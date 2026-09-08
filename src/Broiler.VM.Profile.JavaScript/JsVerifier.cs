@@ -1446,7 +1446,7 @@ internal sealed class JsVerifier
     /// question, and bytes with no symbols are a blob nothing can enter.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=282F69
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7511FC
     // Broiler-Falsified-If: an artifact whose symbol table names fewer units than the function table is admitted, or a symbol offset outside the emitted blob is
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome LinkNative(
@@ -1505,6 +1505,27 @@ internal sealed class JsVerifier
                     JavaScriptDiagnosticCode.MalformedNativeSection,
                     (ulong)index);
             }
+        }
+
+        // THE TEMPLATE-CLOSURE SCAN RUNS HERE AND IT RUNS ALWAYS, which is a decision worth stating
+        // where it is made. Re-emission equality below is strictly stronger where an emitter is in
+        // the image - it reaches the GENERATOR and this reaches only the PAYLOAD - so the obvious
+        // arrangement is to scan only where there is no emitter to re-emit with. That arrangement
+        // would put the layer an execution-only composition depends on in the one configuration
+        // nothing in this repository exercises: every lane here that compiles a native artifact
+        // carries a backend, so the first real run of a scan skipped in that case would be in the
+        // composition that has no other check. It runs first for the same reason the version check
+        // comes before the byte comparison: a payload that is not code at all should be refused as
+        // that rather than as a difference from what this image would have emitted.
+        var scan = JsNativeScan.Scan(
+            state.NativeArchitecture, blob, symbols, state.NativeCodeAlignment);
+
+        if (!scan.Accepted)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.NativePayloadNotTemplateClosed,
+                scan.Offset);
         }
 
         return ReEmit(state, blob, symbols, emitter);

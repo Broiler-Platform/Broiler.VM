@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 3375 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 3420 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 160 |
-| Code units | 6159 |
-| Relevant | 3375 |
-| Exempt | 2784 |
-| Assessed | 3375 of 3375 (100%) |
-| Human reviewed | 0 of 3375 (0%) |
-| Unverified | 3375 |
+| Files scanned | 162 |
+| Code units | 6237 |
+| Relevant | 3420 |
+| Exempt | 2817 |
+| Assessed | 3420 of 3420 (100%) |
+| Human reviewed | 0 of 3420 (0%) |
+| Unverified | 3420 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 3375 |
+| HUMAN_PENDING | 3420 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2784 |
+| EXEMPT | 2817 |
 
 ## 5. Aliases In The Tree
 
@@ -176,12 +176,14 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs` | 64 | 31 | 33 | 31 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` | 26 | 17 | 9 | 17 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeFrame.cs` | 17 | 3 | 14 | 3 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` | 26 | 13 | 13 | 13 | Low | High | 2/2 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` | 51 | 32 | 19 | 32 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNumericManifest.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 150 | 23 | 127 | 23 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 213 | 120 | 93 | 120 | Medium | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 10 | 10 | 0 | 10 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 74 | 8 | 66 | 8 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 75 | 8 | 67 | 8 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` | 35 | 18 | 17 | 18 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptLanguageEdition.cs` | 13 | 13 | 0 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptPosition.cs` | 10 | 6 | 4 | 6 | None | Medium | 1/0 |
@@ -750,6 +752,14 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an offset here differs from the offset the runtime gives that field
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeFrame` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeFrame.cs` - Security=High, Spec=none cited, `B132E7`, PENDING
   - Falsified if: a field of this structure holds a reference the collector traces, or its declared offsets differ from the layout the runtime gives it
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, Spec=none cited, `31ACE8`, PENDING
+  - Falsified if: a payload this scan accepts carries a byte no backend of this build could have emitted
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, byte[], JsNativeSymbolRow[], uint, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, Spec=none cited, `E9805F`, PENDING
+  - Falsified if: a byte sequence no backend of this build can emit is accepted, or a sequence one of them emits is refused
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, Spec=none cited, `14F65E`, PENDING
+  - Falsified if: a template here differs from the bytes the encoder method it names emits, or a byte sequence a backend emits matches no template here
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.Admits(JsNativeFieldKind, long)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, Spec=none cited, `CEE484`, PENDING
+  - Falsified if: a value no backend of this build asks an encoder for is admitted by one of these arms
 - `Broiler.VM.Profile.JavaScript.JavaScriptReadAdapter` in `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` - Security=High, Spec=none cited, `1DD7A4`, PENDING
   - Falsified if: a charge made through this adapter reaches a dimension other than the one named, or a released byte count is charged rather than released
 - `Broiler.VM.Profile.JavaScript.JavaScriptInstance` in `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` - Security=High, Spec=none cited, `E818FA`, PENDING
@@ -1038,7 +1048,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a declared length that disagrees with the bytes present is accepted, or an architecture value this build cannot name is
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadNativeSymbols(ref VmBoundedReader, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `F1C392`, PENDING
   - Falsified if: an offset outside the emitted blob is accepted, or two rows naming one code unit are
-- `Broiler.VM.Profile.JavaScript.JsVerifier.LinkNative(Sections, JsCodeUnit[], IJsNativeEmitter?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `282F69`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsVerifier.LinkNative(Sections, JsCodeUnit[], IJsNativeEmitter?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `7511FC`, PENDING
   - Falsified if: an artifact whose symbol table names fewer units than the function table is admitted, or a symbol offset outside the emitted blob is
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReEmit(Sections, byte[], JsNativeSymbolRow[], IJsNativeEmitter?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `001336`, PENDING
   - Falsified if: an artifact whose emitted bytes differ from this image's own emission of its bytecode is admitted while an emitter is present
@@ -1414,7 +1424,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 3261 of the 3375 assessed units declare
+That is not a figure of speech. 3306 of the 3420 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

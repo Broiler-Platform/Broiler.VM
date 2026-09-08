@@ -1125,6 +1125,9 @@ internal static class JavaScriptDiagnosticCodes
     /// <summary>An emitted-code section disagrees with itself, its frame or the function table.</summary>
     internal const int MalformedNativeSection = 1624;
 
+    /// <summary>A byte of an emitted payload belongs to no instantiation a backend could write.</summary>
+    internal const int NativePayloadNotTemplateClosed = 1625;
+
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;
     internal const int ManifestIdTooLong = 1005;

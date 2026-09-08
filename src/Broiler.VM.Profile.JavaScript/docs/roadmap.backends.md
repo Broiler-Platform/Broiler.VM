@@ -550,33 +550,148 @@ is stated in their own bullets rather than left for a reader to notice from a gr
   backend version the one this build emits. **Re-emission equality, where a backend is in the image**:
   the artifact's own bytecode is recompiled by the same deterministic backend and the result compared
   byte for byte with what the artifact carries — the only layer that reaches the *generator* rather
-  than the *payload*, and the one JSB-1 is what makes possible. **Template-closure scan, where no
-  backend is in the image**: the emitted stream is decoded against the same fixed template table a
-  backend emits from, and every byte must belong to a template instantiation with in-range operands.
-  And the clause that keeps the record honest: **the third layer would not have caught the accident
+  than the *payload*, and the one JSB-1 is what makes possible. **Template-closure scan, always**
+  *(this clause read **where no backend is in the image** until 2026-09-08, and the layer that landed
+  runs in every image instead, for the reason that a layer running only in the configuration nothing
+  in this repository exercises would first run for real in the composition that has no other check:
+  [JSC-209](roadmap.corrections.md#jsc-209))*: the emitted stream is decoded against the same fixed
+  template table a backend emits from, and every byte must belong to a template instantiation with
+  in-range operands. And the clause that keeps the record honest: **the third layer would not have caught the accident
   VM-7 retains as a fixture** — a wrong calling convention that returned the correct answer every time
   and leaked stack until the process died millions of calls later, with no exception and nothing a
   verifier of the artifact could see. A well-formed artifact from a wrong generator is well formed. So
-  the bundle states, in its own words, that an execution-only composition's trust in an emitted payload
-  rests on **provenance and not on verification**, names re-emission equality as the only layer that
-  says otherwise, and names what would pin the generator instead — which is JSB-8 and JSB-10 and
-  nothing in this stage. The corpus is retained in the same form as the one VM-2 retains: each entry
-  with its hash, its expected outcome, its reason and its diagnostic code, replayed by this profile's
-  own corpus check.
+  the bundle states, in its own words, what an execution-only composition's trust in an emitted payload
+  rests on — **that the bytes are closed under a table the emitter answers to, which is strictly more
+  than provenance and strictly less than a correct generator** *(this clause asked the bundle to state
+  that the trust rests on **provenance and not on verification** until 2026-09-08, when the third
+  layer landed and made that sentence false: [JSC-209](roadmap.corrections.md#jsc-209))* — names
+  re-emission equality as the only layer that reaches the generator, and names what would pin the
+  generator instead — which is JSB-8 and JSB-10 and nothing in this stage. The corpus is retained in
+  the same form as the one VM-2 retains: each entry with its hash, its expected outcome, its reason
+  and its diagnostic code, replayed by this profile's own corpus check.
 
-- **State on 2026-09-07: two of the three layers exist and the third does not, which is the layer an
-  execution-only image would have needed.** The **structural** layer is code: section framing, a
-  declared ceiling on emitted length, alignment, every symbol row strictly inside the emitted bytes
+- **State on 2026-09-08: all three layers exist, and the third runs in every image rather than only
+  in an image with no backend.** *(This bullet said, until that date, that **the template-closure scan
+  does not exist**, and drew from it the sentence a reader quotes: that **an execution-only
+  composition's trust in an emitted payload rests on provenance and on nothing this build can check**.
+  Both readings were true when they were written and both are false now. They are replaced rather than
+  edited because the second is the one somebody planned against — [JSC-208](roadmap.corrections.md#jsc-208)
+  quoted it as the standing risk behind a process that died — and the correction is
+  [JSC-209](roadmap.corrections.md#jsc-209).)* The **structural** layer is unchanged: section framing,
+  a declared ceiling on emitted length, alignment, every symbol row strictly inside the emitted bytes
   and non-overlapping and ascending, the architecture a value this build knows, the backend version
-  the one this build emits. The **re-emission-equality** layer is code and is reachable through a
-  descriptor a compiler-bearing composition selects, which recompiles the artifact's own bytecode with
-  the same deterministic backend and compares the result byte for byte. **The template-closure scan
-  does not exist**, so the sentence this stage owes a reader is owed plainly and now: **an
-  execution-only composition's trust in an emitted payload rests on provenance and on nothing this
-  build can check**, re-emission equality is the only layer that says otherwise, and it is available
-  only to an image that carries the lowering. **Open clauses**: the third layer; and the retained
-  corpus, which has entries with hashes and recorded triples for the native surface in this profile's
-  existing corpus but no replay under three publish modes and no bundle.
+  the one this build emits. The **re-emission-equality** layer is unchanged and is still reachable only
+  through a descriptor a compiler-bearing composition selects. The **template-closure scan** is code,
+  in the format assembly, and it decodes an emitted payload against a **closed table of every
+  instruction template this build's backends emit** — per architecture and calling convention, each
+  template carrying its fixed bytes and, for each variable field, **the closed set of values that field
+  admits rather than its width**, because a displacement field admitting every thirty-two-bit value
+  would accept a load from four gigabytes past the frame, which is a legal encoding and an impossible
+  emission. It lives in the format assembly **for the reason that assembly exists at all**: the
+  lowering emits from an encoder, the verifier scans against the table, and the scan is worth running
+  only because both answer to one written-down enumeration rather than to each other — put the table
+  beside the encoders and an execution-only image cannot reach it, put it in the profile and the
+  encoders cannot.
+
+- **Where it runs, and the refusal it produces.** The verifier's native link path calls it **after the
+  symbol-table checks and before re-emission, in every image**, and the ordering is a decision rather
+  than an accident: a payload that is not code at all should be refused as that rather than as a
+  difference from what this image would have emitted. A payload that fails it is refused as
+  **`InvalidArtifact` / `InconsistentStructure`** under a diagnostic code minted for it,
+  `NativePayloadNotTemplateClosed`, carrying the blob-relative offset of the byte that failed; the
+  registry gained the row and, for one revision of that file, a fourth reachability kind — `check`, for
+  a code reached from a composition root's checks lane rather than from a retained corpus entry — which
+  was **withdrawn on 2026-09-08** when the corpus entries below promoted the row to `corpus`; the
+  registry rules hold the row to the retained manifest in both directions. The scan answers with one of
+  twelve named clauses: an
+  architecture with no table, bytes belonging to no code unit, units that overlap or run backwards, a
+  byte sequence matching **no** template, a byte sequence matching **two**, an operand outside the set
+  its field admits, an instantiation crossing the end of the unit it began in, a branch leaving its
+  unit, a branch landing inside an instruction rather than on one, a call whose target is not a unit's
+  entry point, a unit whose last instruction is not a return, and a byte hidden in the alignment
+  padding between one unit and the next.
+
+- **What holds the two directions, observed on this working tree on `win-x64` on 2026-09-08.** The
+  slice compiler's `--checks` lane carries both. *Everything the backends emit, the scanner accepts*: a
+  manifest of numeric programs is compiled by `x86-64-win64`, `x86-64-sysv` and `arm64-aapcs64`, **the
+  emitted bytes are read back out of the artifact rather than taken from the emitter**, and every image
+  is scanned and accepted. *Every template is reached*: each table's templates are all instantiated by
+  one of those programs but for a single x86-64 template, which the row **names rather than tolerates**
+  — `movq xmm0, rax`, emitted only for a return of `undefined`, which a numeric manifest keeps out of
+  reach because it refuses a function body that can fall off its end while a program body returns its
+  completion slot with an ordinary return. **The coverage rows are what make the closure rows worth
+  reading**: a template no program instantiates is a template an encoder could have contradicted with
+  every other row still green. Beside them a row requires the three x86-64 constants the table restates
+  — the frame size, the spill slot and the register the frame pointer arrives in — to be the convention
+  table's, because two records of one fact is a place for them to part company. The other direction is
+  the checkable negative half: byte strings that are **legal machine code no backend emits** are
+  refused by name — an indirect call through a register, a `syscall`, a frame displacement between two
+  declared fields, a slab displacement off the eight-byte grid, a materialised immediate no unit
+  answers with, a unit that runs off its own end, a byte hidden in a unit's padding, a branch that
+  leaves its unit, a branch into the middle of an instruction — as are a real emitted image with its
+  last return removed and one with a branch displacement moved. And a whole artifact of the retained
+  corpus's own shape carrying **four zero bytes** is refused **at verification** by a runtime built from
+  the ordinary descriptor, which carries no emitter and is the execution-only position exactly; a
+  payload that is one instruction still verifies, and nothing instantiates it.
+
+- **And the retained corpus took the four zero bytes back.** [JSC-208](roadmap.corrections.md#jsc-208)
+  removed a row whose bytes were mapped, armed and jumped into, and said that the property it stopped
+  covering had to be written where a machine could not be the authority. The corpus now carries **five
+  entries binding this refusal** — the four zero bytes themselves, restored as a refusal at
+  verification rather than as an armed page, and beside them an emitted unit ending without a return,
+  a branch leaving its code unit, a return code no backend materialises, and a word after an emitted
+  unit's return — with a passing control the scan accepts and instantiation then refuses as an
+  architecture no host arms. **Every one is host-independent**, because a refusal at verification is
+  the same refusal on every machine. The execution-only root — the image with no backend in it —
+  replays every entry of that corpus to its recorded answer, twice and with no residue, with the scan
+  in its path. **And the registry has caught up with its own corpus, which is recorded here rather
+  than repaired quietly.** This bullet read, for one revision of the tree: *"row 1625 is still
+  classified `check`, and that kind's rule says in its own words that such a row is reached by a named
+  check **and by no retained entry** … so **the row understates its own reachability** and the
+  promotion is owed by whoever owns that row."* The promotion was made on **2026-09-08**: row 1625
+  says `corpus` and names `wide-a-native-payload-of-four-zero-bytes`, the entry recording the bytes of
+  [JSC-208](roadmap.corrections.md#jsc-208), and it is held to the retained manifest by the clause
+  every other `corpus` row is held to. **The `check` kind went with it** — a kind minted for one row,
+  whose defining second half was false of that row within the day, leaves behind a branch of rule N7
+  nothing can reach and a list nothing may join, so the kind, its rule branch, its admitted-codes list
+  and the lane reader that bound it to a composition file are all withdrawn; the registry header
+  records what the word said and why it is gone. **The revision did not move with it**: `since` and
+  the registry's own revision date the *meaning* of a code, and 1625 means what it meant when it was
+  minted — what changed is what reaches it.
+
+- **What the layer does not catch, and this half is why the gate's honesty clause above is not weakened
+  by any of it.** It reaches the **payload** and not the **generator**. A well-formed sequence of the
+  *wrong* templates is well formed: a backend that emitted a multiply where the bytecode said add
+  writes a payload every clause of the scan accepts, and the scan has no opinion about what the program
+  was supposed to compute. **It would not have caught the accident VM-7 retains as a fixture** — a
+  caller using the wrong calling convention against a callee that was correct, which returned the right
+  answer every time and leaked stack until the process died millions of calls later. The lane does
+  carry a row in which an image emitted for System V is refused when it is offered as Windows, and
+  **that row must not be read as covering VM-7**: the two conventions differ in three constants that
+  sit in the *fixed bytes* of the table, so a mislabelled artifact is one whose prologue matches no
+  template — an artifact that says it was built for a machine it was not built for. That is a property
+  of a payload. VM-7's is a property of a call site, and no scan of a payload can see one.
+  **Re-emission equality remains the only layer that reaches the generator**, it remains available only
+  to an image that carries the lowering, and what would pin the generator instead is JSB-8 and JSB-10.
+
+- **What an execution-only image's trust in an emitted payload rests on now, at the precision the
+  replaced sentence lacked.** It rests on the payload being **closed under a table the emitter answers
+  to**: every byte belongs to an instantiation of a template this build's backends emit, with every
+  operand inside the set that field admits. That is **strictly stronger than provenance**, which is a
+  claim about where an artifact came from and which nothing inside the image can check, and it is
+  **strictly weaker than a correct generator**, which is a claim about what the bytes compute and which
+  only re-emission equality or a differential oracle reaches. Three things mark the distance and they
+  are worth stating as three: an artifact of arbitrary bytes is refused by this layer, an artifact from
+  a backend version this build does not emit is refused by the structural layer and not by this one,
+  and an artifact of well-formed instructions computing the wrong function is refused by neither.
+
+- **Open clauses**: **the table is a restatement of what the encoders emit and not a derivation from
+  them** — its own falsification line says that a template differing from the bytes the encoder method
+  it names emits is what falsifies it — so the two can drift, nothing generates one from the other, and
+  the closure and coverage rows are **a run rather than a proof** that they have not; and the retained
+  corpus, which now binds this refusal from five entries and replays whole in the execution-only image
+  with the scan in its path, still has **no replay under three publish modes and no bundle**, so every
+  clause above is a fact about one working tree on one machine on one date.
 
 ### JSB-6 — The x86-64 encoder, and a frame that holds no managed reference
 
@@ -608,9 +723,22 @@ is stated in their own bullets rather than left for a reader to notice from a gr
   admits no ineligible construct in the first place — what replaces it is the admission pass, which
   refuses a construct at compile time with a diagnostic and a position; and the entry-guard clause and
   its cases are **excluded by the design rather than unmet**, since there is no guard and nothing to
-  fall back to. **Open clauses**: no bundle, and the cross-machine half of the determinism obligation —
-  identical bytes across processes and machines of one architecture — has been observed on one machine
-  only.
+  fall back to.
+
+- **The gate's last clause gained a second half on 2026-09-08, and both halves are observed.** It asks
+  that every artifact this stage produces satisfy JSB-5's re-emission layer; since JSB-5's third layer
+  landed, every artifact this stage produces must also be **closed under the template table**, and it
+  is — a manifest of numeric programs compiled by all three backends, the bytes read back out of the
+  artifact rather than taken from the emitter, every image accepted, and every template of each table
+  instantiated by one of those programs but for one the check names rather than tolerates. **That is a
+  stronger reading of the same clause and not a new clause**, and it is what makes the closure argument
+  worth anything from this side: an encoder that had contradicted the table would fail here, in a lane
+  somebody runs, rather than in the composition that has no other check. It is stated in this bullet
+  and not written into the gate above, because the gate's words are unchanged and the obligation they
+  name is JSB-5's.
+
+- **Open clauses**: no bundle, and the cross-machine half of the determinism obligation — identical
+  bytes across processes and machines of one architecture — has been observed on one machine only.
 
 ### JSB-7 — The arming path, one place, with a negative control
 

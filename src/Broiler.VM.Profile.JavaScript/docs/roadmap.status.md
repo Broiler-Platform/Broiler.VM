@@ -266,6 +266,76 @@ ordinary way a retained figure stops describing a tree and the reason a bundle i
 moved for any of this, no row reaches `Accepted`, no bundle retains a byte of it, and nothing here
 has been read by a human.**
 
+**A third verification layer for a native payload landed on 2026-09-08, recorded as observed
+repository state under section 1's second category and satisfying no gate** *(added 2026-09-08)*.
+Until that date the verifier checked a native payload's section framing, its length against a
+declared ceiling, its alignment, its symbol ranges and the architecture it names, and — **only in an
+image carrying the lowering** — recompiled the artifact's own bytecode with the same deterministic
+backend and compared the emitted bytes. An execution-only image carries no lowering, so nothing in it
+distinguished emitted code from arbitrary bytes; on 2026-09-08 that stopped being a paragraph and
+became a dead process. A retained corpus row carrying **four zero bytes** as an `x86-64-Win64`
+payload verified, was armed, was jumped into, and killed the process with an access violation.
+[JSC-208](roadmap.corrections.md#jsc-208) records the crash and closes none of the risk behind it;
+[JSC-209](roadmap.corrections.md#jsc-209) records what closed it and what it leaves open.
+
+**What exists now.** A **template-closure scan**, in the format assembly — the assembly the lowering
+and the profile already both depend on and neither may depend past — which decodes an emitted payload
+against a **closed table of every instruction template this build's backends emit**, per architecture
+and calling convention, each template carrying its fixed bytes and, for each variable field, the
+closed set of values that field admits rather than its width. The verifier runs it **in every image**,
+after the symbol-table checks and before re-emission, and refuses a payload that fails it as an
+invalid artifact with an inconsistent structure, naming the blob-relative byte that failed. The
+diagnostic registry gained the row and, for one revision of that file, a **fourth reachability kind**,
+`check`, for a code reached from a composition root's checks lane rather than from a retained corpus
+entry. **That kind was withdrawn the same day**: five retained corpus entries binding code 1625
+landed, which made the clause it was defined by — *and no entry of the retained corpus does* — false
+of the only row that ever claimed it, so row 1625 is a `corpus` row naming
+`wide-a-native-payload-of-four-zero-bytes` and the registry rules hold it to the retained manifest in
+both rejecting directions. The registry's own header records what `check` said and why it is gone,
+because a reader meeting the word in a commit of 2026-09-08 needs to find out where it went.
+
+**What it changed about a reader's trust, and the direction it did not change.** An execution-only
+image's trust in an emitted payload no longer rests on provenance alone: it rests on the bytes being
+**closed under a table the emitter answers to**, which is **strictly more than provenance and strictly
+less than a correct generator**. A well-formed sequence of the *wrong* templates is well formed, so a
+backend that emitted a multiply where the bytecode said add writes a payload the scan accepts;
+re-emission equality is still the only layer that reaches the generator and is still available only
+to an image carrying the lowering; and the accident the core retains as a fixture — a caller using the
+wrong calling convention against a callee that was correct — is a property of a call site that no scan
+of a payload can see. [The backend roadmap's JSB-5](roadmap.backends.md#jsb-5--verification-of-a-payload-that-is-code-and-what-it-cannot-catch)
+states both halves in its own words, and **its exit gate is met by none of this**.
+
+**What was observed, from this working tree, on `win-x64`, on 2026-09-08.** The slice compiler's
+`--checks` lane carries rows in both directions. Every image the three backends emit for a manifest of
+numeric programs is accepted by the table, with the bytes **read back out of the artifact rather than
+taken from the emitter**; every template of each table is instantiated by one of those programs but
+for a single x86-64 one the row names rather than tolerates; a row requires the three x86-64 frame
+constants the table restates to be the convention table's; byte strings that are legal machine code
+and that no backend emits — an indirect call through a register, a `syscall`, operands outside the set
+their field admits, a unit that runs off its own end, a branch that leaves its unit — are refused by
+name, as are a real emitted image with its last return removed and one with a branch displacement
+moved; and a whole artifact of the retained corpus's own shape carrying four zero bytes is refused
+**at verification** by a runtime built from the ordinary descriptor, which carries no emitter. **The
+retained corpus took the four zero bytes back**: the row whose bytes JSC-208 records as mapped, armed
+and jumped into is a corpus entry again, this time as a refusal at verification, with four more
+entries binding the same code beside it and one passing control the scan accepts; every one of them is
+host-independent, because a refusal at verification is the same refusal on every machine. The
+execution-only root — the image with no backend in it — replays every entry of that corpus to its
+recorded answer, twice and with no residue, which is the lane JSC-208 records as not having been run
+before the change that produced the crash. The component's own gate is green at the same commit,
+Contract 207/207 and Architecture 221/221.
+
+**No row moved, and under this ledger's own rules none may.** [Section 4](#4-required-evidence-bundle)
+requires every status claim beyond `Not started` to point at a retained bundle, and **no bundle
+retains a byte of this**: no publish-and-run under any mode, no corpus replay collected as evidence,
+no negative control watched failing and watched passing after revert, and no human has read a line.
+`JS-1` owns the format, `JS-3b` the lowering and `JS-5` the executor, and **no exit gate of any of the
+three asks for a verification layer**, so none of them is closer to a gate for having gained one. The
+table's own limit is recorded rather than left to be found: it is a **restatement** of what the
+encoders emit and not a derivation from them, so the two can drift, and the lane's closure and
+coverage rows are a run rather than a proof that they have not. **No figure of any kind is carried
+here, nothing here is reviewed, and no row reaches `Accepted`.**
+
 The core's VM-7 — which admits the artifact form that document is written under — belongs to the
 core's ledger and is reported there; under update rule 6 no row there advances a row here, and this
 paragraph reports on nothing there.

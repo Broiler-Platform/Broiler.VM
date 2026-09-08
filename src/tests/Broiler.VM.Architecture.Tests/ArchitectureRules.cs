@@ -852,6 +852,7 @@ internal static class ArchitectureRules
     /// of <see cref="DefensiveCodes"/> and states why no artifact reaches it.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This is the backward half of the binding and the expensive one to satisfy honestly: a
     /// registry can always be made to agree with the enum, and it takes a corpus to show that the
     /// codes are reachable at all. Two rows are not - one because the reader's status set is
@@ -861,6 +862,24 @@ internal static class ArchitectureRules
     /// manifest: the two descriptor-mismatch rows were unobservable because the core screened the
     /// descriptor against a set with one member in it, and registering a second version and a
     /// second manifest made both reachable and gave each a retained entry.
+    /// </para>
+    /// <para>
+    /// <b>THE REGISTRY HAD THREE KINDS OF REACHABILITY, THEN FOUR FOR ONE REVISION, AND HAS THREE
+    /// AGAIN - and this rule is where the fourth was admitted, so this is where its withdrawal is
+    /// recorded.</b> Between the two commits of 2026-09-08 that built the template-closure scan, a
+    /// <c>check</c> branch stood below the <c>source</c> one and a <c>CheckReachableCodes</c> list
+    /// stood beside <see cref="DefensiveCodes"/> naming the single code admitted to it, 1625, on
+    /// the reading that a <c>check</c> row is one "a named check of a producer composition reaches
+    /// and no entry of the retained corpus does". The second half of that reading stopped being
+    /// true within the day, when five retained entries binding 1625 landed, and its own text had
+    /// already said the entry that would promote the row belonged to the stage that owns the
+    /// corpus. Withdrawing the kind is what that promotion leaves behind: what would otherwise
+    /// remain is a branch of this rule no row can reach and a list no row may join. 1625 is now a
+    /// <c>corpus</c> row naming <c>wide-a-native-payload-of-four-zero-bytes</c>, held to the
+    /// retained manifest by the same clause every other <c>corpus</c> row is held to, and the lane
+    /// check it used to name still runs in the slice compiler's <c>--checks</c> lane - what it is
+    /// no longer is a registry row's evidence.
+    /// </para>
     /// </remarks>
     internal static IEnumerable<string> N7(
         IReadOnlyList<DiagnosticRegistryRow> registry,

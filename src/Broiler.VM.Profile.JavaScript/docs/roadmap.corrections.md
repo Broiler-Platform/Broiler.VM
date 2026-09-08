@@ -8815,3 +8815,144 @@ the wrong subject: it asks which machine the bytes are for, not whether they are
 `win-x64` from this working tree; `JsNativeExecution.HostArchitecture` and `Instantiate`;
 `WideCorpus.cs`. The regenerated corpus replays 22 of 22 on `win-x64` and the mutation control
 detects both of its injections. 2026-09-08.
+
+### JSC-209
+
+**Where:** [the backend roadmap](roadmap.backends.md)'s
+[JSB-5](roadmap.backends.md#jsb-5--verification-of-a-payload-that-is-code-and-what-it-cannot-catch) —
+its State bullet, and two clauses of its exit gate — and, through it,
+[the support table](../../../docs/support.md)'s x86-64 row and
+[the evidence ledger](roadmap.status.md)'s record of what this profile owns.
+
+**What the plan said.** That **the third of JSB-5's three verification layers did not exist**, and
+that the consequence had to be stated plainly rather than left to be discovered: *"an execution-only
+composition's trust in an emitted payload rests on provenance and on nothing this build can check"*,
+with re-emission equality named as the only layer that says otherwise and available only to an image
+carrying the lowering. The exit gate said the same thing twice more — it specified the third layer as
+a **template-closure scan, *where no backend is in the image***, and it required the stage's bundle to
+state *"that an execution-only composition's trust in an emitted payload rests on provenance and not
+on verification"*.
+
+**What replaced it, and it is the layer that sentence was about.** A **template-closure scan** exists
+in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs`, decoding an emitted payload against a
+closed table in `JsNativeTemplates.cs` of every instruction template this build's backends emit, per
+architecture and calling convention, each carrying its fixed bytes and, for each variable field, the
+closed set of values that field admits rather than its width. Both files are in the **format**
+assembly, which is the pivot the lowering and the profile already depend on and neither may depend
+past: put the table beside the encoders and an execution-only image cannot reach it, put it in the
+profile and the encoders cannot. `JsVerifier.LinkNative` calls it after the symbol-table checks and
+before re-emission and a payload that fails it is refused as `InvalidArtifact`/`InconsistentStructure`
+under `1625 NativePayloadNotTemplateClosed`, naming the blob-relative offset of the byte that failed;
+the diagnostic registry moved to revision 12 and gained a fourth reachability kind, `check`, for a
+code reached from a composition root's checks lane rather than from a retained corpus entry.
+
+**And it runs ALWAYS, which is where the gate's own words were replaced rather than met.** The gate
+asked for the scan *where no backend is in the image*, and that is the arrangement the design refused:
+every lane in this repository that compiles a native artifact carries a backend, so a scan skipped in
+that configuration would be a scan with no test behind it, and the first time it ran for real would be
+inside the composition that has no other check. It therefore runs in every image, and re-emission
+equality — strictly stronger, because it reaches the generator — runs after it where an emitter is
+present. **The clause was strengthened rather than relaxed**, which is the only direction in which a
+gate may be met by something other than what it asked for, and it is recorded here because a reader
+who planned around *where no backend is in the image* would otherwise find a scan running somewhere
+the plan did not put one.
+
+**Its relationship to [JSC-208](#jsc-208), which is the reason this entry exists at all.** That entry
+records a retained corpus row carrying **four zero bytes** as an `x86-64-Win64` native payload which
+verified, was armed, was jumped into, and killed the process with an access violation
+(`0xC0000005`, in `JsNativeExecution.Invoke`). Its closing paragraph named the standing risk and
+closed none of it: *"The architecture check is now the only thing between a malformed native payload
+and execution in such an image"*, and it is *"a check about the wrong subject: it asks which machine
+the bytes are for, not whether they are code."* **That is the sentence this change answers.** Four
+zero bytes match no template of any table here, and the check now runs before anything is armed: on
+2026-09-08, from this working tree on `win-x64`, a whole artifact of the retained corpus's own shape —
+native surface declared, an emitted-code section, one symbol row — carrying four zero bytes as an
+x86-64 payload and again as an arm64 one was refused at verification by a runtime built from the
+**ordinary** descriptor, which carries no emitter and is the execution-only position exactly, with
+`InvalidArtifact/InconsistentStructure` code 1625 in both cases.
+
+**And the corpus took the four zero bytes back, which is the shape of the answer JSC-208's own
+argument asks for.** That entry removed a row whose bytes reached an armed page and said, in as many
+words, that the property it stopped covering had to be written somewhere a machine could not be the
+authority. The retained corpus now carries **five entries binding code 1625** —
+`wide-a-native-payload-of-four-zero-bytes`, the row whose bytes killed the process, restored as a
+**refusal at verification** rather than as an armed page; and beside it an emitted unit that ends
+without a return, a branch that leaves its code unit, a return code no backend materialises, and a
+word after an emitted unit's return — together with a passing control,
+`wide-an-emitted-payload-every-word-of-which-is-a-template`, which the scan accepts and which is
+refused afterwards at instantiation as an architecture no host arms. Every one of them is
+host-independent for the reason JSC-208 fixed on: a refusal at verification is the same refusal on
+every machine, and the bytes are unreachable in the same stroke. Observed 2026-09-08 from this working
+tree on `win-x64`, the execution-only root — the image with no backend in it — replays **128 entries
+to their recorded answers, twice, with no residue**, and the row JSC-208 left behind,
+`wide-a-native-payload-for-an-architecture-no-host-arms`, still answers what it recorded. **That is
+the lane JSC-208 records as not having been run before the change that produced the crash.**
+
+*(This paragraph was rewritten within the day it was first written. It said, in its first form, that
+the corpus row was unchanged and that the retained corpus replayed **22 of 22** — the first clause
+was overtaken by the corpus entries above landing in the same working tree hours later, and the
+second was a check count read as an entry count: the lane reports twenty-two named checks, one of
+which replays every entry. Both are corrected here rather than edited away, because a number
+transcribed from a lane's summary line into prose is exactly the failure the ledger's update rule 10
+is written against, and a corrections file is the last place entitled to commit it quietly.)*
+
+**What it does not close, stated as fully as what it closes, because the half a careless entry omits
+is this one.** The scan reaches the **payload** and not the **generator**. A well-formed sequence of
+the *wrong* templates is well formed: a backend that emitted a multiply where the bytecode said add
+writes a payload every clause of the scan accepts. **It would not have caught the accident the core
+retains as a fixture as VM-7** — a caller using the wrong calling convention against a callee that was
+correct, returning the right answer every time and leaking stack until the process died millions of
+calls later — and JSB-5's exit gate still carries that clause unweakened. The checks lane does carry a
+row in which an image emitted for System V is refused when it is offered as Windows, and **that row is
+not VM-7's defect**: the two conventions differ in three constants that sit in the fixed bytes of the
+table, so a mislabelled artifact is one whose prologue matches no template — an artifact claiming a
+machine it was not built for, which is a property of a payload, where VM-7's is a property of a call
+site that no scan of a payload can see. **Re-emission equality remains the only layer that reaches the
+generator**, and it remains available only to an image carrying the lowering. So what an
+execution-only image's trust now rests on is that **the bytes are closed under a table the emitter
+answers to** — strictly more than provenance, which nothing inside the image can check, and strictly
+less than a correct generator, which only re-emission equality or a differential oracle reaches. And
+the table is a **restatement** of what the encoders emit rather than a derivation from them: its own
+falsification line says a template differing from the bytes the encoder method it names emits is what
+falsifies it, so the two can drift, and the lane's closure and coverage rows are a run rather than a
+proof that they have not.
+
+**One thing this entry recorded without closing, and it was closed later the same day.** The
+paragraph here read: *"The diagnostic registry still classifies row 1625 as `check` — the kind minted
+for a code a producer composition's lane reaches **and no retained corpus entry does** — while five
+retained corpus entries reach it … **nothing fails and the row understates its own reachability** …
+That promotion is owed and is not this entry's to make."* It was made on **2026-09-08**, in a third
+commit of the same day, and it is recorded here rather than substituted for the sentence above,
+because a ledger that edited its own open items into closed ones would be a ledger nobody could date.
+Row 1625 is a `corpus` row naming `wide-a-native-payload-of-four-zero-bytes` — the entry recording the
+bytes [JSC-208](#jsc-208) is about — and the rejecting clause it is now held to is the one every other
+`corpus` row is held to: a case the retained manifest does not record against that code fails, and so
+does a case the manifest records against a *different* code, which the lane clause could not have
+seen. **The `check` kind was withdrawn with the promotion**, because a kind minted for one row whose
+defining second half became false of that row leaves behind a branch of rule N7 nothing can reach and
+a list nothing may join; the registry header, rule N7's own remarks and the composition constant that
+the rule used to read each record what the word said and where it went. **The revision did not move**:
+`since` and `registry-revision` date the *meaning* of a code, 1625 means exactly what it meant when it
+was minted, and a revision minted for a change in what *reaches* a code would mis-date every retained
+entry that records one.
+
+**What this entry is not.** It advances no milestone and moves no row: `JS-1` owns the format, `JS-3b`
+the lowering and `JS-5` the executor, and no exit gate of any of the three asks for a verification
+layer. **No bundle retains a byte of it** — no publish-and-run under any mode, no corpus replay
+collected as evidence, no negative control watched failing and watched passing after revert — nothing
+in it has been reviewed by a human, and no row reaches `Accepted`. It carries no performance figure
+and none was taken.
+
+**Authority and date.** `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` and
+`JsNativeScan.cs`; `JsVerifier.LinkNative`; registry row 1625 at revision 12, which this entry read
+under rule N7's `check` branch and which is `corpus` under the amendment above; the slice compiler's
+`--checks` lane, run from this working tree on `win-x64` on 2026-09-08
+and reporting every closure, coverage, drift, refusal, mutation and whole-verifier row above as
+passing; the execution-only root replaying all 128 retained corpus entries to their recorded answers,
+twice and with no residue, on the same tree and date, five of those entries binding this code;
+Contract 207/207 and Architecture 221/221 green at the same commit; read against
+[JSC-208](#jsc-208) and [JSB-5](roadmap.backends.md#jsb-5--verification-of-a-payload-that-is-code-and-what-it-cannot-catch).
+No bundle. 2026-09-08. *(Amended the same day: row 1625 is `corpus` and rule N7 has no `check`
+branch — Contract 207/207 and Architecture 221/221 green after the withdrawal, the execution-only
+root replaying 128 entries with the five that bind 1625 among them, and the slice compiler's
+`--checks` lane reporting 135 checks passed.)*

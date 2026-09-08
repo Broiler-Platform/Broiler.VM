@@ -1000,7 +1000,16 @@ public sealed class ReviewRecordRuleTests
         // its two platform halves, the executor arm that calls into an armed one, and the probe the
         // calling-convention obligations are held by. Every one of them is covered on the same terms
         // as every other product file.
-        Assert.Equal(160, AssuranceSources.Files.Count);
+        //
+        // TWO MORE JOINED THEM WITH THE TEMPLATE-CLOSURE SCAN, and they are in the format assembly
+        // rather than beside either encoder because that is what makes the scan possible at all: a
+        // closed table of the instruction templates the backends emit, and the pass that decodes an
+        // emitted payload against it. A compiler and an executor must agree about what a payload is
+        // and neither may depend on the other, so the enumeration both answer to is in the assembly
+        // both already reference. They are covered on the same terms as every other product file,
+        // and the record says of them what it says of the other nine: nothing here has been read by
+        // a human.
+        Assert.Equal(162, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

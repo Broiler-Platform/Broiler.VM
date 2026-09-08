@@ -92,6 +92,20 @@ internal static class DiagnosticRegistry
     internal static readonly string[] Halves = ["core-result", "embedder-seam"];
 
     /// <summary>The three reachability kinds a row may claim.</summary>
+    /// <remarks>
+    /// <b>There were four for one revision of the registry, and the fourth is withdrawn as of
+    /// 2026-09-08 rather than erased.</b> <c>check</c> arrived with revision 12 and was documented
+    /// here as the narrowest of the four: "A row claims it when a named check of a producer
+    /// composition reaches the code and no entry of the retained corpus does", with a
+    /// <c>LanePath</c> constant naming the one composition file whose string literals a
+    /// <c>check</c> row's case had to be one of, and a <c>LaneCases</c> reader collecting them. It
+    /// was minted for one row - 1625, the template-closure scan's refusal - by the stage that could
+    /// not add a corpus entry, and the clause "and no entry of the retained corpus does" became
+    /// false of that row the same day, when five retained entries binding 1625 landed. Row 1625 is
+    /// <c>corpus</c> now and names <c>wide-a-native-payload-of-four-zero-bytes</c>, so the kind,
+    /// the lane path and the lane reader are all gone: a word no row may claim is not a narrower
+    /// kind, it is a branch of rule N7 nothing can reach.
+    /// </remarks>
     internal static readonly string[] Reachabilities = ["corpus", "source", "defensive"];
 
     /// <summary>The published registry, parsed.</summary>

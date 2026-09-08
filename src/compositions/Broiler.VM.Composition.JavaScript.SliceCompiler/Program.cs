@@ -429,6 +429,7 @@ internal static class Program
             .Concat(FinallyMatrixChecks.Run())
             .Concat(NativeAbiChecks.Run())
             .Concat(JsArm64GoldenChecks.Run())
+            .Concat(NativeTemplateScanChecks.Run())
             .ToArray();
         var failed = 0;
         var notRun = 0;

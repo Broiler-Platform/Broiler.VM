@@ -112,6 +112,12 @@ wide-a-native-payload-no-surface-declares|daab9766b67b61b92917b431c2b9b067d17ab8
 wide-a-native-code-section-that-disagrees-with-itself|2e7274b287e04969ae5f1c855195bc4868388efe1aef9f589b7eb05e128eb047|wide|InvalidArtifact|InconsistentStructure|1624|-|-|-|-
 wide-the-native-surface-a-composition-declined|cf4fc5e442254906f2d49bc635748811e11463517aa7fe291b63929e38ddbba9|wide-declining|InvalidArtifact|UnsupportedFeatureManifest|1608|-|-|-|-
 wide-a-native-payload-for-an-architecture-no-host-arms|1d0d788c90688333a9ffb24ef21ff58a02db41d7e0b04b8b8a56e821a6ae664f|wide|ProfileFault|UnsatisfiedHostAssumption|0|-|-|-|-
+wide-a-native-payload-of-four-zero-bytes|947163565602db6001c0b5da51f28cbeea4cb02bc9a955c5cd6df053357e93d2|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:0:0:0|-|-
+wide-an-emitted-unit-that-ends-without-a-return|203f4d897c54cf88f4bd9cc2484a144744cc1abf87fd6df820163b18733678b2|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:7:0:0|-|-
+wide-a-branch-that-leaves-its-code-unit|847ebde0cee732540857a724828806ec316fc17ed1ac32fb8fe998ca729b9ad9|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:0:0:0|-|-
+wide-a-return-code-no-backend-materialises|85bf93a4c8e53d486301f696a78fe4c6351c0b5a07bd9aff5a6f42b11b7d6e47|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:0:0:0|-|-
+wide-a-word-after-an-emitted-units-return|a3a9a9ecf6390831b51d1893390481f74559c3819587659c701a3344ab805f8a|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:4:0:0|-|-
+wide-an-emitted-payload-every-word-of-which-is-a-template|225419512084708e280458997ea9de080744d52e4a3bda021d0aea8f630488e5|wide|ProfileFault|UnsatisfiedHostAssumption|0|-|-|-|-
 wide-a-version-1-artifact-announced-as-version-2|4a871c79683bcd1c0192ed7cfd50d4d8a9caf59d62f8071e9776188fee5d8156|wide|InvalidArtifact|DescriptorMismatch|1003|-|-|-|-
 wide-a-slice-manifest-announced-as-the-wide-one|820f00f2877b8bebc95b8ec462f6fa6c9aade306bf7de8eb32b9d48f065fcd2d|wide|InvalidArtifact|DescriptorMismatch|1006|-|-|-|-
 wide-a-method-called-through-a-property|f7bde8e8fc2b93608fe40962a7abb3e33ff28ea5d01dcb20d41635e698db4bcd|wide|Normal|NormalCompleted|0|7|-|-|-

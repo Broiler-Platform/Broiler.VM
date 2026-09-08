@@ -1,9 +1,9 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 11
+# registry-revision: 12
 # published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4),
 #                         JSW-5 (revisions 5, 6, 7 and 9), JSW-8 (revisions 8 and 10),
-#                         JSN-1 (revision 11)
+#                         JSN-1 (revisions 11 and 12)
 # owning-decision: JSD-0009
 # format-version: 1, 2
 # feature-manifest: broiler.javascript.slice, broiler.javascript.wide, broiler.javascript.numeric
@@ -45,8 +45,32 @@
 #                           it is to this half what the artifact corpus is to the other one.
 #                defensive  no artifact reaches it at this build. The case column says why, and
 #                           the count of these rows is fixed by rule N7 rather than by this file.
+#                THREE KINDS, AND THERE WERE FOUR FOR ONE REVISION OF THIS FILE, which is recorded
+#                here rather than repaired quietly. A fourth kind, `check`, stood beside the three
+#                above between the two commits of 2026-09-08 that built the template-closure scan,
+#                and it read: "a named check of a producer composition reaches it and no entry of
+#                the retained corpus does. IT IS WEAKER THAN `corpus` AND THE DIFFERENCE IS WHY IT
+#                IS ITS OWN WORD: nothing is retained, nothing is replayed under three publish
+#                modes, and no evidence bundle holds it". It was minted for ONE row - 1625, the
+#                template-closure scan's refusal - by the stage that added the code and could not
+#                add a corpus entry, and its own last sentence said it was held "ahead of the
+#                retained entry that will pin it". The stage that owns the corpus then wrote five
+#                retained entries that reach 1625, which made the kind's own definition FALSE OF
+#                THE ONLY ROW THAT EVER CLAIMED IT: an entry of the retained corpus does reach the
+#                code, and the row understated its own evidence rather than overstating it. The
+#                kind is WITHDRAWN as of 2026-09-08 rather than left standing as a word no row may
+#                use - row 1625 says `corpus` and names wide-a-native-payload-of-four-zero-bytes,
+#                which is the entry recording the bytes of JSC-208, and rule N7 has neither a
+#                `check` branch nor a list of the codes it would admit. A reader meeting `check` in
+#                a commit of that day is reading a kind that existed for one revision of this file
+#                and was replaced by the evidence it was standing in for. THE REVISION DID NOT MOVE
+#                WITH IT, and that is deliberate: `since` and `registry-revision` date the MEANING
+#                of a code, no code's meaning changed here, and a revision minted for a change in
+#                what reaches a code would mis-date every retained entry that records one.
 # case           the retained corpus entry that produces the code, the retained source entry that
 #                is refused with it, or, for a defensive row, the reason no artifact reaches it.
+#                It named a composition check on the one row that claimed the withdrawn `check`
+#                kind, and no row names one now.
 # since          the registry revision in which this code acquired the meaning it has now. A code
 #                is never reused for a different meaning: a rejection whose meaning changes takes a
 #                new number and the old one is retired, which is what lets a corpus entry recording
@@ -122,6 +146,7 @@
 1622|ImportCallOutsideManifest|core-result|UnknownFeature|code|corpus|wide-an-import-call-with-no-surface-declared|10
 1623|NativeSectionOutsideManifest|core-result|UnknownFeature|native|corpus|wide-a-native-payload-no-surface-declares|11
 1624|MalformedNativeSection|core-result|InconsistentStructure|native|corpus|wide-a-native-code-section-that-disagrees-with-itself|11
+1625|NativePayloadNotTemplateClosed|core-result|InconsistentStructure|native|corpus|wide-a-native-payload-of-four-zero-bytes|12
 1630|AsyncIterationOutsideAsync|core-result|SemanticValidationFailed|code|corpus|wide-an-async-iteration-step-outside-an-async-function|9
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1

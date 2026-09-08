@@ -394,11 +394,13 @@ internal static class Fuzzing
     /// <remarks>
     /// The same bound the ordering checks hold the retained corpus to, applied to every mutant.
     /// This is the part a hand-written corpus cannot do: the retained entries check the ordering on
-    /// as many shapes as somebody wrote down - 122 of them at this checkout - and a session checks
+    /// as many shapes as somebody wrote down - 128 of them at this checkout - and a session checks
     /// it on every shape the mutator reaches. <i>(Corrected 2026-09-08: this read "sixty entries
     /// check the ordering on sixty shapes", a figure that went stale as the corpus grew. The count
     /// is named rather than dropped so that the next reader can check it against
-    /// <c>src/tests/corpus/js-1/corpus.manifest</c>, and the argument does not turn on it.)</i>
+    /// <c>src/tests/corpus/js-1/corpus.manifest</c>, and the argument does not turn on it. Corrected
+    /// again on 2026-09-08, from "122 of them at this checkout", when the six template-closure
+    /// entries were retained.)</i>
     /// </remarks>
     private const ulong AllocationBytesPerArtifactByte = 64;
 
@@ -408,9 +410,11 @@ internal static class Fuzzing
     /// unbounded pool makes a long session's draw distribution a function of how many answers it
     /// happened to discover, so two sessions of different lengths over the same seed would explore
     /// differently for reasons neither could state. The figure is a stated ceiling and not a
-    /// measurement - the retained corpus is 122 entries and this profile publishes 65 diagnostic
+    /// measurement - the retained corpus is 128 entries and this profile publishes 66 diagnostic
     /// codes, so a pool that reaches it has kept more distinct answers than the
     /// vocabulary has members and the mutator is drawing from findings rather than from seeds.
+    /// <i>(Corrected 2026-09-08: this read "122 entries and this profile publishes 65 diagnostic
+    /// codes", both of which the template-closure scan and its retained entries moved.)</i>
     /// </remarks>
     private const int PoolCeiling = 512;
 
