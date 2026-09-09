@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   22
-// Annotated:        22/22
-// Exempt:           12
-// Human-reviewed:   0/22
+// Relevant units:   24
+// Annotated:        24/24
+// Exempt:           13
+// Human-reviewed:   0/24
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         8/8
+// Criteria:         11/11
 // Resource impact:  3/10 max
-// Unverified:       22
+// Unverified:       24
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -269,6 +269,20 @@ public static class JavaScriptProfile
     // Broiler-Human:        PENDING
     public const int ResolveBindingIndex = 2;
 
+    /// <summary>The binding slot a composition's permission to install host objects occupies.</summary>
+    /// <remarks>
+    /// <b>It is a slot the profile never invokes, and that is what it is for.</b> Every other
+    /// binding index names a call the guest can cause; this one names a registration the profile
+    /// only ever ASKS ABOUT, with <c>IsBound</c>, once, at instantiation. A composition that
+    /// registered nothing here gets realms with no host object in them, and a build that linked an
+    /// embedder cannot change that - which is what keeps registration the permission when the
+    /// traffic does not go through the table.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=F33DA9
+    // Broiler-Falsified-If: a realm carries a host object in a composition that did not register this slot
+    // Broiler-Human:        PENDING
+    public const int HostSurfaceBindingIndex = 3;
+
     /// <summary>
     /// The one host capability this profile imports: write one run of UTF-8 text.
     /// </summary>
@@ -381,6 +395,49 @@ public static class JavaScriptProfile
             VmCapabilityThreadAffinity.CallerThread,
             VmExceptionTranslation.TerminateOperation);
 
+    /// <summary>
+    /// The capability a composition registers to permit host objects in this profile's realms.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is a permission and not a channel, and that sentence is the whole of the design
+    /// decision JSD-0024 records.</b> The other three imports carry traffic: the guest asks, the
+    /// core carries the request, the host answers. This one carries nothing. A host object is an
+    /// ordinary object in the realm and its methods are ordinary functions, so calling one never
+    /// reaches the core at all - which is exactly why it can return an object, carry a string, and
+    /// call back into the guest, none of which the capability channel can express.
+    /// </para>
+    /// <para>
+    /// <b>What is registered, then, is the answer to one question asked once:</b> may this
+    /// composition's embedder put objects in this runtime's realms? The profile asks
+    /// <c>IsBound</c> at instantiation and never invokes the slot. A composition that declines
+    /// simply does not register it, and its realms are the realms every other composition has.
+    /// </para>
+    /// <para>
+    /// <b>Its signature says <c>unit</c> in both directions honestly.</b> There is no argument
+    /// because nothing is asked and no result because nothing is answered; a signature naming
+    /// bytes it never carries would be a shape a reader could reasonably expect to be used.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=FA1E2A
+    // Broiler-Falsified-If: this profile invokes this binding rather than only asking whether it is bound
+    // Broiler-Human:        PENDING
+    public static VmHostCapabilityDescriptor HostSurfaceCapability { get; } =
+        new(
+            VmCapabilityId.Parse("broiler.javascript.host-surface"),
+            version: 1,
+            VmCapabilitySignatureId.FromCanonicalDescription("(unit)->unit"),
+            VmCapabilityKind.Value,
+
+            // RE-ENTRANT, AND IT IS THE FIRST DECLARATION OF THAT MODE IN THIS REPOSITORY. A host
+            // object's method calls guest code - a listener, a promise reaction, a coercion - and a
+            // composition reading this descriptor is entitled to know that before it registers.
+            // Nothing here depends on the core admitting the re-entry, because nothing here crosses
+            // the core; what the declaration does is refuse to understate what registering permits.
+            VmCapabilityReentrancy.ReentrantIntoInvokingRuntime,
+            VmCapabilityThreadAffinity.CallerThread,
+            VmExceptionTranslation.TerminateOperation);
+
     /// <summary>The descriptor a composition root names directly, admitting every surface.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4F7006
     // Broiler-Human:        PENDING
@@ -467,6 +524,50 @@ public static class JavaScriptProfile
     // Broiler-Human:        PENDING
     private static ImmutableArray<string> EverySurface => ImmutableArray.Create(Format.JsSurfaces.All);
 
+    /// <summary>
+    /// A descriptor whose realms are handed to <paramref name="surface"/>, for a composition that
+    /// embeds host objects.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The composition supplies the embedder here and registers
+    /// <see cref="HostSurfaceCapability"/> when it creates the runtime, and BOTH are required.</b>
+    /// They are different acts answering different questions - what would be installed, and whether
+    /// this runtime permits installing anything - and requiring both is what keeps the capability
+    /// table the permission for a surface whose traffic does not go through it. A descriptor built
+    /// here in a runtime with no registration produces realms with no host object in them, silently
+    /// and correctly: nothing was permitted, so nothing was installed.
+    /// </para>
+    /// <para>
+    /// <b>It is a third door beside <see cref="DescriptorAdmitting"/> and
+    /// <see cref="DescriptorReEmittingWith"/> rather than a property somebody sets</b>, for the
+    /// reason every one of those exists: a descriptor is what a catalog freezes, and a field
+    /// mutated after registration would let two runtimes built from one descriptor disagree about
+    /// what they are.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=3DAE1C
+    // Broiler-Falsified-If: a descriptor built here installs a surface in a runtime that registered no permission
+    // Broiler-Human:        PENDING
+    public static VmProfileDescriptor DescriptorHostingRealms(
+        IJsHostSurface surface, params VmFeatureManifestId[] surfaces)
+    {
+        if (surface is null)
+        {
+            throw new System.ArgumentNullException(nameof(surface));
+        }
+
+        var names = ImmutableArray.CreateBuilder<string>();
+
+        foreach (var admitted in surfaces)
+        {
+            names.Add(admitted.ToString());
+        }
+
+        return Build(
+            names.Count == 0 ? EverySurface : names.ToImmutable(), emitter: null, hostSurface: surface);
+    }
+
     /// <summary>Projects a completion value out of an invocation result.</summary>
     /// <remarks>
     /// The profile-owned projection the contract specifies: the core hands back an opaque payload
@@ -527,11 +628,13 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=8F3F86
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=69AC6C
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build(
-        ImmutableArray<string> admittedSurfaces, Format.IJsNativeEmitter? emitter = null)
+        ImmutableArray<string> admittedSurfaces,
+        Format.IJsNativeEmitter? emitter = null,
+        IJsHostSurface? hostSurface = null)
     {
         VmDiagnosticsIdentity.TryCreate(Id, "broiler.javascript.diagnostics", out var diagnostics);
 
@@ -558,7 +661,7 @@ public static class JavaScriptProfile
                 JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion),
             acceptedFeatureManifests: accepted,
             verifier: new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces, emitter),
-            executorFactory: environment => new JavaScriptExecutor(Id, environment),
+            executorFactory: environment => new JavaScriptExecutor(Id, environment, hostSurface),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
             artifactLifetimeKind: VmArtifactLifetimeKind.Managed,
             supportsConcurrentVerification: true,
@@ -580,14 +683,16 @@ public static class JavaScriptProfile
             // The slice imports nothing and still does; what changed is that a surface with a
             // `print` exists, and a `print` that reached the console without the composition
             // registering anything would be the ambient surface the capability table forbids.
-            // THREE OPTIONAL IMPORTS, and the third is what a composition admitting the module
-            // surface has to register before a module artifact will verify. It is Optional for the
-            // same reason the first two are: a composition that registers nothing still creates a
-            // runtime and still runs scripts.
+            // FOUR OPTIONAL IMPORTS, and each is a different composition's decision. The third is
+            // what a composition admitting the module surface has to register before a module
+            // artifact will verify; the fourth is what a composition puts host objects in a realm
+            // through. All four are Optional for the same reason: a composition that registers
+            // nothing still creates a runtime and still runs scripts.
             hostCapabilityDescriptors: ImmutableArray.Create(
                 new VmCapabilityImport(WriteCapability, VmCapabilityImportKind.Optional),
                 new VmCapabilityImport(SourceProviderCapability, VmCapabilityImportKind.Optional),
-                new VmCapabilityImport(ResolveCapability, VmCapabilityImportKind.Optional)),
+                new VmCapabilityImport(ResolveCapability, VmCapabilityImportKind.Optional),
+                new VmCapabilityImport(HostSurfaceCapability, VmCapabilityImportKind.Optional)),
 
             // `eval` AND THE `Function` CONSTRUCTOR, THROUGH THE MEDIATOR AND NOWHERE ELSE. Both
             // turn a String into a request and run whatever verified handle the composition's

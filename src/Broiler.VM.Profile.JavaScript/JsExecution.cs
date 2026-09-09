@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
+// Relevant units:   23
+// Annotated:        23/23
 // Exempt:           17
-// Human-reviewed:   0/21
+// Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         9/9
+// Criteria:         11/11
 // Resource impact:  6/10 max
-// Unverified:       21
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -232,11 +232,12 @@ internal sealed class JsInstance : IVmInstanceState
 internal static class JsExecution
 {
     /// <summary>Builds an instance and its realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=809277
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E10B4D
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Instantiate(
         JsProgram program,
         IVmExecutionEnvironment environment,
+        IJsHostSurface? hostSurface,
         System.Threading.CancellationToken cancellationToken)
     {
         if (!environment.Meter.TryCharge(VmBudgetDimension.Fuel, 1))
@@ -251,11 +252,86 @@ internal static class JsExecution
             program.AdmittedSurfaces);
         var instance = new JsInstance(program, engine, environment);
 
+        // THE SURFACE IS INSTALLED ONLY WHERE THE CAPABILITY TABLE SAYS SO, AND THE TWO CONDITIONS
+        // ARE DIFFERENT QUESTIONS. A composition supplies the surface when it builds the descriptor;
+        // it registers the capability when it creates the runtime. Both are its own acts, and
+        // requiring both is what keeps registration the permission: a build that linked an embedder
+        // still has no host object in its realms unless the composition that ran it said so through
+        // the table the core owns.
+        if (hostSurface is not null &&
+            environment.Capabilities.BindingCount > JavaScriptProfile.HostSurfaceBindingIndex &&
+            environment.Capabilities.IsBound(JavaScriptProfile.HostSurfaceBindingIndex))
+        {
+            var step = InstallHostSurface(engine, hostSurface);
+
+            if (step is not null)
+            {
+                return step.Value;
+            }
+        }
+
         // A realm is the largest thing this profile retains, and it is retained rather than
         // consumed: it lives for the instance's lifetime and is released with it.
         environment.Meter.ReportRetained(VmBudgetDimension.LiveBytes, 262_144);
 
         return VmExecutionStep.Instantiated(instance, null);
+    }
+
+    /// <summary>Hands the realm to the embedder, once, on the guest's own thread.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It runs on the guest stack rather than on the caller's</b>, for the same reason every
+    /// other entry into this profile does: the embedder is about to build objects in the realm,
+    /// which allocates and charges, and this profile declares a stack of its own so that a deep
+    /// build cannot overrun a stack somebody else sized.
+    /// </para>
+    /// <para>
+    /// <b>An embedder that throws leaves no half-built realm.</b> The failure is a contract
+    /// violation rather than a guest fault, because no guest program has run yet - the composition
+    /// wired something that does not work, and saying so at instantiation is where a wiring defect
+    /// belongs.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=622F66
+    // Broiler-Falsified-If: an embedder that throws leaves an instance a caller can obtain
+    // Broiler-Human:        PENDING
+    private static VmExecutionStep? InstallHostSurface(JsEngine engine, IJsHostSurface surface)
+    {
+        var realm = engine.HostRealm;
+
+        try
+        {
+            RunOnGuestStack(() =>
+            {
+                realm.BeginStep();
+                JsAbort? pending;
+
+                try
+                {
+                    surface.OnRealmCreated(realm);
+                }
+                finally
+                {
+                    pending = realm.EndStep();
+                }
+
+                if (pending is not null)
+                {
+                    throw pending;
+                }
+            });
+        }
+        catch (JsAbort abort)
+        {
+            return VmExecutionStep.ContractViolation(
+                abort.Kind is JsAbortKind.Cancelled ? VmReason.Cancelled : VmReason.AllowanceExhausted);
+        }
+        catch (System.Exception)
+        {
+            return VmExecutionStep.ContractViolation(VmReason.HostCapabilityFaulted);
+        }
+
+        return null;
     }
 
     /// <summary>The reserved entry-point name a host drains the job queue by invoking.</summary>
@@ -564,6 +640,43 @@ internal static class JsExecution
     // Broiler-Human:        PENDING
     private const int GuestStackBytes = 96 * 1024 * 1024;
 
+    /// <summary>Runs one piece of host-supplied work on a stack this profile declared.</summary>
+    /// <remarks>
+    /// The embedder's installer allocates in the realm and can recurse as deeply as whatever it is
+    /// building, so it gets the same stack guest code gets rather than the caller's. Whatever it
+    /// raises is carried back and rethrown on the calling thread, so the caller sees the exception
+    /// it would have seen had the body run inline.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=63D0AD
+    // Broiler-Falsified-If: host-supplied setup runs on the caller's stack
+    // Broiler-Human:        PENDING
+    private static void RunOnGuestStack(System.Action body)
+    {
+        System.Runtime.ExceptionServices.ExceptionDispatchInfo? raised = null;
+
+        var worker = new System.Threading.Thread(
+            () =>
+            {
+                try
+                {
+                    body();
+                }
+                catch (System.Exception failure)
+                {
+                    raised = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure);
+                }
+            },
+            GuestStackBytes)
+        {
+            IsBackground = true,
+            Name = "broiler-js-guest",
+        };
+
+        worker.Start();
+        worker.Join();
+        raised?.Throw();
+    }
+
     /// <summary>Runs one entry point on a thread whose stack this profile declared.</summary>
     /// <remarks>
     /// Whatever the guest raises is carried back and rethrown here, so the caller sees the same
@@ -572,12 +685,13 @@ internal static class JsExecution
     /// capability this profile imports declares caller-thread affinity - which this satisfies: the
     /// thread that calls it is the thread the guest is running on.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=CDA795
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=D9C81E
     // Broiler-Falsified-If: guest code runs on the caller's stack, or an exception the guest raised does not reach the caller
     // Broiler-Human:        PENDING
     private static JsValue RunOnGuestStack(JsInstance instance, uint? unit)
     {
         var completed = JsValue.Undefined;
+        JsAbort? pending = null;
         System.Runtime.ExceptionServices.ExceptionDispatchInfo? raised = null;
 
         var worker = new System.Threading.Thread(
@@ -585,12 +699,34 @@ internal static class JsExecution
             {
                 try
                 {
-                    // A DRAIN RUNS ON THE SAME STACK A SCRIPT DOES. A job is guest code and can
-                    // recurse exactly as guest code does, so running it on the caller's stack would
-                    // reintroduce the process termination JSC-79 records.
-                    completed = unit is { } entry
-                        ? instance.Engine.RunEntry(instance.Program, entry)
-                        : instance.Engine.DrainJobs();
+                    // THE HOST WINDOW OPENS HERE AND NOWHERE ELSE, because this is the thread the
+                    // guest runs on and this is the span in which a meter is live. A host function
+                    // body reached from guest code inside these braces may touch the realm; the
+                    // same object touched outside them is refused, because outside them there is
+                    // nothing to charge and no operation to fault.
+                    instance.Engine.BeginHostStep();
+
+                    try
+                    {
+                        // A DRAIN RUNS ON THE SAME STACK A SCRIPT DOES. A job is guest code and can
+                        // recurse exactly as guest code does, so running it on the caller's stack
+                        // would reintroduce the process termination JSC-79 records.
+                        completed = unit is { } entry
+                            ? instance.Engine.RunEntry(instance.Program, entry)
+                            : instance.Engine.DrainJobs();
+                    }
+                    finally
+                    {
+                        pending = instance.Engine.EndHostStep();
+                    }
+
+                    // An abort host code caught and discarded is raised here, where nothing else is
+                    // propagating. Raising it from the finally above would have replaced whatever
+                    // was already on its way out, which is the case the latch exists to preserve.
+                    if (pending is not null)
+                    {
+                        throw pending;
+                    }
                 }
                 catch (System.Exception failure)
                 {

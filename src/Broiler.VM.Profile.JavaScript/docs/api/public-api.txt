@@ -13,6 +13,9 @@
 # let this be Assembly.Load, and loading would run the module initializers
 # invariant 2 forbids.
 
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExotic.SupportedNames(Broiler.VM.Profile.JavaScript.JsHostRealm realm) : abstract System.Collections.Generic.IReadOnlyList<System.String>
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExotic.TryGetNamed(Broiler.VM.Profile.JavaScript.JsHostRealm realm, System.String name, out Broiler.VM.Profile.JavaScript.JsHostValue value) : abstract System.Boolean
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostSurface.OnRealmCreated(Broiler.VM.Profile.JavaScript.JsHostRealm realm) : abstract System.Void
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptCompletion.Identity : Broiler.VM.VmPayloadIdentity { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptCompletion.Value : Broiler.VM.Profile.JavaScript.JavaScriptValue { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.AsyncFlagsInconsistent : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1612
@@ -112,10 +115,13 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.CompletionKindId : const System.Int32 = 1001
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.Descriptor : static Broiler.VM.VmProfileDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorAdmitting(Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorHostingRealms(Broiler.VM.Profile.JavaScript.IJsHostSurface surface, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorReEmittingWith(Broiler.VM.Profile.JavaScript.Format.IJsNativeEmitter emitter, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DrainEntryPoint : const System.String = "#drain-jobs"
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DynamicManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.FaultKindId : const System.Int32 = 1002
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.HostSurfaceBindingIndex : const System.Int32 = 3
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.HostSurfaceCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.Id : static Broiler.VM.VmProfileId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ModulesManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.NativeManifest : static Broiler.VM.VmFeatureManifestId { get; }
@@ -183,6 +189,71 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion.Identity : Broiler.VM.VmPayloadIdentity { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion.TypeOf : System.String { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion.Value : System.String { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind.Error : const Broiler.VM.Profile.JavaScript.JsHostErrorKind = 0
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind.RangeError : const Broiler.VM.Profile.JavaScript.JsHostErrorKind = 2
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind.ReferenceError : const Broiler.VM.Profile.JavaScript.JsHostErrorKind = 4
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind.SyntaxError : const Broiler.VM.Profile.JavaScript.JsHostErrorKind = 3
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind.TypeError : const Broiler.VM.Profile.JavaScript.JsHostErrorKind = 1
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind.value__ : System.Int32
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostFunction..ctor(System.Object object, System.IntPtr method) : void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostFunction.BeginInvoke(Broiler.VM.Profile.JavaScript.JsHostRealm realm, Broiler.VM.Profile.JavaScript.JsHostValue thisValue, System.ReadOnlySpan<Broiler.VM.Profile.JavaScript.JsHostValue> arguments, System.AsyncCallback callback, System.Object object) : virtual System.IAsyncResult
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostFunction.EndInvoke(System.IAsyncResult result) : virtual Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostFunction.Invoke(Broiler.VM.Profile.JavaScript.JsHostRealm realm, Broiler.VM.Profile.JavaScript.JsHostValue thisValue, System.ReadOnlySpan<Broiler.VM.Profile.JavaScript.JsHostValue> arguments) : virtual Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.Construct(Broiler.VM.Profile.JavaScript.JsHostValue constructor, System.ReadOnlySpan<Broiler.VM.Profile.JavaScript.JsHostValue> arguments) : Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.DefineAccessor(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name, Broiler.VM.Profile.JavaScript.JsHostFunction getter, Broiler.VM.Profile.JavaScript.JsHostFunction setter) : System.Void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.DefineValue(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name, Broiler.VM.Profile.JavaScript.JsHostValue value) : System.Void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.Error(Broiler.VM.Profile.JavaScript.JsHostErrorKind kind, System.String message) : Broiler.VM.Profile.JavaScript.JsHostThrowException
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.GetProperty(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name) : Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.Global : Broiler.VM.Profile.JavaScript.JsHostValue { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.HasProperty(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name) : System.Boolean
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.Invoke(Broiler.VM.Profile.JavaScript.JsHostValue function, Broiler.VM.Profile.JavaScript.JsHostValue thisValue, System.ReadOnlySpan<Broiler.VM.Profile.JavaScript.JsHostValue> arguments) : Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.NewArray(System.ReadOnlySpan<Broiler.VM.Profile.JavaScript.JsHostValue> elements) : Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.NewConstructor(System.String name, Broiler.VM.Profile.JavaScript.JsHostFunction body, System.Int32 length) : Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.NewExotic(Broiler.VM.Profile.JavaScript.IJsHostExotic handler) : Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.NewMethod(System.String name, Broiler.VM.Profile.JavaScript.JsHostFunction body, System.Int32 length) : Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.NewObject() : Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.OwnPropertyNames(Broiler.VM.Profile.JavaScript.JsHostValue target) : System.Collections.Generic.IReadOnlyList<System.String>
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.SetProperty(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name, Broiler.VM.Profile.JavaScript.JsHostValue value) : System.Void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.ToJsString(Broiler.VM.Profile.JavaScript.JsHostValue value) : System.String
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.ToNumber(Broiler.VM.Profile.JavaScript.JsHostValue value) : System.Double
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.ForeignRealm : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 0
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.HostReentryTooDeep : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 4
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.NotAnObject : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 2
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.NotCallable : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 3
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.RealmNotCurrent : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 1
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.value__ : System.Int32
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostSurfaceException.Refusal : Broiler.VM.Profile.JavaScript.JsHostRefusal { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostThrowException.Thrown : Broiler.VM.Profile.JavaScript.JsHostValue { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.AsBoolean() : System.Boolean
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.AsNumber() : System.Double
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.AsRef() : Broiler.VM.Profile.JavaScript.JsHostRef
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.AsString() : System.String
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.Boolean(System.Boolean value) : static Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.Equals(Broiler.VM.Profile.JavaScript.JsHostValue other) : System.Boolean
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.IsMissing : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.IsNullish : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.IsObject : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.Kind : Broiler.VM.Profile.JavaScript.JsHostValueKind { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.Missing : static Broiler.VM.Profile.JavaScript.JsHostValue { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.Null : static Broiler.VM.Profile.JavaScript.JsHostValue { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.Number(System.Double value) : static Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.String(System.String value) : static Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.Undefined : static Broiler.VM.Profile.JavaScript.JsHostValue { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.op_Equality(Broiler.VM.Profile.JavaScript.JsHostValue left, Broiler.VM.Profile.JavaScript.JsHostValue right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue.op_Inequality(Broiler.VM.Profile.JavaScript.JsHostValue left, Broiler.VM.Profile.JavaScript.JsHostValue right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.Array : const Broiler.VM.Profile.JavaScript.JsHostValueKind = 9
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.Boolean : const Broiler.VM.Profile.JavaScript.JsHostValueKind = 3
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.Function : const Broiler.VM.Profile.JavaScript.JsHostValueKind = 8
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.Missing : const Broiler.VM.Profile.JavaScript.JsHostValueKind = 0
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.Null : const Broiler.VM.Profile.JavaScript.JsHostValueKind = 2
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.Number : const Broiler.VM.Profile.JavaScript.JsHostValueKind = 4
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.Object : const Broiler.VM.Profile.JavaScript.JsHostValueKind = 7
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.String : const Broiler.VM.Profile.JavaScript.JsHostValueKind = 5
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.Symbol : const Broiler.VM.Profile.JavaScript.JsHostValueKind = 6
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.Undefined : const Broiler.VM.Profile.JavaScript.JsHostValueKind = 1
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind.value__ : System.Byte
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbi.Run(System.ReadOnlySpan<System.Byte> blob, System.UInt32 trampolineOffset, System.UInt32 targetOffset, System.Int32 operandSlots, System.Int32 bindingSlots, System.Double[] constants, System.Int64 fuel, System.Int32 repetitions) : static Broiler.VM.Profile.JavaScript.JsNativeAbiObservation
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbiObservation..ctor(System.Boolean Ran, System.Int64 StackBefore, System.Int64 StackAfter, System.Int64 Answer, System.Int64[] Saved) : void
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbiObservation.Answer : System.Int64 { get; set; }
@@ -1827,6 +1898,8 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Modules : const System.String = "broiler.javascript.modules"
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Native : const System.String = "broiler.javascript.native"
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.TryOwner(System.String globalName, out System.String manifestId) : static System.Boolean
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExotic : interface
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostSurface : interface
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptCompletion : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptContinuation : sealed class Broiler.VM.IVmProfileContinuation
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode : enum
@@ -1843,6 +1916,16 @@ type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValue
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValueKind : enum
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier : sealed class Broiler.VM.IVmProfileVerifier
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion : sealed class Broiler.VM.IVmProfilePayload
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind : enum
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostFunction : sealed class System.MulticastDelegate
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm : sealed class
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRef : sealed class
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal : enum
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostSurfaceException : sealed class System.Exception
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostTerminatedException : sealed class System.Exception
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostThrowException : sealed class System.Exception
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue : struct System.IEquatable<Broiler.VM.Profile.JavaScript.JsHostValue>
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind : enum
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbi : static class
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbiObservation : struct System.IEquatable<Broiler.VM.Profile.JavaScript.JsNativeAbiObservation>
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsPause : sealed class Broiler.VM.IVmProfilePayload
