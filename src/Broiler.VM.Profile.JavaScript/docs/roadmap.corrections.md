@@ -9076,3 +9076,40 @@ three where four are listed. It now names them without counting them.
 **Authority and date.** `src/Broiler.VM.Profile.JavaScript/docs/roadmap.hosting.md`, written against
 this checkout; [JSD-0024](decisions/0024-the-in-realm-host-surface.md), which is the decision the
 stage that is built records. 2026-09-09.
+
+---
+
+### JSC-214
+
+**Where:** the lowering's global declaration instantiation,
+`src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs`'s `HoistProgram`, and every statement
+anywhere in this component about what order a script's top-level declarations reach the global
+object in.
+
+**What the checkout did.** Emitted a `DeclareGlobal` for every `var` name in the program's var scope
+and then one for every function declaration. Nothing said so - this is a correction to code rather
+than to a sentence, and it is recorded here because the behaviour it produced is observable to a
+guest and was wrong.
+
+**What replaced it.** The function declarations are emitted first, which is the order the
+specification's global declaration instantiation creates the bindings in: every function binding,
+then every var binding. **Own-key order is observable**, through `Object.getOwnPropertyNames`,
+`Object.keys` and `for...in`, so the two orders are distinguishable by an ordinary program - and the
+old one was source order for a script whose `var` came before its `function`, which is neither what
+the specification says nor what any other engine does.
+
+**It was found by a contract, which is the part worth recording.** Nothing in this component's own
+checks asks what order two global names appear in: the corpus records what programs answer, and a
+program that reads a variable it declared answers the same either way. What asked was a conformance
+suite belonging to a consumer, whose own test recovers a frame's declarations by diffing the
+global's own names across an evaluation - which is how a nested browsing context does it, and which
+is the one reading that makes the order load-bearing rather than incidental.
+
+**Nothing else moved.** The retained corpus replays to its recorded answers unchanged, and the
+compiler's own checks pass unchanged: no retained entry enumerates a global's keys, which is why
+this was reachable in the first place.
+
+**Authority and date.** `JsCompiler.HoistProgram`; the execution-only root's corpus replay and the
+slice compiler's checks lane, both run from this working tree on `win-x64` after the change; and the
+consumer suite that found it, which passes in full against a provider built on this profile.
+2026-09-09.
