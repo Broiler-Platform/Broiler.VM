@@ -1,0 +1,35 @@
+// Rule N20's witness: the host realm parked in thread-static state.
+//
+// This is the shape a later contributor produces, and it produces it for a good reason. A callback
+// somewhere deep in an embedder's own code needs the realm, the parameter did not reach that far,
+// and threading it through six frames to get there is the kind of change a reviewer asks you to
+// simplify. A thread-static is the simplification: the realm is per-thread anyway, the guest runs
+// on one thread, and reading it back where it is needed is one line.
+//
+// What it costs is the property the whole design rests on. The capability table is the permission
+// precisely because a realm reaches an embedder only where a composition registered one - so an
+// embedder in a process hosting two compositions can be handed only the realms its own composition
+// permitted. A thread-static is reachable from anything running on that thread, including the other
+// composition's guest code and the other composition's embedder, and neither registration can see
+// it. That is the ambient platform surface the capability table exists to prevent, reintroduced
+// underneath the table where nothing checks.
+//
+// The second failure is quieter and arrives first. The realm is valid only inside a step; a
+// thread-static outlives the step, so a body that reads it back after the step ended gets an object
+// whose gate refuses - and the refusal names the realm rather than the field that kept it alive, so
+// the reader is sent to the wrong file.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+public sealed class JsHostRealm
+{
+    [System.ThreadStatic]
+    private static JsHostRealm? current;
+
+    internal static JsHostRealm Current => current!;
+
+    internal void BeginStep()
+    {
+        current = this;
+    }
+}
