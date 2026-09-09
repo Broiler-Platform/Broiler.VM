@@ -109,6 +109,23 @@ internal static class FixtureComposition
         return builder.ToImmutable();
     }
 
+    /// <summary>
+    /// The ordinary capability set plus a registration for the re-entrant import.
+    /// </summary>
+    /// <remarks>
+    /// The re-entrant import is optional, so this is the only capability set that binds it and
+    /// every other test still exercises the unbound branch.
+    /// </remarks>
+    internal static ImmutableArray<VmCapabilityRegistration> CapabilitiesWithReentrant(
+        VmHostCapabilityHandler handler)
+    {
+        var builder = ValueCapabilities().ToBuilder();
+
+        builder.Add(VmCapabilityRegistration.Value(FixtureHostCapabilities.Reentrant, handler));
+
+        return builder.ToImmutable();
+    }
+
     /// <summary>The ordinary capability set, with the doubling handler held by a gate.</summary>
     internal static ImmutableArray<VmCapabilityRegistration> GatedCapabilities(FixtureExecutionGate gate) =>
         CapabilitiesWithDouble((ReadOnlySpan<long> arguments, out long result) =>
