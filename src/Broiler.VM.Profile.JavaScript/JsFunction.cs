@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   26
-// Annotated:        26/26
+// Relevant units:   27
+// Annotated:        27/27
 // Exempt:           30
-// Human-reviewed:   0/26
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  2/10 max
-// Unverified:       26
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -230,12 +230,26 @@ internal sealed class JsNativeFunction : JsFunction
         body(engine, thisValue, arguments);
 
     /// <summary>Runs the built-in as a construction.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3B5EDE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E27AED
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsEngine engine, JsValue[] arguments) =>
+        Construct(engine, arguments, JsValue.Undefined);
+
+    /// <summary>Runs the built-in as a construction, telling it what was newed.</summary>
+    /// <remarks>
+    /// <b>The new target arrives in the receiver slot, and that is a deliberate reuse rather than a
+    /// shortcut.</b> A construct call has no receiver - the language has not created the object
+    /// yet - so the slot is dead weight on this path, and every built-in that ignores it goes on
+    /// ignoring it. The alternative was a third parameter on <see cref="JsNativeBody"/>, which
+    /// every built-in in the profile would have had to grow to serve the handful of constructors
+    /// that ask.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=868CD7
+    // Broiler-Human:        PENDING
+    internal JsValue Construct(JsEngine engine, JsValue[] arguments, JsValue newTarget) =>
         construct is null
             ? engine.ThrowTypeError(FunctionName + " is not a constructor")
-            : construct(engine, JsValue.Undefined, arguments);
+            : construct(engine, newTarget, arguments);
 }
 
 /// <summary>A function whose body is bytecode in a verified program.</summary>

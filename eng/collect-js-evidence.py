@@ -45,6 +45,11 @@ HOST_LIFETIME_CHECKS = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly",
     "HostLifetimeChecks.cs")
 PROFILE_VERIFIER = os.path.join(PROFILE_ROOT, "JavaScriptVerifier.cs")
+PROFILE_HOST_REALM = os.path.join(PROFILE_ROOT, "JsHostRealm.cs")
+
+# Built from chr rather than written as an escape, because a patch script that
+# carries this file through a shell heredoc has had the escape eaten before now.
+NEWLINE = chr(10)
 PROFILE_POSITION = os.path.join(PROFILE_ROOT, "JavaScriptPosition.cs")
 FORMAT_SOURCE = os.path.join(
     "src", "Broiler.VM.Profile.JavaScript.Format", "JavaScriptFormat.cs")
@@ -316,6 +321,31 @@ ANDROID_REGISTER_ROW = (
 
 
 CONTROLS = [
+    (
+        "N20-an-ambient-host-realm",
+        "The host realm is parked in a thread-static. It is the one-line simplification a "
+        "callback that cannot reach its realm parameter invites, and it puts one composition's "
+        "embedder within reach of another composition's realm underneath the table that "
+        "permits it. Rule N20 must name the file and the declaration.",
+        PROFILE_HOST_REALM,
+        lambda text: text.replace(
+            "    private JsAbort? latched;",
+            "    [System.ThreadStatic]" + NEWLINE
+            + "    private static JsHostRealm? current;" + NEWLINE + NEWLINE
+            + "    private JsAbort? latched;"),
+    ),
+    (
+        "N21-a-crossing-that-charges-nothing",
+        "A public member of the realm does work before it charges. The allowance a composition "
+        "granted is then exceeded by exactly one crossing every time, because an exhausted "
+        "allowance stops the NEXT crossing rather than this one. Rule N21 must name the member.",
+        PROFILE_HOST_REALM,
+        lambda text: text.replace(
+            "    public bool HasProperty(JsHostValue target, string name)" + NEWLINE
+            + "    {" + NEWLINE + "        Enter(3);",
+            "    public bool HasProperty(JsHostValue target, string name)" + NEWLINE
+            + "    {" + NEWLINE + "        var injected = true;" + NEWLINE + "        Enter(3);"),
+    ),
     (
         "N1-profile-references-the-runtime",
         "The profile assembly is given an edge to Broiler.VM.Runtime. ADR 0011 P1 forbids it and "

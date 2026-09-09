@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   127
-// Annotated:        127/127
-// Exempt:           15
-// Human-reviewed:   0/127
+// Relevant units:   131
+// Annotated:        131/131
+// Exempt:           16
+// Human-reviewed:   0/131
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         27/27
+// Criteria:         29/29
 // Resource impact:  7/10 max
-// Unverified:       127
+// Unverified:       131
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -436,6 +436,36 @@ internal sealed class JsEngine
             JavaScriptProfile.WriteBindingIndex, new VmBytes(bytes), out _);
     }
 
+    /// <summary>The embedder's view of this engine's realm, built on first use.</summary>
+    /// <remarks>
+    /// <b>Lazily, because most realms never have one.</b> The seam costs two weak tables and a
+    /// handful of fields, and a composition that registered no host surface should pay for none of
+    /// it - so the absence of an embedder is the absence of an object rather than an object with
+    /// nothing in it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=53FBA5
+    // Broiler-Human:        PENDING
+    internal JsHostRealm HostRealm => hostRealm ??= new JsHostRealm(this);
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FF6FDD
+    // Broiler-Human:        PENDING
+    private JsHostRealm? hostRealm;
+
+    /// <summary>Opens the host surface's window, where one was ever asked for.</summary>
+    /// <remarks>
+    /// It is a no-op for an engine with no embedder, which is what keeps the bracket free on every
+    /// realm that never had a host object in it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F15254
+    // Broiler-Human:        PENDING
+    internal void BeginHostStep() => hostRealm?.BeginStep();
+
+    /// <summary>Closes the window, answering an abort host code caught and discarded.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=39C37F
+    // Broiler-Falsified-If: an abort latched at the seam is dropped when the step ends
+    // Broiler-Human:        PENDING
+    internal JsAbort? EndHostStep() => hostRealm?.EndStep();
+
     /// <summary>The realm this engine runs in.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B48D28
     // Broiler-Human:        PENDING
@@ -643,6 +673,36 @@ internal sealed class JsEngine
     // Broiler-Falsified-If: a text operation's charge does not grow with the input the guest controls
     // Broiler-Human:        PENDING
     internal void ChargeText(int units) => Charge(units <= 0 ? 1UL : (ulong)units + 1UL);
+
+    /// <summary>Charges one crossing of the host surface: a host call, and its fuel.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It charges <c>HostCalls</c> as well as <c>Fuel</c>, and that is what makes the host
+    /// surface cost what the capability channel costs.</b> A crossing does not go through
+    /// <c>IVmHostCapabilityInvoker</c> - a host object is an ordinary object in this realm and
+    /// calling its method is an ordinary call - so the boundary charge
+    /// <c>VmCapabilityBinding.TryEnter</c> applies is not applied for us. Left uncharged, an
+    /// embedder could move an unbounded amount of work across the seam and pay for none of it,
+    /// which would make a host-call ceiling a ceiling on the wrong thing.
+    /// </para>
+    /// <para>
+    /// The fuel is proportional to what the crossing carries - an argument count, a text length -
+    /// because a flat charge over a guest-controlled quantity is a charge a guest can dilute to
+    /// nothing.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=62A22B
+    // Broiler-Falsified-If: a crossing of the host surface completes without charging HostCalls
+    // Broiler-Human:        PENDING
+    internal void ChargeHostCrossing(ulong units)
+    {
+        if (!meter.TryCharge(VmBudgetDimension.HostCalls, 1))
+        {
+            throw new JsAbort(JsAbortKind.Exhausted, "the host-call allowance is spent");
+        }
+
+        Charge(units);
+    }
 
     /// <summary>Charges fuel, aborting when the allowance is spent.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=4AFB70
@@ -2276,7 +2336,7 @@ internal sealed class JsEngine
     /// language promises rather than a half-built object.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=182F69
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3D9576
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
@@ -2299,7 +2359,11 @@ internal sealed class JsEngine
 
         if (target is JsNativeFunction native)
         {
-            var made = native.Construct(this, arguments);
+            // THE NEW TARGET IS HANDED OVER RATHER THAN DROPPED. Every built-in in the profile
+            // ignores the receiver slot on this path and goes on ignoring it; what changes is that
+            // a body written by an embedder can now answer `new.target`, which is a question a
+            // constructor is entitled to ask and had no way to.
+            var made = native.Construct(this, arguments, newTarget);
 
             // A BUILT-IN REACHED THROUGH `super()` MUST STILL MAKE AN INSTANCE OF THE DERIVED
             // CLASS. `class Failure extends Error { }` is the case that matters: the built-in

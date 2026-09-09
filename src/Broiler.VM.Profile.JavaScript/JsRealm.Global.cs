@@ -190,12 +190,18 @@ internal sealed partial class JsRealm
         // assignment throw would be refusing a whole program over a capability the program does not
         // use, and would answer a `ReferenceError` that names nothing a reader could act on.
         //
-        // It refuses because THIS PROFILE HAS NO SHAPE IN WHICH A HOST COULD ANSWER WITH A FILE'S
-        // CONTENTS. A value capability takes bytes and answers a `long` or an opaque reference, and
-        // an opaque reference is by construction not dereferenceable - so there is no registration
-        // any composition could make that would let this function return text. That is a limit of
-        // core contract version 1 rather than a decision of this profile's, and roadmap section 18
-        // is where a profile asks the core for an amendment. Until one lands, this refuses by name.
+        // It refuses because NO CAPABILITY A COMPOSITION COULD REGISTER WOULD LET IT ANSWER. A
+        // value capability takes bytes and answers a `long` or an opaque reference, and an opaque
+        // reference is by construction not dereferenceable - so no registration in the capability
+        // table would let this function return text. That is a limit of core contract version 1
+        // rather than a decision of this profile's, and roadmap section 18 is where a profile asks
+        // the core for an amendment.
+        //
+        // WHAT IS NO LONGER TRUE IS THAT NOTHING COULD. The host-object surface is a second door,
+        // and a composition that registers it can install a `read` of its own on the global that
+        // answers with whatever it likes. This one is the answer for a composition that did not:
+        // the built-in exists so the environment probe finds a name, and refuses because this
+        // realm has no reader unless somebody installed one *(corrected: JSC-212)*.
         //
         // The shape is `$262.agent`'s, one line below, and for the same stated reason: answering
         // `undefined` would let a program proceed on a false premise.

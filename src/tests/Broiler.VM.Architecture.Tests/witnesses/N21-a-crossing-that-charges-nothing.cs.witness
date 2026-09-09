@@ -1,0 +1,38 @@
+// Rule N21's witness: a crossing of the host surface that charges nothing.
+//
+// This is the shape a later contributor produces, and nothing about it looks wrong. The member is
+// a read - it allocates nothing, it runs no guest code, it answers a field - so charging for it
+// reads like charging for a property access, and the entry charge at the top of every other member
+// reads like something those members need and this one does not.
+//
+// What it costs is that a host-call ceiling stops bounding host calls. A composition states that
+// ceiling to bound how often a guest can reach its own code; a member that charges nothing is a
+// member a guest can drive in a loop for free, and the loop is not exotic - a page reading a
+// property off a host object in a tight loop is the ordinary case rather than the adversarial one.
+// The ceiling would still be enforced, on everything except the traffic that grew.
+//
+// The second one below is worse and is the same mistake wearing a better disguise: it charges, but
+// it charges AFTER the work. A member that answers before its charge is refused has already done
+// the thing the refusal was supposed to prevent, so an exhausted allowance stops the NEXT crossing
+// rather than this one - and the allowance a composition granted is exceeded by exactly one
+// crossing every time, which is a bound that is off by one in the direction nobody audits.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+public sealed class JsHostRealm
+{
+    public JsHostValue Global
+    {
+        get
+        {
+            return Wrap(JsValue.Object(engine.Realm.GlobalObject));
+        }
+    }
+
+    public bool HasProperty(JsHostValue target, string name)
+    {
+        var answer = engine.HasProperty(ObjectOf(target), name ?? string.Empty);
+        Enter(3);
+        return answer;
+    }
+}
