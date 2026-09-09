@@ -204,10 +204,16 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostFunction.BeginInvoke(Broiler.VM.Profile.JavaScript.JsHostRealm realm, Broiler.VM.Profile.JavaScript.JsHostValue thisValue, System.ReadOnlySpan<Broiler.VM.Profile.JavaScript.JsHostValue> arguments, System.AsyncCallback callback, System.Object object) : virtual System.IAsyncResult
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostFunction.EndInvoke(System.IAsyncResult result) : virtual Broiler.VM.Profile.JavaScript.JsHostValue
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostFunction.Invoke(Broiler.VM.Profile.JavaScript.JsHostRealm realm, Broiler.VM.Profile.JavaScript.JsHostValue thisValue, System.ReadOnlySpan<Broiler.VM.Profile.JavaScript.JsHostValue> arguments) : virtual Broiler.VM.Profile.JavaScript.JsHostValue
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostPropertyFlags.Configurable : const Broiler.VM.Profile.JavaScript.JsHostPropertyFlags = 2
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostPropertyFlags.Default : const Broiler.VM.Profile.JavaScript.JsHostPropertyFlags = 7
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostPropertyFlags.Enumerable : const Broiler.VM.Profile.JavaScript.JsHostPropertyFlags = 1
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostPropertyFlags.None : const Broiler.VM.Profile.JavaScript.JsHostPropertyFlags = 0
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostPropertyFlags.Writable : const Broiler.VM.Profile.JavaScript.JsHostPropertyFlags = 4
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostPropertyFlags.value__ : System.Int32
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.Construct(Broiler.VM.Profile.JavaScript.JsHostValue constructor, System.ReadOnlySpan<Broiler.VM.Profile.JavaScript.JsHostValue> arguments) : Broiler.VM.Profile.JavaScript.JsHostValue
-  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.DefineAccessor(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name, Broiler.VM.Profile.JavaScript.JsHostFunction getter, Broiler.VM.Profile.JavaScript.JsHostFunction setter) : System.Void
-  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.DefineIndex(Broiler.VM.Profile.JavaScript.JsHostValue target, System.UInt32 index, Broiler.VM.Profile.JavaScript.JsHostValue value) : System.Void
-  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.DefineValue(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name, Broiler.VM.Profile.JavaScript.JsHostValue value) : System.Void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.DefineAccessor(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name, Broiler.VM.Profile.JavaScript.JsHostFunction getter, Broiler.VM.Profile.JavaScript.JsHostFunction setter, Broiler.VM.Profile.JavaScript.JsHostPropertyFlags flags) : System.Void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.DefineIndex(Broiler.VM.Profile.JavaScript.JsHostValue target, System.UInt32 index, Broiler.VM.Profile.JavaScript.JsHostValue value, Broiler.VM.Profile.JavaScript.JsHostPropertyFlags flags) : System.Void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.DefineValue(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name, Broiler.VM.Profile.JavaScript.JsHostValue value, Broiler.VM.Profile.JavaScript.JsHostPropertyFlags flags) : System.Void
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.DeleteProperty(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name) : System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.DrainJobs(System.Int32 limit) : System.Int32
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.EnqueueJob(System.Action job) : System.Void
@@ -229,6 +235,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.OwnPropertyNames(Broiler.VM.Profile.JavaScript.JsHostValue target) : System.Collections.Generic.IReadOnlyList<System.String>
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.SetProperty(Broiler.VM.Profile.JavaScript.JsHostValue target, System.String name, Broiler.VM.Profile.JavaScript.JsHostValue value) : System.Void
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.SetPrototype(Broiler.VM.Profile.JavaScript.JsHostValue target, Broiler.VM.Profile.JavaScript.JsHostValue prototype) : System.Void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.Throw(Broiler.VM.Profile.JavaScript.JsHostValue value) : Broiler.VM.Profile.JavaScript.JsHostThrowException
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.ToJsString(Broiler.VM.Profile.JavaScript.JsHostValue value) : System.String
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.ToNumber(Broiler.VM.Profile.JavaScript.JsHostValue value) : System.Double
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.ForeignRealm : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 0
@@ -1932,6 +1939,7 @@ type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerif
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostErrorKind : enum
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostFunction : sealed class System.MulticastDelegate
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostPropertyFlags : enum
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm : sealed class
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRef : sealed class
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal : enum

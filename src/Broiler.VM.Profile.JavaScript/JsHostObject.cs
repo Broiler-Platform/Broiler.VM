@@ -134,12 +134,13 @@ internal sealed class JsHostObject : JsObject
     /// neither is an accessor definition, which is the realm installing a member rather than a
     /// guest assigning to one.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E91ADA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=DB8428
     // Broiler-Falsified-If: an assignment reaches the handler for a key this object's storage already holds
     // Broiler-Human:        PENDING
     internal override void SetOwnProperty(string key, JsProperty property)
     {
-        if (!base.TryGetOwnProperty(key, out _) &&
+        if (!realm.Installing &&
+            !base.TryGetOwnProperty(key, out _) &&
             !IsArrayIndex(key, out _) &&
             !property.IsAccessor &&
             handler.TrySetNamed(realm, key, realm.Wrap(property.Value)))

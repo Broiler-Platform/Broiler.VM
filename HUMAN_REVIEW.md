@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 3517 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 3524 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 165 |
-| Code units | 6380 |
-| Relevant | 3517 |
-| Exempt | 2863 |
-| Assessed | 3517 of 3517 (100%) |
-| Human reviewed | 0 of 3517 (0%) |
-| Unverified | 3517 |
+| Code units | 6395 |
+| Relevant | 3524 |
+| Exempt | 2871 |
+| Assessed | 3524 of 3524 (100%) |
+| Human reviewed | 0 of 3524 (0%) |
+| Unverified | 3524 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 3517 |
+| HUMAN_PENDING | 3524 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2863 |
+| EXEMPT | 2871 |
 
 ## 5. Aliases In The Tree
 
@@ -198,8 +198,8 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 57 | 27 | 30 | 27 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 68 | 17 | 51 | 17 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` | 9 | 6 | 3 | 6 | Low | High | 3/3 |
-| `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` | 49 | 42 | 7 | 42 | Low | High | 12/12 |
-| `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` | 69 | 37 | 32 | 37 | Low | High | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` | 58 | 48 | 10 | 48 | Low | High | 13/13 |
+| `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` | 75 | 38 | 37 | 38 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 40 | 13 | 27 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` | 3 | 3 | 0 | 3 | Low | Critical | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` | 22 | 13 | 9 | 13 | Low | Critical | 18/18 |
@@ -937,13 +937,13 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a handler is consulted for a name this object's own storage already holds
 - `Broiler.VM.Profile.JavaScript.JsHostObject.TryGetOwnProperty(string, out JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `4B34C8`, PENDING
   - Falsified if: the handler answers a key the base found
-- `Broiler.VM.Profile.JavaScript.JsHostObject.SetOwnProperty(string, JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `E91ADA`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostObject.SetOwnProperty(string, JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `DB8428`, PENDING
   - Falsified if: an assignment reaches the handler for a key this object's storage already holds
 - `Broiler.VM.Profile.JavaScript.JsHostRealm` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `88DEB7`, PENDING
   - Falsified if: a crossing runs outside a step, on another thread, or without charging HostCalls
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.EndStep()` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `EF50C7`, PENDING
   - Falsified if: an operation whose allowance was spent completes because host code caught the abort
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.DefineIndex(JsHostValue, uint, JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `D8FBB4`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.DefineIndex(JsHostValue, uint, JsHostValue, JsHostPropertyFlags)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `7D9C59`, PENDING
   - Falsified if: an index defined here is not found by an operation that walks length
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Invoke(JsHostValue, JsHostValue, System.ReadOnlySpan<JsHostValue>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `4C7364`, PENDING
   - Falsified if: a guest call from host code skips the call-depth charge or lets a JsAbort escape as a guest throw
@@ -955,7 +955,9 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: two calls over one guest object answer two different JsHostRef instances
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Unwrap(JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `2E3384`, PENDING
   - Falsified if: a value minted by another realm resolves rather than being refused
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.BindConstructor(JsHostFunction)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `556AF7`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Installing` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `DBCA8A`, PENDING
+  - Falsified if: a member the realm installs reaches an exotic handler as an assignment
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.BindConstructor(JsHostFunction)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `1A9B56`, PENDING
   - Falsified if: a nested construction leaves the outer body reading the inner target
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Bind(JsHostFunction)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `79C96E`, PENDING
   - Falsified if: a host body's CLR exception unwinds through interpreter frames uncaught
@@ -1483,7 +1485,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 3403 of the 3517 assessed units declare
+That is not a figure of speech. 3410 of the 3524 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

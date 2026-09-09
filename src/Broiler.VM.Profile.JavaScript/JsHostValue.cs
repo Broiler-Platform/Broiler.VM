@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   37
-// Annotated:        37/37
-// Exempt:           32
-// Human-reviewed:   0/37
+// Relevant units:   38
+// Annotated:        38/38
+// Exempt:           37
+// Human-reviewed:   0/38
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         4/4
 // Resource impact:  2/10 max
-// Unverified:       37
+// Unverified:       38
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -319,6 +319,35 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
 // Broiler-Human:        PENDING
 public delegate JsHostValue JsHostFunction(
     JsHostRealm realm, JsHostValue thisValue, System.ReadOnlySpan<JsHostValue> arguments);
+
+/// <summary>The attributes a member an embedder installs carries.</summary>
+/// <remarks>
+/// <b>Three bits, and the value-or-accessor distinction is not one of them.</b> Which of the two a
+/// member is, is decided by which member of the realm installs it, so encoding it here as well
+/// would let the two disagree - a value installed with the accessor bit set is a mistake nothing
+/// could catch. What is here is what an interface description actually varies: whether a member is
+/// walked by an enumeration, whether it may be redefined, and whether it may be assigned to.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A85D9F
+// Broiler-Human:        PENDING
+[System.Flags]
+public enum JsHostPropertyFlags
+{
+    /// <summary>Not enumerable, not configurable, not writable.</summary>
+    None = 0,
+
+    /// <summary>Walked by <c>for...in</c> and reported by <c>Object.keys</c>.</summary>
+    Enumerable = 1,
+
+    /// <summary>May be redefined or deleted.</summary>
+    Configurable = 2,
+
+    /// <summary>May be assigned to. Meaningless for an accessor, whose writability is its setter.</summary>
+    Writable = 4,
+
+    /// <summary>What an ordinary member of an interface is, and the default everywhere here.</summary>
+    Default = Enumerable | Configurable | Writable,
+}
 
 /// <summary>Which constructor a host-raised error is built from.</summary>
 /// <remarks>

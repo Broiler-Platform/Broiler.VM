@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   42
-// Annotated:        42/42
-// Exempt:           7
-// Human-reviewed:   0/42
+// Relevant units:   48
+// Annotated:        48/48
+// Exempt:           10
+// Human-reviewed:   0/48
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         12/12
+// Criteria:         13/13
 // Resource impact:  5/10 max
-// Unverified:       42
+// Unverified:       48
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -360,6 +360,24 @@ public sealed class JsHostRealm
         }
     }
 
+    /// <summary>The exception to throw so the guest sees <paramref name="value"/> thrown.</summary>
+    /// <remarks>
+    /// <b>An embedder that already holds the value it wants thrown needs this, and <see cref="Error"/>
+    /// is not it.</b> That one builds an error of a named kind; this one throws what the embedder
+    /// has - an object it constructed through some other constructor the realm carries, or a value
+    /// it caught and is re-raising. Without it, an embedder holding a guest value could only throw a
+    /// CLR exception, which unwinds through interpreter frames as something no <c>catch</c> in the
+    /// guest can see.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D4D782
+    // Broiler-Human:        PENDING
+    public JsHostThrowException Throw(JsHostValue value)
+    {
+        Enter(1);
+
+        return new JsHostThrowException(value, "an exception the host raised");
+    }
+
     /// <summary>The abstract operation <c>ToString</c>. May run guest code, and may throw.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=01C147
     // Broiler-Human:        PENDING
@@ -416,15 +434,22 @@ public sealed class JsHostRealm
     /// says its members are enumerable, writable and configurable, so this is that set: the same
     /// one an ordinary guest assignment produces.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1A325F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8E09DE
     // Broiler-Human:        PENDING
-    public void DefineValue(JsHostValue target, string name, JsHostValue value)
+    public void DefineValue(
+        JsHostValue target,
+        string name,
+        JsHostValue value,
+        JsHostPropertyFlags flags = JsHostPropertyFlags.Default)
     {
         Enter(3);
 
         try
         {
-            ObjectOf(target).DefineOrdinary(name ?? string.Empty, Unwrap(value));
+            using var installing = Install();
+
+            ObjectOf(target).SetOwnProperty(
+                name ?? string.Empty, JsProperty.Data(Unwrap(value), Attributes(flags)));
         }
         catch (JsThrow thrown)
         {
@@ -439,10 +464,14 @@ public sealed class JsHostRealm
     /// <summary>
     /// Installs an accessor property. A <see langword="null"/> setter makes it read-only.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=184C43
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=34375F
     // Broiler-Human:        PENDING
     public void DefineAccessor(
-        JsHostValue target, string name, JsHostFunction getter, JsHostFunction? setter = null)
+        JsHostValue target,
+        string name,
+        JsHostFunction getter,
+        JsHostFunction? setter = null,
+        JsHostPropertyFlags flags = JsHostPropertyFlags.Default)
     {
         Enter(5);
 
@@ -453,6 +482,7 @@ public sealed class JsHostRealm
 
         try
         {
+            using var installing = Install();
             var key = name ?? string.Empty;
 
             ObjectOf(target).SetOwnProperty(
@@ -460,7 +490,7 @@ public sealed class JsHostRealm
                 JsProperty.Accessor(
                     engine.Realm.Native("get " + key, 0, Bind(getter)),
                     setter is null ? null : engine.Realm.Native("set " + key, 1, Bind(setter)),
-                    JsPropertyAttributes.Configurable | JsPropertyAttributes.Enumerable));
+                    Attributes(flags)));
         }
         catch (JsThrow thrown)
         {
@@ -494,7 +524,7 @@ public sealed class JsHostRealm
     }
 
     /// <summary>Writes a property. May run a guest setter.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E0AB43
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9CCA0F
     // Broiler-Human:        PENDING
     public void SetProperty(JsHostValue target, string name, JsHostValue value)
     {
@@ -502,7 +532,12 @@ public sealed class JsHostRealm
 
         try
         {
-            engine.SetProperty(Unwrap(target), name ?? string.Empty, Unwrap(value), strict: true);
+            // NOT STRICT, AND THE DIFFERENCE IS OBSERVABLE. An assignment to an accessor with no
+            // setter is a silent no-op in the language's ordinary mode and a TypeError in strict
+            // mode, and an embedder writing to a member it does not own is doing what an ordinary
+            // assignment does rather than what a strict program does. A host that wants the refusal
+            // asks whether the write took by reading the property back.
+            engine.SetProperty(Unwrap(target), name ?? string.Empty, Unwrap(value), strict: false);
         }
         catch (JsThrow thrown)
         {
@@ -599,15 +634,20 @@ public sealed class JsHostRealm
     /// bookkeeping noticing, which makes the element invisible to every generic that reads
     /// <c>length</c> to find out how far to walk.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D8FBB4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=7D9C59
     // Broiler-Falsified-If: an index defined here is not found by an operation that walks length
     // Broiler-Human:        PENDING
-    public void DefineIndex(JsHostValue target, uint index, JsHostValue value)
+    public void DefineIndex(
+        JsHostValue target,
+        uint index,
+        JsHostValue value,
+        JsHostPropertyFlags flags = JsHostPropertyFlags.Default)
     {
         Enter(3);
 
         try
         {
+            using var installing = Install();
             var host = ObjectOf(target);
 
             if (host is JsArray array)
@@ -618,7 +658,7 @@ public sealed class JsHostRealm
 
             host.SetOwnProperty(
                 JsNumberFormat.ToUintString(index),
-                JsProperty.Data(Unwrap(value), JsPropertyAttributes.Default));
+                JsProperty.Data(Unwrap(value), Attributes(flags)));
         }
         catch (JsThrow thrown)
         {
@@ -1051,6 +1091,50 @@ public sealed class JsHostRealm
     private JsHostRef RefFor(JsSymbol target) =>
         symbols.GetValue(target, key => new JsHostRef(this, key));
 
+    /// <summary>
+    /// Whether this realm is installing a member of its own, rather than a guest assigning to one.
+    /// </summary>
+    /// <remarks>
+    /// <b>An exotic object has to tell those two apart and cannot see the difference from the
+    /// write.</b> Both arrive at the same property-storage member; one is an embedder saying what
+    /// the object HAS and the other is a guest writing THROUGH it, and routing the first to the
+    /// named-property handler makes an embedder unable to install a member whose name its own
+    /// handler happens to claim. That is not hypothetical: an interface with an <c>item</c> method
+    /// on a collection whose contents include something called <c>item</c> is the ordinary case.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=DBCA8A
+    // Broiler-Falsified-If: a member the realm installs reaches an exotic handler as an assignment
+    // Broiler-Human:        PENDING
+    internal bool Installing { get; private set; }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=4F42DB
+    // Broiler-Human:        PENDING
+    private InstallScope Install() => new(this);
+
+    /// <summary>Marks one install for as long as it is held.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=485CB3
+    // Broiler-Human:        PENDING
+    private readonly struct InstallScope : System.IDisposable
+    {
+        private readonly JsHostRealm realm;
+
+        private readonly bool outer;
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=484F70
+        // Broiler-Human:        PENDING
+        internal InstallScope(JsHostRealm owner)
+        {
+            realm = owner;
+            outer = owner.Installing;
+            owner.Installing = true;
+        }
+
+        /// <summary>Restores rather than clears, so a nested install leaves the outer one marked.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C94409
+        // Broiler-Human:        PENDING
+        public void Dispose() => realm.Installing = outer;
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=132F2A
     // Broiler-Human:        PENDING
     private JsObject ObjectOf(JsHostValue value)
@@ -1079,7 +1163,7 @@ public sealed class JsHostRealm
     /// It saves and restores the previous new target rather than clearing it, so a constructor that
     /// constructs another one leaves the outer body's answer intact when the inner returns.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=556AF7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=1A9B56
     // Broiler-Falsified-If: a nested construction leaves the outer body reading the inner target
     // Broiler-Human:        PENDING
     private JsNativeBody BindConstructor(JsHostFunction body)
@@ -1088,12 +1172,31 @@ public sealed class JsHostRealm
 
         return (owner, newTarget, arguments) =>
         {
+            // THE RECEIVER IS MADE HERE, WHICH IS WHAT MAKES THIS A CONSTRUCTION RATHER THAN A CALL.
+            // The profile's own built-in constructors make and return their object, because each
+            // knows what it is building; an embedder's does not - it is describing an interface, and
+            // what the language does for a scripted constructor is create the object from the new
+            // target's prototype and hand it over as `this`. Doing that here is what lets an
+            // embedder write the body it would write in JavaScript.
+            var prototype = newTarget.IsObject
+                ? engine.GetProperty(newTarget, "prototype")
+                : JsValue.Undefined;
+
+            var instance = new JsObject(
+                prototype.AsObjectOrNull() ?? engine.Realm.ObjectPrototype);
+
             var outer = NewTarget;
             NewTarget = Wrap(newTarget);
 
             try
             {
-                return call(owner, JsValue.Undefined, arguments);
+                // AN OBJECT THE BODY RETURNS WINS OVER THE ONE MADE HERE, which is the language's
+                // own rule for a constructor's return value and the door an embedder needs when the
+                // thing it is constructing already exists - a wrapper for a node it did not just
+                // create.
+                var answered = call(owner, JsValue.Object(instance), arguments);
+
+                return answered.IsObject ? answered : JsValue.Object(instance);
             }
             finally
             {
@@ -1182,6 +1285,36 @@ public sealed class JsHostRealm
 
         return new JsHostTerminatedException(
             "the operation ended underneath this call and no host code may continue");
+    }
+
+    /// <summary>The engine's attribute bits for an embedder's flags.</summary>
+    /// <remarks>
+    /// The two sets carry the same three questions in a different order, so this is a permutation
+    /// rather than a translation - and it is written out rather than cast, because two enumerations
+    /// that happen to agree today are two enumerations.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=444542
+    // Broiler-Human:        PENDING
+    private static JsPropertyAttributes Attributes(JsHostPropertyFlags flags)
+    {
+        var attributes = JsPropertyAttributes.None;
+
+        if ((flags & JsHostPropertyFlags.Enumerable) != 0)
+        {
+            attributes |= JsPropertyAttributes.Enumerable;
+        }
+
+        if ((flags & JsHostPropertyFlags.Configurable) != 0)
+        {
+            attributes |= JsPropertyAttributes.Configurable;
+        }
+
+        if ((flags & JsHostPropertyFlags.Writable) != 0)
+        {
+            attributes |= JsPropertyAttributes.Writable;
+        }
+
+        return attributes;
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=98F889

@@ -568,7 +568,7 @@ internal static class JsExecution
     }
 
     /// <summary>Runs one entry point against an existing realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A65754
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=79BFAA
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Invoke(
         VmProfileId profileId, JsInstance instance, in VmInvocationRequest request)
@@ -613,10 +613,27 @@ internal static class JsExecution
 
             instance.InvocationCount++;
 
-            var turn = RunHostTurn(profileId, instance, surface);
+            // THE MEDIATOR IS TAKEN FOR A TURN TOO, and leaving it null here was a defect the first
+            // embedder to evaluate anything found. A turn is an invocation, so it has a mediator to
+            // take; without one, an embedder's own script met "this composition registered no
+            // artifact provider" in a composition that had registered one - and the message named
+            // the composition rather than the path that had not asked it for anything.
+            instance.Engine.Loader =
+                instance.Environment.TryGetArtifactLoadMediator(out var turnMediator)
+                    ? turnMediator
+                    : null;
 
-            return turn ?? VmExecutionStep.Completed(
-                new JsCompletion(profileId, "undefined", "undefined"));
+            try
+            {
+                var turn = RunHostTurn(profileId, instance, surface);
+
+                return turn ?? VmExecutionStep.Completed(
+                    new JsCompletion(profileId, "undefined", "undefined"));
+            }
+            finally
+            {
+                instance.Engine.Loader = null;
+            }
         }
 
         if (!instance.Program.TryFindEntry(name, out var unit))
