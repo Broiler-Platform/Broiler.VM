@@ -217,7 +217,6 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.ToJsString(Broiler.VM.Profile.JavaScript.JsHostValue value) : System.String
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRealm.ToNumber(Broiler.VM.Profile.JavaScript.JsHostValue value) : System.Double
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.ForeignRealm : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 0
-  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.HostReentryTooDeep : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 4
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.NotAnObject : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 2
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.NotCallable : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 3
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostRefusal.RealmNotCurrent : const Broiler.VM.Profile.JavaScript.JsHostRefusal = 1

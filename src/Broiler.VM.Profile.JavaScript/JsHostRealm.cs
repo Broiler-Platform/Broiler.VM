@@ -512,8 +512,28 @@ public sealed class JsHostRealm
         }
     }
 
-    /// <summary>The object's own enumerable string keys, in creation order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E6A7A9
+    /// <summary>
+    /// The object's own enumerable string keys: integer-like keys in ascending order, then the
+    /// rest in creation order.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Enumerable, and the filter is here rather than in the object.</b> The engine's own key
+    /// walk answers every own string key whatever its attributes, because the operations inside
+    /// the realm that use it do their own filtering. Answering that list unfiltered would hand an
+    /// embedder the realm's non-enumerable built-ins as if they were the object's members, and an
+    /// embedder mirroring what it was told would publish them.
+    /// </para>
+    /// <para>
+    /// <b>The order is the language's, which is not creation order.</b> Integer-like keys come
+    /// first in ascending numeric order and everything else follows in the order it was created,
+    /// so an object with a member named <c>2</c> reports it before a member added earlier. That is
+    /// what the specification's own key order does and what a guest sees from
+    /// <c>Object.keys</c>; a member that promised creation order would be promising something the
+    /// realm underneath it does not do.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EA8ECC
     // Broiler-Human:        PENDING
     public System.Collections.Generic.IReadOnlyList<string> OwnPropertyNames(JsHostValue target)
     {
@@ -521,9 +541,22 @@ public sealed class JsHostRealm
 
         try
         {
-            var names = ObjectOf(target).OwnPropertyNames();
+            var host = ObjectOf(target);
+            var names = host.OwnPropertyNames();
             engine.ChargeText(names.Count);
-            return names;
+
+            var enumerable = new System.Collections.Generic.List<string>(names.Count);
+
+            foreach (var name in names)
+            {
+                if (host.TryGetOwnProperty(name, out var property) &&
+                    (property.Attributes & JsPropertyAttributes.Enumerable) != 0)
+                {
+                    enumerable.Add(name);
+                }
+            }
+
+            return enumerable;
         }
         catch (JsThrow thrown)
         {

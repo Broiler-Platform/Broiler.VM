@@ -9048,3 +9048,31 @@ row's subject is what a composition can register in the core's table; that is un
 **Authority and date.** [JSD-0024](decisions/0024-the-in-realm-host-surface.md); the `read` refusal
 and its rewritten reason in `JsRealm.Global.cs`; `JavaScriptProfile.HostSurfaceCapability` and
 `DescriptorHostingRealms`. Read against [JSC-84](#jsc-84), which is not withdrawn. 2026-09-09.
+
+---
+
+### JSC-213
+
+**Where:** [the plan](roadmap.md#how-this-roadmap-is-split)'s paragraph on the proposal documents
+that stand outside the plan, and the stage namespaces it lists.
+
+**What the plan said.** That **three** proposal documents stand outside the table, naming the
+workload, parity and backend roadmaps, and that they carry the stage namespaces `JSW-n`, `JSP-n`
+and `JSB-n`.
+
+**What replaced it.** A fourth stands beside them:
+[the hosting roadmap](roadmap.hosting.md), which asks what an embedder with a document-shaped object
+model would take, and which owns `JSH-n`. **Nothing else about the paragraph changes**, and the
+sentence that matters is the one that did not: none of them is a plan file, none mints an identifier
+in the `JS-` namespace, none moves a ledger row, and none is a status. The hosting roadmap says the
+same of itself in its own opening, and says in the same breath that exactly one of its stages is
+built and the rest are written down and nothing more.
+
+**The count was the part that had to move rather than the part that had to be kept.** A paragraph
+that names its members and also counts them says the same thing twice, and the second saying is the
+one that goes stale silently - a reader who trusts the number and skims the list is told there are
+three where four are listed. It now names them without counting them.
+
+**Authority and date.** `src/Broiler.VM.Profile.JavaScript/docs/roadmap.hosting.md`, written against
+this checkout; [JSD-0024](decisions/0024-the-in-realm-host-surface.md), which is the decision the
+stage that is built records. 2026-09-09.

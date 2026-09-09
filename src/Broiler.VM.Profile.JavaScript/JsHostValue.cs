@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   33
 // Annotated:        33/33
-// Exempt:           33
+// Exempt:           32
 // Human-reviewed:   0/33
 // IP risk:          Low
 // Security risk:    High
@@ -351,7 +351,7 @@ public enum JsHostErrorKind
 /// interpret: they name a programming error at the seam, and the realm raises them as
 /// <see cref="JsHostSurfaceException"/> so that a provider cannot mistake one for a guest throw.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C940B9
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C088FA
 // Broiler-Human:        PENDING
 public enum JsHostRefusal
 {
@@ -365,10 +365,16 @@ public enum JsHostRefusal
     NotAnObject = 2,
 
     /// <summary>A value that is not callable was presented where a function was required.</summary>
+    /// <remarks>
+    /// <b>There is deliberately no member here for re-entering too deeply.</b> A guest call made
+    /// from host code goes through the interpreter's own call path, which charges the call-depth
+    /// ceiling and raises the profile's abort when it is reached - so recursion through this seam
+    /// is bounded by the bound that already governs recursion in the guest, and a second one would
+    /// be a second answer to one question. A member declared here and raised nowhere would also be
+    /// exactly the shape this component keeps a test against: a refusal a reader can find, plan
+    /// for, and never observe.
+    /// </remarks>
     NotCallable = 3,
-
-    /// <summary>The seam's own re-entry depth was exhausted.</summary>
-    HostReentryTooDeep = 4,
 }
 
 /// <summary>A refusal at the host surface: the embedder used the seam wrongly.</summary>

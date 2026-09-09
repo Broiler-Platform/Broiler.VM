@@ -70,17 +70,18 @@ own, because they are read one entry at a time rather than start to finish.
 | [`decisions/`](decisions/README.md) | — | The dated decision records, `JSD-nnnn`. A plan says what is intended; a decision record says what was chosen, what it rejected, and who signed it. |
 | `evidence/js-<n>[-nnn]/` | — | The retained evidence bundles, produced by `eng/collect-js-evidence.py`. A milestone carries a numbered series rather than one bundle, because a clause found open after a collection is closed by a further bundle rather than by editing the first. Cited by the ledger and by nothing in the core's. |
 
-**Three proposal documents stand outside that table, and outside this plan.**
+**The proposal documents stand outside that table, and outside this plan.**
 [`roadmap.workloads.md`](roadmap.workloads.md) asks what running the two third-party corpora whole
 would take, [`roadmap.parity.md`](roadmap.parity.md) asks what standing level with the legacy
-JavaScript component would take, and [`roadmap.backends.md`](roadmap.backends.md) asks what a second
-and third output form — an artifact whose payload is machine code — would take. None is a plan file:
-none mints an identifier in the `JS-` namespace, none moves a ledger row, and none is a status. They
-carry their own stage namespaces — `JSW-n`, `JSP-n` and `JSB-n` — which are proposals for where the
-milestones below would have to grow, and each names, for every gap or obligation it records, either
-the milestone or stage that already owns it or the fact that nothing does. A reader who wants to
-know what this component *plans* reads the table above; a reader who wants to know what it does not
-yet *do* reads those three.
+JavaScript component would take, [`roadmap.backends.md`](roadmap.backends.md) asks what a second
+and third output form — an artifact whose payload is machine code — would take, and
+[`roadmap.hosting.md`](roadmap.hosting.md) asks what an embedder with a document-shaped object model
+would take *(corrected: JSC-213)*. None is a plan file: none mints an identifier in the `JS-`
+namespace, none moves a ledger row, and none is a status. They carry their own stage namespaces —
+`JSW-n`, `JSP-n`, `JSB-n` and `JSH-n` — which are proposals for where the milestones below would
+have to grow, and each names, for every gap or obligation it records, either the milestone or stage
+that already owns it or the fact that nothing does. A reader who wants to know what this component
+*plans* reads the table above; a reader who wants to know what it does not yet *do* reads those.
 
 Four rules keep the split cheap and are not negotiable.
 

@@ -429,7 +429,9 @@ public static class JavaScriptProfile
             VmCapabilitySignatureId.FromCanonicalDescription("(unit)->unit"),
             VmCapabilityKind.Value,
 
-            // RE-ENTRANT, AND IT IS THE FIRST DECLARATION OF THAT MODE IN THIS REPOSITORY. A host
+            // RE-ENTRANT, AND IT IS THE FIRST DESCRIPTOR THIS PROFILE PUBLISHES TO DECLARE THAT
+            // MODE. The fixture capability the contract tests use declares it too and declares it
+            // first; what is new here is a descriptor a real composition binds against. A host
             // object's method calls guest code - a listener, a promise reaction, a coercion - and a
             // composition reading this descriptor is entitled to know that before it registers.
             // Nothing here depends on the core admitting the re-entry, because nothing here crosses
