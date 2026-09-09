@@ -44,7 +44,31 @@ public sealed class HostSurfaceRuleTests
     /// charge has to be. A member whose body opens with anything else is what the rule reports.
     /// </remarks>
     private static readonly Regex PublicMember = new(
-        @"\n    public (?!static JsHostValue (Missing|Undefined|Null)\b)[A-Za-z0-9_.<>?\[\]]+ (?<name>[A-Za-z0-9_]+)\s*(\([^)]*\)|\{[\r\n\s]*get)[^\{]*\{\s*(?<first>[^\r\n]*)",
+        @"\n    public (?!static JsHostValue (Missing|Undefined|Null)\b)[A-Za-z0-9_.<>?\[\]]+ (?<name>[A-Za-z0-9_]+)\s*(\([^)]*\)|\{[\r\n\s]*get\s*\r?\n)[^\{]*\{\s*(?<first>[^\r\n]*)",
+        RegexOptions.Compiled);
+
+    /// <summary>A public member whose whole body is one expression.</summary>
+    /// <remarks>
+    /// <b>This exists because the block-bodied scan has a hole and the hole is the interesting
+    /// half.</b> A member written as an expression body has no place to put an entry charge before
+    /// its work, so the first rule cannot ask it for one - and a member that reaches the engine that
+    /// way would cross uncharged while passing a rule about crossings. So the answer is not to
+    /// exempt them: it is to require that an expression-bodied member does not reach the engine at
+    /// all, which makes the shape and the obligation agree.
+    /// </remarks>
+    private static readonly Regex ExpressionMember = new(
+        @"\n    public [A-Za-z0-9_.<>?\[\]]+ (?<name>[A-Za-z0-9_]+)\s*(\([^)]*\))?\s*=>(?<body>[^;]*);",
+        RegexOptions.Compiled);
+
+    /// <summary>A public auto-property: <c>{ get; }</c> or <c>{ get; private set; }</c>.</summary>
+    /// <remarks>
+    /// Matched only so it can be excluded, and excluded because it is structurally incapable of the
+    /// thing the rule is about: an auto-property has no body, so it reaches nothing and crosses
+    /// nothing. Leaving it in made the scan read the NEXT member's body as this one's, which is how
+    /// the rule first reported a member that charges as a member that does not.
+    /// </remarks>
+    private static readonly Regex AutoProperty = new(
+        @"\n    public [A-Za-z0-9_.<>?\[\]]+ (?<name>[A-Za-z0-9_]+)\s*\{\s*get;",
         RegexOptions.Compiled);
 
     private static IEnumerable<AssuranceSourceFile> ProfileFiles =>
@@ -68,6 +92,7 @@ public sealed class HostSurfaceRuleTests
     [
         ("N21.1", EveryPublicMemberCharges),
         ("N21.2", TheChargeReachesTheHostCallDimension),
+        ("N21.3", NoExpressionBodiedMemberReachesTheEngine),
     ];
 
     /// <summary>No source in the profile family parks a surface or a realm in static state.</summary>
@@ -131,8 +156,19 @@ public sealed class HostSurfaceRuleTests
         var text = TextOf("JsHostRealm.cs");
         var matched = 0;
 
+        var automatic = AutoProperty.Matches(text)
+            .Select(static property => property.Groups["name"].Value)
+            .ToHashSet(StringComparer.Ordinal);
+
         foreach (Match member in PublicMember.Matches(text))
         {
+            // An auto-property has no body to charge in and reaches nothing; matching one made the
+            // scan read the next member's body as its own.
+            if (automatic.Contains(member.Groups["name"].Value))
+            {
+                continue;
+            }
+
             matched++;
 
             var first = member.Groups["first"].Value.Trim();
@@ -152,6 +188,26 @@ public sealed class HostSurfaceRuleTests
             yield return
                 "N21 matched no public member of JsHostRealm, so it judged nothing - which is the " +
                 "failure mode a rule that passes by finding nothing has";
+        }
+    }
+
+    /// <summary>No expression-bodied public member reaches the engine.</summary>
+    private static IEnumerable<string> NoExpressionBodiedMemberReachesTheEngine()
+    {
+        var text = TextOf("JsHostRealm.cs");
+
+        foreach (Match member in ExpressionMember.Matches(text))
+        {
+            var body = member.Groups["body"].Value;
+
+            if (!body.Contains("engine.", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            yield return
+                $"JsHostRealm.{member.Groups["name"].Value} reaches the engine from an expression " +
+                "body, which has nowhere to put the entry charge before the work";
         }
     }
 

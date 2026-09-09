@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   32
-// Annotated:        32/32
-// Exempt:           6
-// Human-reviewed:   0/32
+// Relevant units:   42
+// Annotated:        42/42
+// Exempt:           7
+// Human-reviewed:   0/42
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         8/8
-// Resource impact:  4/10 max
-// Unverified:       32
+// Criteria:         12/12
+// Resource impact:  5/10 max
+// Unverified:       42
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -102,6 +102,21 @@ public sealed class JsHostRealm
             return Wrap(JsValue.Object(engine.Realm.GlobalObject));
         }
     }
+
+    /// <summary>
+    /// Whether this realm may be touched right now: inside a step, on the thread the guest runs on.
+    /// </summary>
+    /// <remarks>
+    /// <b>An embedder needs to be able to ASK rather than to find out by being refused.</b> Every
+    /// other member answers <see cref="JsHostRefusal.RealmNotCurrent"/> outside the window, which is
+    /// the right answer for a mistake and the wrong one for a decision: an embedder holding this
+    /// realm between two invocations is not making a mistake, it is deciding whether to do the work
+    /// now or to ask for a turn first. This is what lets it decide.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BB34FA
+    // Broiler-Human:        PENDING
+    public bool IsCurrent =>
+        stepDepth > 0 && System.Environment.CurrentManagedThreadId == guestThreadId;
 
     // ---- the step bracket ----------------------------------------------------------------------
 
@@ -244,7 +259,7 @@ public sealed class JsHostRealm
     }
 
     /// <summary>A new constructable host function, carrying a readable <c>prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7E7022
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1BFB83
     // Broiler-Human:        PENDING
     public JsHostValue NewConstructor(string name, JsHostFunction body, int length = 0)
     {
@@ -257,10 +272,18 @@ public sealed class JsHostRealm
 
         try
         {
-            var bound = Bind(body);
             var prototype = new JsObject(engine.Realm.ObjectPrototype);
+
+            // TWO BOUND BODIES, BECAUSE THE RECEIVER SLOT MEANS TWO THINGS. On a call it is the
+            // receiver; on a construction the language has created no object yet and the engine
+            // puts the new target there instead. Binding once would make an embedder's `this` the
+            // constructor on every `new`, which is a wrong answer rather than a missing one.
             var function = new JsNativeFunction(
-                engine.Realm.FunctionPrototype, name ?? string.Empty, length, bound, bound);
+                engine.Realm.FunctionPrototype,
+                name ?? string.Empty,
+                length,
+                Bind(body),
+                BindConstructor(body));
 
             function.DefineBuiltIn("prototype", JsValue.Object(prototype));
             prototype.DefineBuiltIn("constructor", JsValue.Object(function));
@@ -568,6 +591,137 @@ public sealed class JsHostRealm
         }
     }
 
+    /// <summary>Installs an integer-indexed data property.</summary>
+    /// <remarks>
+    /// <b>On an Array this grows <c>length</c>, and that is the whole reason it is a member of its
+    /// own rather than a formatted key handed to <see cref="DefineValue"/>.</b> An index written
+    /// through the ordinary string path lands in the object's map without the Array's own length
+    /// bookkeeping noticing, which makes the element invisible to every generic that reads
+    /// <c>length</c> to find out how far to walk.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D8FBB4
+    // Broiler-Falsified-If: an index defined here is not found by an operation that walks length
+    // Broiler-Human:        PENDING
+    public void DefineIndex(JsHostValue target, uint index, JsHostValue value)
+    {
+        Enter(3);
+
+        try
+        {
+            var host = ObjectOf(target);
+
+            if (host is JsArray array)
+            {
+                array.SetIndex(index, Unwrap(value));
+                return;
+            }
+
+            host.SetOwnProperty(
+                JsNumberFormat.ToUintString(index),
+                JsProperty.Data(Unwrap(value), JsPropertyAttributes.Default));
+        }
+        catch (JsThrow thrown)
+        {
+            throw Thrown(thrown);
+        }
+        catch (JsAbort abort)
+        {
+            throw Latch(abort);
+        }
+    }
+
+    /// <summary>Reads an integer-indexed property, following the prototype chain.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=522DF2
+    // Broiler-Human:        PENDING
+    public JsHostValue GetIndex(JsHostValue target, uint index)
+    {
+        Enter(3);
+
+        try
+        {
+            return Wrap(engine.GetProperty(Unwrap(target), JsNumberFormat.ToUintString(index)));
+        }
+        catch (JsThrow thrown)
+        {
+            throw Thrown(thrown);
+        }
+        catch (JsAbort abort)
+        {
+            throw Latch(abort);
+        }
+    }
+
+    /// <summary>Deletes an own property, answering whether it is now absent.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=799789
+    // Broiler-Human:        PENDING
+    public bool DeleteProperty(JsHostValue target, string name)
+    {
+        Enter(3);
+
+        try
+        {
+            return ObjectOf(target).DeleteOwnProperty(name ?? string.Empty);
+        }
+        catch (JsThrow thrown)
+        {
+            throw Thrown(thrown);
+        }
+        catch (JsAbort abort)
+        {
+            throw Latch(abort);
+        }
+    }
+
+    /// <summary>Points an object's prototype chain at another object, or at nothing.</summary>
+    /// <remarks>
+    /// This is how an embedder links a wrapper to the interface it implements, so that asking for
+    /// the object's prototype answers the interface rather than the realm's plain
+    /// <c>Object.prototype</c>. Passing a null-ish value gives the object a null prototype, which is
+    /// a legal and different thing from leaving it alone.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0A9DFA
+    // Broiler-Human:        PENDING
+    public void SetPrototype(JsHostValue target, JsHostValue prototype)
+    {
+        Enter(3);
+
+        try
+        {
+            ObjectOf(target).Prototype = prototype.IsNullish ? null : ObjectOf(prototype);
+        }
+        catch (JsThrow thrown)
+        {
+            throw Thrown(thrown);
+        }
+        catch (JsAbort abort)
+        {
+            throw Latch(abort);
+        }
+    }
+
+    /// <summary>The object's prototype, or <see cref="JsHostValue.Null"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D5A4E5
+    // Broiler-Human:        PENDING
+    public JsHostValue GetPrototype(JsHostValue target)
+    {
+        Enter(2);
+
+        try
+        {
+            var prototype = ObjectOf(target).Prototype;
+
+            return prototype is null ? JsHostValue.Null : Wrap(JsValue.Object(prototype));
+        }
+        catch (JsThrow thrown)
+        {
+            throw Thrown(thrown);
+        }
+        catch (JsAbort abort)
+        {
+            throw Latch(abort);
+        }
+    }
+
     // ---- calling -------------------------------------------------------------------------------
 
     /// <summary>
@@ -641,6 +795,134 @@ public sealed class JsHostRealm
         catch (JsThrow thrown)
         {
             throw Thrown(thrown);
+        }
+        catch (JsAbort abort)
+        {
+            throw Latch(abort);
+        }
+    }
+
+    // ---- jobs ----------------------------------------------------------------------------------
+
+    /// <summary>Whether any job is queued.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6D189C
+    // Broiler-Human:        PENDING
+    public bool HasPendingJobs
+    {
+        get
+        {
+            Enter(1);
+            return engine.HasPendingJobs;
+        }
+    }
+
+    /// <summary>Queues a host callback to run at the next drain.</summary>
+    /// <remarks>
+    /// <b>It joins the guest's own queue rather than a second one beside it.</b> A host job and a
+    /// promise reaction are both microtasks, and two queues would make their relative order a
+    /// property of which queue a drain happened to read first - which is exactly the kind of
+    /// ordering an embedder cannot reason about and a page depends on. The action is wrapped in an
+    /// ordinary native function and enqueued where every other job goes.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=530D9B
+    // Broiler-Falsified-If: a host job and a guest job run in an order neither queue decided
+    // Broiler-Human:        PENDING
+    public void EnqueueJob(System.Action job)
+    {
+        Enter(2);
+
+        if (job is null)
+        {
+            throw new System.ArgumentNullException(nameof(job));
+        }
+
+        try
+        {
+            engine.EnqueueJob(
+                JsValue.Object(engine.Realm.Native(
+                    "hostJob",
+                    0,
+                    (owner, _, _) =>
+                    {
+                        try
+                        {
+                            job();
+                        }
+                        catch (JsHostThrowException raised)
+                        {
+                            throw new JsThrow(Unwrap(raised.Thrown), raised.Message);
+                        }
+                        catch (JsHostTerminatedException)
+                        {
+                            throw latched ?? new JsAbort(
+                                JsAbortKind.InternalDefect,
+                                "a host job reported a termination that was not latched");
+                        }
+                        catch (JsHostSurfaceException refusal)
+                        {
+                            throw owner.Error("TypeError", refusal.Message);
+                        }
+
+                        return JsValue.Undefined;
+                    })),
+                System.Array.Empty<JsValue>());
+        }
+        catch (JsThrow thrown)
+        {
+            throw Thrown(thrown);
+        }
+        catch (JsAbort abort)
+        {
+            throw Latch(abort);
+        }
+    }
+
+    /// <summary>
+    /// Runs queued jobs until the queue is empty or <paramref name="limit"/> have run, answering
+    /// how many ran.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A job that enqueues another is followed, which is why there is a limit at all.</b> A
+    /// promise chain that re-queues itself would otherwise make this loop unbounded by anything
+    /// but the allowance, and an embedder that wanted to interleave its own work between turns
+    /// would have no way to take one.
+    /// </para>
+    /// <para>
+    /// <b>A job that throws stops the drain and leaves its successors queued.</b> That differs
+    /// from the profile's own whole-queue drain, which folds every fault into the first and reports
+    /// it at the end; the difference is who is asking. A host draining a bounded number of jobs is
+    /// stepping the queue and wants to see the fault at the job that caused it, with the rest of
+    /// the queue intact to drain again.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=0D75AE
+    // Broiler-Falsified-If: a drain runs more than its limit, or a throwing job discards the queue behind it
+    // Broiler-Human:        PENDING
+    public int DrainJobs(int limit = 10_000)
+    {
+        Enter(2);
+
+        var ran = 0;
+
+        try
+        {
+            while (ran < limit && engine.HasPendingJobs)
+            {
+                if (engine.StepOneJob(out var thrown))
+                {
+                    ran++;
+                    throw new JsThrow(thrown, engine.ToStringValue(thrown));
+                }
+
+                ran++;
+            }
+
+            return ran;
+        }
+        catch (JsThrow raised)
+        {
+            throw Thrown(raised);
         }
         catch (JsAbort abort)
         {
@@ -777,6 +1059,47 @@ public sealed class JsHostRealm
 
         return resolved.AsObjectOrNull() ?? throw new JsHostSurfaceException(
             JsHostRefusal.NotAnObject, "the value presented is not a guest object");
+    }
+
+    /// <summary>What the guest wrote after <c>new</c>, inside a host construct body.</summary>
+    /// <remarks>
+    /// <b>It is meaningful inside a construct body and nowhere else</b>, where it answers
+    /// <see cref="JsHostValue.Missing"/> - which is the same distinction the language draws, since
+    /// <c>new.target</c> is <c>undefined</c> in an ordinary call. It is a property of the realm
+    /// rather than a parameter because the body signature is shared with the ordinary call path,
+    /// and growing that signature would have grown it for every host function an embedder writes to
+    /// serve the few that construct.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5C434A
+    // Broiler-Human:        PENDING
+    public JsHostValue NewTarget { get; private set; }
+
+    /// <summary>Turns an embedder's constructor body into one the interpreter can construct.</summary>
+    /// <remarks>
+    /// It saves and restores the previous new target rather than clearing it, so a constructor that
+    /// constructs another one leaves the outer body's answer intact when the inner returns.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=556AF7
+    // Broiler-Falsified-If: a nested construction leaves the outer body reading the inner target
+    // Broiler-Human:        PENDING
+    private JsNativeBody BindConstructor(JsHostFunction body)
+    {
+        var call = Bind(body);
+
+        return (owner, newTarget, arguments) =>
+        {
+            var outer = NewTarget;
+            NewTarget = Wrap(newTarget);
+
+            try
+            {
+                return call(owner, JsValue.Undefined, arguments);
+            }
+            finally
+            {
+                NewTarget = outer;
+            }
+        };
     }
 
     /// <summary>Turns an embedder's body into one the interpreter can call.</summary>

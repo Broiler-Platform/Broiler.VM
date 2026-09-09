@@ -2336,7 +2336,7 @@ internal sealed class JsEngine
     /// language promises rather than a half-built object.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=182F69
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3D9576
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
@@ -2359,7 +2359,11 @@ internal sealed class JsEngine
 
         if (target is JsNativeFunction native)
         {
-            var made = native.Construct(this, arguments);
+            // THE NEW TARGET IS HANDED OVER RATHER THAN DROPPED. Every built-in in the profile
+            // ignores the receiver slot on this path and goes on ignoring it; what changes is that
+            // a body written by an embedder can now answer `new.target`, which is a question a
+            // constructor is entitled to ask and had no way to.
+            var made = native.Construct(this, arguments, newTarget);
 
             // A BUILT-IN REACHED THROUGH `super()` MUST STILL MAKE AN INSTANCE OF THE DERIVED
             // CLASS. `class Failure extends Error { }` is the case that matters: the built-in

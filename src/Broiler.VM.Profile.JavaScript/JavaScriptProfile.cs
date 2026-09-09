@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   24
-// Annotated:        24/24
+// Relevant units:   25
+// Annotated:        25/25
 // Exempt:           13
-// Human-reviewed:   0/24
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         11/11
+// Criteria:         12/12
 // Resource impact:  3/10 max
-// Unverified:       24
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -77,6 +77,33 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6C91EE
     // Broiler-Human:        PENDING
     public const string StepEntryPoint = "#step-jobs";
+
+    /// <summary>The reserved entry-point name a host asks the embedder's turn by invoking.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It exists because the realm is step-scoped and an embedder is not.</b> A composition's
+    /// embedder may touch the realm only inside a step, on the guest's thread; between two
+    /// invocations there is no step, and a realm touched then would be work with no meter to charge
+    /// and no operation to fault. So rather than widen the window, the profile publishes a way to
+    /// ASK for one: a host invokes this name, the profile opens a step exactly as it does for a
+    /// script, and the embedder's turn runs inside it.
+    /// </para>
+    /// <para>
+    /// <b>An invocation is the unit deliberately.</b> A turn costs what a small script costs -
+    /// an operation with its own allowance, its own meter and its own place in a transcript - and
+    /// that is the honest price of reaching into a realm from outside its execution. An embedder
+    /// that wants many things done cheaply does them in one turn rather than asking for many, which
+    /// is a decision it is in a position to make and the profile is not.
+    /// </para>
+    /// <para>
+    /// The name cannot collide with a script's for the same reason the other two cannot: a script
+    /// entry point is named by whatever compiled it, and <c>#</c> begins no JavaScript identifier.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=E75436
+    // Broiler-Falsified-If: a turn runs outside a step, or reaches an embedder no composition registered
+    // Broiler-Human:        PENDING
+    public const string TurnEntryPoint = "#host-turn";
 
     /// <summary>This profile's identity.</summary>
     /// <remarks>

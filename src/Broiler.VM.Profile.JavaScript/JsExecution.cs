@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
-// Exempt:           17
-// Human-reviewed:   0/23
+// Relevant units:   25
+// Annotated:        25/25
+// Exempt:           18
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         11/11
+// Criteria:         12/12
 // Resource impact:  6/10 max
-// Unverified:       23
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -224,6 +224,19 @@ internal sealed class JsInstance : IVmInstanceState
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=218248
     // Broiler-Human:        PENDING
     internal int InvocationCount { get; set; }
+
+    /// <summary>The embedder this instance's realm was handed to, where there was one.</summary>
+    /// <remarks>
+    /// <b>Held on the instance rather than resolved when a turn asks for it</b>, because the two
+    /// questions a turn has to answer - was an embedder supplied, and did the composition permit
+    /// installing it - were both answered at instantiation, and answering them again later would
+    /// mean asking the capability table something it was asked once. Null here is the honest record
+    /// that this realm has no embedder in it, and it is what makes the turn entry point undefined
+    /// rather than silently successful.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1A4010
+    // Broiler-Human:        PENDING
+    internal IJsHostSurface? HostSurface { get; set; }
 }
 
 /// <summary>The wide surface's half of the executor: instantiate, invoke, and report.</summary>
@@ -232,7 +245,7 @@ internal sealed class JsInstance : IVmInstanceState
 internal static class JsExecution
 {
     /// <summary>Builds an instance and its realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E10B4D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D665D1
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Instantiate(
         JsProgram program,
@@ -268,6 +281,11 @@ internal static class JsExecution
             {
                 return step.Value;
             }
+
+            // RECORDED ONLY AFTER THE INSTALL SUCCEEDED. An embedder whose setup faulted has no
+            // realm worth turning, and remembering it here would leave a turn able to reach one
+            // half-built.
+            instance.HostSurface = hostSurface;
         }
 
         // A realm is the largest thing this profile retains, and it is retained rather than
@@ -275,6 +293,62 @@ internal static class JsExecution
         environment.Meter.ReportRetained(VmBudgetDimension.LiveBytes, 262_144);
 
         return VmExecutionStep.Instantiated(instance, null);
+    }
+
+    /// <summary>Runs one turn of the embedder's own work, inside a step.</summary>
+    /// <remarks>
+    /// It is the installer's shape with a different callback, and it shares the installer's
+    /// reasoning: the guest stack because the embedder allocates in the realm and can recurse as
+    /// deeply as whatever it is building, and the step bracket because everything it does has to be
+    /// charged to this operation. What differs is the failure mapping - an embedder that throws
+    /// during a turn has faulted an invocation a host asked for, so it is reported as a fault the
+    /// host can see rather than as a wiring defect at instantiation.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=A28546
+    // Broiler-Falsified-If: a turn touches the realm outside the step bracket it opens
+    // Broiler-Human:        PENDING
+    private static VmExecutionStep? RunHostTurn(
+        VmProfileId profileId, JsInstance instance, IJsHostSurface surface)
+    {
+        var realm = instance.Engine.HostRealm;
+
+        try
+        {
+            RunOnGuestStack(() =>
+            {
+                realm.BeginStep();
+                JsAbort? pending;
+
+                try
+                {
+                    surface.OnTurn(realm);
+                }
+                finally
+                {
+                    pending = realm.EndStep();
+                }
+
+                if (pending is not null)
+                {
+                    throw pending;
+                }
+            });
+        }
+        catch (JsAbort abort)
+        {
+            return abort.Kind is JsAbortKind.Cancelled
+                ? VmExecutionStep.ContractViolation(VmReason.Cancelled)
+                : VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);
+        }
+        catch (JsThrow thrown)
+        {
+            return VmExecutionStep.Faulted(new JsUncaught(
+                profileId,
+                instance.Engine.ToStringValue(thrown.Value),
+                thrown.Value.TypeOf()));
+        }
+
+        return null;
     }
 
     /// <summary>Hands the realm to the embedder, once, on the guest's own thread.</summary>
@@ -362,6 +436,11 @@ internal static class JsExecution
     // Broiler-Falsified-If: a guest pause creates a core suspension, or a step runs more than one job
     // Broiler-Human:        PENDING
     internal const string StepEntryPoint = JavaScriptProfile.StepEntryPoint;
+
+    /// <summary>The reserved entry-point name a host asks the embedder's turn by.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A0B2BA
+    // Broiler-Human:        PENDING
+    internal const string TurnEntryPoint = JavaScriptProfile.TurnEntryPoint;
 
     /// <summary>Runs one due job and parks if the queue still holds anything.</summary>
     /// <remarks>
@@ -489,7 +568,7 @@ internal static class JsExecution
     }
 
     /// <summary>Runs one entry point against an existing realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DB0FB0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A65754
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Invoke(
         VmProfileId profileId, JsInstance instance, in VmInvocationRequest request)
@@ -517,6 +596,27 @@ internal static class JsExecution
         {
             instance.InvocationCount++;
             return StepJobs(profileId, instance, 0);
+        }
+
+        // THE EMBEDDER'S TURN, AND IT IS REFUSED WHERE NO EMBEDDER WAS REGISTERED. A composition
+        // that supplied no surface, or supplied one and did not register the permission, has no
+        // turn to give - and answering that as an undefined entry point is the honest reading: the
+        // name means nothing in a realm with no embedder in it, exactly as a script entry point
+        // means nothing in a program that does not define it.
+        if (string.Equals(name, TurnEntryPoint, System.StringComparison.Ordinal))
+        {
+            if (instance.HostSurface is not { } surface)
+            {
+                return VmExecutionStep.Faulted(
+                    new JsUncaught(profileId, "entry point is not defined", "ReferenceError"));
+            }
+
+            instance.InvocationCount++;
+
+            var turn = RunHostTurn(profileId, instance, surface);
+
+            return turn ?? VmExecutionStep.Completed(
+                new JsCompletion(profileId, "undefined", "undefined"));
         }
 
         if (!instance.Program.TryFindEntry(name, out var unit))
@@ -752,7 +852,7 @@ internal static class JsExecution
     /// carried out rather than raised, because a job that throws does not stop the stepping any
     /// more than it stops a drain.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=6D52BB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=94AAA9
     // Broiler-Falsified-If: a job runs on the caller's stack, or a job that throws ends the stepping
     // Broiler-Human:        PENDING
     private static string RunOneJobOnGuestStack(JsInstance instance)
@@ -765,9 +865,31 @@ internal static class JsExecution
             {
                 try
                 {
-                    if (instance.Engine.StepOneJob(out var thrown))
+                    // THE HOST WINDOW OPENS FOR A SINGLE JOB TOO, and leaving it shut here was a
+                    // defect rather than a decision. A job is guest code; a promise reaction is a
+                    // job; and a reaction that reaches a host method is the ordinary way an
+                    // embedder's code runs after an await. Without the bracket that method met a
+                    // realm that refused it, and the refusal named the realm rather than the
+                    // stepping path that had failed to open it - so a drain worked and a step did
+                    // not, which is a difference no embedder could have accounted for.
+                    instance.Engine.BeginHostStep();
+                    JsAbort? pending;
+
+                    try
                     {
-                        rendered = instance.Engine.Render(thrown);
+                        if (instance.Engine.StepOneJob(out var thrown))
+                        {
+                            rendered = instance.Engine.Render(thrown);
+                        }
+                    }
+                    finally
+                    {
+                        pending = instance.Engine.EndHostStep();
+                    }
+
+                    if (pending is not null)
+                    {
+                        throw pending;
                     }
                 }
                 catch (System.Exception failure)

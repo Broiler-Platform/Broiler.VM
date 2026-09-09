@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   33
-// Annotated:        33/33
+// Relevant units:   37
+// Annotated:        37/37
 // Exempt:           32
-// Human-reviewed:   0/33
+// Human-reviewed:   0/37
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         4/4
 // Resource impact:  2/10 max
-// Unverified:       33
+// Unverified:       37
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -477,6 +477,28 @@ public interface IJsHostSurface
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3B74E3
     // Broiler-Human:        PENDING
     void OnRealmCreated(JsHostRealm realm);
+
+    /// <summary>
+    /// Runs whatever the embedder has been waiting to do, inside a step, on the guest's thread.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the door in from outside.</b> The realm is usable only inside a step, and an
+    /// embedder holding one between two invocations has no step to be inside. Rather than let it
+    /// touch the realm anyway - where there is no meter to charge and no operation to fault - the
+    /// profile gives it a way to ASK for a step: the host invokes the reserved entry point
+    /// <see cref="JavaScriptProfile.TurnEntryPoint"/>, the profile opens the window, and this runs.
+    /// </para>
+    /// <para>
+    /// <b>It is the embedder's own queue and the profile does not know what is in it.</b> What
+    /// arrives here is a turn, not a work item; an embedder that has nothing pending does nothing
+    /// and the invocation completes, which is what makes it safe for a host to ask for a turn it
+    /// may not need.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A00E82
+    // Broiler-Human:        PENDING
+    void OnTurn(JsHostRealm realm);
 }
 
 /// <summary>
@@ -511,4 +533,39 @@ public interface IJsHostExotic
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=90AC1E
     // Broiler-Human:        PENDING
     System.Collections.Generic.IReadOnlyList<string> SupportedNames(JsHostRealm realm);
+
+    /// <summary>Answers an integer-indexed lookup the object's own storage did not hold.</summary>
+    /// <remarks>
+    /// <b>Indexed and named lookup are separate members because they are separate questions.</b> A
+    /// live collection answers an element read from its contents and a named read from its members'
+    /// names, and the two can disagree about whether a key exists. One hook taking a string would
+    /// also make every indexed read parse a number back out of a key the engine had just formatted
+    /// from one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B12C9F
+    // Broiler-Human:        PENDING
+    bool TryGetIndex(JsHostRealm realm, uint index, out JsHostValue value);
+
+    /// <summary>
+    /// Takes an assignment to a named property, or declines it so ordinary assignment happens.
+    /// </summary>
+    /// <remarks>
+    /// <b>Declining is the common answer and the important one.</b> An embedder's object takes the
+    /// names it owns and must let an ordinary expando through untouched, because a guest assigning
+    /// a name the embedder does not own is writing TO the object rather than THROUGH it. A hook
+    /// that took everything would make every such assignment vanish.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=74DA1F
+    // Broiler-Human:        PENDING
+    bool TrySetNamed(JsHostRealm realm, string name, JsHostValue value);
+
+    /// <summary>How many integer-indexed elements this object has right now.</summary>
+    /// <remarks>
+    /// Asked immediately before an enumeration rather than when the object was minted, so a live
+    /// collection reports what it holds now. An embedder whose object has no indexed elements
+    /// answers zero.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CBA49F
+    // Broiler-Human:        PENDING
+    uint IndexedLength(JsHostRealm realm);
 }
