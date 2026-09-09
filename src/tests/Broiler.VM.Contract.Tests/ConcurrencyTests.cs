@@ -121,6 +121,140 @@ public sealed class ConcurrencyTests
     }
 
     /// <summary>
+    /// A capability that DECLARES it may re-enter is admitted, and its nested call completes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The complementary half of the test above, and until now it did not exist.</b> The refusal
+    /// is keyed on the declaration - <c>VmCapabilityBinding.TryEnter</c> hands the descriptor's own
+    /// mode to <c>VmRuntime.EnterCapability</c>, which raises the in-capability depth only for
+    /// <see cref="VmCapabilityReentrancy.NonReentrant"/> - so a capability declaring
+    /// <see cref="VmCapabilityReentrancy.ReentrantIntoInvokingRuntime"/> never sets the flag that
+    /// <c>TryBeginCall</c> refuses on. Nothing else in the tree declared the mode, so the admitted
+    /// arm of a two-armed rule was carried by reading rather than by a run.
+    /// </para>
+    /// <para>
+    /// <b>It asserts on the nested call's own outcome, not on the outer invocation.</b> An
+    /// assertion that the operation completed would pass whether the nested call ran, was refused,
+    /// or was never reached: a refusal here is a returned reason rather than a throw, and the
+    /// handler above discards it and answers <c>Completed</c> either way. What distinguishes the
+    /// three is the reason the nested call carried back, so that is what is checked - together with
+    /// the artifact it produced, because a verification that answers a reason of
+    /// <see cref="VmReason.None"/> and no artifact is not a verification that happened.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_Capability_Declaring_Reentrancy_May_Re_Enter_Its_Own_Runtime()
+    {
+        VmRuntime? current = null;
+        var nestedReason = VmReason.None;
+        var nestedSucceeded = false;
+        var nestedProducedArtifact = false;
+        var observed = false;
+
+        VmHostCallOutcome Reentrant(ReadOnlySpan<long> arguments, out long result)
+        {
+            result = arguments.Length > 0 ? arguments[0] + 1 : 0;
+
+            var descriptor = FixtureComposition.Descriptor();
+            var attempt = current!.Verify(in descriptor, FixtureArtifactWriter.Constant(1), CancellationToken.None);
+
+            nestedReason = attempt.Reason;
+            nestedSucceeded = attempt.IsSuccess;
+            nestedProducedArtifact = attempt.TryGetArtifact(out var nested);
+            nested?.Dispose();
+
+            observed = true;
+            return VmHostCallOutcome.Completed;
+        }
+
+        using var runtime = FixtureComposition.Runtime(
+            FixtureComposition.Catalog(FixtureVmProfile.Descriptor),
+            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithReentrant(Reentrant)));
+
+        current = runtime;
+
+        var artifact = FixtureComposition.Verify(
+            runtime, FixtureArtifactWriter.HostCall(41, FixtureHostCapabilities.ReentrantBinding));
+
+        var instance = FixtureComposition.Instantiate(runtime, artifact);
+        var result = FixtureComposition.Invoke(instance);
+
+        Assert.True(observed, "the re-entrant capability never ran");
+        Assert.NotEqual(VmReason.ReentrantRuntimeCallFromCapability, nestedReason);
+        Assert.Equal(VmReason.NormalCompleted, nestedReason);
+        Assert.True(nestedSucceeded, $"the nested verification was refused: {nestedReason}");
+        Assert.True(nestedProducedArtifact, "the nested verification produced no artifact");
+        Assert.Equal(VmOutcome.Normal, result.Outcome);
+
+        instance.Dispose();
+        artifact.Dispose();
+    }
+
+    /// <summary>
+    /// A re-entrant capability may re-enter the RUNTIME and may not re-enter the INSTANCE that is
+    /// executing, and the two refusals are different gates with different reasons.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the boundary of what the reentrancy declaration buys, and it is not where a
+    /// reader would put it.</b> The declaration is consulted by exactly one gate:
+    /// <c>VmCapabilityBinding.TryEnter</c> hands the descriptor's mode to
+    /// <c>VmRuntime.EnterCapability</c>, which raises the in-capability depth only for
+    /// <see cref="VmCapabilityReentrancy.NonReentrant"/>, and <c>VmRuntime.TryBeginCall</c> refuses
+    /// on that depth. <c>VmInstanceImplementation.TryAdmit</c> is a SECOND gate that never reads the
+    /// declaration: an instance in <see cref="VmInstanceState.Executing"/> refuses every invocation
+    /// with <see cref="VmReason.ReentrancyRefused"/>, whoever is asking and whatever they declared.
+    /// </para>
+    /// <para>
+    /// <b>Why that distinction is worth a test of its own.</b> "The capability may call back into
+    /// the invoking runtime" reads like permission to call back into the guest, and it is not: a
+    /// host function that calls a guest function - an event listener, a promise reaction, a
+    /// <c>toString</c> coercion - re-enters the instance, not merely the runtime. A reader who
+    /// takes the declaration at its word writes that call and is refused at a gate whose reason
+    /// names reentrancy without naming the declaration, which is the most confusing shape a refusal
+    /// can have. The two are asserted together so neither can be changed while believing the other
+    /// covered it.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_Re_Entrant_Capability_Still_Cannot_Re_Enter_The_Executing_Instance()
+    {
+        VmInstance? current = null;
+        var guestReason = VmReason.None;
+        var observed = false;
+
+        VmHostCallOutcome Reentrant(ReadOnlySpan<long> arguments, out long result)
+        {
+            result = arguments.Length > 0 ? arguments[0] + 1 : 0;
+
+            var attempt = FixtureComposition.Invoke(current!);
+            guestReason = attempt.Reason;
+
+            observed = true;
+            return VmHostCallOutcome.Completed;
+        }
+
+        using var runtime = FixtureComposition.Runtime(
+            FixtureComposition.Catalog(FixtureVmProfile.Descriptor),
+            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithReentrant(Reentrant)));
+
+        var artifact = FixtureComposition.Verify(
+            runtime, FixtureArtifactWriter.HostCall(41, FixtureHostCapabilities.ReentrantBinding));
+
+        var instance = FixtureComposition.Instantiate(runtime, artifact);
+        current = instance;
+
+        FixtureComposition.Invoke(instance);
+
+        Assert.True(observed, "the re-entrant capability never ran");
+        Assert.Equal(VmReason.ReentrancyRefused, guestReason);
+
+        instance.Dispose();
+        artifact.Dispose();
+    }
+
+    /// <summary>
     /// Disposing an instance while a step is executing does not return until the step has left the
     /// profile.
     /// </summary>

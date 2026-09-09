@@ -8956,3 +8956,160 @@ No bundle. 2026-09-08. *(Amended the same day: row 1625 is `corpus` and rule N7 
 branch — Contract 207/207 and Architecture 221/221 green after the withdrawal, the execution-only
 root replaying 128 entries with the five that bind 1625 among them, and the slice compiler's
 `--checks` lane reporting 135 checks passed.)*
+
+---
+
+### JSC-210
+
+**Where:** [the plan](roadmap.md#non-goals)'s CLR-interop non-goal, and every sentence anywhere in
+this component that reads a host capability as the only shape a host may reach guest code through.
+
+**What the plan said.** That "a host reaches guest code through typed, allowlisted, versioned
+capabilities **and through nothing else**". The second clause was written as a statement about a
+channel, and it was read - correctly, on the surface that then existed - as a statement that there
+is no other door at all. A component consuming this profile drew exactly that reading, and concluded
+that a document-bearing embedding was impossible here: a host accessor answers an object, a value
+capability answers a `long` or an opaque reference, an opaque reference is by construction not
+dereferenceable, and therefore no registration any composition could make would deliver one.
+
+**What replaced it.** **Every step of that reasoning is true and the conclusion does not follow**,
+because it assumes the object has to travel through the capability channel. A host object is an
+ordinary object in this profile's realm; its methods are ordinary native functions; and calling one
+is the same call the standard library makes when `Array.prototype.map` invokes the function it was
+handed, or when a `Proxy` trap runs. **Nothing about it reaches the core**, so no core member has to
+be able to carry it.
+
+**What did not change is the permission.** A realm is handed to an embedder only where the
+composition registered `broiler.javascript.host-surface`, an optional import whose binding this
+profile asks `IsBound` about once, at instantiation, and never invokes. So the non-goal's force is
+intact and its wording was not: registration is still the only thing that admits host code, and what
+was wrong was calling the capability the *channel* when it is the *gate*. The plan now says that,
+and says in the same breath what an embedder installs - this profile's own values, not CLR types the
+guest can name, which is the clause the non-goal's first sentence has always carried and which is
+untouched.
+
+**Authority and date.** [JSD-0024](decisions/0024-the-in-realm-host-surface.md);
+`src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs`, `JsHostValue.cs`, `JsHostObject.cs`, and
+`JavaScriptProfile.HostSurfaceCapability`; the `--host-surface` lane of the command-line root, whose
+every check is judged by what the guest printed and which includes a composition that registers no
+permission and sees no host object. 2026-09-09.
+
+---
+
+### JSC-211
+
+**Where:** [the plan](roadmap.md#the-fifteen-budget-dimensions)'s budget matrix, the `HostCalls`
+row.
+
+**What the plan said.** That `HostCalls` charges "every call into an imported host capability,
+including every artifact-provider request". That was an exhaustive list of the ways host code could
+be entered, and it stopped being exhaustive the moment a second way existed.
+
+**What replaced it.** The row now names the dimension by what it is for rather than by the one
+mechanism that used to realise it: **every crossing into host code**, which is the capability calls
+it always named plus every crossing of the host-object surface. **The charge is the point rather
+than the wording.** A crossing of that surface does not reach `VmCapabilityBinding`, so the boundary
+charge the core applies is not applied for it, and a surface left uncharged would have let an
+embedder move an unbounded amount of work across a seam and pay for none of it - which would make a
+host-call ceiling a ceiling on something other than host calls. The profile charges the dimension
+itself, one unit per crossing, beside fuel proportional to what the crossing carries.
+
+**Authority and date.** `JsEngine.ChargeHostCrossing`, and every member of `JsHostRealm` that enters
+through it; ADR 0007 defines the dimension as host-capability invocations, and this widening is the
+profile charging *more* than the core's definition requires rather than less, which is the direction
+a profile may move a charge in. [JSD-0024](decisions/0024-the-in-realm-host-surface.md). 2026-09-09.
+
+---
+
+### JSC-212
+
+**Where:** [the plan](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core)'s
+candidate-amendment register, the row for a host capability that answers a guest with bytes; and the
+refusal comment on the `read` global in
+`src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs`, which carried the same sentence.
+
+**What the plan said.** That "there is no registration any composition could make that would let a
+host answer a guest with a file's contents, so a shell-shaped global like `read` can exist and
+refuse and **can never do anything else**".
+
+**What replaced it.** **The first half is unchanged and the second is now false.** The row is about
+the capability channel, and about that channel the statement stands exactly as
+[JSC-84](#jsc-84) recorded it: a value capability answers a `long` or an opaque reference, and
+neither is a file's contents. What is no longer true is the conclusion, because the capability
+channel is no longer the only door. A composition that registers the host-object surface can install
+a `read` of its own that answers with whatever it likes, and the built-in refusal is now the answer
+for a composition that did not rather than the answer for every composition there could be.
+
+**The amendment row stays filed and its grade does not move.** Nothing here gives the *guest* a byte
+channel it can reach without an embedder, and a profile that answered "a host could write one" to
+every capability request would be answering a different question from the one the register asks. The
+row's subject is what a composition can register in the core's table; that is unchanged.
+
+**Authority and date.** [JSD-0024](decisions/0024-the-in-realm-host-surface.md); the `read` refusal
+and its rewritten reason in `JsRealm.Global.cs`; `JavaScriptProfile.HostSurfaceCapability` and
+`DescriptorHostingRealms`. Read against [JSC-84](#jsc-84), which is not withdrawn. 2026-09-09.
+
+---
+
+### JSC-213
+
+**Where:** [the plan](roadmap.md#how-this-roadmap-is-split)'s paragraph on the proposal documents
+that stand outside the plan, and the stage namespaces it lists.
+
+**What the plan said.** That **three** proposal documents stand outside the table, naming the
+workload, parity and backend roadmaps, and that they carry the stage namespaces `JSW-n`, `JSP-n`
+and `JSB-n`.
+
+**What replaced it.** A fourth stands beside them:
+[the hosting roadmap](roadmap.hosting.md), which asks what an embedder with a document-shaped object
+model would take, and which owns `JSH-n`. **Nothing else about the paragraph changes**, and the
+sentence that matters is the one that did not: none of them is a plan file, none mints an identifier
+in the `JS-` namespace, none moves a ledger row, and none is a status. The hosting roadmap says the
+same of itself in its own opening, and says in the same breath that exactly one of its stages is
+built and the rest are written down and nothing more.
+
+**The count was the part that had to move rather than the part that had to be kept.** A paragraph
+that names its members and also counts them says the same thing twice, and the second saying is the
+one that goes stale silently - a reader who trusts the number and skims the list is told there are
+three where four are listed. It now names them without counting them.
+
+**Authority and date.** `src/Broiler.VM.Profile.JavaScript/docs/roadmap.hosting.md`, written against
+this checkout; [JSD-0024](decisions/0024-the-in-realm-host-surface.md), which is the decision the
+stage that is built records. 2026-09-09.
+
+---
+
+### JSC-214
+
+**Where:** the lowering's global declaration instantiation,
+`src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs`'s `HoistProgram`, and every statement
+anywhere in this component about what order a script's top-level declarations reach the global
+object in.
+
+**What the checkout did.** Emitted a `DeclareGlobal` for every `var` name in the program's var scope
+and then one for every function declaration. Nothing said so - this is a correction to code rather
+than to a sentence, and it is recorded here because the behaviour it produced is observable to a
+guest and was wrong.
+
+**What replaced it.** The function declarations are emitted first, which is the order the
+specification's global declaration instantiation creates the bindings in: every function binding,
+then every var binding. **Own-key order is observable**, through `Object.getOwnPropertyNames`,
+`Object.keys` and `for...in`, so the two orders are distinguishable by an ordinary program - and the
+old one was source order for a script whose `var` came before its `function`, which is neither what
+the specification says nor what any other engine does.
+
+**It was found by a contract, which is the part worth recording.** Nothing in this component's own
+checks asks what order two global names appear in: the corpus records what programs answer, and a
+program that reads a variable it declared answers the same either way. What asked was a conformance
+suite belonging to a consumer, whose own test recovers a frame's declarations by diffing the
+global's own names across an evaluation - which is how a nested browsing context does it, and which
+is the one reading that makes the order load-bearing rather than incidental.
+
+**Nothing else moved.** The retained corpus replays to its recorded answers unchanged, and the
+compiler's own checks pass unchanged: no retained entry enumerates a global's keys, which is why
+this was reachable in the first place.
+
+**Authority and date.** `JsCompiler.HoistProgram`; the execution-only root's corpus replay and the
+slice compiler's checks lane, both run from this working tree on `win-x64` after the change; and the
+consumer suite that found it, which passes in full against a provider built on this profile.
+2026-09-09.

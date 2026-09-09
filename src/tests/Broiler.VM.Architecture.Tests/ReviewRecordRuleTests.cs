@@ -1009,7 +1009,15 @@ public sealed class ReviewRecordRuleTests
         // both already reference. They are covered on the same terms as every other product file,
         // and the record says of them what it says of the other nine: nothing here has been read by
         // a human.
-        Assert.Equal(162, AssuranceSources.Files.Count);
+        //
+        // THREE MORE JOINED THEM WITH THE HOST SURFACE, and they are the seam through which a
+        // composition puts host objects in a realm: the vocabulary an embedder holds values and
+        // identities in, the realm object it reaches the guest through, and the exotic object whose
+        // property lookup it completes. They are in the profile assembly rather than in a new one
+        // because what they expose is the profile's own object model under another name, and an
+        // assembly of their own would be an assembly whose whole content is a projection of the one
+        // beside it. They are covered on the same terms as every other product file.
+        Assert.Equal(165, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

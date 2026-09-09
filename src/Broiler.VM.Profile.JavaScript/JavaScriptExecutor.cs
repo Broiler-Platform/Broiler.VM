@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   18
 // Annotated:        18/18
-// Exempt:           17
+// Exempt:           18
 // Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    High
@@ -240,12 +240,20 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     // Broiler-Human:        PENDING
     private readonly IVmExecutionEnvironment environment;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FC50CA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=592099
     // Broiler-Human:        PENDING
-    internal JavaScriptExecutor(VmProfileId profileId, IVmExecutionEnvironment executionEnvironment)
+    private readonly IJsHostSurface? hostSurface;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9DB2F2
+    // Broiler-Human:        PENDING
+    internal JavaScriptExecutor(
+        VmProfileId profileId,
+        IVmExecutionEnvironment executionEnvironment,
+        IJsHostSurface? surface = null)
     {
         ProfileId = profileId;
         environment = executionEnvironment;
+        hostSurface = surface;
     }
 
     /// <inheritdoc/>
@@ -254,7 +262,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     public VmProfileId ProfileId { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=8F63E1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D2A502
     // Broiler-Falsified-If: a handle this profile did not verify produces an instance
     // Broiler-Human:        PENDING
     public VmExecutionStep Instantiate(
@@ -272,7 +280,8 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
             // non-goal, written as a single `if`.
             return JsNativeExecution.CarriesEmittedCode(wideProgram)
                 ? JsNativeExecution.Instantiate(wideProgram, environment)
-                : JsExecution.Instantiate(wideProgram, environment, cancellationToken);
+                : JsExecution.Instantiate(
+                    wideProgram, environment, hostSurface, cancellationToken);
         }
 
         if (!artifact.TryGetState(out var state) || state is not JavaScriptProgram program)

@@ -35,6 +35,7 @@ does not contain says so in its own text.
 | [JSD-0021](0021-the-wide-bring-up-manifest-and-format-version-2.md) | The second manifest identity `broiler.javascript.wide` and the format version defined against it, why the slice was not widened and the core name not taken, why a version break rather than more opcodes, the one verifier both versions are read through, and the condition that retires or narrows this identity | JS-5 |
 | [JSD-0022](0022-what-the-nesting-bound-bounds-and-the-stack-it-is-derived-against.md) | That the nesting bound stays a bound on the parser's recursion and a second bound is minted on the depth of the tree handed to a walk, the stack this component declares for compilation that its ceiling is derived against, why the ceiling is not a host's to raise, and what refusing a deeper tree costs | JS-3b |
 | [JSD-0023](0023-which-pauses-route-through-a-core-suspension.md) | Which of section 12's three pause kinds route through a core suspension and which stay this profile's own job records, why external suspension is left undeclared at core contract version 1, and the live-suspension count the routing produces | JS-7 |
+| [JSD-0024](0024-the-in-realm-host-surface.md) | That an embedder installs host objects through this profile's own realm seam rather than through the capability channel, that the capability table is the permission for that seam rather than its channel, and what charging, bracketing and an abort that cannot be swallowed have to hold for the permission to mean anything | JS-5 |
 
 ## What a record must carry
 

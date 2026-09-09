@@ -22,6 +22,9 @@ public static class FixtureHostCapabilities
     /// <summary>An optional capability a composition may leave unregistered.</summary>
     public static VmCapabilityId OptionalId { get; } = VmCapabilityId.Parse("Broiler.VM.Fixture.Optional");
 
+    /// <summary>A capability that declares it may call back into the runtime that invoked it.</summary>
+    public static VmCapabilityId ReentrantId { get; } = VmCapabilityId.Parse("Broiler.VM.Fixture.Reentrant");
+
     /// <summary>The artifact-provider capability.</summary>
     public static VmCapabilityId ProviderId { get; } = VmCapabilityId.Parse("Broiler.VM.Fixture.Provider");
 
@@ -44,6 +47,14 @@ public static class FixtureHostCapabilities
 
     /// <summary>Binding index three: the optional capability.</summary>
     public const int OptionalBinding = 3;
+
+    /// <summary>Binding index four: the capability that declares it may re-enter.</summary>
+    /// <remarks>
+    /// It is declared before the conditional provider import so the index is the same whichever
+    /// variant is asked for. Nothing addresses the provider by index - it is reached through the
+    /// mediator - so moving it along by one costs nothing.
+    /// </remarks>
+    public const int ReentrantBinding = 4;
 
     /// <summary>The doubling capability's shape.</summary>
     public static VmHostCapabilityDescriptor Double { get; } = new(
@@ -69,6 +80,30 @@ public static class FixtureHostCapabilities
         VmCapabilityReentrancy.NonReentrant, VmCapabilityThreadAffinity.CallerThread,
         VmExceptionTranslation.TerminateOperation);
 
+    /// <summary>
+    /// The shape of a capability that declares it may call back into the runtime that invoked it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the only fixture capability that declares the mode, and it exists because nothing
+    /// else in this repository did.</b> Every other declaration - here, in the JavaScript profile,
+    /// in the calculator and ledger samples - says <see cref="VmCapabilityReentrancy.NonReentrant"/>,
+    /// so the enforced half of the rule had a test and the admitted half had none. A mode that
+    /// nothing exercises is a mode nobody can rely on, whatever the enum says.
+    /// </para>
+    /// <para>
+    /// <b>Value, not <see cref="VmCapabilityKind.ArtifactProvider"/>, and the descriptor refuses the
+    /// other pairing itself.</b> An artifact provider that could re-enter the runtime whose load it
+    /// is answering would let a guest-initiated load reach the operation that requested it, so
+    /// <see cref="VmHostCapabilityDescriptor.IsWellFormed"/> rejects that combination before a
+    /// catalog is built.
+    /// </para>
+    /// </remarks>
+    public static VmHostCapabilityDescriptor Reentrant { get; } = new(
+        ReentrantId, 1, IntegerSignature, VmCapabilityKind.Value,
+        VmCapabilityReentrancy.ReentrantIntoInvokingRuntime, VmCapabilityThreadAffinity.CallerThread,
+        VmExceptionTranslation.TerminateOperation);
+
     /// <summary>The provider capability's shape.</summary>
     public static VmHostCapabilityDescriptor Provider { get; } = new(
         ProviderId, 1, ProviderSignature, VmCapabilityKind.ArtifactProvider,
@@ -89,6 +124,10 @@ public static class FixtureHostCapabilities
         builder.Add(new VmCapabilityImport(Throwing, VmCapabilityImportKind.Required));
         builder.Add(new VmCapabilityImport(Refusing, VmCapabilityImportKind.Required));
         builder.Add(new VmCapabilityImport(Optional, VmCapabilityImportKind.Optional));
+
+        // Optional for the same reason the one above is: a composition that registers no re-entrant
+        // capability must still create a runtime, so the unbound branch stays reachable.
+        builder.Add(new VmCapabilityImport(Reentrant, VmCapabilityImportKind.Optional));
 
         if (declaresGuestLoads)
         {

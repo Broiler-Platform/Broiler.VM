@@ -316,10 +316,19 @@ public sealed class RuleRegisterTests
         // and X1 - a new group letter, because write-exclusive-or-execute belongs to no profile
         // family - pins the arming path to one place and its protections to a closed set. Neither
         // the Vacuous nor the Deferred count moves again.
-        Assert.Equal(89, byStatus["Active"]);
+        // The host surface adds N20 and N21, and they are the two properties its argument rests on
+        // that no call site shows. N20 forbids a static or thread-static holder of a surface or a
+        // realm, because a realm reaching an embedder is what a composition's registration permits
+        // and an ambient holder would put one composition's embedder within reach of another's
+        // realm underneath the table that permits it. N21 holds every public member of the realm to
+        // charging before it acts, because a crossing does not reach the core's capability binding
+        // and therefore does not get the core's boundary charge - so a member added without one is
+        // a member a guest drives for free while the ceiling that was supposed to bound it goes on
+        // bounding the capability table. Neither the Vacuous nor the Deferred count moves.
+        Assert.Equal(91, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(91, Loaded.Rules.Count);
+        Assert.Equal(93, Loaded.Rules.Count);
     }
 
     private static Register Load()

@@ -95,6 +95,22 @@ internal static class Program
             return Closure();
         }
 
+        // THE HOST-SURFACE LANE, and it takes no file. What it runs is written into the checks
+        // themselves, because each one is a pair - a guest program and the lines that program must
+        // print - and separating the two into a corpus would put the answer somewhere a reader
+        // comparing them has to go and find.
+        if (args.Contains("--host-surface", StringComparer.Ordinal))
+        {
+            var failures = HostSurfaceChecks.Run();
+
+            Console.WriteLine(
+                failures == 0
+                    ? "host-surface: every check passed"
+                    : "host-surface: " + Host.Number(failures) + " check(s) failed");
+
+            return failures == 0 ? ExitCodes.Ok : ExitCodes.Faulted;
+        }
+
         var module = args.Contains("--module", StringComparer.Ordinal);
         var checkOnly = args.Contains("--check", StringComparer.Ordinal);
         var all = args.Contains("--all", StringComparer.Ordinal);
@@ -606,7 +622,7 @@ internal static class Program
     [
         "--module", "--check", "--all", "--quiet", "--fuel", "--max-depth", "--closure",
         "--slice", "--strict", "--sweep", "--wall", "--call-depth", "--live-bytes", "--help",
-        "--version", "--numeric", "--native",
+        "--version", "--numeric", "--native", "--host-surface",
     ];
 
     /// <summary>The closure this image actually has, read off its own loaded assemblies.</summary>

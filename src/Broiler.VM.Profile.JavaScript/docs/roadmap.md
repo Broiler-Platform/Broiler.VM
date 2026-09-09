@@ -70,17 +70,18 @@ own, because they are read one entry at a time rather than start to finish.
 | [`decisions/`](decisions/README.md) | — | The dated decision records, `JSD-nnnn`. A plan says what is intended; a decision record says what was chosen, what it rejected, and who signed it. |
 | `evidence/js-<n>[-nnn]/` | — | The retained evidence bundles, produced by `eng/collect-js-evidence.py`. A milestone carries a numbered series rather than one bundle, because a clause found open after a collection is closed by a further bundle rather than by editing the first. Cited by the ledger and by nothing in the core's. |
 
-**Three proposal documents stand outside that table, and outside this plan.**
+**The proposal documents stand outside that table, and outside this plan.**
 [`roadmap.workloads.md`](roadmap.workloads.md) asks what running the two third-party corpora whole
 would take, [`roadmap.parity.md`](roadmap.parity.md) asks what standing level with the legacy
-JavaScript component would take, and [`roadmap.backends.md`](roadmap.backends.md) asks what a second
-and third output form — an artifact whose payload is machine code — would take. None is a plan file:
-none mints an identifier in the `JS-` namespace, none moves a ledger row, and none is a status. They
-carry their own stage namespaces — `JSW-n`, `JSP-n` and `JSB-n` — which are proposals for where the
-milestones below would have to grow, and each names, for every gap or obligation it records, either
-the milestone or stage that already owns it or the fact that nothing does. A reader who wants to
-know what this component *plans* reads the table above; a reader who wants to know what it does not
-yet *do* reads those three.
+JavaScript component would take, [`roadmap.backends.md`](roadmap.backends.md) asks what a second
+and third output form — an artifact whose payload is machine code — would take, and
+[`roadmap.hosting.md`](roadmap.hosting.md) asks what an embedder with a document-shaped object model
+would take *(corrected: JSC-213)*. None is a plan file: none mints an identifier in the `JS-`
+namespace, none moves a ledger row, and none is a status. They carry their own stage namespaces —
+`JSW-n`, `JSP-n`, `JSB-n` and `JSH-n` — which are proposals for where the milestones below would
+have to grow, and each names, for every gap or obligation it records, either the milestone or stage
+that already owns it or the fact that nothing does. A reader who wants to know what this component
+*plans* reads the table above; a reader who wants to know what it does not yet *do* reads those.
 
 Four rules keep the split cheap and are not negotiable.
 
@@ -234,8 +235,11 @@ trimming, and Native AOT gates for the core boundary.
   correctness properties of this profile. They are not an isolation claim for untrusted script,
   and no conformance total or benchmark result may be presented as one.
 - **CLR interop.** No JavaScript-reachable surface resolves a CLR type by name, constructs a
-  generic type at run time, or enumerates CLR members. A host reaches guest code through typed,
-  allowlisted, versioned capabilities and through nothing else.
+  generic type at run time, or enumerates CLR members. What a host may reach guest code with is
+  decided by a typed, allowlisted, versioned capability and by nothing else - a composition that
+  registered none reaches nothing - and the objects an embedder installs under that permission are
+  this profile's own values rather than CLR types the guest can name
+  *(corrected: JSC-210)*.
 - **A debug wire protocol.** External suspension is a core lifecycle state; what a paused profile
   exposes is this profile's own surface, and a wire protocol is a separate component if it is
   ever wanted.
@@ -383,7 +387,7 @@ record of its own, and none may drift into one *(corrected: JSC-02)*.
 | `WallClock` | Charged | Core-metered against the operation; this profile polls often enough for it to bite. |
 | `AllocatedBytes` | Charged | Verification buffers, the constant pool, environments, objects, and the storage layer's transitions. |
 | `LiveBytes` | Charged | Retained realm and heap state, reported on retention and released on instance disposal. |
-| `HostCalls` | Charged | Every call into an imported host capability, including every artifact-provider request. |
+| `HostCalls` | Charged | Every crossing into host code: every call into an imported host capability, every artifact-provider request, and every crossing of the host-object surface *(corrected: JSC-211)*. |
 | `CallDepth` | Charged | Every interpreter frame. The default is measured, not chosen — see [section 8](#8-the-value-frame-and-call-model). |
 | `VerifierWork` | Charged | Required by the catalog. Decode, structural validation, and the static-semantic stage. |
 | `ArtifactBytes` | Charged | Enforced by the core's reader over the payload. |
@@ -1818,7 +1822,7 @@ asking alone; the other two are weaker than that and are corrected for their own
 | Lazy per-section verification | A browser compiles function bodies on first call and will not verify a whole bundle to run one entry point; version 1 fixes whole-artifact eager verification. | **Moderate, and actively declined by the counterweight**, which is offered the same permission by its own specification and refuses it because a deferred check is a check reported as a trap. This profile's invariant 3 fixes the shape of any proposal it would sign, and the two profiles agree on that shape: each section verified **completely** before that section's first execution, with no structural, index, stack-consistency, or handler-nesting check migrating into execution. Funded by a measurement, not by argument. |
 | Streaming or incremental verification | A browser wants to verify as bytes arrive. | **Strong: general**, and the core already carries a registered amendment shape for it. **Both profiles want it and neither needs it yet**: the other intended profile grades it *wanted eventually, needed by nobody yet* — it streams bytes and is not indifferent, but it has no measurement either. That bears on when the row is filed, not on how general it is. Reopened against a measurement, not against the observation that browsers stream. |
 | A persisted envelope | [Section 16](#16-persistence-and-the-code-cache). | **Strong: general**, graded the same by the other intended profile, and already admitted by contract. It needs a gate rather than an amendment. |
-| A host capability that answers a guest with **bytes** | A value capability takes bytes and answers a `long` or an opaque reference, and an opaque reference is by construction not dereferenceable. **There is no registration any composition could make that would let a host answer a guest with a file's contents**, so a shell-shaped global like `read` can exist and refuse and can never do anything else. | **Moderate, and it is the first row here reached by an OBSERVATION rather than by a design reading.** A third-party workload assumed the shell and this profile could not have it *(corrected: [JSC-84](roadmap.corrections.md#jsc-84))*. What weakens it is that the need is a HOST's rather than a language's: the guest asked for a byte channel, not for a filesystem, and a composition that wanted one could already pass bytes IN. Filed and held like every other row, with the deterministic refusal published in the meantime. |
+| A host capability that answers a guest with **bytes** | A value capability takes bytes and answers a `long` or an opaque reference, and an opaque reference is by construction not dereferenceable. **There is no registration any composition could make that would let a host answer a guest with a file's contents THROUGH THE CAPABILITY CHANNEL**, which is what this row is about and what remains true. What is no longer true is the conclusion this row used to draw from it - that a shell-shaped global like `read` can exist and refuse and can never do anything else - because the host-object surface is a second door and a composition that registers it can install a `read` that answers *(corrected: JSC-212)*. | **Moderate, and it is the first row here reached by an OBSERVATION rather than by a design reading.** A third-party workload assumed the shell and this profile could not have it *(corrected: [JSC-84](roadmap.corrections.md#jsc-84))*. What weakens it is that the need is a HOST's rather than a language's: the guest asked for a byte channel, not for a filesystem, and a composition that wanted one could already pass bytes IN. Filed and held like every other row, with the deterministic refusal published in the meantime. |
 
 The rule that governs all of them: **a design that can only be hosted by a second core state
 machine is refused.** Exactly one core state machine and one core contract version exist in a

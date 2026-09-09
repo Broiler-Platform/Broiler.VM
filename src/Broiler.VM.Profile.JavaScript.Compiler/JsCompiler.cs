@@ -2618,18 +2618,13 @@ public sealed class JsCompiler
 
     // ---- hoisting ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=31AE12
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=59CE37
     // Broiler-Human:        PENDING
     private void HoistProgram(System.Collections.Generic.IReadOnlyList<JsStatement> body)
     {
         var names = new System.Collections.Generic.List<string>();
         var functions = new System.Collections.Generic.List<JsFunctionNode>();
         CollectVarScope(body, names, functions, lexical: null);
-
-        foreach (var name in names)
-        {
-            Emit(JsOpcode.DeclareGlobal, InternedName(name));
-        }
 
         // A FUNCTION DECLARATION CREATES ITS GLOBAL BINDING BEFORE IT IS WRITTEN, and until
         // 2026-09-04 the write was the only step. It worked because a store to a name the global
@@ -2638,9 +2633,24 @@ public sealed class JsCompiler
         // declaration in it threw a `ReferenceError` about the function it was declaring. The
         // declaration is separate from the write in the specification for this reason: the binding
         // exists before anything assigns to it.
+        //
+        // AND IT CREATES IT BEFORE THE VAR BINDINGS, NOT AFTER *(corrected: JSC-214)*. The
+        // specification's global declaration instantiation creates every function binding and then
+        // every var binding, so a script declaring both puts the function on the global object
+        // first - and the order own property keys come out in is observable, through
+        // `Object.getOwnPropertyNames`, `Object.keys` and `for...in`. This loop ran second until
+        // 2026-09-09, which made the order source order for a script whose var came first. A host
+        // that recovers a script's declarations by diffing the global's own names across an
+        // evaluation - which is how a nested browsing context does it - read them in an order no
+        // other engine produces.
         foreach (var function in functions)
         {
             Emit(JsOpcode.DeclareGlobal, InternedName(function.Name));
+        }
+
+        foreach (var name in names)
+        {
+            Emit(JsOpcode.DeclareGlobal, InternedName(name));
         }
 
         foreach (var function in functions)
