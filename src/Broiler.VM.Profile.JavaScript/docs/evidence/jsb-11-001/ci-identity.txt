@@ -1,0 +1,64 @@
+# Identity of the two continuous-integration workflow runs this bundle retains, and of the pull-request lane run it cites.
+# Written 2026-09-15 from the GitHub API with the commands shown before each block; every value below is that output.
+# Durations are completedAt minus startedAt of each job, computed by the --jq filter from the two timestamps printed beside them.
+# (Revised 2026-09-15: each jobs command read `gh run view <id> --json jobs  (<column names>)`, which prints JSON and no
+# duration, so it could not reproduce its block; the commands below reproduce the blocks, whose values did not change.
+# The second listing of the lane's runs was added then.)
+
+## workflow .github/workflows/test262-javascript-profile.yml at the runs' commit
+$ git show 06e14627ef51e509b219dcdd65e65392898847bd:.github/workflows/test262-javascript-profile.yml | grep -n -E 'runs-on|timeout-minutes|retention-days'
+98:    runs-on: ubuntu-latest
+135:    runs-on: ubuntu-latest
+136:    timeout-minutes: 340
+229:          retention-days: 14
+237:    runs-on: ubuntu-latest
+362:          retention-days: 30
+# the timeout-minutes line is in the job 'score shards (runner N)'; the merge job 'merge and report' sets none
+
+## profile machinecode
+$ gh run view 35001811041 --json databaseId,headSha,status,conclusion,createdAt,updatedAt,url,event,headBranch,workflowName
+{"conclusion":"success","createdAt":"2026-09-15T17:31:30Z","databaseId":35001811041,"event":"workflow_dispatch","headBranch":"claude/wide-native-baseline-form","headSha":"06e14627ef51e509b219dcdd65e65392898847bd","status":"completed","updatedAt":"2026-09-15T17:45:22Z","url":"https://github.com/Broiler-Platform/Broiler.VM/actions/runs/35001811041","workflowName":"test262 javascript profile"}
+$ gh run view 35001811041 --json jobs --jq '.jobs[]|[.databaseId,.name,.status,.conclusion,.startedAt,.completedAt,(((.completedAt|fromdate)-(.startedAt|fromdate)) as $d|(($d/60|floor|tostring)+"m"+(($d%60)|tostring|if length<2 then "0"+. else . end)+"s"))]|@tsv'
+104491746149	resolve the profile	completed	success	2026-09-15T17:31:34Z	2026-09-15T17:31:37Z	0m03s
+104491777886	score shards (runner 4)	completed	success	2026-09-15T17:31:40Z	2026-09-15T17:32:59Z	1m19s
+104491777959	score shards (runner 0)	completed	success	2026-09-15T17:31:40Z	2026-09-15T17:35:52Z	4m12s
+104491777964	score shards (runner 2)	completed	success	2026-09-15T17:31:40Z	2026-09-15T17:44:41Z	13m01s
+104491777986	score shards (runner 1)	completed	success	2026-09-15T17:31:40Z	2026-09-15T17:33:08Z	1m28s
+104491777994	score shards (runner 5)	completed	success	2026-09-15T17:31:40Z	2026-09-15T17:32:53Z	1m13s
+104491777995	score shards (runner 3)	completed	success	2026-09-15T17:31:40Z	2026-09-15T17:33:08Z	1m28s
+104491778047	score shards (runner 6)	completed	success	2026-09-15T17:31:39Z	2026-09-15T17:33:16Z	1m37s
+104491778056	score shards (runner 7)	completed	success	2026-09-15T17:31:40Z	2026-09-15T17:42:37Z	10m57s
+104496282919	merge and report	completed	success	2026-09-15T17:44:43Z	2026-09-15T17:45:21Z	0m38s
+$ gh api repos/Broiler-Platform/Broiler.VM/actions/runs/35001811041/artifacts --jq '.artifacts[] | select(.name|endswith("merged")) | [.id,.name,.size_in_bytes,.digest,.created_at,.expires_at] | @tsv'
+10410203791	test262-machinecode-merged	777579	sha256:c634cb980f05b960c25f3cfbecfb5dab6eccf6d2db4d368a048719be1dc017a9	2026-09-15T17:45:19Z	2026-10-15T17:45:18Z
+
+## profile bytecode
+$ gh run view 35001814153 --json databaseId,headSha,status,conclusion,createdAt,updatedAt,url,event,headBranch,workflowName
+{"conclusion":"success","createdAt":"2026-09-15T17:31:32Z","databaseId":35001814153,"event":"workflow_dispatch","headBranch":"claude/wide-native-baseline-form","headSha":"06e14627ef51e509b219dcdd65e65392898847bd","status":"completed","updatedAt":"2026-09-15T17:45:22Z","url":"https://github.com/Broiler-Platform/Broiler.VM/actions/runs/35001814153","workflowName":"test262 javascript profile"}
+$ gh run view 35001814153 --json jobs --jq '.jobs[]|[.databaseId,.name,.status,.conclusion,.startedAt,.completedAt,(((.completedAt|fromdate)-(.startedAt|fromdate)) as $d|(($d/60|floor|tostring)+"m"+(($d%60)|tostring|if length<2 then "0"+. else . end)+"s"))]|@tsv'
+104491755396	resolve the profile	completed	success	2026-09-15T17:31:36Z	2026-09-15T17:31:40Z	0m04s
+104491794420	score shards (runner 0)	completed	success	2026-09-15T17:31:42Z	2026-09-15T17:37:23Z	5m41s
+104491794421	score shards (runner 2)	completed	success	2026-09-15T17:31:42Z	2026-09-15T17:37:03Z	5m21s
+104491794445	score shards (runner 1)	completed	success	2026-09-15T17:31:43Z	2026-09-15T17:32:50Z	1m07s
+104491794447	score shards (runner 4)	completed	success	2026-09-15T17:31:42Z	2026-09-15T17:32:58Z	1m16s
+104491794465	score shards (runner 5)	completed	success	2026-09-15T17:31:43Z	2026-09-15T17:32:50Z	1m07s
+104491794473	score shards (runner 6)	completed	success	2026-09-15T17:31:43Z	2026-09-15T17:33:07Z	1m24s
+104491794540	score shards (runner 3)	completed	success	2026-09-15T17:31:43Z	2026-09-15T17:32:48Z	1m05s
+104491796317	score shards (runner 7)	completed	success	2026-09-15T17:31:43Z	2026-09-15T17:44:35Z	12m52s
+104496253244	merge and report	completed	success	2026-09-15T17:44:38Z	2026-09-15T17:45:21Z	0m43s
+$ gh api repos/Broiler-Platform/Broiler.VM/actions/runs/35001814153/artifacts --jq '.artifacts[] | select(.name|endswith("merged")) | [.id,.name,.size_in_bytes,.digest,.created_at,.expires_at] | @tsv'
+10409599352	test262-bytecode-merged	777492	sha256:334dd732699c6b99be05ab778d4c91b93e919190bf7a297f08184bc67a6510c8	2026-09-15T17:45:18Z	2026-10-15T17:45:16Z
+
+## the pull-request lane on this branch (workflow broiler-vm.yml), as listed when this file was written
+$ gh run list --branch claude/wide-native-baseline-form --workflow broiler-vm.yml --json databaseId,headSha,status,conclusion,createdAt,event,url
+[{"conclusion":"","createdAt":"2026-09-15T18:08:09Z","databaseId":35005579234,"event":"pull_request","headSha":"fd3a2aaa830f5f5f3352016d0f1d71d62a1ad92d","status":"in_progress","url":"https://github.com/Broiler-Platform/Broiler.VM/actions/runs/35005579234"},{"conclusion":"success","createdAt":"2026-09-15T17:11:51Z","databaseId":34999734401,"event":"pull_request","headSha":"06e14627ef51e509b219dcdd65e65392898847bd","status":"completed","url":"https://github.com/Broiler-Platform/Broiler.VM/actions/runs/34999734401"}]
+$ gh run view 34999734401 --json jobs --jq '.jobs[]|[.databaseId,.name,.conclusion,.startedAt,.completedAt]|@tsv'
+104484866638	quick / build, suites, graph and drift	success	2026-09-15T17:12:05Z	2026-09-15T17:13:35Z
+104484866787	quick / android head (build only)	success	2026-09-15T17:11:54Z	2026-09-15T17:13:50Z
+104484866836	quick / publish and run (linux-x64)	success	2026-09-15T17:11:53Z	2026-09-15T17:22:56Z
+104484866921	quick / publish and run (linux-arm64)	success	2026-09-15T17:11:56Z	2026-09-15T17:25:29Z
+104484868329	quick / android head (emulator)	skipped	2026-09-15T17:11:52Z	2026-09-15T17:11:51Z
+
+## the pull-request lane on this branch (workflow broiler-vm.yml), listed again when this file was revised
+$ gh run list --branch claude/wide-native-baseline-form --workflow broiler-vm.yml --json databaseId,headSha,status,conclusion,createdAt,event,url
+[{"conclusion":"success","createdAt":"2026-09-15T18:08:09Z","databaseId":35005579234,"event":"pull_request","headSha":"fd3a2aaa830f5f5f3352016d0f1d71d62a1ad92d","status":"completed","url":"https://github.com/Broiler-Platform/Broiler.VM/actions/runs/35005579234"},{"conclusion":"success","createdAt":"2026-09-15T17:11:51Z","databaseId":34999734401,"event":"pull_request","headSha":"06e14627ef51e509b219dcdd65e65392898847bd","status":"completed","url":"https://github.com/Broiler-Platform/Broiler.VM/actions/runs/34999734401"}]

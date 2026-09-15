@@ -1110,7 +1110,11 @@ names, and a stage identifier is never reused.
 
 - **State on 2026-09-15, after collection: the code is committed, and
   [bundle JSB-11-001](evidence/jsb-11-001/README.md) meets one clause of the gate above and shows
-  parts of the others, on one `win-x64` workstation, in the Windows convention only.** *(Replaced the
+  parts of the others: on one `win-x64` workstation in the Windows convention, and, in the System V
+  convention, in the machine-code workflow run of the conformance suite (compared with a bytecode
+  workflow run) and a pull-request lane job on hosted Linux runners.** *(Revised the
+  same day, after those runs: this sentence ended "on one `win-x64` workstation, in the Windows
+  convention only": [JSC-224](roadmap.corrections.md#jsc-224).)* *(Replaced the
   same day. This bullet read "code is being written, and nothing is collected", and said that
   `jsb-11-001` did not exist, that no gate had been run into a retained record and that no witness had
   been watched failing: [JSC-223](roadmap.corrections.md#jsc-223).)* A clause is met or it is not, so each is named:
@@ -1140,19 +1144,32 @@ names, and a stage identifier is never reused.
     past the table, the verifier's reason named on each refusal, and a hand check of the golden bytes.
   - **Not met: the two forms agree over the wide manifest.** The Windows half is shown for the named
     programs and probes, the swapped handler, the entry points and forced collections. **The System V
-    half has executed nowhere**: its two entry-point rows did not run on that machine, and the lane
-    that would run them has not run. The smallest completing fuel ceiling was compared for some of the
+    half is not shown for these rows.** Its two entry-point rows did not run on that machine. The
+    pull-request lane's Linux job, which ran after the collection, names no passing row, so the
+    bundle's selected lines of that job show those rows only as absent from the rows not run
+    *(revised 2026-09-15: this read "The System V half has executed nowhere" and said that the lane
+    that would run them had not run; that lane and a workflow run have since executed the convention:
+    [JSC-224](roadmap.corrections.md#jsc-224))*. The smallest completing fuel ceiling was compared for some of the
     programs that load nothing and not for all, and no bound for the deep throw was predeclared.
   - **Not met: rules hold the rooting argument.** Both rules and their witnesses pass in the suite; no
     injection into the tree watched failing and passing after revert is retained.
   - **Not met: the conformance suite in the two forms.** A whole-suite native run was compared variant
     by variant with a bytecode run under one wall-clock allowance with no difference, **and again with a
     bytecode run from the native run's own binaries, with no difference**. The bundle also retains a comparison against a native run at a
-    longer wall-clock allowance **that the comparison script does not pass**: its differences, all in
-    exhausted dimension and none in a verdict, are neither admitted nor classified, and this clause
-    calls such a difference a defect (section 3 of the bundle). No like-for-like comparison under a
-    deterministic allowance exists, and neither workflow run nor any shard's job limit has been
-    observed.
+    longer wall-clock allowance **that the comparison script, as it stood at the collection, does not
+    pass**: its differences, all in exhausted dimension and none in a verdict, are neither admitted nor
+    classified, and this clause calls such a difference a defect (section 3 of the bundle). **The
+    machine-code and bytecode workflow runs were taken on one commit, every shard job completed inside
+    its limit, and no verdict differs between them. They compare clean only under the comparison
+    script as widened after they were seen.** Under this clause as written, some of their differences —
+    wall-clock exhaustions in the bytecode form against another allowance's exhaustion in the native
+    form — are in no named class. This clause calls them defects, so **it is not met on them**. With
+    guest loads exempted, the widened script also passes the longer-allowance comparison; there too
+    the differences are in no class this clause names, including two whose native side is not a fuel
+    exhaustion. The gate above was not amended ([JSC-224](roadmap.corrections.md#jsc-224)). No like-for-like
+    comparison under a deterministic allowance exists *(revised 2026-09-15: this sentence also read "and
+    neither workflow run nor any shard's job limit has been observed", and the sentence before it read
+    "that the comparison script does not pass")*.
   - **Not met: a bundle retains all of it.** The audit this clause names — assignments before the
     loop, `continue` and `goto` against the step boundary, and pure catch filters — is not recorded.
 

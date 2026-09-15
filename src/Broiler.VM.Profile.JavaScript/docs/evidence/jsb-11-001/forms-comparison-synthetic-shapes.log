@@ -1,0 +1,119 @@
+# Hand-built one-row reports run through eng/compare-test262-forms.py at fd3a2aa, from the component root, on 2026-09-15.
+# Each case prints both reports as written to a scratch directory and the script's output; the suite named by --suite
+# is a scratch directory holding test/a.js as the single line `1;`, so no case is a guest-load variant.
+
+### case 1: a native Failed against a bytecode wall-clock exhaustion, both walls 5000 ms
+$ python eng/compare-test262-forms.py <scratch>/bytecode-0.report <scratch>/native-0.report --suite <scratch>/suite
+--- bytecode report
+# broiler-js-conformance test262 report 2
+manifest|broiler.javascript.wide|2|loaded|-|-
+allowance|100000000|5000
+result|test/a.js|sloppy|Exhausted||WallClock|||
+--- native report
+# broiler-js-conformance test262 report 2
+manifest|broiler.javascript.wide|2|loaded|-|-
+form|native|x86-64-sysv
+allowance|100000000|5000
+result|test/a.js|sloppy|Failed|||||
+--- output
+# reference <scratch>/bytecode-0.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 5000 ms
+#   ?
+# candidate <scratch>/native-0.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   ?
+# reading: realistic - class (c) is admitted, because a run was taken below 60000 ms; class (b) is not admitted without --exempt-guest-loads
+# 1 variants in both reports, 1 differ; 0 variant(s) present in only one report were ignored
+
+## (unclassified) a difference in no admitted class: 1 - NOT ADMITTED
+  test/a.js [sloppy]: Exhausted/WallClock -> Failed
+
+# 1 difference(s) in no admitted class
+exit 1
+
+### case 2: a native Unsupported against a bytecode wall-clock exhaustion, both walls 5000 ms
+$ python eng/compare-test262-forms.py <scratch>/bytecode-1.report <scratch>/native-1.report --suite <scratch>/suite
+--- bytecode report
+# broiler-js-conformance test262 report 2
+manifest|broiler.javascript.wide|2|loaded|-|-
+allowance|100000000|5000
+result|test/a.js|sloppy|Exhausted||WallClock|||
+--- native report
+# broiler-js-conformance test262 report 2
+manifest|broiler.javascript.wide|2|loaded|-|-
+form|native|x86-64-sysv
+allowance|100000000|5000
+result|test/a.js|sloppy|Unsupported|||||
+--- output
+# reference <scratch>/bytecode-1.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 5000 ms
+#   ?
+# candidate <scratch>/native-1.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   ?
+# reading: realistic - class (c) is admitted, because a run was taken below 60000 ms; class (b) is not admitted without --exempt-guest-loads
+# 1 variants in both reports, 1 differ; 0 variant(s) present in only one report were ignored
+
+## (unclassified) a difference in no admitted class: 1 - NOT ADMITTED
+  test/a.js [sloppy]: Exhausted/WallClock -> Unsupported
+
+# 1 difference(s) in no admitted class
+exit 1
+
+### case 3: a native Fuel exhaustion against a bytecode wall-clock exhaustion, both walls 60000 ms
+$ python eng/compare-test262-forms.py <scratch>/bytecode-2.report <scratch>/native-2.report --suite <scratch>/suite
+--- bytecode report
+# broiler-js-conformance test262 report 2
+manifest|broiler.javascript.wide|2|loaded|-|-
+allowance|100000000|60000
+result|test/a.js|sloppy|Exhausted||WallClock|||
+--- native report
+# broiler-js-conformance test262 report 2
+manifest|broiler.javascript.wide|2|loaded|-|-
+form|native|x86-64-sysv
+allowance|100000000|60000
+result|test/a.js|sloppy|Exhausted||Fuel|||
+--- output
+# reference <scratch>/bytecode-2.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 60000 ms
+#   ?
+# candidate <scratch>/native-2.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 60000 ms
+#   ?
+# reading: deterministic - class (c) is not admitted, because both runs were taken at or above 60000 ms; class (b) is not admitted without --exempt-guest-loads
+# 1 variants in both reports, 1 differ; 0 variant(s) present in only one report were ignored
+
+## (unclassified) a difference in no admitted class: 1 - NOT ADMITTED
+  test/a.js [sloppy]: Exhausted/WallClock -> Exhausted/Fuel
+
+# 1 difference(s) in no admitted class
+exit 1
+
+### case 4: a native Fuel exhaustion against a bytecode wall-clock exhaustion, both walls 5000 ms
+$ python eng/compare-test262-forms.py <scratch>/bytecode-3.report <scratch>/native-3.report --suite <scratch>/suite
+--- bytecode report
+# broiler-js-conformance test262 report 2
+manifest|broiler.javascript.wide|2|loaded|-|-
+allowance|100000000|5000
+result|test/a.js|sloppy|Exhausted||WallClock|||
+--- native report
+# broiler-js-conformance test262 report 2
+manifest|broiler.javascript.wide|2|loaded|-|-
+form|native|x86-64-sysv
+allowance|100000000|5000
+result|test/a.js|sloppy|Exhausted||Fuel|||
+--- output
+# reference <scratch>/bytecode-3.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 5000 ms
+#   ?
+# candidate <scratch>/native-3.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   ?
+# reading: realistic - class (c) is admitted, because a run was taken below 60000 ms; class (b) is not admitted without --exempt-guest-loads
+# 1 variants in both reports, 1 differ; 0 variant(s) present in only one report were ignored
+
+## (c) a wall-clock exhaustion under a realistic allowance: 1 - admitted
+  test/a.js [sloppy]: Exhausted/WallClock -> Exhausted/Fuel
+
+# every difference is in an admitted class
+exit 0

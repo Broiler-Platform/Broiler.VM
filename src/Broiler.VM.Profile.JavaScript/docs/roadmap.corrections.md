@@ -9436,3 +9436,91 @@ sentence about the bundle.
 
 **Authority and date.** Bundle [JSB-11-001](evidence/jsb-11-001/README.md), retained on 2026-09-15,
 and its sections 8 and 9; the ledger's update rules 1 and 2. 2026-09-15.
+
+---
+
+### JSC-224
+
+**Where:** class (c) of `eng/compare-test262-forms.py` as commit `fd3a2aa` changed it, together with
+the comment that commit changed in `.github/workflows/broiler-vm-lane.yml` to describe the class; the
+conformance clause of
+[JSB-11](roadmap.backends.md#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference)'s
+exit gate, **which is not changed**; that stage's State bullet, in its lead sentence and in its
+sub-bullets on the two forms and on the conformance suite;
+[the ledger](roadmap.status.md#2-current-milestone-status)'s paragraph on the second native form and
+two of its item rows (the baseline form and the two-forms check); `docs/support.md`, in section 3a (its
+paragraph on the two forms beyond bytecode and the x86-64 row of its table) and in section 7; and
+bundle [JSB-11-001](evidence/jsb-11-001/README.md), in its introduction and sections 1, 2, 3, 4, 8 and
+9.
+
+**What the plan said.** The State bullet said that the bundle showed the gate's clauses "on one
+`win-x64` workstation, in the Windows convention only", that "the System V half has executed nowhere"
+and that the lane that would run its rows had not run, and that "neither workflow run nor any shard's
+job limit has been observed". The ledger said that no item was `[FULL]` because, among other things,
+"the System V convention has executed nowhere"; its baseline-form row listed "any execution under
+`x86-64-sysv`" as open, and its two-forms row listed every `x86-64-sysv` row as not run and the
+workflow runs and their shard limits as unobserved. `docs/support.md` said the bundle retained a
+collection "in the Windows convention only", and that the wide-manifest form's System V convention had
+been executed nowhere. Beside those records, the comparison script at `06e1462` admitted into class (c)
+a wall-clock exhaustion under a realistic allowance in two shapes. In the first, the native run ran out
+of wall where the bytecode run answered or exhausted another allowance; in the second, the bytecode run
+ran out of wall where the native run passed. **The second shape is not a wall-clock exhaustion in the
+native form either, so it is not a class the gate names**, and a comparison could already pass the
+script without meeting the gate. On 2026-09-15 two workflow runs of the conformance suite on that
+commit, one in each form, were compared through it, and it refused the pair. Some of their differences
+were a bytecode wall-clock exhaustion against a native fuel exhaustion, a shape it had no class for.
+
+**What changed in the script, and when.** **After that observation**, the same day, commit `fd3a2aa`
+added a third shape to class (c): the bytecode run out of wall and the native run out of another
+allowance, admitted under a realistic wall only. Under it the pair compares clean. The bundle retains
+hand-built reports run through the script at `fd3a2aa`, which show where the new shape stops. A native
+failure or refusal against a bytecode wall-clock exhaustion stays unclassified. The new shape stays
+unclassified when both runs were taken at the deterministic lane's allowance, and is admitted below it.
+The bundle also retains that, when the script finds no test262 checkout, the new shape takes in
+differences whose native side is a nested-load-byte exhaustion on a variant that loads a program, which
+class (b) would otherwise hold.
+
+**The justification recorded with the change.** A comparison of two bytecode runs, with no native run
+in it, shows the same split. It holds the workstation's whole-suite bytecode reference from main against
+the workflow's bytecode run, and variants run out of wall clock in one and out of fuel in the other, in
+exactly that shape. The script's comment argues from this that the machine, not the form, decides which
+allowance trips first in a variant that exhausts both. The bundle retains that comparison, and records
+it as an argument from one run of each and not as a demonstration.
+
+**What was not changed: the gate.** JSB-11's conformance clause says that under a wall-clock allowance
+the only additional class is a wall-clock exhaustion in the native form. It also says that any other
+difference is a defect, fixed before the clause is met rather than classified into it. **Its text was
+deliberately not amended by this change.** Widening a classification after seeing the evidence it then
+passes is exactly what that sentence forbids for the clause itself, so the script's reading is recorded
+as the script's and nothing more. **The bundle's clause readings rest on the classes the gate names,
+row by row, and not on the script's exit code at either commit.** The pair compares clean under the
+widened script. Under the gate as written, some of its differences are in no named class, so **the
+conformance clause stays not met on this evidence**. The same holds for the bundle's comparison against
+a native run at a longer wall-clock allowance, which the widened script also passes when guest loads
+are exempted: its differences are in no class the gate names, two of them because their native side is
+a nested-load-byte exhaustion rather than a fuel exhaustion.
+
+**What replaced it.** On `06e1462`, the pull-request lane's Linux job executed the System V convention
+over two subtrees, and the machine-code workflow run executed it over the whole suite; the bytecode
+workflow run, which has no calling convention, is the run it was compared with. Both workflow runs
+succeeded, and each of their shard jobs finished inside its limit. The bundle retains the workflow runs'
+identity, merge logs and merged reports, and selected lines of the lane job. So the State bullet now
+names the System V convention as executed in the machine-code workflow run and a lane job, and says
+that the System V half of the two-forms clause is not shown for its rows, because **no retained
+transcript names the two System V checks rows as passed**: that lane's transcript names no passing row.
+It names the workflow half of the conformance clause as observed and the clause as not met, because
+some differences are in no named class. The ledger drops "the System V convention has executed nowhere"
+as a reason, lists the System V checks rows named as passed as open in place of any execution under
+that convention, and names the differences the gate does not classify in place of the unobserved
+workflow runs. `docs/support.md` keeps every sentence and adds a dated note beside each, saying that
+the bundle now retains the form's System V convention executed on hosted Linux runners and that no
+runtime identifier, `linux-x64` included, is claimed. Each revised sentence carries a dated note
+pointing here or to the bundle.
+
+**What this entry does NOT do.** It accepts nothing, moves no milestone row, claims no runtime
+identifier and marks no item `[FULL]`. It amends no gate. It does not edit the script or the lane's
+comment, which stay as commit `fd3a2aa` left them. No figure from the bundle is copied into any record
+named above, and no human has read a line.
+
+**Authority and date.** Commit `fd3a2aa`; bundle [JSB-11-001](evidence/jsb-11-001/README.md) as extended
+on 2026-09-15, sections 3, 4, 8 and 9. 2026-09-15.

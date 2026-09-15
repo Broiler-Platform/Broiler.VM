@@ -1,4 +1,4 @@
-# SHA-256 of the files this bundle retains by hand, and of the raw reports three of them read or compress.
+# SHA-256 of the files this bundle retains by hand, and of the raw reports they read or compress.
 # The collector's own hashes.txt covers the tracked sources it names; these are not among them.
 dbd7f5274d0a8a90b80b428c8dad47ee36e4db2b9b40779c9dcfebda32bea7dd *aot-image-sizes.txt
 46de3e489883602a49dccad4404e144ffa3ddfc0679fc3d907d45f204b7effaa *bytecode-before-after-subtrees.log
@@ -36,3 +36,20 @@ a2d4a04751c50d237de879ae6722ca6c20f2d23edd7934649cb1cad243e4c58e *test262-byteco
 6e34ab5389d2ca0094ab35d4844dd05fa709f9104359ca61537bd6d5e0c0cae3 *forms-comparison-same-build.log
 34a34b6fec492f10a2ea13bf46096c30fd79adef8bc29affe9a686a233eb2dd6 *bytecode-merge-base-against-branch.log
 cf2dd788d7c4e1e0180e1c889d23e9f4d8a5238af1bb0036ec9125b3d9b0329b *artifacts/test262-bytecode-samebuild/test262.report (not retained; read by forms-comparison-same-build.log and bytecode-merge-base-against-branch.log)
+c44170ffb4064523d088a326aded1d6d7c6cbd5f2025026f44734c394229774c *ci-identity.txt
+a2d1222b22a542c7df6f85f5807ef0f32351a0c4f000df30b45de7dcf0922d05 *ci-merge-machinecode.log
+4b3448b6e7fa1f969980e05d45a130905e21e3368ca6241a01d07428ad28cc1b *ci-merge-bytecode.log
+67c6a0d2f8dcb3a5e0c90c3c878b38bc9e40c938ee298ed34249e45cc40177fa *ci-pr-lane-linux-x64-excerpt.log
+c3bb4650a2f8ffe92eb27940f308f4748fc1bf85fa62f2edb220c032866045b0 *forms-comparison-ci.log
+02e655255574e3087ba74ba13389fd4839815dacf6346d4841345f8369a3106d *forms-comparison-ci-06e1462-script.log
+e47116b744253b85cc942de269fc20728f13b4f8f0bd19833d9038e27faa7559 *bytecode-workstation-against-ci.log
+14cf9ff2bf036e7b38b879a14fd350449aa08c8eab8d414c083eb6021da2af98 *native-workstation-against-ci.log
+801136b9cee743c2283fbe768ec53b697db27e8128ce40da79e9e747654f086b *forms-comparison-60000-fd3a2aa-script.log
+aebc47046ec3d19b9aed02ac0d9e7ae9f7739ecab432ed9be3e95b20093cde4c *forms-comparison-60000-fd3a2aa-script-unexempted.log
+2bd080c8777cbfca749b69e94856dd203f1fccba7a0068ac366bed30a711c594 *forms-comparison-60000-fd3a2aa-script-no-suite.log
+09fdd9801b9248e7b7aa5067ff890d415492b7ce55fa96a923ed2b0e51e56e74 *forms-comparison-synthetic-shapes.log
+e03006f531bb84179537f70564d78ae26c16d9dea817db6240f768edc5fe1924 *test262-ci-machinecode.report.gz
+15d6c67d6a9c900d38902f37a6113cfa292e6ca990e06681937096de27172126 *test262-ci-bytecode.report.gz
+7d80ec7e6e226176d0151f451efa1ce810f951ccd19a0a380d7008973f22a901 *artifacts/ci-test262/machinecode/test262.report (compressed as test262-ci-machinecode.report.gz)
+350d47d40487be7ca739f973a1acd85b78d9595a6fa9fb735836811c7e4aa919 *artifacts/ci-test262/bytecode/test262.report (compressed as test262-ci-bytecode.report.gz)
+caf668e893656121655917c5754fee553cc05f153745e5a65a1b3e6a475b706e *artifacts/test262-native-wide-1/test262.report (not retained; read by forms-comparison-60000.log and the three forms-comparison-60000-fd3a2aa-script*.log)
