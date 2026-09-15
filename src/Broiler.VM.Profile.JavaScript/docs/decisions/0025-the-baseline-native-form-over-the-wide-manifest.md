@@ -317,8 +317,13 @@ reproduce.
   and names the rest as open. That bundle is not acceptance and nothing in it has been reviewed; this
   record still states no outcome figure, and what the collection showed is the bundle's to say.)*
 - **No runtime identifier.** The support table claims none for either native form and this adds none.
-  The System V convention of the baseline form is to be executed in the continuous-integration lane,
-  which retains nothing.
+  The System V convention of the baseline form has executed on hosted Linux runners, in a
+  pull-request lane job and in a machine-code workflow run, and
+  [bundle JSB-11-001](../evidence/jsb-11-001/README.md) retains what those runs printed; neither is a
+  claim for `linux-x64`, and the lane itself retains nothing. *(Corrected 2026-09-15: this bullet read
+  "The System V convention of the baseline form is to be executed in the continuous-integration lane,
+  which retains nothing", written before either run existed:
+  [JSC-224](../roadmap.corrections.md#jsc-224).)*
 - **No proof of handler placement.** The scan proves every call lands in the table; the wrapper's
   checks catch a misplaced handler at run time; nothing proves at verification that the right handler
   is at the right offset.
