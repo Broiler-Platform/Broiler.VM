@@ -23,7 +23,7 @@
 #       nested-load byte count are spent at a different point. This class is admitted only with
 #       `--exempt-guest-loads`, because it is an exemption and a caller should have to ask for it.
 #   (c) a wall-clock exhaustion, admitted only when the two runs were not both taken at the
-#       deterministic lane's allowance of 60,000 ms or more, and only in two shapes:
+#       deterministic lane's allowance of 60,000 ms or more, and only in three shapes:
 #         - the NATIVE run exhausted the wall where the bytecode run passed, failed, or exhausted
 #           another allowance. Each native instruction costs more wall time, so a realistic wall
 #           bites the native run first, and the native run gave no answer to disagree with.
@@ -31,7 +31,13 @@
 #           was taken at a shorter wall than the native run, that exhaustion is a statement about
 #           the shorter wall. A native failure, refusal or defect against it is NOT admitted, since
 #           it can be a wrong answer only the native form gives.
-#       Under the deterministic lane neither is admitted, because at sixty seconds a wall-clock
+#         - the BYTECODE run exhausted the wall and the native run exhausted ANOTHER allowance.
+#           Neither run gave an answer, and which allowance trips first is a race between the wall
+#           clock and a counter that the machine decides: two BYTECODE runs of one checkout on two
+#           machines split the same variants between `WallClock` and `Fuel` (added 2026-09-15, after
+#           the first CI pair of the two forms showed it and a bytecode-against-bytecode comparison
+#           across a workstation and a hosted runner showed the same split with no native run at all).
+#       Under the deterministic lane none is admitted, because at sixty seconds a wall-clock
 #       exhaustion is not noise.
 #
 # Anything else - a pass that became a failure, a failure that became a pass, a refusal to
@@ -196,6 +202,13 @@ def classify(reference, candidate, loads, exempt, realistic):
         # The bytecode run ran out of its (shorter) wall and the native run passed. A native FAILURE
         # against a bytecode wall exhaustion is not admitted: it may be a wrong answer only the
         # native form gives, and nothing in this report can say otherwise.
+        return "c"
+
+    if realistic and is_wall(reference) and candidate.verdict == "Exhausted" and not is_wall(candidate):
+        # Both runs ran out of an allowance and neither answered; the bytecode run's wall tripped
+        # before its counters did and the native run's counter tripped before its wall. That order
+        # is the machine's, not the form's - two bytecode runs on two machines split the same way -
+        # and it is the mirror of the first shape above.
         return "c"
 
     return "unclassified"

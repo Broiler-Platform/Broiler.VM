@@ -578,11 +578,13 @@ jobs:
       # `form|native` before the comparison means anything. eng/compare-test262-forms.py then holds
       # every per-variant difference from the bytecode run above to the named classes: a code-size
       # refusal, fuel spent differently on a guest-loading variant, and a wall-clock exhaustion that
-      # left one side without an answer - native out of wall where bytecode answered, or bytecode
-      # out of wall where native passed. The third is admitted because the bytecode run above is
-      # taken at the driver's five-second wall and this one at sixty, so the two walls are not one
-      # question; a native failure against a bytecode wall exhaustion is still a defect. The script
-      # reads both allowances off the reports and says which reading it applied.
+      # left one side without an answer - native out of wall where bytecode answered, bytecode out
+      # of wall where native passed, or bytecode out of wall where native ran out of another
+      # allowance. The third is admitted because the bytecode run above is taken at the driver's
+      # five-second wall and this one at sixty, so the two walls are not one question, and because
+      # which allowance trips first in a variant that exhausts both ways is the runner's to decide;
+      # a native failure against a bytecode wall exhaustion is still a defect. The script reads both
+      # allowances off the reports and says which reading it applied.
       - name: Score two of those subtrees in the native form and compare the two forms
         if: matrix.rid == 'linux-x64' || matrix.rid == 'win-x64'
         shell: bash
