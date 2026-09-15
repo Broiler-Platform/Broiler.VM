@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   7
-// Annotated:        7/7
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           2
-// Human-reviewed:   0/7
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         6/6
+// Criteria:         8/8
 // Resource impact:  1/10 max
-// Unverified:       7
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -209,7 +209,7 @@ public sealed record JsX64Abi(
     /// property a row could omit would default to RAX, and the emitter would then write a prologue and
     /// a head that are not the table's templates - refused by the scan, but only after a compile.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=5EE4FB
     // Broiler-Falsified-If: this names a register other than the one the row's convention passes its second integer argument in
     // Broiler-Human:        PENDING
     public JsX64Register SecondArgumentRegister =>
@@ -227,7 +227,7 @@ public sealed record JsX64Abi(
     /// reserve. Forty under Windows x64 and eight under System V - the format's
     /// <c>JsBaselineAbi.FrameBytes</c> states the same two numbers, and a lane row compares them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=9E74A2
     // Broiler-Falsified-If: a baseline unit calls a handler with the stack pointer not sixteen-aligned, or with less shadow space below it than the convention requires
     // Broiler-Human:        PENDING
     public int BaselineFrameBytes => ShadowSpaceBytes + 8;

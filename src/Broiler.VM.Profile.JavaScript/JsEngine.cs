@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   131
-// Annotated:        131/131
-// Exempt:           16
-// Human-reviewed:   0/131
+// Relevant units:   136
+// Annotated:        136/136
+// Exempt:           21
+// Human-reviewed:   0/136
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         29/29
+// Criteria:         37/37
 // Resource impact:  7/10 max
-// Unverified:       131
+// Unverified:       136
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -37,7 +37,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// proportionally, so a program cannot buy unbounded work with one instruction.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3E740C
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=7BBE7E
 // Broiler-Human:        PENDING
 internal sealed partial class JsEngine
 {
@@ -78,13 +78,13 @@ internal sealed partial class JsEngine
     /// It is checked three times - at instantiation, at every nested load, and on every entry into
     /// the dispatch loop - because each check is one comparison and each catches a different route.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=05B362
     // Broiler-Falsified-If: an engine built for one form runs a program of the other form
     // Broiler-Human:        PENDING
     private readonly bool nativeForm;
 
     /// <summary>Creates an engine over a fresh realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=EFBE54
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=67C431
     // Broiler-Human:        PENDING
     internal JsEngine(
         IVmMeter contractMeter,
@@ -325,7 +325,7 @@ internal sealed partial class JsEngine
     /// not a defect to be discovered later.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=AF4B33
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=EA0B7E
     // Broiler-Falsified-If: guest source becomes executable bytes without passing through the mediator
     // Broiler-Human:        PENDING
     internal JsValue Evaluate(JsValue[] arguments, bool direct, Format.JsFormat.FunctionFlags callerFlags)
@@ -3474,7 +3474,7 @@ internal sealed partial class JsEngine
     /// this realm has already instanced, so an artifact that arrives carrying a module the realm
     /// has is a second VIEW of that module and not a second copy of it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=0713ED
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=CEFB56
     // Broiler-Falsified-If: one module key is evaluated twice in one realm
     // Broiler-Human:        PENDING
     private (JsProgram Program, int Index) ImportedModule(
@@ -4530,7 +4530,7 @@ internal sealed partial class JsEngine
     /// native-only branch the importer removes; the native arm is a call that is never inlined.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=1E35A3
     // Broiler-Falsified-If: a program whose form differs from the engine's reaches ExecuteCore or emitted code
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -4600,7 +4600,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=C7D1E7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=972A12
     // Broiler-Falsified-If: an instantiation over a step mode runs more or fewer than one charged instruction per call, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -7348,38 +7348,38 @@ internal sealed partial class JsEngine
 /// the modes that read the opcode from the code answer <c>default</c> and never have it asked.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7F0A56
 // Broiler-Falsified-If: a mode's opcode is read by the dispatch loop for a mode that reads its opcode from the code
 // Broiler-Human:        PENDING
 internal interface IJsExecutionMode
 {
     /// <summary>The instruction a per-opcode step runs; <c>default</c> for every other mode.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A70DF0
     // Broiler-Falsified-If: a per-opcode step answers an opcode other than the one its handler was installed for
     // Broiler-Human:        PENDING
     static abstract JsOpcode Opcode { get; }
 }
 
 /// <summary>The interpreter: the whole loop, from entry to return or suspension.</summary>
-// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7881B9
 // Broiler-Falsified-If: the loop instantiated over this mode stops before a return, a suspension or an escaping exception
 // Broiler-Human:        PENDING
 internal readonly struct JsInterpreted : IJsExecutionMode
 {
     /// <summary>Never asked: the interpreter reads each opcode from the code.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=AA45B6
     // Broiler-Human:        PENDING
     public static JsOpcode Opcode => default;
 }
 
 /// <summary>The baseline form's entry: the prologue, an abrupt resumption's raise and landing, and nothing more.</summary>
-// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=9020C2
 // Broiler-Falsified-If: the loop instantiated over this mode charges for or runs an instruction
 // Broiler-Human:        PENDING
 internal readonly struct JsNativeEntry : IJsExecutionMode
 {
     /// <summary>Never asked: the entry runs no instruction.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=AA45B6
     // Broiler-Human:        PENDING
     public static JsOpcode Opcode => default;
 }
@@ -7390,13 +7390,13 @@ internal readonly struct JsNativeEntry : IJsExecutionMode
 /// property.</b> Every handler can run through this one instantiation instead, with the same checks
 /// and the same semantics, if compiling one step per opcode costs more than it saves.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6071DF
 // Broiler-Falsified-If: the loop instantiated over this mode runs more or fewer than one charged instruction per call
 // Broiler-Human:        PENDING
 internal readonly struct JsStepAny : IJsExecutionMode
 {
     /// <summary>Never asked: this step reads its opcode from the code.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=AA45B6
     // Broiler-Human:        PENDING
     public static JsOpcode Opcode => default;
 }

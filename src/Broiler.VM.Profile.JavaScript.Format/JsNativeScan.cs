@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           13
-// Human-reviewed:   0/13
+// Relevant units:   16
+// Annotated:        16/16
+// Exempt:           15
+// Human-reviewed:   0/16
 // IP risk:          Low
-// Security risk:    High
-// Criteria:         2/2
+// Security risk:    Critical
+// Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       13
+// Unverified:       16
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -35,7 +35,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// that names one. Every other member is reached by bytes somebody could hand this build, and the
 /// composition lane beside the backends has a row for each.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2D2D92
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=294341
 // Broiler-Human:        PENDING
 public enum JsNativeScanOutcome
 {
@@ -183,7 +183,7 @@ public static class JsNativeScan
     /// never wrote, and no framing check has ever been able to see it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E9805F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=885F63
     // Broiler-Falsified-If: a byte sequence no backend of this build can emit is accepted, or a sequence one of them emits is refused
     // Broiler-Human:        PENDING
     public static JsNativeScanResult Scan(
@@ -222,7 +222,7 @@ public static class JsNativeScan
     /// defect rather than any JavaScript value.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=DCCED6
     // Broiler-Falsified-If: a baseline x86-64 payload is accepted whose unit writes RBX or RSP outside one prologue and one epilogue, branches into either sequence, or makes an indirect call other than through the handler table at a defined opcode's slot
     // Broiler-Human:        PENDING
     public static JsNativeScanResult Scan(
@@ -325,7 +325,7 @@ public static class JsNativeScan
     /// unit has exactly one return - which restores all three to what the caller left.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=50C955
     // Broiler-Falsified-If: a baseline unit is accepted whose instantiations do not open with exactly the prologue, close with exactly the epilogue, or carry a prologue or epilogue template elsewhere
     // Broiler-Human:        PENDING
     private static JsNativeScanResult FrameShape(
@@ -418,7 +418,7 @@ public static class JsNativeScan
     /// registers the unit never pushed and return with the stack pointer where the caller did not
     /// leave it. The first instruction of the epilogue is where every exit is meant to land.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=6A1345
     // Broiler-Falsified-If: a baseline payload is accepted with a branch whose target is a prologue instruction, a pop or a return
     // Broiler-Human:        PENDING
     private static JsNativeScanResult FrameTargets(
@@ -459,7 +459,7 @@ public static class JsNativeScan
     /// the middle of a unit, where the encoder never writes one and where a decoder that met one
     /// would be re-synchronising against bytes nobody emitted.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DBDB40
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=ACBBC0
     // Broiler-Human:        PENDING
     private static JsNativeScanResult Decode(
         JsNativeArchitecture architecture,
@@ -585,7 +585,7 @@ public static class JsNativeScan
     /// spell and its backends never ask for - a load from four gigabytes past the frame, say. The
     /// first is a forgery or a truncation; the second is the one a wrong producer would write.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=06D2FF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B692D2
     // Broiler-Human:        PENDING
     private static (JsNativeScanResult Result, JsNativeTemplate? Template, int Index) Match(
         JsNativeTemplate[] templates, byte[] code, uint at, uint limit, int unit)

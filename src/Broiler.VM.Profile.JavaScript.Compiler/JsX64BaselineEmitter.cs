@@ -1,5 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Broiler Platform contributors
 // SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   6
+// Annotated:        6/6
+// Exempt:           0
+// Human-reviewed:   0/6
+// IP risk:          None
+// Security risk:    Critical
+// Criteria:         4/4
+// Resource impact:  3/10 max
+// Unverified:       6
+//
+// GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.VM.Profile.JavaScript.Format;
 
@@ -41,13 +55,13 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// verifier's re-emission of an artifact's own bytecode reproduces the payload byte for byte.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=4CA3A6
 // Broiler-Falsified-If: an emitted unit transfers control to a handler other than the one for the opcode at the program counter it passes, lands on an offset the managed side did not answer, or emits different bytes for the same image
 // Broiler-Human:        PENDING
 internal static class JsX64BaselineEmitter
 {
     /// <summary>What an artifact whose baseline form would not fit the format's ceiling is told.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=25B021
     // Broiler-Human:        PENDING
     internal const string CeilingRefusal =
         "the baseline form's emitted code would exceed the format's native-code ceiling";
@@ -57,7 +71,7 @@ internal static class JsX64BaselineEmitter
     /// <b>Four, because a chain of four costs about what one more level of the tree would</b>, and
     /// a unit with no suspension and no handler has a single landing, its entry.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=0B88FA
     // Broiler-Human:        PENDING
     private const int LeafLandings = 4;
 
@@ -71,7 +85,7 @@ internal static class JsX64BaselineEmitter
     /// bytes of machine code per bytecode byte, and an artifact past the format's native-code ceiling
     /// is refused whole rather than emitted in part.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=2FA82F
     // Broiler-Falsified-If: an emission is produced in which some code unit has no entry point, some instruction has no handler call, or the bytes exceed the format's native-code ceiling
     // Broiler-Human:        PENDING
     internal static bool TryEmit(
@@ -141,7 +155,7 @@ internal static class JsX64BaselineEmitter
     /// dispatch. No opcode is named here except the four that define landings.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=9C8358
     // Broiler-Falsified-If: a unit's block for an instruction calls a slot other than eight times that instruction's opcode, passes a program counter other than that instruction's offset, or a branch site is left unpatched
     // Broiler-Human:        PENDING
     private static bool EmitUnit(
@@ -341,7 +355,7 @@ internal static class JsX64BaselineEmitter
     /// a non-negative offset and <c>ja</c> orders it correctly. A chain ends in the defect, so an
     /// offset the unit has no landing for never falls into whatever block happens to follow.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=CB5D94
     // Broiler-Falsified-If: an offset in the landing set is dispatched anywhere but its own instruction's block, or an offset outside it anywhere but the defect block
     // Broiler-Human:        PENDING
     private static void Tree(

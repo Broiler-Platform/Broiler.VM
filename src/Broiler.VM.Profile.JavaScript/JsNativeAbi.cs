@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   3
-// Annotated:        3/3
+// Relevant units:   4
+// Annotated:        4/4
 // Exempt:           0
-// Human-reviewed:   0/3
+// Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         3/3
+// Criteria:         4/4
 // Resource impact:  5/10 max
-// Unverified:       3
+// Unverified:       4
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -202,7 +202,7 @@ public static unsafe class JsNativeAbi
     /// that loads the entry program counter a unit takes as its second argument.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=1F95D2
     // Broiler-Falsified-If: this records a handler stack pointer the stub did not write, sends a slot anywhere but the stub, or returns without releasing the mapping
     // Broiler-Human:        PENDING
     public static JsNativeAbiObservation RunBaseline(

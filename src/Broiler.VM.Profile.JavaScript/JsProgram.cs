@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   16
 // Annotated:        16/16
-// Exempt:           34
+// Exempt:           35
 // Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         0/0
+// Criteria:         1/1
 // Resource impact:  2/10 max
 // Unverified:       16
 //
@@ -327,7 +327,7 @@ internal sealed class JsProgram : IVmVerifiedState
     /// program of the numeric manifest never sets this, because its instance owns its own mapping.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=F05E06
     // Broiler-Falsified-If: this is written more than once for one program, or holds a mapping that is not armed
     // Broiler-Human:        PENDING
     internal JsNativePage? NativePage;

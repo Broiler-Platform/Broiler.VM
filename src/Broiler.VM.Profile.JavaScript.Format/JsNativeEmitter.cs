@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   17
 // Annotated:        17/17
-// Exempt:           9
+// Exempt:           11
 // Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         4/4
+// Criteria:         5/5
 // Resource impact:  1/10 max
 // Unverified:       17
 //
@@ -127,7 +127,7 @@ public static class JsNativeValues
 /// reads an entry this array says false for, rather than substituting a value for it.
 /// </param>
 /// <param name="MaximumOperandStack">The deepest operand stack any unit declares.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E64DAB
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DD805A
 // Broiler-Human:        PENDING
 public sealed record JsNativeProgramImage(
     byte[] Code,
@@ -145,7 +145,7 @@ public sealed record JsNativeProgramImage(
     /// and equality would fail for a correct artifact. It defaults to the numeric form, so every
     /// image built before the baseline form existed means what it meant.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6AB00A
     // Broiler-Falsified-If: the compiler and the verifier build images of one artifact with different tiers
     // Broiler-Human:        PENDING
     public JsNativeTier Tier { get; init; }
@@ -158,7 +158,7 @@ public sealed record JsNativeProgramImage(
     /// compare tree names. The numeric form admits no region and reads none, which is why the
     /// default is empty rather than absent.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6CF892
     // Broiler-Human:        PENDING
     public JsExceptionRegionRow[] Regions { get; init; } = [];
 }

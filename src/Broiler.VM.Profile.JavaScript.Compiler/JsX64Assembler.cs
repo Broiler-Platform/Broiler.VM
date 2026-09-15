@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   53
-// Annotated:        53/53
-// Exempt:           26
-// Human-reviewed:   0/53
+// Relevant units:   65
+// Annotated:        65/65
+// Exempt:           30
+// Human-reviewed:   0/65
 // IP risk:          Low
-// Security risk:    High
-// Criteria:         13/13
+// Security risk:    Critical
+// Criteria:         20/20
 // Resource impact:  2/10 max
-// Unverified:       53
+// Unverified:       65
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -816,7 +816,7 @@ public sealed class JsX64Assembler
     /// eight - so there is no later edit that can grow it past the byte without changing the
     /// convention table first.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0247BA
     // Broiler-Falsified-If: this emits bytes other than 48 83 EC followed by the immediate
     // Broiler-Human:        PENDING
     public void SubRspImm8(sbyte value)
@@ -828,7 +828,7 @@ public sealed class JsX64Assembler
     }
 
     /// <summary><c>add rsp, imm8</c>: <c>REX.W 83 /0 ib</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C87914
     // Broiler-Falsified-If: this emits bytes other than 48 83 C4 followed by the immediate
     // Broiler-Human:        PENDING
     public void AddRspImm8(sbyte value)
@@ -847,7 +847,7 @@ public sealed class JsX64Assembler
     /// would have to know that RBP, RSP, R12 and R13 cannot be spelled that way, which this one
     /// never asks.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=97690A
     // Broiler-Falsified-If: this emits bytes other than 49 8B 1E
     // Broiler-Human:        PENDING
     public void MovRbxFromR14()
@@ -858,7 +858,7 @@ public sealed class JsX64Assembler
     }
 
     /// <summary><c>mov eax, r32</c>: <c>89 /r</c>, from the register a second argument arrives in.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=497634
     // Broiler-Human:        PENDING
     public void MovEaxFromArgument1(JsX64Register argument)
     {
@@ -868,7 +868,7 @@ public sealed class JsX64Assembler
     }
 
     /// <summary><c>mov r32, imm32</c>: <c>B8+r id</c>, into the register a second argument travels in.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=2904BE
     // Broiler-Human:        PENDING
     public void MovArgument1Imm32(JsX64Register argument, int value)
     {
@@ -878,7 +878,7 @@ public sealed class JsX64Assembler
     }
 
     /// <summary><c>mov eax, imm32</c>: <c>B8 id</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=3F5EAC
     // Broiler-Human:        PENDING
     public void MovEaxImm32(int value)
     {
@@ -887,7 +887,7 @@ public sealed class JsX64Assembler
     }
 
     /// <summary><c>cmp eax, imm32</c>: <c>3D id</c>, the short form the accumulator has.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C5B70A
     // Broiler-Human:        PENDING
     public void CmpEaxImm32(int value)
     {
@@ -903,7 +903,7 @@ public sealed class JsX64Assembler
     /// times a defined opcode, and nothing else in that table can write RBX or any memory. A general
     /// indirect call would be a door the scan could not close, so there is none.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=94AF39
     // Broiler-Falsified-If: this emits an indirect call through any base other than RBX, or bytes other than FF 93 followed by the displacement
     // Broiler-Human:        PENDING
     public void CallRbxDisp32(int displacement)
@@ -923,7 +923,7 @@ public sealed class JsX64Assembler
     /// array of bound positions and one list of sites, and asks for the site here; what it owes in
     /// return is that every site it was handed is patched before it takes the bytes, which it checks.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D48702
     // Broiler-Falsified-If: this emits a short conditional form, or answers a site that is not the first byte of the four-byte displacement
     // Broiler-Human:        PENDING
     public int JccRel32(JsX64JumpCondition condition)
@@ -936,7 +936,7 @@ public sealed class JsX64Assembler
     }
 
     /// <summary><c>jmp rel32</c> with its displacement left zero, answering the site the caller patches.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=ED0ED4
     // Broiler-Falsified-If: this emits the two-byte EB form, or answers a site that is not the first byte of the displacement
     // Broiler-Human:        PENDING
     public int JmpRel32()
@@ -948,7 +948,7 @@ public sealed class JsX64Assembler
     }
 
     /// <summary>Patches a rel32 site so the branch lands on <paramref name="target"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B3F5EE
     // Broiler-Falsified-If: the patched displacement is not the distance from the end of the branch instruction to the target
     // Broiler-Human:        PENDING
     public void PatchRel32(int site, int target) => Patch(site, target - (site + 4));
@@ -960,7 +960,7 @@ public sealed class JsX64Assembler
 /// that one names exactly the conditions the numeric form's template field admits, and a member added
 /// there would be spelled by the encoder and refused by the table.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4048E9
 // Broiler-Human:        PENDING
 public enum JsX64JumpCondition
 {

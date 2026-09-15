@@ -245,7 +245,7 @@ internal sealed class JsInstance : IVmInstanceState
 internal static class JsExecution
 {
     /// <summary>Builds an instance and its realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D665D1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9AA3F1
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Instantiate(
         JsProgram program,

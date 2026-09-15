@@ -198,7 +198,7 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
     /// decoded. Two decoders would be two chances to disagree, and re-emission equality is exactly
     /// a test of whether the two projections agree.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F67D3E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D97A3D
     // Broiler-Human:        PENDING
     public bool TryEmit(JsAssembledProgram program, out JsNativeEmission emission, out string refusal)
     {
@@ -287,7 +287,7 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
     /// and those no" would be making the per-unit choice that paragraph refuses, so the only two
     /// answers here are every unit and none.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=86EFA0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=8C91FD
     // Broiler-Falsified-If: an emission is produced in which some code unit has no emitted entry point
     // Broiler-Human:        PENDING
     public bool TryEmit(

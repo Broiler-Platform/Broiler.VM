@@ -991,7 +991,7 @@ public sealed class JsCompiler
     /// names a construct rather than a stage.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=97B265
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5AAE40
     // Broiler-Human:        PENDING
     private JsNativeEmission? Emit(JsAssembledProgram assembled)
     {

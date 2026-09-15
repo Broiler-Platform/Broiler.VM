@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   32
-// Annotated:        32/32
-// Exempt:           19
-// Human-reviewed:   0/32
+// Relevant units:   39
+// Annotated:        39/39
+// Exempt:           22
+// Human-reviewed:   0/39
 // IP risk:          Low
-// Security risk:    High
-// Criteria:         2/2
+// Security risk:    Critical
+// Criteria:         7/7
 // Resource impact:  3/10 max
-// Unverified:       32
+// Unverified:       39
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -32,7 +32,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// know why a value is admitted is directed at the backend that emits it rather than at a range.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B5D437
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9D0532
 // Broiler-Human:        PENDING
 public enum JsNativeFieldKind
 {
@@ -377,7 +377,7 @@ public static class JsNativeTemplates
     /// no host arms arm64.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=2CC6D8
     // Broiler-Falsified-If: a numeric payload is judged against any table other than the one For(architecture) answers, or a baseline x86-64 payload against a table that admits a template the baseline emitter does not write
     // Broiler-Human:        PENDING
     public static JsNativeTemplate[] For(JsNativeArchitecture architecture, JsNativeTier tier) =>
@@ -398,19 +398,19 @@ public static class JsNativeTemplates
     /// <b>Identity and not contents</b>, because the clauses index the table by position: the first
     /// six entries are the prologue in order, and the last four are the epilogue in order.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8C4B1E
     // Broiler-Falsified-If: a baseline x86-64 table is scanned without the frame-shape clauses
     // Broiler-Human:        PENDING
     internal static bool IsX64Baseline(JsNativeTemplate[] table) =>
         ReferenceEquals(table, windowsBaseline) || ReferenceEquals(table, systemVBaseline);
 
     /// <summary>How many templates open a baseline table, in prologue order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=42DDC5
     // Broiler-Human:        PENDING
     internal const int X64BaselinePrologue = 6;
 
     /// <summary>How many templates close a baseline table, in epilogue order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9CAFB1
     // Broiler-Human:        PENDING
     internal const int X64BaselineEpilogue = 4;
 
@@ -423,7 +423,7 @@ public static class JsNativeTemplates
     /// sets is a value no backend of this build could have written, whatever the architecture would
     /// make of it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=CEE484
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F6FEC3
     // Broiler-Falsified-If: a value no backend of this build asks an encoder for is admitted by one of these arms
     // Broiler-Human:        PENDING
     public static bool Admits(JsNativeFieldKind kind, long value) => kind switch
@@ -747,14 +747,14 @@ public static class JsNativeTemplates
     // ---- the x86-64 baseline tables ------------------------------------------------------------
 
     /// <summary>The baseline table for x86-64 under the Windows x64 convention.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=86A9C7
     // Broiler-Falsified-If: an entry of this table differs from the bytes the baseline emitter writes for Windows x64
     // Broiler-Human:        PENDING
     private static readonly JsNativeTemplate[] windowsBaseline =
         X64Baseline(JsNativeArchitecture.X64Windows);
 
     /// <summary>The baseline table for x86-64 under the System V AMD64 convention.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=10255D
     // Broiler-Falsified-If: an entry of this table differs from the bytes the baseline emitter writes for System V
     // Broiler-Human:        PENDING
     private static readonly JsNativeTemplate[] systemVBaseline =
@@ -787,7 +787,7 @@ public static class JsNativeTemplates
     /// what lets a lane row decode one program's two images and compare the name sequences.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=4BCDE9
     // Broiler-Falsified-If: a template here admits an indirect transfer other than the handler-table call, a memory write, or a byte sequence the baseline emitter does not write
     // Broiler-Human:        PENDING
     private static JsNativeTemplate[] X64Baseline(JsNativeArchitecture architecture)

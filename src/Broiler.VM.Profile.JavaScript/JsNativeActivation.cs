@@ -1,5 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Broiler Platform contributors
 // SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   4
+// Annotated:        4/4
+// Exempt:           22
+// Human-reviewed:   0/4
+// IP risk:          None
+// Security risk:    Critical
+// Criteria:         14/14
+// Resource impact:  5/10 max
+// Unverified:       4
+//
+// GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.VM.Profile.JavaScript.Format;
 
@@ -33,7 +47,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// slot, and no other composition's code can observe it.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=7BCAA8
 // Broiler-Falsified-If: a handler reaches an activation other than the one whose emitted frame is innermost on its thread, or an object a handler touches is reachable only from an emitted frame
 // Broiler-Human:        PENDING
 internal sealed unsafe class JsNativeActivation
@@ -44,20 +58,20 @@ internal sealed unsafe class JsNativeActivation
     /// activation was built for that activation and for no earlier one that happened to occupy the
     /// same thread slot.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2F3773
     // Broiler-Falsified-If: two activations are ever given the same cookie
     // Broiler-Human:        PENDING
     private static long cookies;
 
     /// <summary>The activation whose emitted code is innermost on this thread, or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=4421A1
     // Broiler-Falsified-If: this names an activation while no emitted code of that activation is on this thread's stack
     // Broiler-Human:        PENDING
     [System.ThreadStatic]
     private static JsNativeActivation? current;
 
     /// <summary>Creates the activation for one entry into a unit.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=3F3C6C
     // Broiler-Falsified-If: an activation is created with a cookie another activation already holds, or with entry values other than the ones the dispatch loop was called with
     // Broiler-Human:        PENDING
     internal JsNativeActivation(
@@ -87,64 +101,64 @@ internal sealed unsafe class JsNativeActivation
     }
 
     /// <summary>The engine, and so the realm, the unit runs in.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=86B4E1
     // Broiler-Human:        PENDING
     internal readonly JsEngine Engine;
 
     /// <summary>The verified program the unit belongs to.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=265750
     // Broiler-Human:        PENDING
     internal readonly JsProgram Program;
 
     /// <summary>Which unit of <see cref="Program"/> is running.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=33D420
     // Broiler-Human:        PENDING
     internal readonly int UnitIndex;
 
     /// <summary>The program's code, which a handler reads its expected opcode from.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=975847
     // Broiler-Falsified-If: this is any array other than the program's own code section
     // Broiler-Human:        PENDING
     internal readonly byte[] Code;
 
     /// <summary>The identity a frame must carry for a handler to act on this activation.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=73BB14
     // Broiler-Falsified-If: a handler acts on this activation for a frame whose cookie differs
     // Broiler-Human:        PENDING
     internal readonly long Cookie;
 
     /// <summary>The environment the unit was entered with.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=081A05
     // Broiler-Human:        PENDING
     internal readonly JsEnvironment? Environment;
 
     /// <summary>The receiver the unit was entered with.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C3E680
     // Broiler-Human:        PENDING
     internal readonly JsValue ThisValue;
 
     /// <summary>The actual arguments the unit was entered with.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A48201
     // Broiler-Human:        PENDING
     internal readonly JsValue[] Arguments;
 
     /// <summary>The closure being run, or nothing for a program body.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=F9A1B5
     // Broiler-Human:        PENDING
     internal readonly JsScriptFunction? Self;
 
     /// <summary>The <c>new.target</c> the unit was entered with.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6546DB
     // Broiler-Human:        PENDING
     internal readonly JsValue NewTarget;
 
     /// <summary>The box a construction holds its <c>this</c> in, or nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=51EA57
     // Broiler-Human:        PENDING
     internal readonly JsCell? ThisBinding;
 
     /// <summary>The heap frame of a generator or async body, or nothing for an ordinary call.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7F5E13
     // Broiler-Human:        PENDING
     internal readonly JsFrame? Frame;
 
@@ -154,48 +168,48 @@ internal sealed unsafe class JsNativeActivation
     /// instruction it runs</b>, and they are written by the dispatch loop's entry and step boundary
     /// only.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=5C6FE1
     // Broiler-Falsified-If: a step runs over a stack other than the one the entry built or borrowed from the frame
     // Broiler-Human:        PENDING
     internal JsValue[] Stack = [];
 
     /// <summary>The scope chain, set by the entry and shared by every step.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=0E6121
     // Broiler-Falsified-If: a step runs over a scope list other than the one the entry built or borrowed from the frame
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.List<JsEnvironment> Scopes = null!;
 
     /// <summary>The operand stack height at the step boundary.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1FED1E
     // Broiler-Falsified-If: a step starts at a height other than the one the previous step or the entry stopped at
     // Broiler-Human:        PENDING
     internal int Sp;
 
     /// <summary>The instruction the next step must be asked for.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=4E6E02
     // Broiler-Falsified-If: a handler runs an instruction at any offset other than this one
     // Broiler-Human:        PENDING
     internal int Pc;
 
     /// <summary>Whether the unit has left through a return or a suspension.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=05335F
     // Broiler-Falsified-If: a handler runs an instruction after the activation exited
     // Broiler-Human:        PENDING
     internal bool Exited;
 
     /// <summary>What the unit returned or suspended with.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=9AE3E3
     // Broiler-Human:        PENDING
     internal JsValue Result;
 
     /// <summary>The exception a step caught at the wrapper, for the entering frame to raise.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=AE8477
     // Broiler-Falsified-If: an exception a step caught is dropped rather than raised by the managed frame that entered the emitted code
     // Broiler-Human:        PENDING
     internal System.Exception? Pending;
 
     /// <summary>The activation whose emitted code is innermost on this thread.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=859662
     // Broiler-Falsified-If: this is written anywhere but around the one call that enters emitted code, or is not restored when that call returns
     // Broiler-Human:        PENDING
     internal static JsNativeActivation? Current
@@ -210,7 +224,7 @@ internal sealed unsafe class JsNativeActivation
     /// answer travels.</b> The value stays here, on the managed side, and the handler answers only
     /// the status that tells the emitted code to leave.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E56FC1
     // Broiler-Human:        PENDING
     internal JsValue Exit(JsValue value)
     {
@@ -243,7 +257,7 @@ internal sealed unsafe class JsNativeActivation
     /// activations the way a rethrow per frame would.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=EAD7FE
     // Broiler-Falsified-If: an instruction runs whose offset, opcode or activation differs from what the managed side computed, or an exception escapes into emitted code
     // Broiler-Human:        PENDING
     internal static int Step<TMode>(JsBaselineFrame* frame, int pc, JsOpcode expected)

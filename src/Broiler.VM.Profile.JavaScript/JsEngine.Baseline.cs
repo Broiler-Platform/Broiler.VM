@@ -1,5 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Broiler Platform contributors
 // SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   4
+// Annotated:        4/4
+// Exempt:           0
+// Human-reviewed:   0/4
+// IP risk:          None
+// Security risk:    Critical
+// Criteria:         4/4
+// Resource impact:  5/10 max
+// Unverified:       4
+//
+// GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.VM.Profile.JavaScript.Format;
 
@@ -15,7 +29,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// auditing where emitted code is entered has to read, kept apart from the seven thousand lines of
 /// semantics it shares.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=7BBE7E
 // Broiler-Falsified-If: emitted code is entered from anywhere but this file
 // Broiler-Human:        PENDING
 internal sealed partial class JsEngine
@@ -41,7 +55,7 @@ internal sealed partial class JsEngine
     /// and no guest can observe the trace.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=8C7329
     // Broiler-Falsified-If: emitted code runs while its activation or its page is unreachable from a managed root, or this answers a value for a status other than exit
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -114,7 +128,7 @@ internal sealed partial class JsEngine
     /// never seen with two pages and a published page is never replaced.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=D236B5
     // Broiler-Falsified-If: a page this returns is not armed, or a program's published page is replaced or released while the program is reachable
     // Broiler-Human:        PENDING
     internal JsNativePage? NativePageOf(JsProgram program)
@@ -160,7 +174,7 @@ internal sealed partial class JsEngine
     /// defect rather than a language error. The page is mapped here as well, so a program that
     /// cannot be mapped is refused where it was loaded rather than at its first call.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=08A11D
     // Broiler-Falsified-If: a guest-loaded program of the other form, of another architecture, or of the numeric manifest runs in a baseline instance
     // Broiler-Human:        PENDING
     private void RequireInstanceForm(JsProgram loaded)

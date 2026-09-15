@@ -262,7 +262,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     public VmProfileId ProfileId { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D2A502
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=1A8791
     // Broiler-Falsified-If: a handle this profile did not verify produces an instance
     // Broiler-Human:        PENDING
     public VmExecutionStep Instantiate(

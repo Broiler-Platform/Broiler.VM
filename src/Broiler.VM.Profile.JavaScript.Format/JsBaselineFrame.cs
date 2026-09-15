@@ -1,5 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Broiler Platform contributors
 // SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   9
+// Annotated:        9/9
+// Exempt:           7
+// Human-reviewed:   0/9
+// IP risk:          None
+// Security risk:    Critical
+// Criteria:         8/8
+// Resource impact:  0/10 max
+// Unverified:       9
+//
+// GENERATED - DO NOT EDIT MANUALLY
 
 namespace Broiler.VM.Profile.JavaScript.Format;
 
@@ -20,7 +34,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// never is.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=2E4C4B
 // Broiler-Human:        PENDING
 public enum JsNativeTier : byte
 {
@@ -50,7 +64,7 @@ public enum JsNativeTier : byte
 /// JavaScript answer.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=B08268
 // Broiler-Falsified-If: a handler or unit answers a negative value other than these three, or a non-negative value that is not the offset of an instruction start
 // Broiler-Human:        PENDING
 public enum JsBaselineStatus
@@ -92,7 +106,7 @@ public enum JsBaselineStatus
 /// the lowering assembly computes nothing about it.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=0; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=0; Fingerprint=654AD3
 // Broiler-Falsified-If: a field of this structure is, or contains, a reference the collector traces, or its offsets differ from the constants in JsBaselineAbi
 // Broiler-Human:        PENDING
 [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
@@ -108,28 +122,29 @@ public struct JsBaselineFrame
 /// <summary>The baseline form's frame layout and stack reservation, as the emitter and the runtime both read them.</summary>
 /// <remarks>
 /// <b>One statement of each number, in the assembly both halves reference.</b> The emitter is in the
-/// lowering assembly and the handlers are in the profile assembly, and neither may reference the other;
-/// a constant restated in each would be two constants that could drift.
+/// lowering assembly and the handlers are in the profile assembly; the profile may not reference its
+/// lowering (rule N1) and the lowering does not reference the profile, so a constant restated in each
+/// would be two constants that could drift.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=5343D7
 // Broiler-Falsified-If: a constant here disagrees with the layout the runtime gives JsBaselineFrame, or with the reservation the emitted prologue makes
 // Broiler-Human:        PENDING
 public static class JsBaselineAbi
 {
     /// <summary>The offset of <see cref="JsBaselineFrame.Handlers"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=A0D518
     // Broiler-Falsified-If: the runtime places JsBaselineFrame.Handlers at any other offset
     // Broiler-Human:        PENDING
     public const int HandlersOffset = 0;
 
     /// <summary>The offset of <see cref="JsBaselineFrame.Cookie"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=5C496D
     // Broiler-Falsified-If: the runtime places JsBaselineFrame.Cookie at any other offset
     // Broiler-Human:        PENDING
     public const int CookieOffset = 8;
 
     /// <summary>The size of <see cref="JsBaselineFrame"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=168EAF
     // Broiler-Falsified-If: the runtime gives JsBaselineFrame any other size
     // Broiler-Human:        PENDING
     public const int FrameSize = 16;
@@ -140,7 +155,7 @@ public static class JsBaselineAbi
     /// table.</b> A byte no opcode takes holds a handler that answers <see cref="JsBaselineStatus.Defect"/>
     /// and touches nothing.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=7D95B4
     // Broiler-Falsified-If: an emitted call can index the table at or beyond this many slots
     // Broiler-Human:        PENDING
     public const int HandlerSlots = 256;
@@ -152,7 +167,7 @@ public static class JsBaselineAbi
     /// reservation brings it to zero: under Windows the forty bytes are the thirty-two the callee may use
     /// as shadow space plus eight of alignment, and under System V there is no shadow space to reserve.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=ED86E7
     // Broiler-Falsified-If: a baseline unit calls a handler with the stack pointer not sixteen-aligned or with less shadow space than the convention requires
     // Broiler-Human:        PENDING
     public static int FrameBytes(JsNativeArchitecture architecture) =>

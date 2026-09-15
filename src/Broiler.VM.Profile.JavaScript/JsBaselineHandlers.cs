@@ -1,5 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Broiler Platform contributors
 // SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   371
+// Annotated:        371/371
+// Exempt:           1
+// Human-reviewed:   0/371
+// IP risk:          None
+// Security risk:    Critical
+// Criteria:         372/372
+// Resource impact:  4/10 max
+// Unverified:       371
+//
+// GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.VM.Profile.JavaScript.Format;
 
@@ -31,19 +45,19 @@ namespace Broiler.VM.Profile.JavaScript;
 /// that reads its opcode from the code, with the same checks and the same semantics.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=TBF
+// Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=20AD4A
 // Broiler-Falsified-If: an emitted call through this table reaches code other than one step of the dispatch loop or the refusing entry point
 // Broiler-Human:        PENDING
 internal static unsafe class JsBaselineHandlers
 {
     /// <summary>Whether each entry point runs its own per-opcode step or the shared one.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=6B18D3
     // Broiler-Falsified-If: the two settings produce a different JavaScript answer for any program
     // Broiler-Human:        PENDING
     internal const bool PerOpcodeSteps = true;
 
     /// <summary>The base address of the handler table, or zero if the table failed its check.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=FD6363
     // Broiler-Falsified-If: this is non-zero while a defined opcode's slot holds anything but that opcode's own entry point, or an undefined byte's slot holds anything but the refusing one
     // Broiler-Human:        PENDING
     internal static readonly nint Table;
@@ -53,7 +67,7 @@ internal static unsafe class JsBaselineHandlers
     /// <b>A static constructor and not a module initializer</b>, so the table is built the first time
     /// a baseline instance asks for it and never in a process that runs only bytecode.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=B49754
     // Broiler-Falsified-If: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
     // Broiler-Human:        PENDING
     static JsBaselineHandlers()
@@ -203,7 +217,7 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>Whether every defined opcode has its own entry point and every other byte the refusing one.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=131DD4
     // Broiler-Falsified-If: this answers true for a table in which two defined opcodes share an entry point, a defined opcode has the refusing one, or an undefined byte has any other
     // Broiler-Human:        PENDING
     private static bool Sound(nint[] slots, nint undefined)
@@ -237,14 +251,14 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The entry point of every byte no opcode takes: it answers a defect and touches nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=DFD818
     // Broiler-Falsified-If: this reads or writes any state, or answers anything but the defect status
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
     private static int Undefined(JsBaselineFrame* frame, int pc) => (int)JsBaselineStatus.Defect;
 
     /// <summary>The entry point for <see cref="JsOpcode.Nop"/> (0x00).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=83B08B
     // Broiler-Falsified-If: this runs any instruction other than one Nop at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -254,7 +268,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Nop);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadUndefined"/> (0x01).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=4A9181
     // Broiler-Falsified-If: this runs any instruction other than one LoadUndefined at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -264,7 +278,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadUndefined);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadNull"/> (0x02).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=8596F7
     // Broiler-Falsified-If: this runs any instruction other than one LoadNull at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -274,7 +288,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadNull);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadTrue"/> (0x03).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=D81D5C
     // Broiler-Falsified-If: this runs any instruction other than one LoadTrue at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -284,7 +298,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadTrue);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadFalse"/> (0x04).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=F5B412
     // Broiler-Falsified-If: this runs any instruction other than one LoadFalse at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -294,7 +308,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadFalse);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadConstant"/> (0x05).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=F5965D
     // Broiler-Falsified-If: this runs any instruction other than one LoadConstant at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -304,7 +318,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadConstant);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadThis"/> (0x06).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=C41896
     // Broiler-Falsified-If: this runs any instruction other than one LoadThis at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -314,7 +328,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadThis);
 
     /// <summary>The entry point for <see cref="JsOpcode.NewArguments"/> (0x07).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=A3A14D
     // Broiler-Falsified-If: this runs any instruction other than one NewArguments at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -324,7 +338,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.NewArguments);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadNewTarget"/> (0x08).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=1273ED
     // Broiler-Falsified-If: this runs any instruction other than one LoadNewTarget at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -334,7 +348,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadNewTarget);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadArgument"/> (0x09).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=E9D139
     // Broiler-Falsified-If: this runs any instruction other than one LoadArgument at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -344,7 +358,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadArgument);
 
     /// <summary>The entry point for <see cref="JsOpcode.RestArguments"/> (0x0A).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=AC5C1B
     // Broiler-Falsified-If: this runs any instruction other than one RestArguments at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -354,7 +368,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.RestArguments);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadScoped"/> (0x10).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=BE894E
     // Broiler-Falsified-If: this runs any instruction other than one LoadScoped at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -364,7 +378,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadScoped);
 
     /// <summary>The entry point for <see cref="JsOpcode.StoreScoped"/> (0x11).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=92E4B7
     // Broiler-Falsified-If: this runs any instruction other than one StoreScoped at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -374,7 +388,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.StoreScoped);
 
     /// <summary>The entry point for <see cref="JsOpcode.InitialiseScoped"/> (0x12).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=A8B7C0
     // Broiler-Falsified-If: this runs any instruction other than one InitialiseScoped at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -384,7 +398,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.InitialiseScoped);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadGlobal"/> (0x13).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=D81C4A
     // Broiler-Falsified-If: this runs any instruction other than one LoadGlobal at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -394,7 +408,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadGlobal);
 
     /// <summary>The entry point for <see cref="JsOpcode.StoreGlobal"/> (0x14).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3D0A78
     // Broiler-Falsified-If: this runs any instruction other than one StoreGlobal at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -404,7 +418,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.StoreGlobal);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadGlobalOrUndefined"/> (0x15).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=5D502D
     // Broiler-Falsified-If: this runs any instruction other than one LoadGlobalOrUndefined at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -414,7 +428,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadGlobalOrUndefined);
 
     /// <summary>The entry point for <see cref="JsOpcode.PushScope"/> (0x16).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=004588
     // Broiler-Falsified-If: this runs any instruction other than one PushScope at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -424,7 +438,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.PushScope);
 
     /// <summary>The entry point for <see cref="JsOpcode.PopScope"/> (0x17).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=66725F
     // Broiler-Falsified-If: this runs any instruction other than one PopScope at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -434,7 +448,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.PopScope);
 
     /// <summary>The entry point for <see cref="JsOpcode.CopyScope"/> (0x18).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3D2AB7
     // Broiler-Falsified-If: this runs any instruction other than one CopyScope at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -444,7 +458,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.CopyScope);
 
     /// <summary>The entry point for <see cref="JsOpcode.DeclareGlobal"/> (0x19).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=101B09
     // Broiler-Falsified-If: this runs any instruction other than one DeclareGlobal at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -454,7 +468,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DeclareGlobal);
 
     /// <summary>The entry point for <see cref="JsOpcode.PushObjectScope"/> (0x1A).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=1C718A
     // Broiler-Falsified-If: this runs any instruction other than one PushObjectScope at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -464,7 +478,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.PushObjectScope);
 
     /// <summary>The entry point for <see cref="JsOpcode.ResolveName"/> (0x1B).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=7306DA
     // Broiler-Falsified-If: this runs any instruction other than one ResolveName at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -474,7 +488,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ResolveName);
 
     /// <summary>The entry point for <see cref="JsOpcode.NewObject"/> (0x20).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=AA7494
     // Broiler-Falsified-If: this runs any instruction other than one NewObject at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -484,7 +498,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.NewObject);
 
     /// <summary>The entry point for <see cref="JsOpcode.NewArray"/> (0x21).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=8C63D9
     // Broiler-Falsified-If: this runs any instruction other than one NewArray at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -494,7 +508,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.NewArray);
 
     /// <summary>The entry point for <see cref="JsOpcode.GetProperty"/> (0x22).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=898108
     // Broiler-Falsified-If: this runs any instruction other than one GetProperty at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -504,7 +518,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.GetProperty);
 
     /// <summary>The entry point for <see cref="JsOpcode.SetProperty"/> (0x23).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=B2462B
     // Broiler-Falsified-If: this runs any instruction other than one SetProperty at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -514,7 +528,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.SetProperty);
 
     /// <summary>The entry point for <see cref="JsOpcode.GetIndex"/> (0x24).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=2BCC4E
     // Broiler-Falsified-If: this runs any instruction other than one GetIndex at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -524,7 +538,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.GetIndex);
 
     /// <summary>The entry point for <see cref="JsOpcode.SetIndex"/> (0x25).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=BC2ADF
     // Broiler-Falsified-If: this runs any instruction other than one SetIndex at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -534,7 +548,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.SetIndex);
 
     /// <summary>The entry point for <see cref="JsOpcode.DefineField"/> (0x26).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=52DB75
     // Broiler-Falsified-If: this runs any instruction other than one DefineField at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -544,7 +558,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DefineField);
 
     /// <summary>The entry point for <see cref="JsOpcode.DefineIndexed"/> (0x27).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=D73387
     // Broiler-Falsified-If: this runs any instruction other than one DefineIndexed at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -554,7 +568,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DefineIndexed);
 
     /// <summary>The entry point for <see cref="JsOpcode.DeleteProperty"/> (0x28).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=C305CB
     // Broiler-Falsified-If: this runs any instruction other than one DeleteProperty at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -564,7 +578,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DeleteProperty);
 
     /// <summary>The entry point for <see cref="JsOpcode.DeleteIndex"/> (0x29).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=6C89CB
     // Broiler-Falsified-If: this runs any instruction other than one DeleteIndex at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -574,7 +588,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DeleteIndex);
 
     /// <summary>The entry point for <see cref="JsOpcode.DefineGetter"/> (0x2A).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=B424EC
     // Broiler-Falsified-If: this runs any instruction other than one DefineGetter at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -584,7 +598,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DefineGetter);
 
     /// <summary>The entry point for <see cref="JsOpcode.DefineSetter"/> (0x2B).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3128D1
     // Broiler-Falsified-If: this runs any instruction other than one DefineSetter at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -594,7 +608,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DefineSetter);
 
     /// <summary>The entry point for <see cref="JsOpcode.DefineMethod"/> (0x2C).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=5C33BF
     // Broiler-Falsified-If: this runs any instruction other than one DefineMethod at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -604,7 +618,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DefineMethod);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadSuperProperty"/> (0x2D).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3C53C0
     // Broiler-Falsified-If: this runs any instruction other than one LoadSuperProperty at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -614,7 +628,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadSuperProperty);
 
     /// <summary>The entry point for <see cref="JsOpcode.StoreSuperProperty"/> (0x2E).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=B6FDAA
     // Broiler-Falsified-If: this runs any instruction other than one StoreSuperProperty at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -624,7 +638,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.StoreSuperProperty);
 
     /// <summary>The entry point for <see cref="JsOpcode.ArrayAppend"/> (0x2F).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=F117B0
     // Broiler-Falsified-If: this runs any instruction other than one ArrayAppend at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -634,7 +648,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ArrayAppend);
 
     /// <summary>The entry point for <see cref="JsOpcode.Closure"/> (0x30).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=AA6A7D
     // Broiler-Falsified-If: this runs any instruction other than one Closure at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -644,7 +658,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Closure);
 
     /// <summary>The entry point for <see cref="JsOpcode.Call"/> (0x31).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=88C946
     // Broiler-Falsified-If: this runs any instruction other than one Call at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -654,7 +668,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Call);
 
     /// <summary>The entry point for <see cref="JsOpcode.Construct"/> (0x32).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=9C5153
     // Broiler-Falsified-If: this runs any instruction other than one Construct at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -664,7 +678,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Construct);
 
     /// <summary>The entry point for <see cref="JsOpcode.Return"/> (0x33).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=D3DEE3
     // Broiler-Falsified-If: this runs any instruction other than one Return at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -674,7 +688,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Return);
 
     /// <summary>The entry point for <see cref="JsOpcode.ReturnUndefined"/> (0x34).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=B442F9
     // Broiler-Falsified-If: this runs any instruction other than one ReturnUndefined at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -684,7 +698,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ReturnUndefined);
 
     /// <summary>The entry point for <see cref="JsOpcode.CallEval"/> (0x35).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=829105
     // Broiler-Falsified-If: this runs any instruction other than one CallEval at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -694,7 +708,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.CallEval);
 
     /// <summary>The entry point for <see cref="JsOpcode.SuperCall"/> (0x36).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=9E9DD8
     // Broiler-Falsified-If: this runs any instruction other than one SuperCall at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -704,7 +718,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.SuperCall);
 
     /// <summary>The entry point for <see cref="JsOpcode.SuperCallForwarded"/> (0x37).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=1F8C0A
     // Broiler-Falsified-If: this runs any instruction other than one SuperCallForwarded at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -714,7 +728,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.SuperCallForwarded);
 
     /// <summary>The entry point for <see cref="JsOpcode.NewClass"/> (0x38).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=12BAFD
     // Broiler-Falsified-If: this runs any instruction other than one NewClass at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -724,7 +738,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.NewClass);
 
     /// <summary>The entry point for <see cref="JsOpcode.ArrayHoles"/> (0x39).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=C557C5
     // Broiler-Falsified-If: this runs any instruction other than one ArrayHoles at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -734,7 +748,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ArrayHoles);
 
     /// <summary>The entry point for <see cref="JsOpcode.SpreadArray"/> (0x3A).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=CCB353
     // Broiler-Falsified-If: this runs any instruction other than one SpreadArray at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -744,7 +758,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.SpreadArray);
 
     /// <summary>The entry point for <see cref="JsOpcode.SpreadObject"/> (0x3B).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=C74FE7
     // Broiler-Falsified-If: this runs any instruction other than one SpreadObject at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -754,7 +768,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.SpreadObject);
 
     /// <summary>The entry point for <see cref="JsOpcode.CallSpread"/> (0x3C).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=950BA2
     // Broiler-Falsified-If: this runs any instruction other than one CallSpread at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -764,7 +778,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.CallSpread);
 
     /// <summary>The entry point for <see cref="JsOpcode.ConstructSpread"/> (0x3D).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=8CFDE8
     // Broiler-Falsified-If: this runs any instruction other than one ConstructSpread at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -774,7 +788,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ConstructSpread);
 
     /// <summary>The entry point for <see cref="JsOpcode.SuperCallSpread"/> (0x3E).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=25D21E
     // Broiler-Falsified-If: this runs any instruction other than one SuperCallSpread at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -784,7 +798,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.SuperCallSpread);
 
     /// <summary>The entry point for <see cref="JsOpcode.SetPrototypeLiteral"/> (0x3F).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=615426
     // Broiler-Falsified-If: this runs any instruction other than one SetPrototypeLiteral at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -794,7 +808,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.SetPrototypeLiteral);
 
     /// <summary>The entry point for <see cref="JsOpcode.Add"/> (0x40).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=DC1D75
     // Broiler-Falsified-If: this runs any instruction other than one Add at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -804,7 +818,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Add);
 
     /// <summary>The entry point for <see cref="JsOpcode.Subtract"/> (0x41).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=AAEF66
     // Broiler-Falsified-If: this runs any instruction other than one Subtract at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -814,7 +828,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Subtract);
 
     /// <summary>The entry point for <see cref="JsOpcode.Multiply"/> (0x42).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=8108E6
     // Broiler-Falsified-If: this runs any instruction other than one Multiply at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -824,7 +838,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Multiply);
 
     /// <summary>The entry point for <see cref="JsOpcode.Divide"/> (0x43).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=F872AD
     // Broiler-Falsified-If: this runs any instruction other than one Divide at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -834,7 +848,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Divide);
 
     /// <summary>The entry point for <see cref="JsOpcode.Remainder"/> (0x44).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=7723F4
     // Broiler-Falsified-If: this runs any instruction other than one Remainder at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -844,7 +858,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Remainder);
 
     /// <summary>The entry point for <see cref="JsOpcode.Exponent"/> (0x45).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=39FE33
     // Broiler-Falsified-If: this runs any instruction other than one Exponent at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -854,7 +868,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Exponent);
 
     /// <summary>The entry point for <see cref="JsOpcode.Negate"/> (0x46).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=0B89CD
     // Broiler-Falsified-If: this runs any instruction other than one Negate at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -864,7 +878,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Negate);
 
     /// <summary>The entry point for <see cref="JsOpcode.ToNumber"/> (0x47).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=7197D0
     // Broiler-Falsified-If: this runs any instruction other than one ToNumber at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -874,7 +888,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ToNumber);
 
     /// <summary>The entry point for <see cref="JsOpcode.Not"/> (0x48).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3D785F
     // Broiler-Falsified-If: this runs any instruction other than one Not at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -884,7 +898,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Not);
 
     /// <summary>The entry point for <see cref="JsOpcode.BitwiseNot"/> (0x49).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=C515EC
     // Broiler-Falsified-If: this runs any instruction other than one BitwiseNot at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -894,7 +908,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.BitwiseNot);
 
     /// <summary>The entry point for <see cref="JsOpcode.LessThan"/> (0x4A).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=BF00B1
     // Broiler-Falsified-If: this runs any instruction other than one LessThan at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -904,7 +918,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LessThan);
 
     /// <summary>The entry point for <see cref="JsOpcode.LessThanOrEqual"/> (0x4B).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=40CE31
     // Broiler-Falsified-If: this runs any instruction other than one LessThanOrEqual at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -914,7 +928,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LessThanOrEqual);
 
     /// <summary>The entry point for <see cref="JsOpcode.GreaterThan"/> (0x4C).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=B9C32C
     // Broiler-Falsified-If: this runs any instruction other than one GreaterThan at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -924,7 +938,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.GreaterThan);
 
     /// <summary>The entry point for <see cref="JsOpcode.GreaterThanOrEqual"/> (0x4D).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3BD93D
     // Broiler-Falsified-If: this runs any instruction other than one GreaterThanOrEqual at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -934,7 +948,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.GreaterThanOrEqual);
 
     /// <summary>The entry point for <see cref="JsOpcode.StrictEquals"/> (0x4E).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=D266CC
     // Broiler-Falsified-If: this runs any instruction other than one StrictEquals at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -944,7 +958,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.StrictEquals);
 
     /// <summary>The entry point for <see cref="JsOpcode.StrictNotEquals"/> (0x4F).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=6438EB
     // Broiler-Falsified-If: this runs any instruction other than one StrictNotEquals at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -954,7 +968,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.StrictNotEquals);
 
     /// <summary>The entry point for <see cref="JsOpcode.LooseEquals"/> (0x50).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=F4CC11
     // Broiler-Falsified-If: this runs any instruction other than one LooseEquals at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -964,7 +978,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LooseEquals);
 
     /// <summary>The entry point for <see cref="JsOpcode.LooseNotEquals"/> (0x51).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=CE0D35
     // Broiler-Falsified-If: this runs any instruction other than one LooseNotEquals at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -974,7 +988,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LooseNotEquals);
 
     /// <summary>The entry point for <see cref="JsOpcode.BitwiseOr"/> (0x52).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=91E149
     // Broiler-Falsified-If: this runs any instruction other than one BitwiseOr at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -984,7 +998,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.BitwiseOr);
 
     /// <summary>The entry point for <see cref="JsOpcode.BitwiseAnd"/> (0x53).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=29011C
     // Broiler-Falsified-If: this runs any instruction other than one BitwiseAnd at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -994,7 +1008,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.BitwiseAnd);
 
     /// <summary>The entry point for <see cref="JsOpcode.BitwiseXor"/> (0x54).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=5AD920
     // Broiler-Falsified-If: this runs any instruction other than one BitwiseXor at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1004,7 +1018,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.BitwiseXor);
 
     /// <summary>The entry point for <see cref="JsOpcode.ShiftLeft"/> (0x55).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=561B01
     // Broiler-Falsified-If: this runs any instruction other than one ShiftLeft at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1014,7 +1028,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ShiftLeft);
 
     /// <summary>The entry point for <see cref="JsOpcode.ShiftRight"/> (0x56).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=B77C26
     // Broiler-Falsified-If: this runs any instruction other than one ShiftRight at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1024,7 +1038,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ShiftRight);
 
     /// <summary>The entry point for <see cref="JsOpcode.ShiftRightUnsigned"/> (0x57).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=02D889
     // Broiler-Falsified-If: this runs any instruction other than one ShiftRightUnsigned at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1034,7 +1048,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ShiftRightUnsigned);
 
     /// <summary>The entry point for <see cref="JsOpcode.TypeOf"/> (0x58).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=7321BC
     // Broiler-Falsified-If: this runs any instruction other than one TypeOf at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1044,7 +1058,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.TypeOf);
 
     /// <summary>The entry point for <see cref="JsOpcode.InstanceOf"/> (0x59).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=33D660
     // Broiler-Falsified-If: this runs any instruction other than one InstanceOf at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1054,7 +1068,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.InstanceOf);
 
     /// <summary>The entry point for <see cref="JsOpcode.In"/> (0x5A).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=1E5DA2
     // Broiler-Falsified-If: this runs any instruction other than one In at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1064,7 +1078,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.In);
 
     /// <summary>The entry point for <see cref="JsOpcode.Void"/> (0x5B).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=6F674D
     // Broiler-Falsified-If: this runs any instruction other than one Void at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1074,7 +1088,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Void);
 
     /// <summary>The entry point for <see cref="JsOpcode.RequireCoercible"/> (0x5C).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=89B678
     // Broiler-Falsified-If: this runs any instruction other than one RequireCoercible at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1084,7 +1098,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.RequireCoercible);
 
     /// <summary>The entry point for <see cref="JsOpcode.Jump"/> (0x60).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=0C9331
     // Broiler-Falsified-If: this runs any instruction other than one Jump at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1094,7 +1108,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Jump);
 
     /// <summary>The entry point for <see cref="JsOpcode.JumpIfFalse"/> (0x61).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=E67CB5
     // Broiler-Falsified-If: this runs any instruction other than one JumpIfFalse at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1104,7 +1118,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.JumpIfFalse);
 
     /// <summary>The entry point for <see cref="JsOpcode.JumpIfTrue"/> (0x62).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=AC8106
     // Broiler-Falsified-If: this runs any instruction other than one JumpIfTrue at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1114,7 +1128,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.JumpIfTrue);
 
     /// <summary>The entry point for <see cref="JsOpcode.Throw"/> (0x63).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=1AC7A7
     // Broiler-Falsified-If: this runs any instruction other than one Throw at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1124,7 +1138,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Throw);
 
     /// <summary>The entry point for <see cref="JsOpcode.ForInStart"/> (0x64).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=64758B
     // Broiler-Falsified-If: this runs any instruction other than one ForInStart at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1134,7 +1148,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ForInStart);
 
     /// <summary>The entry point for <see cref="JsOpcode.ForInNext"/> (0x65).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=50869D
     // Broiler-Falsified-If: this runs any instruction other than one ForInNext at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1144,7 +1158,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ForInNext);
 
     /// <summary>The entry point for <see cref="JsOpcode.IterateStart"/> (0x66).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=5F94B2
     // Broiler-Falsified-If: this runs any instruction other than one IterateStart at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1154,7 +1168,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.IterateStart);
 
     /// <summary>The entry point for <see cref="JsOpcode.IterateNext"/> (0x67).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=534ABA
     // Broiler-Falsified-If: this runs any instruction other than one IterateNext at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1164,7 +1178,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.IterateNext);
 
     /// <summary>The entry point for <see cref="JsOpcode.IterateRest"/> (0x68).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=A64800
     // Broiler-Falsified-If: this runs any instruction other than one IterateRest at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1174,7 +1188,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.IterateRest);
 
     /// <summary>The entry point for <see cref="JsOpcode.IterateClose"/> (0x69).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=EEEE67
     // Broiler-Falsified-If: this runs any instruction other than one IterateClose at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1184,7 +1198,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.IterateClose);
 
     /// <summary>The entry point for <see cref="JsOpcode.Yield"/> (0x6A).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=FBD791
     // Broiler-Falsified-If: this runs any instruction other than one Yield at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1194,7 +1208,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Yield);
 
     /// <summary>The entry point for <see cref="JsOpcode.YieldDelegate"/> (0x6B).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=CAC651
     // Broiler-Falsified-If: this runs any instruction other than one YieldDelegate at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1204,7 +1218,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.YieldDelegate);
 
     /// <summary>The entry point for <see cref="JsOpcode.Await"/> (0x6C).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=632E6C
     // Broiler-Falsified-If: this runs any instruction other than one Await at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1214,7 +1228,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Await);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadImport"/> (0x6D).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=C08536
     // Broiler-Falsified-If: this runs any instruction other than one LoadImport at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1224,7 +1238,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadImport);
 
     /// <summary>The entry point for <see cref="JsOpcode.ThrowImmutable"/> (0x6E).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=7AF5CC
     // Broiler-Falsified-If: this runs any instruction other than one ThrowImmutable at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1234,7 +1248,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ThrowImmutable);
 
     /// <summary>The entry point for <see cref="JsOpcode.DefineClassElement"/> (0x6F).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=1697AF
     // Broiler-Falsified-If: this runs any instruction other than one DefineClassElement at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1244,7 +1258,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DefineClassElement);
 
     /// <summary>The entry point for <see cref="JsOpcode.Pop"/> (0x70).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=84C4B7
     // Broiler-Falsified-If: this runs any instruction other than one Pop at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1254,7 +1268,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Pop);
 
     /// <summary>The entry point for <see cref="JsOpcode.Duplicate"/> (0x71).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=6E333D
     // Broiler-Falsified-If: this runs any instruction other than one Duplicate at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1264,7 +1278,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Duplicate);
 
     /// <summary>The entry point for <see cref="JsOpcode.DuplicateTwo"/> (0x72).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=8D6AE6
     // Broiler-Falsified-If: this runs any instruction other than one DuplicateTwo at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1274,7 +1288,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DuplicateTwo);
 
     /// <summary>The entry point for <see cref="JsOpcode.Swap"/> (0x73).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=DE7B3C
     // Broiler-Falsified-If: this runs any instruction other than one Swap at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1284,7 +1298,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Swap);
 
     /// <summary>The entry point for <see cref="JsOpcode.Pick"/> (0x74).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=DA2E13
     // Broiler-Falsified-If: this runs any instruction other than one Pick at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1294,7 +1308,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.Pick);
 
     /// <summary>The entry point for <see cref="JsOpcode.NewPrivateName"/> (0x75).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=CF7609
     // Broiler-Falsified-If: this runs any instruction other than one NewPrivateName at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1304,7 +1318,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.NewPrivateName);
 
     /// <summary>The entry point for <see cref="JsOpcode.LoadPrivate"/> (0x76).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=E044C3
     // Broiler-Falsified-If: this runs any instruction other than one LoadPrivate at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1314,7 +1328,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.LoadPrivate);
 
     /// <summary>The entry point for <see cref="JsOpcode.StorePrivate"/> (0x77).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=4885B8
     // Broiler-Falsified-If: this runs any instruction other than one StorePrivate at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1324,7 +1338,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.StorePrivate);
 
     /// <summary>The entry point for <see cref="JsOpcode.HasPrivate"/> (0x78).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=AE4747
     // Broiler-Falsified-If: this runs any instruction other than one HasPrivate at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1334,7 +1348,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.HasPrivate);
 
     /// <summary>The entry point for <see cref="JsOpcode.RunStaticElements"/> (0x79).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=B35953
     // Broiler-Falsified-If: this runs any instruction other than one RunStaticElements at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1344,7 +1358,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.RunStaticElements);
 
     /// <summary>The entry point for <see cref="JsOpcode.IterateStartAsync"/> (0x7A).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=052888
     // Broiler-Falsified-If: this runs any instruction other than one IterateStartAsync at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1354,7 +1368,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.IterateStartAsync);
 
     /// <summary>The entry point for <see cref="JsOpcode.IterateNextAsync"/> (0x7B).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=BFF4ED
     // Broiler-Falsified-If: this runs any instruction other than one IterateNextAsync at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1364,7 +1378,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.IterateNextAsync);
 
     /// <summary>The entry point for <see cref="JsOpcode.IterateAwaitStep"/> (0x7C).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=7BB366
     // Broiler-Falsified-If: this runs any instruction other than one IterateAwaitStep at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1374,7 +1388,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.IterateAwaitStep);
 
     /// <summary>The entry point for <see cref="JsOpcode.IterateCloseAsync"/> (0x7D).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=076C22
     // Broiler-Falsified-If: this runs any instruction other than one IterateCloseAsync at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1384,7 +1398,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.IterateCloseAsync);
 
     /// <summary>The entry point for <see cref="JsOpcode.IterateCloseCheck"/> (0x7E).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=350530
     // Broiler-Falsified-If: this runs any instruction other than one IterateCloseCheck at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1394,7 +1408,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.IterateCloseCheck);
 
     /// <summary>The entry point for <see cref="JsOpcode.DeclareGlobalLet"/> (0x7F).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=134B19
     // Broiler-Falsified-If: this runs any instruction other than one DeclareGlobalLet at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1404,7 +1418,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DeclareGlobalLet);
 
     /// <summary>The entry point for <see cref="JsOpcode.DeclareGlobalConst"/> (0x80).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=FD3EA6
     // Broiler-Falsified-If: this runs any instruction other than one DeclareGlobalConst at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1414,7 +1428,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DeclareGlobalConst);
 
     /// <summary>The entry point for <see cref="JsOpcode.InitialiseGlobalLexical"/> (0x81).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=F779D8
     // Broiler-Falsified-If: this runs any instruction other than one InitialiseGlobalLexical at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1424,7 +1438,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.InitialiseGlobalLexical);
 
     /// <summary>The entry point for <see cref="JsOpcode.DeleteGlobalBinding"/> (0x82).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=80DA29
     // Broiler-Falsified-If: this runs any instruction other than one DeleteGlobalBinding at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1434,7 +1448,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.DeleteGlobalBinding);
 
     /// <summary>The entry point for <see cref="JsOpcode.EnterBody"/> (0x83).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=598758
     // Broiler-Falsified-If: this runs any instruction other than one EnterBody at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1444,7 +1458,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.EnterBody);
 
     /// <summary>The entry point for <see cref="JsOpcode.ImportCall"/> (0x85).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=BC391A
     // Broiler-Falsified-If: this runs any instruction other than one ImportCall at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1454,7 +1468,7 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ImportCall);
 
     /// <summary>The entry point for <see cref="JsOpcode.ImportMeta"/> (0x86).</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=629FCF
     // Broiler-Falsified-If: this runs any instruction other than one ImportMeta at the offset the managed side expects
     // Broiler-Human:        PENDING
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
@@ -1464,13 +1478,13 @@ internal static unsafe class JsBaselineHandlers
             : JsNativeActivation.Step<JsStepAny>(frame, pc, JsOpcode.ImportMeta);
 
     /// <summary>The step that runs one <see cref="JsOpcode.Nop"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=382D07
     // Broiler-Falsified-If: this step names an opcode other than Nop
     // Broiler-Human:        PENDING
     internal readonly struct StepNop : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Nop"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D7D8F6
         // Broiler-Falsified-If: this answers any opcode other than Nop
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1482,13 +1496,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadUndefined"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=5B5713
     // Broiler-Falsified-If: this step names an opcode other than LoadUndefined
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadUndefined : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadUndefined"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E0D46D
         // Broiler-Falsified-If: this answers any opcode other than LoadUndefined
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1500,13 +1514,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadNull"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=88C1B8
     // Broiler-Falsified-If: this step names an opcode other than LoadNull
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadNull : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadNull"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8F90FD
         // Broiler-Falsified-If: this answers any opcode other than LoadNull
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1518,13 +1532,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadTrue"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=264FAD
     // Broiler-Falsified-If: this step names an opcode other than LoadTrue
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadTrue : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadTrue"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=3D4366
         // Broiler-Falsified-If: this answers any opcode other than LoadTrue
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1536,13 +1550,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadFalse"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A20665
     // Broiler-Falsified-If: this step names an opcode other than LoadFalse
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadFalse : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadFalse"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=289B9B
         // Broiler-Falsified-If: this answers any opcode other than LoadFalse
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1554,13 +1568,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadConstant"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=145A2F
     // Broiler-Falsified-If: this step names an opcode other than LoadConstant
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadConstant : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadConstant"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A1257B
         // Broiler-Falsified-If: this answers any opcode other than LoadConstant
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1572,13 +1586,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadThis"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=033581
     // Broiler-Falsified-If: this step names an opcode other than LoadThis
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadThis : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadThis"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=93E9E1
         // Broiler-Falsified-If: this answers any opcode other than LoadThis
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1590,13 +1604,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.NewArguments"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1AED01
     // Broiler-Falsified-If: this step names an opcode other than NewArguments
     // Broiler-Human:        PENDING
     internal readonly struct StepNewArguments : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.NewArguments"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A8B424
         // Broiler-Falsified-If: this answers any opcode other than NewArguments
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1608,13 +1622,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadNewTarget"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=DB6C51
     // Broiler-Falsified-If: this step names an opcode other than LoadNewTarget
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadNewTarget : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadNewTarget"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D1003C
         // Broiler-Falsified-If: this answers any opcode other than LoadNewTarget
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1626,13 +1640,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadArgument"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=CB1D05
     // Broiler-Falsified-If: this step names an opcode other than LoadArgument
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadArgument : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadArgument"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A879E1
         // Broiler-Falsified-If: this answers any opcode other than LoadArgument
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1644,13 +1658,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.RestArguments"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2BFA7C
     // Broiler-Falsified-If: this step names an opcode other than RestArguments
     // Broiler-Human:        PENDING
     internal readonly struct StepRestArguments : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.RestArguments"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=CC6674
         // Broiler-Falsified-If: this answers any opcode other than RestArguments
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1662,13 +1676,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadScoped"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B152D7
     // Broiler-Falsified-If: this step names an opcode other than LoadScoped
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadScoped : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadScoped"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=DA48FC
         // Broiler-Falsified-If: this answers any opcode other than LoadScoped
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1680,13 +1694,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.StoreScoped"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=DC8CDA
     // Broiler-Falsified-If: this step names an opcode other than StoreScoped
     // Broiler-Human:        PENDING
     internal readonly struct StepStoreScoped : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.StoreScoped"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=3F1707
         // Broiler-Falsified-If: this answers any opcode other than StoreScoped
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1698,13 +1712,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.InitialiseScoped"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E4F47C
     // Broiler-Falsified-If: this step names an opcode other than InitialiseScoped
     // Broiler-Human:        PENDING
     internal readonly struct StepInitialiseScoped : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.InitialiseScoped"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F14691
         // Broiler-Falsified-If: this answers any opcode other than InitialiseScoped
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1716,13 +1730,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadGlobal"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=47E562
     // Broiler-Falsified-If: this step names an opcode other than LoadGlobal
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadGlobal : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadGlobal"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A7AB7B
         // Broiler-Falsified-If: this answers any opcode other than LoadGlobal
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1734,13 +1748,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.StoreGlobal"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2C67FF
     // Broiler-Falsified-If: this step names an opcode other than StoreGlobal
     // Broiler-Human:        PENDING
     internal readonly struct StepStoreGlobal : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.StoreGlobal"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F87126
         // Broiler-Falsified-If: this answers any opcode other than StoreGlobal
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1752,13 +1766,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadGlobalOrUndefined"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=119420
     // Broiler-Falsified-If: this step names an opcode other than LoadGlobalOrUndefined
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadGlobalOrUndefined : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadGlobalOrUndefined"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=35BA98
         // Broiler-Falsified-If: this answers any opcode other than LoadGlobalOrUndefined
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1770,13 +1784,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.PushScope"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=434E04
     // Broiler-Falsified-If: this step names an opcode other than PushScope
     // Broiler-Human:        PENDING
     internal readonly struct StepPushScope : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.PushScope"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6F0172
         // Broiler-Falsified-If: this answers any opcode other than PushScope
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1788,13 +1802,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.PopScope"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7045C2
     // Broiler-Falsified-If: this step names an opcode other than PopScope
     // Broiler-Human:        PENDING
     internal readonly struct StepPopScope : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.PopScope"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=115BB4
         // Broiler-Falsified-If: this answers any opcode other than PopScope
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1806,13 +1820,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.CopyScope"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7B43D1
     // Broiler-Falsified-If: this step names an opcode other than CopyScope
     // Broiler-Human:        PENDING
     internal readonly struct StepCopyScope : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.CopyScope"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BDDF52
         // Broiler-Falsified-If: this answers any opcode other than CopyScope
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1824,13 +1838,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DeclareGlobal"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=364D14
     // Broiler-Falsified-If: this step names an opcode other than DeclareGlobal
     // Broiler-Human:        PENDING
     internal readonly struct StepDeclareGlobal : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DeclareGlobal"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8DA33D
         // Broiler-Falsified-If: this answers any opcode other than DeclareGlobal
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1842,13 +1856,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.PushObjectScope"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=4A9195
     // Broiler-Falsified-If: this step names an opcode other than PushObjectScope
     // Broiler-Human:        PENDING
     internal readonly struct StepPushObjectScope : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.PushObjectScope"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2FB524
         // Broiler-Falsified-If: this answers any opcode other than PushObjectScope
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1860,13 +1874,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ResolveName"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=57D935
     // Broiler-Falsified-If: this step names an opcode other than ResolveName
     // Broiler-Human:        PENDING
     internal readonly struct StepResolveName : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ResolveName"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=EFF26A
         // Broiler-Falsified-If: this answers any opcode other than ResolveName
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1878,13 +1892,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.NewObject"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7773C6
     // Broiler-Falsified-If: this step names an opcode other than NewObject
     // Broiler-Human:        PENDING
     internal readonly struct StepNewObject : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.NewObject"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A62141
         // Broiler-Falsified-If: this answers any opcode other than NewObject
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1896,13 +1910,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.NewArray"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6BD1F2
     // Broiler-Falsified-If: this step names an opcode other than NewArray
     // Broiler-Human:        PENDING
     internal readonly struct StepNewArray : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.NewArray"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=CD07BC
         // Broiler-Falsified-If: this answers any opcode other than NewArray
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1914,13 +1928,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.GetProperty"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D62B2C
     // Broiler-Falsified-If: this step names an opcode other than GetProperty
     // Broiler-Human:        PENDING
     internal readonly struct StepGetProperty : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.GetProperty"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=5835F4
         // Broiler-Falsified-If: this answers any opcode other than GetProperty
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1932,13 +1946,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.SetProperty"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F90B33
     // Broiler-Falsified-If: this step names an opcode other than SetProperty
     // Broiler-Human:        PENDING
     internal readonly struct StepSetProperty : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.SetProperty"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F1EBDB
         // Broiler-Falsified-If: this answers any opcode other than SetProperty
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1950,13 +1964,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.GetIndex"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=AE652E
     // Broiler-Falsified-If: this step names an opcode other than GetIndex
     // Broiler-Human:        PENDING
     internal readonly struct StepGetIndex : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.GetIndex"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=37F5C2
         // Broiler-Falsified-If: this answers any opcode other than GetIndex
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1968,13 +1982,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.SetIndex"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=97240E
     // Broiler-Falsified-If: this step names an opcode other than SetIndex
     // Broiler-Human:        PENDING
     internal readonly struct StepSetIndex : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.SetIndex"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=19F768
         // Broiler-Falsified-If: this answers any opcode other than SetIndex
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -1986,13 +2000,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DefineField"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B754A2
     // Broiler-Falsified-If: this step names an opcode other than DefineField
     // Broiler-Human:        PENDING
     internal readonly struct StepDefineField : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DefineField"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BC936A
         // Broiler-Falsified-If: this answers any opcode other than DefineField
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2004,13 +2018,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DefineIndexed"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=172214
     // Broiler-Falsified-If: this step names an opcode other than DefineIndexed
     // Broiler-Human:        PENDING
     internal readonly struct StepDefineIndexed : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DefineIndexed"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=83BF75
         // Broiler-Falsified-If: this answers any opcode other than DefineIndexed
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2022,13 +2036,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DeleteProperty"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=9F3C01
     // Broiler-Falsified-If: this step names an opcode other than DeleteProperty
     // Broiler-Human:        PENDING
     internal readonly struct StepDeleteProperty : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DeleteProperty"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=CCED5A
         // Broiler-Falsified-If: this answers any opcode other than DeleteProperty
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2040,13 +2054,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DeleteIndex"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=3286F1
     // Broiler-Falsified-If: this step names an opcode other than DeleteIndex
     // Broiler-Human:        PENDING
     internal readonly struct StepDeleteIndex : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DeleteIndex"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2C1D9C
         // Broiler-Falsified-If: this answers any opcode other than DeleteIndex
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2058,13 +2072,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DefineGetter"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=AD18BC
     // Broiler-Falsified-If: this step names an opcode other than DefineGetter
     // Broiler-Human:        PENDING
     internal readonly struct StepDefineGetter : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DefineGetter"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2316AF
         // Broiler-Falsified-If: this answers any opcode other than DefineGetter
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2076,13 +2090,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DefineSetter"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F032AB
     // Broiler-Falsified-If: this step names an opcode other than DefineSetter
     // Broiler-Human:        PENDING
     internal readonly struct StepDefineSetter : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DefineSetter"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E0C41F
         // Broiler-Falsified-If: this answers any opcode other than DefineSetter
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2094,13 +2108,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DefineMethod"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F07759
     // Broiler-Falsified-If: this step names an opcode other than DefineMethod
     // Broiler-Human:        PENDING
     internal readonly struct StepDefineMethod : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DefineMethod"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=00E07A
         // Broiler-Falsified-If: this answers any opcode other than DefineMethod
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2112,13 +2126,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadSuperProperty"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F071D2
     // Broiler-Falsified-If: this step names an opcode other than LoadSuperProperty
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadSuperProperty : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadSuperProperty"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=3430FE
         // Broiler-Falsified-If: this answers any opcode other than LoadSuperProperty
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2130,13 +2144,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.StoreSuperProperty"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=797FE3
     // Broiler-Falsified-If: this step names an opcode other than StoreSuperProperty
     // Broiler-Human:        PENDING
     internal readonly struct StepStoreSuperProperty : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.StoreSuperProperty"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=9AB412
         // Broiler-Falsified-If: this answers any opcode other than StoreSuperProperty
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2148,13 +2162,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ArrayAppend"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8D4F2F
     // Broiler-Falsified-If: this step names an opcode other than ArrayAppend
     // Broiler-Human:        PENDING
     internal readonly struct StepArrayAppend : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ArrayAppend"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D01310
         // Broiler-Falsified-If: this answers any opcode other than ArrayAppend
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2166,13 +2180,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Closure"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D1CFE8
     // Broiler-Falsified-If: this step names an opcode other than Closure
     // Broiler-Human:        PENDING
     internal readonly struct StepClosure : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Closure"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B9B08E
         // Broiler-Falsified-If: this answers any opcode other than Closure
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2184,13 +2198,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Call"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=821976
     // Broiler-Falsified-If: this step names an opcode other than Call
     // Broiler-Human:        PENDING
     internal readonly struct StepCall : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Call"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=AEA809
         // Broiler-Falsified-If: this answers any opcode other than Call
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2202,13 +2216,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Construct"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D2D494
     // Broiler-Falsified-If: this step names an opcode other than Construct
     // Broiler-Human:        PENDING
     internal readonly struct StepConstruct : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Construct"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=AB9410
         // Broiler-Falsified-If: this answers any opcode other than Construct
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2220,13 +2234,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Return"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2331CA
     // Broiler-Falsified-If: this step names an opcode other than Return
     // Broiler-Human:        PENDING
     internal readonly struct StepReturn : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Return"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=EF4A69
         // Broiler-Falsified-If: this answers any opcode other than Return
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2238,13 +2252,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ReturnUndefined"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=744CBB
     // Broiler-Falsified-If: this step names an opcode other than ReturnUndefined
     // Broiler-Human:        PENDING
     internal readonly struct StepReturnUndefined : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ReturnUndefined"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7D9B6E
         // Broiler-Falsified-If: this answers any opcode other than ReturnUndefined
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2256,13 +2270,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.CallEval"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=5E042F
     // Broiler-Falsified-If: this step names an opcode other than CallEval
     // Broiler-Human:        PENDING
     internal readonly struct StepCallEval : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.CallEval"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D5D4C4
         // Broiler-Falsified-If: this answers any opcode other than CallEval
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2274,13 +2288,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.SuperCall"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D2FC1C
     // Broiler-Falsified-If: this step names an opcode other than SuperCall
     // Broiler-Human:        PENDING
     internal readonly struct StepSuperCall : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.SuperCall"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=716B4E
         // Broiler-Falsified-If: this answers any opcode other than SuperCall
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2292,13 +2306,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.SuperCallForwarded"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=82DB6C
     // Broiler-Falsified-If: this step names an opcode other than SuperCallForwarded
     // Broiler-Human:        PENDING
     internal readonly struct StepSuperCallForwarded : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.SuperCallForwarded"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6D1190
         // Broiler-Falsified-If: this answers any opcode other than SuperCallForwarded
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2310,13 +2324,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.NewClass"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=538D6C
     // Broiler-Falsified-If: this step names an opcode other than NewClass
     // Broiler-Human:        PENDING
     internal readonly struct StepNewClass : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.NewClass"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=254D0F
         // Broiler-Falsified-If: this answers any opcode other than NewClass
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2328,13 +2342,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ArrayHoles"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2FFDBD
     // Broiler-Falsified-If: this step names an opcode other than ArrayHoles
     // Broiler-Human:        PENDING
     internal readonly struct StepArrayHoles : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ArrayHoles"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A0D86F
         // Broiler-Falsified-If: this answers any opcode other than ArrayHoles
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2346,13 +2360,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.SpreadArray"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0307E1
     // Broiler-Falsified-If: this step names an opcode other than SpreadArray
     // Broiler-Human:        PENDING
     internal readonly struct StepSpreadArray : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.SpreadArray"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=10C694
         // Broiler-Falsified-If: this answers any opcode other than SpreadArray
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2364,13 +2378,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.SpreadObject"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0844B8
     // Broiler-Falsified-If: this step names an opcode other than SpreadObject
     // Broiler-Human:        PENDING
     internal readonly struct StepSpreadObject : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.SpreadObject"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=90CFF0
         // Broiler-Falsified-If: this answers any opcode other than SpreadObject
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2382,13 +2396,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.CallSpread"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A5D0B7
     // Broiler-Falsified-If: this step names an opcode other than CallSpread
     // Broiler-Human:        PENDING
     internal readonly struct StepCallSpread : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.CallSpread"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B10BF3
         // Broiler-Falsified-If: this answers any opcode other than CallSpread
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2400,13 +2414,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ConstructSpread"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=41B0BC
     // Broiler-Falsified-If: this step names an opcode other than ConstructSpread
     // Broiler-Human:        PENDING
     internal readonly struct StepConstructSpread : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ConstructSpread"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A344AA
         // Broiler-Falsified-If: this answers any opcode other than ConstructSpread
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2418,13 +2432,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.SuperCallSpread"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=CBE67D
     // Broiler-Falsified-If: this step names an opcode other than SuperCallSpread
     // Broiler-Human:        PENDING
     internal readonly struct StepSuperCallSpread : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.SuperCallSpread"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=935410
         // Broiler-Falsified-If: this answers any opcode other than SuperCallSpread
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2436,13 +2450,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.SetPrototypeLiteral"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=89B50B
     // Broiler-Falsified-If: this step names an opcode other than SetPrototypeLiteral
     // Broiler-Human:        PENDING
     internal readonly struct StepSetPrototypeLiteral : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.SetPrototypeLiteral"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F076A9
         // Broiler-Falsified-If: this answers any opcode other than SetPrototypeLiteral
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2454,13 +2468,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Add"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=FFC7EE
     // Broiler-Falsified-If: this step names an opcode other than Add
     // Broiler-Human:        PENDING
     internal readonly struct StepAdd : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Add"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=5AF05B
         // Broiler-Falsified-If: this answers any opcode other than Add
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2472,13 +2486,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Subtract"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C9669A
     // Broiler-Falsified-If: this step names an opcode other than Subtract
     // Broiler-Human:        PENDING
     internal readonly struct StepSubtract : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Subtract"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=5768D1
         // Broiler-Falsified-If: this answers any opcode other than Subtract
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2490,13 +2504,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Multiply"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=DE36AE
     // Broiler-Falsified-If: this step names an opcode other than Multiply
     // Broiler-Human:        PENDING
     internal readonly struct StepMultiply : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Multiply"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E0007F
         // Broiler-Falsified-If: this answers any opcode other than Multiply
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2508,13 +2522,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Divide"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=894DC9
     // Broiler-Falsified-If: this step names an opcode other than Divide
     // Broiler-Human:        PENDING
     internal readonly struct StepDivide : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Divide"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=84FD41
         // Broiler-Falsified-If: this answers any opcode other than Divide
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2526,13 +2540,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Remainder"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=902936
     // Broiler-Falsified-If: this step names an opcode other than Remainder
     // Broiler-Human:        PENDING
     internal readonly struct StepRemainder : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Remainder"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=129811
         // Broiler-Falsified-If: this answers any opcode other than Remainder
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2544,13 +2558,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Exponent"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=AAF31C
     // Broiler-Falsified-If: this step names an opcode other than Exponent
     // Broiler-Human:        PENDING
     internal readonly struct StepExponent : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Exponent"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=914BD7
         // Broiler-Falsified-If: this answers any opcode other than Exponent
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2562,13 +2576,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Negate"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=EA6192
     // Broiler-Falsified-If: this step names an opcode other than Negate
     // Broiler-Human:        PENDING
     internal readonly struct StepNegate : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Negate"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C79B7B
         // Broiler-Falsified-If: this answers any opcode other than Negate
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2580,13 +2594,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ToNumber"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=789217
     // Broiler-Falsified-If: this step names an opcode other than ToNumber
     // Broiler-Human:        PENDING
     internal readonly struct StepToNumber : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ToNumber"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C36BA6
         // Broiler-Falsified-If: this answers any opcode other than ToNumber
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2598,13 +2612,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Not"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F65806
     // Broiler-Falsified-If: this step names an opcode other than Not
     // Broiler-Human:        PENDING
     internal readonly struct StepNot : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Not"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=75DF62
         // Broiler-Falsified-If: this answers any opcode other than Not
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2616,13 +2630,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.BitwiseNot"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=125FA0
     // Broiler-Falsified-If: this step names an opcode other than BitwiseNot
     // Broiler-Human:        PENDING
     internal readonly struct StepBitwiseNot : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.BitwiseNot"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F715CA
         // Broiler-Falsified-If: this answers any opcode other than BitwiseNot
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2634,13 +2648,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LessThan"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BA9E4E
     // Broiler-Falsified-If: this step names an opcode other than LessThan
     // Broiler-Human:        PENDING
     internal readonly struct StepLessThan : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LessThan"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=EEF32A
         // Broiler-Falsified-If: this answers any opcode other than LessThan
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2652,13 +2666,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LessThanOrEqual"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8A5F19
     // Broiler-Falsified-If: this step names an opcode other than LessThanOrEqual
     // Broiler-Human:        PENDING
     internal readonly struct StepLessThanOrEqual : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LessThanOrEqual"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F41DF2
         // Broiler-Falsified-If: this answers any opcode other than LessThanOrEqual
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2670,13 +2684,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.GreaterThan"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0E011D
     // Broiler-Falsified-If: this step names an opcode other than GreaterThan
     // Broiler-Human:        PENDING
     internal readonly struct StepGreaterThan : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.GreaterThan"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E44031
         // Broiler-Falsified-If: this answers any opcode other than GreaterThan
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2688,13 +2702,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.GreaterThanOrEqual"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1AB0AF
     // Broiler-Falsified-If: this step names an opcode other than GreaterThanOrEqual
     // Broiler-Human:        PENDING
     internal readonly struct StepGreaterThanOrEqual : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.GreaterThanOrEqual"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6DF1AF
         // Broiler-Falsified-If: this answers any opcode other than GreaterThanOrEqual
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2706,13 +2720,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.StrictEquals"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=32EA23
     // Broiler-Falsified-If: this step names an opcode other than StrictEquals
     // Broiler-Human:        PENDING
     internal readonly struct StepStrictEquals : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.StrictEquals"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A8BF70
         // Broiler-Falsified-If: this answers any opcode other than StrictEquals
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2724,13 +2738,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.StrictNotEquals"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=CF6E47
     // Broiler-Falsified-If: this step names an opcode other than StrictNotEquals
     // Broiler-Human:        PENDING
     internal readonly struct StepStrictNotEquals : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.StrictNotEquals"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1F0424
         // Broiler-Falsified-If: this answers any opcode other than StrictNotEquals
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2742,13 +2756,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LooseEquals"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B52645
     // Broiler-Falsified-If: this step names an opcode other than LooseEquals
     // Broiler-Human:        PENDING
     internal readonly struct StepLooseEquals : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LooseEquals"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=4B4670
         // Broiler-Falsified-If: this answers any opcode other than LooseEquals
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2760,13 +2774,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LooseNotEquals"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=60920E
     // Broiler-Falsified-If: this step names an opcode other than LooseNotEquals
     // Broiler-Human:        PENDING
     internal readonly struct StepLooseNotEquals : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LooseNotEquals"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=4EE2CC
         // Broiler-Falsified-If: this answers any opcode other than LooseNotEquals
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2778,13 +2792,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.BitwiseOr"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=29E8EB
     // Broiler-Falsified-If: this step names an opcode other than BitwiseOr
     // Broiler-Human:        PENDING
     internal readonly struct StepBitwiseOr : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.BitwiseOr"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=28A30B
         // Broiler-Falsified-If: this answers any opcode other than BitwiseOr
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2796,13 +2810,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.BitwiseAnd"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=79FE8E
     // Broiler-Falsified-If: this step names an opcode other than BitwiseAnd
     // Broiler-Human:        PENDING
     internal readonly struct StepBitwiseAnd : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.BitwiseAnd"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D7BEA3
         // Broiler-Falsified-If: this answers any opcode other than BitwiseAnd
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2814,13 +2828,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.BitwiseXor"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=06DE4D
     // Broiler-Falsified-If: this step names an opcode other than BitwiseXor
     // Broiler-Human:        PENDING
     internal readonly struct StepBitwiseXor : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.BitwiseXor"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B60E97
         // Broiler-Falsified-If: this answers any opcode other than BitwiseXor
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2832,13 +2846,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ShiftLeft"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=EAF572
     // Broiler-Falsified-If: this step names an opcode other than ShiftLeft
     // Broiler-Human:        PENDING
     internal readonly struct StepShiftLeft : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ShiftLeft"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0FC726
         // Broiler-Falsified-If: this answers any opcode other than ShiftLeft
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2850,13 +2864,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ShiftRight"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8F4070
     // Broiler-Falsified-If: this step names an opcode other than ShiftRight
     // Broiler-Human:        PENDING
     internal readonly struct StepShiftRight : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ShiftRight"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=58841A
         // Broiler-Falsified-If: this answers any opcode other than ShiftRight
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2868,13 +2882,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ShiftRightUnsigned"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=5C54C8
     // Broiler-Falsified-If: this step names an opcode other than ShiftRightUnsigned
     // Broiler-Human:        PENDING
     internal readonly struct StepShiftRightUnsigned : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ShiftRightUnsigned"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A421C0
         // Broiler-Falsified-If: this answers any opcode other than ShiftRightUnsigned
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2886,13 +2900,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.TypeOf"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8919CF
     // Broiler-Falsified-If: this step names an opcode other than TypeOf
     // Broiler-Human:        PENDING
     internal readonly struct StepTypeOf : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.TypeOf"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=EA8853
         // Broiler-Falsified-If: this answers any opcode other than TypeOf
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2904,13 +2918,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.InstanceOf"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=103340
     // Broiler-Falsified-If: this step names an opcode other than InstanceOf
     // Broiler-Human:        PENDING
     internal readonly struct StepInstanceOf : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.InstanceOf"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7A23DA
         // Broiler-Falsified-If: this answers any opcode other than InstanceOf
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2922,13 +2936,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.In"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0C947A
     // Broiler-Falsified-If: this step names an opcode other than In
     // Broiler-Human:        PENDING
     internal readonly struct StepIn : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.In"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2A1104
         // Broiler-Falsified-If: this answers any opcode other than In
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2940,13 +2954,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Void"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=3E17A1
     // Broiler-Falsified-If: this step names an opcode other than Void
     // Broiler-Human:        PENDING
     internal readonly struct StepVoid : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Void"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=172D6A
         // Broiler-Falsified-If: this answers any opcode other than Void
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2958,13 +2972,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.RequireCoercible"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7E524F
     // Broiler-Falsified-If: this step names an opcode other than RequireCoercible
     // Broiler-Human:        PENDING
     internal readonly struct StepRequireCoercible : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.RequireCoercible"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=DD736E
         // Broiler-Falsified-If: this answers any opcode other than RequireCoercible
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2976,13 +2990,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Jump"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A5BA52
     // Broiler-Falsified-If: this step names an opcode other than Jump
     // Broiler-Human:        PENDING
     internal readonly struct StepJump : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Jump"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=FDAF9E
         // Broiler-Falsified-If: this answers any opcode other than Jump
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -2994,13 +3008,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.JumpIfFalse"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=99CF26
     // Broiler-Falsified-If: this step names an opcode other than JumpIfFalse
     // Broiler-Human:        PENDING
     internal readonly struct StepJumpIfFalse : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.JumpIfFalse"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=5DB205
         // Broiler-Falsified-If: this answers any opcode other than JumpIfFalse
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3012,13 +3026,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.JumpIfTrue"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=9E7D28
     // Broiler-Falsified-If: this step names an opcode other than JumpIfTrue
     // Broiler-Human:        PENDING
     internal readonly struct StepJumpIfTrue : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.JumpIfTrue"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=5D29ED
         // Broiler-Falsified-If: this answers any opcode other than JumpIfTrue
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3030,13 +3044,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Throw"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E53BDA
     // Broiler-Falsified-If: this step names an opcode other than Throw
     // Broiler-Human:        PENDING
     internal readonly struct StepThrow : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Throw"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BAACFC
         // Broiler-Falsified-If: this answers any opcode other than Throw
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3048,13 +3062,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ForInStart"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D67D0B
     // Broiler-Falsified-If: this step names an opcode other than ForInStart
     // Broiler-Human:        PENDING
     internal readonly struct StepForInStart : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ForInStart"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6C92A5
         // Broiler-Falsified-If: this answers any opcode other than ForInStart
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3066,13 +3080,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ForInNext"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F06054
     // Broiler-Falsified-If: this step names an opcode other than ForInNext
     // Broiler-Human:        PENDING
     internal readonly struct StepForInNext : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ForInNext"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=40210D
         // Broiler-Falsified-If: this answers any opcode other than ForInNext
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3084,13 +3098,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.IterateStart"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=74E822
     // Broiler-Falsified-If: this step names an opcode other than IterateStart
     // Broiler-Human:        PENDING
     internal readonly struct StepIterateStart : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.IterateStart"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0C1F4F
         // Broiler-Falsified-If: this answers any opcode other than IterateStart
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3102,13 +3116,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.IterateNext"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=02BE85
     // Broiler-Falsified-If: this step names an opcode other than IterateNext
     // Broiler-Human:        PENDING
     internal readonly struct StepIterateNext : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.IterateNext"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E8268A
         // Broiler-Falsified-If: this answers any opcode other than IterateNext
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3120,13 +3134,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.IterateRest"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=28105F
     // Broiler-Falsified-If: this step names an opcode other than IterateRest
     // Broiler-Human:        PENDING
     internal readonly struct StepIterateRest : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.IterateRest"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D63D37
         // Broiler-Falsified-If: this answers any opcode other than IterateRest
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3138,13 +3152,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.IterateClose"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=167664
     // Broiler-Falsified-If: this step names an opcode other than IterateClose
     // Broiler-Human:        PENDING
     internal readonly struct StepIterateClose : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.IterateClose"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BF8374
         // Broiler-Falsified-If: this answers any opcode other than IterateClose
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3156,13 +3170,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Yield"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8A1AFC
     // Broiler-Falsified-If: this step names an opcode other than Yield
     // Broiler-Human:        PENDING
     internal readonly struct StepYield : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Yield"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0E5713
         // Broiler-Falsified-If: this answers any opcode other than Yield
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3174,13 +3188,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.YieldDelegate"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=96D383
     // Broiler-Falsified-If: this step names an opcode other than YieldDelegate
     // Broiler-Human:        PENDING
     internal readonly struct StepYieldDelegate : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.YieldDelegate"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BB6777
         // Broiler-Falsified-If: this answers any opcode other than YieldDelegate
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3192,13 +3206,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Await"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F3ADAA
     // Broiler-Falsified-If: this step names an opcode other than Await
     // Broiler-Human:        PENDING
     internal readonly struct StepAwait : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Await"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2F7951
         // Broiler-Falsified-If: this answers any opcode other than Await
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3210,13 +3224,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadImport"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C1C1F1
     // Broiler-Falsified-If: this step names an opcode other than LoadImport
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadImport : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadImport"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=957D8D
         // Broiler-Falsified-If: this answers any opcode other than LoadImport
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3228,13 +3242,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ThrowImmutable"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=295743
     // Broiler-Falsified-If: this step names an opcode other than ThrowImmutable
     // Broiler-Human:        PENDING
     internal readonly struct StepThrowImmutable : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ThrowImmutable"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C977D7
         // Broiler-Falsified-If: this answers any opcode other than ThrowImmutable
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3246,13 +3260,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DefineClassElement"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C227A8
     // Broiler-Falsified-If: this step names an opcode other than DefineClassElement
     // Broiler-Human:        PENDING
     internal readonly struct StepDefineClassElement : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DefineClassElement"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=56A2D2
         // Broiler-Falsified-If: this answers any opcode other than DefineClassElement
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3264,13 +3278,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Pop"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=407323
     // Broiler-Falsified-If: this step names an opcode other than Pop
     // Broiler-Human:        PENDING
     internal readonly struct StepPop : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Pop"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A61E2D
         // Broiler-Falsified-If: this answers any opcode other than Pop
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3282,13 +3296,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Duplicate"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=74AEDB
     // Broiler-Falsified-If: this step names an opcode other than Duplicate
     // Broiler-Human:        PENDING
     internal readonly struct StepDuplicate : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Duplicate"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=3E8968
         // Broiler-Falsified-If: this answers any opcode other than Duplicate
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3300,13 +3314,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DuplicateTwo"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=16F384
     // Broiler-Falsified-If: this step names an opcode other than DuplicateTwo
     // Broiler-Human:        PENDING
     internal readonly struct StepDuplicateTwo : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DuplicateTwo"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=435C7A
         // Broiler-Falsified-If: this answers any opcode other than DuplicateTwo
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3318,13 +3332,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Swap"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E9B6EE
     // Broiler-Falsified-If: this step names an opcode other than Swap
     // Broiler-Human:        PENDING
     internal readonly struct StepSwap : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Swap"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E79E80
         // Broiler-Falsified-If: this answers any opcode other than Swap
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3336,13 +3350,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.Pick"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F4FD35
     // Broiler-Falsified-If: this step names an opcode other than Pick
     // Broiler-Human:        PENDING
     internal readonly struct StepPick : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.Pick"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A6A5C6
         // Broiler-Falsified-If: this answers any opcode other than Pick
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3354,13 +3368,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.NewPrivateName"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=95E075
     // Broiler-Falsified-If: this step names an opcode other than NewPrivateName
     // Broiler-Human:        PENDING
     internal readonly struct StepNewPrivateName : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.NewPrivateName"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=4B324A
         // Broiler-Falsified-If: this answers any opcode other than NewPrivateName
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3372,13 +3386,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.LoadPrivate"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F818BF
     // Broiler-Falsified-If: this step names an opcode other than LoadPrivate
     // Broiler-Human:        PENDING
     internal readonly struct StepLoadPrivate : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.LoadPrivate"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E3F8D0
         // Broiler-Falsified-If: this answers any opcode other than LoadPrivate
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3390,13 +3404,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.StorePrivate"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=3056BA
     // Broiler-Falsified-If: this step names an opcode other than StorePrivate
     // Broiler-Human:        PENDING
     internal readonly struct StepStorePrivate : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.StorePrivate"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E161C3
         // Broiler-Falsified-If: this answers any opcode other than StorePrivate
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3408,13 +3422,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.HasPrivate"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=097FEA
     // Broiler-Falsified-If: this step names an opcode other than HasPrivate
     // Broiler-Human:        PENDING
     internal readonly struct StepHasPrivate : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.HasPrivate"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=468A35
         // Broiler-Falsified-If: this answers any opcode other than HasPrivate
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3426,13 +3440,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.RunStaticElements"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=4AD870
     // Broiler-Falsified-If: this step names an opcode other than RunStaticElements
     // Broiler-Human:        PENDING
     internal readonly struct StepRunStaticElements : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.RunStaticElements"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=276AB0
         // Broiler-Falsified-If: this answers any opcode other than RunStaticElements
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3444,13 +3458,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.IterateStartAsync"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B0B5E3
     // Broiler-Falsified-If: this step names an opcode other than IterateStartAsync
     // Broiler-Human:        PENDING
     internal readonly struct StepIterateStartAsync : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.IterateStartAsync"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=4D20AC
         // Broiler-Falsified-If: this answers any opcode other than IterateStartAsync
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3462,13 +3476,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.IterateNextAsync"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=319122
     // Broiler-Falsified-If: this step names an opcode other than IterateNextAsync
     // Broiler-Human:        PENDING
     internal readonly struct StepIterateNextAsync : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.IterateNextAsync"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=021DE0
         // Broiler-Falsified-If: this answers any opcode other than IterateNextAsync
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3480,13 +3494,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.IterateAwaitStep"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=12DE68
     // Broiler-Falsified-If: this step names an opcode other than IterateAwaitStep
     // Broiler-Human:        PENDING
     internal readonly struct StepIterateAwaitStep : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.IterateAwaitStep"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=988400
         // Broiler-Falsified-If: this answers any opcode other than IterateAwaitStep
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3498,13 +3512,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.IterateCloseAsync"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=664AB9
     // Broiler-Falsified-If: this step names an opcode other than IterateCloseAsync
     // Broiler-Human:        PENDING
     internal readonly struct StepIterateCloseAsync : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.IterateCloseAsync"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=3D3E70
         // Broiler-Falsified-If: this answers any opcode other than IterateCloseAsync
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3516,13 +3530,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.IterateCloseCheck"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=08A955
     // Broiler-Falsified-If: this step names an opcode other than IterateCloseCheck
     // Broiler-Human:        PENDING
     internal readonly struct StepIterateCloseCheck : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.IterateCloseCheck"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=940D59
         // Broiler-Falsified-If: this answers any opcode other than IterateCloseCheck
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3534,13 +3548,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DeclareGlobalLet"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E2614E
     // Broiler-Falsified-If: this step names an opcode other than DeclareGlobalLet
     // Broiler-Human:        PENDING
     internal readonly struct StepDeclareGlobalLet : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DeclareGlobalLet"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=FFF17F
         // Broiler-Falsified-If: this answers any opcode other than DeclareGlobalLet
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3552,13 +3566,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DeclareGlobalConst"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8C9FAB
     // Broiler-Falsified-If: this step names an opcode other than DeclareGlobalConst
     // Broiler-Human:        PENDING
     internal readonly struct StepDeclareGlobalConst : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DeclareGlobalConst"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C6B233
         // Broiler-Falsified-If: this answers any opcode other than DeclareGlobalConst
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3570,13 +3584,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.InitialiseGlobalLexical"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E8474D
     // Broiler-Falsified-If: this step names an opcode other than InitialiseGlobalLexical
     // Broiler-Human:        PENDING
     internal readonly struct StepInitialiseGlobalLexical : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.InitialiseGlobalLexical"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2F78D2
         // Broiler-Falsified-If: this answers any opcode other than InitialiseGlobalLexical
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3588,13 +3602,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.DeleteGlobalBinding"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E5A638
     // Broiler-Falsified-If: this step names an opcode other than DeleteGlobalBinding
     // Broiler-Human:        PENDING
     internal readonly struct StepDeleteGlobalBinding : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.DeleteGlobalBinding"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BFB32C
         // Broiler-Falsified-If: this answers any opcode other than DeleteGlobalBinding
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3606,13 +3620,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.EnterBody"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=889496
     // Broiler-Falsified-If: this step names an opcode other than EnterBody
     // Broiler-Human:        PENDING
     internal readonly struct StepEnterBody : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.EnterBody"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BD1929
         // Broiler-Falsified-If: this answers any opcode other than EnterBody
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3624,13 +3638,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ImportCall"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=ECF250
     // Broiler-Falsified-If: this step names an opcode other than ImportCall
     // Broiler-Human:        PENDING
     internal readonly struct StepImportCall : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ImportCall"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=33B0A7
         // Broiler-Falsified-If: this answers any opcode other than ImportCall
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode
@@ -3642,13 +3656,13 @@ internal static unsafe class JsBaselineHandlers
     }
 
     /// <summary>The step that runs one <see cref="JsOpcode.ImportMeta"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=A5E6F9
     // Broiler-Falsified-If: this step names an opcode other than ImportMeta
     // Broiler-Human:        PENDING
     internal readonly struct StepImportMeta : IJsExecutionMode
     {
         /// <summary>Always <see cref="JsOpcode.ImportMeta"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=2803F5
         // Broiler-Falsified-If: this answers any opcode other than ImportMeta
         // Broiler-Human:        PENDING
         public static JsOpcode Opcode

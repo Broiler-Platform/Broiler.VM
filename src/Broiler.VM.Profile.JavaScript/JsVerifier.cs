@@ -1446,7 +1446,7 @@ internal sealed class JsVerifier
     /// question, and bytes with no symbols are a blob nothing can enter.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7511FC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=5E7901
     // Broiler-Falsified-If: an artifact whose symbol table names fewer units than the function table is admitted, or a symbol offset outside the emitted blob is
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome LinkNative(
@@ -1574,7 +1574,7 @@ internal sealed class JsVerifier
     /// with the wrong reason attached; refusing on the version says the true thing.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=001336
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=143E4A
     // Broiler-Falsified-If: an artifact whose emitted bytes differ from this image's own emission of its bytecode is admitted while an emitter is present
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReEmit(
