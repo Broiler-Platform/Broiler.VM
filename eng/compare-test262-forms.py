@@ -22,13 +22,17 @@
 #       the requesting operation's allowance and its native payload is larger, so fuel and the
 #       nested-load byte count are spent at a different point. This class is admitted only with
 #       `--exempt-guest-loads`, because it is an exemption and a caller should have to ask for it.
-#   (c) a wall-clock exhaustion on either side, admitted only when the two runs were not both taken
-#       at the deterministic lane's allowance of 60,000 ms or more. Each native instruction costs more
-#       wall time, so a realistic wall bites the native run first; and where the bytecode run was
-#       taken at a shorter wall than the native run, a bytecode wall-clock exhaustion is a statement
-#       about that shorter wall rather than an answer the native run disagreed with. Under the
-#       deterministic lane neither is admitted, because at sixty seconds a wall-clock exhaustion is
-#       not noise.
+#   (c) a wall-clock exhaustion, admitted only when the two runs were not both taken at the
+#       deterministic lane's allowance of 60,000 ms or more, and only in two shapes:
+#         - the NATIVE run exhausted the wall where the bytecode run passed, failed, or exhausted
+#           another allowance. Each native instruction costs more wall time, so a realistic wall
+#           bites the native run first, and the native run gave no answer to disagree with.
+#         - the BYTECODE run exhausted the wall and the native run PASSED. Where the bytecode run
+#           was taken at a shorter wall than the native run, that exhaustion is a statement about
+#           the shorter wall. A native failure, refusal or defect against it is NOT admitted, since
+#           it can be a wrong answer only the native form gives.
+#       Under the deterministic lane neither is admitted, because at sixty seconds a wall-clock
+#       exhaustion is not noise.
 #
 # Anything else - a pass that became a failure, a failure that became a pass, a refusal to
 # instantiate, an internal defect - is UNCLASSIFIED and fails the comparison.
@@ -62,6 +66,11 @@ CEILING_REFUSAL = "would exceed the format's native-code ceiling"
 
 GUEST_LOADS = ("eval(", "Function(", "import(")
 LOADING_DIMENSIONS = ("Fuel", "NestedLoadBytes")
+
+# The bytecode verdicts against which a native wall-clock exhaustion is class (c): an answer, or an
+# exhaustion of another allowance. A bytecode refusal or defect against a native run that got as far
+# as running out of wall is a divergence of the two forms, not the cost of one.
+WALL_REFERENCES = ("Passed", "Failed", "Exhausted")
 
 Row = collections.namedtuple("Row", "verdict family dimension kind detail")
 
@@ -125,8 +134,14 @@ def read(path):
     return header, rows
 
 
-def find_suite(named):
-    """The checkout guest-load detection reads, named or found under artifacts/."""
+def find_suite(named, required):
+    """The checkout guest-load detection reads, named or found under artifacts/.
+
+    Guest-load detection runs with or without --exempt-guest-loads, so a guest-load difference is
+    named as class (b-unexempted) rather than lost among the unclassified rows. Only the exemption
+    REQUIRES the checkout: without it a checkout that cannot be found is no refusal, and a
+    guest-load difference is then reported unclassified, which fails the comparison all the same.
+    """
     if named:
         suite = pathlib.Path(named)
 
@@ -137,6 +152,9 @@ def find_suite(named):
 
     found = sorted(
         candidate.parent for candidate in (ROOT / "artifacts").glob("t262*/*/harness") if candidate.is_dir())
+
+    if len(found) != 1 and not required:
+        return None
 
     if len(found) != 1:
         refuse(
@@ -169,15 +187,22 @@ def classify(reference, candidate, loads, exempt, realistic):
     if candidate.verdict == "Exhausted" and candidate.dimension in LOADING_DIMENSIONS and loads():
         return "b" if exempt else "b-unexempted"
 
-    walls = [
-        row.dimension for row in (reference, candidate)
-        if row.verdict == "Exhausted" and row.dimension == "WallClock"
-    ]
+    if realistic and is_wall(candidate) and not is_wall(reference) and reference.verdict in WALL_REFERENCES:
+        # The native run ran out of wall where the bytecode run answered, or ran out of another
+        # allowance: the native side gave no answer, so there is no answer to disagree with.
+        return "c"
 
-    if realistic and walls:
+    if realistic and is_wall(reference) and candidate.verdict == "Passed":
+        # The bytecode run ran out of its (shorter) wall and the native run passed. A native FAILURE
+        # against a bytecode wall exhaustion is not admitted: it may be a wrong answer only the
+        # native form gives, and nothing in this report can say otherwise.
         return "c"
 
     return "unclassified"
+
+
+def is_wall(row):
+    return row.verdict == "Exhausted" and row.dimension == "WallClock"
 
 
 def describe(row):
@@ -202,7 +227,7 @@ def main():
 
     reference_header, reference = read(arguments.reference)
     candidate_header, candidate = read(arguments.candidate)
-    suite = find_suite(arguments.suite) if arguments.exempt_guest_loads else None
+    suite = find_suite(arguments.suite, required=arguments.exempt_guest_loads)
 
     for label, path, header in (
             ("reference", arguments.reference, reference_header),
