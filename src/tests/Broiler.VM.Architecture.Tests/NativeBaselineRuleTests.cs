@@ -150,6 +150,11 @@ public sealed class NativeBaselineRuleTests
 
         Assert.True(Tree.Count > 100);
 
+        // The sweep is the shipping tree, and a vendored component is not in it. The row states that
+        // limit by directory, and this is what keeps the limit the one the row states.
+        Assert.DoesNotContain(Tree, static file => ComponentGraph.VendoredComponents.Any(directory =>
+            file.RelativePath.StartsWith(directory, StringComparison.Ordinal)));
+
         Assert.Empty(X3(Tree));
     }
 
@@ -218,6 +223,72 @@ public sealed class NativeBaselineRuleTests
 
         Assert.Contains(partial, static message => message.Contains(
             "is partial", StringComparison.Ordinal));
+
+        // A qualifier the parser spells differently is still the type.
+        var qualified = SlotViolations(WithMember(
+            activation,
+            "internal static void Park(JsNativeActivation parked) => " +
+            "global::Broiler.VM.Profile.JavaScript.JsNativeActivation.current = parked;"));
+
+        Assert.Contains(qualified, static message => message.Contains(
+            "writes the thread slot current in Park", StringComparison.Ordinal));
+
+        // A write inside Step is not the read Step is allowed, however the target is wrapped.
+        foreach (var write in new[] { "(current) = null;", "(current, _) = (null, 0);" })
+        {
+            var stepWrite = SlotViolations(activation with
+            {
+                Text = activation.Text.Replace(
+                    "var act = current;",
+                    "var act = current;\n        " + write,
+                    StringComparison.Ordinal),
+            });
+
+            Assert.Contains(stepWrite, static message => message.Contains(
+                "writes the thread slot current in Step", StringComparison.Ordinal));
+        }
+    }
+
+    /// <summary>
+    /// A second type declared beside the activation, in its own file, cannot name the slot unseen.
+    /// </summary>
+    [Fact]
+    public void X3_A_Type_Beside_The_Activation_Naming_The_Slot_Is_Reported()
+    {
+        var activation = Tree.Single(static file =>
+            string.Equals(file.RelativePath, ActivationFile, StringComparison.Ordinal));
+
+        var sibling = SlotViolations(activation with
+        {
+            Text = activation.Text +
+                "\ninternal static class JsStepHelper\n{\n" +
+                "    internal static JsNativeActivation? Peek() => JsNativeActivation.Current;\n}\n",
+        }).ToArray();
+
+        Assert.Contains(sibling, static message => message.Contains(
+            "names JsNativeActivation.Current outside JsNativeActivation", StringComparison.Ordinal));
+
+        // ...and the real file, which declares nothing beside the activation, is not reported.
+        Assert.DoesNotContain(SlotViolations(activation), static message => message.Contains(
+            "outside JsNativeActivation", StringComparison.Ordinal));
+    }
+
+    /// <summary>An alias of the activation, anywhere in the tree, is reported.</summary>
+    [Fact]
+    public void X3_An_Alias_Of_The_Activation_Is_Reported()
+    {
+        var violations = X3(
+            [.. Tree, new NativeMappingRules.SourceUnit(
+                "src/Broiler.VM.Profile.JavaScript/JsSlotPeek.cs",
+                "Broiler.VM.Profile.JavaScript",
+                "using Slot = Broiler.VM.Profile.JavaScript.JsNativeActivation;\n" +
+                "namespace Broiler.VM.Profile.JavaScript;\n" +
+                "internal static class JsSlotPeek { internal static bool Busy => Slot.Current is not null; }\n")])
+            .ToArray();
+
+        Assert.Contains(violations, static message => message.Contains(
+            "JsSlotPeek.cs aliases JsNativeActivation", StringComparison.Ordinal));
+        Assert.Single(violations);
     }
 
     /// <summary>
@@ -268,6 +339,16 @@ public sealed class NativeBaselineRuleTests
         Assert.Equal("0001", row.OwningAdr);
         Assert.Contains("JSD-0025", row.Statement, StringComparison.Ordinal);
         Assert.Contains("N20", row.Statement, StringComparison.Ordinal);
+
+        // The statement is scoped to the tree the rule sweeps, and the row names every component that
+        // sweep leaves out - one of them declares native callbacks of its own, so an unscoped
+        // statement would claim a property the repository does not have.
+        Assert.Contains("shipping source tree", row.Statement, StringComparison.Ordinal);
+
+        foreach (var directory in ComponentGraph.VendoredComponents)
+        {
+            Assert.Contains(directory, row.NonVacuousWhen, StringComparison.Ordinal);
+        }
 
         // The design named a third clause - no write through a frame pointer outside two files -
         // and the rule does not decide it. The row has to say so, and say what holds it instead,
@@ -400,6 +481,13 @@ public sealed class NativeBaselineRuleTests
                     $"{file.RelativePath} imports JsNativeActivation's static members, which lets it " +
                     "name the thread slot without naming the type";
             }
+
+            if (TypeAlias.IsMatch(file.Text))
+            {
+                yield return
+                    $"{file.RelativePath} aliases JsNativeActivation, which lets it name the thread slot " +
+                    "under a name this rule does not read";
+            }
         }
 
         if (handler is not null && !UnmanagedEntry.IsMatch(handler.Text))
@@ -441,6 +529,26 @@ public sealed class NativeBaselineRuleTests
         {
             yield return $"{activation.RelativePath} declares no JsNativeActivation";
             yield break;
+        }
+
+        if (root.DescendantNodes().OfType<ClassDeclarationSyntax>().Count(static other =>
+                string.Equals(other.Identifier.ValueText, "JsNativeActivation", StringComparison.Ordinal)) > 1)
+        {
+            yield return
+                $"{activation.RelativePath} declares more than one type named JsNativeActivation, so the " +
+                "one this rule parses need not be the one that holds the slot";
+        }
+
+        // The rest of the file is read the way every other file is. The tree scan leaves this file
+        // out because its class names the slot by design, so without this a second type declared
+        // beside the activation - a step helper, say - could name the slot and nothing would see it.
+        var outside = activation.Text[..type.Span.Start] + "\n" + activation.Text[type.Span.End..];
+
+        if (SlotNamed.IsMatch(outside))
+        {
+            yield return
+                $"{activation.RelativePath} names JsNativeActivation.Current outside JsNativeActivation, " +
+                $"and outside the activation the one file that may set or read the thread slot is {EnteringFile}";
         }
 
         if (type.Modifiers.Any(SyntaxKind.PartialKeyword))
@@ -575,6 +683,10 @@ public sealed class NativeBaselineRuleTests
     private static readonly Regex StaticImport =
         new(@"\busing\s+static\s+(?:global::)?[\w.]*\bJsNativeActivation\s*;", RegexOptions.Compiled);
 
+    /// <summary>An alias of the activation, which would let a file name the slot under another name.</summary>
+    private static readonly Regex TypeAlias =
+        new(@"\busing\s+\w+\s*=\s*(?:global::)?[\w.]*\bJsNativeActivation\s*;", RegexOptions.Compiled);
+
     private static readonly string[] ThreadStaticNames =
     [
         "ThreadStatic", "ThreadStaticAttribute", "System.ThreadStatic", "System.ThreadStaticAttribute",
@@ -685,25 +797,83 @@ public sealed class NativeBaselineRuleTests
     }
 
     /// <summary>Whether an identifier names a member of the activation itself rather than of something else.</summary>
-    private static bool IsOwnMember(IdentifierNameSyntax identifier) =>
-        identifier.Parent is not MemberAccessExpressionSyntax access ||
-        access.Name != identifier ||
-        access.Expression.ToString() is "JsNativeActivation" or "Broiler.VM.Profile.JavaScript.JsNativeActivation";
+    /// <remarks>
+    /// The qualifier is compared with its whitespace and any <c>global::</c> removed, and any
+    /// qualifier ending in the type's simple name is the type: the slot's field is private and the
+    /// property static, so no receiver but the type can name either, and every spelling of the type
+    /// is one the rule has to count. An alias of the type is the one spelling this cannot see, and
+    /// rule X3 reports every alias of it across the tree instead.
+    /// </remarks>
+    private static bool IsOwnMember(IdentifierNameSyntax identifier)
+    {
+        if (identifier.Parent is not MemberAccessExpressionSyntax access || access.Name != identifier)
+        {
+            return true;
+        }
 
-    /// <summary>Whether an identifier is assigned to or passed by reference.</summary>
+        var qualifier = string.Concat(access.Expression.ToString().Where(static c => !char.IsWhiteSpace(c)));
+
+        if (qualifier.StartsWith("global::", StringComparison.Ordinal))
+        {
+            qualifier = qualifier["global::".Length..];
+        }
+
+        return qualifier is "JsNativeActivation" ||
+            qualifier.EndsWith(".JsNativeActivation", StringComparison.Ordinal);
+    }
+
+    /// <summary>Whether an identifier is assigned to, deconstructed into, stepped, or passed by reference.</summary>
+    /// <remarks>
+    /// The target is walked up through parentheses and through the tuples of a deconstruction to the
+    /// place that decides it, so <c>(current) = x</c> and <c>(current, _) = (x, 0)</c> are writes and
+    /// not reads - a read is what the step is allowed, so a write mistaken for one would pass there.
+    /// </remarks>
     private static bool IsWrite(IdentifierNameSyntax identifier)
     {
         SyntaxNode target = identifier.Parent is MemberAccessExpressionSyntax access && access.Name == identifier
             ? access
             : identifier;
 
-        return target.Parent switch
+        while (true)
         {
-            AssignmentExpressionSyntax assignment => assignment.Left == target,
-            ArgumentSyntax argument => !argument.RefKindKeyword.IsKind(SyntaxKind.None),
-            RefExpressionSyntax => true,
-            _ => false,
-        };
+            switch (target.Parent)
+            {
+                case ParenthesizedExpressionSyntax parenthesized:
+                    target = parenthesized;
+                    continue;
+
+                case ArgumentSyntax argument when argument.Parent is TupleExpressionSyntax tuple:
+                    if (!argument.RefKindKeyword.IsKind(SyntaxKind.None))
+                    {
+                        return true;
+                    }
+
+                    target = tuple;
+                    continue;
+
+                case AssignmentExpressionSyntax assignment:
+                    return assignment.Left == target;
+
+                case ArgumentSyntax argument:
+                    return !argument.RefKindKeyword.IsKind(SyntaxKind.None);
+
+                case RefExpressionSyntax:
+                    return true;
+
+                case PrefixUnaryExpressionSyntax prefix:
+                    return prefix.Kind() is SyntaxKind.PreIncrementExpression or SyntaxKind.PreDecrementExpression
+                        or SyntaxKind.AddressOfExpression;
+
+                case PostfixUnaryExpressionSyntax postfix:
+                    return postfix.Kind() is SyntaxKind.PostIncrementExpression or SyntaxKind.PostDecrementExpression;
+
+                case ForEachVariableStatementSyntax loop:
+                    return loop.Variable == target;
+
+                default:
+                    return false;
+            }
+        }
     }
 
     /// <summary>The member an identifier sits in, and the accessor when it is in a property.</summary>

@@ -330,8 +330,9 @@ public sealed class RuleRegisterTests
         // are the two claims decision JSD-0025's rooting argument makes that no call site shows.
         // X2 holds the frame handed to emitted code to carrying no reference, because the collector
         // does not scan an emitted frame and a reference parked in one is held where nothing roots
-        // it. X3 pins where native code may enter managed code to the handler file and the thread
-        // slot a handler finds its activation through to one writer and one reader, which is what
+        // it. X3 pins where native code may enter managed code to the handler file, and the thread
+        // slot a handler finds its activation through to one entering file that saves, sets and
+        // restores it and, inside the activation, to the property's accessors and Step, which is what
         // keeps that slot an activation handle rather than the ambient holder N20 forbids. Neither
         // the Vacuous nor the Deferred count moves.
         Assert.Equal(93, byStatus["Active"]);
