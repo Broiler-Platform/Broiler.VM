@@ -32,3 +32,7 @@ d5770388b18a503f83cbf57a7f7189f1adabc4687602825662498d26239d6aec *test262-byteco
 ca256378075d5bd7e22856336dfe806a424d2e7384b8eea296ddd7a60da19ef4 *artifacts/test262-native-wide-5000/test262.report
 cf2dd788d7c4e1e0180e1c889d23e9f4d8a5238af1bb0036ec9125b3d9b0329b *artifacts/test262-bytecode-head/test262.report
 7f756f1eb8e6b412d60e544da98f6c56424c68a1126b7af50f1a314a3e80f57b *artifacts/g4-int/test262.report
+a2d4a04751c50d237de879ae6722ca6c20f2d23edd7934649cb1cad243e4c58e *test262-bytecode-same-build.log
+6e34ab5389d2ca0094ab35d4844dd05fa709f9104359ca61537bd6d5e0c0cae3 *forms-comparison-same-build.log
+34a34b6fec492f10a2ea13bf46096c30fd79adef8bc29affe9a686a233eb2dd6 *bytecode-merge-base-against-branch.log
+cf2dd788d7c4e1e0180e1c889d23e9f4d8a5238af1bb0036ec9125b3d9b0329b *artifacts/test262-bytecode-samebuild/test262.report (not retained; read by forms-comparison-same-build.log and bytecode-merge-base-against-branch.log)

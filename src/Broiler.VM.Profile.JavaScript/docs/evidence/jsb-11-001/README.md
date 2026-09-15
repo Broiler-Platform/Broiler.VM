@@ -65,7 +65,7 @@ satisfied by a file, never by a sentence here.**
 | **Dependencies and corpus** | `environment.txt`, `hashes.txt`; the pinned suite is named in every `test262-*.log` except the waves, and the Octane pin in every `octane-*.report` |
 | **Environment** | `environment.txt` — one machine, `win-x64`, JIT, trimmed and Native AOT |
 | **Procedure** | section 2 below, and the header of each log |
-| **Results** | `build.log`, `suite.log`, `publish-and-run.log`, every `test262-*`, `forms-comparison*`, `frame-cost-*` and `octane-*` file, `bytecode-before-after-subtrees.log`, `floor-native.log`, `jit-execute-summary.txt`, `aot-image-sizes.txt` |
+| **Results** | `build.log`, `suite.log`, `publish-and-run.log`, every `test262-*`, `forms-comparison*`, `frame-cost-*` and `octane-*` file, `bytecode-before-after-subtrees.log`, `bytecode-merge-base-against-branch.log`, `floor-native.log`, `jit-execute-summary.txt`, `aot-image-sizes.txt` |
 | **Negative controls** | **Thin, and deliberately** — section 5 |
 | **Closure** | `closure-*.txt` and `catalog-*.txt`, read off the images `publish-and-run.log` published and ran |
 | **Exclusions** | section 9, which takes in section 8's *What is missing* column |
@@ -102,7 +102,8 @@ nothing.
 | Retained as | What it is | Build | Allowance per variant | Machine state |
 |---|---|---|---|---|
 | `test262-bytecode-reference.log`, `test262-bytecode-reference.report.gz` | whole suite, bytecode form | main `d126172` | fuel 100000000, wall 5000 ms | loaded by other work |
-| `test262-native-wide.log`, `test262-native-wide.report.gz` | whole suite, native form `x86-64-win64` | `444f9c9` | fuel 100000000, wall 5000 ms | quiet |
+| `test262-native-wide.log`, `test262-native-wide.report.gz` | whole suite, native form `x86-64-win64` | `444f9c9` | fuel 100000000, wall 5000 ms | quiet apart from the frame-cost measure, which ran alongside it |
+| `test262-bytecode-same-build.log` | whole suite, bytecode form, from the very binaries the row above ran | `444f9c9` | fuel 100000000, wall 5000 ms | quiet apart from two runs of the test suite of about fifteen seconds each |
 | `test262-native-wide-60000.log` | whole suite, native form `x86-64-win64` | `0f6baec` | fuel 100000000, wall 60000 ms | loaded by other work |
 | `test262-numeric-before.log` | whole suite, numeric manifest, native form, harness not loaded | main `d126172` | fuel 100000000, wall 5000 ms | loaded by other work |
 | `test262-native-waves.log` | five named selections, native form, each compared with the bytecode reference | `0f6baec` | fuel 100000000, wall 60000 ms | — |
@@ -117,12 +118,16 @@ python eng/compare-test262-forms.py artifacts/test262-bytecode-head/test262.repo
 python eng/compare-test262-forms.py artifacts/test262-bytecode-head/test262.report artifacts/test262-native-wide-1/test262.report      > forms-comparison-60000.log
 python eng/compare-test262-forms.py artifacts/test262-bytecode-head/test262.report artifacts/aot/t262-native/test262.report           > forms-comparison-aot-subset.log
 python eng/compare-test262-forms.py artifacts/test262-bytecode-head/test262.report artifacts/g4-int/test262.report                    > bytecode-before-after-subtrees.log
+python eng/compare-test262-forms.py artifacts/test262-bytecode-samebuild/test262.report artifacts/test262-native-wide-5000/test262.report --exempt-guest-loads --suite <checkout> > forms-comparison-same-build.log
+python eng/compare-test262-forms.py artifacts/test262-bytecode-head/test262.report artifacts/test262-bytecode-samebuild/test262.report --suite <checkout>                        > bytecode-merge-base-against-branch.log
 ```
 
-The last is a bytecode run against a bytecode run, and the script prints that its classes describe a
-comparison of two forms rather than this one. Only the reference and the wall-5000 native report are
-retained, compressed; `retained-hashes.txt` carries the digest of those two raw reports and of the
-subtree report the last comparison read.
+The fourth and the last are bytecode runs against bytecode runs, and the script prints that its classes
+describe a comparison of two forms rather than those. The last line of each of the final two logs is
+the script's exit code, appended by the shell. Only the reference and the wall-5000 native report are
+retained, compressed; `retained-hashes.txt` carries the digest of those two raw reports, of the subtree
+report the fourth comparison read, and of the same-build bytecode report, **which is not retained
+because it is the reference report's bytes**: the two files have one digest.
 
 `test262-native-waves.log` was **not** produced by that script. It came from a working comparison
 script that is not in this repository, which is why section 3 leans on it least.
@@ -159,6 +164,7 @@ come from the session's notes, as does the machine being quiet.
 | Run | files | variants | pass | fail | unsupported | exhausted | skipped |
 |---|---|---|---|---|---|---|---|
 | bytecode reference | 53,469 | 94,545 | 70,834 | 13,315 | 1,990 | 60 | 8,346 |
+| bytecode, from the wall-5000 native run's own binaries | 53,469 | 94,545 | 70,834 | 13,315 | 1,990 | 60 | 8,346 |
 | native, wall 5000 ms | 53,469 | 94,545 | 70,834 | 13,315 | 1,990 | 60 | 8,346 |
 | native, wall 60000 ms | 53,469 | 94,545 | 70,834 | 13,315 | 1,990 | 60 | 8,346 |
 | native, Native AOT image, two subtrees | 5,044 | 9,962 | 9,669 | 228 | 12 | 0 | 53 |
@@ -169,10 +175,18 @@ allowance, **all 94,545 variants are present in both reports and none differs** 
 exhausted dimension, and the script exits 0. Each of the four whole-suite logs ends by saying its run may be
 retained: pinned, whole, and its verdicts account for it.
 
-**What that comparison is not.** The two runs came from **two builds**: the reference from main and the
-native run from this commit. The gate asks for one build, and that condition is not met here. Each was
-taken once, on the same machine, under different load. Each shard exiting 1 in the logs is the
-ordinary outcome for this suite, meaning cases failed; it is not a harness failure.
+**The same comparison from one build** is `forms-comparison-same-build.log`. The bytecode run was
+repeated from the very binaries the wall-5000 native run used, under the same manifest, harness,
+allowance and process count: **all 94,545 variants are present in both reports and none differs** in
+verdict or in exhausted dimension, and the script exits 0. **The reference from main and that repeated
+bytecode run are one file twice**: the two merged reports have the same SHA-256, recorded in
+`retained-hashes.txt`, so the two builds answer the suite identically in bytecode, row for row and
+detail for detail (section 7).
+
+**What those comparisons are not.** Each run was taken once, on one machine, under a wall-clock
+allowance rather than a deterministic one, and not every run under the same load (section 2). Each
+shard exiting 1 in the logs is the ordinary outcome for this suite, meaning cases failed; it is not a
+harness failure.
 
 **The run at 60000 ms is recorded and rests no clause, because `forms-comparison-60000.log` exits 1.**
 All 94,545 verdicts agree. **Forty variants differ in the exhausted dimension.** Each is exhausted in
@@ -329,6 +343,14 @@ and process counts, once each, on one machine. The session's notes record an ear
 the same selection on another build, whose report was not found when this bundle was written. This
 retained comparison takes its place and is not a copy of it.
 
+**The whole suite in bytecode, before and after.** `bytecode-merge-base-against-branch.log` compares the
+merge base's whole-suite bytecode report with a whole-suite bytecode run from the binaries the
+wall-5000 native run used (section 2): **94,545 variants in both reports, none differs**, and the
+script exits 0. The two merged reports have one SHA-256, so they are the same bytes. **It is one run of
+each**, on one machine, under a wall-clock allowance, the main run loaded by other work; and identical
+verdict rows say nothing about speed, code size or stack reservation, which are what the clause's
+tolerances ask about.
+
 **The call depth is bounded in both forms, and at the merge base.** `frame-cost-bytecode.log`,
 `frame-cost-native.log` and `frame-cost-bytecode-merge-base.log` each report a deepest returning and a
 deepest throwing recursion of 5999, both stopped by the declared bound, on a declared guest stack of
@@ -359,13 +381,13 @@ A clause is met or it is not. **"Shown in part" is not met.**
 
 | Clause | On this evidence | What is missing |
 |---|---|---|
-| The bytecode form is unchanged | **Not met** — shown in part: optimised instantiation (section 7); bytecode call depth bounded at this commit and at the merge base (section 7); verdict rows over six named subtrees identical to the merge base's, for `0f6baec` (section 7); corpus replays (section 4); benchmark reports retained, not read (section 6) | Every tolerance predeclared in this bundle before the run it judges, without which the code size, the frame-cost measure and the benchmark geometric mean meet none; the stack reservation; the subtree run and the benchmark taken from the collected commit rather than `0f6baec` |
+| The bytecode form is unchanged | **Not met** — shown in part: optimised instantiation (section 7); bytecode call depth bounded at this commit and at the merge base (section 7); verdict rows over six named subtrees identical to the merge base's, for `0f6baec`, and the whole-suite bytecode report of the collected build byte-identical to the merge base's (section 7); corpus replays (section 4); benchmark reports retained, not read (section 6) | Every tolerance predeclared in this bundle before the run it judges, without which the code size, the frame-cost measure and the benchmark geometric mean meet none; the stack reservation; the benchmark taken from the collected commit rather than `0f6baec` |
 | The per-step instantiations, or the fallback | **Not met** — native call depth bounded (section 7); each Native AOT image's size retained at this commit and at the merge base (section 7); the fallback was not taken | Each instantiation's size within a bound and its absence of jump tables; the fresh-process cost of a first native variant within a bound; a fresh process recursing to the ceiling answering `RangeError`; the native frame-cost margin; a bound on image growth, predeclared |
 | The scan closes over what the encoder emits | **Not met** — shown in part on `win-x64` for both conventions' bytes (section 4) | A refusal the transcript names as a call past the table; the verifier's reason on each refusal; a hand check of the retained bytes against the templates |
 | The two forms agree over the wide manifest | **Not met** — the Windows half shown (section 4) | **Any execution under `x86-64-sysv`**; the smallest completing fuel ceiling for every program that loads nothing, not three; a predeclared bound for the deep throw |
 | Rules hold the rooting argument | **Not met** — rules and witnesses pass (section 5) | A control watched failing and passing after revert |
 | The retained corpus replays unchanged | **Met on this machine** — section 4, in all three images, with the baseline-slot entry present | Nothing on this machine; no other runtime identifier replayed it for this bundle |
-| The conformance suite in the two forms | **Not met** — no per-variant difference under one wall-clock allowance (section 3) | One build for both forms; a like-for-like run under a deterministic allowance; the forty unadmitted, unclassified differences of the 60000 ms comparison, which the gate calls defects until shown otherwise; the machine-code and bytecode workflow runs on one commit; every shard inside its job limit |
+| The conformance suite in the two forms | **Not met** — no per-variant difference under one wall-clock allowance, across two builds and from one (section 3) | A like-for-like run under a deterministic allowance; the forty unadmitted, unclassified differences of the 60000 ms comparison, which the gate calls defects until shown otherwise; the machine-code and bytecode workflow runs on one commit; every shard inside its job limit |
 | A bundle retains all of it, with the audit | **Not met** | The audit: that no arm assigns a parameter or a pre-loop local other than the four the clause names, that no `continue` or `goto` bypasses the step boundary, and that every catch filter in the profile assembly is pure. **It was not performed for this bundle** |
 
 ---
@@ -385,7 +407,9 @@ its own.
   frame-cost margin, the Native AOT image growth and the deep throw.
 - **No stack reservation** of `JsEngine.ExecuteCore` or of `Execute` at the merge base was collected.
 - **The subtree bytecode run and the benchmark were taken at `0f6baec`**, not at the collected commit,
-  and the subtree comparison is across two builds at different process counts (section 7).
+  and the subtree comparison is across two builds at different process counts (section 7). The
+  whole-suite bytecode comparison is from the collected build, and it does not stand in for the
+  benchmark.
 - **No per-step instantiation was inspected.** No bundle file shows any instantiation's size or whether
   it has a jump table.
 - **No fresh-process cost** of a first variant in the native form against the same variant in bytecode
@@ -409,9 +433,9 @@ its own.
   loads nothing.
 - **No control watched failing and passing after revert**, for rule `X2`, rule `X3` or anything else
   (section 5).
-- **The two forms' whole-suite comparison is across two builds**, and the 60000 ms comparison exits 1
-  with forty differences in exhausted dimension that the script does not admit and this bundle does not
-  classify (section 3).
+- **The 60000 ms comparison exits 1** with forty differences in exhausted dimension that the script
+  does not admit and this bundle does not classify (section 3). The same-allowance comparisons, across
+  two builds and from one, pass it.
 - **No like-for-like comparison under a deterministic allowance**: no bytecode run at the native runs'
   allowances other than 5000 ms exists.
 - **No continuous-integration run of either form**, so neither the workflow comparison nor any shard's

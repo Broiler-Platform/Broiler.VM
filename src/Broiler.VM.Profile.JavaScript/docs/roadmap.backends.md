@@ -1120,7 +1120,8 @@ names, and a stage identifier is never reused.
   - **Not met: the bytecode form is unchanged.** Shown in part: the interpreted instantiation of
     `JsEngine.ExecuteCore` reaches fully optimised code; the bytecode frame-cost measure stops at the
     declared bound at this commit and at the merge base alike; a bytecode run over named subtrees gives
-    verdict rows identical to the merge base's; and the benchmark comparison's raw reports are
+    verdict rows identical to the merge base's, and a whole-suite bytecode run from the collected build
+    gives a merged report byte-identical to the merge base's; and the benchmark comparison's raw reports are
     retained, with no figure read from them. Not shown: **no tolerance was predeclared in the bundle
     before the runs it would judge**, because the bundle did not exist before them, so the code size,
     the frame-cost measure and the benchmark geometric mean meet none; the stack reservation was not
@@ -1145,8 +1146,8 @@ names, and a stage identifier is never reused.
   - **Not met: rules hold the rooting argument.** Both rules and their witnesses pass in the suite; no
     injection into the tree watched failing and passing after revert is retained.
   - **Not met: the conformance suite in the two forms.** A whole-suite native run was compared variant
-    by variant with a bytecode run under one wall-clock allowance with no difference, but **the two
-    runs came from two builds**. The bundle also retains a comparison against a native run at a
+    by variant with a bytecode run under one wall-clock allowance with no difference, **and again with a
+    bytecode run from the native run's own binaries, with no difference**. The bundle also retains a comparison against a native run at a
     longer wall-clock allowance **that the comparison script does not pass**: its differences, all in
     exhausted dimension and none in a verdict, are neither admitted nor classified, and this clause
     calls such a difference a defect (section 3 of the bundle). No like-for-like comparison under a
