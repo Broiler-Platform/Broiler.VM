@@ -72,7 +72,7 @@ internal static class Test262Json
         new("reportFormat", "string", "The header line of the line-oriented report format this document was rendered from, which carries that format's own version."),
         new("edition", "object", "The language edition the manifests were defined against: standard, year, source, revision, document, digest and whether that document is archived here."),
         new("suite", "object", "The pin: the suite's name, whether it was pinned at all, the upstream project and commit the retained pin names, and the content digest the run computed and matched."),
-        new("manifest", "object", "The feature manifest the run was taken under: its id, the artifact format version, whether the suite's harness prelude was loaded, and the admitted and declined surfaces."),
+        new("manifest", "object", "The feature manifest the run was taken under: its id, the artifact format version, whether the suite's harness prelude was loaded, the admitted and declined surfaces, and the output form with the native backend it was emitted by (empty for bytecode)."),
         new("allowance", "object", "The two ceilings one variant was given: fuel per variant and wall clock in milliseconds per variant."),
         new("partition", "object", "How the selection was cut into processes: the partition rule, this report's shard index (-1 for a whole run) and the shard count."),
         new("selection", "object", "What the run chose to score: candidate files, selected files, the files and variants actually reported, and every recorded narrowing."),
@@ -150,7 +150,9 @@ internal static class Test262Json
                     ("formatVersion", Number((int)report.FormatVersion)),
                     ("loadsHarness", Bool(report.LoadsHarness)),
                     ("admitted", Strings(report.Admitted)),
-                    ("declined", Strings(report.Declined)));
+                    ("declined", Strings(report.Declined)),
+                    ("form", Quote(report.Form)),
+                    ("backend", Quote(report.Backend)));
 
             case "allowance":
                 return Object(

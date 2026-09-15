@@ -27,6 +27,13 @@
 # compares nothing against a baseline or an earlier run. Roadmap section 17 governs any figure that
 # is ever retained, and the ratchet is `--floor`'s and not this script's.
 #
+# THE OUTPUT FORM IS THE HARNESS'S TO CHECK AND NOT THIS SCRIPT'S. `--form native` compiles every
+# variant to emitted machine code, which the compiler admits only under the numeric manifest - so a
+# native run with no `--manifest` is taken under that one, and a native run naming another is
+# refused by every shard before it scores anything. `--backend` defaults, in the harness, to the
+# calling convention this process arms. Two forms are two runs: the shard reports say which form
+# they were, and the merge refuses shards that disagree.
+#
 # THE ALLOWANCES, AND WHY THEY ARE SMALL HERE. A variant gets a fuel ceiling and a wall-clock
 # ceiling, and both are allowances this script states rather than measurements it took. Fuel is the
 # one meant to decide: it is charged per instruction, so the same test decides the same way on a busy
@@ -72,6 +79,7 @@
 # code, because narrowing is what the caller asked for.
 #
 #   python3 eng/run-test262.py --suite <root> [--binary-directory <dir>] [--manifest <id>]
+#                              [--form bytecode|native] [--backend <name>]
 #                              [--decline <surface>]... [--jobs <n>] [--shards <n>]
 #                              [--fuel <n>] [--wall <ms>] [--out <dir>] [--dir <subtree>]...
 #                              [--digest-cache <file>] [--json <file>]
@@ -92,6 +100,9 @@ DEFAULT_BINARY_DIRECTORY = (
     ROOT / "src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0"
 )
 BINARY_NAME = "Broiler.VM.Composition.JavaScript.Conformance"
+
+WIDE_MANIFEST = "broiler.javascript.wide"
+NUMERIC_MANIFEST = "broiler.javascript.numeric"
 
 # The instruction allowance one variant gets. Deterministic, so a retained run says the same thing
 # twice, and sized to run out at about the same point as the wall clock below rather than a minute
@@ -228,7 +239,11 @@ def shard(binary, suite, arguments, index, count, reports, logs):
         "--report", str(report),
         "--fuel", str(arguments.fuel),
         "--wall", str(arguments.wall),
+        "--form", arguments.form,
     ]
+
+    if arguments.backend:
+        command += ["--backend", arguments.backend]
 
     for surface in arguments.decline:
         command += ["--decline", surface]
@@ -249,7 +264,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--suite", required=True, help="an unpacked checkout of the pinned suite")
     parser.add_argument("--binary-directory", default=str(DEFAULT_BINARY_DIRECTORY))
-    parser.add_argument("--manifest", default="broiler.javascript.wide")
+    parser.add_argument(
+        "--manifest", default=None,
+        help=f"defaults to {WIDE_MANIFEST}, or to {NUMERIC_MANIFEST} for a native run")
+    parser.add_argument("--form", choices=("bytecode", "native"), default="bytecode")
+    parser.add_argument(
+        "--backend", default=None, help="a native run's backend; the harness defaults it to the host's")
     parser.add_argument("--decline", action="append", default=[])
     parser.add_argument("--dir", action="append", default=[], help="a subtree; a run naming one is partial")
     parser.add_argument("--fuel", type=int, default=DEFAULT_FUEL)
@@ -287,6 +307,12 @@ def main():
     )
 
     arguments = parser.parse_args()
+
+    if arguments.manifest is None:
+        arguments.manifest = NUMERIC_MANIFEST if arguments.form == "native" else WIDE_MANIFEST
+
+    if arguments.backend and arguments.form != "native":
+        parser.error("--backend names a native backend, and this run's form is bytecode")
 
     binary = pathlib.Path(arguments.binary_directory) / BINARY_NAME
 
@@ -347,7 +373,9 @@ def main():
         print(
             f"# {len(rows)} file digests written to {arguments.digest_cache}; every shard still "
             f"verifies the checkout, and every file whose length or timestamp moved is re-read")
-    print(f"# manifest {arguments.manifest}; declined {arguments.decline or '(none)'}")
+    print(f"# manifest {arguments.manifest}; form {arguments.form}"
+          + (f" ({arguments.backend})" if arguments.backend else "")
+          + f"; declined {arguments.decline or '(none)'}")
     print(f"# {shards} shards across {jobs} processes, {arguments.fuel} fuel and "
           f"{arguments.wall} ms per variant")
     print(f"# retaining every shard's transcript under {out}"

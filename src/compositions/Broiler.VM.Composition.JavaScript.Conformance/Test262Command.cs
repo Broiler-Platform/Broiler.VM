@@ -82,7 +82,12 @@ internal static class Test262Command
         }
 
         if (!Test262Manifest.TryParse(
-                Argument(args, "--manifest"), Repeated(args, "--decline"), out var manifest, out var why))
+                Argument(args, "--manifest"),
+                Repeated(args, "--decline"),
+                Argument(args, "--form"),
+                Argument(args, "--backend"),
+                out var manifest,
+                out var why))
         {
             Console.WriteLine("broiler-js-conformance: " + why);
             return ExitCodes.Usage;
@@ -211,7 +216,9 @@ internal static class Test262Command
             fuel,
             wallClock,
             results,
-            Test262Report.Validate(suite, selected.Count, results));
+            Test262Report.Validate(suite, selected.Count, results),
+            manifest.Form,
+            manifest.Backend);
 
         Summarize(report);
 

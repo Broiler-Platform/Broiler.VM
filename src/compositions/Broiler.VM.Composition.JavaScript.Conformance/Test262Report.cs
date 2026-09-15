@@ -88,7 +88,9 @@ internal sealed record Test262Report(
     ulong Fuel,
     ulong WallClock,
     IReadOnlyList<Test262Outcome> Results,
-    IReadOnlyList<ConfigurationFinding> Findings)
+    IReadOnlyList<ConfigurationFinding> Findings,
+    string Form = Test262Manifest.Bytecode,
+    string Backend = "")
 {
     /// <summary>The header every report of this kind carries, naming the format's version.</summary>
     /// <remarks>
@@ -244,7 +246,7 @@ internal sealed record Test262Report(
 
     /// <summary>The composition this report was taken under, in the words the run printed.</summary>
     internal string DescribeManifest() =>
-        Test262Manifest.Describe(ManifestId, FormatVersion, LoadsHarness, Admitted, Declined);
+        Test262Manifest.Describe(ManifestId, FormatVersion, LoadsHarness, Admitted, Declined, Form, Backend);
 
     /// <summary>Whether anything failed: a case, or the configuration.</summary>
     /// <remarks>
@@ -368,6 +370,17 @@ internal sealed record Test262Report(
         text.Append("# run|suite|revision|upstream|upstreamRevision|shardIndex|shardCount|partition\n");
         text.Append("# edition|standard|year|source|revision|document|digest|archived\n");
         text.Append("# manifest|id|formatVersion|harness|admitted|declined\n");
+
+        // THE FORM ROW IS WRITTEN ONLY FOR A FORM OTHER THAN BYTECODE. A bytecode report is
+        // therefore the document it was before a run could name a form, and a native one is refused
+        // by any reader that predates the row rather than read as a bytecode run.
+        var bytecode = string.Equals(Form, Test262Manifest.Bytecode, StringComparison.Ordinal);
+
+        if (!bytecode)
+        {
+            text.Append("# form|name|backend\n");
+        }
+
         text.Append("# allowance|fuel|wallClockMs\n");
         text.Append("# narrowing|reason\n");
         text.Append("# selection|candidates|selected|sharded|files\n");
@@ -418,6 +431,11 @@ internal sealed record Test262Report(
                 Admitted.Count == 0 ? "-" : string.Join(",", Admitted),
                 Declined.Count == 0 ? "-" : string.Join(",", Declined)))
             .Append('\n');
+
+        if (!bytecode)
+        {
+            text.Append(string.Join('|', "form", Form, Backend.Length == 0 ? "-" : Backend)).Append('\n');
+        }
 
         text.Append(string.Join(
                 '|',
@@ -560,6 +578,8 @@ internal sealed record Test262Report(
         var manifestId = JavaScriptProfile.WideManifest.ToString();
         var formatVersion = 0u;
         var loadsHarness = false;
+        var form = Test262Manifest.Bytecode;
+        var backend = string.Empty;
         IReadOnlyList<string> admitted = [];
         IReadOnlyList<string> declined = [];
         var shardIndex = Sharding.AllShards;
@@ -616,6 +636,11 @@ internal sealed record Test262Report(
                     loadsHarness = string.Equals(parts[3], "loaded", StringComparison.Ordinal);
                     admitted = Set(parts[4]);
                     declined = Set(parts[5]);
+                    break;
+
+                case "form" when parts.Length == 3:
+                    form = parts[1];
+                    backend = Stated(parts[2]);
                     break;
 
                 case "allowance" when parts.Length == 3:
@@ -691,7 +716,7 @@ internal sealed record Test262Report(
         var report = new Test262Report(
             suite, upstream, upstreamRevision, manifestId, formatVersion, loadsHarness, admitted,
             declined, shardIndex, shardCount, partition, narrowings, candidates, selected, fuel,
-            wallClock, results, findings);
+            wallClock, results, findings, form, backend);
 
         // THE COVERAGE CLAIM IS CHECKED AGAINST THE FACTS AND NOT TRUSTED. It is the field a rule
         // reads to decide whether a transcript is a whole-suite run, which makes it the one field
