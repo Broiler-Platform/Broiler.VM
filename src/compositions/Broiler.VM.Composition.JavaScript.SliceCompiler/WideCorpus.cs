@@ -413,7 +413,7 @@ internal static class WideCorpus
             JsNativeArchitecture.Arm64,
             offset: 4),
 
-        // ---- and the control, without which the five above are satisfied by refusing everything -
+        // ---- and the control, without which the six above are satisfied by refusing everything --
         //
         // NINE WORDS THAT ARE ALL TEMPLATES, AND THE ROW RECORDS THAT VERIFICATION PASSED. The
         // entry is refused at INSTANTIATION for the architecture it names, which is the only reason

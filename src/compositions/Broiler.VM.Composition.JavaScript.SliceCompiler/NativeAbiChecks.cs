@@ -517,6 +517,9 @@ internal static class NativeAbiChecks
         "the-smallest-completing-allowance-is-one-figure",
         "entry-points-survive/" + JsNativeBackends.X64Windows,
         "entry-points-survive/" + JsNativeBackends.X64SystemV,
+        "a-misaligned-reservation-is-caught/" + JsNativeBackends.X64Windows,
+        "a-misaligned-reservation-is-caught/" + JsNativeBackends.X64SystemV,
+        "a-short-reservation-loses-a-saved-register/" + JsNativeBackends.X64Windows,
         "a-swapped-handler-is-a-defect",
         "frequent-collections",
     ];
@@ -687,6 +690,11 @@ internal static class NativeAbiChecks
             return (0, "did not compile");
         }
 
+        if (form == JsOutputForm.Native && EmittedCodeMissing(compiled.Artifact) is { } missing)
+        {
+            return (0, missing);
+        }
+
         NativeLifecycle.WideAnswer Attempt(ulong fuel) =>
             NativeLifecycle.RunWideArtifact(
                 compiled.Artifact, form, backend, fuel, reEmit: form == JsOutputForm.Native, module: library is not null);
@@ -742,10 +750,14 @@ internal static class NativeAbiChecks
     /// </para>
     /// <para>
     /// <b>UNDER WINDOWS x64 THE STUB ALSO WRITES THE LAST SLOT OF ITS SHADOW SPACE</b>, which a callee
-    /// may, so a unit that reserved less than the convention asks would lose a saved register or its
-    /// return address to it. The injection beside the row reserves eight bytes MORE, which is the one
-    /// wrong reservation that is safe to run, and requires the recorded pointer to be caught
-    /// misaligned.
+    /// may, so a unit that reserved less than the convention asks loses a saved register or its return
+    /// address to it. Only the first of those is a row: a write onto the return address sends the unit
+    /// back into the stack and takes the process down, and that is what the likeliest short
+    /// reservation - System V's eight, emitted under Windows - would do. Two injections sit beside the
+    /// row. One reserves eight bytes MORE and requires every recorded pointer to be caught misaligned.
+    /// The other reserves sixteen bytes LESS, which keeps the call aligned and lands the stub's write on
+    /// the saved r14 rather than the return address, and requires R14 to be named as the register that
+    /// came back changed - the witness that the shadow-space half of the stub can fail at all.
     /// </para>
     /// <para>
     /// <b>Only the convention this machine uses is entered.</b> The other convention's unit is bytes
@@ -758,33 +770,69 @@ internal static class NativeAbiChecks
         var name = "native/baseline/entry-points-survive/" + row.Name;
         var injection = "native/baseline/a-misaligned-reservation-is-caught/" + row.Name;
 
+        // THE SHORT-RESERVATION INJECTION EXISTS ONLY WHERE THE STUB HAS A SHADOW SPACE TO WRITE.
+        // Under System V the stub writes nothing above its return address, so a short reservation
+        // loses nothing a row could name, and no row by this name is claimed or counted there.
+        var shortName = row.ShadowSpaceBytes != 0
+            ? "native/baseline/a-short-reservation-loses-a-saved-register/" + row.Name
+            : null;
+
         if (row.Architecture != host.Architecture)
         {
             const string Why =
                 "this machine uses {0}, so a unit emitted for {1} was not entered; its bytes are held " +
                 "by the baseline closure, golden and cross-convention rows on every machine";
 
-            return
-            [
-                ("not-run/" + name, false, string.Format(System.Globalization.CultureInfo.InvariantCulture, Why, host.Name, row.Name)),
-                ("not-run/" + injection, false, string.Format(System.Globalization.CultureInfo.InvariantCulture, Why, host.Name, row.Name)),
-            ];
+            var because = string.Format(System.Globalization.CultureInfo.InvariantCulture, Why, host.Name, row.Name);
+            var notRun = new List<(string, bool, string)>
+            {
+                ("not-run/" + name, false, because),
+                ("not-run/" + injection, false, because),
+            };
+
+            if (shortName is not null)
+            {
+                notRun.Add(("not-run/" + shortName, false, because));
+            }
+
+            return notRun;
         }
 
         var compiled = NativeLifecycle.CompileWide(
             "function f() { return 1; }\nf();\n", JsOutputForm.Native, row.Name);
 
+        List<(string, bool, string)> AllFail(string why)
+        {
+            var failed = new List<(string, bool, string)> { (name, false, why), (injection, false, why) };
+
+            if (shortName is not null)
+            {
+                failed.Add((shortName, false, why));
+            }
+
+            return failed;
+        }
+
         if (compiled.Artifact is null ||
             !NativeLifecycle.TryReadEmitted(compiled.Artifact, out var code, out var symbols, out var refusal))
         {
-            var why = compiled.Artifact is null ? "the program did not compile" : "the artifact carried no emitted code";
-            return [(name, false, why), (injection, false, why)];
+            return AllFail(compiled.Artifact is null ? "the program did not compile" : "the artifact carried no emitted code");
+        }
+
+        // NOT LEFT TO THE READER'S CONTRACT: every verdict below starts true and is only ever made
+        // false inside the loop over units, so a table with no unit in it would pass every row
+        // having entered nothing.
+        if (symbols.Length == 0)
+        {
+            return AllFail("the artifact's symbol table names no unit, so nothing would have been entered");
         }
 
         var survived = true;
         var survivedDetail = new List<string>();
         var caught = true;
         var caughtDetail = new List<string>();
+        var lost = true;
+        var lostDetail = new List<string>();
 
         foreach (var symbol in symbols)
         {
@@ -797,6 +845,7 @@ internal static class NativeAbiChecks
             {
                 survived = false;
                 caught = false;
+                lost = false;
                 survivedDetail.Add("unit " + symbol.FunctionIndex + " does not begin with a prologue and a dispatch compare");
                 continue;
             }
@@ -832,37 +881,84 @@ internal static class NativeAbiChecks
             // every handler call is made from a pointer eight bytes off the boundary.
             var injected = (byte[])code.Clone();
 
-            if (!TryWidenReservation(injected, at, row.BaselineFrameBytes))
+            if (!TryResizeReservation(injected, at, row.BaselineFrameBytes, row.BaselineFrameBytes + 8))
             {
                 caught = false;
                 caughtDetail.Add("unit " + symbol.FunctionIndex + ": no reservation and release to widen");
+            }
+            else
+            {
+                var wrong = EnterBaseline(row, injected, symbol.Offset, entryPc, out var wrongStacks);
+                var detected = wrong.Ran && wrong.StackBefore == wrong.StackAfter &&
+                    Array.TrueForAll(wrongStacks, stack => stack != 0 && (stack % 16) != 8);
+
+                caught &= detected;
+                caughtDetail.Add(
+                    "unit " + symbol.FunctionIndex + (detected ? " widened by eight reached its handler at 0x" : " widened by eight was NOT caught, first stack 0x") +
+                    (wrongStacks.Length == 0 ? "0" : wrongStacks[0].ToString("x")));
+            }
+
+            if (shortName is null)
+            {
                 continue;
             }
 
-            var wrong = EnterBaseline(row, injected, symbol.Offset, entryPc, out var wrongStacks);
-            var detected = wrong.Ran && wrong.StackBefore == wrong.StackAfter &&
-                Array.TrueForAll(wrongStacks, stack => stack != 0 && (stack % 16) != 8);
+            // THE SHORT INJECTION: sixteen bytes fewer reserved and released. Sixteen and not eight,
+            // because a reservation eight short is also eight off the boundary and the stub's
+            // shadow-space write would land on the unit's own return address - a process-level access
+            // violation and not a failing row. Sixteen short keeps the handler call aligned and the
+            // return address out of reach, and moves the stub's write down onto the word the prologue
+            // pushed second: with E the stack pointer on entry, rbx is at E-8 and r14 at E-16, the
+            // reservation leaves E-16-(frame-16), the call E-8-that, and the stub writes thirty-two
+            // above that, which is E-16. The unit's frame pointer is what it writes, so r14 comes back
+            // holding the frame rather than the caller's value, and the row requires R14 to be named.
+            var shortened = (byte[])code.Clone();
 
-            caught &= detected;
-            caughtDetail.Add(
-                "unit " + symbol.FunctionIndex + (detected ? " widened by eight reached its handler at 0x" : " widened by eight was NOT caught, first stack 0x") +
-                (wrongStacks.Length == 0 ? "0" : wrongStacks[0].ToString("x")));
+            if (!TryResizeReservation(shortened, at, row.BaselineFrameBytes, row.BaselineFrameBytes - 16))
+            {
+                lost = false;
+                lostDetail.Add("unit " + symbol.FunctionIndex + ": no reservation and release to shorten");
+                continue;
+            }
+
+            var shortSeen = EnterBaseline(row, shortened, symbol.Offset, entryPc, out var shortStacks);
+            var shortClobbered = FirstClobbered(row, shortSeen);
+            var shortAligned = Array.TrueForAll(shortStacks, stack => stack != 0 && (stack % 16) == 8);
+            var named = shortSeen.Ran && shortSeen.StackBefore == shortSeen.StackAfter && shortAligned &&
+                shortClobbered == JsX64Register.R14;
+
+            lost &= named;
+            lostDetail.Add(
+                "unit " + symbol.FunctionIndex + " shortened by sixteen " +
+                (named
+                    ? "came back with R14 changed and its stack aligned"
+                    : "was NOT caught as losing R14: ran " + shortSeen.Ran + ", aligned " + shortAligned +
+                        ", stack pointer moved by " + (shortSeen.StackAfter - shortSeen.StackBefore) +
+                        ", first changed register " + (shortClobbered?.ToString() ?? "none")));
         }
 
-        return
-        [
+        var rows = new List<(string, bool, string)>
+        {
             (name, survived, symbols.Length + " units, each entered " + BaselineRepetitions + " times: " + string.Join("; ", survivedDetail)),
             (injection, caught, string.Join("; ", caughtDetail)),
-        ];
+        };
+
+        if (shortName is not null)
+        {
+            rows.Add((shortName, lost, string.Join("; ", lostDetail)));
+        }
+
+        return rows;
     }
 
-    /// <summary>Widens a baseline unit's reservation and its release by eight bytes, in place.</summary>
-    private static bool TryWidenReservation(byte[] code, int unit, int frameBytes)
+    /// <summary>Changes a baseline unit's reservation and its release from one size to another, in place.</summary>
+    private static bool TryResizeReservation(byte[] code, int unit, int frameBytes, int bytes)
     {
         byte[] reserve = [0x48, 0x83, 0xEC, (byte)frameBytes];
         byte[] release = [0x48, 0x83, 0xC4, (byte)frameBytes, 0x41, 0x5E, 0x5B, 0xC3];
 
-        if (!code.AsSpan(unit + 3, reserve.Length).SequenceEqual(reserve))
+        if (bytes <= 0 || bytes > sbyte.MaxValue ||
+            !code.AsSpan(unit + 3, reserve.Length).SequenceEqual(reserve))
         {
             return false;
         }
@@ -874,8 +970,8 @@ internal static class NativeAbiChecks
             return false;
         }
 
-        code[unit + 6] = (byte)(frameBytes + 8);
-        code[unit + leave + 3] = (byte)(frameBytes + 8);
+        code[unit + 6] = (byte)bytes;
+        code[unit + leave + 3] = (byte)bytes;
         return true;
     }
 
@@ -907,7 +1003,9 @@ internal static class NativeAbiChecks
     /// <b>BUILT WITH THE BACKEND'S ENCODER, FOR THE REASON THE TRAMPOLINE IS.</b> The Windows x64 stub
     /// also stores its frame argument in the fourth slot of its shadow space - thirty-two bytes above
     /// its return address, which a callee owns - so a unit whose reservation did not hold the shadow
-    /// space would have a saved register or its return address overwritten where a row can see it.
+    /// space has a saved register or its return address overwritten. A saved register is what a row
+    /// sees, and the sixteen-short injection is the row that sees it; a return address overwritten is
+    /// an access violation that ends the process, which is why no injection reserves eight short.
     /// </remarks>
     private static byte[] BaselineStub(JsX64Abi abi)
     {
@@ -1041,12 +1139,39 @@ internal static class NativeAbiChecks
         Func<NativeLifecycle.WideAnswer, NativeLifecycle.WideAnswer, TimeSpan, string?>? also = null,
         Action? collect = null)
     {
+        // THE NATIVE HALF IS COMPILED ONCE AND REQUIRED TO CARRY EMITTED CODE BEFORE IT IS RUN. The
+        // comparison below is of rendered answers only, and two interpreter runs answer alike; an
+        // artifact compiled for the native form with no code section in it would make every row of
+        // this kind a comparison of bytecode with bytecode, so that is refused here, by name.
+        var compiledNative = NativeLifecycle.CompileWide(source, JsOutputForm.Native, abi.Name, library);
+
+        if (!compiledNative.Succeeded || compiledNative.Artifact is null)
+        {
+            return (
+                name,
+                false,
+                "the native form was refused by the front end: " +
+                    (compiledNative.Diagnostics.Count == 0 ? "no diagnostic" : compiledNative.Diagnostics[0].ToString()));
+        }
+
+        if (EmittedCodeMissing(compiledNative.Artifact) is { } missing)
+        {
+            return (name, false, missing);
+        }
+
         var clock = System.Diagnostics.Stopwatch.StartNew();
         var interpreted = NativeLifecycle.RunWide(source, JsOutputForm.Bytecode, string.Empty, WideFuel, library, collect);
         var interpretedTime = clock.Elapsed;
 
         clock.Restart();
-        var emitted = NativeLifecycle.RunWide(source, JsOutputForm.Native, abi.Name, WideFuel, library, collect);
+        var emitted = NativeLifecycle.RunWideArtifact(
+            compiledNative.Artifact,
+            JsOutputForm.Native,
+            abi.Name,
+            WideFuel,
+            reEmit: true,
+            module: library is not null,
+            collect);
         var emittedTime = clock.Elapsed;
 
         var left = interpreted.Render(withFuel: !guestLoads);
@@ -1073,6 +1198,14 @@ internal static class NativeAbiChecks
             ? (name, true, "both answered " + left + timing)
             : (name, false, extra + "; both answered " + left + timing);
     }
+
+    /// <summary>Why an artifact compiled for the native form carries no emitted code, or null if it does.</summary>
+    private static string? EmittedCodeMissing(byte[] artifact) =>
+        NativeLifecycle.TryReadEmitted(artifact, out var code, out var symbols, out var refusal) &&
+            code.Length != 0 && symbols.Length != 0
+            ? null
+            : "the native form's artifact carried no emitted code, so the native half would have run " +
+                "the interpreter alone: " + (refusal.Length == 0 ? "empty code or symbol table" : refusal);
 
     // ---- the machinery ------------------------------------------------------------------------
 
