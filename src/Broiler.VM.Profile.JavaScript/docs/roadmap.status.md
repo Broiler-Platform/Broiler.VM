@@ -159,9 +159,13 @@ decision that would have chosen it is
 [MVP-7](../../../docs/mvp.md#5-routes-taken-without-a-decision).
 
 **Three things about that surface stated in the direction that costs, because a list of what exists
-invites the other direction.** **The language it compiles is small and it is not JavaScript** — a
-program that touches a property, builds an array, holds a string or catches an error is refused
-before any artifact exists, and the wide manifest stays bytecode-only. **No milestone row below moved
+invites the other direction.** **The language the numeric form compiles is small and it is not
+JavaScript** — a program that touches a property, builds an array, holds a string or catches an error
+is refused before any artifact exists under that manifest *(corrected 2026-09-15: this sentence ended
+"and the wide manifest stays bytecode-only", which stopped being the plan on that date — a native form
+over the wide manifest is being written, the paragraph after next records it as observed repository
+state, and nothing about it is collected, so the sentence moved and no state did:
+[JSC-220](roadmap.corrections.md#jsc-220))*. **No milestone row below moved
 because of any of it**: `JS-1` owns the format, `JS-3b` the lowering and `JS-5` the executor, all
 three were already `In progress`, and none of them is closer to a gate for having gained a second
 output form — none of their exit gates asks for one. And **no bundle retains a byte of it**: no
@@ -176,6 +180,30 @@ benchmark host. **That is not a measurement**, `JS-10` owns what would make one,
 that observation is written here or anywhere else in this component. What may be said is that a
 native form exists and was observed to answer what the interpreter answered; what it is worth is not
 a thing this ledger knows.
+
+**A second native form, over the wide manifest, is being written from 2026-09-15, recorded as observed
+repository state under section 1's second category and satisfying no gate** *(added 2026-09-15)*.
+[JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) decides it: every unit of a
+`broiler.javascript.wide` artifact emitted as x86-64 machine code, the control flow between
+instructions emitted, and every instruction one call into the interpreter's own dispatch for that
+instruction, with every value left in managed memory. Its exit gate is [the backend
+roadmap's](roadmap.backends.md) stage `JSB-11`. **What the checkout holds of it on that date is four
+declarations in the format assembly** — `JsBaselineFrame`, `JsBaselineAbi`, `JsBaselineStatus` and
+`JsNativeTier` — and the rest is being written. **No milestone row in section 2 moves for it**, for the
+reason the paragraphs above give for the numeric form: `JS-1`, `JS-3b` and `JS-5` own the format, the
+lowering and the executor, and none of their exit gates asks for an output form. The three items below
+are set out as rows so that each names what it lacks. **Each is marked `[NONE]` because no bundle
+retains anything about it** — `[PARTIAL]` needs a retained bundle and there is none — and the state
+column is observed repository state and not a milestone state.
+
+| Verdict | Item | Observed state | What the checkout holds | What is open |
+|---|---|---|---|---|
+| [NONE] | **The baseline form: emitted units calling the interpreter's own dispatch, one instruction per call** | **In progress**, as observed repository state | The frame, ABI constants, status and tier declarations beside `JsBaselineFrame`. Being written: `JsEngine.ExecuteCore` as the interpreter's body specialised over a mode, `JsNativeActivation` and its handler step, `JsBaselineHandlers` and its table, the engine's native entry `RunNative`, program-owned code pages, the compile path through `JsCompiler.Emit`, and the x86-64 backend's baseline emitter | Everything. No bundle; no gate on the interpreter's unchanged behaviour run into a retained record; no Native AOT publish of an image carrying it; no human has read a line |
+| [NONE] | **The baseline scan: the wide manifest's template tables and shape clauses** | **In progress**, as observed repository state | `JsNativeTier`, which is what selects a table. Being written: the baseline tables behind the tier-aware `JsNativeTemplates.For`, the tier-aware `JsNativeScan.Scan` with the four shape clauses and their two named outcomes, and the verifier's choice of table by manifest | Every closure, coverage, refusal, golden-byte, cross-convention and re-emission row; the corpus entry for a baseline payload calling a slot no opcode takes; the rule asserting that the frame declares no reference |
+| [NONE] | **The two-forms check over the wide manifest** | **In progress**, as observed repository state | Nothing yet. Being written: `NativeAbiChecks.TheTwoFormsAgreeOverTheWideManifest`, `ASwappedHandlerIsADefect` and `BaselineEntryPointsSurvive`, the conformance composition's native run under the wide manifest, and a script that compares two conformance reports variant by variant | Every row, under either convention; the System V half, which only a Linux runner in the continuous-integration lane executes and which retains nothing; any comparison of the two forms over the conformance suite, retained or otherwise |
+
+**No figure about this form is written in this ledger, and none is to be**, under update rule 10:
+what the stage's bundle would retain belongs to the bundle.
 
 **A silently wrong answer was removed from the wide surface on 2026-09-08, recorded as observed
 repository state under section 1's second category and satisfying no gate** *(added 2026-09-08)*.
@@ -1186,7 +1214,10 @@ Stated positively, because a table of empty rows invites a reader to fill them i
   2026-09-07 there is a third manifest beside them, `broiler.javascript.numeric`, which is smaller
   than either**: it admits numbers and the statements over them and refuses everything else at
   compile time, it is the manifest every native artifact this component produces names because it is
-  the only one the backend admits — **the verifier's own gate on a machine-code payload is the
+  the only one the backend admits *(corrected 2026-09-15: from that date a native form over
+  `broiler.javascript.wide` is being written beside it, so "every native artifact" is a statement about
+  the checkout before that form lands and not a property of the backend —
+  [JSC-220](roadmap.corrections.md#jsc-220))* — **the verifier's own gate on a machine-code payload is the
   declared native SURFACE and not the manifest**, which is a narrower property and the one a reader
   should rely on — and **a reader must not read a third manifest as more language**. *(This bullet
   also said there is still no suspension and no guest-initiated load, which the JS-7 and JS-8 rows

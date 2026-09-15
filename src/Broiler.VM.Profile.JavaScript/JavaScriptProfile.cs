@@ -162,6 +162,11 @@ public static class JavaScriptProfile
     /// every program of which is compilable in whole is the only shape that rule admits, and this
     /// is that language. The cost is stated where the manifest is defined: what it admits is small
     /// and it is not JavaScript.
+    /// <i>(Corrected 2026-09-15. "The only shape that rule admits" is true of a native form whose
+    /// emitted code computes, and it was read as true of any native form. JSD-0025 admits a second
+    /// one, the baseline form over <see cref="WideManifest"/>, which is whole-artifact without a small
+    /// language because each instruction it emits is a call into the interpreter's own dispatch for
+    /// that instruction.)</i>
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F84EE9
@@ -248,6 +253,12 @@ public static class JavaScriptProfile
     /// an instruction of any architecture. Refusing a payload because an image has no backend for
     /// the architecture it names is a second refusal that does not exist yet; this surface is the
     /// question about executable memory, asked before there is anything to run.
+    /// <i>(Corrected 2026-09-15. Every factual clause of this paragraph was overtaken on 2026-09-07,
+    /// when this profile gained x86-64 encoders, an arming type, an executor for emitted code and a
+    /// refusal at instantiation for an architecture the host does not arm; it is marked rather than
+    /// deleted. What survives is the point of its first sentence: this surface is the question about
+    /// executable memory, and it is the same question for the numeric form and for the wide manifest's
+    /// baseline form that JSD-0025 decides, which carries its emitted code in the same section.)</i>
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DDC799

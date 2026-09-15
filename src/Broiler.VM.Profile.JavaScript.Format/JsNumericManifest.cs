@@ -63,6 +63,14 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// manifest stays the one that carries real programs, and the interpreter stays the only thing that
 /// runs them. Nothing here narrows what the wide manifest admits and nothing here is a step towards
 /// compiling it.
+/// <i>(Corrected 2026-09-15. The last clause was written when no native form of the wide manifest
+/// was proposed, and the first paragraph's "the only admissible answer" was read as true of any
+/// native form. JSD-0025 decides a second one, the baseline form over the wide manifest, and it is
+/// not a step from this manifest either: it emits every instruction as a call into the
+/// interpreter's own dispatch for that instruction, so it is whole-artifact without a small
+/// language, and this manifest stays exactly as small as it is. The interpreter's method body still
+/// runs every instruction of a wide program, in either form. What this manifest remains the only
+/// answer to is a native form whose emitted code computes.)</i>
 /// </para>
 /// <para>
 /// <b>UNDEFINED IS IN THE ADMITTED SET AND IT IS THE ONE VALUE HERE THAT IS NOT A NUMBER.</b> The
