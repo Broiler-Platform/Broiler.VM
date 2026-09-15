@@ -632,7 +632,13 @@ public sealed class DiagnosticRegistryRuleTests
         // which is a defect that produces a well-framed artifact nothing downstream can detect;
         // the calling-convention tables are static because they are DATA and are readonly, which
         // this rule reads and correctly does not report.
-        Assert.Equal(27, lowering.Length);
+        //
+        // THE TWENTY-EIGHTH IS THE BASELINE EMITTER, the second template set the x86-64 backend
+        // writes, and it is scanned for the same reason as the first. It lays out a whole code unit
+        // - a label per instruction, a dispatch tree over the unit's landing offsets, a patch list
+        // for every forward branch - and every one of those is a table an author would reach for a
+        // static to reuse between units. It holds them in locals of one emission and nothing longer.
+        Assert.Equal(28, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

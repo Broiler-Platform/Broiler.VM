@@ -1017,7 +1017,19 @@ public sealed class ReviewRecordRuleTests
         // because what they expose is the profile's own object model under another name, and an
         // assembly of their own would be an assembly whose whole content is a projection of the one
         // beside it. They are covered on the same terms as every other product file.
-        Assert.Equal(165, AssuranceSources.Files.Count);
+        //
+        // FIVE MORE JOINED THEM WITH THE BASELINE NATIVE FORM OVER THE WIDE MANIFEST, and like the
+        // native output form's nine they are files a reader would most want read, because they
+        // are where emitted code is handed a frame, where it calls back into managed code, and
+        // where the activation it runs for is kept. The format's is the frame and its layout
+        // constants, JsBaselineFrame.cs, in the assembly both the emitter and the handlers
+        // reference. The lowering's is the emitter that writes every unit of a wide artifact as
+        // one call per instruction, JsX64BaselineEmitter.cs. The profile's three are the activation
+        // and the step that checks it, JsNativeActivation.cs; the table of entry points native code
+        // calls, JsBaselineHandlers.cs; and the engine's half that enters emitted code and maps its
+        // page, JsEngine.Baseline.cs. They are covered on the same terms as every other product
+        // file, and nothing in them has been read by a human.
+        Assert.Equal(170, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
