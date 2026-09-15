@@ -1,0 +1,359 @@
+# THE PINNED TEST262 SUITE AGAINST THE JAVASCRIPT PROFILE, IN ONE OUTPUT FORM. A button, and a
+# lane another workflow may call.
+#
+# WHAT THE PARAMETER CHOOSES. `profile` is the form every variant is compiled to before it is
+# verified and run:
+#
+#   bytecode      the ordinary artifact, under `broiler.javascript.wide` with the suite's harness
+#                 prelude loaded. This is the run eng/run-test262.py takes by default.
+#   machinecode   the native form: every unit emitted as machine code beside its bytecode, by the
+#                 backend this runner's calling convention arms (x86-64-sysv on ubuntu-latest).
+#                 The compiler admits that form only under `broiler.javascript.numeric`, so the
+#                 run is taken under that manifest and the harness prelude is not loaded.
+#
+# WHAT A machinecode RUN WILL SAY, SO NOBODY READS IT AS A REGRESSION. The numeric manifest admits
+# Number values, their operators, bindings and functions of numbers called by name, and refuses
+# everything else BY NAME at compile time. Almost every test262 file reaches a string, an object or
+# `assert`, so almost every variant is reported `unsupported` with the construct family that was
+# refused, and the family table is the useful part of the report. The two runs are two questions
+# over one checkout; their totals are not comparable and this workflow compares nothing.
+#
+# WHY A MATRIX AND NOT eng/run-test262.py IN ONE JOB. A whole run of the wide manifest was 56 shards
+# across 14 processes and several hours on a workstation, and a hosted job is cut at six. So the
+# selection is partitioned into RUNNERS x SHARDS_PER_RUNNER shards by the harness's own path hash,
+# each runner scores its slice with one process per core, and a final job merges every shard
+# report. The merge is the harness's and it is the check: a missing shard, a shard scored under
+# another manifest or form, or a file scored twice is a finding in the merged report, not a smaller
+# total.
+#
+# WHAT FAILS THIS WORKFLOW. A shard exiting with anything but 0 (nothing failed) or 1 (cases
+# failed - the ordinary outcome for this suite today), a merge that is not given every shard, or a
+# merged run the harness says may not be retained because it read no pinned suite or its verdicts
+# do not account for its variants. Failing cases do not: this lane measures, and the floors that
+# ratchet are broiler-vm-lane.yml's.
+
+name: test262 javascript profile
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: The output profile the suite is compiled to.
+        required: true
+        default: bytecode
+        type: choice
+        options:
+          - bytecode
+          - machinecode
+      dirs:
+        description: >
+          Space-separated test262 subtrees, e.g. `test/built-ins/Array test/language/types`.
+          Empty scores the whole suite; a named subtree makes the run partial, and the report says so.
+        required: false
+        default: ''
+        type: string
+  workflow_call:
+    inputs:
+      profile:
+        description: The output profile, `bytecode` or `machinecode`.
+        required: true
+        type: string
+      dirs:
+        description: Space-separated test262 subtrees; empty scores the whole suite.
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test262-javascript-profile-${{ inputs.profile }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+  # THE PARTITION. Every shard of one run must be told the same total, so both numbers live here
+  # and the matrix below is generated from the first rather than written out beside it.
+  TEST262_RUNNERS: 8
+  TEST262_SHARDS_PER_RUNNER: 4
+
+  # The allowances eng/run-test262.py states for a whole run, and for its reasons: fuel is the
+  # deterministic ceiling and is sized to bite at about the same point as the wall clock.
+  TEST262_FUEL: 100000000
+  TEST262_WALL_MS: 5000
+
+  CONFORMANCE_PROJECT: src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj
+  CONFORMANCE_BINARY: src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance
+
+jobs:
+  plan:
+    name: resolve the profile
+    runs-on: ubuntu-latest
+    outputs:
+      form: ${{ steps.resolve.outputs.form }}
+      manifest: ${{ steps.resolve.outputs.manifest }}
+      runners: ${{ steps.resolve.outputs.runners }}
+    steps:
+      # THE INPUT REACHES THE SCRIPT THROUGH THE ENVIRONMENT AND NOT THROUGH `${{ }}`, so a caller's
+      # string is shell data rather than shell source. A workflow_call caller passes a free string,
+      # which is why the two names are checked here rather than trusted.
+      - name: Map the profile to a form and a manifest
+        id: resolve
+        env:
+          PROFILE: ${{ inputs.profile }}
+        run: |
+          set -euo pipefail
+          case "$PROFILE" in
+            bytecode)    form=bytecode; manifest=broiler.javascript.wide ;;
+            machinecode) form=native;   manifest=broiler.javascript.numeric ;;
+            *)
+              echo "::error::profile must be bytecode or machinecode, and was '$PROFILE'"
+              exit 1
+              ;;
+          esac
+
+          runners=$(python3 -c "import json; print(json.dumps(list(range($TEST262_RUNNERS))))")
+
+          {
+            echo "form=$form"
+            echo "manifest=$manifest"
+            echo "runners=$runners"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "profile $PROFILE -> form $form under $manifest, $TEST262_RUNNERS runners x $TEST262_SHARDS_PER_RUNNER shards"
+
+  shard:
+    name: score shards (runner ${{ matrix.runner }})
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: ${{ fromJSON(needs.plan.outputs.runners) }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: false
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build the conformance harness
+        run: dotnet build "$CONFORMANCE_PROJECT" -c Release -warnaserror
+
+      # The archive is what is committed; the extraction is scratch. `--expect` on every shard is
+      # what makes the extraction answerable to the pin rather than to itself.
+      - name: Extract the pinned suite
+        run: |
+          set -euo pipefail
+          rm -rf artifacts/t262 && mkdir -p artifacts/t262
+          tar xzf src/tests/conformance/pins/test262-*.tar.gz -C artifacts/t262
+
+      - name: Score this runner's shards
+        env:
+          FORM: ${{ needs.plan.outputs.form }}
+          MANIFEST: ${{ needs.plan.outputs.manifest }}
+          DIRS: ${{ inputs.dirs }}
+          RUNNER: ${{ matrix.runner }}
+        run: |
+          set -euo pipefail
+          suite=$(find artifacts/t262 -maxdepth 1 -mindepth 1 -type d)
+          total=$((TEST262_RUNNERS * TEST262_SHARDS_PER_RUNNER))
+          first=$((RUNNER * TEST262_SHARDS_PER_RUNNER))
+          last=$((first + TEST262_SHARDS_PER_RUNNER - 1))
+          out=artifacts/test262
+          mkdir -p "$out/shards" "$out/logs"
+
+          # One `--dir` per named subtree, as positional parameters so an empty input expands to
+          # nothing under `set -u`.
+          set --
+          for dir in $DIRS; do
+            set -- "$@" --dir "$dir"
+          done
+
+          echo "shards $first..$last of $total, form $FORM under $MANIFEST"
+
+          for index in $(seq "$first" "$last"); do
+            name=$(printf 'shard-%04d' "$index")
+            (
+              set +e
+              "$CONFORMANCE_BINARY" --test262 "$suite" \
+                --manifest "$MANIFEST" --form "$FORM" \
+                --shard "$index/$total" \
+                --expect src/tests/conformance/pins/test262.pin \
+                --report "$out/shards/$name.report" \
+                --fuel "$TEST262_FUEL" --wall "$TEST262_WALL_MS" \
+                "$@" > "$out/logs/$name.log" 2>&1
+              echo $? > "$out/logs/$name.exit"
+            ) &
+          done
+
+          wait
+
+          # 0 is nothing failed and 1 is cases failed, and both are measurements. Anything else is a
+          # shard that could not measure - a usage refusal, a pin that did not match, a harness
+          # defect - and its report, if it wrote one, is not one a merge may be handed.
+          broken=0
+          for index in $(seq "$first" "$last"); do
+            name=$(printf 'shard-%04d' "$index")
+            code=$(cat "$out/logs/$name.exit")
+            echo "--- $name exited $code"
+            tail -n 3 "$out/logs/$name.log"
+
+            if [ "$code" != 0 ] && [ "$code" != 1 ]; then
+              echo "::error::$name exited $code; see its log in the uploaded artifact"
+              broken=1
+            fi
+          done
+
+          exit "$broken"
+
+      - name: Retain this runner's reports and transcripts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: test262-${{ inputs.profile }}-runner-${{ matrix.runner }}
+          path: |
+            artifacts/test262/shards
+            artifacts/test262/logs
+          if-no-files-found: ignore
+          retention-days: 14
+
+  merge:
+    name: merge and report
+    needs: [plan, shard]
+    # A merge runs even when a shard job failed, because the merged report is what names which
+    # shard is missing; the step below still fails the workflow for it.
+    if: ${{ always() && needs.plan.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: false
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build the conformance harness
+        run: dotnet build "$CONFORMANCE_PROJECT" -c Release -warnaserror
+
+      - name: Collect every runner's retained output
+        uses: actions/download-artifact@v7
+        with:
+          pattern: test262-${{ inputs.profile }}-runner-*
+          path: artifacts/test262
+          merge-multiple: true
+
+      - name: Merge the shards and hold the run to what may be retained
+        env:
+          PROFILE: ${{ inputs.profile }}
+          FORM: ${{ needs.plan.outputs.form }}
+          MANIFEST: ${{ needs.plan.outputs.manifest }}
+          SHARDS_RESULT: ${{ needs.shard.result }}
+        run: |
+          set -euo pipefail
+          out=artifacts/test262
+          mkdir -p "$out/shards"
+
+          set +e
+          "$CONFORMANCE_BINARY" --merge "$out/shards" \
+            --report "$out/test262.report" --json "$out/test262.json" | tee "$out/merge.log"
+          code=${PIPESTATUS[0]}
+          set -e
+
+          echo "merge exited $code"
+
+          if [ ! -f "$out/test262.json" ]; then
+            echo "::error::the merge produced no machine-readable report (exit $code)"
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          import json, os, sys
+
+          report = json.load(open("artifacts/test262/test262.json", encoding="utf-8"))
+          totals = report["totals"]
+          manifest = report["manifest"]
+          coverage = report["coverage"]
+          retention = report["retention"]
+
+          lines = [
+              f"## test262 - `{os.environ['PROFILE']}` profile",
+              "",
+              f"- Manifest `{manifest['id']}`, form `{manifest['form']}`"
+              + (f", backend `{manifest['backend']}`" if manifest["backend"] else ""),
+              f"- Suite `{report['suite']['upstream']}` at `{report['suite']['upstreamRevision']}`",
+              f"- Coverage: `{coverage['field']}`",
+              f"- Retainable: `{retention['retainable']}`",
+              "",
+              "| files | variants | passed | failed | unsupported | exhausted | skipped |",
+              "|---:|---:|---:|---:|---:|---:|---:|",
+              "| {files} | {variants} | {passed} | {failed} | {unsupported} | {exhausted} | {skipped} |".format(**totals),
+          ]
+
+          def table(title, rows):
+              if not rows:
+                  return
+              lines.extend(["", f"### {title}", "", "| count | name | example |", "|---:|---|---|"])
+              for row in rows[:15]:
+                  lines.append(f"| {row['count']} | {row['name']} | `{row['example']}` |")
+              if len(rows) > 15:
+                  lines.append(f"| | {len(rows) - 15} more rows in the report | |")
+
+          table("Unsupported families", report["unsupportedFamilies"])
+          table("Failures by kind", report["failureClassification"]["byKind"])
+
+          if report["findings"]:
+              lines.extend(["", "### Configuration findings", ""])
+              lines.extend(f"- `{f['failure']}`: {f['detail']}" for f in report["findings"])
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("\n".join(lines) + "\n")
+
+          # THE RETENTION VERDICT IS THE HARNESS'S, read the way eng/run-test262.py reads it: a named
+          # subtree is a narrowing the caller asked for, while an unpinned suite, verdicts that do not
+          # add up, or shards that do not cover the selection are not.
+          blocking = [
+              reason for reason in retention["reasons"]
+              if "--expect" in reason or "account for" in reason
+          ]
+          blocking += [
+              f"{f['failure']}: {f['detail']}" for f in report["findings"]
+              if f["failure"] in ("IncompleteShardCoverage", "InconsistentShardConfiguration")
+          ]
+
+          for reason in blocking:
+              print(f"::error::{reason}")
+
+          sys.exit(1 if blocking else 0)
+          PY
+
+          # A merge exits 0 or 1 when it merged; anything else is a merge that could not.
+          if [ "$code" != 0 ] && [ "$code" != 1 ]; then
+            echo "::error::the merge exited $code"
+            exit 1
+          fi
+
+          if [ "$SHARDS_RESULT" != success ]; then
+            echo "::error::at least one shard job did not succeed ($SHARDS_RESULT)"
+            exit 1
+          fi
+
+      - name: Retain the merged report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: test262-${{ inputs.profile }}-merged
+          path: |
+            artifacts/test262/test262.report
+            artifacts/test262/test262.json
+            artifacts/test262/merge.log
+          if-no-files-found: ignore
+          retention-days: 30

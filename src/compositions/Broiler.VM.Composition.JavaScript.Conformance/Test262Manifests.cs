@@ -3,9 +3,11 @@
 
 using Broiler.VM;
 using Broiler.VM.Profile.JavaScript;
+using Broiler.VM.Profile.JavaScript.Compiler;
 using Broiler.VM.Profile.JavaScript.Format;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace Broiler.VM.Composition.JavaScript.Conformance;
 
@@ -49,18 +51,28 @@ internal sealed class Test262Manifest
     /// </remarks>
     internal const string Default = "broiler.javascript.wide";
 
+    /// <summary>The output form every run took before a run could name one.</summary>
+    internal const string Bytecode = "bytecode";
+
+    /// <summary>The output form whose artifact carries emitted machine code beside its bytecode.</summary>
+    internal const string Native = "native";
+
     private Test262Manifest(
         VmFeatureManifestId id,
         uint formatVersion,
         bool loadsHarness,
         ImmutableArray<string> admitted,
-        ImmutableArray<string> declined)
+        ImmutableArray<string> declined,
+        string form = Bytecode,
+        string backend = "")
     {
         Id = id;
         FormatVersion = formatVersion;
         LoadsHarness = loadsHarness;
         Admitted = admitted;
         Declined = declined;
+        Form = form;
+        Backend = backend;
 
         var surfaces = new VmFeatureManifestId[admitted.Length];
 
@@ -104,6 +116,37 @@ internal sealed class Test262Manifest
     internal bool IsWide => Id == JavaScriptProfile.WideManifest;
 
     /// <summary>
+    /// The output form the run compiles every variant to: <see cref="Bytecode"/> or
+    /// <see cref="Native"/>.
+    /// </summary>
+    /// <remarks>
+    /// <b>A PROPERTY OF THE RUN AND NOT OF A TEST, for the reason the compiler gives for choosing a
+    /// form exactly once.</b> Two forms over one checkout are two runs, which is why the report
+    /// states the form and a merge refuses shards that disagree about it.
+    /// </remarks>
+    internal string Form { get; }
+
+    /// <summary>The native backend a <see cref="Native"/> run emits with; empty for bytecode.</summary>
+    internal string Backend { get; }
+
+    internal bool IsNative => string.Equals(Form, Native, StringComparison.Ordinal);
+
+    internal bool IsNumeric => Id == JavaScriptProfile.NumericManifest;
+
+    /// <summary>
+    /// Whether the wide front end lowers the source. The numeric manifest is a narrowing of the wide
+    /// surface compiled by the same compiler and answered in the same payload shapes, which is what
+    /// the end-user host already relies on; only the slice manifest has a front end of its own.
+    /// </summary>
+    internal bool UsesWideFrontEnd => IsWide || IsNumeric;
+
+    /// <summary>What the compiler is asked for, which is the only place a form is ever chosen.</summary>
+    internal JsCompileRequest CompileRequest => new(
+        IsNumeric ? JsFeatureManifest.Numeric : JsFeatureManifest.Wide,
+        IsNative ? JsOutputForm.Native : JsOutputForm.Bytecode,
+        Backend);
+
+    /// <summary>
     /// The family a refusal for a declined surface is counted under.
     /// </summary>
     /// <remarks>
@@ -132,10 +175,94 @@ internal sealed class Test262Manifest
         string? named,
         IReadOnlyList<string> declined,
         out Test262Manifest manifest,
+        out string failure) =>
+        TryParse(named, declined, form: null, backend: null, out manifest, out failure);
+
+    /// <summary>Reads a manifest and an output form, refusing a pairing the compiler would refuse.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE NATIVE FORM IMPLIES THE NUMERIC MANIFEST, and naming another is refused here rather
+    /// than per variant.</b> The compiler admits the native form only under
+    /// <c>broiler.javascript.numeric</c>, because a form other than bytecode has to be a
+    /// whole-artifact form. A run that asked for machine code from the wide surface would score
+    /// every variant as the same refusal and report it as a family of the suite, which it is not.
+    /// </para>
+    /// <para>
+    /// <b>The backend defaults to the one this process can arm</b> - System V x64 or Windows x64 -
+    /// because a run over the other convention would verify every artifact and then refuse every
+    /// instantiation, and those refusals are failures of the run's configuration rather than
+    /// answers about the language. A caller may still name another; the report says which.
+    /// </para>
+    /// </remarks>
+    internal static bool TryParse(
+        string? named,
+        IReadOnlyList<string> declined,
+        string? form,
+        string? backend,
+        out Test262Manifest manifest,
         out string failure)
     {
         manifest = null!;
-        var name = named ?? Default;
+        var chosenForm = form ?? Bytecode;
+
+        if (!string.Equals(chosenForm, Bytecode, StringComparison.Ordinal) &&
+            !string.Equals(chosenForm, Native, StringComparison.Ordinal))
+        {
+            failure = $"`{chosenForm}` is not an output form; --form takes `{Bytecode}` or `{Native}`";
+            return false;
+        }
+
+        var native = string.Equals(chosenForm, Native, StringComparison.Ordinal);
+        var chosenBackend = string.Empty;
+
+        if (!native && backend is not null)
+        {
+            failure = "--backend names a native backend, and this run's form is bytecode";
+            return false;
+        }
+
+        var name = named ?? (native ? JavaScriptProfile.NumericManifest.ToString() : Default);
+
+        if (native)
+        {
+            if (!string.Equals(name, JavaScriptProfile.NumericManifest.ToString(), StringComparison.Ordinal))
+            {
+                failure =
+                    $"the native output form is admitted only by {JavaScriptProfile.NumericManifest}, " +
+                    $"and this run names `{name}`";
+
+                return false;
+            }
+
+            if (declined.Contains(JsSurfaces.Native, StringComparer.Ordinal))
+            {
+                failure =
+                    $"a native run declining {JsSurfaces.Native} would refuse every artifact it " +
+                    "produced at verification";
+
+                return false;
+            }
+
+            chosenBackend = backend ?? HostBackend() ?? string.Empty;
+
+            if (chosenBackend.Length == 0)
+            {
+                failure =
+                    "this process's architecture has no backend it arms, so a native run must name " +
+                    "one with --backend; this build names " + string.Join(", ", JsNativeBackends.Names);
+
+                return false;
+            }
+
+            if (!JsNativeBackends.TryFind(chosenBackend, out _))
+            {
+                failure =
+                    $"this build carries no backend named `{chosenBackend}`; it names " +
+                    string.Join(", ", JsNativeBackends.Names);
+
+                return false;
+            }
+        }
 
         foreach (var surface in declined)
         {
@@ -182,6 +309,24 @@ internal sealed class Test262Manifest
             return true;
         }
 
+        if (string.Equals(name, JavaScriptProfile.NumericManifest.ToString(), StringComparison.Ordinal))
+        {
+            // NO HARNESS, for the slice manifest's reason: `assert.js` is objects and strings, which
+            // this manifest refuses by name, so loading it would report every test as the harness's
+            // refusal rather than as the construct the test itself reaches.
+            manifest = new Test262Manifest(
+                JavaScriptProfile.NumericManifest,
+                JsFormat.FormatVersion,
+                loadsHarness: false,
+                admitted.ToImmutable(),
+                declinedInOrder.ToImmutable(),
+                chosenForm,
+                chosenBackend);
+
+            failure = string.Empty;
+            return true;
+        }
+
         if (string.Equals(name, JavaScriptProfile.SliceManifest.ToString(), StringComparison.Ordinal))
         {
             manifest = new Test262Manifest(
@@ -197,10 +342,24 @@ internal sealed class Test262Manifest
 
         failure =
             $"`{name}` is not a manifest this build runs a suite under; it runs " +
-            $"{JavaScriptProfile.SliceManifest} and {JavaScriptProfile.WideManifest}";
+            $"{JavaScriptProfile.SliceManifest}, {JavaScriptProfile.NumericManifest} and " +
+            $"{JavaScriptProfile.WideManifest}";
 
         return false;
     }
+
+    /// <summary>The backend whose calling convention this process arms, or null where none is.</summary>
+    /// <remarks>
+    /// The same answer the executor's own arming check gives, restated because that check is internal
+    /// to the profile. A disagreement would not be silent: the executor refuses to instantiate an
+    /// artifact emitted for a convention it does not arm, and the run reports every such refusal.
+    /// </remarks>
+    private static string? HostBackend() =>
+        RuntimeInformation.ProcessArchitecture != Architecture.X64
+            ? null
+            : OperatingSystem.IsWindows()
+                ? JsNativeBackends.X64Windows
+                : JsNativeBackends.X64SystemV;
 
     /// <summary>
     /// Rebuilds a manifest from what a report recorded, so a merge reads one rather than trusting a
@@ -228,7 +387,7 @@ internal sealed class Test262Manifest
     /// verdicts and none of these is being handed a number with no question attached to it.
     /// </remarks>
     internal string Describe() =>
-        Describe(Id.ToString(), FormatVersion, LoadsHarness, Admitted, Declined);
+        Describe(Id.ToString(), FormatVersion, LoadsHarness, Admitted, Declined, Form, Backend);
 
     /// <summary>The same line, written from what a report recorded rather than from a manifest.</summary>
     /// <remarks>
@@ -241,10 +400,18 @@ internal sealed class Test262Manifest
         uint formatVersion,
         bool loadsHarness,
         IReadOnlyList<string> admitted,
-        IReadOnlyList<string> declined) =>
+        IReadOnlyList<string> declined,
+        string form = Bytecode,
+        string backend = "") =>
         "manifest " + id +
         " at format version " + formatVersion.ToString(CultureInfo.InvariantCulture) +
         "; harness " + (loadsHarness ? "loaded" : "not loaded") +
         "; admitted surfaces " + (admitted.Count == 0 ? "(none)" : string.Join(", ", admitted)) +
-        "; declined " + (declined.Count == 0 ? "(none)" : string.Join(", ", declined));
+        "; declined " + (declined.Count == 0 ? "(none)" : string.Join(", ", declined)) +
+
+        // WRITTEN ONLY FOR A FORM OTHER THAN BYTECODE, so every line a bytecode run printed before
+        // a run could name a form is the line it prints now.
+        (string.Equals(form, Bytecode, StringComparison.Ordinal)
+            ? string.Empty
+            : "; form " + form + " (" + backend + ")");
 }

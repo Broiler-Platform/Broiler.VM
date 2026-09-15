@@ -248,7 +248,9 @@ internal static class Merge
             first.Fuel,
             first.WallClock,
             results,
-            Distinct(findings));
+            Distinct(findings),
+            first.Form,
+            first.Backend);
     }
 
     /// <summary>Every field two shards of one run must agree on, with what they actually said.</summary>
@@ -265,6 +267,10 @@ internal static class Merge
         yield return ("upstream", Distinct(shards, static shard => shard.Upstream));
         yield return ("upstreamRevision", Distinct(shards, static shard => shard.UpstreamRevision));
         yield return ("manifest", Distinct(shards, static shard => shard.ManifestId));
+
+        // TWO FORMS OVER ONE CHECKOUT ARE TWO RUNS, for the manifest's reason one line up: a family
+        // a native backend refuses is not a family the bytecode form refuses.
+        yield return ("form", Distinct(shards, static shard => shard.Form + " " + shard.Backend));
         yield return ("formatVersion", Distinct(shards, static shard => shard.FormatVersion.ToString()));
         yield return ("harness", Distinct(shards, static shard => shard.LoadsHarness.ToString()));
         yield return ("admitted", Distinct(shards, static shard => string.Join(",", shard.Admitted)));

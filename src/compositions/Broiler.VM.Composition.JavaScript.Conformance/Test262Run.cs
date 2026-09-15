@@ -296,7 +296,7 @@ internal static class Test262Run
 
         var modules = new List<JsModuleUnit>();
 
-        if (manifest.IsWide)
+        if (manifest.UsesWideFrontEnd)
         {
             if (string.Equals(variant, "module", StringComparison.Ordinal))
             {
@@ -332,7 +332,7 @@ internal static class Test262Run
                         .Replace('\\', '/')));
             }
 
-            var compiled = JsCompiler.Compile(scripts, modules);
+            var compiled = JsCompiler.Compile(scripts, modules, manifest.CompileRequest);
 
             if (!compiled.Succeeded || compiled.Artifact is null)
             {
@@ -608,7 +608,7 @@ internal static class Test262Run
         // that invoked the scripts and stopped saw no completion and reported the absence of a
         // queue, which stopped being true the day one was built. The drain point is the host's to
         // choose and this one chooses the same point the end-user host does: after the last script.
-        if (manifest.IsWide)
+        if (manifest.UsesWideFrontEnd)
         {
             var drain = new VmInvocationRequest(
                 new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(JavaScriptProfile.DrainEntryPoint)));
@@ -679,7 +679,7 @@ internal static class Test262Run
         out string errorName,
         out string message)
     {
-        if (manifest.IsWide)
+        if (manifest.UsesWideFrontEnd)
         {
             if (JavaScriptProfile.TryGetUncaught(in result, out var uncaught))
             {
@@ -702,7 +702,7 @@ internal static class Test262Run
 
     /// <summary>Whether the invocation produced this manifest's completion payload.</summary>
     private static bool Completed(in VmInvocationResult result, Test262Manifest manifest) =>
-        manifest.IsWide
+        manifest.UsesWideFrontEnd
             ? JavaScriptProfile.TryGetWideCompletion(in result, out _)
             : JavaScriptProfile.TryGetCompletion(in result, out _);
 
