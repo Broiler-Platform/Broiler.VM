@@ -39,7 +39,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3E740C
 // Broiler-Human:        PENDING
-internal sealed class JsEngine
+internal sealed partial class JsEngine
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A41ED2
     // Broiler-Human:        PENDING
@@ -69,6 +69,20 @@ internal sealed class JsEngine
     // Broiler-Human:        PENDING
     private readonly IVmHostCapabilityInvoker? capabilities;
 
+    /// <summary>Whether every program this engine runs carries the baseline native form.</summary>
+    /// <remarks>
+    /// <b>ONE FORM PER INSTANCE, FIXED WHEN THE INSTANCE IS BUILT.</b> The instance's own artifact
+    /// decided it, and a program a guest loads later must carry the same form or the load is a
+    /// defect: an engine that ran one program interpreted and the next one emitted would be choosing
+    /// an execution form per program, which is the per-unit choice this profile's non-goals refuse.
+    /// It is checked three times - at instantiation, at every nested load, and on every entry into
+    /// the dispatch loop - because each check is one comparison and each catches a different route.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Falsified-If: an engine built for one form runs a program of the other form
+    // Broiler-Human:        PENDING
+    private readonly bool nativeForm;
+
     /// <summary>Creates an engine over a fresh realm.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=EFBE54
     // Broiler-Human:        PENDING
@@ -76,11 +90,13 @@ internal sealed class JsEngine
         IVmMeter contractMeter,
         System.Threading.CancellationToken token,
         IVmHostCapabilityInvoker? invoker = null,
-        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces = default)
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces = default,
+        bool nativeForm = false)
     {
         meter = contractMeter;
         cancellation = token;
         capabilities = invoker;
+        this.nativeForm = nativeForm;
 
         // THE SURFACE SET IS ASSIGNED BEFORE THE REALM IS BUILT AND NOT AFTER, because the realm's
         // constructor is what decides which intrinsics exist. A realm handed the set afterwards
@@ -390,6 +406,8 @@ internal sealed class JsEngine
         {
             throw Error("EvalError", "the artifact provider answered with a foreign program");
         }
+
+        RequireInstanceForm(evaluated);
 
         if (!evaluated.TryFindEntry("main", out var unit))
         {
@@ -3533,6 +3551,8 @@ internal sealed class JsEngine
             throw Error("TypeError", "the artifact provider answered with a foreign program");
         }
 
+        RequireInstanceForm(loadedProgram);
+
         if (!loadedProgram.TryFindEntry(ModuleEntryName, out var unit) ||
             loadedProgram.ModuleOfUnit[(int)unit] is var root and < 0)
         {
@@ -4492,6 +4512,56 @@ internal sealed class JsEngine
     // ---- the loop ------------------------------------------------------------------------------
 
     /// <summary>
+    /// Runs one activation of a code unit in whichever form this instance's programs carry.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>EVERY ENTRY INTO A CODE UNIT COMES THROUGH HERE, AND THE FORM IS ASSERTED ON EACH ONE.</b>
+    /// The eight drivers - an entry, a module body, an ordinary call, the parameter prologue and the
+    /// three resumptions - call this method and nothing below it, so a program of the other form can
+    /// reach neither the interpreter nor emitted code without passing the one comparison. The
+    /// comparison is the third of three: instantiation and every nested load already refused a
+    /// mismatch, and an answer here means one of those two was bypassed, which is a defect in this
+    /// profile rather than anything a guest did.
+    /// </para>
+    /// <para>
+    /// <b>It is inlined into its callers and the interpreter pays one test for it.</b> The bytecode
+    /// arm is the interpreter's own loop instantiated over <see cref="JsInterpreted"/>, whose every
+    /// native-only branch the importer removes; the native arm is a call that is never inlined.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=TBF
+    // Broiler-Falsified-If: a program whose form differs from the engine's reaches ExecuteCore or emitted code
+    // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private JsValue Execute(
+        JsProgram program,
+        int unitIndex,
+        JsEnvironment? environment,
+        JsValue thisValue,
+        JsValue[] actualArguments,
+        JsScriptFunction? self,
+        JsValue newTarget,
+        JsCell? thisBinding,
+        JsFrame? frame)
+    {
+        if ((program.NativeCode.Length != 0) != nativeForm)
+        {
+            throw new JsAbort(
+                JsAbortKind.InternalDefect, "a program of the other output form reached this engine");
+        }
+
+        return nativeForm
+            ? RunNative(
+                program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+                thisBinding, frame)
+            : ExecuteCore<JsInterpreted>(
+                program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+                thisBinding, frame, null);
+    }
+
+    /// <summary>
     /// The dispatch loop, over an ordinary frame or over a generator's heap-allocated one.
     /// </summary>
     /// <remarks>
@@ -4510,10 +4580,30 @@ internal sealed class JsEngine
     /// existing region search then runs the same <c>catch</c> and <c>finally</c> blocks it would
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
+    /// <para>
+    /// <b>ONE BODY, SPECIALISED OVER A MODE, AND THE MODE ONLY DECIDES HOW MUCH OF IT RUNS.</b>
+    /// <see cref="JsInterpreted"/> is the loop as it always was: every test of the mode below is a
+    /// comparison of two type tokens the importer folds, so that instantiation carries none of them.
+    /// <see cref="JsNativeEntry"/> runs the prologue - including an abrupt resumption's raise and
+    /// landing - and stops at the first instruction without charging for it. Every other mode runs
+    /// exactly one charged instruction and stops at the next one, which is what one call from
+    /// emitted code into the handler table asks for. Stopping is the one statement at the top of the
+    /// inner loop, which every way back to an instruction passes through: a <c>break</c> out of an
+    /// arm, a caught throw and a caught forced return all land there. So a step runs the same arm
+    /// text, the same charge, the same filter and the same landing as the interpreter, because it is
+    /// the interpreter.
+    /// </para>
+    /// <para>
+    /// <b>A step reads its state from the activation and writes it back only at the boundary.</b>
+    /// The operand stack and the scope list are the activation's own objects, shared exactly as a
+    /// generator's frame shares them today, so an arm mutates them in place; the height and the
+    /// instruction pointer are integers and are handed back when the step stops.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C7D1E7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=C7D1E7
+    // Broiler-Falsified-If: an instantiation over a step mode runs more or fewer than one charged instruction per call, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
-    private JsValue Execute(
+    internal JsValue ExecuteCore<TMode>(
         JsProgram program,
         int unitIndex,
         JsEnvironment? environment,
@@ -4522,20 +4612,69 @@ internal sealed class JsEngine
         JsScriptFunction? self,
         JsValue newTarget,
         JsCell? thisBinding,
-        JsFrame? frame)
+        JsFrame? frame,
+        JsNativeActivation? act)
+        where TMode : struct, IJsExecutionMode
     {
         var unit = program.Functions[unitIndex];
         var code = program.Code;
         var constants = program.Constants;
         var names = program.Names;
-        var stack = frame is null ? new JsValue[unit.MaxOperandStack + 1] : frame.Stack;
+        JsValue[] stack;
+        System.Collections.Generic.List<JsEnvironment> scopes;
+        int sp;
+        int pc;
+        var abrupt = false;
 
-        var scopes = frame is null
-            ? new System.Collections.Generic.List<JsEnvironment>(4) { environment! }
-            : frame.Scopes;
+        if (typeof(TMode) == typeof(JsInterpreted) || typeof(TMode) == typeof(JsNativeEntry))
+        {
+            stack = frame is null ? new JsValue[unit.MaxOperandStack + 1] : frame.Stack;
 
-        var sp = frame is null ? 0 : frame.Sp;
-        var pc = frame is null ? (int)unit.CodeOffset : frame.Pc;
+            scopes = frame is null
+                ? new System.Collections.Generic.List<JsEnvironment>(4) { environment! }
+                : frame.Scopes;
+
+            sp = frame is null ? 0 : frame.Sp;
+            pc = frame is null ? (int)unit.CodeOffset : frame.Pc;
+
+            // A DELEGATION RESUMES INSIDE ITS OWN OPCODE, whatever mode it resumes in: `return` and
+            // `throw` arriving mid-`yield*` are forwarded to the inner iterator rather than raised
+            // here, so only a plain `yield` reaches either of the two arms below.
+            abrupt = frame is { Started: true, Delegating: false } &&
+                frame.ResumeMode != JsResumeMode.Next;
+
+            // THE NORMAL RESUMPTION IS FINISHED HERE AND NOT IN THE OPCODE. The instruction that
+            // suspended has already run its pop; what re-entry owes it is the push of the sent value
+            // and the step past it, and doing that here keeps the `Yield` case a straight-line
+            // suspend.
+            //
+            // THE STEP IS THE WIDTH OF THE INSTRUCTION ACTUALLY AT THE POINTER, not of `Yield`. The
+            // two suspensions this arm serves - `Yield` and `Await` - happen to be one byte each
+            // today, so naming one of them worked; it would have gone on working right up until a
+            // suspension with an operand was added, and then it would have resumed one byte into an
+            // instruction rather than after it. Reading the byte costs nothing and cannot be wrong.
+            if (frame is { Started: true, Delegating: false } && !abrupt)
+            {
+                stack[sp++] = frame.ResumeValue;
+                pc += JsOpcodes.InstructionWidth((JsOpcode)code[pc]);
+            }
+
+            // THE ENTRY HANDS THE ACTIVATION THE OBJECTS IT BUILT OR BORROWED, so every step after
+            // it mutates the same stack and the same scope list the interpreter would have.
+            if (typeof(TMode) == typeof(JsNativeEntry))
+            {
+                act!.Stack = stack;
+                act.Scopes = scopes;
+            }
+        }
+        else
+        {
+            stack = act!.Stack;
+            scopes = act.Scopes;
+            sp = act.Sp;
+            pc = act.Pc;
+        }
+
         var strict = unit.IsStrict;
         var current = pc;
         JsRegion region = default;
@@ -4546,27 +4685,10 @@ internal sealed class JsEngine
         // rather than from `self`.
         var active = self is null ? null : unit.IsArrow ? self.LexicalActiveFunction : self;
 
-        // A DELEGATION RESUMES INSIDE ITS OWN OPCODE, whatever mode it resumes in: `return` and
-        // `throw` arriving mid-`yield*` are forwarded to the inner iterator rather than raised
-        // here, so only a plain `yield` reaches either of the two arms below.
-        var abrupt = frame is { Started: true, Delegating: false } &&
-            frame.ResumeMode != JsResumeMode.Next;
-
-        // THE NORMAL RESUMPTION IS FINISHED HERE AND NOT IN THE OPCODE. The instruction that
-        // suspended has already run its pop; what re-entry owes it is the push of the sent value
-        // and the step past it, and doing that here keeps the `Yield` case a straight-line suspend.
-        //
-        // THE STEP IS THE WIDTH OF THE INSTRUCTION ACTUALLY AT THE POINTER, not of `Yield`. The two
-        // suspensions this arm serves - `Yield` and `Await` - happen to be one byte each today, so
-        // naming one of them worked; it would have gone on working right up until a suspension with
-        // an operand was added, and then it would have resumed one byte into an instruction rather
-        // than after it. Reading the byte costs nothing and cannot be wrong.
-        if (frame is { Started: true, Delegating: false } && !abrupt)
-        {
-            stack[sp++] = frame.ResumeValue;
-            pc += JsOpcodes.InstructionWidth((JsOpcode)code[pc]);
-            current = pc;
-        }
+        // AN ENTRY RUNS NO INSTRUCTION AND A STEP RUNS ONE. The flag starts set for the entry, so
+        // the first boundary it reaches stops it; a step clears the boundary once, runs its one
+        // instruction, and stops at the next.
+        var stepped = typeof(TMode) == typeof(JsNativeEntry);
 
         while (true)
         {
@@ -4588,9 +4710,27 @@ internal sealed class JsEngine
 
                 while (true)
                 {
+                    // THE STEP BOUNDARY. Every route back to an instruction reaches this line - an
+                    // arm's `break`, a landed throw and a landed forced return - so a mode that runs
+                    // one instruction stops here with the pointer the interpreter would run next.
+                    if (typeof(TMode) != typeof(JsInterpreted))
+                    {
+                        if (stepped)
+                        {
+                            act!.Sp = sp;
+                            act.Pc = pc;
+                            return default;
+                        }
+
+                        stepped = true;
+                    }
+
                     current = pc;
                     Charge(FuelPerInstruction);
-                    var opcode = (JsOpcode)code[pc];
+
+                    var opcode = typeof(TMode) == typeof(JsInterpreted) || typeof(TMode) == typeof(JsStepAny)
+                        ? (JsOpcode)code[pc]
+                        : TMode.Opcode;
 
                     switch (opcode)
                     {
@@ -5412,10 +5552,14 @@ internal sealed class JsEngine
                         }
 
                         case JsOpcode.Return:
-                            return stack[--sp];
+                            return typeof(TMode) == typeof(JsInterpreted)
+                                ? stack[--sp]
+                                : act!.Exit(stack[--sp]);
 
                         case JsOpcode.ReturnUndefined:
-                            return JsValue.Undefined;
+                            return typeof(TMode) == typeof(JsInterpreted)
+                                ? JsValue.Undefined
+                                : act!.Exit(JsValue.Undefined);
 
                         case JsOpcode.Add:
                         {
@@ -5751,7 +5895,7 @@ internal sealed class JsEngine
                             // an async generator's body suspends both ways into one frame, and the
                             // two mean opposite things to whoever receives the value.
                             frame.Suspension = JsSuspension.Yield;
-                            return yielded;
+                            return typeof(TMode) == typeof(JsInterpreted) ? yielded : act!.Exit(yielded);
                         }
 
                         // AN IMPORT READ GOES TO THE EXPORTING ENVIRONMENT EVERY TIME. Nothing is
@@ -5794,7 +5938,10 @@ internal sealed class JsEngine
                                 frame.Sp = sp;
                                 frame.Pc = pc + 1;
                                 frame.Suspended = true;
-                                return JsValue.Undefined;
+
+                                return typeof(TMode) == typeof(JsInterpreted)
+                                    ? JsValue.Undefined
+                                    : act!.Exit(JsValue.Undefined);
                             }
 
                             pc++;
@@ -5849,7 +5996,7 @@ internal sealed class JsEngine
                             frame.Pc = pc;
                             frame.Suspended = true;
                             frame.Suspension = JsSuspension.Await;
-                            return awaited;
+                            return typeof(TMode) == typeof(JsInterpreted) ? awaited : act!.Exit(awaited);
                         }
 
                         case JsOpcode.YieldDelegate:
@@ -5867,7 +6014,7 @@ internal sealed class JsEngine
 
                             if (frame!.Suspended)
                             {
-                                return step;
+                                return typeof(TMode) == typeof(JsInterpreted) ? step : act!.Exit(step);
                             }
 
                             stack[sp++] = step;
@@ -7185,4 +7332,71 @@ internal sealed class JsEngine
     // Broiler-Human:        PENDING
     private static uint U32(byte[] code, int at) => (uint)(
         code[at + 1] | (code[at + 2] << 8) | (code[at + 3] << 16) | (code[at + 4] << 24));
+}
+
+/// <summary>How much of the dispatch loop one call of <see cref="JsEngine.ExecuteCore"/> runs.</summary>
+/// <remarks>
+/// <para>
+/// <b>A MODE IS A VALUE TYPE SO THAT EACH ONE GETS ITS OWN COMPILED LOOP.</b> The runtime compiles a
+/// generic method separately for every value-type argument, and a comparison of the argument's type
+/// token against a mode's is a constant in that compilation - so the interpreter's instantiation
+/// carries no trace of the native form's branches, and no inlining decision is needed to remove them.
+/// </para>
+/// <para>
+/// <b>The opcode is a static member so a per-opcode mode can name its instruction as a constant.</b>
+/// A step built for one opcode switches over a constant, which lets the compiler keep only that arm;
+/// the modes that read the opcode from the code answer <c>default</c> and never have it asked.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+// Broiler-Falsified-If: a mode's opcode is read by the dispatch loop for a mode that reads its opcode from the code
+// Broiler-Human:        PENDING
+internal interface IJsExecutionMode
+{
+    /// <summary>The instruction a per-opcode step runs; <c>default</c> for every other mode.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Falsified-If: a per-opcode step answers an opcode other than the one its handler was installed for
+    // Broiler-Human:        PENDING
+    static abstract JsOpcode Opcode { get; }
+}
+
+/// <summary>The interpreter: the whole loop, from entry to return or suspension.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+// Broiler-Falsified-If: the loop instantiated over this mode stops before a return, a suspension or an escaping exception
+// Broiler-Human:        PENDING
+internal readonly struct JsInterpreted : IJsExecutionMode
+{
+    /// <summary>Never asked: the interpreter reads each opcode from the code.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public static JsOpcode Opcode => default;
+}
+
+/// <summary>The baseline form's entry: the prologue, an abrupt resumption's raise and landing, and nothing more.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+// Broiler-Falsified-If: the loop instantiated over this mode charges for or runs an instruction
+// Broiler-Human:        PENDING
+internal readonly struct JsNativeEntry : IJsExecutionMode
+{
+    /// <summary>Never asked: the entry runs no instruction.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public static JsOpcode Opcode => default;
+}
+
+/// <summary>One instruction of any opcode, read from the code: the fallback to per-opcode steps.</summary>
+/// <remarks>
+/// <b>It exists so that the per-opcode specialisation is a measurement and not a correctness
+/// property.</b> Every handler can run through this one instantiation instead, with the same checks
+/// and the same semantics, if compiling one step per opcode costs more than it saves.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+// Broiler-Falsified-If: the loop instantiated over this mode runs more or fewer than one charged instruction per call
+// Broiler-Human:        PENDING
+internal readonly struct JsStepAny : IJsExecutionMode
+{
+    /// <summary>Never asked: this step reads its opcode from the code.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public static JsOpcode Opcode => default;
 }

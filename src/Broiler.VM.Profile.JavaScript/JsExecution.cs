@@ -253,6 +253,20 @@ internal static class JsExecution
         IJsHostSurface? hostSurface,
         System.Threading.CancellationToken cancellationToken)
     {
+        // A BASELINE ARTIFACT THIS PROCESS CANNOT ENTER IS REFUSED BEFORE ANYTHING IS CHARGED, and it
+        // is a refusal and not a fallback. The bytecode is in the same artifact and this arm will not
+        // run it instead: the form was fixed when the artifact was compiled. The refusal precedes the
+        // charge so an artifact for another architecture answers the same way whatever allowance the
+        // operation had, which is the order the numeric arm answers in.
+        var native = JsNativeExecution.CarriesEmittedCode(program);
+
+        if (native &&
+            (program.NativeArchitecture != JsNativeExecution.HostArchitecture ||
+                JsBaselineHandlers.Table == 0))
+        {
+            return VmExecutionStep.ContractViolation(VmReason.UnsatisfiedHostAssumption);
+        }
+
         if (!environment.Meter.TryCharge(VmBudgetDimension.Fuel, 1))
         {
             return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);
@@ -262,7 +276,16 @@ internal static class JsExecution
             environment.Meter,
             cancellationToken,
             environment.Capabilities,
-            program.AdmittedSurfaces);
+            program.AdmittedSurfaces,
+            nativeForm: native);
+
+        // THE PAGE IS MAPPED NOW AND NOT AT THE FIRST CALL, so a process that may not make memory
+        // executable refuses the instance instead of faulting its first invocation.
+        if (native && engine.NativePageOf(program) is null)
+        {
+            return VmExecutionStep.ContractViolation(VmReason.UnsatisfiedHostAssumption);
+        }
+
         var instance = new JsInstance(program, engine, environment);
 
         // THE SURFACE IS INSTALLED ONLY WHERE THE CAPABILITY TABLE SAYS SO, AND THE TWO CONDITIONS
