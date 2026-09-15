@@ -292,15 +292,26 @@ internal static class NativeTemplateScanChecks
 
     /// <summary>
     /// The baseline tables carry no call to a unit entry, no memory destination, and exactly one
-    /// indirect transfer: the call through the handler table.
+    /// indirect transfer: the call through the handler table - judged from each template's bytes.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>CLAUSE S4 IS A PROPERTY OF THE TABLE AND THIS ROW PINS IT.</b> The argument that every
     /// indirect call lands in the handler table rests on nothing in the table writing memory - so
     /// the frame's first word is still the table base the runtime stored - and on the one indirect
     /// transfer indexing that table by a field kind that admits only defined opcodes. A template added
     /// with a memory destination, or a second indirect form, turns this row red before any scan
     /// accepts a payload that uses it.
+    /// </para>
+    /// <para>
+    /// <b>A TEMPLATE'S NAME IS NOT EVIDENCE, SO THE ROW DECODES WHAT THE SCAN COMPARES.</b> The scan
+    /// matches bytes under a mask and never reads a name; a template named <c>mov eax, arg1d</c> whose
+    /// bytes are <c>49 89 1E</c> writes through R14 all the same. So each template's fixed bytes are
+    /// decoded as exactly one x86-64 instruction, with every prefix, opcode, ModRM and SIB bit fixed by
+    /// the mask, and the decoding is conservative: an opcode it has no rule for is a failure, not a
+    /// pass. The controls at the end are byte sequences under misleading names that the judgement must
+    /// refuse, so a judgement weakened into accepting them turns the row red as well.
+    /// </para>
     /// </remarks>
     private static (string, bool, string) TheBaselineTablesWriteNothingAndCallOnlyTheHandlerTable()
     {
@@ -308,44 +319,89 @@ internal static class NativeTemplateScanChecks
             "the baseline tables write no memory and transfer indirectly only through the handler table";
 
         var failures = new System.Collections.Generic.List<string>();
+        var judged = 0;
 
         foreach (var architecture in new[] { JsNativeArchitecture.X64Windows, JsNativeArchitecture.X64SystemV })
         {
-            var indirect = 0;
+            var calls = 0;
 
             foreach (var template in JsNativeTemplates.For(architecture, JsNativeTier.Baseline))
             {
-                var operands = template.Text.IndexOf(' ', System.StringComparison.Ordinal);
-                var first = operands < 0 ? string.Empty : template.Text[(operands + 1)..];
+                judged++;
+                var refusal = WhyABaselineTemplateIsRefused(template, out var isHandlerCall);
 
-                if (first.StartsWith('[') && !template.Text.StartsWith("call ", System.StringComparison.Ordinal))
+                if (refusal is not null)
                 {
-                    failures.Add(architecture + ": `" + template.Text + "` has a memory destination");
+                    failures.Add(architecture + ": `" + template.Text + "` " + refusal);
                 }
 
-                if (template.Text.StartsWith("call ", System.StringComparison.Ordinal))
+                if (isHandlerCall)
                 {
-                    indirect++;
-
-                    if (template.Text != "call [rbx+slot]" || template.Fields.Length != 1 ||
-                        template.Fields[0].Kind != JsNativeFieldKind.HelperSlot)
-                    {
-                        failures.Add(architecture + ": `" + template.Text + "` is a call other than through the handler table");
-                    }
-                }
-
-                foreach (var field in template.Fields)
-                {
-                    if (field.Kind == JsNativeFieldKind.UnitEntryBranch)
-                    {
-                        failures.Add(architecture + ": `" + template.Text + "` branches to a unit entry");
-                    }
+                    calls++;
                 }
             }
 
-            if (indirect != 1)
+            if (calls != 1)
             {
-                failures.Add(architecture + ": " + indirect + " call templates where one is expected");
+                failures.Add(architecture + ": " + calls + " handler-table calls where one is expected");
+            }
+        }
+
+        var slot = new JsNativeTemplateField(JsNativeFieldKind.HelperSlot, 16, 32, true, 1, false);
+        var pc = new JsNativeTemplateField(JsNativeFieldKind.BytecodePc, 8, 32, true, 1, false);
+        var controls = new[]
+        {
+            // mov [r14], rbx - the finding's own example, under a prologue template's name.
+            new JsNativeTemplate("mov eax, arg1d", [0x49, 0x89, 0x1E], false),
+
+            // mov qword [rbx+0], imm32.
+            new JsNativeTemplate("add rsp, frame", [0x48, 0xC7, 0x83, 0, 0, 0, 0, 0, 0, 0, 0], false),
+
+            // sete byte [rax].
+            new JsNativeTemplate("test eax, eax", [0x0F, 0x94, 0x00], false),
+
+            // pop qword [r14].
+            new JsNativeTemplate("pop rbx", [0x41, 0x8F, 0x06], false),
+
+            // call rax.
+            new JsNativeTemplate("call [rbx+slot]", [0xFF, 0xD0], false),
+
+            // call qword [rdx+disp32], with the displacement a helper-slot field.
+            new JsNativeTemplate("call [rbx+slot]", [0xFF, 0x92, 0, 0, 0, 0], false, slot),
+
+            // jmp qword [rbx+disp32], with the displacement a helper-slot field.
+            new JsNativeTemplate("call [rbx+slot]", [0xFF, 0xA3, 0, 0, 0, 0], false, slot),
+
+            // call rel32.
+            new JsNativeTemplate("jmp rel32", [0xE8, 0, 0, 0, 0], false),
+
+            // cmp eax, imm32 followed by mov [rax], ebx inside the same template.
+            new JsNativeTemplate("cmp eax, pc", [0x3D, 0, 0, 0, 0, 0x89, 0x18], false, pc),
+
+            // An opcode byte a field covers, so the mask compares nothing there.
+            new JsNativeTemplate(
+                "ret",
+                [0xC3, 0, 0, 0],
+                true,
+                new JsNativeTemplateField(JsNativeFieldKind.BytecodePc, 0, 32, true, 1, false)),
+
+            // imul eax, eax - legal, harmless, and an opcode the judgement has no rule for.
+            new JsNativeTemplate("push rbx", [0x0F, 0xAF, 0xC0], false),
+        };
+
+        var refused = 0;
+
+        foreach (var control in controls)
+        {
+            if (WhyABaselineTemplateIsRefused(control, out var called) is not null && !called)
+            {
+                refused++;
+            }
+            else
+            {
+                failures.Add(
+                    "control " + System.Convert.ToHexString(control.Fixed) + " named `" + control.Text +
+                    "` was not refused by its bytes");
             }
         }
 
@@ -353,8 +409,217 @@ internal static class NativeTemplateScanChecks
             Name,
             failures.Count == 0,
             failures.Count == 0
-                ? "both tables: one call, through [rbx+slot] with a helper-slot field; no memory destination; no unit-entry branch"
+                ? judged + " templates judged by their bytes: one handler-table call per table (FF 93 with a helper-slot " +
+                  "disp32), no memory destination, no other transfer through memory or a register, no direct call, " +
+                  "no unit-entry branch; " + refused + " of " + controls.Length + " misnamed byte controls refused"
                 : string.Join("; ", failures));
+    }
+
+    /// <summary>
+    /// Why the bytes of one baseline template break clause S4, or <see langword="null"/> when they
+    /// are exactly one instruction that writes no memory and transfers control only as the handler
+    /// call or a direct branch does.
+    /// </summary>
+    /// <remarks>
+    /// <b>EVERY OPCODE HERE HAS A RULE, AND AN OPCODE WITHOUT ONE IS A REFUSAL.</b> The rules cover
+    /// what the baseline form can plausibly grow into - pushes and pops, register moves and loads,
+    /// arithmetic and compares with an immediate, conditional sets, direct branches, the two indirect
+    /// groups of <c>FF</c> - so a new template either decodes under one of them and is judged, or
+    /// fails here and makes its author extend the judgement deliberately. A ModRM <c>mod</c> of three
+    /// names a register and anything else names memory; for an opcode whose r/m operand is its
+    /// destination, that is a memory write.
+    /// </remarks>
+    private static string? WhyABaselineTemplateIsRefused(JsNativeTemplate template, out bool isHandlerCall)
+    {
+        isHandlerCall = false;
+        var bytes = template.Fixed;
+        var mask = template.Mask;
+
+        foreach (var field in template.Fields)
+        {
+            if (field.Kind == JsNativeFieldKind.UnitEntryBranch)
+            {
+                return "branches to a unit entry";
+            }
+        }
+
+        bool IsFixed(int index) => index < bytes.Length && mask[index] == 0xFF;
+
+        var at = 0;
+        var wide = false;
+
+        if (IsFixed(0) && (bytes[0] & 0xF0) == 0x40)
+        {
+            wide = (bytes[0] & 0x08) != 0;
+            at = 1;
+        }
+
+        if (!IsFixed(at))
+        {
+            return "leaves its opcode to a field or ends before one";
+        }
+
+        var opcode = bytes[at++];
+        var second = -1;
+        var hasModRm = false;
+        var writesRm = false;
+        var immediate = 0;
+
+        switch (opcode)
+        {
+            case >= 0x50 and <= 0x5F:
+            case 0x90:
+            case 0xC3:
+                break;
+            case >= 0xB8 and <= 0xBF:
+                immediate = wide ? 8 : 4;
+                break;
+            case 0x3D:
+            case 0xE9:
+                immediate = 4;
+                break;
+            case 0xE8:
+                return "is a direct call, which reaches something other than the handler table";
+            case 0x84:
+            case 0x85:
+            case 0x8A:
+            case 0x8B:
+            case 0xFF:
+                hasModRm = true;
+                break;
+            case 0x88:
+            case 0x89:
+            case 0x8F:
+                hasModRm = true;
+                writesRm = true;
+                break;
+            case 0x80:
+            case 0x83:
+            case 0xC6:
+                hasModRm = true;
+                writesRm = true;
+                immediate = 1;
+                break;
+            case 0x81:
+            case 0xC7:
+                hasModRm = true;
+                writesRm = true;
+                immediate = 4;
+                break;
+            case 0x0F:
+                if (!IsFixed(at))
+                {
+                    return "leaves its second opcode byte to a field or ends before one";
+                }
+
+                second = bytes[at++];
+
+                if (second is >= 0x80 and <= 0x8F)
+                {
+                    immediate = 4;
+                }
+                else if (second is >= 0x90 and <= 0x9F)
+                {
+                    hasModRm = true;
+                    writesRm = true;
+                }
+                else
+                {
+                    return "carries the opcode 0F " + second.ToString("X2", System.Globalization.CultureInfo.InvariantCulture) +
+                           ", which this judgement has no rule for";
+                }
+
+                break;
+            default:
+                return "carries the opcode " + opcode.ToString("X2", System.Globalization.CultureInfo.InvariantCulture) +
+                       ", which this judgement has no rule for";
+        }
+
+        var memory = false;
+
+        if (hasModRm)
+        {
+            if (!IsFixed(at))
+            {
+                return "leaves its ModRM byte to a field or ends before one";
+            }
+
+            var modRm = bytes[at++];
+            var mod = modRm >> 6;
+            var reg = (modRm >> 3) & 7;
+            var rm = modRm & 7;
+            memory = mod != 3;
+
+            if (memory && rm == 4)
+            {
+                if (!IsFixed(at))
+                {
+                    return "leaves its SIB byte to a field or ends before one";
+                }
+
+                if (mod == 0 && (bytes[at] & 7) == 5)
+                {
+                    at += 4;
+                }
+
+                at++;
+            }
+
+            at += mod switch
+            {
+                1 => 1,
+                2 => 4,
+                0 when rm == 5 => 4,
+                _ => 0,
+            };
+
+            if (opcode is 0x80 or 0x81 or 0x83 && reg == 7)
+            {
+                writesRm = false;
+            }
+
+            if (opcode is 0x8F or 0xC6 or 0xC7 && reg != 0)
+            {
+                return "carries the undefined extension /" + reg + " of its opcode";
+            }
+
+            if (opcode == 0xFF)
+            {
+                switch (reg)
+                {
+                    case 0:
+                    case 1:
+                        writesRm = true;
+                        break;
+                    case >= 2 and <= 5:
+                        if (template.Length != 6 || bytes[0] != 0xFF || modRm != 0x93 || template.Fields.Length != 1 ||
+                            template.Fields[0].Kind != JsNativeFieldKind.HelperSlot ||
+                            template.Fields[0].BitOffset != 16 || template.Fields[0].BitWidth != 32)
+                        {
+                            return "transfers control through memory or a register other than as call qword [rbx+disp32] " +
+                                   "with the displacement a helper-slot field";
+                        }
+
+                        isHandlerCall = true;
+                        break;
+                    default:
+                        return "carries the extension /" + reg + " of FF, which this judgement has no rule for";
+                }
+            }
+        }
+
+        if (writesRm && memory)
+        {
+            return "has a memory destination";
+        }
+
+        if (at + immediate != template.Length)
+        {
+            isHandlerCall = false;
+            return "is " + template.Length + " bytes where the one instruction it opens with is " + (at + immediate);
+        }
+
+        return null;
     }
 
     /// <summary>

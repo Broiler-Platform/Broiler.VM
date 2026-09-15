@@ -106,10 +106,7 @@ public sealed record JsX64Abi(
             JsX64Register.R13,
             JsX64Register.R14,
             JsX64Register.R15,
-        ])
-    {
-        SecondArgumentRegister = JsX64Register.Rdx,
-    };
+        ]);
 
     /// <summary>The System V AMD64 convention.</summary>
     /// <remarks>
@@ -134,10 +131,7 @@ public sealed record JsX64Abi(
             JsX64Register.R13,
             JsX64Register.R14,
             JsX64Register.R15,
-        ])
-    {
-        SecondArgumentRegister = JsX64Register.Rsi,
-    };
+        ]);
 
     /// <summary>Both rows, in the order their architecture values ascend.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4ACC2C
@@ -210,12 +204,16 @@ public sealed record JsX64Abi(
     /// unit receives its frame and its entry program counter, and it hands every handler the same
     /// frame and the program counter of the instruction to run. The first argument's register is
     /// <see cref="FramePointerRegister"/> already; this is the second, and it is data on the row for
-    /// the reason the first is.
+    /// the reason the first is. It is DERIVED from <see cref="Architecture"/>, the same key the baseline
+    /// template table is built from, rather than set beside the positional fields: an init-only
+    /// property a row could omit would default to RAX, and the emitter would then write a prologue and
+    /// a head that are not the table's templates - refused by the scan, but only after a compile.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
     // Broiler-Falsified-If: this names a register other than the one the row's convention passes its second integer argument in
     // Broiler-Human:        PENDING
-    public JsX64Register SecondArgumentRegister { get; init; }
+    public JsX64Register SecondArgumentRegister =>
+        Architecture == JsNativeArchitecture.X64Windows ? JsX64Register.Rdx : JsX64Register.Rsi;
 
     /// <summary>
     /// The bytes a baseline unit subtracts from the stack pointer after saving the two callee-saved
