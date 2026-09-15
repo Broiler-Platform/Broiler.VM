@@ -57,6 +57,14 @@ internal sealed record Test262FloorRow(string Field, bool AtLeast, int Value);
 /// reason.
 /// </para>
 /// <para>
+/// <b>And the output form, for the same reason.</b> A native run and a bytecode run under one
+/// manifest are two runs whose totals are expected to differ by named classes - wall-clock
+/// exhaustions, fuel on guest-loading variants, code-size refusals - and a floor that compared
+/// them would read a form's declared costs as a regression. The form is an optional
+/// <c>form &lt;name&gt; &lt;backend&gt;</c> line, absent for bytecode, so every floor written before
+/// a run could name a form reads, renders and compares exactly as it did.
+/// </para>
+/// <para>
 /// <b>A run that may not be retained may not set a floor.</b> A floor is the most durable thing this
 /// harness writes, so <see cref="Test262Report.IsRetainable"/> is the gate: no unpinned suite, no
 /// single shard, no partial coverage, no arithmetic that does not add up. A floor set from a run
@@ -67,7 +75,9 @@ internal sealed record Test262Floor(
     SuiteRevision Suite,
     string ManifestId,
     IReadOnlyList<Test262FloorRow> Rows,
-    IReadOnlyList<string> Retired)
+    IReadOnlyList<string> Retired,
+    string Form = Test262Manifest.Bytecode,
+    string Backend = "")
 {
     /// <summary>The header a whole-run floor file carries.</summary>
     internal const string Header = "# broiler-js-conformance test262 floor 1";
@@ -118,7 +128,20 @@ internal sealed record Test262Floor(
         report.Suite,
         report.ManifestId,
         Fields.Select(field => new Test262FloorRow(field.Field, field.AtLeast, Value(report, field.Field))).ToArray(),
-        []);
+        [],
+        report.Form,
+        report.Backend);
+
+    /// <summary>The form a floor or a report names, as one comparable phrase.</summary>
+    /// <remarks>
+    /// <b>The backend is part of it.</b> Two native runs emitted for two calling conventions are
+    /// two compilations on two platforms, and the merge already refuses shards that disagree about
+    /// the pair rather than about the name alone.
+    /// </remarks>
+    private static string FormOf(string form, string backend) =>
+        string.Equals(form, Test262Manifest.Bytecode, StringComparison.Ordinal)
+            ? form
+            : form + " (" + (backend.Length == 0 ? "-" : backend) + ")";
 
     /// <summary>Compares a run against this floor.</summary>
     internal Floor.Verdict Compare(Test262Report report, out IReadOnlyList<string> complaints)
@@ -141,6 +164,20 @@ internal sealed record Test262Floor(
             [
                 $"the floor was set under manifest `{ManifestId}` and this run was taken under " +
                 $"`{report.ManifestId}`: re-basing, because two manifests' totals are two runs",
+            ];
+
+            return Floor.Verdict.Rebased;
+        }
+
+        var floorForm = FormOf(Form, Backend);
+        var runForm = FormOf(report.Form, report.Backend);
+
+        if (!string.Equals(floorForm, runForm, StringComparison.Ordinal))
+        {
+            complaints =
+            [
+                $"the floor was set in the {floorForm} form and this run was taken in the {runForm} " +
+                "form: re-basing, because two output forms' totals are two runs",
             ];
 
             return Floor.Verdict.Rebased;
@@ -178,6 +215,13 @@ internal sealed record Test262Floor(
         text.Append("revision ").Append(Suite.IsPinned ? Suite.Revision : "unpinned").Append('\n');
         text.Append("manifest ").Append(ManifestId).Append('\n');
 
+        // WRITTEN ONLY FOR A FORM OTHER THAN BYTECODE, so a bytecode floor is byte for byte the file
+        // it was before a run could name a form.
+        if (!string.Equals(Form, Test262Manifest.Bytecode, StringComparison.Ordinal))
+        {
+            text.Append("form ").Append(Form).Append(' ').Append(Backend.Length == 0 ? "-" : Backend).Append('\n');
+        }
+
         foreach (var field in Fields)
         {
             var row = Rows.FirstOrDefault(candidate =>
@@ -209,6 +253,8 @@ internal sealed record Test262Floor(
         var name = "unnamed";
         var revision = string.Empty;
         var manifest = Test262Manifest.Default;
+        var form = Test262Manifest.Bytecode;
+        var backend = string.Empty;
         var rows = new List<Test262FloorRow>();
         var retired = new List<string>();
         var seenHeader = false;
@@ -240,6 +286,16 @@ internal sealed record Test262Floor(
                     manifest = parts[1];
                     break;
 
+                // A FORM THIS BUILD DOES NOT NAME IS REFUSED RATHER THAN READ AS BYTECODE, because a
+                // floor that quietly compared under the wrong form is the comparison this line
+                // exists to prevent.
+                case "form" when parts.Length == 3 &&
+                    (string.Equals(parts[1], Test262Manifest.Bytecode, StringComparison.Ordinal) ||
+                        string.Equals(parts[1], Test262Manifest.Native, StringComparison.Ordinal)):
+                    form = parts[1];
+                    backend = string.Equals(parts[2], "-", StringComparison.Ordinal) ? string.Empty : parts[2];
+                    break;
+
                 case "atLeast" when parts.Length == 3:
                 case "atMost" when parts.Length == 3:
                     rows.Add(Row(path, parts[0], parts[1], parts[2]));
@@ -259,7 +315,7 @@ internal sealed record Test262Floor(
             throw new InvalidOperationException($"{path} does not open with `{Header}`");
         }
 
-        return new Test262Floor(new SuiteRevision(name, revision), manifest, rows, retired);
+        return new Test262Floor(new SuiteRevision(name, revision), manifest, rows, retired, form, backend);
     }
 
     /// <summary>The floor a re-base produces: the new run's rows, with the old floor retained.</summary>
@@ -269,6 +325,9 @@ internal sealed record Test262Floor(
         [
             .. Retired,
             $"{Suite} {ManifestId} " +
+                (string.Equals(Form, Test262Manifest.Bytecode, StringComparison.Ordinal)
+                    ? string.Empty
+                    : FormOf(Form, Backend) + " ") +
                 string.Join(
                     "; ",
                     Rows.Select(static row =>
@@ -379,15 +438,15 @@ internal sealed record Test262Floor(
                 if (!admit)
                 {
                     Console.WriteLine(
-                        "broiler-js-conformance: the suite revision or the manifest moved; pass " +
-                        "--admit to re-base the floor onto this run");
+                        "broiler-js-conformance: the suite revision, the manifest or the output form " +
+                        "moved; pass --admit to re-base the floor onto this run");
 
                     return ExitCodes.Failed;
                 }
 
                 File.WriteAllText(
                     floorPath,
-                    floor.Rebase(run, "the suite revision or the manifest moved").Render());
+                    floor.Rebase(run, "the suite revision, the manifest or the output form moved").Render());
 
                 Console.WriteLine(
                     $"broiler-js-conformance: test262 floor re-based onto {run.Suite} under " +

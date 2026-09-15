@@ -561,6 +561,65 @@ jobs:
             exit 1
           }
 
+      # TWO OF THOSE SUBTREES AGAIN, IN THE NATIVE FORM, ON THE TWO CELLS WHOSE CONVENTION THIS
+      # BUILD ARMS.
+      #
+      # The published image compiles every variant of `language/statements/class` and
+      # `built-ins/Promise` in the baseline native form over the wide manifest - every unit emitted
+      # as x86-64 for this cell's calling convention, each instruction one call into the
+      # interpreter's own dispatch for it - and scores it with the harness prelude loaded. That
+      # executes the whole baseline form under System V on linux-x64 and under Win64 on win-x64 on
+      # every lane run, which nothing else in the lane does over a suite. An arm64 cell has no
+      # backend it arms, so a native run there would score every variant as a refused
+      # instantiation and measure nothing; it is not run there rather than run and ignored.
+      #
+      # THE FORM ROW IS ASSERTED, NOT ASSUMED. A native run that had silently compiled to bytecode
+      # would report the bytecode run's verdicts and compare clean, so the merged report must say
+      # `form|native` before the comparison means anything. eng/compare-test262-forms.py then holds
+      # every per-variant difference from the bytecode run above to the named classes: a code-size
+      # refusal, fuel spent differently on a guest-loading variant, and a wall-clock exhaustion. The
+      # third is admitted because the bytecode run above is taken at the driver's five-second wall
+      # and this one at sixty, so the two walls are not one question; the script reads both
+      # allowances off the reports and says which reading it applied.
+      - name: Score two of those subtrees in the native form and compare the two forms
+        if: matrix.rid == 'linux-x64' || matrix.rid == 'win-x64'
+        shell: bash
+        run: |
+          set -euo pipefail
+          py=python3
+          command -v "$py" >/dev/null 2>&1 || py=python
+          suite=$(find artifacts/t262-rid -maxdepth 1 -mindepth 1 -type d)
+
+          # The exit code is not the assertion, for the reason the step above gives.
+          set +e
+          "$py" eng/run-test262.py --suite "$suite" \
+            --binary-directory artifacts/ci-aot-JavaScript.Conformance \
+            --jobs 2 --form native --wall 60000 --out artifacts/test262-rid-native \
+            --dir test/language/statements/class \
+            --dir test/built-ins/Promise
+          measured=$?
+          set -e
+
+          if [ ! -f artifacts/test262-rid-native/test262.report ]; then
+            echo "the native run did not produce a merged report (driver exit $measured)" >&2
+            exit 1
+          fi
+
+          grep -q '^total|' artifacts/test262-rid-native/test262.report || {
+            echo "the native run's merged report carries no total, so nothing was measured" >&2
+            exit 1
+          }
+
+          grep -q '^form|native' artifacts/test262-rid-native/test262.report || {
+            echo "the native run's merged report does not say form|native, so it is not a native run" >&2
+            exit 1
+          }
+
+          "$py" eng/compare-test262-forms.py \
+            artifacts/test262-rid/test262.report \
+            artifacts/test262-rid-native/test262.report \
+            --exempt-guest-loads --suite "$suite"
+
       # THE SHARDED RUN, WHICH IS A DIFFERENT QUESTION FROM THE STEP ABOVE.
       #
       # One unsharded run proves the totals. It cannot prove that the shards of a sharded run

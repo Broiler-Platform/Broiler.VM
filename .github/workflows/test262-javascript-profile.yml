@@ -6,17 +6,20 @@
 #
 #   bytecode      the ordinary artifact, under `broiler.javascript.wide` with the suite's harness
 #                 prelude loaded. This is the run eng/run-test262.py takes by default.
-#   machinecode   the native form: every unit emitted as machine code beside its bytecode, by the
-#                 backend this runner's calling convention arms (x86-64-sysv on ubuntu-latest).
-#                 The compiler admits that form only under `broiler.javascript.numeric`, so the
-#                 run is taken under that manifest and the harness prelude is not loaded.
+#   machinecode   the native form, under `broiler.javascript.wide` with the harness prelude loaded
+#                 exactly as the bytecode run loads it. Every unit of the wide artifact is emitted
+#                 as x86-64 machine code for this runner's calling convention (x86-64-sysv on
+#                 ubuntu-latest). Each instruction is one call into the interpreter's own dispatch
+#                 for that instruction, and the control flow between instructions is emitted.
 #
-# WHAT A machinecode RUN WILL SAY, SO NOBODY READS IT AS A REGRESSION. The numeric manifest admits
-# Number values, their operators, bindings and functions of numbers called by name, and refuses
-# everything else BY NAME at compile time. Almost every test262 file reaches a string, an object or
-# `assert`, so almost every variant is reported `unsupported` with the construct family that was
-# refused, and the family table is the useful part of the report. The two runs are two questions
-# over one checkout; their totals are not comparable and this workflow compares nothing.
+# WHAT A machinecode RUN WILL SAY, SO NOBODY READS IT AS A REGRESSION. Its verdicts are expected to
+# equal the bytecode run's over the same checkout, variant by variant, except in three named
+# classes: a variant that spends the wall clock in the native form where bytecode answered, because
+# each instruction costs more wall time; a variant that loads a guest program (eval, Function,
+# import()) and spends fuel at a different point, because the loaded program's larger native
+# payload is verified under the same allowance; and a variant refused because its emitted code
+# would exceed the format's native-code ceiling. eng/compare-test262-forms.py sorts a per-variant
+# diff of the two merged reports into exactly those classes. This workflow compares nothing itself.
 #
 # WHY A MATRIX AND NOT eng/run-test262.py IN ONE JOB. A whole run of the wide manifest was 56 shards
 # across 14 processes and several hours on a workstation, and a hosted job is cut at six. So the
@@ -109,7 +112,7 @@ jobs:
           set -euo pipefail
           case "$PROFILE" in
             bytecode)    form=bytecode; manifest=broiler.javascript.wide ;;
-            machinecode) form=native;   manifest=broiler.javascript.numeric ;;
+            machinecode) form=native;   manifest=broiler.javascript.wide ;;
             *)
               echo "::error::profile must be bytecode or machinecode, and was '$PROFILE'"
               exit 1

@@ -278,6 +278,16 @@ internal static class Program
     /// emitted for somewhere else and not a defect.)</i>
     /// </para>
     /// <para>
+    /// <b><c>--native</c> WITHOUT <c>--numeric</c> ASKS FOR THE BASELINE FORM OVER THE WIDE
+    /// SURFACE, AND THIS HOST PASSES IT THROUGH.</b> <i>(Added 2026-09-15.)</i> Every unit of the
+    /// wide artifact is emitted as x86-64 machine code whose control flow between instructions is
+    /// emitted and whose every instruction is one call into the interpreter's own dispatch for that
+    /// instruction, so a program this host runs in bytecode it also runs in that form. The same
+    /// request reaches this host's source provider, because an instance has one form and a
+    /// guest-loaded program of the other form is refused as a defect. The arm64 backend emits only
+    /// for <c>--numeric</c>.
+    /// </para>
+    /// <para>
     /// <b>It implies nothing about speed and this host makes no claim about any.</b> That sentence
     /// survives the revision above unchanged and matters more now than it did: a form that runs is
     /// exactly the kind of thing a reader will assume a number about, and this component has
@@ -715,6 +725,11 @@ internal static class Program
         Console.WriteLine("              its bytes are compared against a retained expectation rather");
         Console.WriteLine("              than run, and it admits a narrower set of instructions than");
         Console.WriteLine("              either x86-64 backend and refuses the rest at compile time.");
+        Console.WriteLine("              Without --numeric it asks for the baseline form over the wide");
+        Console.WriteLine("              surface: every unit emitted, each instruction one call into the");
+        Console.WriteLine("              interpreter's own dispatch for it, the control flow between");
+        Console.WriteLine("              instructions emitted, and eval and import() compiled the same");
+        Console.WriteLine("              way. The arm64 backend emits only with --numeric.");
         Console.WriteLine("              None of this implies anything about speed: no measurement of");
         Console.WriteLine("              any output form is retained anywhere in this repository.");
         Console.WriteLine("              (Corrected 2026-09-08. This entry read \"Every backend this");
@@ -883,5 +898,10 @@ internal static class Program
         Console.WriteLine("nothing here emits machine code.\" Its final clause has been false since");
         Console.WriteLine("the encoders landed: --numeric --native emits machine code, and on this");
         Console.WriteLine("platform's own calling convention this host arms and executes it.)");
+        Console.WriteLine("(Recorded 2026-09-15. The wide surface has a native form of its own since");
+        Console.WriteLine("then - the baseline form, under --native without --numeric - so this");
+        Console.WriteLine("manifest is no longer the only language that can be emitted in whole. It");
+        Console.WriteLine("remains the one whose instructions are emitted as computation rather than");
+        Console.WriteLine("as calls into the interpreter.)");
     }
 }

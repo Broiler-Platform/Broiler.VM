@@ -28,11 +28,15 @@
 # is ever retained, and the ratchet is `--floor`'s and not this script's.
 #
 # THE OUTPUT FORM IS THE HARNESS'S TO CHECK AND NOT THIS SCRIPT'S. `--form native` compiles every
-# variant to emitted machine code, which the compiler admits only under the numeric manifest - so a
-# native run with no `--manifest` is taken under that one, and a native run naming another is
-# refused by every shard before it scores anything. `--backend` defaults, in the harness, to the
+# variant to emitted machine code beside its bytecode. A native run with no `--manifest` is taken
+# under the wide manifest, exactly as a bytecode run is: every unit is emitted in the baseline form,
+# each instruction one call into the interpreter's own dispatch for it, and the suite's harness
+# prelude is loaded. Naming the numeric manifest takes the run under that manifest's computing form
+# instead, with no prelude; naming the slice manifest is refused by every shard before it scores
+# anything, because that manifest has no native form. `--backend` defaults, in the harness, to the
 # calling convention this process arms. Two forms are two runs: the shard reports say which form
-# they were, and the merge refuses shards that disagree.
+# they were, the merge refuses shards that disagree, and eng/compare-test262-forms.py is what holds
+# a native run's per-variant verdicts to a bytecode run's.
 #
 # THE ALLOWANCES, AND WHY THEY ARE SMALL HERE. A variant gets a fuel ceiling and a wall-clock
 # ceiling, and both are allowances this script states rather than measurements it took. Fuel is the
@@ -266,7 +270,7 @@ def main():
     parser.add_argument("--binary-directory", default=str(DEFAULT_BINARY_DIRECTORY))
     parser.add_argument(
         "--manifest", default=None,
-        help=f"defaults to {WIDE_MANIFEST}, or to {NUMERIC_MANIFEST} for a native run")
+        help=f"defaults to {WIDE_MANIFEST} in either form; a native run may name {NUMERIC_MANIFEST}")
     parser.add_argument("--form", choices=("bytecode", "native"), default="bytecode")
     parser.add_argument(
         "--backend", default=None, help="a native run's backend; the harness defaults it to the host's")
@@ -309,7 +313,7 @@ def main():
     arguments = parser.parse_args()
 
     if arguments.manifest is None:
-        arguments.manifest = NUMERIC_MANIFEST if arguments.form == "native" else WIDE_MANIFEST
+        arguments.manifest = WIDE_MANIFEST
 
     if arguments.backend and arguments.form != "native":
         parser.error("--backend names a native backend, and this run's form is bytecode")

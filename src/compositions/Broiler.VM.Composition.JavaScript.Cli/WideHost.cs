@@ -118,7 +118,7 @@ internal static class WideHost
                 lines);
         }
 
-        var created = VmRuntime.Create(Catalog(), Options(fuel, wallClock, callDepth, liveBytes));
+        var created = VmRuntime.Create(Catalog(), Options(fuel, wallClock, callDepth, liveBytes, asked));
 
         if (!created.TryGetRuntime(out var runtime))
         {
@@ -305,7 +305,7 @@ internal static class WideHost
     /// make.
     /// </remarks>
     private static VmRuntimeCreationOptions Options(
-        ulong? fuel, ulong? wallClock, ulong? callDepth, ulong? liveBytes)
+        ulong? fuel, ulong? wallClock, ulong? callDepth, ulong? liveBytes, JsCompileRequest request)
     {
         var ceilings = ImmutableArray.CreateBuilder<VmCeilingSpec>();
 
@@ -343,9 +343,13 @@ internal static class WideHost
             JavaScriptProfile.ResolveCapability,
             Resolve));
 
+        // THE PROVIDER COMPILES WITH THE REQUEST THE OUTER PROGRAM WAS COMPILED WITH. An instance
+        // has one output form, and a guest-loaded program of the other form is refused as a
+        // defect, so a provider that always answered in bytecode would break `eval` in every
+        // native run.
         capabilities.Add(VmCapabilityRegistration.ArtifactProvider(
             JavaScriptProfile.SourceProviderCapability,
-            new SourceProvider()));
+            new SourceProvider(request)));
 
         return new VmRuntimeCreationOptions(
             aggregateBudget: null,

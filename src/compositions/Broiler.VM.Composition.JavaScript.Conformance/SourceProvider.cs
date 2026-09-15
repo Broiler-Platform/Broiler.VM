@@ -32,8 +32,14 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// manifest and the format version the requesting program was verified at, so a slice-mode run
 /// cannot be handed wide-mode bytes through a door the guest opened.
 /// </para>
+/// <para>
+/// <b>Nor does it decide the output form: it compiles with the run's own request.</b> An instance
+/// has one form, and the engine refuses a guest-loaded program of the other form as a defect, so
+/// a provider that compiled every <c>eval</c> to bytecode would turn every native variant reaching
+/// <c>eval</c> into an internal defect that no bytecode run could show.
+/// </para>
 /// </remarks>
-internal sealed class SourceProvider(VmFeatureManifestId manifest, uint formatVersion)
+internal sealed class SourceProvider(VmFeatureManifestId manifest, uint formatVersion, JsCompileRequest compileRequest)
     : IVmArtifactProvider
 {
     /// <summary>The identity this provider is registered under.</summary>
@@ -72,18 +78,53 @@ internal sealed class SourceProvider(VmFeatureManifestId manifest, uint formatVe
             return VmArtifactProviderAnswer.Refused(VmReason.MalformedEncoding);
         }
 
-        var compiled = JsCompiler.Compile(
-            [new JsScriptUnit("main", source, SliceParseOptions.Script)]);
+        JsScriptUnit[] scripts = [new JsScriptUnit("main", source, SliceParseOptions.Script)];
+        var compiled = JsCompiler.Compile(scripts, [], compileRequest);
 
         if (!compiled.Succeeded || compiled.Artifact is null)
         {
             // THE FRONT END REFUSED THE SOURCE, WHICH IS A POLICY ANSWER AND NOT A FAILURE OF THIS
             // HOST, and for this harness it is also the answer a negative test is asking for: a
             // program `eval` cannot compile is one the manifest does not admit.
-            return VmArtifactProviderAnswer.Refused(VmReason.SemanticValidationFailed);
+            return Unanswered(scripts, []);
         }
 
         return Answered(compiled.Artifact);
+    }
+
+    /// <summary>The answer for an input the run's own request would not compile.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A native compilation can fail for a reason that is not the source's, and the answer must
+    /// not say otherwise.</b> The baseline form refuses an artifact whose emitted code would exceed
+    /// the format's native-code ceiling, and that refusal is a limit of the form. Answering it as
+    /// <c>Refused(SemanticValidationFailed)</c> would tell the guest its program was not admitted,
+    /// which a negative test would score as the early error it expects - a pass the bytecode run
+    /// could not have earned.
+    /// </para>
+    /// <para>
+    /// <b>So the same input is compiled again in bytecode, and only that answer decides.</b> If
+    /// bytecode admits it, the failure was the emitter's and the answer is <c>NotFound</c>: there is
+    /// no artifact of this run's form for it. If bytecode refuses it too, the source was refused and
+    /// the answer is the one a bytecode run gives. A bytecode run never reaches the second
+    /// compilation, so its answers are unchanged.
+    /// </para>
+    /// </remarks>
+    private VmArtifactProviderAnswer Unanswered(
+        IReadOnlyList<JsScriptUnit> scripts, IReadOnlyList<JsModuleUnit> modules)
+    {
+        if (compileRequest.Form == JsOutputForm.Native)
+        {
+            var bytecode = JsCompiler.Compile(
+                scripts, modules, compileRequest with { Form = JsOutputForm.Bytecode, Backend = string.Empty });
+
+            if (bytecode.Succeeded && bytecode.Artifact is not null)
+            {
+                return VmArtifactProviderAnswer.NotFound(VmReason.ProviderArtifactNotFound);
+            }
+        }
+
+        return VmArtifactProviderAnswer.Refused(VmReason.SemanticValidationFailed);
     }
 
     /// <summary>Answers a request for the module one specifier names from one referrer.</summary>
@@ -101,11 +142,11 @@ internal sealed class SourceProvider(VmFeatureManifestId manifest, uint formatVe
             return VmArtifactProviderAnswer.NotFound(VmReason.ProviderArtifactNotFound);
         }
 
-        var compiled = JsCompiler.Compile([], graph.Modules);
+        var compiled = JsCompiler.Compile([], graph.Modules, compileRequest);
 
         return compiled.Succeeded && compiled.Artifact is not null
             ? Answered(compiled.Artifact)
-            : VmArtifactProviderAnswer.Refused(VmReason.SemanticValidationFailed);
+            : Unanswered([], graph.Modules);
     }
 
     /// <summary>Wraps compiled bytes in the descriptor the requesting program was verified at.</summary>

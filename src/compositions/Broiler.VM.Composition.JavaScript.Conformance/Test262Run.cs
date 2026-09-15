@@ -775,10 +775,11 @@ internal static class Test262Run
         // a fact about this file's own wiring, reported as a fact about the language surface.
         //
         // It answers at the manifest and format version the run is taken under, so a slice-mode run
-        // cannot be handed wide-mode bytes through a door the guest opened.
+        // cannot be handed wide-mode bytes through a door the guest opened - and it compiles with
+        // the run's own request, so a native run's `eval` is answered in the native form.
         capabilities.Add(VmCapabilityRegistration.ArtifactProvider(
             JavaScriptProfile.SourceProviderCapability,
-            new SourceProvider(manifest.Id, manifest.FormatVersion)));
+            new SourceProvider(manifest.Id, manifest.FormatVersion, manifest.CompileRequest)));
 
         // THIS HARNESS ADMITS THE MODULE SURFACE, and registering the resolver is how it answers
         // the one question that surface asks. The rule is the suite's own convention: a module
