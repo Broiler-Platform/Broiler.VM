@@ -57,8 +57,9 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// </param>
 /// <param name="ShadowSpaceBytes">
 /// The bytes a caller must reserve below its own frame before any call: thirty-two under Windows
-/// x64, none under System V. It is reserved here even though this backend calls nothing outside its
-/// own emitted blob, because the obligation is the CALLER'S and an emitted unit is a caller.
+/// x64, none under System V. The numeric form reserves it even though its units call nothing outside
+/// their own emitted blob, because the obligation is the CALLER'S and an emitted unit is a caller;
+/// the baseline form's units call a managed handler per instruction, and the callee may use it.
 /// </param>
 /// <param name="StackAlignmentAtCall">
 /// What the stack pointer must be congruent to, modulo sixteen, at the moment a <c>call</c>
@@ -105,7 +106,10 @@ public sealed record JsX64Abi(
             JsX64Register.R13,
             JsX64Register.R14,
             JsX64Register.R15,
-        ]);
+        ])
+    {
+        SecondArgumentRegister = JsX64Register.Rdx,
+    };
 
     /// <summary>The System V AMD64 convention.</summary>
     /// <remarks>
@@ -130,7 +134,10 @@ public sealed record JsX64Abi(
             JsX64Register.R13,
             JsX64Register.R14,
             JsX64Register.R15,
-        ]);
+        ])
+    {
+        SecondArgumentRegister = JsX64Register.Rsi,
+    };
 
     /// <summary>Both rows, in the order their architecture values ascend.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4ACC2C
@@ -196,6 +203,36 @@ public sealed record JsX64Abi(
     // Broiler-Falsified-If: this offset lands inside the shadow space a callee may overwrite
     // Broiler-Human:        PENDING
     public int FramePointerSlot => ShadowSpaceBytes;
+
+    /// <summary>The register the second integer argument arrives in: RDX under Windows x64, RSI under System V.</summary>
+    /// <remarks>
+    /// <b>The baseline form is the first thing this backend emits that passes two arguments</b>: a
+    /// unit receives its frame and its entry program counter, and it hands every handler the same
+    /// frame and the program counter of the instruction to run. The first argument's register is
+    /// <see cref="FramePointerRegister"/> already; this is the second, and it is data on the row for
+    /// the reason the first is.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Falsified-If: this names a register other than the one the row's convention passes its second integer argument in
+    // Broiler-Human:        PENDING
+    public JsX64Register SecondArgumentRegister { get; init; }
+
+    /// <summary>
+    /// The bytes a baseline unit subtracts from the stack pointer after saving the two callee-saved
+    /// registers it uses.
+    /// </summary>
+    /// <remarks>
+    /// <b>Two pushes, not one, so the reservation is eight past a multiple of sixteen rather than a
+    /// multiple of it.</b> A <c>call</c> leaves the stack pointer eight past a boundary and two
+    /// pushes leave it there, so the reservation must be congruent to eight for every handler call
+    /// to be made from a boundary; and it must hold the shadow space this convention makes a caller
+    /// reserve. Forty under Windows x64 and eight under System V - the format's
+    /// <c>JsBaselineAbi.FrameBytes</c> states the same two numbers, and a lane row compares them.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Falsified-If: a baseline unit calls a handler with the stack pointer not sixteen-aligned, or with less shadow space below it than the convention requires
+    // Broiler-Human:        PENDING
+    public int BaselineFrameBytes => ShadowSpaceBytes + 8;
 
     /// <summary>Rounds up to the next multiple of sixteen.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9367AF

@@ -80,6 +80,21 @@ public enum JsNativeFieldKind
 
     /// <summary>A call displacement, which must land on a code unit's entry point.</summary>
     UnitEntryBranch = 12,
+
+    /// <summary>
+    /// A bytecode offset a baseline unit compares a handler's answer against, or hands a handler
+    /// as the instruction it is to run.
+    /// </summary>
+    BytecodePc = 13,
+
+    /// <summary>
+    /// A displacement into the baseline handler table: eight times an opcode byte this format
+    /// version defines.
+    /// </summary>
+    HelperSlot = 14,
+
+    /// <summary>The one status a baseline unit materialises itself: <see cref="JsBaselineStatus.Defect"/>.</summary>
+    BaselineStatusValue = 15,
 }
 
 /// <summary>One field of a template: where it sits, how wide it is, and what it may carry.</summary>
@@ -342,6 +357,63 @@ public static class JsNativeTemplates
         _ => [],
     };
 
+    /// <summary>
+    /// The templates a payload of <paramref name="tier"/> for <paramref name="architecture"/> is
+    /// judged against, or an empty table for none.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE NUMERIC TIER IS THE TABLE <see cref="For(JsNativeArchitecture)"/> ALREADY ANSWERED, AND
+    /// NOTHING ABOUT IT MOVES.</b> Every artifact emitted before the baseline form existed declares
+    /// the numeric manifest, and a scan of it has to reach exactly the answer it reached then - so
+    /// this overload hands the numeric question to the method that has always answered it rather
+    /// than restating its tables.
+    /// </para>
+    /// <para>
+    /// <b>The baseline tier has its own x86-64 tables and borrows the arm64 one.</b> There is no
+    /// arm64 baseline emitter in this build, so a wide artifact declaring arm64 cannot have come
+    /// from this build's backends; judging it against the arm64 table keeps the answers the retained
+    /// arm64 rows already pin, and such an artifact is refused at instantiation in any case because
+    /// no host arms arm64.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=TBF
+    // Broiler-Falsified-If: a numeric payload is judged against any table other than the one For(architecture) answers, or a baseline x86-64 payload against a table that admits a template the baseline emitter does not write
+    // Broiler-Human:        PENDING
+    public static JsNativeTemplate[] For(JsNativeArchitecture architecture, JsNativeTier tier) =>
+        (architecture, tier) switch
+        {
+            (_, JsNativeTier.Numeric) => For(architecture),
+            (JsNativeArchitecture.X64Windows, JsNativeTier.Baseline) => windowsBaseline,
+            (JsNativeArchitecture.X64SystemV, JsNativeTier.Baseline) => systemVBaseline,
+            (JsNativeArchitecture.Arm64, JsNativeTier.Baseline) => For(architecture),
+            _ => [],
+        };
+
+    /// <summary>
+    /// Whether <paramref name="table"/> is one of the two x86-64 baseline tables, whose units the scan
+    /// also holds to the frame-shape clauses.
+    /// </summary>
+    /// <remarks>
+    /// <b>Identity and not contents</b>, because the clauses index the table by position: the first
+    /// six entries are the prologue in order, and the last four are the epilogue in order.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Falsified-If: a baseline x86-64 table is scanned without the frame-shape clauses
+    // Broiler-Human:        PENDING
+    internal static bool IsX64Baseline(JsNativeTemplate[] table) =>
+        ReferenceEquals(table, windowsBaseline) || ReferenceEquals(table, systemVBaseline);
+
+    /// <summary>How many templates open a baseline table, in prologue order.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal const int X64BaselinePrologue = 6;
+
+    /// <summary>How many templates close a baseline table, in epilogue order.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal const int X64BaselineEpilogue = 4;
+
     /// <summary>Whether <paramref name="value"/> is one this kind of field may carry.</summary>
     /// <remarks>
     /// <b>EVERY ARM OF THIS METHOD IS A CLOSED SET AND NONE OF THEM IS A WIDTH.</b> Each names the
@@ -412,6 +484,26 @@ public static class JsNativeTemplates
         // admissible is a question about the unit it sits in and this method has no unit. Admitting
         // it here and refusing it there is what keeps the two questions apart.
         JsNativeFieldKind.UnitLocalBranch or JsNativeFieldKind.UnitEntryBranch => true,
+
+        // A BYTECODE OFFSET, bounded by the format's own ceiling on a code section. The scan has no
+        // bytecode to tie it to an instruction start; the handler a unit calls does that at run
+        // time, by refusing any program counter the managed side did not compute.
+        JsNativeFieldKind.BytecodePc =>
+            value >= 0 && value < JsFormat.CeilingCodeBytes,
+
+        // EIGHT TIMES AN OPCODE THIS FORMAT DEFINES, AND NOTHING ELSE. The handler table has a slot
+        // for every byte, but a slot no opcode takes holds a handler that only answers a defect, and
+        // an emitter indexes the table by the opcode of an instruction it read - so a displacement
+        // naming an undefined byte, or landing between two slots, is one no backend writes.
+        JsNativeFieldKind.HelperSlot =>
+            value >= 0 && (value % 8) == 0 && value < JsBaselineAbi.HandlerSlots * 8 &&
+            JsOpcodes.IsDefined((byte)(value / 8)),
+
+        // THE ONE STATUS A BASELINE UNIT WRITES ITSELF. Leaving and throwing are answered by the
+        // handlers and only passed on; the emitted code materialises a defect, when a handler
+        // answered a program counter the unit has no landing for.
+        JsNativeFieldKind.BaselineStatusValue =>
+            value == (long)JsBaselineStatus.Defect,
 
         _ => false,
     };
@@ -604,9 +696,9 @@ public static class JsNativeTemplates
                 Nibble(8, JsNativeFieldKind.X64Condition),
                 Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
 
-            // call rel32: E8 id, and never an indirect form. Every call an emitted artifact makes
-            // is a direct branch to a code unit of the same artifact, at a displacement fixed when
-            // the artifact was compiled.
+            // call rel32: E8 id, and never an indirect form. Every call a numeric unit makes is a
+            // direct branch to a code unit of the same artifact, at a displacement fixed when the
+            // artifact was compiled.
             Field("call rel32", [0xE8, 0, 0, 0, 0], Rel32(1, JsNativeFieldKind.UnitEntryBranch)),
 
             // movsd xmm0, [rbx+slab]: F2 0F 10 /r. The F2 is a mandatory prefix and comes BEFORE
@@ -649,6 +741,132 @@ public static class JsNativeTemplates
             // movq xmm0, rax: 66 REX.W 0F 6E /r - it moves BITS, which is how the undefined pattern
             // reaches the register a return leaves its value in.
             Plain("movq xmm0, rax", [0x66, 0x48, 0x0F, 0x6E, 0xC0]),
+        ];
+    }
+
+    // ---- the x86-64 baseline tables ------------------------------------------------------------
+
+    /// <summary>The baseline table for x86-64 under the Windows x64 convention.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Falsified-If: an entry of this table differs from the bytes the baseline emitter writes for Windows x64
+    // Broiler-Human:        PENDING
+    private static readonly JsNativeTemplate[] windowsBaseline =
+        X64Baseline(JsNativeArchitecture.X64Windows);
+
+    /// <summary>The baseline table for x86-64 under the System V AMD64 convention.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Falsified-If: an entry of this table differs from the bytes the baseline emitter writes for System V
+    // Broiler-Human:        PENDING
+    private static readonly JsNativeTemplate[] systemVBaseline =
+        X64Baseline(JsNativeArchitecture.X64SystemV);
+
+    /// <summary>
+    /// Every byte sequence the x86-64 backend emits for the wide manifest's baseline form, for one of
+    /// the two calling conventions.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>TWENTY-ONE TEMPLATES, AND THE ONLY INDIRECT TRANSFER AMONG THEM IS A CALL THROUGH THE
+    /// HANDLER TABLE.</b> A baseline unit computes nothing: it saves two callee-saved registers,
+    /// loads the table base out of the frame it was handed, calls one handler per instruction and
+    /// follows the program counter the handler answers with through compares and direct branches.
+    /// The one indirect call is <c>call qword [rbx+disp32]</c> with a displacement that is eight
+    /// times a defined opcode, RBX is written only by the prologue's load and the epilogue's pop, and
+    /// no template here writes memory at all - which, with the frame-shape clauses the scan holds a
+    /// unit to, is why every call a scan-accepted payload makes lands in the table.
+    /// </para>
+    /// <para>
+    /// <b>THE ORDER OF THE ROWS IS PART OF THE TABLE.</b> The first six are the prologue in the
+    /// order a unit must open with, and the last four are the epilogue in the order it must close
+    /// with; the scan's frame-shape clauses read positions, so a row moved is a clause changed.
+    /// </para>
+    /// <para>
+    /// <b>The conventions differ in four fixed bytes and a reservation, so this is one table with a
+    /// parameter.</b> The frame arrives in RCX or RDI, the entry program counter in EDX or ESI, and
+    /// the reservation is forty bytes or eight. Every template's name is the same under both, which is
+    /// what lets a lane row decode one program's two images and compare the name sequences.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=TBF
+    // Broiler-Falsified-If: a template here admits an indirect transfer other than the handler-table call, a memory write, or a byte sequence the baseline emitter does not write
+    // Broiler-Human:        PENDING
+    private static JsNativeTemplate[] X64Baseline(JsNativeArchitecture architecture)
+    {
+        var windows = architecture == JsNativeArchitecture.X64Windows;
+        var frameBytes = (byte)JsBaselineAbi.FrameBytes(architecture);
+
+        return
+        [
+            // ---- the prologue, in order -----------------------------------------------------
+
+            // push rbx: 50+r with r = 3.
+            Plain("push rbx", [0x53]),
+
+            // push r14: REX.B and 50+r with r = 6.
+            Plain("push r14", [0x41, 0x56]),
+
+            // sub rsp, imm8: REX.W 83 /5 ib. Two pushes leave the stack eight past a boundary, and
+            // forty or eight bytes bring it to one with the shadow space the convention asks for.
+            Plain("sub rsp, frame", [0x48, 0x83, 0xEC, frameBytes]),
+
+            // mov r14, rcx or rdi: REX.WB 89 /r, the frame into the register that keeps it.
+            Plain("mov r14, arg0", [0x49, 0x89, windows ? (byte)0xCE : (byte)0xFE]),
+
+            // mov rbx, [r14]: REX.WB 8B /r with mod 00 - the handler table's base, read once.
+            Plain("mov rbx, [r14]", [0x49, 0x8B, 0x1E]),
+
+            // mov eax, edx or esi: 89 /r with no REX - the entry program counter.
+            Plain("mov eax, arg1d", [0x89, windows ? (byte)0xD0 : (byte)0xF0]),
+
+            // ---- dispatch, branches and the defect ------------------------------------------
+
+            // test eax, eax: 85 /r, the sign of what a handler answered.
+            Plain("test eax, eax", [0x85, 0xC0]),
+
+            // js, je, jne, ja rel32: 0F 8x id, each with its condition FIXED rather than a field,
+            // because the baseline form emits exactly these four and a field would admit the rest.
+            Field("js rel32", [0x0F, 0x88, 0, 0, 0, 0], Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
+
+            // cmp eax, imm32: 3D id, against a program counter the unit can land on.
+            Field("cmp eax, pc", [0x3D, 0, 0, 0, 0], Imm32(1, JsNativeFieldKind.BytecodePc)),
+
+            Field("je rel32", [0x0F, 0x84, 0, 0, 0, 0], Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
+            Field("jne rel32", [0x0F, 0x85, 0, 0, 0, 0], Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
+            Field("ja rel32", [0x0F, 0x87, 0, 0, 0, 0], Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
+
+            // jmp rel32: E9 id.
+            Field("jmp rel32", [0xE9, 0, 0, 0, 0], Rel32(1, JsNativeFieldKind.UnitLocalBranch)),
+
+            // mov eax, imm32: B8 id - the defect status and no other value.
+            Field("mov eax, status", [0xB8, 0, 0, 0, 0], Imm32(1, JsNativeFieldKind.BaselineStatusValue)),
+
+            // ---- one instruction's call -----------------------------------------------------
+
+            // mov rcx or rdi, r14: REX.WR 89 /r, the frame as the handler's first argument.
+            Plain("mov arg0, r14", [0x4C, 0x89, windows ? (byte)0xF1 : (byte)0xF7]),
+
+            // mov edx or esi, imm32: B8+r id, the program counter of the instruction to run.
+            Field(
+                "mov arg1d, pc",
+                [windows ? (byte)0xBA : (byte)0xBE, 0, 0, 0, 0],
+                Imm32(1, JsNativeFieldKind.BytecodePc)),
+
+            // call qword [rbx+disp32]: FF /2 with ModRM 0x93 = 0x80 | (010 << 3) | 011.
+            Field("call [rbx+slot]", [0xFF, 0x93, 0, 0, 0, 0], Disp32(2, JsNativeFieldKind.HelperSlot)),
+
+            // ---- the epilogue, in order -----------------------------------------------------
+
+            // add rsp, imm8: REX.W 83 /0 ib, the same amount the prologue reserved.
+            Plain("add rsp, frame", [0x48, 0x83, 0xC4, frameBytes]),
+
+            // pop r14: REX.B and 58+r.
+            Plain("pop r14", [0x41, 0x5E]),
+
+            // pop rbx: 58+r.
+            Plain("pop rbx", [0x5B]),
+
+            // ret: C3.
+            Terminal("ret", [0xC3]),
         ];
     }
 

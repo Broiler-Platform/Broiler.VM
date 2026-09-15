@@ -294,6 +294,18 @@ public sealed class JsArm64Backend : IJsNativeBackend
     {
         emission = null!;
 
+        // THE WIDE MANIFEST HAS A NATIVE FORM ON x86-64 AND NONE HERE, and the refusal says which
+        // of the two facts an author ran into. The general sentence below would read as though the
+        // wide manifest had no native form at all.
+        if (program.ManifestId == JsFormat.ManifestId)
+        {
+            refusal =
+                "the arm64 backend emits only for the numeric manifest; the baseline form over " +
+                "`" + JsFormat.ManifestId + "` has no arm64 emitter in this build";
+
+            return false;
+        }
+
         if (program.ManifestId != JsNumericManifest.ManifestId)
         {
             refusal =
