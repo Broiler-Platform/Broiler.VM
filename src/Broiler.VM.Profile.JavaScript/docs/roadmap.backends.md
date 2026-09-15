@@ -28,9 +28,13 @@ emitted, and every instruction one call into the interpreter's own dispatch for 
 with every value left in managed memory and no managed reference in any emitted frame. It is still
 whole-artifact or nothing, and *one form per handle* becomes one form per handle **and per instance**
 ([JSC-215](roadmap.corrections.md#jsc-215), [JSC-216](roadmap.corrections.md#jsc-216)). **Its code
-is being written on that date and nothing about it is collected**; the stage that records what would
-show it true is
-[JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference).
+landed on that date, and a bundle collected the same day retains some of what would show it true and
+names the rest as open** *(corrected 2026-09-15, after collection: this read "Its code is being
+written on that date and nothing about it is collected")*; the stage that records what would show it
+true is
+[JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference),
+and its State bullet names which of its clauses [bundle JSB-11-001](evidence/jsb-11-001/README.md)
+meets and which it does not. **None of that is acceptance.**
 
 **What this document is not.** It is not the ledger and it moves no row in one:
 [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) remains the only
@@ -496,8 +500,10 @@ is stated in their own bullets rather than left for a reader to notice from a gr
 [JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference)
 is the baseline native form over the wide manifest that
 [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) decides. A decision
-behind a stage is not acceptance of it either, and its State bullet says that its code is being
-written and that nothing about it is collected. **It is not `JSB-7`**, which the arming path already
+behind a stage is not acceptance of it either, and its State bullet names which of its clauses
+[bundle JSB-11-001](evidence/jsb-11-001/README.md) meets and which it does not *(corrected
+2026-09-15, after collection: this sentence ended "its State bullet says that its code is being
+written and that nothing about it is collected")*. **It is not `JSB-7`**, which the arming path already
 names, and a stage identifier is never reused.
 
 ### JSB-1 — Determinism over bytecode, before determinism over machine code
@@ -1102,15 +1108,56 @@ names, and a stage identifier is never reused.
     region; that no `continue` or `goto` bypasses the step boundary; and that every catch filter in the
     profile assembly is pure.
 
-- **State on 2026-09-15: code is being written, and nothing is collected.** The format assembly carries
-  `JsBaselineFrame`, `JsBaselineAbi`, `JsBaselineStatus` and `JsNativeTier`. The generic interpreter
-  body, the activation, the handler table, the baseline templates and shape clauses, the encoder, the
-  harness and lane changes and the rules are being written in parallel against
-  [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md). **No clause of the gate
-  above is met on evidence**: `jsb-11-001` does not exist and is to be collected, no gate has been run
-  into a retained record, no witness has been watched failing, and no human has read a line. A reader
-  who meets this stage's objective and infers that the wide manifest runs natively has inferred what
-  this bullet does not say.
+- **State on 2026-09-15, after collection: the code is committed, and
+  [bundle JSB-11-001](evidence/jsb-11-001/README.md) meets one clause of the gate above and shows
+  parts of the others, on one `win-x64` workstation, in the Windows convention only.** *(Replaced the
+  same day. This bullet read "code is being written, and nothing is collected", and said that
+  `jsb-11-001` did not exist, that no gate had been run into a retained record and that no witness had
+  been watched failing: [JSC-223](roadmap.corrections.md#jsc-223).)* A clause is met or it is not, so each is named:
+  - **Met on that machine: the retained corpus replays unchanged**, in a JIT, a trimmed and a Native
+    AOT image of the execution-only root, and it carries the entry for a baseline payload calling a
+    slot no opcode takes.
+  - **Not met: the bytecode form is unchanged.** Shown in part: the interpreted instantiation of
+    `JsEngine.ExecuteCore` reaches fully optimised code; the bytecode frame-cost measure stops at the
+    declared bound at this commit and at the merge base alike; a bytecode run over named subtrees gives
+    verdict rows identical to the merge base's; and the benchmark comparison's raw reports are
+    retained, with no figure read from them. Not shown: **no tolerance was predeclared in the bundle
+    before the runs it would judge**, because the bundle did not exist before them, so the code size,
+    the frame-cost measure and the benchmark geometric mean meet none; the stack reservation was not
+    collected; and the subtree run and the benchmark were taken at an integration commit rather than
+    the collected one.
+  - **Not met: the per-step instantiations.** The native frame-cost measure stops at the declared
+    bound, which reports what the build promises and not a margin. Each Native AOT image's size is
+    retained at the collected commit and at the merge base, and no bound was predeclared to record the
+    growth against. Not collected: each instantiation's size and jump tables, the fresh-process cost,
+    and a fresh process per variant recursing to the ceiling. The fallback was not taken.
+  - **Not met: the scan closes over what the encoder emits.** Shown on that machine, in the slice
+    compiler's checks under all three publish modes: the named programs compile, scan clean and
+    re-emit identically under both conventions, every template of both baseline tables is reached, the
+    two conventions decode to one template sequence, retained bytes match per convention, and the
+    refusals the transcript names are refused. Not identifiable in the transcript: a refusal of a call
+    past the table, the verifier's reason named on each refusal, and a hand check of the golden bytes.
+  - **Not met: the two forms agree over the wide manifest.** The Windows half is shown for the named
+    programs and probes, the swapped handler, the entry points and forced collections. **The System V
+    half has executed nowhere**: its two entry-point rows did not run on that machine, and the lane
+    that would run them has not run. The smallest completing fuel ceiling was compared for some of the
+    programs that load nothing and not for all, and no bound for the deep throw was predeclared.
+  - **Not met: rules hold the rooting argument.** Both rules and their witnesses pass in the suite; no
+    injection into the tree watched failing and passing after revert is retained.
+  - **Not met: the conformance suite in the two forms.** A whole-suite native run was compared variant
+    by variant with a bytecode run under one wall-clock allowance with no difference, but **the two
+    runs came from two builds**. The bundle also retains a comparison against a native run at a
+    longer wall-clock allowance **that the comparison script does not pass**: its differences, all in
+    exhausted dimension and none in a verdict, are neither admitted nor classified, and this clause
+    calls such a difference a defect (section 3 of the bundle). No like-for-like comparison under a
+    deterministic allowance exists, and neither workflow run nor any shard's job limit has been
+    observed.
+  - **Not met: a bundle retains all of it.** The audit this clause names — assignments before the
+    loop, `continue` and `goto` against the step boundary, and pure catch filters — is not recorded.
+
+  **None of that is acceptance**, no human has read a line, and a reader who meets this stage's
+  objective and infers that the wide manifest runs natively on a supported runtime identifier has
+  inferred what this bullet does not say.
 
 ---
 

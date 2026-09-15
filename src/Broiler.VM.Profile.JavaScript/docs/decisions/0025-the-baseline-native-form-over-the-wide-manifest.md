@@ -14,7 +14,9 @@ record does not claim the co-signature is independent - there is no second signa
 decides is stage [JSB-11](../roadmap.backends.md#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference)
 of [the backend roadmap](../roadmap.backends.md), a proposal-document stage with no owner in the
 milestone sense and no milestone row in the ledger; the ledger records its work only as observed
-repository state, in three `[NONE]` rows. The index names that stage because it is where the exit
+repository state, in three rows *(corrected 2026-09-15, after collection: this read "in three `[NONE]`
+rows"; they are `[PARTIAL]` since bundle JSB-11-001 was retained, which is not acceptance:
+[JSC-223](../roadmap.corrections.md#jsc-223))*. The index names that stage because it is where the exit
 gate this record depends on is written down, not because a stage is a milestone.
 
 **Context.** On 2026-09-15 the repository owner asked that the test262 run in the machine-code output
@@ -305,10 +307,15 @@ reproduce.
 - **No speed claim**, and no outcome figure of any kind - no count, rate, timing or measured size - in
   any record this decision touches. The constants stated, such as the frame's offsets and the number
   of prologue and epilogue templates, are properties of the code and not outcomes.
-- **No acceptance, no review and no evidence.** Nothing described here is retained in a bundle, and the
-  stage's bundle is to be collected. The code this decision governs is being written at this record's
-  date, and **a decision recorded here is not evidence that it was implemented**, which is this
-  series' own rule.
+- **No acceptance, no review and no evidence in this record.** **A decision recorded here is not
+  evidence that it was implemented**, which is this series' own rule. *(Corrected 2026-09-15, after
+  collection: this bullet read "Nothing described here is retained in a bundle, and the stage's bundle
+  is to be collected. The code this decision governs is being written at this record's date". The code
+  was committed on that date, and [bundle JSB-11-001](../evidence/jsb-11-001/README.md) retains a
+  collection over it on one `win-x64` workstation that demonstrates some clauses of
+  [JSB-11](../roadmap.backends.md#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference)
+  and names the rest as open. That bundle is not acceptance and nothing in it has been reviewed; this
+  record still states no outcome figure, and what the collection showed is the bundle's to say.)*
 - **No runtime identifier.** The support table claims none for either native form and this adds none.
   The System V convention of the baseline form is to be executed in the continuous-integration lane,
   which retains nothing.

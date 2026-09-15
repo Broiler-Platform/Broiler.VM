@@ -1,0 +1,50 @@
+# broiler-js-conformance test262 floor 1
+# The whole-suite --test262 ratchet. A later run of THIS revision under THIS
+# manifest may not cross a row below. `atLeast` may not fall; `atMost` may not
+# rise. Exhaustions are deliberately not held: a spent allowance says what the
+# machine was doing, not what the engine does. A revision or manifest change
+# re-bases with --admit and retires the old rows here with their reason.
+#
+# THIS IS THE WIDE MANIFEST'S FLOOR IN THE BASELINE NATIVE FORM, AND IT IS A
+# SECOND FILE RATHER THAN A SECOND SET OF ROWS IN test262-wide.floor BECAUSE A
+# FLOOR NAMES ONE FORM. It was set on 2026-09-15 with --admit from one merged
+# whole-suite run of the conformance composition in the native form
+# (JSD-0025), under broiler.javascript.wide with the suite's harness loaded, on
+# one win-x64 workstation, from a build of commit 444f9c9, at the SAME
+# allowances the bytecode floor beside it was set under: fuel 100000000 and a
+# wall clock of 5000 ms per variant. That run's report is retained, compressed,
+# in bundle jsb-11-001 (src/Broiler.VM.Profile.JavaScript/docs/evidence/
+# jsb-11-001), together with the per-variant comparison against the bytecode
+# run it was held to; the bundle, not this header, is where what the run showed
+# and what it did not show is written down.
+#
+# THE FORM LINE NAMES A CALLING CONVENTION, AND THAT IS DELIBERATE. It reads
+# `x86-64-win64`, so a run in the System V convention (`x86-64-sysv`, which is
+# what a Linux runner emits) is a different form to this file: without --admit
+# the ratchet refuses and says the output form moved, and with --admit it
+# re-bases onto that run rather than comparing against these rows. No System V
+# run has been admitted here or taken on the machine this floor came from.
+#
+# WHAT READS THIS FILE: NOTHING AUTOMATIC. No workflow passes it to --floor on
+# the day it was set; the lane's floors are the ones broiler-vm-lane.yml names,
+# and the test262 profile workflow measures but compares nothing and holds no
+# floor itself. It is held by hand, by running the conformance composition with
+# --floor against a merged native report, and a run that nobody holds to it
+# moves nothing.
+#
+# WHAT THIS FLOOR IS NOT. It is not acceptance of the native form and not a
+# support claim for any runtime identifier; nothing in it has been reviewed.
+# It says nothing about speed. Its rows are totals, not per-variant verdicts,
+# so a run that holds them can still disagree with the bytecode form variant by
+# variant; eng/compare-test262-forms.py is what reads that, not this file. And
+# exhaustions are not held here, for the reason stated at the top.
+suite test262
+revision 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide
+form native x86-64-win64
+atLeast files 53469
+atLeast variants 94545
+atLeast passed 70834
+atMost failed 13315
+atMost unsupported 1990
+atMost skipped 8346

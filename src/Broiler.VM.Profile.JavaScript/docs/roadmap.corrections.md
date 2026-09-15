@@ -9396,3 +9396,43 @@ with the process's private bytes watched is what would show it, and it is to be 
 **Authority and date.** [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md),
 section 4; `JsNativeExecution.cs` and the `Broiler.VM.Runtime` assembly as read on this date.
 2026-09-15.
+
+---
+
+### JSC-223
+
+**Where:** [the ledger](roadmap.status.md#2-current-milestone-status)'s paragraph on the second native
+form and its three item rows, with the two earlier sentences of that section that described the form
+as being written; [`roadmap.backends.md`](roadmap.backends.md)'s JSB-11 State bullet and the two
+sentences of that file that repeat it; [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md)'s
+Milestone paragraph and section 9; the paragraph of [`roadmap.md`](roadmap.md) that names the stage;
+and, outside this profile, [`docs/support.md`](../../../docs/support.md) sections 3a and 7 and
+[`docs/mvp.md`](../../../docs/mvp.md#5-routes-taken-without-a-decision)'s MVP-8 row.
+
+**What the plan said.** That the baseline native form over the wide manifest "is being written" and
+that "nothing about it is collected"; that `jsb-11-001` "is to be collected and does not exist", which
+[JSC-216](#jsc-216) recorded; and that the ledger's three items for the form are `[NONE]` because no
+bundle retains anything about them.
+
+**What was true.** The code landed on 2026-09-15, and bundle
+[JSB-11-001](evidence/jsb-11-001/README.md) was collected from it the same day on one `win-x64`
+workstation. The bundle retains conformance runs of both forms and their per-variant comparisons, the
+slice compiler's checks and the corpus replay in JIT, trimmed and Native AOT images, the rules and
+witnesses passing, frame-cost measures, a JIT summary, Native AOT image sizes and benchmark reports.
+It meets one clause of JSB-11's gate on that machine and shows parts of the others. No unit emitted
+for the System V convention was entered, no control was watched failing and passing after revert, and
+the interpreter audit was not performed. One of its comparisons fails the comparison script with
+differences it does not classify.
+
+**What replaced it.** The three ledger items cite the bundle and are `[PARTIAL]`, each naming what
+the bundle leaves open. The JSB-11 State bullet names, clause by clause, what the bundle meets and
+what it does not. Each sentence that said the form was being written, or that nothing about it was
+collected, carries a dated note pointing here.
+
+**What this entry does NOT do.** It does not accept anything, moves no milestone row and claims no
+runtime identifier. No item is `[FULL]`, no figure from the bundle is copied into any record named
+above, and no human has read a line. [JSC-216](#jsc-216) is not edited; this entry supersedes its
+sentence about the bundle.
+
+**Authority and date.** Bundle [JSB-11-001](evidence/jsb-11-001/README.md), retained on 2026-09-15,
+and its sections 8 and 9; the ledger's update rules 1 and 2. 2026-09-15.

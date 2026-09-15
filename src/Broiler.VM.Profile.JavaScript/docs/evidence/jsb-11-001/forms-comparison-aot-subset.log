@@ -1,0 +1,11 @@
+# reference artifacts/test262-bytecode-head/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 5000 ms
+#   total|53469|94545|70834|13315|1990|60|8346
+# candidate artifacts/aot/t262-native/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-win64); fuel 100000000; wall 5000 ms
+#   total|5044|9962|9669|228|12|0|53
+# reading: realistic - class (c) is admitted, because a run was taken below 60000 ms; class (b) is not admitted without --exempt-guest-loads
+# 9962 variants in both reports, 0 differ; 84583 variant(s) present in only one report were ignored
+
+# every difference is in an admitted class
+exit 0

@@ -243,7 +243,9 @@ trimming, and Native AOT gates for the core boundary.
   form is no longer the numeric manifest's alone. The route register's MVP-7 named an amendment to
   this paragraph as the condition that settles it, and this is that amendment. The stage is the
   backend roadmap's `JSB-11`, which is still a proposal-document stage with no milestone row in the
-  ledger; the ledger records its work only as observed repository state, in three `[NONE]` rows.*
+  ledger; the ledger records its work only as observed repository state, in three rows
+  (corrected 2026-09-15, after collection: this sentence ended "in three `[NONE]` rows"; the rows are
+  marked `[PARTIAL]` since bundle JSB-11-001 was retained, and that mark is not acceptance).*
 - **A second verifier.** Whatever validates an artifact is this profile's verifier, reached
   through the core's one verification entry point. A build-time reimplementation that is merely
   supposed to agree with it is a security defect with a schedule attached.
