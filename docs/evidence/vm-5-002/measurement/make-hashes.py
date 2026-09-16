@@ -1,8 +1,13 @@
 """Write docs/evidence/vm-5-002/hashes.txt.
 
-Every digest is SHA-256 of the bytes the repository stores: a tracked file is read from the index
-blob at HEAD (and must equal the working copy, or the script refuses), and a file of this bundle is
-read from the working copy, where it is already LF.
+Every digest is SHA-256 of the bytes the repository stores: a tracked file is read from its blob at
+the retained commit (and must equal the working copy, or the script refuses, so a hashed file changed
+since that commit is refused rather than hashed), and a file of this bundle is read from the working
+copy, where it is already LF.
+
+docs/baselines.md was in the third set as first committed, as the register this bundle does not
+edit. It was withdrawn: no run, figure or verdict here reads it, and the dated note the change's own
+records commit adds to it hit this bundle's first recertification trigger (README section 8).
 
 python docs/evidence/vm-5-002/measurement/make-hashes.py   (from the repository root)
 """
@@ -15,18 +20,19 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[4]
 BUNDLE = ROOT / "docs" / "evidence" / "vm-5-002"
+RETAINED = "34dbd7a"
 
 
 crlf_in_working_copy = set()
 
 
 def blob(relative):
-    data = subprocess.run(["git", "show", "HEAD:" + relative], cwd=ROOT, capture_output=True,
+    data = subprocess.run(["git", "show", RETAINED + ":" + relative], cwd=ROOT, capture_output=True,
                           check=True).stdout
     working = (ROOT / relative).read_bytes()
     if working != data:
         if working.replace(b"\r\n", b"\n") != data:
-            sys.exit("REFUSED: %s differs between HEAD and the working copy" % relative)
+            sys.exit("REFUSED: %s differs between %s and the working copy" % (relative, RETAINED))
         crlf_in_working_copy.add(relative)
     return data
 
@@ -66,7 +72,6 @@ drivers = [
     "src/tests/conformance/pins/test262.pin",
     "src/tests/octane/pins/octane.pin",
     "docs/api/public-api.txt",
-    "docs/baselines.md",
 ]
 
 retained = sorted(
@@ -88,7 +93,7 @@ lines = [
 lines += [row(blob(f), f) for f in collector_set if (ROOT / f).exists()]
 lines += ["", "## 2. The files design section 8.4 names: the metering path, the fuel-exactness tests, the fixture", "##    files the fuel work changed, and the two ADRs the change rests on without editing", ""]
 lines += [row(blob(f), f) for f in design_set]
-lines += ["", "## 3. The drivers and pins the runs used, the public API file E1c compares, and the register", "##    this bundle does not edit", ""]
+lines += ["", "## 3. The drivers and pins the runs used, and the public API file E1c compares", ""]
 lines += [row(blob(f), f) for f in drivers]
 lines += ["", "## 4. Every file retained in this directory", ""]
 lines += [row((BUNDLE / f).read_bytes(), f) for f in retained]

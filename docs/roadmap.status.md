@@ -244,10 +244,13 @@ What the comparison leaves, bundle by bundle:
 - **VM-7-CLI-001 is not recertified.** It retains no `hashes.txt` and states no validity triggers,
   and its JIT and trimmed closures both contain `Broiler.VM.Runtime`, whose bytes this change alters.
   This paragraph says so rather than carrying the bundle forward.
-- **VM-5-002, the change's own bundle, is reached by the commit that records it.** Its `hashes.txt`
-  names `docs/baselines.md`, as the register that bundle does not edit, and the register's note of
-  this date changes that file's bytes and none of its figures. So VM-5-002's first recertification
-  trigger is hit here. The bundle is neither edited nor re-collected.
+- **VM-5-002, the change's own bundle, was reached by the commit that records it, and the row that
+  caused it was then withdrawn.** As committed, its `hashes.txt` named `docs/baselines.md`, as the
+  register that bundle does not edit, so the register's note of this date - which changes that
+  file's bytes and none of its figures - hit VM-5-002's first recertification trigger. No run, figure
+  or verdict of that bundle reads the register, and rule L1 binds the register to VM-6-001's benchmark
+  log, so a later commit of the same date withdrew the row instead of re-collecting the bundle. The
+  bundle's section 8 records the withdrawal, and that the bundle stood expired until it.
 - **What must be re-collected when a release needs it:** the source-hash collections of VM-1-003
   to VM-6-001, naming the files in the table; VM-6-001's packages and Native AOT images; and
   VM-7-CLI-001's publish and run.

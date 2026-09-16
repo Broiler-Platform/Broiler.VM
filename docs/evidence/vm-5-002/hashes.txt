@@ -194,8 +194,7 @@ ad4751c6e5b64a5fff82a29bfdf92b6e5af7473a358058f57f2894be3f1bb980  src/tests/Broi
 1b15ad533e9a321c595e5bc8688d28b21d698f7c33128a7d5444ecf1278752ca  docs/adr/0003-core-contract-v1-and-amendments.md
 5ff2191a87bc22fcf537e67fc3290cc49f11b37b317fa73a58bceec4baf259ec  docs/adr/0007-resource-authority-and-budgets.md
 
-## 3. The drivers and pins the runs used, the public API file E1c compares, and the register
-##    this bundle does not edit
+## 3. The drivers and pins the runs used, and the public API file E1c compares
 
 b987b2776d82b36f11e4294b2812d61b0a4cc6eb7693c6d523e6258bb3c143bb  eng/collect-evidence.py
 08a8053681d58ab14b418992801870490ec81a94d4a5fb38b305aee06feace7b  eng/run-test262.py
@@ -204,7 +203,6 @@ b987b2776d82b36f11e4294b2812d61b0a4cc6eb7693c6d523e6258bb3c143bb  eng/collect-ev
 794eea961c9a912f28034312f5b044135111494d23deb83474d29ad6f03ee7b6  src/tests/conformance/pins/test262.pin
 eafe4d66d1dcb5896b273e0decef8557b0de987655fd88bd028aea904cf2d592  src/tests/octane/pins/octane.pin
 aa745a17263b08d5b9a91c5cd640bd399facbdc04aeb077073b0651f87db8421  docs/api/public-api.txt
-6e1dcf23a0deedd32c3e02d9805648d4e2f80e394264ef09a215c37da174ff5c  docs/baselines.md
 
 ## 4. Every file retained in this directory
 
@@ -452,7 +450,7 @@ c7936c6b5d4db2b27cb2bbc09d55abb3764f246f85d7e6ab6907f85c1f73b738  gates/test-aft
 13a100705d9a270dbbe335ab524ba47bd703042868ff8e2687d93ec16fc48034  machine-state-before.txt
 76fb46531b4730464a3ef9930e2248f76bc5d3768d8a01543b322a8f19ec1f37  measurement/e7-rule.py
 c62ec6f51ed43862dceda79e721e691f8046ebdab872553d0afddf5e9c060c66  measurement/e8-run.sh
-4390b0337b316d92d0f2549f496713583b03146648118101468dbd20fe02238e  measurement/make-hashes.py
+77a329a4afa5c22b3a9e85394e9c066de8f4545f76872d6c741f59a0417a9a95  measurement/make-hashes.py
 e3ffbe40def15a5e2a921de4cdb9a196ef87caa8da18b46d307da02949935330  measurement/masked-compare.py
 2e82b567e4142a9673184cc405ed11c652faa532aca2a8b9b30615ac8005bee9  measurement/measure-shapes.py
 a5bc840bf5ddf195c07678b8e320d442f9321cecfadf172e4d321bd18cac17f8  measurement/measure-t6.py

@@ -395,7 +395,8 @@ working copy that differs from it in anything but line endings. That refusal mat
 working copy of `VmExecutionScope.cs` carried CRLF line endings although the repository stores the
 file LF - `git status` compares after normalising and showed nothing - so the collector, which reads
 working-copy bytes, had hashed bytes the repository does not hold. `hashes.txt` names that file in
-its last section.
+its last section. As `c9afb0d` committed it, `hashes.txt` also named `docs/baselines.md`; section 8
+says why that row was later withdrawn.
 
 **One thing the collector did outside this directory**, and it was undone: its test step rewrote
 `docs/evidence/vm-6/d1-outcome.txt`, which was restored with `git checkout`. Nothing else outside
@@ -774,6 +775,20 @@ absolute paths of the workstation they ran on, as they ran.
 **Expiry.** Everything here is true of the logs as retained. Rules H5 and L1 hold quoted figures to
 logs and cannot hold the logs to the checkout (EX-54). `hashes.txt` is what ties this bundle to the
 files it depends on.
+
+**The register was withdrawn from `hashes.txt` after this bundle was committed, and the bundle stood
+expired until it was.** As `c9afb0d` committed it, the third section of `hashes.txt` also named
+`docs/baselines.md`, as the register this bundle does not edit. That row tied the bundle to a file no
+run, figure or verdict here reads, and the design this work follows never named it. The records
+commit `ecf52bf` then added a dated note to the register, as that design's records section asks,
+which changed the file's bytes and none of its figures - and so hit the first trigger below. From
+that commit until the one that withdrew the row, this bundle was expired by its own rule. The row was
+withdrawn rather than the bundle re-collected, because what it was there to show - that the commit
+retaining this bundle left the register alone - is git's to show, and git shows it: `c9afb0d` changes
+nothing outside this directory. The register's figures are bound by rule L1 to the benchmark log of
+bundle VM-6-001, not to this bundle. `measurement/make-hashes.py` was changed with it, and now reads
+every tracked file at `34dbd7a` rather than at the checkout's head, so that running it again refuses
+a hashed file changed since that commit instead of hashing the change.
 
 **Recertification triggers.** Any one of these invalidates this bundle:
 
