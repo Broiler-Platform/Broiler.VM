@@ -32,7 +32,7 @@ header's "incomplete" describes that commit. Every other section was written aft
 describes, and says which run that was.
 
 **What the evidence says, in one paragraph.** The predeclared rule of section 5.1 is **not met as a
-whole**. Item 1 fails on one witness: after the resolution fallback, the witness that stops the
+whole**. Item 1 fails on two witnesses: after the resolution fallback, the witness that stops the
 ambient lookup comparing contexts still fails the environment-meter test but no longer fails the
 two-thread invocation-allowance test the design named for it, and a witness added for the
 suppressed-flow arm fails no test at all. Item 4 fails in both bench-host pairs.
@@ -445,7 +445,10 @@ this directory changed, and `docs/baselines.md` did not change.
    head as it is committed. Two changes to the design's table: the witness for the ambient lookup
    was re-expressed for the thread-static resolution (it drops the context comparison, which is what
    it dropped before), and two witnesses were added - W11 and W12 - for the two arms `c98011a` wrote
-   tests for and named as defects those tests catch.
+   tests for and named as defects those tests catch. The design also asks for a passing transcript
+   after each witness is reverted; the script kept none per witness. It restored the tree after
+   each, checked that `git status` was empty, and ran the class once clean before the first witness
+   and once after the last (section 6.2).
 5. **E4 was not re-run after the fallback.** The fallback changed `VmExecutionScope` alone, in the
    runtime assembly, which neither profile assembly references, and `git diff` from `c98011a` to
    `34dbd7a` over both profiles, `Broiler.VM.Abstractions`, `Broiler.VM.Binary` and
@@ -504,6 +507,10 @@ transcript, and git holds the text each one replaced.
    they could not show a warning; `gates/cold-build-base.log` and `gates/cold-build-c98011a.log`
    were run after the review, with the collector's `--no-incremental -warnaserror` command, in fresh
    worktrees outside the repository.
+4. **Rule item 1's witness clause is read as failing on W12 as well as W8**, where the verdict table
+   and EX-114 had counted W8 alone while section 6.2 already marked W12 `[UNMET]`. The W5 row now says
+   that W5 passed its test before `4490eda` amended it, and the verdict no longer says each witness
+   passed again when reverted, since no witness has a passing run of its own.
 
 ---
 
@@ -539,6 +546,10 @@ no number.
 
 Each witness ran once, against `34dbd7a`, with the class's tests filtered in. A clean run before the
 first witness and after the last passes every test, and `git status` is empty after every revert.
+**No witness has a passing run of its own after its revert**: that each passes again when reverted
+rests on the restored tree being the one both clean runs passed on, not on a run per witness. W11 and
+W12 were added after the rule was committed; its witness clause reads "every injected-defect
+witness", so both are read against it like the rest.
 The T numbers are the ones the test file's own section comments use. (`e3/driver.log`'s one-line
 summaries are empty: they grep for a summary format the normal-verbosity logger does not print. The
 per-witness logs are the record.)
@@ -550,7 +561,7 @@ per-witness logs are the record.)
 | W3 | The settle in `Poll` deleted, with the re-admission it guards | T8, row 10, 60, 60 | That row, and 23 more rows; the failing rows fall in fifteen tests, T8 among them | `[MET]` |
 | W4 | `LeavesRoomFor` answers true | T6 | T6, on the first run, so no further iteration was needed | `[MET]` |
 | W4b | The uncharged-work reader's settle, the invocation-path step-end settle and the settle-all branch of the locked charge deleted | T2b | T2b; and T8's 62-unit row and T6 as well | `[MET]` |
-| W5 | The settle in the remaining-allowance reader deleted | T9 | T9, and nothing else | `[MET]` |
+| W5 | The settle in the remaining-allowance reader deleted | T9 | T9, and nothing else. **Not so at first**: run before `e117162` landed, with no transcript kept, this witness passed T9 as T9 then stood, and `4490eda` changed T9's profile variant so that it fails (section 5.8, item 4). This verdict is of T9 as amended, before the rule was committed | `[MET]` |
 | W6 | The aggregate-parent test in `PreAdmit` deleted | T11 | T11, and nothing else | `[MET]` |
 | W7 | The fast-path head returns false instead of calling the locked charge | T1 | Every test in the class, T1 among them | `[MET]` |
 | W8 | The ambient lookup returns the thread's resolved meter without comparing contexts | T12 and T7 | **T12 only. T7 passes with the defect in place** | `[UNMET]` |
@@ -569,7 +580,7 @@ resolved scope, context and meter per thread, so a second thread never sees the 
 triple, with or without the defect. What the context comparison still guards is a change of context
 on one thread, and T12 witnesses that. What the rule against holding a null-context lookup still guards
 is confined to one thread, as the scope's own remarks describe, and no test in the class reaches it. Neither
-table row is rewritten here; the first is a failure of rule item 1, and both are EX-114.
+table row is rewritten here: both are failures of rule item 1's witness clause, and both are EX-114.
 
 ### 6.3 The JavaScript shapes, E10
 
@@ -794,7 +805,7 @@ together with the scope and the context it was the answer for.
 
 | Verdict | Item of section 5.1 | What the evidence shows |
 |---|---|---|
-| `[UNMET]` | 1. Every correctness result holds | **Fails on the witness clause.** W8 fails T12 but not T7, the second test the design names for it (section 6.2). Every other clause holds as section 6.1 reads it: the build is clean with warnings as errors, by cold builds of the base, the product before the fallback and the head, the first two run after a review; the generated records were regenerated and `HUMAN_REVIEW.md` reads PENDING; the public API file is unchanged; the fuel-exactness tests pass on both meters; every other named witness fails the test it names and passes again when reverted; the profile assemblies are byte-identical; the JavaScript checks, corpus replay and host lifetime give identical verdicts; the parity rule holds; the low-fuel runs agree row for row in both forms; and the fuel minima are identical. The test-project clause failed once, in the collector's run, for the stray project file, and held in the run over the finished bundle (section 6.8). E5 to E9 ran before the fallback (EX-116), and four E8 runs were driven from another branch's driver (EX-115). Which build most of these runs used rests on the procedure, not on a retained stamp or digest (EX-117) |
+| `[UNMET]` | 1. Every correctness result holds | **Fails on the witness clause, on two witnesses.** W8 fails T12 but not T7, the second test the design names for it; and W12 fails no test at all, not T18, which it was added against (section 6.2). W12 was added after the rule was committed, and the clause covers every injected-defect witness, so it counts as W8 does. Every other clause holds as section 6.1 reads it: the build is clean with warnings as errors, by cold builds of the base, the product before the fallback and the head, the first two run after a review; the generated records were regenerated and `HUMAN_REVIEW.md` reads PENDING; the public API file is unchanged; the fuel-exactness tests pass on both meters; every other witness fails the test it names - W5 only since `4490eda` amended T9, before the rule was committed (section 5.8, item 4) - and the tree was restored after each, with the class passing clean before the first witness and after the last, though no witness has a passing run of its own after its revert (section 6.2); the profile assemblies are byte-identical; the JavaScript checks, corpus replay and host lifetime give identical verdicts; the parity rule holds; the low-fuel runs agree row for row in both forms; and the fuel minima are identical. The test-project clause failed once, in the collector's run, for the stray project file, and held in the run over the finished bundle (section 6.8). E5 to E9 ran before the fallback (EX-116), and four E8 runs were driven from another branch's driver (EX-115). Which build most of these runs used rests on the procedure, not on a retained stamp or digest (EX-117) |
 | `[MET]` | 2. Shapes | In both runs, all eight shape-and-form cells: the credit median below base, by more than the A/A spread (section 6.3) |
 | `[MET]` | 3. Concurrency, three parts | **On the second run.** `concurrent-bench`: the credit build below base in all twelve cells with two or more threads, in both runs. `concurrent-ambient`: **the first run failed**, the credit build above C2 in all twelve cells, which triggered the fallback; after the fallback the credit build is below C2 in all twelve. T6 alone: median 243.9 ms on credit against 476.0 ms on base. Both runs of the ambient part are retained (sections 6.5 and 6.6) |
 | `[UNMET]` | 4. The per-instruction meter row | **Fails in both pairs**: the credit `meter-per-instruction` row is above base by far more than either lane's A/A figure (section 6.6). By the rule's own terms nothing in this repository may describe the change as faster for this row, and a profile that polls after every instruction pays more on the credit build |
@@ -862,7 +873,7 @@ a hashed file changed since that commit instead of hashing the change.
 | EX-111 | Open | **A remaining-correlated timing signal between concurrent operations of one runtime.** With two or more holders sharing a runtime or instance level, blocks shrink as that level nears its ceiling, so extra locked charges grow more frequent as the remainder falls, and a guest timing its own charges can learn roughly how much of the shared level remains. No remaining value becomes readable through the metering surface; a coarse one becomes timeable. ADR 0007's acceptance of timing as a channel covers runtimes under a shared aggregate parent, and says nothing about operations inside one runtime. The owner recorded this as an exclusion and declined the variant that refuses pre-admission near a shared ceiling, which would leak one threshold bit instead. Closed by: that variant, or a decision that accepts the signal |
 | EX-112 | Open | **No registered baseline shows the saving.** VM-5 funds optimisation only against a registered baseline, and the one registered row on this path, `meter-per-instruction`, polls after every charge and cannot show it; in this bundle that row is higher on the credit build. E10 and E12 show the saving and are bundle-local measurements. The owner recorded this as an exclusion: no windowed-polling baseline is registered, VM-6-001's benchmark log is not re-collected, and the figures in `docs/baselines.md` are not edited. Closed by: registering a windowed-polling measurement and collecting it before and after a change, or the performance owner recording the clause as unmet for this change |
 | EX-113 | Open | **The conformance parity is held except on predeclared base wall-clock rows**, which may become passes or other exhaustions in the credit build. In this collection no row differed, so the exception was not used; it stands because a wall-clock verdict belongs to the machine, and a later collection may need it |
-| EX-114 | Open | **After the thread-static fallback, two arms of the ambient lookup have no failing witness.** Dropping the context comparison fails T12 and no longer fails T7, and holding a lookup made with the flow suppressed fails no test: both tests put a second thread where a scope-wide field would have leaked across threads, and a per-thread answer cannot. The first is a failure of rule item 1. Closed by: a test that changes context on one thread in the way each arm guards, with a witness that fails it |
+| EX-114 | Open | **After the thread-static fallback, two arms of the ambient lookup have no failing witness.** Dropping the context comparison fails T12 and no longer fails T7, and holding a lookup made with the flow suppressed fails no test: both tests put a second thread where a scope-wide field would have leaked across threads, and a per-thread answer cannot. Both are failures of rule item 1's witness clause. Closed by: a test that changes context on one thread in the way each arm guards, with a witness that fails it |
 | EX-115 | Open | **Part of the low-fuel series was driven while the checkout was on another branch.** From 16:22:56 to 16:52:03 the main checkout was on `main`. Four bytecode runs at fuel 30,000 and 100,000, base and credit, were driven by `main`'s test262 driver, and the identity of the credit binaries they used rests on file timestamps, not on anything in the reports. Six native runs in that window were taken under the numeric manifest; they are retained apart as off-series and were not counted, and the native series at those fuel values was run again afterwards |
 | EX-116 | Open | **The JavaScript and conformance evidence was taken before the resolution fallback.** E4 to E9 used the product at `c98011a`; the fallback changed `VmExecutionScope` alone, and the design's fallback clause asks for E1 to E4, E12 and the T6 timing again but not for E5 to E9. E4's inputs are unchanged across the fallback; E5 to E9 were not re-run on `34dbd7a`. Closed by: re-running E5 to E9 on the head |
 | EX-117 | Open | **Which build most runs used, and when several of them ran, rests on the procedure and on file-system times, not on a retained stamp.** E3's transcripts name their commit, and the binaries of E9 and of E10's second run survived for their stamps and digests to be retained after the fact. For E2's credit half, E4 to E8, E10's first run, E11, E12 and E13, no retained file names the commit or holds a digest of the binary the run used, and E7's base and credit reports and E5's plain transcripts are byte-identical, so their content cannot tell the builds apart. No transcript of E4 to E9 carries a time: the times of E7 and E8 - including that both credit test262 runs began after the predeclared rule was committed - are output-directory creation and write times read from the throwaway directory after a review, and E4 to E6 have no time of their own. Closed by: a driver that writes the binary's commit stamp, its digest and its start time into its own transcript |

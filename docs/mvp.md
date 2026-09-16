@@ -481,8 +481,8 @@ passes on both meters: on the changed one, and on the unchanged one with the hea
 files copied onto the base. **That is evidence for the reading, not a proof.** The second settle of
 a fuel retention has no deterministic test, the step-end settle on the resume path has no witness,
 the concurrency claims rest on sampled runs, and after the resolution fallback two arms of the
-ambient meter's lookup have no failing witness, the first of which the bundle reads as a failure of
-its own predeclared rule. The route also opens a coarse timing signal between concurrent operations of one
+ambient meter's lookup have no failing witness, both of which the bundle reads as failures of its own
+predeclared rule. The route also opens a coarse timing signal between concurrent operations of one
 runtime, recorded as the bundle's exclusion EX-111, and no registered baseline shows the saving it
 was taken for, recorded as EX-112 and in the VM-5 row of [the status ledger](roadmap.status.md).
 **What makes the route affordable to take without a decision is that it revised no contract-bearing
