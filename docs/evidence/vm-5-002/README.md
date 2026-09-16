@@ -81,7 +81,7 @@ Section 9 carries the exclusions.
 | `ba760d9` | Make the fuel-exactness tests fail on the claims they guard rather than on their timing | An amendment to the same tests, still on the unchanged meter |
 | `e117162` | Admit fuel without the meter's lock inside a block checked at every level | `VmFuelPreAdmissions`, the `VmMeter` fast path and its split from the locked charge, the pre-admissions property on `VmBudgetLevel`, and the settle points in `VmRuntime`, `VmInstanceImplementation` and `VmInstantiation` |
 | `a416c7a` | Resolve the ambient meter once per execution context | The resolution cache in `VmExecutionScope`, keyed by execution context, held in one field on the scope |
-| `4490eda` | Request a guest load from a profile that polls on a window, so the remainder it is verified under is read with fuel outstanding | A further test |
+| `4490eda` | Request a guest load from a profile that polls on a window, so the remainder it is verified under is read with fuel outstanding | No new test: an amendment to T9, which now requests its guest load from `WindowedGuestLoads`, a fixture profile variant this commit adds that polls on a window, with a remark saying why |
 | `738d9c7` | Answer a zero-unit fuel charge without a locked write, and make each settle say what it alone guarantees | A zero-unit fast path, and the remark on each settle point saying what that point alone guarantees |
 | `c98011a` | Hold five steps of one runtime open, and suppress a flow on a thread that is in no step | Two further tests: a full pre-admission table's eviction, and a lookup with the execution flow suppressed |
 | `dbc8d37` | Predeclare the rule the fuel pre-admission evidence is read against | Sections 5.1 to 5.3 of this README, before the changed build was measured |
@@ -131,9 +131,10 @@ commit (section 5.7).
 | `VmExecutionScope.cs` | The resolution of the ambient meter: first a per-scope cache keyed by execution context, then the thread-static fallback |
 | `VmVerification.cs` | A comment only: why a caller-driven verification meter gets no step-end settle |
 
-**Outside them:** `FuelChargeExactnessTests` gained the tests `4490eda` and `c98011a` added (the file
-comments number the tests T1 to T18), three fixture files changed with them
-(`FixtureHostCapabilities`, `FixtureVmExecutor`, `FixtureVmProfile`), the architecture rule tests'
+**Outside them:** `FuelChargeExactnessTests` gained the two tests `c98011a` added, and `4490eda`
+amended T9's profile variant (the file comments number the tests T1 to T18); three fixture files
+changed with that amendment (`FixtureHostCapabilities`, `FixtureVmExecutor`, `FixtureVmProfile`),
+to add the variant; the architecture rule tests'
 covered-file count moved by the one new product file, and the generated `CODE-ASSURANCE.md`,
 `HUMAN_REVIEW.md` and `assurance.manifest.json` were regenerated with every new or changed unit
 `PENDING`. `docs/api/public-api.txt` is unchanged at every commit in the series (section 6.1, E1c).
@@ -511,6 +512,11 @@ transcript, and git holds the text each one replaced.
    and EX-114 had counted W8 alone while section 6.2 already marked W12 `[UNMET]`. The W5 row now says
    that W5 passed its test before `4490eda` amended it, and the verdict no longer says each witness
    passed again when reverted, since no witness has a passing run of its own.
+5. **Four statements were narrowed to what the files show.** `4490eda` is described as the amendment
+   to T9 it is, not as a further test. Section 6.5 no longer compares the single-threaded `bench`
+   figures across builds, since no rule item reads that row. EX-110 and section 7.2 say that W2 does
+   remove the resume-path pair, and that no test fails for it. EX-108 names which consumption figures
+   a run compares and which rest on argument.
 
 ---
 
@@ -618,8 +624,7 @@ reported by the per-meter, scope, exactness or observer checks. `e12/probe-stres
 | `e12/probe-bench-c3-before-fallback.txt` | 3.12 | 5.76 |
 | `e12/probe-bench-c3.txt` | 3.37 | 8.24 |
 
-The thread-static fallback made a single-threaded charge through the ambient meter slower than the
-shared field it replaced, and still faster than base. No rule item reads this row.
+No rule item reads this row.
 
 **`concurrent-bench`**, each thread charging through its own meter on one runtime level
 (`e12/probe-concurrent-bench-base.txt`, `-c3-before-fallback.txt`, `-c3.txt`):
@@ -794,8 +799,9 @@ together with the scope and the context it was the answer for.
   on another meter, landing between the retention's two lock sections, can pre-admit a block there
   (EX-109).
 - **The step-end settle on the resume path, jointly with the uncharged-work reader's settle,** has no
-  witness; the invocation-path pair is witnessed by W2 and the resume path has the same shape
-  (EX-110).
+  failing witness. No witness removes that pair alone, and W2, which removes it together with the
+  invocation-path settle, fails only the invocation-path row of T8: T10, the park-and-resume test,
+  passes with the pair gone. It rests on the resume path having the invocation path's shape (EX-110).
 - **The concurrency claims** rest on sampled runs: T6 and T7, and the probe's `trace` and `stress`
   modes (EX-107).
 - **After the fallback, the ambient lookup's context comparison across threads and its refusal to
@@ -867,9 +873,9 @@ a hashed file changed since that commit instead of hashing the change.
 | EX-105 | Open | **Pre-admission is never exercised under an aggregate parent**, by design: a runtime with a parent never pre-admits. T11 shows it is refused there. Nothing shows a design that pre-admits under a parent. Closed by: a design that does, with its own evidence |
 | EX-106 | Open | **The table's capacity of four, the block limit, the block cap of twice the declared poll bound, the share divisor and single-victim eviction are choices made by argument.** The probe's `concurrent-bench` rows and the T6 timing are the only evidence about them, on one machine. Closed by: a measurement that varies each |
 | EX-107 | Open | **The concurrency and trace evidence drives internal types by reflection.** The probe binds `VmBudgetLevel.FuelPreAdmissions` and `VmFuelPreAdmissions.SettleAll` by name, because architecture rule A10 forbids exposing internals to another assembly; a rename breaks it silently into a base-shaped run. The in-tree evidence is the behavioural tests T4 to T7, T11 and T14, and the concurrent ones among them are sampled races. Closed by: nothing short of an internal test surface A10 would have to admit |
-| EX-108 | Open | **Wall-clock consumption figures are not held equal.** Less time is spent in the lock, so every wall-clock consumption moves; every fuel, call-depth, host-call, byte, verifier-work and nested-load figure is held, and no record may say "every figure" |
+| EX-108 | Open | **Wall-clock consumption figures are not held equal, and most other consumption figures are held by argument rather than by a run.** Less time is spent in the lock, so every wall-clock consumption moves, and no record may say "every figure". What the retained runs compare between the builds is narrower than every other dimension: fuel consumption, in E2's tests, E9's budget lines and E12's traces; runtime call-depth and live-byte consumption, in E9's budget lines for four programs; and verdicts, including which allowance a variant exhausted, in E7 and E8. That host-call, allocated-byte, verifier-work and nested-load consumption are unchanged is argued - a charge of any dimension but fuel never takes a block and runs the locked path as before - and no retained run compares those figures |
 | EX-109 | Open | **The second settle of a fuel retention has no deterministic test.** Only a concurrent locked fuel charge on another meter, landing between the retention's two lock sections, can pre-admit a block there. It rests on the invariant that every commit of fuel first checks room or settles every holder, and on the readers' argument in section 7.2 |
-| EX-110 | Open | **The step-end settle on the resume path, with the uncharged-work reader's settle, has no witness.** The invocation-path pair is witnessed by W2; the resume path is the same code shape, and no witness removes the resume-path pair |
+| EX-110 | Open | **The step-end settle on the resume path, with the uncharged-work reader's settle, has no failing witness.** No witness removes the resume-path pair alone. W2 removes it together with the invocation-path step-end settle, and the only test that fails is the invocation-path row of T8: T10, the park-and-resume test, passes with the pair gone. The resume path is the same code shape as the invocation path, and that is what the pair rests on |
 | EX-111 | Open | **A remaining-correlated timing signal between concurrent operations of one runtime.** With two or more holders sharing a runtime or instance level, blocks shrink as that level nears its ceiling, so extra locked charges grow more frequent as the remainder falls, and a guest timing its own charges can learn roughly how much of the shared level remains. No remaining value becomes readable through the metering surface; a coarse one becomes timeable. ADR 0007's acceptance of timing as a channel covers runtimes under a shared aggregate parent, and says nothing about operations inside one runtime. The owner recorded this as an exclusion and declined the variant that refuses pre-admission near a shared ceiling, which would leak one threshold bit instead. Closed by: that variant, or a decision that accepts the signal |
 | EX-112 | Open | **No registered baseline shows the saving.** VM-5 funds optimisation only against a registered baseline, and the one registered row on this path, `meter-per-instruction`, polls after every charge and cannot show it; in this bundle that row is higher on the credit build. E10 and E12 show the saving and are bundle-local measurements. The owner recorded this as an exclusion: no windowed-polling baseline is registered, VM-6-001's benchmark log is not re-collected, and the figures in `docs/baselines.md` are not edited. Closed by: registering a windowed-polling measurement and collecting it before and after a change, or the performance owner recording the clause as unmet for this change |
 | EX-113 | Open | **The conformance parity is held except on predeclared base wall-clock rows**, which may become passes or other exhaustions in the credit build. In this collection no row differed, so the exception was not used; it stands because a wall-clock verdict belongs to the machine, and a later collection may need it |

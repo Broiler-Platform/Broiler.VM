@@ -479,7 +479,7 @@ argument is in [bundle VM-5-002](evidence/vm-5-002/README.md) section 7.2. The f
 were first written and passed against the meter before the change, and their version at the head
 passes on both meters: on the changed one, and on the unchanged one with the head's test and fixture
 files copied onto the base. **That is evidence for the reading, not a proof.** The second settle of
-a fuel retention has no deterministic test, the step-end settle on the resume path has no witness,
+a fuel retention has no deterministic test, the step-end settle on the resume path has no failing witness,
 the concurrency claims rest on sampled runs, and after the resolution fallback two arms of the
 ambient meter's lookup have no failing witness, both of which the bundle reads as failures of its own
 predeclared rule. The route also opens a coarse timing signal between concurrent operations of one
