@@ -24,6 +24,18 @@ public sealed class FixtureExecutionGate
     private readonly System.Threading.ManualResetEventSlim released = new(false);
     private int entries;
 
+    /// <summary>
+    /// How long a held step waits before continuing on its own.
+    /// </summary>
+    /// <remarks>
+    /// It is stated here rather than written into <see cref="Reached"/> alone because a test's own
+    /// patience has to stay materially BELOW it. A test that waits as long as the gate holds can
+    /// have its step resume while it still believes it is held, and the run then fails on a figure
+    /// that moved rather than on the timeout this wait exists to produce - a wrong answer where a
+    /// clean refusal was available.
+    /// </remarks>
+    public static readonly System.TimeSpan SelfRelease = System.TimeSpan.FromSeconds(30);
+
     /// <summary>Which step kinds this gate holds.</summary>
     public FixtureGatePoint HoldAt { get; set; } = FixtureGatePoint.None;
 
@@ -55,7 +67,7 @@ public sealed class FixtureExecutionGate
         // A bounded wait, never an unbounded one. A gate a test forgets to release must fail that
         // test rather than wedge the whole run, and thirty seconds is far longer than any step
         // this suite performs.
-        released.Wait(System.TimeSpan.FromSeconds(30));
+        released.Wait(SelfRelease);
     }
 }
 

@@ -46,11 +46,21 @@ public sealed class FuelChargeExactnessTests
     /// How long a test waits for a rendezvous before calling it a deadlock.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A bounded wait rather than an unbounded one, for the reason the execution gate itself gives:
     /// a rendezvous that is never reached means the path under test did not run, and reporting that
     /// as a timeout is more useful than hanging the suite.
+    /// </para>
+    /// <para>
+    /// It is a fraction of <see cref="FixtureExecutionGate.SelfRelease"/> rather than a figure of
+    /// its own, and materially below it. The gate's countdown starts when the step arrives, not
+    /// when this thread notices, so a patience equal to it would let a held step continue while a
+    /// test that had waited nearly that long still believed it was held - and the run would then
+    /// fail on a figure that moved instead of on the timeout the gate promises. A third leaves the
+    /// rest of the gate's wait to the reads a held test performs.
+    /// </para>
     /// </remarks>
-    private static readonly TimeSpan Patience = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan Patience = FixtureExecutionGate.SelfRelease / 3;
 
     private static ulong Fuel(VmRuntime runtime) =>
         runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.Fuel);
@@ -358,9 +368,19 @@ public sealed class FuelChargeExactnessTests
     /// A budget read while a runtime is running never goes backwards and ends on the exact total.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Consumption is a sum of allowances already spent, and an allowance never refunds, so a
     /// reader watching a live runtime must see a monotone sequence bounded by the ceiling. Forty
     /// invocations of 20,002 charges each is the figure at the end.
+    /// </para>
+    /// <para>
+    /// The observer has to be shown to have observed. A loop conditioned on a flag the main thread
+    /// sets can be scheduled after that flag is already set, and would then enqueue no complaint
+    /// having read nothing at all - an empty queue that means "no defect" and an empty queue that
+    /// means "no evidence" are the same assertion, which is the shape this file's header refuses.
+    /// So the observer signals its first read, the invocations do not start until that signal
+    /// arrives, and the count of reads is asserted at the end beside the complaints.
+    /// </para>
     /// </remarks>
     [Fact]
     public void Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact()
@@ -372,8 +392,10 @@ public sealed class FuelChargeExactnessTests
 
         var ceiling = runtime.GetBudgetSnapshot().EffectiveCeiling(VmBudgetDimension.Fuel);
         var complaints = new ConcurrentQueue<string>();
+        var reads = 0;
 
         using var finished = new ManualResetEventSlim(false);
+        using var watching = new ManualResetEventSlim(false);
 
         var observer = Task.Run(() =>
         {
@@ -394,8 +416,12 @@ public sealed class FuelChargeExactnessTests
                 }
 
                 previous = seen;
+                Interlocked.Increment(ref reads);
+                watching.Set();
             }
         });
+
+        Assert.True(watching.Wait(Patience), "the observer never read the budget");
 
         for (var invocation = 0; invocation < 40; invocation++)
         {
@@ -406,6 +432,7 @@ public sealed class FuelChargeExactnessTests
         observer.GetAwaiter().GetResult();
 
         Assert.Empty(complaints);
+        Assert.True(Volatile.Read(ref reads) > 0, "the observer enqueued nothing because it read nothing");
         Assert.Equal(40UL * 20002UL, Fuel(runtime));
     }
 
@@ -611,10 +638,18 @@ public sealed class FuelChargeExactnessTests
     /// A parked operation has committed its fuel, and resumes against the same allowance.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// What the run spent before it parked is spent: an allowance does not refund at a suspension,
     /// and the resumed run draws on the same ceiling until it reaches it. Both polling shapes are
     /// exercised, because a park in the middle of a charge window is the case a profile that polls
     /// after every charge can never produce.
+    /// </para>
+    /// <para>
+    /// The resume crosses a thread boundary deliberately. The profile is agile, so the core is free
+    /// to resume a parked operation anywhere, and a resume that only ever happens on the thread
+    /// that invoked would leave the poll phase a continuation carries, and the context comparison
+    /// the meter makes when it resolves an operation, exercised on one thread only.
+    /// </para>
     /// </remarks>
     [Theory]
     [InlineData(FixtureVmProfileVariant.Conforming)]
@@ -635,7 +670,7 @@ public sealed class FuelChargeExactnessTests
         Assert.Equal(1001UL, Fuel(runtime));
         Assert.True(parked.TryGetSuspension(out var suspension));
 
-        var resumed = runtime.Resume(suspension);
+        var resumed = Task.Run(() => runtime.Resume(suspension)).GetAwaiter().GetResult();
 
         Assert.Equal(VmOutcome.ResourceExhaustion, resumed.Outcome);
         Assert.Equal(VmBudgetDimension.Fuel, resumed.Diagnostics.ExhaustedDimension);
@@ -755,10 +790,12 @@ public sealed class FuelChargeExactnessTests
     /// A thread a step started still charges that operation after the step has ended.
     /// </summary>
     /// <remarks>
-    /// This pins the behaviour as it stands and endorses nothing. Leaving a step clears the step
-    /// thread's own context and no other, so a thread the profile started during the step keeps the
-    /// meter it captured and its charges still land. A later change to how the meter is resolved
-    /// must not alter that quietly, which is the whole reason the figure is written down here.
+    /// This pins the behaviour of commit <c>5130be9</c> - <c>VmExecutionScope.Leave</c>, which
+    /// clears the step thread's own context and no other - and endorses nothing. A thread the
+    /// profile started during the step therefore keeps the meter it captured, and its charges still
+    /// land after the step has ended. A later change to how the meter is resolved, a cache over
+    /// that resolution above all, must not alter that quietly, which is the whole reason the figure
+    /// is written down here and named against that baseline.
     /// </remarks>
     [Fact]
     public void A_Thread_Started_Inside_A_Step_Still_Charges_Its_Operation_After_The_Step_Ends()
