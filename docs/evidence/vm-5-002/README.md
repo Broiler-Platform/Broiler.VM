@@ -178,10 +178,12 @@ than a corpus: nothing replays them as a gate.
 `environment.txt` is the collector's record of the SDKs and runtimes this machine resolved.
 
 **The machine was not idle during the timing runs**, and the retained notes say so rather than this
-README guessing: between the two snapshots, 55 minutes apart, the agent processes on this workstation
-accumulated CPU time equal to about 1.2 of the 16 logical processors running continuously, desktop
-processes accumulated a few minutes more, and a Git status cache rescanned the checkout after the
-fallback commit.
+README guessing: between the two snapshots, 55 minutes apart, the agent processes that both
+snapshots list among the eight busiest accumulated **at least** 3,900 CPU-seconds - about 1.2 of the
+16 logical processors running continuously - and the desktop processes both list at least a few
+minutes more. Those are lower bounds: the second snapshot lists another agent process and a Git status cache
+that the first snapshot's eight busiest do not, so what those two accumulated in between is unknown,
+and so is anything neither list names.
 No build ran during any timing run. Every timing figure in this bundle is a property of this machine
 in that state (EX-45).
 
@@ -477,8 +479,9 @@ this directory changed, and `docs/baselines.md` did not change.
    is a sizing run, not a repetition.
 10. **E12's first `trace`, `stress` and `bench` runs were overwritten.** They wrote numbers with this
     workstation's decimal comma; the probe was changed to write invariant numbers and the three modes
-    were run again over the same files. `collection-notes.txt` records what the overwritten run
-    showed. `e12/trial-conc-base.txt` is the first complete base run of `concurrent-bench`, taken to
+    were run again over the same files. No log of the overwritten run survives, so what it showed is
+    not retained: `collection-notes.txt` says only that its stress mode passed and its traces
+    matched, and no longer quotes the figures it first quoted (section 5.9). `e12/trial-conc-base.txt` is the first complete base run of `concurrent-bench`, taken to
     size the workload, and is retained beside the base run that counts.
 11. **The collector's test step failed two architecture tests** for a reason outside the product: a
     copy of the probe's project file sat under the git-ignored `artifacts/` directory, and group A
@@ -517,6 +520,11 @@ transcript, and git holds the text each one replaced.
    figures across builds, since no rule item reads that row. EX-110 and section 7.2 say that W2 does
    remove the resume-path pair, and that no test fails for it. EX-108 names which consumption figures
    a run compares and which rest on argument.
+6. **`collection-notes.txt` was corrected**: the overwritten probe run's figures, which no log backs,
+   are removed; the paths it gave for the fallback's gate logs, the probe's source and the E10 lanes
+   now name where those files are, or say they are not retained; and its CPU-time figures, like
+   section 4's, are lower bounds, since the second machine-state snapshot lists two processes the
+   first does not.
 
 ---
 
