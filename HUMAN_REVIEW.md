@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 3976 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 3975 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 171 |
-| Code units | 6904 |
-| Relevant | 3976 |
-| Exempt | 2928 |
-| Assessed | 3976 of 3976 (100%) |
-| Human reviewed | 0 of 3976 (0%) |
-| Unverified | 3976 |
+| Code units | 6902 |
+| Relevant | 3975 |
+| Exempt | 2927 |
+| Assessed | 3975 of 3975 (100%) |
+| Human reviewed | 0 of 3975 (0%) |
+| Unverified | 3975 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 3976 |
+| HUMAN_PENDING | 3975 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2928 |
+| EXEMPT | 2927 |
 
 ## 5. Aliases In The Tree
 
@@ -273,7 +273,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Runtime/VmCatalogValidation.cs` | 47 | 5 | 42 | 5 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmCeilingResolution.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmDescriptorValidation.cs` | 10 | 10 | 0 | 10 | Low | Low | 0/0 |
-| `src/Broiler.VM.Runtime/VmExecutionScope.cs` | 31 | 17 | 14 | 17 | Low | Medium | 3/0 |
+| `src/Broiler.VM.Runtime/VmExecutionScope.cs` | 29 | 16 | 13 | 16 | Low | Medium | 2/0 |
 | `src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs` | 13 | 11 | 2 | 11 | Low | Medium | 10/0 |
 | `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` | 40 | 24 | 16 | 24 | Low | High | 6/2 |
 | `src/Broiler.VM.Runtime/VmInstantiation.cs` | 15 | 9 | 6 | 9 | Low | Medium | 2/0 |
@@ -2363,7 +2363,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 3862 of the 3976 assessed units declare
+That is not a figure of speech. 3861 of the 3975 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

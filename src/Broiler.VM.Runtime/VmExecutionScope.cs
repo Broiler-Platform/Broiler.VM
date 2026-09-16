@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
-// Exempt:           14
-// Human-reviewed:   0/17
+// Relevant units:   16
+// Annotated:        16/16
+// Exempt:           13
+// Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         3/0
+// Criteria:         2/0
 // Resource impact:  2/10 max
-// Unverified:       17
+// Unverified:       16
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -43,15 +43,32 @@ internal sealed class VmExecutionScope
     private readonly System.Threading.AsyncLocal<VmMeter?> current = new();
     private readonly System.Threading.AsyncLocal<VmOperation?> operation = new();
 
-    // The answer the last lookup gave, together with the execution context it was read under. Read
-    // and written without a lock: every value ever stored is a true pair, so a thread that loses a
-    // race only misses the cache. One field rather than one per thread, and that is where the cost
-    // can go the wrong way: two operations of ONE scope charging on two threads at once - two
-    // instances of one profile in one runtime - displace each other's pair, so every lookup misses,
-    // allocates and writes a shared field. The answer stays right and the speed does not. The
-    // fallback, if a concurrent measurement ever finds that case slower than no cache at all, is
-    // three thread-static fields (scope, context, meter) that Leave clears for the leaving thread.
-    private volatile Resolution? resolution;
+    // The answer the last lookup ON THIS THREAD gave, with the scope and the execution context it was
+    // the answer for. Three thread-static fields rather than one field on the scope, because a field
+    // on the scope is displaced by every other thread charging through the same scope: two instances
+    // of one profile in one runtime, running at once, made every lookup miss, allocate a pair and
+    // write a shared field, and the concurrent measurement this change was made for found that case
+    // slower at every thread count of two or more than holding no answer at all. Per thread, a miss
+    // costs the AsyncLocal read and nothing besides, and no thread can displace another's answer.
+    //
+    // The scope is one of the three because the fields are the thread's rather than the scope's, and
+    // two scopes may be entered on one thread.
+    //
+    // This is not the leak class VM-5 found. That was an AsyncLocal entry per runtime that nothing
+    // released, so the map every later write copies grew without bound. These three hold exactly one
+    // triple however many runtimes have run on the thread: the next lookup overwrites it and Leave
+    // clears it, so nothing accumulates and a disposed runtime leaves nothing of itself behind. What
+    // this variant does hold, until the thread's next lookup or its Leave, is one context object on a
+    // thread a step left running - one per thread, which is what makes it the fallback and not the
+    // first choice.
+    [System.ThreadStatic]
+    private static VmExecutionScope? resolvedScope;
+
+    [System.ThreadStatic]
+    private static System.Threading.ExecutionContext? resolvedContext;
+
+    [System.ThreadStatic]
+    private static VmMeter? resolvedMeter;
 
     /// <summary>The meter of the step this thread is running inside, or null outside a step.</summary>
     /// <remarks>
@@ -68,23 +85,24 @@ internal sealed class VmExecutionScope
     /// context of its own captures <c>ExecutionContext.Default</c>, which every such thread shares;
     /// that is a consistent pair with the null meter such a thread reads, and no pair of
     /// <c>Default</c> with a meter can ever be written, because entering a step installs a context.
-    /// A thread whose flow is suppressed captures null, and that lookup is answered but not cached -
-    /// deliberately, and that is the load-bearing half of it: null is a key every suppressed flow
-    /// shares, so a pair published under it would be handed straight to any other thread that looks
-    /// up with its own flow suppressed, including one that is inside no step and must be refused.
+    /// A thread whose flow is suppressed captures null, and that lookup is answered but not held -
+    /// deliberately, and that is the load-bearing half of it: null is a key every suppressed lookup
+    /// shares, so a triple stored under it would be handed back to this thread's next suppressed
+    /// lookup whatever it is now inside, including one inside no step, which must be refused.
     /// </para>
     /// <para>
-    /// What is cached is at most one context object and one meter per scope at a time. <see
-    /// cref="Leave"/> releases the pair, and the next lookup takes one again - including a lookup
-    /// from a thread the step left running, which republishes the finished step's own context and
-    /// meter, and through them that operation's levels, until a later lookup displaces them or the
-    /// runtime is disposed and drops the scope. So the pin is bounded to one pair and is never
-    /// per-thread, but it is not over when the step is. Nothing is stored on a thread: an
-    /// <c>AsyncLocal</c> entry, a value-changed handler or a thread-static would each be the VM-5
-    /// leak class, which a disposed runtime must leave nothing of behind.
+    /// What is held is at most one triple - scope, context and meter - per thread. <see
+    /// cref="Leave"/> clears the leaving thread's, and the next lookup on that thread takes one
+    /// again - including a lookup from a thread the step left running, which puts the finished
+    /// step's own context and meter back, and through them that operation's levels, until a later
+    /// lookup on that same thread displaces them. So the pin is bounded to one triple per thread,
+    /// and it is not over when the step is. It is not the leak class VM-5 found, which was an
+    /// <c>AsyncLocal</c> entry per runtime that nothing released and so grew the map every later
+    /// write copies: nothing here grows with the number of runtimes a thread has run, and a
+    /// disposed runtime leaves nothing of itself behind.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=785C21
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=BCD550
     // Broiler-Falsified-If: a lookup returns a meter other than the one the thread's AsyncLocal holds
     // Broiler-Human:        PENDING
     internal VmMeter? Current
@@ -92,18 +110,21 @@ internal sealed class VmExecutionScope
         get
         {
             var context = System.Threading.ExecutionContext.Capture();
-            var cached = resolution;
 
-            if (cached is not null && ReferenceEquals(cached.Context, context))
+            if (context is not null &&
+                ReferenceEquals(resolvedScope, this) &&
+                ReferenceEquals(resolvedContext, context))
             {
-                return cached.Meter;
+                return resolvedMeter;
             }
 
             var meter = current.Value;
 
             if (context is not null)
             {
-                resolution = new Resolution(context, meter);
+                resolvedScope = this;
+                resolvedContext = context;
+                resolvedMeter = meter;
             }
 
             return meter;
@@ -126,43 +147,24 @@ internal sealed class VmExecutionScope
         operation.Value = owner;
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=AB35B4
-    // Broiler-Falsified-If: a step's own thread returns from here with the scope still holding the context that step ran under
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=884E92
+    // Broiler-Falsified-If: a step's own thread returns from here still holding the context that step ran under
     // Broiler-Human:        PENDING
     internal void Leave()
     {
         current.Value = null;
         operation.Value = null;
 
-        // Releases the finished step's context at once. Not needed for the answer: the two writes
-        // above have already put this thread under a new context object, so no stale hit is
-        // possible on it, and a thread the step started keeps the meter it captured either way.
-        // A release and not a seal: a thread the step left running that looks up after this puts
-        // the finished step's pair back, and it stays until the next lookup or until the runtime
-        // drops the scope.
-        resolution = null;
+        // Releases the finished step's context on the thread that is leaving. Not needed for the
+        // answer: the two writes above have already put this thread under a new context object, so no
+        // stale hit is possible on it, and a thread the step started keeps the meter it captured
+        // either way. It is the leaving thread's triple and no other: a thread the step left running
+        // still holds the one its own last lookup wrote, until its next lookup displaces it.
+        resolvedScope = null;
+        resolvedContext = null;
+        resolvedMeter = null;
     }
 
-    /// <summary>One lookup's answer, and the execution context it is the answer for.</summary>
-    /// <remarks>
-    /// One object rather than two fields, so a reader sees a context and a meter that were read
-    /// together. It is immutable and published by the volatile write of the field that holds it.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=32D733
-    // Broiler-Falsified-If: a pair is published whose meter is not what the AsyncLocal held under its context
-    // Broiler-Human:        PENDING
-    private sealed class Resolution
-    {
-        internal Resolution(System.Threading.ExecutionContext context, VmMeter? meter)
-        {
-            Context = context;
-            Meter = meter;
-        }
-
-        internal System.Threading.ExecutionContext Context { get; }
-
-        internal VmMeter? Meter { get; }
-    }
 }
 
 /// <summary>
