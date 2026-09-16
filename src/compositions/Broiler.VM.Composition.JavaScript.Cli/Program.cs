@@ -59,6 +59,16 @@ internal static class Program
 
     private static int Dispatch(string[] args)
     {
+        // THE EFFECTIVE CONFIGURATION, BEFORE THIS PROCESS DOES ANYTHING ELSE, and it is not a
+        // mode: every other argument is still answered afterwards, so the line can be asked for
+        // beside the work rather than instead of it. It goes to STANDARD ERROR because a run whose
+        // completion value, closure claim or report is read off standard output has to carry it
+        // without disturbing that.
+        if (args.Contains("--runtime", StringComparer.Ordinal))
+        {
+            Runtime();
+        }
+
         if (args.Length == 0 || args.Contains("--help", StringComparer.Ordinal))
         {
             Usage();
@@ -632,8 +642,84 @@ internal static class Program
     [
         "--module", "--check", "--all", "--quiet", "--fuel", "--max-depth", "--closure",
         "--slice", "--strict", "--sweep", "--wall", "--call-depth", "--live-bytes", "--help",
-        "--version", "--numeric", "--native", "--host-surface",
+        "--version", "--numeric", "--native", "--host-surface", "--runtime",
     ];
+
+    /// <summary>
+    /// Prints the runtime configuration this process actually got, on standard error.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>EFFECTIVE, NOT REQUESTED.</b> Two timed runs are comparable only when both ran under the
+    /// same runtime, and the settings that decide that - the garbage collector's mode, tiered
+    /// compilation, tiered PGO - are taken from the environment and from the runtime configuration.
+    /// Neither is visible in the command line that started the process, so a harness recording the
+    /// arguments alone would record what it asked for rather than what it ran under.
+    /// </para>
+    /// <para>
+    /// <b>Tiering is read from BOTH sources, because the runtime takes it from both.</b> An
+    /// environment variable does not reach <c>AppContext</c>, so a process started under
+    /// <c>DOTNET_TieredCompilation=0</c> answers the switch as absent and a line reading only the
+    /// switch would report the default; a <c>runtimeconfig</c> setting does not reach the
+    /// environment either. Both are printed under their own names. <b>Neither of them is the tier
+    /// state itself</b> - no runtime API reports that - so what these name is what was asked of the
+    /// runtime, which is the limit this option has and the one a bundle citing it must state.
+    /// </para>
+    /// <para>
+    /// The pattern is <c>src/tests/Broiler.VM.Bench.Host/Program.cs</c>, which prints the same GC
+    /// and runtime-identifier facts at the head of a bench transcript for the same reason.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+    // Broiler-Falsified-If: the line reports a setting other than the one the running process has
+    // Broiler-Human:        PENDING
+    private static void Runtime() =>
+        Console.Error.WriteLine(
+            $"runtime-identifier={System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier} " +
+            $"process-architecture={System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture} " +
+            $"gc-server={System.Runtime.GCSettings.IsServerGC} " +
+            $"gc-latency={System.Runtime.GCSettings.LatencyMode} " +
+            $"tiered-compilation-env={Asked("TieredCompilation")} " +
+            $"tiered-compilation-config={Configured("System.Runtime.TieredCompilation")} " +
+            $"tiered-pgo-env={Asked("TieredPGO")} " +
+            $"tiered-pgo-config={Configured("System.Runtime.TieredPGO")} " +
+            $"dynamic-code={System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeCompiled}");
+
+    /// <summary>What the environment asks of the runtime for one knob, or <c>unset</c>.</summary>
+    /// <remarks>
+    /// Both prefixes, newest first: the runtime reads <c>DOTNET_</c> and still honours the older
+    /// <c>COMPlus_</c>, so a line reading one of them would print <c>unset</c> for a process that
+    /// had in fact been configured through the other. An empty value is not a request and reads as
+    /// unset, which is how the runtime's own parse treats it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+    // Broiler-Falsified-If: a variable the runtime reads for this knob is set and this answers `unset`
+    // Broiler-Human:        PENDING
+    private static string Asked(string knob)
+    {
+        var current = Environment.GetEnvironmentVariable("DOTNET_" + knob);
+
+        if (!string.IsNullOrEmpty(current))
+        {
+            return current;
+        }
+
+        var legacy = Environment.GetEnvironmentVariable("COMPlus_" + knob);
+
+        return string.IsNullOrEmpty(legacy) ? "unset" : legacy;
+    }
+
+    /// <summary>What the runtime configuration states for one switch, or <c>unset</c>.</summary>
+    /// <remarks>
+    /// <c>AppContext</c> carries what <c>runtimeconfig.json</c>, the host and the publish
+    /// properties set, and nothing the environment set. It is the second half of the same question
+    /// and not a substitute for the first.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+    // Broiler-Falsified-If: the switch is present in this process's configuration and this answers `unset`
+    // Broiler-Human:        PENDING
+    private static string Configured(string name) =>
+        AppContext.GetData(name) is { } value ? value.ToString() ?? "unset" : "unset";
 
     /// <summary>The closure this image actually has, read off its own loaded assemblies.</summary>
     /// <remarks>
@@ -761,6 +847,17 @@ internal static class Program
         Console.WriteLine("              64 and are refused at the default\"; --check over the pinned");
         Console.WriteLine("              checkout refuses six of its twenty-one files and only one of the");
         Console.WriteLine("              six meets the 64-level bound.)");
+        Console.WriteLine("  --runtime   print the runtime configuration this process ACTUALLY GOT to");
+        Console.WriteLine("              standard error, before anything else, and then carry on with");
+        Console.WriteLine("              the other options: the runtime identifier and process");
+        Console.WriteLine("              architecture, the garbage collector's mode and latency,");
+        Console.WriteLine("              tiered compilation and tiered PGO as BOTH the environment and");
+        Console.WriteLine("              the runtime configuration state them, and whether dynamic code");
+        Console.WriteLine("              is compiled. Tiering is read from both sources because the");
+        Console.WriteLine("              runtime takes it from both and neither shows the other's");
+        Console.WriteLine("              setting; NEITHER IS THE TIER STATE ITSELF, which no runtime");
+        Console.WriteLine("              API reports, so what is printed is what was asked of the");
+        Console.WriteLine("              runtime rather than what it did.");
         Console.WriteLine("  --closure   print this composition's closure claim and exit");
         Console.WriteLine("  --version   print the profile and manifest identity");
         Console.WriteLine();

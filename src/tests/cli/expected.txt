@@ -379,6 +379,12 @@ limits/a-delegation-chain-with-no-bottom.js|1|uncaught RangeError: Maximum call 
 --version|0|manifest broiler.javascript.wide
 --version|0|docs/specification/ecma-262-es2026-spec.html
 
+# THE EFFECTIVE RUNTIME CONFIGURATION, and the second row is the one that matters: `--runtime` is
+# not a mode, so the option prints its line and the file still runs and still answers its value.
+# The substring is a key rather than a value, because every value on that line is the machine's.
+--runtime --check runs/a-product.js|0|runtime-identifier=
+--runtime runs/a-product.js|0|42
+
 # THE TWO DEFECTS THE OCTANE WORKLOADS FOUND, pinned as programs this repository holds rather than
 # as a benchmark it does not. Neither fixture needs a third-party file, and each row is the ANSWER
 # the construct produces - so reverting either repair moves a value rather than killing the driver,
