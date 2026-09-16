@@ -272,10 +272,22 @@ def classify_same_form(before, after, loads, exempt, native):
     if native and any(is_ceiling_refusal(row) for row in (before, after)):
         return "a"
 
-    if native and any(
-            row.verdict == "Exhausted" and row.dimension in LOADING_DIMENSIONS
-            for row in (before, after)) and loads():
-        return "b" if exempt else "b-unexempted"
+    # (b) THE SIDE THAT DID NOT EXHAUST MUST HAVE GIVEN NO WRONG ANSWER. Class (b) exempts one
+    # thing: a guest-loading variant costing a different allowance between two builds of this form.
+    # A build that turned an exhaustion into `Failed` did not cost a different allowance, it
+    # answered differently, and reading either side without looking at the other would present that
+    # regression as an admitted class. So the other side must have PASSED, or have run out of an
+    # allowance of its own - the same shape the wall clause below requires, and for the same reason:
+    # a side that has no answer has no answer to disagree with.
+    spent = [
+        row for row in (before, after)
+        if row.verdict == "Exhausted" and row.dimension in LOADING_DIMENSIONS]
+
+    if native and spent and loads():
+        other = after if spent[0] is before else before
+
+        if other.verdict in ("Passed", "Exhausted"):
+            return "b" if exempt else "b-unexempted"
 
     # (c') THE WALL, ON EITHER SIDE, AT ANY ALLOWANCE. One side spent the wall and the other gave an
     # answer or spent a different allowance: the wall side has no answer to disagree with, and which
