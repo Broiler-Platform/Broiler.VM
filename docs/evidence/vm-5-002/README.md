@@ -1,9 +1,10 @@
 # Evidence bundle VM-5-002
 
 **Milestone:** VM-5 - baseline the core's own overhead
-**Collected:** 2026-09-16, and incomplete. This commit retains the predeclared rule, the conformance
-parity rule and the two base test262 wall-clock lists, and nothing else. Every other section below
-says what it is waiting for.
+**Collected:** 2026-09-16. The predeclared rule, the conformance parity rule and the two base test262
+wall-clock lists were committed first, by `dbc8d37`, before the changed build was measured. The
+evidence was retained by `c9afb0d`, after every run it describes, and later commits changed what
+section 5.9 lists.
 **Core contract version:** 1, unchanged. Fuel pre-admission adds no public member, mints no
 amendment and adds no member to the meter interface.
 **Status of the milestone after this collection:** In progress, unaccepted.
@@ -17,19 +18,25 @@ acceptance behind an owner and a reviewer confirming every objective exit condit
 > one JavaScript shape on one workstation. A real language profile's cost is its own, and nothing
 > here predicts it.
 
-**Why this commit exists before the changed build was measured.** A rule written after the numbers
-are in is not a rule, it is a description. The subject of this bundle is a change made for speed, so
-the reading of its evidence is fixed here, in the repository, before the changed build is measured:
-what must hold, cell by cell, for the change to be described as faster, and what is named as failing
-when a cell does not hold. The two base test262 lists in section 5.3 are part of the same
-predeclaration - they are the rows the parity rule will later admit a difference on, they were taken
-from the unchanged build, and they are committed before the changed build runs the suite once.
+**What `dbc8d37` committed before the changed build was measured.** Sections 5.1, 5.2 and 5.3 stand
+exactly as that commit wrote them, so they still say what was fixed in advance. That commit's header
+said what it was, and its two paragraphs that no longer describe the bundle are kept here, as it
+wrote them, rather than left standing as the header; "this commit" in them means `dbc8d37`:
 
-**Completed 2026-09-16, by the commit that retained the evidence.** The header above, and sections
-5.1, 5.2 and 5.3, are kept exactly as commit `dbc8d37` wrote them, so they still say what was fixed
-before the changed build was measured. Where they say "this commit" they mean `dbc8d37`, and the
-header's "incomplete" describes that commit. Every other section was written after every run it
-describes, and says which run that was.
+> **Collected:** 2026-09-16, and incomplete. This commit retains the predeclared rule, the conformance
+> parity rule and the two base test262 wall-clock lists, and nothing else. Every other section below
+> says what it is waiting for.
+>
+> **Why this commit exists before the changed build was measured.** A rule written after the numbers
+> are in is not a rule, it is a description. The subject of this bundle is a change made for speed, so
+> the reading of its evidence is fixed here, in the repository, before the changed build is measured:
+> what must hold, cell by cell, for the change to be described as faster, and what is named as failing
+> when a cell does not hold. The two base test262 lists in section 5.3 are part of the same
+> predeclaration - they are the rows the parity rule will later admit a difference on, they were taken
+> from the unchanged build, and they are committed before the changed build runs the suite once.
+
+Every other section was written after every run it describes, and says which run that was; section
+5.9 lists what later commits changed.
 
 **What the evidence says, in one paragraph.** The predeclared rule of section 5.1 is **not met as a
 whole**. Item 1 fails on two witnesses: after the resolution fallback, the witness that stops the
@@ -525,6 +532,9 @@ transcript, and git holds the text each one replaced.
    now name where those files are, or say they are not retained; and its CPU-time figures, like
    section 4's, are lower bounds, since the second machine-state snapshot lists two processes the
    first does not.
+7. **The header says the bundle is collected.** `c9afb0d` kept `dbc8d37`'s header, whose collection
+   line called the bundle incomplete and said every other section was waiting; that line and the
+   paragraph on why `dbc8d37` came first are now quoted, as that commit wrote them, under the header.
 
 ---
 
