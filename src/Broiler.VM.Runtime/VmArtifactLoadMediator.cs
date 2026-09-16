@@ -209,7 +209,7 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=9DC2AB
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=889577
     // Broiler-Human:        PENDING
     private VmGuestLoadResult Answer(
         IVmArtifactProvider provider,
@@ -229,7 +229,7 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
 
         VmArtifactProviderAnswer answer;
 
-        runtime.EnterProviderCall();
+        var entry = runtime.EnterProviderCall();
 
         try
         {
@@ -251,7 +251,7 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         }
         finally
         {
-            runtime.LeaveProviderCall();
+            runtime.LeaveProviderCall(in entry);
         }
 
         switch (answer.Kind)

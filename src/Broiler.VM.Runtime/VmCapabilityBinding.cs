@@ -110,13 +110,13 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         bindingIndex >= 0 && bindingIndex < bindings.Length && bindings[bindingIndex].IsBound;
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=7C7101
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=E9B7D3
     // Broiler-Human:        PENDING
     public VmHostCallOutcome Invoke(int bindingIndex, System.ReadOnlySpan<long> arguments, out long result)
     {
         result = 0;
 
-        if (!TryEnter(bindingIndex, out var binding))
+        if (!TryEnter(bindingIndex, out var binding, out var entry))
         {
             return VmHostCallOutcome.Unavailable;
         }
@@ -127,7 +127,7 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         {
             LastFailure = VmReason.CapabilitySignatureMismatch;
             LastFailureCapability = binding.Import.Descriptor.CapabilityId;
-            Leave(binding);
+            Leave(binding, in entry);
             return VmHostCallOutcome.Unavailable;
         }
 
@@ -154,18 +154,18 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         }
         finally
         {
-            Leave(binding);
+            Leave(binding, in entry);
         }
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=F685D1
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=8DD562
     // Broiler-Human:        PENDING
     public VmHostCallOutcome InvokeBytes(int bindingIndex, VmBytes argument, out VmOpaqueRef result)
     {
         result = default;
 
-        if (!TryEnter(bindingIndex, out var binding))
+        if (!TryEnter(bindingIndex, out var binding, out var entry))
         {
             return VmHostCallOutcome.Unavailable;
         }
@@ -176,7 +176,7 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         {
             LastFailure = VmReason.CapabilitySignatureMismatch;
             LastFailureCapability = binding.Import.Descriptor.CapabilityId;
-            Leave(binding);
+            Leave(binding, in entry);
             return VmHostCallOutcome.Unavailable;
         }
 
@@ -196,15 +196,16 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         }
         finally
         {
-            Leave(binding);
+            Leave(binding, in entry);
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=C0F568
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=65C205
     // Broiler-Human:        PENDING
-    private bool TryEnter(int bindingIndex, out VmCapabilityBinding binding)
+    private bool TryEnter(int bindingIndex, out VmCapabilityBinding binding, out VmRuntime.CapabilityEntry entry)
     {
         binding = null!;
+        entry = default;
 
         if (bindingIndex < 0 || bindingIndex >= bindings.Length)
         {
@@ -229,14 +230,14 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
             return false;
         }
 
-        owner.EnterCapability(binding.Import.Descriptor.Reentrancy);
+        entry = owner.EnterCapability(binding.Import.Descriptor.Reentrancy);
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=FDBEE7
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=8F2386
     // Broiler-Human:        PENDING
-    private void Leave(VmCapabilityBinding binding) =>
-        owner.LeaveCapability(binding.Import.Descriptor.Reentrancy);
+    private void Leave(VmCapabilityBinding binding, in VmRuntime.CapabilityEntry entry) =>
+        owner.LeaveCapability(binding.Import.Descriptor.Reentrancy, in entry);
 
     // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=FBCA55
     // Broiler-Human:        PENDING
