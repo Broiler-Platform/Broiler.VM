@@ -316,12 +316,13 @@ informational version - is how a binary is tied to a commit below, where one sur
 | Oracle | `f127d92` with the head's fuel-exactness test and fixture files copied over it | A worktree at `D:/broiler-arms/oracle`, removed afterwards | E2's base half |
 | Profile assemblies, deterministic | Both trees, with debug information and the commit stamp off and a path map | Output directories under `D:/Broiler.VM-e4` | E4 |
 | Collector | `34dbd7a` | The main checkout | Every top-level log in this directory (section 5.7) |
+| Cold builds, after a review | `f127d92` and `c98011a`, each checked out fresh | Worktrees at `D:/broiler-arms/cold-base` and `D:/broiler-arms/cold-c98011a`, removed afterwards | E1's cold builds of the base and of the product before the fallback |
 
 No worktree was created inside the repository, so architecture rule A14's test failures inside a
 worktree do not arise; every run of the architecture tests was in the main checkout.
 
 **Where the tie between a run and its build is retained, and where it is not.** E3's transcripts
-name the commit of their worktree, and so does E2's base half. The binaries of E9 and of E10's second
+name the commit of their worktree, and so do E2's base half and the cold builds of E1. The binaries of E9 and of E10's second
 run survived in the throwaway directory, and `e9/binaries.txt` and `e10/lanes.txt`, written after a
 review, give each file's digest and commit stamp. For every other run - E2's credit half, E4 to E8,
 E10's first run, E11, E12 and E13 - no retained file names the commit, or holds a digest of the
@@ -370,7 +371,7 @@ transcript is retained whatever it shows.
 
 | ID | What | Command | Retained |
 |---|---|---|---|
-| E1 | Build | `dotnet build Broiler.VM.slnx -c Release -warnaserror` in both trees, and the collector's own `--no-incremental` build | `gates/build-*.log`, `gates/final-build-*.log`, `gates/rebuild-*.log`, `gates/fallback-build.log`, `build.log` |
+| E1 | Build | `dotnet build Broiler.VM.slnx -c Release -warnaserror` in both trees, and the collector's own `--no-incremental` build; and, after a review, `dotnet build Broiler.VM.slnx -c Release --no-incremental -warnaserror` in a fresh worktree at `f127d92` and one at `c98011a` | `gates/build-*.log`, `gates/final-build-*.log`, `gates/rebuild-*.log`, `gates/fallback-build.log`, `build.log`, `gates/cold-build-base.log`, `gates/cold-build-c98011a.log` |
 | E1a | Regenerate the generated records | The test run with the assurance and API write switches set, after the fallback | `gates/fallback-test-write.log` |
 | E1b | Every test project | `dotnet test Broiler.VM.slnx -c Release` after the fallback; the collector's test step; and once more over the finished bundle | `gates/fallback-test-plain.log`, `test.log`, `gates/test-after-bundle.log` |
 | E1c | The public API file | `git diff --exit-code` of `docs/api/public-api.txt` from `f127d92` to every commit of the series | `gates/public-api-diff.log` |
@@ -498,6 +499,11 @@ transcript, and git holds the text each one replaced.
    the binaries that survived. Section 5.5's times now name their source and E12's are named as
    finish times, the stamps section 5.4 cited are now in those files, and what could not be recovered
    is EX-117.
+3. **The build clause of rule item 1 gained cold builds of the base and of the product before the
+   fallback.** The transcripts section 6.1 read it from were incremental and record no command, so
+   they could not show a warning; `gates/cold-build-base.log` and `gates/cold-build-c98011a.log`
+   were run after the review, with the collector's `--no-incremental -warnaserror` command, in fresh
+   worktrees outside the repository.
 
 ---
 
@@ -516,7 +522,7 @@ no number.
 
 | ID | Result | Where |
 |---|---|---|
-| E1 | Clean in both trees with warnings as errors, before and after the fallback, and in the collector's `--no-incremental` build of `34dbd7a`: 0 warnings, 0 errors in every transcript | `gates/*build*.log`, `build.log` |
+| E1 | **Clean with warnings as errors in both trees, shown by cold builds.** The collector's `--no-incremental -warnaserror` build of `34dbd7a`, and - run after a review, each in a fresh worktree outside the repository with the collector's command - the same cold build of `f127d92` and of `c98011a`, whose product the runs before the fallback used: every project of the solution built, with 0 warnings and 0 errors, in each of the three. The other build transcripts in `gates/` also read 0 warnings and 0 errors, but none records its command and several finished in about two seconds: they are incremental builds that may have compiled nothing, and a project that is not compiled emits no warning, so they are not the evidence for this item | `build.log`, `gates/cold-build-base.log`, `gates/cold-build-c98011a.log`; the incremental builds in `gates/*build*.log` |
 | E1a | The regeneration run rewrote the generated records; within that same run two review-record rules (H3 and H4) failed, because they compared the record as it stood before the rewrite. The plain run that followed passed both test assemblies. `HUMAN_REVIEW.md` still reads PENDING | `gates/fallback-test-write.log`, `gates/fallback-test-plain.log` |
 | E1b | After the fallback, both test assemblies passed. **The collector's test step failed two architecture tests** - both rule A14 rows, on the copy of the probe's project file under `artifacts/` (section 5.8, item 11) - and passed every other test. The run over the finished bundle is in `gates/test-after-bundle.log` and section 6.8 reads it | `gates/fallback-test-plain.log`, `test.log`, `gates/test-after-bundle.log` |
 | E1c | `docs/api/public-api.txt` is byte-identical between `f127d92` and each of the seven commits of the series; `git diff --exit-code` exits 0 for every one | `gates/public-api-diff.log` |
@@ -788,7 +794,7 @@ together with the scope and the context it was the answer for.
 
 | Verdict | Item of section 5.1 | What the evidence shows |
 |---|---|---|
-| `[UNMET]` | 1. Every correctness result holds | **Fails on the witness clause.** W8 fails T12 but not T7, the second test the design names for it (section 6.2). Every other clause holds as section 6.1 reads it: the build is clean with warnings as errors; the generated records were regenerated and `HUMAN_REVIEW.md` reads PENDING; the public API file is unchanged; the fuel-exactness tests pass on both meters; every other named witness fails the test it names and passes again when reverted; the profile assemblies are byte-identical; the JavaScript checks, corpus replay and host lifetime give identical verdicts; the parity rule holds; the low-fuel runs agree row for row in both forms; and the fuel minima are identical. The test-project clause failed once, in the collector's run, for the stray project file, and held in the run over the finished bundle (section 6.8). E5 to E9 ran before the fallback (EX-116), and four E8 runs were driven from another branch's driver (EX-115). Which build most of these runs used rests on the procedure, not on a retained stamp or digest (EX-117) |
+| `[UNMET]` | 1. Every correctness result holds | **Fails on the witness clause.** W8 fails T12 but not T7, the second test the design names for it (section 6.2). Every other clause holds as section 6.1 reads it: the build is clean with warnings as errors, by cold builds of the base, the product before the fallback and the head, the first two run after a review; the generated records were regenerated and `HUMAN_REVIEW.md` reads PENDING; the public API file is unchanged; the fuel-exactness tests pass on both meters; every other named witness fails the test it names and passes again when reverted; the profile assemblies are byte-identical; the JavaScript checks, corpus replay and host lifetime give identical verdicts; the parity rule holds; the low-fuel runs agree row for row in both forms; and the fuel minima are identical. The test-project clause failed once, in the collector's run, for the stray project file, and held in the run over the finished bundle (section 6.8). E5 to E9 ran before the fallback (EX-116), and four E8 runs were driven from another branch's driver (EX-115). Which build most of these runs used rests on the procedure, not on a retained stamp or digest (EX-117) |
 | `[MET]` | 2. Shapes | In both runs, all eight shape-and-form cells: the credit median below base, by more than the A/A spread (section 6.3) |
 | `[MET]` | 3. Concurrency, three parts | **On the second run.** `concurrent-bench`: the credit build below base in all twelve cells with two or more threads, in both runs. `concurrent-ambient`: **the first run failed**, the credit build above C2 in all twelve cells, which triggered the fallback; after the fallback the credit build is below C2 in all twelve. T6 alone: median 243.9 ms on credit against 476.0 ms on base. Both runs of the ambient part are retained (sections 6.5 and 6.6) |
 | `[UNMET]` | 4. The per-instruction meter row | **Fails in both pairs**: the credit `meter-per-instruction` row is above base by far more than either lane's A/A figure (section 6.6). By the rule's own terms nothing in this repository may describe the change as faster for this row, and a profile that polls after every instruction pays more on the credit build |

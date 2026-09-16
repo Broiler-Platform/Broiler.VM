@@ -1,0 +1,62 @@
+# worktree c98011aaebf23b88092f5125d95e59e9191b0629 at /d/broiler-arms/cold-c98011a, fresh: no bin or obj directory before this build
+# started 2026-09-16T19:49:51+02:00
+# dotnet build Broiler.VM.slnx -c Release --no-incremental -warnaserror
+  Determining projects to restore...
+  Restored D:\broiler-arms\cold-c98011a\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj (in 144 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj (in 180 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj (in 144 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Fuzz.Host\Broiler.VM.Fuzz.Host.csproj (in 171 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 187 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj (in 172 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj (in 4 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj (in 3 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\tests\Com.Example.Ledger\Com.Example.Ledger.csproj (in 385 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.WebAssembly.Execution\Broiler.VM.Composition.WebAssembly.Execution.csproj (in 385 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.PolyglotCli\Broiler.VM.Composition.PolyglotCli.csproj (in 386 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj (in 1 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\tests\Com.Example.Calculator\Com.Example.Calculator.csproj (in 393 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Fixtures.Host\Broiler.VM.Fixtures.Host.csproj (in 163 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Bench.Host\Broiler.VM.Bench.Host.csproj (in 143 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.JavaScript.Conformance\Broiler.VM.Composition.JavaScript.Conformance.csproj (in 154 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.Calculator\Broiler.VM.Composition.Calculator.csproj (in 402 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.JavaScript.Cli\Broiler.VM.Composition.JavaScript.Cli.csproj (in 403 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.WebAssembly.Harness\Broiler.VM.Composition.WebAssembly.Harness.csproj (in 164 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Soak.Host\Broiler.VM.Soak.Host.csproj (in 403 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Contract.Tests\Broiler.VM.Contract.Tests.csproj (in 176 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Architecture.Tests\Broiler.VM.Architecture.Tests.csproj (in 170 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 429 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 436 ms).
+  Restored D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.Workbench\Broiler.VM.Composition.Workbench.csproj (in 413 ms).
+  Broiler.VM.Binary -> D:\broiler-arms\cold-c98011a\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\broiler-arms\cold-c98011a\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Abstractions -> D:\broiler-arms\cold-c98011a\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Com.Example.Calculator -> D:\broiler-arms\cold-c98011a\src\tests\Com.Example.Calculator\bin\Release\net10.0\Com.Example.Calculator.dll
+  Broiler.VM.Fixtures -> D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> D:\broiler-arms\cold-c98011a\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.WebAssembly -> D:\broiler-arms\cold-c98011a\src\Broiler.VM.Profile.WebAssembly\bin\Release\net10.0\Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> D:\broiler-arms\cold-c98011a\src\Broiler.VM.Profile.JavaScript.Compiler\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Compiler.dll
+  Com.Example.Ledger -> D:\broiler-arms\cold-c98011a\src\tests\Com.Example.Ledger\bin\Release\net10.0\Com.Example.Ledger.dll
+  Broiler.VM.Profile.JavaScript -> D:\broiler-arms\cold-c98011a\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Bench.Host -> D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Bench.Host\bin\Release\net10.0\Broiler.VM.Bench.Host.dll
+  Broiler.VM.Fixtures.Host -> D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Fixtures.Host\bin\Release\net10.0\Broiler.VM.Fixtures.Host.dll
+  Broiler.VM.Fuzz.Host -> D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Fuzz.Host\bin\Release\net10.0\Broiler.VM.Fuzz.Host.dll
+  Broiler.VM.Soak.Host -> D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Soak.Host\bin\Release\net10.0\Broiler.VM.Soak.Host.dll
+  Broiler.VM.Contract.Tests -> D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+  Broiler.VM.Architecture.Tests -> D:\broiler-arms\cold-c98011a\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+  Broiler.VM.Composition.Workbench -> D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.Workbench\bin\Release\net10.0\Broiler.VM.Composition.Workbench.dll
+  Broiler.VM.Composition.WebAssembly.Execution -> D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.WebAssembly.Execution\bin\Release\net10.0\Broiler.VM.Composition.WebAssembly.Execution.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.ExecutionOnly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.WebAssembly.Harness\bin\Release\net10.0\Broiler.VM.Composition.WebAssembly.Harness.dll
+  Broiler.VM.Composition.JavaScript.Cli -> D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.JavaScript.Cli\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.Cli.dll
+  Broiler.VM.Composition.PolyglotCli -> D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.PolyglotCli\bin\Release\net10.0\Broiler.VM.Composition.PolyglotCli.dll
+  Broiler.VM.Composition.Calculator -> D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.Calculator\bin\Release\net10.0\Broiler.VM.Composition.Calculator.dll
+  Broiler.VM.Composition.JavaScript.Conformance -> D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.JavaScript.Conformance\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.Conformance.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> D:\broiler-arms\cold-c98011a\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:08.74
+# exit 0
+# finished 2026-09-16T19:50:00+02:00
