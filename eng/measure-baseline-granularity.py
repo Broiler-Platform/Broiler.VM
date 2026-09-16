@@ -67,6 +67,10 @@
 #   * the rule's fenced block still carries a threshold in angle brackets that nobody has fixed;
 #   * the rule's own statement of the quantity, the noise floor or the difference is not the one this
 #     harness computes - the constants are read from the rule, so the formulas must be the rule's too;
+#   * the rule does not quantify its clauses as `if and only if all of`, does not say `REFUSE
+#     otherwise`, or does not state clause 1's two conditions or clause 5's one configuration. Every
+#     clause this harness applies is pinned, not only the ones it reads a constant out of: a clause
+#     that is computed here and stated nowhere is the harness's rule and not the committed one;
 #   * any binary's SHA-256 differs from the manifest, or an arm holds a binary the manifest does not
 #     name, or the manifest names one the arm does not hold;
 #   * the two arms are the same bytes and the manifest has not declared that on purpose;
@@ -108,6 +112,10 @@
 # a different name and nothing else, so the difference between their medians is ONE OBSERVATION of
 # this machine's noise floor for this shape and form - not an estimate of it.
 #
+# The shapes themselves are visited in the MANIFEST's order, not the directory's. The manifest names
+# the same files either way - the run is refused unless it does - so the two orders measure the same
+# thing; the manifest's is the one a reader can check against a committed file.
+#
 # --------------------------------------------------------------------------------------------------
 # THE CONDITION (RULE 5), CHECKED BEFORE ANY TIMING, ON EVERY LANE, AND AGAIN AFTER ALL OF IT
 # --------------------------------------------------------------------------------------------------
@@ -118,7 +126,8 @@
 #      becomes its expected check output. Then FUEL PARITY: the smallest completing `--fuel` of the
 #      shape's `.small.js` twin is bisected under the control's bytecode lane, all four combinations
 #      must complete at that figure, and all four must refuse with `AllowanceExhausted on Fuel` at one
-#      less. A fuel figure is exact and machine-independent, which is why it may be printed here.
+#      less. A fuel figure is exact and machine-independent, which is why it may be printed here. A
+#      population shape with no twin stops the harness rather than being bisected over itself.
 #   2. Every lane, as it runs: the process exits 0, its standard output hashes to the expected answer
 #      (run lanes) or to the expected check output (check lanes), and its `--runtime` line equals the
 #      first one recorded. A mismatch stops the harness at once.
@@ -165,6 +174,15 @@
 #   4. THE POPULATION IS THE SHAPES FOLDER MINUS TWO KINDS OF FILE: `*.small.js`, which are the
 #      fuel-parity twins rather than workloads, and `fresh-small.js`, which is the fresh-process shape
 #      and is judged by no rule. `--fresh` measures that one and computes no verdict.
+#   5. A RUNTIME KNOB IN THIS ENVIRONMENT IS SCRUBBED AND PINNED, NOT REFUSED. The design's fifth
+#      refusal is "the child environment carries any `DOTNET_*` or `COMPlus_*` key", and it also asks
+#      for those keys to be scrubbed out of every child - which cannot both hold, because a scrubbed
+#      child environment carries none of them and there would be nothing left to refuse. What is
+#      refused instead is a SET that differs from `manifest.environment.scrubbed`: the keys are
+#      removed from every child, the list is recorded in `harness.log`, and the manifest pins WHICH
+#      ones this machine had, because that is the part of the configuration a later reader cannot
+#      recover. A knob set on the machine is then not a reason to stop, and a knob that appeared or
+#      vanished since the manifest was written is.
 #
 #   python3 eng/measure-baseline-granularity.py --control <dir> --candidate <dir>
 #                                               --manifest <bundle>/manifest.json
@@ -374,10 +392,21 @@ def read_rule(path, population):
             "the rule still carries a threshold nobody has fixed: " + ", ".join(unfixed),
             "the owner fixes every angle-bracketed figure before the rule is committed")
 
+    # EVERY PART OF THE RULE THIS HARNESS APPLIES IS PINNED, NOT JUST THE PARTS IT READS CONSTANTS
+    # OUT OF. A clause whose text is not checked is a clause the harness computes from its own
+    # formula while the file beside the summary says something else - which is precisely the
+    # substitution the predeclared decision exists to prevent. The three quantities come first, then
+    # the quantifier over the clauses, then the two clauses whose wording is all there is to check
+    # because their enforcement is a refusal rather than a computation.
     for statement, what in (
             ("run_ms - check_ms", "the quantity"),
             ("Q(shape, K, form) - Q(shape, K-again, form)", "the noise floor"),
-            ("Q(shape, C, form) - Q(shape, K, form)", "the difference")):
+            ("Q(shape, C, form) - Q(shape, K, form)", "the difference"),
+            ("ADOPT per-block steps if and only if all of", "that every clause must hold"),
+            ("REFUSE otherwise", "what it does when one does not"),
+            ("condition-before", "clause 1's before-condition"),
+            ("condition-after", "clause 1's after-condition"),
+            ("identical across arms, lanes and repetitions", "clause 5's one effective configuration")):
         if statement not in body:
             refuse(
                 f"the rule does not state {what} as `{statement}`",
@@ -397,10 +426,16 @@ def read_rule(path, population):
     interpreter = re.search(
         r"\|D\| <= N or \|D\| <=\s*([0-9.]+)\s*\* Q\(C, bytecode\)", body)
 
-    if not (repetitions and warmup and majority and interpreter):
+    # CLAUSE 2 IS READ, NOT ASSUMED. The harness used to compute `D >= -N` from a constant of its
+    # own while accepting a block that said `D >= -2N` or said nothing at all, so the multiplier
+    # comes out of the rule exactly as clauses 3 and 4's thresholds do. An absent multiplier is the
+    # design's own `D >= -N` and means one.
+    never_slower = re.search(r"D >= -\s*([0-9.]*)\s*\*?\s*N", body)
+
+    if not (repetitions and warmup and majority and interpreter and never_slower):
         refuse(
-            f"{path}'s rule block does not state R, W, the majority clause and the interpreter "
-            "clause in the form this harness reads")
+            f"{path}'s rule block does not state R, W, the never-slower clause, the majority clause "
+            "and the interpreter clause in the form this harness reads")
 
     count = majority.group(1)
 
@@ -421,6 +456,9 @@ def read_rule(path, population):
         "warmup": int(warmup.group(1)),
         "majority-shapes": wanted,
         "majority-source": count,
+        "never-slower-multiplier": (
+            number(never_slower.group(1), "the multiplier of clause 2", path)
+            if never_slower.group(1) else 1.0),
         "ratio": number(majority.group(2), "the ratio of clause 3", path),
         "interpreter-fraction": number(interpreter.group(1), "the fraction of clause 4", path),
         "population-line": next(
@@ -701,10 +739,22 @@ class Harness:
             twin = shape.with_name(shape.stem + TWIN_SUFFIX)
 
             if not twin.exists():
+                # A MISSING TWIN IS A REFUSAL AND NOT A FALLBACK. Bisecting over the measured shape
+                # instead would run the allowance search across a hundred million units of work
+                # rather than a twenty-thousand-unit twin, on every arm and form, before any timing
+                # - so the quiet substitution costs an hour and says nothing about it. The fresh
+                # shape is the one exception: it IS the small one, and no rule judges it.
+                if shape.name != FRESH_SHAPE:
+                    self.stop(
+                        f"{shape.name} has no `{shape.stem + TWIN_SUFFIX}`, so fuel parity has no "
+                        "twin to bisect",
+                        "every population shape carries one, and a folder missing one is not the "
+                        "population this rule was written over")
+
                 twin = shape
                 lines.append(
-                    f"{shape.name}: no `{shape.stem + TWIN_SUFFIX}`, so parity is bisected over the "
-                    "shape itself")
+                    f"{shape.name}: the fresh-process shape is its own twin, so parity is bisected "
+                    "over the shape itself")
 
             figure = smallest_completing_fuel(
                 self.binaries["control"], "bytecode", twin, self.arguments, self.environment)
@@ -886,7 +936,31 @@ class Harness:
 
         return quantity
 
-    def summarise(self, quantity, conditions_held):
+    def compare_conditions(self, before, after):
+        """Rule 5's bookend: BOTH halves of the before-condition, not only the run lanes' answer.
+
+        Each check lane's output was recorded before the timing, and every check lane of every
+        repetition was compared against it - the subtraction that is the whole quantity rests on
+        those lanes doing what they are named for. A bookend that compared only the run answer would
+        pass a run whose check lanes had started printing something else partway through, which is
+        the one direction the per-lane comparison cannot cover: it compares each lane against the
+        SAME recorded digest, so a check lane that changed once and stayed changed would be caught,
+        and one that changed only between the last timed lane and here would not.
+        """
+        for name, expectation in before.items():
+            if after[name]["answer"] != expectation["answer"]:
+                self.stop(
+                    f"condition-after: {name} answers something else than it did before the timing",
+                    "every figure of this run is void")
+
+            for combination, digest in expectation["checks"].items():
+                if after[name]["checks"][combination] != digest:
+                    self.stop(
+                        f"condition-after: {name}'s {combination} check lane prints something else "
+                        "than it did before the timing",
+                        "every figure of this run is void")
+
+    def summarise(self, quantity):
         lines = [
             "# What the granularity measurement of the baseline form found, and nothing else.",
             "#",
@@ -931,10 +1005,10 @@ class Harness:
             return
 
         clauses = []
-        clauses.append(("1 conditions", conditions_held, "every condition held"))
+        multiplier = self.rule["never-slower-multiplier"]
         never_slower = [
             name for name in (shape.name for shape in self.population)
-            if judged[(name, "native")][4] < -judged[(name, "native")][3]]
+            if judged[(name, "native")][4] < -multiplier * judged[(name, "native")][3]]
         clauses.append((
             "2 native, never slower beyond the floor", not never_slower,
             "slower beyond the floor on: " + (", ".join(never_slower) or "no shape")))
@@ -967,11 +1041,24 @@ class Harness:
         clauses.append((
             "4 bytecode, the interpreter is not moved", not moved,
             "moved on: " + (", ".join(moved) or "no shape")))
-        clauses.append((
-            "5 one effective configuration", True,
-            "every child reported " + (self.runtime_line or "")))
 
         lines.append("## the rule, clause by clause")
+
+        # CLAUSES 1 AND 5 ARE NOT EVALUATED HERE, AND THE TABLE MAY NOT PRETEND THEY WERE. Both are
+        # enforced by stopping: a condition that fails, before, during or after the timing, and a
+        # child whose effective-configuration line differs from the first one recorded, each end the
+        # run without writing this file. Printing them as two rows that always read MET would put
+        # two constants among three measured clauses and invite a reader to count five.
+        lines.append(
+            "        clauses 1 and 5 are not computed here. Each is enforced by a refusal - a")
+        lines.append(
+            "        condition that fails, or a child whose effective-configuration line differs")
+        lines.append(
+            "        from the first recorded, ends the run and writes no summary - so a summary")
+        lines.append(
+            "        that exists is what those two clauses assert.")
+        lines.append(
+            "        every timed child reported " + (self.runtime_line or "nothing"))
 
         for name, held, detail in clauses:
             lines.append(f"{'MET    ' if held else 'NOT MET'} {name}: {detail}")
@@ -1012,18 +1099,10 @@ class Harness:
         self.say("# every lane ran and every lane's answer was the expected one")
         after, lines = self.condition("condition-after")
         self.write("condition-after.log", lines)
-        held = True
-
-        for name, expectation in before.items():
-            if after[name]["answer"] != expectation["answer"]:
-                held = False
-                self.stop(
-                    f"condition-after: {name} answers something else than it did before the timing",
-                    "every figure of this run is void")
-
+        self.compare_conditions(before, after)
         self.write_runs()
         self.write("runtime-reports.log", self.runtime_reports)
-        self.summarise(self.quantities(), held)
+        self.summarise(self.quantities())
         self.write("harness.log", self.log_lines)
         self.say(f"# written to {self.directory}")
         self.say(
@@ -1112,6 +1191,15 @@ def main():
     rule = read_rule(arguments.rule, population)
     environment, removed = scrubbed_environment()
     check_manifest(manifest, arguments.manifest, arguments, rule, shapes, folder, removed)
+
+    # THE LANES RUN THROUGH THE SHAPES IN MANIFEST ORDER, which is what the manifest is for and what
+    # a sorted directory listing only happens to be. `check_manifest` has just proved the two name
+    # exactly the same files, so this reorders and can drop nothing; a shape the manifest does not
+    # name never reaches here. The order matters no more than any other fixed order does - the
+    # interleaving that carries the comparison is inside a shape - but it is now the committed
+    # file's and not the file system's.
+    order = list(manifest["shapes"])
+    population.sort(key=lambda path: order.index(path.name))
 
     print("# broiler-js baseline-form granularity measurement")
     print(f"# {datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}")
