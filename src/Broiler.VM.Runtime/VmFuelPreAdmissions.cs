@@ -65,11 +65,9 @@ internal sealed class VmFuelPreAdmissions
 
     /// <summary>The largest block, and the one used when a meter declares no poll bound.</summary>
     /// <remarks>
-    /// A meter that declares a poll bound is capped at twice it instead: a compliant profile
-    /// charges at most its bound between two polls and a poll re-admits, so a larger block buys
-    /// nothing, and the factor two lets a block that began at a charge rather than at a poll still
-    /// reach the next poll. This value bounds the other case, and it is what keeps a block small
-    /// enough that the fuel a reader has to settle stays a bounded quantity.
+    /// A meter that declares a poll bound is capped at twice that bound instead (see the meter's
+    /// cap). This value bounds the other case, and it is what keeps a block small enough that the
+    /// fuel a reader has to settle stays a bounded quantity.
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=77165A
     // Broiler-Falsified-If: a block larger than this is ever pre-admitted to a meter that declares no poll bound

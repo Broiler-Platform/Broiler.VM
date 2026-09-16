@@ -240,7 +240,7 @@ public sealed class FuelChargeExactnessTests
     /// </summary>
     /// <remarks>
     /// The first invocation ends part-way through a window, holding charged work that has not been
-    /// accounted at a poll. Witness W4b - the step-end settle and the crowded-level settle removed
+    /// committed. Witness W4b - the step-end settle and the crowded-level settle removed
     /// together - fails here, because the second invocation is then admitted against a level that
     /// never learned what the first one spent, and the total overshoots by what the first was
     /// holding. The budget is deliberately not read between the two invocations: reading it settles
@@ -317,8 +317,8 @@ public sealed class FuelChargeExactnessTests
     /// The step is stopped inside a host capability, at a point where exactly 1,002 units have been
     /// charged, and it stays there while five threads read the budget five thousand times. Witness
     /// W1 - the settle removed from the runtime's own budget reader - fails here: the reads would
-    /// see only what had been committed at the last poll, which is 960, and never the charges made
-    /// since.
+    /// see only what had been committed when the meter last took a block, at its 904th charge, which
+    /// is 904, and never the charges made since.
     /// </remarks>
     [Fact]
     public void A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge()
@@ -568,8 +568,8 @@ public sealed class FuelChargeExactnessTests
     /// The sixty-one-unit row sits on the bound and completes; sixty-two is one unit past it and is
     /// found at completion, where the step-end settle makes the counter exact. Witness W2 - the
     /// step-end settle removed - turns that row into a normal completion. The last row is found
-    /// earlier, at the poll after the sixty-fourth instruction charge, and witness W3 - the settle
-    /// removed from the poll itself - lets that poll pass and finds the breach only at completion,
+    /// earlier, at the poll after the sixty-fourth instruction charge, and witness W3 - the poll's
+    /// count of the block removed - lets that poll pass and finds the breach only at completion,
     /// by which time 133 units have been spent rather than 124.
     /// </para>
     /// </remarks>
@@ -613,14 +613,14 @@ public sealed class FuelChargeExactnessTests
     /// must carry the outer handle's instantiation ceiling less exactly that. Witness W5 - the
     /// settle removed from the remaining-allowance reader - fails here, because the remainder
     /// handed to the nested verification would be computed from a level that had not yet been told
-    /// about the charges made since the last poll.
+    /// about the charges made since the meter last took a block.
     /// </para>
     /// <para>
-    /// The requesting profile polls on a window for exactly that reason. A profile that polls after
-    /// every charge has committed everything it charged by the time it asks for a load, so the
-    /// remainder is the same whether or not the reader settles first and the read guards nothing.
-    /// With a window of sixty-four the last poll falls at 4,992 units, which leaves the nine
-    /// charges before the request uncommitted at the moment the remainder is taken.
+    /// A poll commits nothing, so a profile that polls after every charge also holds uncommitted
+    /// fuel when it asks for a load. The test keeps the windowed variant it was written with. That
+    /// variant's block cap is twice its declared bound of 1,024, so its last renewal before the
+    /// request falls at the 4,099th charge, which leaves 902 charges uncommitted at the moment the
+    /// remainder is taken.
     /// </para>
     /// </remarks>
     [Fact]
@@ -876,13 +876,13 @@ public sealed class FuelChargeExactnessTests
     /// operation's end. With one holder the retention is offered 150 units against 102 already
     /// charged, and must be refused; the run then completes its remaining instructions and is
     /// reported as exhausted with 113 units spent. Witness W9 - the settle removed from the
-    /// retention's admission check - admits it against the 64 units committed at the last poll and
-    /// ends at 162.
+    /// retention's admission check - admits it against the one unit committed by the first charge,
+    /// while the block taken there holds the other 101, and ends at 162.
     /// </para>
     /// <para>
     /// With two holders, a second operation retains while the first is held inside a capability
     /// with charges of its own outstanding. Witness W9b - a retention that settles only the meter
-    /// doing the retaining - admits it against 166 committed units and ends with the first
+    /// doing the retaining - admits it against 103 committed units and ends with the first
     /// operation refused and 10,004 units spent.
     /// </para>
     /// </remarks>

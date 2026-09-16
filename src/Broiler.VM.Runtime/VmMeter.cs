@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   31
 // Annotated:        31/31
-// Exempt:           20
+// Exempt:           21
 // Human-reviewed:   0/31
 // IP risk:          Low
 // Security risk:    Medium
@@ -82,6 +82,11 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     // this meter is not in its runtime's pre-admission table.
     private ulong preAdmissionSize;
 
+    // How much of the block this meter holds a poll has already counted toward the uncharged-work
+    // bound: what the block had admitted when this meter last polled. Read and written only under the
+    // gate. Zero whenever preAdmissionSize is zero, and never above what the block has admitted.
+    private ulong usedAtLastPoll;
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A6A2A6
     // Broiler-Human:        PENDING
     internal VmMeter(
@@ -153,11 +158,12 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// than an exemption from it.
     /// </summary>
     /// <remarks>
-    /// The counter is read here, so this meter's block is settled first: work admitted from a block
-    /// reaches the counter at the settle, and a breach decided before that would be decided on a
-    /// count of work the profile did rather than a count of work it was charged for. This settle
-    /// alone also covers a thread the step left running, which can charge after the step's own
-    /// settle and before this read.
+    /// The counter field is read here, so this meter's block is settled first: the settle folds into
+    /// the counter what the block admitted and no poll in it has already counted, and a breach decided
+    /// before that would be decided on a count that leaves out work the profile was charged for. A
+    /// poll reads the block instead of settling it, which is the one other way the count is taken.
+    /// This settle alone also covers a thread the step left running, which can charge after the
+    /// step's own settle and before this read.
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=346ABD
     // Broiler-Falsified-If: work charged since the last poll is missing from the count a breach is decided on
@@ -264,9 +270,10 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 
     /// <summary>The largest block this meter may hold.</summary>
     /// <remarks>
-    /// Twice the declared poll bound, because a compliant profile charges at most its bound between
-    /// two polls and a poll re-admits, so anything larger buys nothing - and the factor two is what
-    /// lets a block that began at a charge rather than at a poll still reach the next poll. A
+    /// Twice the declared poll bound. A block is renewed only by the charge that finds it spent, so
+    /// the cap sets how often a meter charging steadily takes the locked path - once per cap's worth
+    /// of units - and how much fuel one holder keeps uncommitted and held back from the other
+    /// operations of its runtime. Twice the bound is a choice made by argument, not by measurement. A
     /// profile that declares no bound gets the flat maximum. Written to avoid overflowing the
     /// doubling.
     /// </remarks>
@@ -302,20 +309,29 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// uncharged-work counter. Called under the gate only.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The block is zeroed FIRST. A fast-path charge racing this either landed in what is still
     /// there, in which case it is part of what is committed here, or fails its compare-exchange and
     /// takes the locked path, where it waits for this lock section to end - so no charge is lost
     /// and none is counted twice.
+    /// </para>
+    /// <para>
+    /// The part of the block a poll has already counted toward the bound is not counted again: the
+    /// counter gains only what the block admitted since this meter last polled in it, and the record
+    /// of what was counted is cleared with the block, so the next block is counted from nothing.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=3F7F04
-    // Broiler-Falsified-If: fuel spent from a block reaches a level twice, or reaches none of them, or bypasses the uncharged-work counter
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=EF1AC4
+    // Broiler-Falsified-If: fuel spent from a block reaches a level twice, or reaches none of them, or reaches the uncharged-work counter other than once, less what a poll in the same block already counted
     // Broiler-Human:        PENDING
     internal void CommitPreAdmittedFuelLocked()
     {
         var left = (ulong)System.Threading.Interlocked.Exchange(ref preAdmittedFuel, 0);
         var used = preAdmissionSize - left;
+        var uncounted = used - usedAtLastPoll;
 
         preAdmissionSize = 0;
+        usedAtLastPoll = 0;
 
         if (used == 0)
         {
@@ -326,8 +342,9 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
         instance?.Commit(VmBudgetDimension.Fuel, used);
         invocation.Commit(VmBudgetDimension.Fuel, used);
 
-        // Fuel is work, so it counts toward the bound exactly as a per-charge commit would have.
-        sinceLastPoll += used;
+        // Fuel is work, so it counts toward the bound exactly as a per-charge commit would have, less
+        // the part a poll in this block has already counted and reset away.
+        sinceLastPoll += uncounted;
     }
 
     /// <summary>
@@ -517,14 +534,24 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 
     /// <inheritdoc/>
     /// <remarks>
-    /// A poll settles this meter's block before it reads the uncharged-work counter, and takes a
-    /// fresh one on the way out if it held one when it arrived. That pairing is what makes a block
-    /// worth having for a profile that polls on a window: the block is spent between two polls and
-    /// renewed at each, so the bound is decided on every unit charged and the charges themselves
-    /// stay off the lock.
+    /// <para>
+    /// A poll neither settles this meter's block nor renews it. It reads the block once, counts toward
+    /// the bound what the block has admitted since this meter last polled, and records that count at
+    /// the point where the count is reset. So the bound is decided on every unit charged, as it was
+    /// when every charge was committed as it was made, while the block goes on being spent by charges
+    /// that take no lock, across as many polls as it lasts. The block is renewed by the locked charge
+    /// that finds it spent, and that charge settles it first.
+    /// </para>
+    /// <para>
+    /// The one read is a consistent cut. Nothing but the fast path writes the block's remainder while
+    /// the gate is held, and the fast path only lowers it, so a charge that landed before the read is
+    /// in this count and one that lands after it is in a later one. Leaving the block uncommitted
+    /// hides nothing either: every reader of what a level has consumed or has left settles first.
+    /// And a refusal writes nothing, so a profile that ignores it and polls again is refused again.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=8621A4
-    // Broiler-Falsified-If: a poll decides the bound before the fuel admitted from a block has reached the counter
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=C52C71
+    // Broiler-Falsified-If: a poll decides the bound without the work a held block admitted since this meter last polled, or counts again work an earlier poll in the same block already counted, or a refused poll resets any part of the count
     // Broiler-Human:        PENDING
     public bool Poll()
     {
@@ -538,17 +565,21 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 
         lock (gate)
         {
-            var held = runtime.FuelPreAdmissions!.Settle(this);
+            // What the fast path has admitted from this meter's block, read once. With no block held,
+            // size and remainder are both zero.
+            var used = preAdmissionSize - (ulong)System.Threading.Volatile.Read(ref preAdmittedFuel);
 
             // The bound is on work performed between two polls. Exceeding it is how a profile
             // silently makes cancellation latency unbounded, so it is detected rather than trusted.
-            if (pollBound > 0 && sinceLastPoll > pollBound)
+            // The block's part of that work is what it has admitted since this meter last polled.
+            if (pollBound > 0 && sinceLastPoll + (used - usedAtLastPoll) > pollBound)
             {
                 PollBoundExceeded = true;
                 return false;
             }
 
             sinceLastPoll = 0;
+            usedAtLastPoll = used;
 
             // Wall clock accrues on its own rather than being charged by the profile, so its
             // exhaustion has to be looked for here: charging zero would never find it. Outermost
@@ -571,15 +602,6 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
             if (invocation.Remaining(VmBudgetDimension.WallClock) == 0)
             {
                 return Refuse(VmBudgetDimension.WallClock, VmBudgetScope.Invocation);
-            }
-
-            // Only a meter that arrived holding a block takes another. A poll is not by itself
-            // evidence that anything is charging fuel: a profile polls on paths that charge
-            // nothing, and a block taken there would sit unspent against a level its holder is not
-            // using while some other operation needs it.
-            if (held)
-            {
-                runtime.FuelPreAdmissions.PreAdmit(this, 0);
             }
         }
 

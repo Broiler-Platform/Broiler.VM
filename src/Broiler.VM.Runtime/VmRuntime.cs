@@ -501,9 +501,10 @@ public sealed partial class VmRuntime : System.IDisposable
         lock (gate)
         {
             // Every operation of this runtime first, because every one of them can be holding fuel
-            // it has already been admitted and not yet committed. A host reading a running runtime
-            // is asking what has been spent, and a figure that stopped at the last poll of each
-            // operation would answer a different question.
+            // it has already been admitted and not yet committed: a block is committed only when its
+            // holder renews it or something settles it, and a poll does neither. A host reading a
+            // running runtime is asking what has been spent, and a figure that stopped at what each
+            // operation had committed would answer a different question.
             runtimeLevel.FuelPreAdmissions!.SettleAll();
 
             return runtimeLevel.Snapshot();
