@@ -1,0 +1,10 @@
+# reference artifacts/fc/t262-base-bytecode/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 60000 ms
+#   total|53469|94545|70834|13315|1990|60|8346
+# candidate artifacts/fc/t262-credit-bytecode/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 60000 ms
+#   total|53469|94545|70834|13315|1990|60|8346
+# same-form: two bytecode runs, from two builds, read on either side - class (c') is admitted at any wall allowance, because two builds differ in speed by construction and were run at different times; classes (a) and (b) are NOT read, because these are not two native runs; class (b) is not admitted without --exempt-guest-loads
+# 94545 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+
+# every difference is in an admitted class

@@ -1,0 +1,13 @@
+  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.VM-c2\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" wiederhergestellt (in 76 ms.).
+  "D:\Broiler.VM-c2\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 74 ms.).
+  "D:\Broiler.VM-c2\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 74 ms.).
+  Broiler.VM.Binary -> D:\Broiler.VM-c2\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM-c2\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM-c2\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:03.82

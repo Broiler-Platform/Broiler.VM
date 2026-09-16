@@ -1,0 +1,19 @@
+# E2 order oracle, base half: the test and fixture files as they stand at 34dbd7a, transplanted onto f127d92
+# worktree f127d92a03f92281de3a27438eae22903a70f316 (the base meter; src/Broiler.VM.Runtime untouched)
+# git diff --stat f127d92 -- src (after the transplant):
+ .../FuelChargeExactnessTests.cs                    | 169 ++++++++++++++++++++-
+ .../Broiler.VM.Fixtures/FixtureHostCapabilities.cs |   3 +-
+ src/tests/Broiler.VM.Fixtures/FixtureVmExecutor.cs |   3 +-
+ src/tests/Broiler.VM.Fixtures/FixtureVmProfile.cs  |  17 ++-
+ 4 files changed, 188 insertions(+), 4 deletions(-)
+# git status --porcelain:
+ M src/tests/Broiler.VM.Contract.Tests/FuelChargeExactnessTests.cs
+ M src/tests/Broiler.VM.Fixtures/FixtureHostCapabilities.cs
+ M src/tests/Broiler.VM.Fixtures/FixtureVmExecutor.cs
+ M src/tests/Broiler.VM.Fixtures/FixtureVmProfile.cs
+# sha256 of the transplanted files, equal to their bytes at 34dbd7a:
+dc263f9193239bf2686f9890f447a7d380fa6c48c1f3b0b7580ba83b87a6e731 *src/tests/Broiler.VM.Contract.Tests/FuelChargeExactnessTests.cs
+d70d1fd934160209fa00b2cb49acfeec72eea63634ee7b6c675711de6c1237f1 *src/tests/Broiler.VM.Fixtures/FixtureHostCapabilities.cs
+9562144c6bc23749df244fce2c6c3c53fb1bcd2f4eff13f619c21c339e121f66 *src/tests/Broiler.VM.Fixtures/FixtureVmExecutor.cs
+ad4751c6e5b64a5fff82a29bfdf92b6e5af7473a358058f57f2894be3f1bb980 *src/tests/Broiler.VM.Fixtures/FixtureVmProfile.cs
+# git diff --exit-code f127d92 -- src/Broiler.VM.Runtime -> 0

@@ -1,0 +1,20 @@
+﻿captured=2026-09-16T17:33:03
+host=DESKTOP-UK9RCOH
+os=Microsoft Windows 11 Enterprise build 26200
+cpu=AMD Ryzen 7 5800X 8-Core Processor
+cores_physical=8 logical=16 maxclock_mhz=3801
+current_clock_mhz=3801 load_pct=2
+memory_total_kb=33473012 free_kb=13443016
+power_plan=
+dotnet=10.0.401
+python=Python 3.11.9
+top_cpu_processes_before:
+  claude cpu_s=77219 ws_mb=241.6
+  explorer cpu_s=5198.2 ws_mb=243.3
+  claude cpu_s=4344.8 ws_mb=708.4
+  OOSU10PE cpu_s=4230.2 ws_mb=125.5
+  claude cpu_s=2977.8 ws_mb=84.2
+  EADesktop cpu_s=2892.7 ws_mb=90.1
+  msedgewebview2 cpu_s=2205 ws_mb=71
+  claude cpu_s=1951.5 ws_mb=356.3
+power_scheme=GUID des Energieschemas: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (Höchstleistung)

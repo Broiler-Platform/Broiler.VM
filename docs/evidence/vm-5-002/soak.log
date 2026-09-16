@@ -1,0 +1,72 @@
+=== SOAK: 400000 cycles across 4 workers ===
+
+--- JIT ---
+# broiler-vm-soak core-contract-version=1 cycles=400000 workers=4 sample-every=20000
+# gc server=False latency=Batch
+cycles heap-bytes allocated-bytes working-set-bytes gen0 gen1 gen2 elapsed-ms
+0 749560 747448 26951680 0 0 0 0
+20376 3426128 102248856 47820800 6 1 0 144
+40777 5876328 203844688 47837184 12 1 0 210
+63326 2506272 316148064 48316416 19 1 0 307
+86017 16402264 429183712 48316416 25 1 0 408
+100693 6871072 502277528 48316416 30 1 0 475
+120099 4380608 598928912 48508928 36 1 0 560
+142765 1593360 711832376 48582656 43 1 0 659
+165147 13940880 823322200 48992256 49 1 0 758
+186581 5029040 930071440 49201152 56 1 0 860
+206129 3238296 1027439712 49270784 62 1 0 960
+221679 14579280 1104899640 49393664 66 1 0 1017
+250779 10769880 1249840800 49463296 75 1 0 1109
+263718 9111776 1314301344 49659904 79 1 0 1142
+299718 1365288 1488734520 51359744 90 1 0 1210
+323718 1347096 1604796272 51433472 97 1 0 1244
+347461 16729608 1719661968 51408896 103 1 0 1275
+364432 15929112 1801767296 51445760 108 1 0 1297
+389121 2690776 1921168264 51449856 116 1 0 1327
+400000 5409648 1973750320 51453952 119 1 0 1360
+400000 301264 1973750320 51437568 121 3 2 1361 settled
+# totals cycles=400000 runtimes=100 invocations=400000 suspensions=100000 resumptions=90908 cancellations=42856 refusals=0 faults=0
+broiler-vm-soak: 400000 cycles completed, 20 samples retained
+exit code: 0
+
+--- TRIMMED: dotnet publish -r win-x64 ---
+Determining projects to restore...
+  Restored D:\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj (in 268 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj (in 268 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj (in 268 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 268 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Soak.Host\Broiler.VM.Soak.Host.csproj (in 268 ms).
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Soak.Host -> D:\Broiler.VM\src\tests\Broiler.VM.Soak.Host\bin\Release\net10.0\win-x64\Broiler.VM.Soak.Host.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Soak.Host -> D:\Broiler.VM\artifacts\publish-soak-trimmed\
+image size: 162816 bytes
+# broiler-vm-soak core-contract-version=1 cycles=400000 workers=4 sample-every=20000
+# gc server=False latency=Batch
+cycles heap-bytes allocated-bytes working-set-bytes gen0 gen1 gen2 elapsed-ms
+0 716920 714856 28119040 0 0 0 0
+21418 8621408 107464320 46399488 6 1 0 229
+42822 16002912 213990304 46825472 12 1 0 364
+70192 3614320 350338336 47083520 21 1 0 480
+84572 9102496 421963032 47276032 25 1 0 512
+101873 10445712 506110456 47390720 30 1 0 546
+122592 11240328 606313480 47460352 36 1 0 579
+141425 2903368 697405928 47493120 42 1 0 612
+164479 15020816 808932256 47591424 48 1 0 646
+185944 2861168 912747128 47644672 55 1 0 679
+207501 7706576 1017015272 47722496 61 1 0 712
+228869 11661464 1120388328 47800320 67 1 0 746
+252927 12020184 1236749536 47972352 74 1 0 780
+278105 1228688 1358510048 48193536 82 1 0 814
+305271 16659744 1489935816 48295936 89 1 0 846
+321980 14583240 1570764304 48316416 94 1 0 867
+362043 9403328 1764525712 48336896 106 1 0 913
+389696 10522152 1898280536 48353280 114 1 0 946
+400000 10590400 1948095384 48390144 117 1 0 980
+400000 272320 1948095384 48369664 119 3 2 983 settled
+# totals cycles=400000 runtimes=100 invocations=400000 suspensions=100000 resumptions=90908 cancellations=42856 refusals=0 faults=0
+broiler-vm-soak: 400000 cycles completed, 19 samples retained
+exit code: 0

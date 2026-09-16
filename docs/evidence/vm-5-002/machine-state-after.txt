@@ -1,0 +1,15 @@
+captured=2026-09-16T18:28:05
+current_clock_mhz=3801 load_pct=15
+memory_total_kb=33473012 free_kb=13441704
+power_scheme=GUID des Energieschemas: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (Höchstleistung)
+top_cpu_processes_after:
+  claude cpu_s=80722.6 ws_mb=247.7
+  explorer cpu_s=5256.1 ws_mb=241.8
+  claude cpu_s=4520.3 ws_mb=765.8
+  OOSU10PE cpu_s=4304.7 ws_mb=118.4
+  claude cpu_s=3088.8 ws_mb=108.9
+  EADesktop cpu_s=2941.5 ws_mb=84.1
+  msedgewebview2 cpu_s=2305.2 ws_mb=209.3
+  claude cpu_s=2085 ws_mb=373.7
+  claude cpu_s=1609.6 ws_mb=329.3
+  TGitCache cpu_s=1604 ws_mb=40

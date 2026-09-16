@@ -1,0 +1,13 @@
+  Wiederherzustellende Projekte werden ermittelt...
+  Alle Projekte sind für die Wiederherstellung auf dem neuesten Stand.
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Bench.Host -> D:\Broiler.VM\src\tests\Broiler.VM.Bench.Host\bin\Release\net10.0\Broiler.VM.Bench.Host.dll
+
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:01.71

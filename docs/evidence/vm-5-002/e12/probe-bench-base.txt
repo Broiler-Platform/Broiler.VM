@@ -1,0 +1,6 @@
+# probe variant=base mode=bench bin=D:/Broiler.VM-base/src/Broiler.VM.Runtime/bin/Release/net10.0
+# started=2026-09-16T17:42:38
+variant=net10.0 preAdmissionTable=False
+BENCH direct ns_per_charge_min_of_3=14.36
+BENCH ambient ns_per_charge_min_of_3=27.04
+stress_failures=0

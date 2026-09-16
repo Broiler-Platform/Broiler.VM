@@ -1,0 +1,6 @@
+# probe variant=c3 mode=bench bin=D:/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0
+# started=2026-09-16T18:27:50
+variant=net10.0 preAdmissionTable=True
+BENCH direct ns_per_charge_min_of_3=3.37
+BENCH ambient ns_per_charge_min_of_3=8.24
+stress_failures=0

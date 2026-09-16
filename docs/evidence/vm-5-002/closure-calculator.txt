@@ -1,0 +1,22 @@
+# closure Broiler.VM.Composition.Calculator rid=win-x64
+
+[trimmed] 17 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.Calculator
+Broiler.VM.Runtime
+Com.Example.Calculator
+clretwrc
+clrgc
+clrgcexp
+clrjit
+coreclr
+hostfxr
+hostpolicy
+mscordaccore
+mscordaccore_amd64_amd64_10.0.1226.42308
+mscordbi
+mscorrc
+msquic
+
+[aot] 0 non-framework assemblies

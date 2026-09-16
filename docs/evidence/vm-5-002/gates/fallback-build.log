@@ -1,0 +1,49 @@
+  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.VM\src\tests\Broiler.VM.Fuzz.Host\Broiler.VM.Fuzz.Host.csproj" wiederhergestellt (in 170 ms.).
+  "D:\Broiler.VM\src\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj" wiederhergestellt (in 170 ms.).
+  "D:\Broiler.VM\src\tests\Com.Example.Ledger\Com.Example.Ledger.csproj" wiederhergestellt (in 250 ms.).
+  "D:\Broiler.VM\src\tests\Broiler.VM.Soak.Host\Broiler.VM.Soak.Host.csproj" wiederhergestellt (in 251 ms.).
+  "D:\Broiler.VM\src\tests\Com.Example.Calculator\Com.Example.Calculator.csproj" wiederhergestellt (in 194 ms.).
+  "D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.Conformance\Broiler.VM.Composition.JavaScript.Conformance.csproj" wiederhergestellt (in 251 ms.).
+  "D:\Broiler.VM\src\compositions\Broiler.VM.Composition.WebAssembly.Harness\Broiler.VM.Composition.WebAssembly.Harness.csproj" wiederhergestellt (in 190 ms.).
+  "D:\Broiler.VM\src\tests\Broiler.VM.Fixtures.Host\Broiler.VM.Fixtures.Host.csproj" wiederhergestellt (in 251 ms.).
+  "D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj" wiederhergestellt (in 251 ms.).
+  "D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj" wiederhergestellt (in 251 ms.).
+  "D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Calculator\Broiler.VM.Composition.Calculator.csproj" wiederhergestellt (in 194 ms.).
+  "D:\Broiler.VM\src\compositions\Broiler.VM.Composition.WebAssembly.Execution\Broiler.VM.Composition.WebAssembly.Execution.csproj" wiederhergestellt (in 251 ms.).
+  "D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Workbench\Broiler.VM.Composition.Workbench.csproj" wiederhergestellt (in 251 ms.).
+  "D:\Broiler.VM\src\compositions\Broiler.VM.Composition.PolyglotCli\Broiler.VM.Composition.PolyglotCli.csproj" wiederhergestellt (in 251 ms.).
+  "D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\Broiler.VM.Contract.Tests.csproj" wiederhergestellt (in 205 ms.).
+  "D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\Broiler.VM.Architecture.Tests.csproj" wiederhergestellt (in 204 ms.).
+  9 von 25 Projekten sind für die Wiederherstellung auf dem neuesten Stand.
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Fixtures -> D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Profile.WebAssembly -> D:\Broiler.VM\src\Broiler.VM.Profile.WebAssembly\bin\Release\net10.0\Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Profile.JavaScript -> D:\Broiler.VM\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> D:\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Compiler.dll
+  Com.Example.Ledger -> D:\Broiler.VM\src\tests\Com.Example.Ledger\bin\Release\net10.0\Com.Example.Ledger.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Com.Example.Calculator -> D:\Broiler.VM\src\tests\Com.Example.Calculator\bin\Release\net10.0\Com.Example.Calculator.dll
+  Broiler.VM.Fixtures.Host -> D:\Broiler.VM\src\tests\Broiler.VM.Fixtures.Host\bin\Release\net10.0\Broiler.VM.Fixtures.Host.dll
+  Broiler.VM.Bench.Host -> D:\Broiler.VM\src\tests\Broiler.VM.Bench.Host\bin\Release\net10.0\Broiler.VM.Bench.Host.dll
+  Broiler.VM.Fuzz.Host -> D:\Broiler.VM\src\tests\Broiler.VM.Fuzz.Host\bin\Release\net10.0\Broiler.VM.Fuzz.Host.dll
+  Broiler.VM.Composition.Calculator -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Calculator\bin\Release\net10.0\Broiler.VM.Composition.Calculator.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.WebAssembly.Harness\bin\Release\net10.0\Broiler.VM.Composition.WebAssembly.Harness.dll
+  Broiler.VM.Composition.WebAssembly.Execution -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.WebAssembly.Execution\bin\Release\net10.0\Broiler.VM.Composition.WebAssembly.Execution.dll
+  Broiler.VM.Soak.Host -> D:\Broiler.VM\src\tests\Broiler.VM.Soak.Host\bin\Release\net10.0\Broiler.VM.Soak.Host.dll
+  Broiler.VM.Composition.Workbench -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Workbench\bin\Release\net10.0\Broiler.VM.Composition.Workbench.dll
+  Broiler.VM.Contract.Tests -> D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+  Broiler.VM.Architecture.Tests -> D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+  Broiler.VM.Composition.JavaScript.Cli -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.Cli\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.Cli.dll
+  Broiler.VM.Composition.JavaScript.Conformance -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.Conformance\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.Conformance.dll
+  Broiler.VM.Composition.PolyglotCli -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.PolyglotCli\bin\Release\net10.0\Broiler.VM.Composition.PolyglotCli.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.ExecutionOnly.dll
+
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:07.58

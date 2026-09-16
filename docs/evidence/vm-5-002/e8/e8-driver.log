@@ -1,0 +1,41 @@
+=== RUN base bytecode fuel=1000 ===
+=== EXIT base bytecode fuel=1000 -> 1 ===
+=== RUN credit bytecode fuel=1000 ===
+=== EXIT credit bytecode fuel=1000 -> 1 ===
+=== RUN base native fuel=1000 ===
+=== EXIT base native fuel=1000 -> 1 ===
+=== RUN credit native fuel=1000 ===
+=== EXIT credit native fuel=1000 -> 1 ===
+=== RUN base bytecode fuel=2500 ===
+=== EXIT base bytecode fuel=2500 -> 1 ===
+=== RUN credit bytecode fuel=2500 ===
+=== EXIT credit bytecode fuel=2500 -> 1 ===
+=== RUN base native fuel=2500 ===
+=== EXIT base native fuel=2500 -> 1 ===
+=== RUN credit native fuel=2500 ===
+=== EXIT credit native fuel=2500 -> 1 ===
+=== RUN base bytecode fuel=10000 ===
+=== EXIT base bytecode fuel=10000 -> 1 ===
+=== RUN credit bytecode fuel=10000 ===
+=== EXIT credit bytecode fuel=10000 -> 1 ===
+=== RUN base native fuel=10000 ===
+=== EXIT base native fuel=10000 -> 0 ===
+=== RUN credit native fuel=10000 ===
+=== EXIT credit native fuel=10000 -> 0 ===
+=== RUN base bytecode fuel=30000 ===
+=== EXIT base bytecode fuel=30000 -> 1 ===
+=== RUN credit bytecode fuel=30000 ===
+=== EXIT credit bytecode fuel=30000 -> 1 ===
+=== RUN base native fuel=30000 ===
+=== EXIT base native fuel=30000 -> 0 ===
+=== RUN credit native fuel=30000 ===
+=== EXIT credit native fuel=30000 -> 0 ===
+=== RUN base bytecode fuel=100000 ===
+=== EXIT base bytecode fuel=100000 -> 1 ===
+=== RUN credit bytecode fuel=100000 ===
+=== EXIT credit bytecode fuel=100000 -> 1 ===
+=== RUN base native fuel=100000 ===
+=== EXIT base native fuel=100000 -> 0 ===
+=== RUN credit native fuel=100000 ===
+=== EXIT credit native fuel=100000 -> 0 ===
+=== E8 ALL RUNS DONE ===

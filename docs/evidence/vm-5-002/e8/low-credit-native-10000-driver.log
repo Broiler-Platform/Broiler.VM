@@ -1,0 +1,173 @@
+# test262 tc39/test262 at ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+# 56560 files, content 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93 - the checkout answers to test262.pin
+# 56560 file digests written to artifacts\fc\t262-digest.cache; every shard still verifies the checkout, and every file whose length or timestamp moved is re-read
+# manifest broiler.javascript.wide; form native; declined (none)
+# 56 shards across 14 processes, 10000 fuel and 600000 ms per variant
+# retaining every shard's transcript under artifacts\fc\low-credit-native-10000
+--- shard 6 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0006.log
+--- shard 12 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0012.log
+--- shard 13 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0013.log
+--- shard 5 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0005.log
+--- shard 3 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0003.log
+--- shard 0 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0000.log
+--- shard 1 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0001.log
+--- shard 11 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0011.log
+--- shard 10 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0010.log
+--- shard 2 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0002.log
+--- shard 9 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0009.log
+--- shard 8 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0008.log
+--- shard 7 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0007.log
+--- shard 16 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0016.log
+--- shard 14 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0014.log
+--- shard 18 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0018.log
+--- shard 17 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0017.log
+--- shard 15 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0015.log
+--- shard 23 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0023.log
+--- shard 25 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0025.log
+--- shard 20 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0020.log
+--- shard 19 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0019.log
+--- shard 24 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0024.log
+--- shard 26 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0026.log
+--- shard 21 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0021.log
+--- shard 22 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0022.log
+--- shard 27 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0027.log
+--- shard 28 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0028.log
+--- shard 34 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0034.log
+--- shard 32 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0032.log
+--- shard 30 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0030.log
+--- shard 33 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0033.log
+--- shard 29 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0029.log
+--- shard 37 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0037.log
+--- shard 35 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0035.log
+--- shard 31 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0031.log
+--- shard 36 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0036.log
+--- shard 38 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0038.log
+--- shard 39 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0039.log
+--- shard 40 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0040.log
+--- shard 41 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0041.log
+--- shard 44 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0044.log
+--- shard 43 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0043.log
+--- shard 47 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0047.log
+--- shard 42 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0042.log
+--- shard 45 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0045.log
+--- shard 46 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0046.log
+--- shard 49 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0049.log
+--- shard 51 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0051.log
+--- shard 48 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0048.log
+--- shard 50 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0050.log
+--- shard 52 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0052.log
+--- shard 55 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0055.log
+--- shard 53 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0053.log
+--- shard 54 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0054.log
+--- shard 4 of 56 exited 1; artifacts\fc\low-credit-native-10000\logs\shard-0004.log
+json D:\Broiler.VM\artifacts\fc\low-credit-native-10000\test262.json
+broiler-js-conformance: merged 56 test262 shard report(s)
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.modules, broiler.javascript.native; declined (none); form native (x86-64-win64)
+partition FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard; merged from 56 shards
+selection candidates=9295 selected=9295 merged=9295
+# unsupported families: 1 distinct, 52 variants
+#        52  a BigInt literal  e.g. test/built-ins/Array/fromAsync/asyncitems-arraylike-length-accessor-throws.js [sloppy]
+# exhausted dimensions: 1 distinct, 48 variants
+#        48  Fuel  e.g. test/built-ins/Array/prototype/Symbol.unscopables/value.js [sloppy]
+# exhausted test/built-ins/Array/prototype/Symbol.unscopables/value.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/Symbol.unscopables/value.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/concat/Array.prototype.concat_large-typed-array.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/concat/Array.prototype.concat_large-typed-array.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/copyWithin/coerced-values-start-change-start.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/copyWithin/coerced-values-start-change-start.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/copyWithin/coerced-values-start-change-target.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/copyWithin/coerced-values-start-change-target.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/every/15.4.4.16-7-c-ii-2.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/every/15.4.4.16-7-c-ii-2.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/filter/15.4.4.20-9-c-ii-1.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/filter/15.4.4.20-9-c-ii-1.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/flatMap/array-like-objects.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/flatMap/array-like-objects.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/forEach/15.4.4.18-7-c-ii-1.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/forEach/15.4.4.18-7-c-ii-1.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/indexOf/15.4.4.14-10-1.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/indexOf/15.4.4.14-10-1.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/lastIndexOf/15.4.4.15-9-1.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/lastIndexOf/15.4.4.15-9-1.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/lastIndexOf/length-near-integer-limit.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/lastIndexOf/length-near-integer-limit.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/map/15.4.4.19-8-c-ii-1.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/map/15.4.4.19-8-c-ii-1.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/reduce/callbackfn-resize-arraybuffer.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/reduce/callbackfn-resize-arraybuffer.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/reduceRight/callbackfn-resize-arraybuffer.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/reduceRight/callbackfn-resize-arraybuffer.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/reduceRight/length-near-integer-limit.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/reduceRight/length-near-integer-limit.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/some/15.4.4.17-7-c-ii-2.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/some/15.4.4.17-7-c-ii-2.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/sort/stability-2048-elements.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/sort/stability-2048-elements.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/sort/stability-513-elements.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/sort/stability-513-elements.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/splice/throws-if-integer-limit-exceeded.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/splice/throws-if-integer-limit-exceeded.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/toReversed/length-casted-to-zero.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/toReversed/length-casted-to-zero.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/toSorted/length-casted-to-zero.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/toSorted/length-casted-to-zero.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/toSpliced/length-casted-to-zero.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/toSpliced/length-casted-to-zero.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/unshift/length-near-integer-limit.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/unshift/length-near-integer-limit.js [strict] on Fuel
+# exhausted test/built-ins/Array/prototype/unshift/throws-if-integer-limit-exceeded.js [sloppy] on Fuel
+# exhausted test/built-ins/Array/prototype/unshift/throws-if-integer-limit-exceeded.js [strict] on Fuel
+# failure classification over 1071 failing variant(s)
+#   by kind: 6 distinct, 1071 variants
+#         587  an uncaught Test262Error  e.g. test/built-ins/Array/from/iter-cstm-ctor-err.js [sloppy]
+#         148  an asynchronous test reported its own failure  e.g. test/built-ins/Array/fromAsync/async-iterable-async-mapped-awaits-once.js [sloppy]
+#         144  an uncaught ReferenceError  e.g. test/built-ins/Array/prototype/at/typed-array-resizable-buffer.js [sloppy]
+#          70  an uncaught EvalError  e.g. test/language/expressions/object/scope-gen-meth-param-elem-var-close.js [sloppy]
+#          66  an uncaught TypeError  e.g. test/built-ins/Array/from/Array.from_forwards-length-for-array-likes.js [sloppy]
+#          56  a declared parse-phase error was raised at run time instead  e.g. test/language/expressions/object/getter-body-strict-inside.js [sloppy]
+#   by area: 10 distinct, 1071 variants
+#         581  test/built-ins/Array/prototype  e.g. test/built-ins/Array/prototype/at/coerced-index-resize.js [sloppy]
+#         224  test/language/statements/class  e.g. test/language/statements/class/accessor-name-inst/literal-numeric-non-canonical.js [sloppy]
+#         156  test/built-ins/Array/fromAsync  e.g. test/built-ins/Array/fromAsync/async-iterable-async-mapped-awaits-once.js [sloppy]
+#          60  test/language/expressions/object  e.g. test/language/expressions/object/computed-property-name-topropertykey-before-value-evaluation.js [sloppy]
+#          18  test/built-ins/Array/from  e.g. test/built-ins/Array/from/Array.from_forwards-length-for-array-likes.js [sloppy]
+#          16  test/built-ins/Array/of  e.g. test/built-ins/Array/of/construct-this-with-the-number-of-arguments.js [sloppy]
+#           6  test/built-ins/Array  e.g. test/built-ins/Array/proto-from-ctor-realm-one.js [sloppy]
+#           6  test/built-ins/Array/length  e.g. test/built-ins/Array/length/define-own-prop-length-coercion-order-set.js [sloppy]
+#           2  test/built-ins/Promise  e.g. test/built-ins/Promise/proto-from-ctor-realm.js [sloppy]
+#           2  test/built-ins/Promise/any  e.g. test/built-ins/Promise/any/resolve-from-same-thenable.js [sloppy]
+#   by declared feature (821 of 1071 failing variants declare one; a variant with two is in two rows): 41 distinct, 1295 taggings over 821 variants
+#         198  class  e.g. test/language/expressions/object/fn-name-class.js [sloppy]
+#         156  Array.fromAsync  e.g. test/built-ins/Array/fromAsync/async-iterable-async-mapped-awaits-once.js [sloppy]
+#         152  resizable-arraybuffer  e.g. test/built-ins/Array/prototype/at/coerced-index-resize.js [sloppy]
+#         120  Symbol.species  e.g. test/built-ins/Array/prototype/concat/create-proto-from-ctor-realm-array.js [sloppy]
+#         114  class-fields-public  e.g. test/language/statements/class/elements/arrow-body-derived-cls-direct-eval-contains-superproperty-1.js [sloppy]
+#          80  class-fields-private  e.g. test/language/statements/class/elements/arrow-body-private-derived-cls-direct-eval-contains-superproperty-1.js [sloppy]
+#          59  Symbol.isConcatSpreadable  e.g. test/built-ins/Array/prototype/concat/Array.prototype.concat_array-like-length-to-string-throws.js [sloppy]
+#          48  Symbol  e.g. test/built-ins/Array/length/define-own-prop-length-coercion-order-set.js [sloppy]
+#          38  Proxy  e.g. test/built-ins/Array/of/return-abrupt-from-data-property-using-proxy.js [sloppy]
+#          38  exponentiation  e.g. test/built-ins/Array/prototype/pop/clamps-to-integer-limit.js [sloppy]
+#          34  class-methods-private  e.g. test/language/statements/class/elements/private-getter-access-on-inner-function.js [sloppy]
+#          34  cross-realm  e.g. test/built-ins/Array/from/proto-from-ctor-realm.js [sloppy]
+#          22  TypedArray  e.g. test/built-ins/Array/prototype/every/callbackfn-resize-arraybuffer.js [sloppy]
+#          14  Array.prototype.flatMap  e.g. test/built-ins/Array/prototype/flatMap/proxy-access-count.js [sloppy]
+#          12  Reflect  e.g. test/built-ins/Array/length/define-own-prop-length-coercion-order-set.js [sloppy]
+#          12  Reflect.construct  e.g. test/built-ins/Array/fromAsync/not-a-constructor.js [sloppy]
+#          12  Symbol.iterator  e.g. test/built-ins/Array/from/iter-cstm-ctor-err.js [sloppy]
+#          12  class-static-methods-private  e.g. test/language/statements/class/elements/private-static-getter-visible-to-direct-eval.js [sloppy]
+#          12  computed-property-names  e.g. test/language/statements/class/elements/computed-name-toprimitive-symbol.js [sloppy]
+#          12  new.target  e.g. test/language/statements/class/elements/arrow-body-direct-eval-err-contains-newtarget.js [sloppy]
+#          11  generators  e.g. test/language/expressions/object/fn-name-gen.js [sloppy]
+#          10  Array.prototype.includes  e.g. test/built-ins/Array/prototype/includes/coerced-searchelement-fromindex-resize.js [sloppy]
+#          10  Symbol.toPrimitive  e.g. test/built-ins/Array/length/define-own-prop-length-coercion-order-set.js [sloppy]
+#           8  change-array-by-copy  e.g. test/built-ins/Array/prototype/toReversed/length-exceeding-array-length-limit.js [sloppy]
+#           8  destructuring-binding  e.g. test/language/expressions/object/dstr/object-rest-proxy-get-not-called-on-dontenum-keys.js [sloppy]
+#          16  further row(s) not printed here; every one of them is in the report
+# test262 9295 files, 18329 variants: pass 17105, fail 1071, unsupported 52, exhausted 48, skipped 53
+coverage partial a named selection rather than the whole test tree: test/built-ins/Promise test/language/statements/class test/built-ins/Array test/language/expressions/object
+# the whole-run report is artifacts\fc\low-credit-native-10000\test262.report
+# the machine-readable report is artifacts\fc\low-credit-native-10000\test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/built-ins/Promise test/language/statements/class test/built-ins/Array test/language/expressions/object

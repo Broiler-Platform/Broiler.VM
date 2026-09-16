@@ -1,0 +1,108 @@
+{
+ "cmd": "measure-t6.py --reps 5",
+ "test": "Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit",
+ "rows": [
+  {
+   "rep": 0,
+   "build": "base",
+   "outcome": "Passed",
+   "test_ms": 811.3,
+   "process_ms": 3681.1,
+   "exit": 0
+  },
+  {
+   "rep": 0,
+   "build": "credit",
+   "outcome": "Passed",
+   "test_ms": 247.4,
+   "process_ms": 1724.9,
+   "exit": 0
+  },
+  {
+   "rep": 1,
+   "build": "base",
+   "outcome": "Passed",
+   "test_ms": 496.2,
+   "process_ms": 1973.6,
+   "exit": 0
+  },
+  {
+   "rep": 1,
+   "build": "credit",
+   "outcome": "Passed",
+   "test_ms": 242.2,
+   "process_ms": 1709.7,
+   "exit": 0
+  },
+  {
+   "rep": 2,
+   "build": "base",
+   "outcome": "Passed",
+   "test_ms": 461.6,
+   "process_ms": 1954.6,
+   "exit": 0
+  },
+  {
+   "rep": 2,
+   "build": "credit",
+   "outcome": "Passed",
+   "test_ms": 243.9,
+   "process_ms": 1713.7,
+   "exit": 0
+  },
+  {
+   "rep": 3,
+   "build": "base",
+   "outcome": "Passed",
+   "test_ms": 467.4,
+   "process_ms": 1953.7,
+   "exit": 0
+  },
+  {
+   "rep": 3,
+   "build": "credit",
+   "outcome": "Passed",
+   "test_ms": 246.5,
+   "process_ms": 1692.8,
+   "exit": 0
+  },
+  {
+   "rep": 4,
+   "build": "base",
+   "outcome": "Passed",
+   "test_ms": 476.0,
+   "process_ms": 1931.5,
+   "exit": 0
+  },
+  {
+   "rep": 4,
+   "build": "credit",
+   "outcome": "Passed",
+   "test_ms": 243.5,
+   "process_ms": 1727.9,
+   "exit": 0
+  }
+ ],
+ "summary": {
+  "base": {
+   "median_ms": 476.0,
+   "min_ms": 461.6,
+   "max_ms": 811.3,
+   "n": 5
+  },
+  "credit": {
+   "median_ms": 243.9,
+   "min_ms": 242.2,
+   "max_ms": 247.4,
+   "n": 5
+  }
+ },
+ "verdict": {
+  "base_median_ms": 476.0,
+  "credit_median_ms": 243.9,
+  "credit_at_or_below_base": true,
+  "outcomes": [
+   "Passed"
+  ]
+ }
+}

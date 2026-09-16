@@ -1,0 +1,72 @@
+51c51
+< ok   native/abi/stack-pointer-unchanged: before 0xd77fdadf80, after 0xd77fdadf80
+---
+> ok   native/abi/stack-pointer-unchanged: before 0x10017dd30, after 0x10017dd30
+55c55
+< ok   native/abi/frame-pointer-register: the frame pointer arrives in Rcx under x86-64-win64, and the callee read 0xd77fdae1d0
+---
+> ok   native/abi/frame-pointer-register: the frame pointer arrives in Rcx under x86-64-win64, and the callee read 0x10017df80
+57c57
+< ok   native/abi/stack-aligned-at-the-call: the stack pointer at the call was 0xd77fdadf90, which is 0 modulo sixteen
+---
+> ok   native/abi/stack-aligned-at-the-call: the stack pointer at the call was 0x10017dd40, which is 0 modulo sixteen
+65,73c65,73
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/an object literal and a property read: both answered completed value=3 (number) printed=0#e3b0c44298fc fuel=21; bytecode 3 ms, native 312 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/string concatenation: both answered completed value=a012! (string) printed=0#e3b0c44298fc fuel=81; bytecode 1 ms, native 125 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/a closure counter: both answered completed value=2 (number) printed=0#e3b0c44298fc fuel=57; bytecode 1 ms, native 77 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/a class with super and private members: both answered completed value=6 (number) printed=0#e3b0c44298fc fuel=152; bytecode 4 ms, native 340 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/try, catch and finally with a break through the finally: both answered completed value=e0fgfg (string) printed=0#e3b0c44298fc fuel=110; bytecode 1 ms, native 44 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/a generator resumed by return() and throw() past a leaf of the tree: both answered completed value=true (boolean) printed=0#e3b0c44298fc fuel=157; bytecode 3 ms, native 22 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/yield* over a generator and over an array: both answered completed value=10 (number) printed=0#e3b0c44298fc fuel=252; bytecode 3 ms, native 88 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/async and await with a rejected await: both answered completed value=undefined (undefined) printed=0#e3b0c44298fc fuel=134; bytecode 2 ms, native 21 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/an async generator with for await and yield* into an async iterator: both answered completed value=[object Promise] (object) printed=0#e3b0c44298fc fuel=341; bytecode 4 ms, native 63 ms
+---
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/an object literal and a property read: both answered completed value=3 (number) printed=0#e3b0c44298fc fuel=21; bytecode 3 ms, native 315 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/string concatenation: both answered completed value=a012! (string) printed=0#e3b0c44298fc fuel=81; bytecode 1 ms, native 124 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/a closure counter: both answered completed value=2 (number) printed=0#e3b0c44298fc fuel=57; bytecode 1 ms, native 76 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/a class with super and private members: both answered completed value=6 (number) printed=0#e3b0c44298fc fuel=152; bytecode 3 ms, native 342 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/try, catch and finally with a break through the finally: both answered completed value=e0fgfg (string) printed=0#e3b0c44298fc fuel=110; bytecode 1 ms, native 46 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/a generator resumed by return() and throw() past a leaf of the tree: both answered completed value=true (boolean) printed=0#e3b0c44298fc fuel=157; bytecode 3 ms, native 23 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/yield* over a generator and over an array: both answered completed value=10 (number) printed=0#e3b0c44298fc fuel=252; bytecode 2 ms, native 88 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/async and await with a rejected await: both answered completed value=undefined (undefined) printed=0#e3b0c44298fc fuel=134; bytecode 2 ms, native 22 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/an async generator with for await and yield* into an async iterator: both answered completed value=[object Promise] (object) printed=0#e3b0c44298fc fuel=341; bytecode 4 ms, native 65 ms
+75,76c75,76
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/for-of with an early exit: both answered completed value=3 (number) printed=0#e3b0c44298fc fuel=97; bytecode 1 ms, native 44 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/destructuring parameters with defaults: both answered completed value=15 (number) printed=0#e3b0c44298fc fuel=181; bytecode 1 ms, native 70 ms
+---
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/for-of with an early exit: both answered completed value=3 (number) printed=0#e3b0c44298fc fuel=97; bytecode 1 ms, native 46 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/destructuring parameters with defaults: both answered completed value=15 (number) printed=0#e3b0c44298fc fuel=181; bytecode 1 ms, native 71 ms
+79,82c79,82
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/recursion to RangeError at the engine's maximum call depth: both answered completed value=RangeError at depth 6000 (string) printed=0#e3b0c44298fc fuel=78037; bytecode 47 ms, native 86 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/a throw from depth 5000 caught at the top: both answered completed value=from the bottom (string) printed=0#e3b0c44298fc fuel=70066; bytecode 42 ms, native 74 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/a 100000-iteration throw and catch across a call: both answered completed value=100000 (number) printed=0#e3b0c44298fc fuel=3500022; bytecode 755 ms, native 775 ms
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/a generator's return() through two finallys: both answered completed value=inner;outer;42:true (string) printed=0#e3b0c44298fc fuel=97; bytecode 1 ms, native 1 ms
+---
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/recursion to RangeError at the engine's maximum call depth: both answered completed value=RangeError at depth 6000 (string) printed=0#e3b0c44298fc fuel=78037; bytecode 42 ms, native 87 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/a throw from depth 5000 caught at the top: both answered completed value=from the bottom (string) printed=0#e3b0c44298fc fuel=70066; bytecode 35 ms, native 64 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/a 100000-iteration throw and catch across a call: both answered completed value=100000 (number) printed=0#e3b0c44298fc fuel=3500022; bytecode 646 ms, native 731 ms
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/a generator's return() through two finallys: both answered completed value=inner;outer;42:true (string) printed=0#e3b0c44298fc fuel=97; bytecode 0 ms, native 1 ms
+84c84
+< ok   native/baseline/two-forms-agree-over-the-wide-manifest/an eval of a function that is called later: both answered completed value=42 (number) printed=0#e3b0c44298fc; bytecode 3 ms, native 46 ms; fuel reported and not compared: bytecode 69, native 69
+---
+> ok   native/baseline/two-forms-agree-over-the-wide-manifest/an eval of a function that is called later: both answered completed value=42 (number) printed=0#e3b0c44298fc; bytecode 3 ms, native 45 ms; fuel reported and not compared: bytecode 69, native 69
+90,91c90,91
+< ok   native/baseline/entry-points-survive/x86-64-win64: 2 units, each entered 1000 times: unit 0 entered at pc 0 reached its handler at 0xd77fdad078; unit 1 entered at pc 29 reached its handler at 0xd77fdad078
+< ok   native/baseline/a-misaligned-reservation-is-caught/x86-64-win64: unit 0 widened by eight reached its handler at 0xd77fdad070; unit 1 widened by eight reached its handler at 0xd77fdad070
+---
+> ok   native/baseline/entry-points-survive/x86-64-win64: 2 units, each entered 1000 times: unit 0 entered at pc 0 reached its handler at 0x10017ce28; unit 1 entered at pc 29 reached its handler at 0x10017ce28
+> ok   native/baseline/a-misaligned-reservation-is-caught/x86-64-win64: unit 0 widened by eight reached its handler at 0x10017ce20; unit 1 widened by eight reached its handler at 0x10017ce20
+94,99c94,99
+< ok   native/baseline/frequent-collections/printing at every level of a 3000-deep recursion: both answered completed value=4501500 (number) printed=3001#9993d1cd7ffa fuel=123046; bytecode 81 ms, native 60 ms; collections forced: bytecode 3, native 3
+< ok   native/baseline/frequent-collections/printing from a generator between yields and in its finally: both answered completed value=2001000 (number) printed=2002#04431fabe032 fuel=120127; bytecode 11 ms, native 13 ms; collections forced: bytecode 2, native 2
+< ok   native/baseline/frequent-collections/printing from awaited continuations drained as jobs: both answered completed value=[object Promise] (object) printed=2501#019d03b77194 fuel=247570; bytecode 20 ms, native 31 ms; collections forced: bytecode 2, native 2
+< ok   native/baseline/frequent-collections/printing from catches of throws across a call: both answered completed value=3123750 (number) printed=2500#d5217e28ce7d fuel=137522; bytecode 20 ms, native 29 ms; collections forced: bytecode 2, native 2
+< ok   native/baseline/frequent-collections/printing from a function an eval defined: both answered completed value=6247500 (number) printed=2500#d9b1626371fb; bytecode 10 ms, native 33 ms; fuel reported and not compared: bytecode 117588, native 117588; collections forced: bytecode 2, native 2
+< ok   native/baseline/frequent-collections/printing while closures and strings accumulate: both answered completed value=13890 (number) printed=3000#a7823306255f fuel=243032; bytecode 23 ms, native 34 ms; collections forced: bytecode 3, native 3
+---
+> ok   native/baseline/frequent-collections/printing at every level of a 3000-deep recursion: both answered completed value=4501500 (number) printed=3001#9993d1cd7ffa fuel=123046; bytecode 85 ms, native 61 ms; collections forced: bytecode 3, native 3
+> ok   native/baseline/frequent-collections/printing from a generator between yields and in its finally: both answered completed value=2001000 (number) printed=2002#04431fabe032 fuel=120127; bytecode 8 ms, native 10 ms; collections forced: bytecode 2, native 2
+> ok   native/baseline/frequent-collections/printing from awaited continuations drained as jobs: both answered completed value=[object Promise] (object) printed=2501#019d03b77194 fuel=247570; bytecode 16 ms, native 26 ms; collections forced: bytecode 2, native 2
+> ok   native/baseline/frequent-collections/printing from catches of throws across a call: both answered completed value=3123750 (number) printed=2500#d5217e28ce7d fuel=137522; bytecode 20 ms, native 26 ms; collections forced: bytecode 2, native 2
+> ok   native/baseline/frequent-collections/printing from a function an eval defined: both answered completed value=6247500 (number) printed=2500#d9b1626371fb; bytecode 7 ms, native 32 ms; fuel reported and not compared: bytecode 117588, native 117588; collections forced: bytecode 2, native 2
+> ok   native/baseline/frequent-collections/printing while closures and strings accumulate: both answered completed value=13890 (number) printed=3000#a7823306255f fuel=243032; bytecode 20 ms, native 27 ms; collections forced: bytecode 3, native 3

@@ -1,0 +1,9 @@
+left  e5/e5-base-verbose.log: 199 lines
+right e5/e5-credit-verbose.log: 199 lines
+line counts equal: True
+lines differing after masking: 0
+
+left  e5/e5-base-verbose.log: 199 lines
+right e5/e5-base-verbose-run2.log: 199 lines
+line counts equal: True
+lines differing after masking: 0

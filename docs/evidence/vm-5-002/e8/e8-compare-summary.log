@@ -1,0 +1,10 @@
+bytecode  1000    sorted-row-diff=0 compare-exit=0 Fuel-lines base=2257 credit=2257 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+native    1000    sorted-row-diff=0 compare-exit=0 Fuel-lines base=2257 credit=2257 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+bytecode  2500    sorted-row-diff=0 compare-exit=0 Fuel-lines base=729 credit=729 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+native    2500    sorted-row-diff=0 compare-exit=0 Fuel-lines base=729 credit=729 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+bytecode  10000   sorted-row-diff=0 compare-exit=0 Fuel-lines base=49 credit=49 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+native    10000   sorted-row-diff=0 compare-exit=0 Fuel-lines base=49 credit=49 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+bytecode  30000   sorted-row-diff=0 compare-exit=0 Fuel-lines base=41 credit=41 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+native    30000   sorted-row-diff=0 compare-exit=0 Fuel-lines base=41 credit=41 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+bytecode  100000  sorted-row-diff=0 compare-exit=0 Fuel-lines base=35 credit=35 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+native    100000  sorted-row-diff=0 compare-exit=0 Fuel-lines base=35 credit=35 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
