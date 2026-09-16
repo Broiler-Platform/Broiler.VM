@@ -1,0 +1,27 @@
+Read 2026-09-16T19:53:30 from artifacts/fc, after this bundle was committed.
+
+No transcript of E4, E5, E6 or E9 carries a time. The copies in the throwaway directory from which
+the bundle's transcripts of those runs were taken are 20 files, all
+written between 11:09:09 and 11:09:10, together, so they bound when those runs had finished and not
+when each ran. e9/binaries.txt gives the creation time of E9's copied-out binaries.
+
+11:09:09  e4-base-js.log
+11:09:09  e4-base-wasm.log
+11:09:09  e4-credit-js.log
+11:09:09  e4-credit-wasm.log
+11:09:09  e5-base-verbose-run2.log
+11:09:09  e5-base-verbose.log
+11:09:09  e5-base.log
+11:09:09  e5-credit-verbose.log
+11:09:09  e5-credit.log
+11:09:10  e5-verbose.diff
+11:09:09  e6-base-verbose-run2.log
+11:09:09  e6-base-verbose.log
+11:09:09  e6-base.log
+11:09:09  e6-credit-verbose-run2.log
+11:09:09  e6-credit-verbose.log
+11:09:09  e6-credit.log
+11:09:10  e6-verbose.diff
+11:09:09  e9-bisect.log
+11:09:09  e9-build-Broiler.VM-base.log
+11:09:09  e9-build-Broiler.VM.log

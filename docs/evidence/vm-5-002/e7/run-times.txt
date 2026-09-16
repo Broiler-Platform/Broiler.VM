@@ -1,0 +1,21 @@
+Read 2026-09-16T19:53:30 from the throwaway directory artifacts/fc, after this bundle was committed. These are
+file-system times, not transcript times: no transcript of these runs carries a time.
+
+How eng/run-test262.py writes them: it verifies the checkout, then creates the run's output
+directory ("created"); each shard's transcript is written once, when that shard's process exits,
+so "first written" is when the first shard FINISHED, not when the run began; merge.log is written
+by the merge that ends the run. No retained driver transcript of these runs reports removing files
+an earlier run left in its directory, so each creation time is when that run's driver reached that
+point, and no shard process of the run started before it.
+
+E7, the four whole-suite runs, in the order they ran.
+
+t262-base-bytecode                            created 11:21:14  shard logs 56, first written 11:21:35, last written 12:21:54  merge.log written 12:21:55
+t262-base-native                              created 12:30:23  shard logs 56, first written 12:30:57, last written 14:08:06  merge.log written 14:08:07
+t262-credit-bytecode                          created 14:14:17  shard logs 56, first written 14:14:37, last written 15:05:39  merge.log written 15:05:40
+t262-credit-native                            created 15:06:19  shard logs 56, first written 15:06:46, last written 15:29:37  merge.log written 15:29:38
+
+The binary directory each E7 run was given is recorded in no file that survives: the driver prints
+none, and the command lines were not kept. The base build's directory was in the worktree
+D:/Broiler.VM-base, since removed, and the credit build's in the main checkout, rebuilt after the
+fallback, so no digest or commit stamp of either binary can be taken now.

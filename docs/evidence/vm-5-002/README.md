@@ -52,7 +52,7 @@ The status ledger's section 3 fixes the fields a bundle must carry.
 | Source | Section 2 | Written |
 | Dependencies and corpus | Section 3 | Written |
 | Environment | Section 4 | Written |
-| Procedure | Section 5 | 5.1 to 5.3 as `dbc8d37` committed them; 5.4 to 5.8 written at completion |
+| Procedure | Section 5 | 5.1 to 5.3 as `dbc8d37` committed them; 5.4 to 5.8 written at completion; 5.9 lists what later commits changed |
 | Outputs | Section 6 | Written |
 | Decision | Section 7 | Written |
 | Validity | Section 8 | Written |
@@ -89,8 +89,9 @@ Section 9 carries the exclusions.
 | this commit | Retain the evidence for fuel admitted in blocks as bundle VM-5-002 | Everything else in this directory |
 
 `34dbd7a` was first committed as `66efe30` and then amended in its message alone: the two commits
-carry the same tree, and the binaries measured after the fallback carry `66efe30` as their commit
-stamp.
+carry the same tree, and the binaries built after the fallback carry `66efe30` as their commit
+stamp - as the lanes of E10's second run, the only ones of those binaries that survived, show in
+`e10/lanes.txt`.
 
 **The base for every comparison is commit `f127d92`**, "Pin every clause of the rule the granularity
 harness applies, and refuse a shape with no twin" - the last commit on this branch before the meter
@@ -192,7 +193,8 @@ stand here exactly as commit `dbc8d37` wrote them: the rule the timing evidence 
 rule the conformance parity is read against, and the two lists the parity rule admits a difference
 on. Sections 5.4 to 5.8 were written at completion: which build each run used, the order in which
 things happened, every command with the file that retains its transcript, how this directory was
-collected, and every place the collection departed from the design this work follows.
+collected, and every place the collection departed from the design this work follows. Section 5.9
+lists what commits after the bundle's own changed in it, after a review.
 
 Throughout this section members and types are named rather than source lines, per rule H3.
 
@@ -302,14 +304,14 @@ tolerance at all.
 ### 5.4 The builds, and which run used which
 
 Every build is Release. A binary's commit stamp - the source revision the SDK writes into its
-informational version - is how a retained binary is tied to a commit below, where one survives.
+informational version - is how a binary is tied to a commit below, where one survives.
 
 | Build | Tree | Where it was built | Runs |
 |---|---|---|---|
 | Base | `f127d92` | A worktree at `D:/Broiler.VM-base`, outside the repository | Every base side of E4 to E13 |
 | C2 | `e117162`: the pre-admission table without the resolution cache | A worktree at `D:/Broiler.VM-c2`, removed after E12 | The C2 column of E12's ambient-concurrency mode |
-| Credit before the fallback | The product at `c98011a` (the checkout later moved to `dbc8d37`, which changed this README alone) | The main checkout | E4, E5, E6, E9 (the retained runtime's stamp is `c98011a`), E7, E8, E10's first run, and every E12 file named "before-fallback" |
-| Credit after the fallback | The tree of `34dbd7a`, built first before it was committed and then again after it was committed as `66efe30` | The main checkout | The gate runs in `gates/` named "fallback", E2's credit half, E10's second run (the lanes' stamp is `66efe30`), E11, E12's files without "before-fallback", E13 and the T6 timing |
+| Credit before the fallback | The product at `c98011a` (the checkout later moved to `dbc8d37`, which changed this README alone) | The main checkout | E4, E5, E6, E9 (its binaries survived, and `e9/binaries.txt` gives their stamp, `c98011a`), E7, E8, E10's first run, and every E12 file named "before-fallback" |
+| Credit after the fallback | The tree of `34dbd7a`, built first before it was committed and then again after it was committed as `66efe30` | The main checkout | The gate runs in `gates/` named "fallback", E2's credit half, E10's second run (its lanes survived, and `e10/lanes.txt` gives their stamp, `66efe30`), E11, E12's files without "before-fallback", E13 and the T6 timing |
 | Witnesses | `34dbd7a` with one injected defect at a time | A worktree at `D:/broiler-arms/wit`, removed afterwards | E3 |
 | Oracle | `f127d92` with the head's fuel-exactness test and fixture files copied over it | A worktree at `D:/broiler-arms/oracle`, removed afterwards | E2's base half |
 | Profile assemblies, deterministic | Both trees, with debug information and the commit stamp off and a path map | Output directories under `D:/Broiler.VM-e4` | E4 |
@@ -318,25 +320,44 @@ informational version - is how a retained binary is tied to a commit below, wher
 No worktree was created inside the repository, so architecture rule A14's test failures inside a
 worktree do not arise; every run of the architecture tests was in the main checkout.
 
+**Where the tie between a run and its build is retained, and where it is not.** E3's transcripts
+name the commit of their worktree, and so does E2's base half. The binaries of E9 and of E10's second
+run survived in the throwaway directory, and `e9/binaries.txt` and `e10/lanes.txt`, written after a
+review, give each file's digest and commit stamp. For every other run - E2's credit half, E4 to E8,
+E10's first run, E11, E12 and E13 - no retained file names the commit, or holds a digest of the
+binary, that the run used: their transcripts carry neither, the base and C2 worktrees were removed,
+and the main checkout's outputs were rebuilt after the fallback. Nor can their content tell the
+builds apart where it is identical: E7's base and credit reports are byte-identical in each form,
+E5's plain transcripts are byte-identical, and `e9/e9-bisect.log` tells base from credit only by the
+variant name its script printed, which the binaries in `e9/binaries.txt` now back. For those runs the
+table above rests on the procedure (EX-117).
+
 ### 5.5 The order in which things happened
 
-Times are the workstation's, on 2026-09-16, read from commit and reflog times and from the retained
-transcripts' own timestamps.
+Times are the workstation's, on 2026-09-16. Commit times are the reflog's. A run's time is its
+transcript's where the transcript carries one - E2's base half, E3, E10, the T6 results and the two
+machine-state files. Otherwise it is read from a file this list names: for E7 and E8, the creation
+time of each run's output directory and the write times of its shard transcripts, retained in
+`e7/run-times.txt` and `e8/run-times.txt`; for E12, the `started=` header of each probe file, which
+the probe script writes after the probe process returns, so that each is the time a mode
+**finished**, not when it began. No retained transcript of E4, E5, E6 or E9 carries a time, and
+`e5/transcript-times.txt` gives only the time their copies were written, together. Every file-system
+time here was read after a review, from the throwaway directory (EX-117).
 
 | Time | What |
 |---|---|
 | 09:29 | `f127d92`, the base, committed |
 | 09:49 to 10:51 | `e117162`, `a416c7a`, `4490eda`, `738d9c7` and `c98011a` committed |
-| about 11:00 | E4's deterministic profile builds, E9's bisections, E5 and E6 in both builds |
-| 11:21 to 14:08 | The two base test262 runs, bytecode then emitted machine code |
+| 10:51 to 11:09 | E4's deterministic profile builds, E9's bisections, E5 and E6 in both builds: after `c98011a`, whose stamp E9's credit binaries carry, and before 11:09, when the copies of all four runs' transcripts were written |
+| 11:21 to 14:08 | The two base test262 runs, bytecode then emitted machine code, from the first run's output directory to the second run's merge |
 | 14:11:59 | `dbc8d37` committed: the predeclared rule and the two base wall-clock lists |
-| 14:14 to 15:29 | The two credit test262 runs - both began after the rule was committed |
-| 15:30 to 17:25 | E8, the low-fuel series |
+| 14:14 to 15:29 | The two credit test262 runs. Both began after the rule was committed: the first credit run's output directory was created at 14:14:17, and none of its shard processes started before that |
+| 15:30 to 17:25 | E8, the low-fuel series, from the first run's output directory to the last run's merge |
 | 16:22:56 to 16:52:03 | **The main checkout was on branch `main`**, by the reflog, while E8 ran (section 5.8) |
 | 17:33 | Machine state recorded; E10's first run |
-| 17:42 to 17:47 | E12 before the fallback; the ambient-concurrency part of rule item 3 fails |
+| 17:42 to 17:47 | E12 before the fallback, by the times its modes finished; the ambient-concurrency part of rule item 3 fails |
 | 17:52:23 | The fallback committed as `66efe30` |
-| 17:54 to 18:28 | E12's ambient-concurrency mode again, E10's second run, E11, E13, the T6 timing, and E12's other modes again |
+| 17:54 to 18:28 | E12's ambient-concurrency mode again (finished by 17:54), E10's second run, E11, E13, the T6 timing, and E12's other modes again (finished from 18:27 to 18:28) |
 | 18:28 | Machine state recorded again; `66efe30` amended in its message to `34dbd7a` |
 | 18:41 to 18:45 | E3's witnesses, then E2's base half |
 | 18:45 to 18:49 | The evidence collector |
@@ -462,6 +483,22 @@ this directory changed, and `docs/baselines.md` did not change.
     toolchain discovery EX-42 records failed with MSB3073, because that step runs no `vcvars64`
     shell. Every other step of it, and the collector's own Native AOT publishes, succeeded.
 
+### 5.9 What later commits changed, after a review
+
+A review of the committed bundle found places where it said more than its files show. Every change
+below was made by a commit after `c9afb0d`. None of them re-ran a measurement or replaced a retained
+transcript, and git holds the text each one replaced.
+
+1. **`docs/baselines.md` was withdrawn from `hashes.txt`**, after the records commit's note to the
+   register hit this bundle's first recertification trigger. Section 8 says why, and that the bundle
+   stood expired until the row was withdrawn.
+2. **What the throwaway directory still showed about times and builds was retained**:
+   `e5/transcript-times.txt`, `e7/run-times.txt`, `e8/run-times.txt`, `e9/binaries.txt` and
+   `e10/lanes.txt`, written by `measurement/list-run-identity.py` from file-system times and from
+   the binaries that survived. Section 5.5's times now name their source and E12's are named as
+   finish times, the stamps section 5.4 cited are now in those files, and what could not be recovered
+   is EX-117.
+
 ---
 
 ## 6. Outputs
@@ -483,7 +520,7 @@ no number.
 | E1a | The regeneration run rewrote the generated records; within that same run two review-record rules (H3 and H4) failed, because they compared the record as it stood before the rewrite. The plain run that followed passed both test assemblies. `HUMAN_REVIEW.md` still reads PENDING | `gates/fallback-test-write.log`, `gates/fallback-test-plain.log` |
 | E1b | After the fallback, both test assemblies passed. **The collector's test step failed two architecture tests** - both rule A14 rows, on the copy of the probe's project file under `artifacts/` (section 5.8, item 11) - and passed every other test. The run over the finished bundle is in `gates/test-after-bundle.log` and section 6.8 reads it | `gates/fallback-test-plain.log`, `test.log`, `gates/test-after-bundle.log` |
 | E1c | `docs/api/public-api.txt` is byte-identical between `f127d92` and each of the seven commits of the series; `git diff --exit-code` exits 0 for every one | `gates/public-api-diff.log` |
-| E2 | Both halves pass. On the base meter, with the head's test file and the three fixture files it depends on transplanted onto `f127d92`, every fuel-exactness test passes; on the credit build at `34dbd7a`, every one passes. The test file is not unchanged since the commit that pinned it (section 5.8, item 3), and `e2/test-file-diff-stat.txt` names the commits that changed it after the base | `e2/` |
+| E2 | Both halves pass. On the base meter, with the head's test file and the three fixture files it depends on transplanted onto `f127d92`, every fuel-exactness test passes; on the credit build after the fallback, every one passes - in a transcript that carries neither a commit nor a time, and is tied to that build only by being one of the fallback's gate runs (EX-117). The test file is not unchanged since the commit that pinned it (section 5.8, item 3), and `e2/test-file-diff-stat.txt` names the commits that changed it after the base | `e2/` |
 | E3 | Section 6.2 | `e3/` |
 | E4 | All seven pairs equal: `Broiler.VM.Abstractions`, `Broiler.VM.Binary` and `Broiler.VM.Profile.JavaScript.Format` and `Broiler.VM.Profile.JavaScript` in the JavaScript output, and `Broiler.VM.Abstractions`, `Broiler.VM.Binary` and `Broiler.VM.Profile.WebAssembly` in the WebAssembly output | `e4/e4-hashes.txt` |
 | E5 | Every row passes in both builds, with the same two System V rows not run on this Windows x64 machine in both. The verbose transcripts of the two builds differ on 27 lines, and so do two verbose runs of the base build against each other; with elapsed times and addresses masked, both pairs are identical line for line, including every fuel row | `e5/`, and `e5/masked-compare.log` from `measurement/masked-compare.py` |
@@ -751,7 +788,7 @@ together with the scope and the context it was the answer for.
 
 | Verdict | Item of section 5.1 | What the evidence shows |
 |---|---|---|
-| `[UNMET]` | 1. Every correctness result holds | **Fails on the witness clause.** W8 fails T12 but not T7, the second test the design names for it (section 6.2). Every other clause holds as section 6.1 reads it: the build is clean with warnings as errors; the generated records were regenerated and `HUMAN_REVIEW.md` reads PENDING; the public API file is unchanged; the fuel-exactness tests pass on both meters; every other named witness fails the test it names and passes again when reverted; the profile assemblies are byte-identical; the JavaScript checks, corpus replay and host lifetime give identical verdicts; the parity rule holds; the low-fuel runs agree row for row in both forms; and the fuel minima are identical. The test-project clause failed once, in the collector's run, for the stray project file, and held in the run over the finished bundle (section 6.8). E5 to E9 ran before the fallback (EX-116), and four E8 runs were driven from another branch's driver (EX-115) |
+| `[UNMET]` | 1. Every correctness result holds | **Fails on the witness clause.** W8 fails T12 but not T7, the second test the design names for it (section 6.2). Every other clause holds as section 6.1 reads it: the build is clean with warnings as errors; the generated records were regenerated and `HUMAN_REVIEW.md` reads PENDING; the public API file is unchanged; the fuel-exactness tests pass on both meters; every other named witness fails the test it names and passes again when reverted; the profile assemblies are byte-identical; the JavaScript checks, corpus replay and host lifetime give identical verdicts; the parity rule holds; the low-fuel runs agree row for row in both forms; and the fuel minima are identical. The test-project clause failed once, in the collector's run, for the stray project file, and held in the run over the finished bundle (section 6.8). E5 to E9 ran before the fallback (EX-116), and four E8 runs were driven from another branch's driver (EX-115). Which build most of these runs used rests on the procedure, not on a retained stamp or digest (EX-117) |
 | `[MET]` | 2. Shapes | In both runs, all eight shape-and-form cells: the credit median below base, by more than the A/A spread (section 6.3) |
 | `[MET]` | 3. Concurrency, three parts | **On the second run.** `concurrent-bench`: the credit build below base in all twelve cells with two or more threads, in both runs. `concurrent-ambient`: **the first run failed**, the credit build above C2 in all twelve cells, which triggered the fallback; after the fallback the credit build is below C2 in all twelve. T6 alone: median 243.9 ms on credit against 476.0 ms on base. Both runs of the ambient part are retained (sections 6.5 and 6.6) |
 | `[UNMET]` | 4. The per-instruction meter row | **Fails in both pairs**: the credit `meter-per-instruction` row is above base by far more than either lane's A/A figure (section 6.6). By the rule's own terms nothing in this repository may describe the change as faster for this row, and a profile that polls after every instruction pays more on the credit build |
@@ -822,3 +859,4 @@ a hashed file changed since that commit instead of hashing the change.
 | EX-114 | Open | **After the thread-static fallback, two arms of the ambient lookup have no failing witness.** Dropping the context comparison fails T12 and no longer fails T7, and holding a lookup made with the flow suppressed fails no test: both tests put a second thread where a scope-wide field would have leaked across threads, and a per-thread answer cannot. The first is a failure of rule item 1. Closed by: a test that changes context on one thread in the way each arm guards, with a witness that fails it |
 | EX-115 | Open | **Part of the low-fuel series was driven while the checkout was on another branch.** From 16:22:56 to 16:52:03 the main checkout was on `main`. Four bytecode runs at fuel 30,000 and 100,000, base and credit, were driven by `main`'s test262 driver, and the identity of the credit binaries they used rests on file timestamps, not on anything in the reports. Six native runs in that window were taken under the numeric manifest; they are retained apart as off-series and were not counted, and the native series at those fuel values was run again afterwards |
 | EX-116 | Open | **The JavaScript and conformance evidence was taken before the resolution fallback.** E4 to E9 used the product at `c98011a`; the fallback changed `VmExecutionScope` alone, and the design's fallback clause asks for E1 to E4, E12 and the T6 timing again but not for E5 to E9. E4's inputs are unchanged across the fallback; E5 to E9 were not re-run on `34dbd7a`. Closed by: re-running E5 to E9 on the head |
+| EX-117 | Open | **Which build most runs used, and when several of them ran, rests on the procedure and on file-system times, not on a retained stamp.** E3's transcripts name their commit, and the binaries of E9 and of E10's second run survived for their stamps and digests to be retained after the fact. For E2's credit half, E4 to E8, E10's first run, E11, E12 and E13, no retained file names the commit or holds a digest of the binary the run used, and E7's base and credit reports and E5's plain transcripts are byte-identical, so their content cannot tell the builds apart. No transcript of E4 to E9 carries a time: the times of E7 and E8 - including that both credit test262 runs began after the predeclared rule was committed - are output-directory creation and write times read from the throwaway directory after a review, and E4 to E6 have no time of their own. Closed by: a driver that writes the binary's commit stamp, its digest and its start time into its own transcript |

@@ -1,0 +1,44 @@
+Read 2026-09-16T19:53:30 from artifacts/fc/e10/lanes, after this bundle was committed.
+
+measurement/measure-shapes.py runs each lane's Broiler.VM.Composition.JavaScript.Cli.exe. The lanes
+left here are those of E10's second run, after the fallback; the first run's credit and A/A lanes
+were overwritten by them, and only the digest of their Broiler.VM.Runtime.dll survives, in
+collection-notes.txt, with no stamp. The base lane was created before the first run began and is
+the one both runs used. Each row: SHA-256, file, product version.
+
+base: lanes/base, created 17:31:23
+3b696dec6e3908e402cc5f742df2e2950ae2f304dff8bc58ea2f79d07974ecf2  Broiler.VM.Abstractions.dll                                 0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+3e3a4c04463e0114aeb50a59c2b2bee4c82eb65f112473b989d15f75bb719358  Broiler.VM.Binary.dll                                       0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+9a72d5ec15b1f3cf0a30b84c244cdc2a7ead03e6f68b1b0175e7909adea6e080  Broiler.VM.Composition.JavaScript.Cli.dll                   0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+303609ca7286ace2560d67c9ae40b12e2ee366e5174afefde398c7587240ea01  Broiler.VM.Composition.JavaScript.Cli.exe                   0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+38f95fc663e46e6f5a568a7780316901bf2fe3b557d588aebacec662e8beb700  Broiler.VM.Profile.JavaScript.Compiler.dll                  0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+6fa04a7fdd2abdbb3f17336398c3fdfd7d93d94c75a13429e9bb520a4150abfa  Broiler.VM.Profile.JavaScript.dll                           0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+1a0fd0022354d1973c84d5838547c71b4785ddbc8614fc7a4bca72babf5eb8ea  Broiler.VM.Profile.JavaScript.Format.dll                    0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+43e52ac9b159aed0233f2dda9cc25b73203caade40ae62e546c7298f46051fc0  Broiler.VM.Runtime.dll                                      0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+
+credit: lanes/credit, created 17:55:03
+68abf33d9ea4816105f598bbd1b00f75f32b56a1499937262662d5c3fb097c89  Broiler.VM.Abstractions.dll                                 0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+3d214df1458724ac4557c636d9617a3be59e35cbda73ab7eb117f8cffef05eb5  Broiler.VM.Binary.dll                                       0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+f9a9d682e1fe22882a24dc19e14a34d5969da879b4a045a003044fe23c8c3a00  Broiler.VM.Composition.JavaScript.Cli.dll                   0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+cecb57de6ec19ce138121fcb2a2336c166d32aad772d64b97ecfdf0b4d31acbc  Broiler.VM.Composition.JavaScript.Cli.exe                   0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+073381442667018f53f11c74a0d8b93364c4aef32b520aa5c8e26a7533a36359  Broiler.VM.Profile.JavaScript.Compiler.dll                  0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+4b4f48e2fc9fa3f92920779995b78b6227dc3abf63aa03908d991f5a439f11ac  Broiler.VM.Profile.JavaScript.dll                           0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+5679b06c8d6b93dfb7576012345f3a76703be4673e7cb92e77a44e7aec29e926  Broiler.VM.Profile.JavaScript.Format.dll                    0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+bd3194bd7d72346356cd0bc4fc98c5646f7664e61cbbaef6850df4d29a9aa491  Broiler.VM.Runtime.dll                                      0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+  A subdirectory copied along with the output directory, from an earlier RID-specific build;
+  it is a separate output and not the host above:
+  win-x64/Broiler.VM.Runtime.dll  0da8940a9216f54e943054ef7aa92a32a28c211b0e73cace4c075e07c94382a7  0.1.0-preview.1+444f9c92f581feb4d4d3ed547f122f5146a04c72
+
+aa: lanes/aa, created 17:55:04
+68abf33d9ea4816105f598bbd1b00f75f32b56a1499937262662d5c3fb097c89  Broiler.VM.Abstractions.dll                                 0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+3d214df1458724ac4557c636d9617a3be59e35cbda73ab7eb117f8cffef05eb5  Broiler.VM.Binary.dll                                       0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+f9a9d682e1fe22882a24dc19e14a34d5969da879b4a045a003044fe23c8c3a00  Broiler.VM.Composition.JavaScript.Cli.dll                   0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+cecb57de6ec19ce138121fcb2a2336c166d32aad772d64b97ecfdf0b4d31acbc  Broiler.VM.Composition.JavaScript.Cli.exe                   0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+073381442667018f53f11c74a0d8b93364c4aef32b520aa5c8e26a7533a36359  Broiler.VM.Profile.JavaScript.Compiler.dll                  0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+4b4f48e2fc9fa3f92920779995b78b6227dc3abf63aa03908d991f5a439f11ac  Broiler.VM.Profile.JavaScript.dll                           0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+5679b06c8d6b93dfb7576012345f3a76703be4673e7cb92e77a44e7aec29e926  Broiler.VM.Profile.JavaScript.Format.dll                    0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+bd3194bd7d72346356cd0bc4fc98c5646f7664e61cbbaef6850df4d29a9aa491  Broiler.VM.Runtime.dll                                      0.1.0-preview.1+66efe305dfe75ebce0314568347723ea294067d8
+  A subdirectory copied along with the output directory, from an earlier RID-specific build;
+  it is a separate output and not the host above:
+  win-x64/Broiler.VM.Runtime.dll  0da8940a9216f54e943054ef7aa92a32a28c211b0e73cace4c075e07c94382a7  0.1.0-preview.1+444f9c92f581feb4d4d3ed547f122f5146a04c72
+
