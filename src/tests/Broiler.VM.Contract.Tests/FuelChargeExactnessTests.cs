@@ -1042,6 +1042,164 @@ public sealed class FuelChargeExactnessTests
         Assert.Equal(215UL, Fuel(runtime));
     }
 
+    // ---- T17: the block an eviction makes room for --------------------------------------------
+
+    /// <summary>
+    /// A pre-admission that has to evict a holder commits what that holder spent.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Four meters of one runtime may hold a block at once; a fifth is made room for by settling
+    /// the oldest. Five steps of one runtime held together inside a capability is the shape that
+    /// reaches that, and the only one this suite otherwise never builds: each of the five charges a
+    /// thousand units before its host call, so each wants a block, and none gives one up while it
+    /// is held. No budget is read while they are held, deliberately - a runtime snapshot settles
+    /// every holder, and would empty the table the fifth meter has to find full.
+    /// </para>
+    /// <para>
+    /// The defect is an eviction that drops its victim's block instead of committing it. The victim
+    /// then holds a block the table no longer knows of: it spends the rest of it without the gate
+    /// and nothing ever commits that, and because the block's size is still recorded it never takes
+    /// another one either. The total comes out short by a whole block for every eviction, which is
+    /// 128 units here - twice the sixty-four-unit window this profile declares. The same figure
+    /// fails an eviction that removes its victim before committing it, which commits whichever
+    /// holder moved into the hole and orphans the one it meant to settle.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_Full_Table_Commits_The_Block_It_Evicts()
+    {
+        const int Holders = 5;
+
+        var gate = new FixtureExecutionGate { HoldAt = FixtureGatePoint.Capability };
+
+        using var runtime = FixtureComposition.Runtime(
+            Windowed(),
+            FixtureComposition.Options(capabilities: FixtureComposition.GatedCapabilities(gate)));
+
+        var artifact = FixtureComposition.Verify(
+            runtime, FixtureArtifactWriter.NopsAroundHostCall(1000, FixtureHostCapabilities.DoubleBinding, 500));
+
+        var instances = new VmInstance[Holders];
+        var outcomes = new VmInvocationResult[Holders];
+        var steps = new Thread[Holders];
+
+        for (var index = 0; index < Holders; index++)
+        {
+            instances[index] = FixtureComposition.Instantiate(runtime, artifact);
+        }
+
+        try
+        {
+            // Threads of its own rather than the pool. All five block inside the gate at once, and
+            // a pool that injects its last worker on a timer would turn the rendezvous into a race
+            // against this test's own patience rather than a property of the runtime.
+            for (var index = 0; index < Holders; index++)
+            {
+                var slot = index;
+
+                steps[slot] = new Thread(() => outcomes[slot] = FixtureComposition.Invoke(instances[slot]));
+                steps[slot].Start();
+            }
+
+            Assert.True(WaitForEntries(gate, Holders), "five steps were never held at once");
+
+            gate.Release();
+
+            foreach (var step in steps)
+            {
+                Assert.True(step.Join(Patience), "a held step never finished");
+            }
+
+            foreach (var outcome in outcomes)
+            {
+                Assert.Equal(VmOutcome.Normal, outcome.Outcome);
+            }
+
+            Assert.Equal((ulong)Holders, runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.HostCalls));
+            Assert.Equal(Holders * 1503UL, Fuel(runtime));
+        }
+        finally
+        {
+            gate.Release();
+
+            foreach (var instance in instances)
+            {
+                instance.Dispose();
+            }
+        }
+    }
+
+    // ---- T18: what a suppressed flow may be answered from --------------------------------------
+
+    /// <summary>
+    /// A lookup made with the execution flow suppressed is answered, and never cached.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A suppressed flow captures no context at all, so a resolution has nothing to be keyed on.
+    /// Such a lookup is answered from the AsyncLocal and publishes nothing, and that is
+    /// load-bearing rather than tidy: an absent context is a key every suppressed flow in the
+    /// process shares, so a pair published under it would be handed to the next thread that looks
+    /// up with its own flow suppressed - whichever operation that thread is in, and whether it is
+    /// in one at all.
+    /// </para>
+    /// <para>
+    /// The step thread charges five units with its own flow suppressed, and they land: suppressing
+    /// the flow stops a context from reaching a new thread and does not take this thread out of its
+    /// step, so the AsyncLocal still holds this operation's meter. A thread with no operation of
+    /// its own then charges eleven with its flow suppressed too, and must be refused. The defect is
+    /// a cache that publishes the pair it read under the absent context: the second charge is then
+    /// answered from the first one's meter, the thread is billed to an operation it is not in, and
+    /// the run ends eleven units over.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_Suppressed_Flow_Is_Answered_But_Never_Cached()
+    {
+        IVmExecutionEnvironment? captured = null;
+        var answers = new List<bool>();
+
+        VmHostCallOutcome Handler(ReadOnlySpan<long> arguments, out long result)
+        {
+            var environment = captured!;
+
+            using (ExecutionContext.SuppressFlow())
+            {
+                answers.Add(environment.Meter.TryCharge(VmBudgetDimension.Fuel, 5));
+
+                var detached = new Thread(() =>
+                {
+                    using (ExecutionContext.SuppressFlow())
+                    {
+                        answers.Add(environment.Meter.TryCharge(VmBudgetDimension.Fuel, 11));
+                    }
+                });
+
+                detached.Start();
+                detached.Join();
+            }
+
+            result = 0;
+            return VmHostCallOutcome.Completed;
+        }
+
+        using var runtime = FixtureComposition.Runtime(
+            Observing(FixtureVmProfileVariant.Conforming, environment => captured = environment),
+            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
+
+        var artifact = FixtureComposition.Verify(
+            runtime, FixtureArtifactWriter.NopsAroundHostCall(100, FixtureHostCapabilities.DoubleBinding, 100));
+
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+        var result = FixtureComposition.Invoke(instance);
+
+        Assert.Equal(VmOutcome.Normal, result.Outcome);
+        Assert.Equal(new[] { true, false }, answers);
+        Assert.Equal(203UL + 5UL, Fuel(runtime));
+    }
+
     private static VmAggregateBudget AggregateBudget(ulong liveRuntimes, ulong fuel)
     {
         var builder = ImmutableArray.CreateBuilder<VmCeilingSpec>();
