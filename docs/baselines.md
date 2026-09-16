@@ -123,6 +123,34 @@ the cost of executing bytecode in this core, by an order of magnitude over any p
 figure here. A profile whose instructions do real work will amortise it; a profile of cheap
 instructions will not.
 
+**The metering path behind `meter-per-instruction` changed on 2026-09-16, and the row has not been
+re-measured.** A fuel charge that fits a block the meter has already checked at every budget level
+no longer takes the meter's lock: it is admitted with one compare-exchange and written to the
+counters before anything reads them. And the ambient meter is no longer found through an
+`AsyncLocal` read on every charge. `Poll` is one of the places that write a block back, so a
+profile that polls after every charge - as the fixture executor behind this row does - now pays for
+that write and a fresh block inside each poll, where it used to pay for a lock inside each charge.
+**The figures in that row therefore describe a metering path that no longer exists, and no claim
+about what the change did to them, in either direction, may be made from this register** until it
+is re-measured.
+
+**The verifier rows are reached too, more lightly.** The description of `verify-throughput` above -
+two interface calls per byte, each of which takes a lock and walks four budget scopes - is still
+true: a `VerifierWork` or `AllocatedBytes` charge is never admitted in a block and still takes the
+lock. But that path is not untouched. Every charge now tests whether it is a fuel charge before it
+takes the locked path, and every poll looks under the lock for a block the polling meter holds,
+which a verifier's meter never does. So `verify-throughput` and `verify-per-declared-count` are
+stale for this reason as well as for the 2026-08-31 one, and the same re-run closes both.
+
+**Where the runs are, and why the table stays as it is.** Bundle
+[VM-5-002](evidence/vm-5-002/README.md) retains runs of this benchmark host on both sides of the
+change and gives its verdict on the `meter-per-instruction` row there. It is not this register's
+bundle, and none of its figures is copied here: rule L1 binds every figure in the table to the
+benchmark log of `docs/evidence/vm-6`, and this note changes neither. No measurement is registered
+for the change either. The one that could show what it was made for - a profile that polls on a
+window rather than after every charge - is not in this register, and bundle VM-5-002 records that
+gap as its exclusion EX-112 instead of adding one.
+
 ---
 
 ## 3. Recorded figures
