@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   16
-// Annotated:        16/16
-// Exempt:           10
-// Human-reviewed:   0/16
+// Relevant units:   17
+// Annotated:        17/17
+// Exempt:           14
+// Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         0/0
+// Criteria:         3/0
 // Resource impact:  2/10 max
-// Unverified:       16
+// Unverified:       17
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -43,9 +43,60 @@ internal sealed class VmExecutionScope
     private readonly System.Threading.AsyncLocal<VmMeter?> current = new();
     private readonly System.Threading.AsyncLocal<VmOperation?> operation = new();
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=033A8F
+    // The answer the last lookup gave, together with the execution context it was read under. Read
+    // and written without a lock: every value ever stored is a true pair, so a thread that loses a
+    // race only misses the cache.
+    private volatile Resolution? resolution;
+
+    /// <summary>The meter of the step this thread is running inside, or null outside a step.</summary>
+    /// <remarks>
+    /// <para>
+    /// The answer is the <c>AsyncLocal</c>'s, and only the reading is different. An
+    /// <c>ExecutionContext</c> is immutable: setting any <c>AsyncLocal</c> builds a new context
+    /// object and installs it on the thread, and the value map inside it is copy-on-write. So a
+    /// context object determines every <c>AsyncLocal</c> value, and while a thread runs under the
+    /// context object an earlier lookup was made under - on whichever thread that context has
+    /// flowed to - the <c>AsyncLocal</c> still holds exactly what that lookup read.
+    /// </para>
+    /// <para>
+    /// Two cases fall back to the <c>AsyncLocal</c> and are answered as before. A thread with no
+    /// context of its own captures <c>ExecutionContext.Default</c>, which every such thread shares;
+    /// that is a consistent pair with the null meter such a thread reads, and no pair of
+    /// <c>Default</c> with a meter can ever be written, because entering a step installs a context.
+    /// A thread whose flow is suppressed captures null, and that lookup is answered but not cached.
+    /// </para>
+    /// <para>
+    /// What is cached is one context object per scope, released at <see cref="Leave"/> and dropped
+    /// with the scope when the runtime is disposed. Nothing is stored on a thread: an
+    /// <c>AsyncLocal</c> entry, a value-changed handler or a thread-static would each be the VM-5
+    /// leak class, which a disposed runtime must leave nothing of behind.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=785C21
+    // Broiler-Falsified-If: a lookup returns a meter other than the one the thread's AsyncLocal holds
     // Broiler-Human:        PENDING
-    internal VmMeter? Current => current.Value;
+    internal VmMeter? Current
+    {
+        get
+        {
+            var context = System.Threading.ExecutionContext.Capture();
+            var cached = resolution;
+
+            if (cached is not null && ReferenceEquals(cached.Context, context))
+            {
+                return cached.Meter;
+            }
+
+            var meter = current.Value;
+
+            if (context is not null)
+            {
+                resolution = new Resolution(context, meter);
+            }
+
+            return meter;
+        }
+    }
 
     /// <summary>
     /// The operation the current step belongs to, so a host failure a capability produced can be
@@ -63,12 +114,39 @@ internal sealed class VmExecutionScope
         operation.Value = owner;
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=58FA1F
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=AB35B4
+    // Broiler-Falsified-If: a scope that is not inside a step still holds the context the step ran under
     // Broiler-Human:        PENDING
     internal void Leave()
     {
         current.Value = null;
         operation.Value = null;
+
+        // Releases the finished step's context at once. Not needed for the answer: the two writes
+        // above have already put this thread under a new context object, so no stale hit is
+        // possible on it, and a thread the step started keeps the meter it captured either way.
+        resolution = null;
+    }
+
+    /// <summary>One lookup's answer, and the execution context it is the answer for.</summary>
+    /// <remarks>
+    /// One object rather than two fields, so a reader sees a context and a meter that were read
+    /// together. It is immutable and published by the volatile write of the field that holds it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=32D733
+    // Broiler-Falsified-If: a pair is published whose meter is not what the AsyncLocal held under its context
+    // Broiler-Human:        PENDING
+    private sealed class Resolution
+    {
+        internal Resolution(System.Threading.ExecutionContext context, VmMeter? meter)
+        {
+            Context = context;
+            Meter = meter;
+        }
+
+        internal System.Threading.ExecutionContext Context { get; }
+
+        internal VmMeter? Meter { get; }
     }
 }
 
