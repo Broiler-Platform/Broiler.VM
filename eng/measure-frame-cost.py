@@ -57,14 +57,37 @@
 # THE OUTPUT FORM IS AN INPUT, BECAUSE THE NATIVE FORM'S CALL IS NOT THE INTERPRETER'S. `--form
 # native` hands the host `--native <backend>`, so the program is compiled in the baseline form over
 # the wide manifest and one JavaScript call also crosses an emitted unit's frame, the transition into
-# a handler and the handler's own frames before it reaches the call path the bytecode form takes. The
-# two forms therefore have two per-frame costs, and each is printed with the form it was taken in so
-# neither is read as the other. The backend defaults to the x86-64 convention this host uses, which
-# is the only one the host arms; an artifact emitted for any other refuses to instantiate and would
-# measure nothing.
+# a handler and the handler's own frames before it reaches the call path the bytecode form takes -
+# and, where the call is re-entered from an instruction inside a block rather than from a call
+# instruction, the block step's frame, which is sized like the interpreter's; the shape families
+# exist to measure that. The two forms therefore have two per-frame costs, and each is printed with
+# the form it was taken in so neither is read as the other. The backend defaults to the x86-64
+# convention this host uses, which is the only one the host arms; an artifact emitted for any other
+# refuses to instantiate and would measure nothing.
+#
+# AND THE SHAPE IS AN INPUT, BECAUSE THE ROUTE A LEVEL NESTS THROUGH DECIDES WHAT IT COSTS. `plain`
+# is the recursion this script began with: a call instruction, which the baseline form gives a step
+# of its own. Every other family recurses through the object model instead - an accessor, an indexed
+# or global or `super` read, a setter, a coercion hook, a Proxy trap, `Symbol.hasInstance`, `with`,
+# `for-in`, object spread, the rendering of a thrown object - or through the iterator protocol. Those
+# routes re-enter guest code from an instruction that the form may be running inside a wider step, so
+# what one level costs there is not what `plain` costs and cannot be read off it. There is one family
+# per route that can nest a chain of levels, and each is measured on its own.
+#
+# EACH FAMILY IS A (RETURNING, THROWING) PAIR, and the pair is the point: the two depths must agree,
+# and a route where they do not has a throw costing stack that a call does not. Every throwing form
+# tells its own exception from the bound's the way `THROWING` does, by the message it threw.
+#
+# WHICH BUILD A LOG WAS TAKEN FROM IS PART OF THE LOG. `--source-tree` names the tree the binary was
+# built from, and the header then carries its commit, whether that tree was dirty (the lifted-bounds
+# patch makes it so), and the setting of `PerOpcodeSteps` - the constant deciding whether a run-alone
+# entry point runs its own per-opcode step or the shared one. Without the option all three print
+# `unknown`, which is a statement and not an omission: a log that does not show the shipped setting
+# is a log no depth clause may read.
 #
 #   python3 eng/measure-frame-cost.py [--binary-directory <dir>] [--stack-bytes <n>] [--ceiling <n>]
 #                                     [--form bytecode|native] [--backend <name>]
+#                                     [--shape <name>] [--source-tree <dir>]
 
 import argparse
 import os
@@ -84,6 +107,11 @@ DEFAULT_BINARY_DIRECTORY = (
 # construction and would stop being able to notice the two disagreeing.
 DEFAULT_STACK_BYTES = 96 * 1024 * 1024
 
+# Where `PerOpcodeSteps` is stated, and how its line reads, for `--source-tree`. It is read from the
+# source of the tree the binary was built from because nothing the binary prints carries it.
+HANDLERS = "src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs"
+PER_OPCODE_STEPS = "const bool PerOpcodeSteps"
+
 RETURNING = """function down(n) { return n === 0 ? 0 : down(n - 1); }
 print("answered " + down(%d));
 """
@@ -97,6 +125,129 @@ catch (failure) {
   print(failure.message === "here" ? "answered " + failure.name : "bounded " + failure.name);
 }
 """
+
+# THE FAMILIES WRITTEN OUT. Each recurses through one route and through nothing else on its common
+# path, so what it measures is that route's per-level cost and not a mixture. `delegate` and `forof`
+# nest through the iterator protocol; the rest through the object model.
+SHAPES = {
+    "plain": (RETURNING, THROWING),
+    "getter": (
+        'var n = %d; var o = { get down() { if (n === 0) { return 0; } n = n - 1; return this.down; } };\n'
+        'print("answered " + o.down);\n',
+        'var n = %d; var o = { get down() { if (n === 0) { throw new Error("here"); } n = n - 1; '
+        'return this.down; } };\n'
+        'try { o.down; print("bounded no-throw"); }\n'
+        'catch (failure) { print(failure.message === "here" ? "answered " + failure.name '
+        ': "bounded " + failure.name); }\n'),
+    "valueof": (
+        'var n = %d; var o = { valueOf: function () { if (n === 0) { return 0; } n = n - 1; return +o; } };\n'
+        'print("answered " + (+o));\n',
+        'var n = %d; var o = { valueOf: function () { if (n === 0) { throw new Error("here"); } n = n - 1; '
+        'return +o; } };\n'
+        'try { +o; print("bounded no-throw"); }\n'
+        'catch (failure) { print(failure.message === "here" ? "answered " + failure.name '
+        ': "bounded " + failure.name); }\n'),
+    "tostring": (
+        'var n = %d; var o = { toString: function () { if (n === 0) { return "a"; } n = n - 1; '
+        'return "" + o; } };\n'
+        'print("answered " + ("" + o));\n',
+        'var n = %d; var o = { toString: function () { if (n === 0) { throw new Error("here"); } n = n - 1; '
+        'return "" + o; } };\n'
+        'try { "" + o; print("bounded no-throw"); }\n'
+        'catch (failure) { print(failure.message === "here" ? "answered " + failure.name '
+        ': "bounded " + failure.name); }\n'),
+    "proxy": (
+        'var n = %d; var p = new Proxy({}, { get: function () { if (n === 0) { return 0; } n = n - 1; '
+        'return p.down; } });\n'
+        'print("answered " + p.down);\n',
+        'var n = %d; var p = new Proxy({}, { get: function () { if (n === 0) { throw new Error("here"); } '
+        'n = n - 1; return p.down; } });\n'
+        'try { p.down; print("bounded no-throw"); }\n'
+        'catch (failure) { print(failure.message === "here" ? "answered " + failure.name '
+        ': "bounded " + failure.name); }\n'),
+    "delegate": (
+        'function* g(n) { if (n === 0) { yield 0; return; } yield* g(n - 1); }\n'
+        'var step = g(%d).next();\n'
+        'print("answered " + step.value);\n',
+        'function* g(n) { if (n === 0) { throw new Error("here"); } yield* g(n - 1); }\n'
+        'try { g(%d).next(); print("bounded no-throw"); }\n'
+        'catch (failure) { print(failure.message === "here" ? "answered " + failure.name '
+        ': "bounded " + failure.name); }\n'),
+    "forof": (
+        'function* g(n) { if (n > 0) { for (var v of g(n - 1)) { yield v; } } yield n; }\n'
+        'var first = g(%d).next();\n'
+        'print("answered " + first.value);\n',
+        'function* g(n) { if (n === 0) { throw new Error("here"); } for (var v of g(n - 1)) { yield v; } }\n'
+        'try { g(%d).next(); print("bounded no-throw"); }\n'
+        'catch (failure) { print(failure.message === "here" ? "answered " + failure.name '
+        ': "bounded " + failure.name); }\n'),
+}
+
+# THE REST, WRITTEN AS ONE TEMPLATE EACH, BECAUSE THE TWO FORMS OF A FAMILY DIFFER IN TWO PLACES AND
+# NOWHERE ELSE: the base case, and what the top level does with the answer. Writing each pair out
+# would repeat the recursion twice per route and let the two copies drift, and a throwing form that
+# drifted from its returning form would compare two shapes rather than two depths of one.
+# `@BASE@` is the base case; the third field is the expression that starts the recursion.
+TEMPLATES = {
+    "global": (
+        'var n = %d; Object.defineProperty(globalThis, "down", { get: function () { if (n === 0) { @BASE@ } '
+        'n = n - 1; return down; } });', "0", "down"),
+    "index": (
+        'var n = %d; var k = "down"; var o = { get down() { if (n === 0) { @BASE@ } n = n - 1; '
+        'return this[k]; } };', "0", "o[k]"),
+    "super": (
+        'var n = %d; var base = { get down() { if (n === 0) { @BASE@ } n = n - 1; return this.down; } }; '
+        'var o = { __proto__: base, get down() { return super.down; } };', "0", "o.down"),
+    "setter": (
+        'var n = %d; var o = { set down(v) { if (n === 0) { @BASE@ } n = n - 1; this.down = v; } };',
+        "", "(function () { o.down = 1; return n; })()"),
+    "toprimitive": (
+        'var n = %d; var o = { [Symbol.toPrimitive]: function () { if (n === 0) { @BASE@ } n = n - 1; '
+        'return +o; } };', "0", "+o"),
+    "in": (
+        'var n = %d; var p = new Proxy({}, { has: function () { if (n === 0) { @BASE@ } n = n - 1; '
+        'return "down" in p; } });', "false", '"down" in p'),
+    "with": (
+        'var n = %d; var p = new Proxy({}, { has: function (t, k) { if (k !== "down") { return false; } '
+        'if (n === 0) { @BASE@ } n = n - 1; with (p) { typeof down; } return false; } });',
+        "false", "(function () { with (p) { typeof down; } return n; })()"),
+    "forinproxy": (
+        'var n = %d; var p = new Proxy({}, { ownKeys: function () { if (n === 0) { @BASE@ } n = n - 1; '
+        'for (var key in p) { } return []; } });',
+        "[]", "(function () { for (var key in p) { } return n; })()"),
+    "hasinstance": (
+        'var n = %d; var C = { [Symbol.hasInstance]: function (v) { if (n === 0) { @BASE@ } n = n - 1; '
+        'return v instanceof C; } };', "false", "({} instanceof C)"),
+    "spread": (
+        'var n = %d; var o = { get down() { if (n === 0) { @BASE@ } n = n - 1; var copy = { ...o }; '
+        'return 0; } };', "0", "(function () { var copy = { ...o }; return n; })()"),
+    "render": (
+        'var n = %d; var e = { get message() { if (n === 0) { @BASE@ } n = n - 1; try { throw e; } '
+        'catch (x) { if (x !== e) { throw x; } } return "m"; } };',
+        '"m"', '(function () { try { throw e; } catch (x) { if (x !== e) { throw x; } } return n; })()'),
+}
+
+
+def family(setup, value, top):
+    """The (returning, throwing) pair of one template.
+
+    `render` is why the throwing form rethrows what it did not throw: its recursion is a throw, so a
+    level's `catch` sees the bound's `RangeError` and the base case's `Error` alike, and only a level
+    that passes on what is not its own leaves the top-level catch able to tell them apart.
+    """
+    returning = setup.replace("@BASE@", f"return {value};" if value else "return;")
+    throwing = setup.replace("@BASE@", 'throw new Error("here");')
+
+    return (
+        returning + f'\nprint("answered " + ({top}));\n',
+        throwing
+        + f"\ntry {{ {top}; print(\"bounded no-throw\"); }}\n"
+        + "catch (failure) {\n"
+        + '  print(failure.message === "here" ? "answered " + failure.name : "bounded " + failure.name);\n'
+        + "}\n")
+
+
+SHAPES.update({name: family(*parts) for name, parts in TEMPLATES.items()})
 
 
 # THE THREE OUTCOMES, AND WHY THEY ARE THREE RATHER THAN TWO. A run that COMPLETED reached the
@@ -116,6 +267,55 @@ def host_backend():
         return None
 
     return "x86-64-win64" if os.name == "nt" else "x86-64-sysv"
+
+
+def git(tree, *arguments):
+    """One git answer from that tree, or None where git could not answer."""
+    try:
+        done = subprocess.run(
+            ["git", "-C", str(tree)] + list(arguments), capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+
+    return done.stdout if done.returncode == 0 else None
+
+
+def per_opcode_steps(tree):
+    """The setting of `PerOpcodeSteps` in that tree, as `true`, `false` or `unknown`."""
+    try:
+        text = (tree / HANDLERS).read_text(encoding="utf-8")
+    except OSError:
+        return "unknown"
+
+    for line in text.splitlines():
+        if PER_OPCODE_STEPS not in line or "=" not in line:
+            continue
+
+        setting = line.split("=", 1)[1].strip().rstrip(";").strip()
+
+        return setting if setting in ("true", "false") else "unknown"
+
+    return "unknown"
+
+
+def build_identity(named):
+    """Which build the binary under measurement came from: its commit, its dirtiness, its constant.
+
+    All three print `unknown` without `--source-tree`, rather than not printing at all: an absent
+    line reads as an oversight in the script and a stated `unknown` reads as what it is, a log that
+    cannot say which build it measured and that therefore no depth clause may be read against.
+    """
+    if named is None:
+        return "unknown", "unknown", "unknown"
+
+    tree = pathlib.Path(named)
+    commit = git(tree, "rev-parse", "HEAD")
+    status = git(tree, "status", "--porcelain")
+
+    return (
+        commit.strip() if commit else "unknown",
+        ("yes" if status.strip() else "no") if status is not None else "unknown",
+        per_opcode_steps(tree))
 
 
 def outcome(binary, scratch, shape, depth, ceiling, timeout, form):
@@ -209,10 +409,19 @@ def main():
     parser.add_argument("--form", choices=("bytecode", "native"), default="bytecode")
     parser.add_argument(
         "--backend", default=None, help="a native run's backend; defaults to this host's x86-64 convention")
+    parser.add_argument(
+        "--shape", choices=tuple(SHAPES), default="plain",
+        help="the re-entry route to measure, one per route a chain of JavaScript levels can nest through")
+    parser.add_argument(
+        "--source-tree", default=None,
+        help="the tree the binary was built from; without it the build identity lines print unknown")
     arguments = parser.parse_args()
 
     if arguments.backend and arguments.form != "native":
         parser.error("--backend names a native backend, and this run's form is bytecode")
+
+    if arguments.source_tree and not pathlib.Path(arguments.source_tree).is_dir():
+        parser.error(f"--source-tree names {arguments.source_tree}, which is not a directory")
 
     form = []
     backend = ""
@@ -239,23 +448,31 @@ def main():
         print(f"# no binary at {binary}", file=sys.stderr)
         return 2
 
+    commit, dirty, steps = build_identity(arguments.source_tree)
+    returning_source, throwing_source = SHAPES[arguments.shape]
+
     print(f"# measuring against {binary}")
     print(f"# form {arguments.form}" + (f" ({backend})" if backend else ""))
+    print(f"# shape {arguments.shape}")
+    print(f"# source-commit {commit}")
+    print(f"# source-dirty {dirty}")
+    print(f"# per-opcode-steps {steps}")
     print(f"# declared guest stack {arguments.stack_bytes} bytes")
 
     with tempfile.TemporaryDirectory(prefix="broiler-depth-") as directory:
         scratch = pathlib.Path(directory)
 
         returning, why_returning = deepest(
-            binary, scratch, RETURNING, arguments.ceiling, arguments.timeout, "returning", form)
+            binary, scratch, returning_source, arguments.ceiling, arguments.timeout, "returning", form)
 
         throwing, why_throwing = deepest(
-            binary, scratch, THROWING, arguments.ceiling, arguments.timeout, "throwing", form)
+            binary, scratch, throwing_source, arguments.ceiling, arguments.timeout, "throwing", form)
 
     if returning is None or throwing is None:
         return 1
 
     print(f"form {arguments.form}" + (f" {backend}" if backend else ""))
+    print(f"shape {arguments.shape}")
     print(f"deepest-returning-recursion {returning}")
     print(f"stopped-by-returning {why_returning}")
     print(f"deepest-throwing-recursion {throwing}")
