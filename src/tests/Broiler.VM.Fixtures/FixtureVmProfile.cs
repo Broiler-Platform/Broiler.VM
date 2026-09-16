@@ -70,6 +70,20 @@ public enum FixtureVmProfileVariant
     /// and polls once the same number of per-instruction charges have accumulated.
     /// </remarks>
     WindowedPolling = 16,
+
+    /// <summary>
+    /// Declares guest-initiated loads, and polls on a window rather than after every charge.
+    /// </summary>
+    /// <remarks>
+    /// A load requested by a variant that polls after every charge is requested by a meter that has
+    /// just committed everything it charged, so the remainder handed to the nested verification is
+    /// the same whether or not the reader settles first, and nothing about that reader is
+    /// exercised. This variant is what puts charges between the last poll and the request. It keeps
+    /// the conforming bound rather than the window as its declared latency, so the work a nested
+    /// verification charges on the requesting meter still fits between two of the requester's own
+    /// polls: polling more often than declared is what a profile is allowed to do.
+    /// </remarks>
+    WindowedGuestLoads = 17,
 }
 
 /// <summary>
@@ -241,7 +255,8 @@ public static class FixtureDescriptorFactory
 
         var declaresGuestLoads = variant
             is FixtureVmProfileVariant.DeclaresGuestLoads
-            or FixtureVmProfileVariant.MisconvertingNestedOutcome;
+            or FixtureVmProfileVariant.MisconvertingNestedOutcome
+            or FixtureVmProfileVariant.WindowedGuestLoads;
 
         var guestLoads = declaresGuestLoads
             ? VmGuestLoadDeclaration.Declared(

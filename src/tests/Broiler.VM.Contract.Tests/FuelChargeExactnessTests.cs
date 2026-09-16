@@ -600,11 +600,20 @@ public sealed class FuelChargeExactnessTests
     /// A guest-initiated load is verified under the exact fuel the operation has left.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Five thousand nops and the load instruction itself are 5,001 units, so the nested handle
     /// must carry the outer handle's instantiation ceiling less exactly that. Witness W5 - the
     /// settle removed from the remaining-allowance reader - fails here, because the remainder
     /// handed to the nested verification would be computed from a level that had not yet been told
     /// about the charges made since the last poll.
+    /// </para>
+    /// <para>
+    /// The requesting profile polls on a window for exactly that reason. A profile that polls after
+    /// every charge has committed everything it charged by the time it asks for a load, so the
+    /// remainder is the same whether or not the reader settles first and the read guards nothing.
+    /// With a window of sixty-four the last poll falls at 4,992 units, which leaves the nine
+    /// charges before the request uncommitted at the moment the remainder is taken.
+    /// </para>
     /// </remarks>
     [Fact]
     public void A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel()
@@ -615,7 +624,7 @@ public sealed class FuelChargeExactnessTests
 
         using var runtime = FixtureComposition.Runtime(
             Observing(
-                FixtureVmProfileVariant.DeclaresGuestLoads,
+                FixtureVmProfileVariant.WindowedGuestLoads,
                 executorObserver: created => executor = created),
             FixtureComposition.Options(capabilities: FixtureComposition.WithProvider(provider)));
 

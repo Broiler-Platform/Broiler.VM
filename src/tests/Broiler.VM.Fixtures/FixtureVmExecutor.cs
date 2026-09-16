@@ -326,7 +326,8 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
     private bool PollsAt(uint sinceLastPoll) => variant switch
     {
         FixtureVmProfileVariant.PollBoundBreaker => false,
-        FixtureVmProfileVariant.WindowedPolling => sinceLastPoll >= PollWindow,
+        FixtureVmProfileVariant.WindowedPolling or FixtureVmProfileVariant.WindowedGuestLoads =>
+            sinceLastPoll >= PollWindow,
         _ => true,
     };
 
