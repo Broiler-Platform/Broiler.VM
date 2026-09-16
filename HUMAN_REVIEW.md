@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 3952 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 3975 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 170 |
-| Code units | 6872 |
-| Relevant | 3952 |
-| Exempt | 2920 |
-| Assessed | 3952 of 3952 (100%) |
-| Human reviewed | 0 of 3952 (0%) |
-| Unverified | 3952 |
+| Files scanned | 171 |
+| Code units | 6899 |
+| Relevant | 3975 |
+| Exempt | 2924 |
+| Assessed | 3975 of 3975 (100%) |
+| Human reviewed | 0 of 3975 (0%) |
+| Unverified | 3975 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 3952 |
+| HUMAN_PENDING | 3975 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2920 |
+| EXEMPT | 2924 |
 
 ## 5. Aliases In The Tree
 
@@ -266,7 +266,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyVerifier.cs` | 11 | 7 | 4 | 7 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Runtime/VmAggregateBudget.cs` | 42 | 23 | 19 | 23 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs` | 17 | 6 | 11 | 6 | Low | Medium | 1/0 |
-| `src/Broiler.VM.Runtime/VmBudgetLevel.cs` | 15 | 11 | 4 | 11 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmBudgetLevel.cs` | 16 | 12 | 4 | 12 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Runtime/VmCanonicalCatalogEncoding.cs` | 5 | 5 | 0 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmCapabilityBinding.cs` | 22 | 10 | 12 | 10 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmCatalog.cs` | 47 | 24 | 23 | 24 | Low | Medium | 0/0 |
@@ -274,13 +274,14 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Runtime/VmCeilingResolution.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmDescriptorValidation.cs` | 10 | 10 | 0 | 10 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmExecutionScope.cs` | 26 | 16 | 10 | 16 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs` | 13 | 11 | 2 | 11 | Low | Medium | 10/0 |
 | `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` | 40 | 24 | 16 | 24 | Low | High | 6/2 |
 | `src/Broiler.VM.Runtime/VmInstantiation.cs` | 15 | 9 | 6 | 9 | Low | Medium | 2/0 |
 | `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` | 3 | 3 | 0 | 3 | Low | High | 1/1 |
-| `src/Broiler.VM.Runtime/VmMeter.cs` | 38 | 20 | 18 | 20 | Low | Medium | 10/0 |
+| `src/Broiler.VM.Runtime/VmMeter.cs` | 51 | 31 | 20 | 31 | Low | Medium | 21/0 |
 | `src/Broiler.VM.Runtime/VmOperation.cs` | 54 | 25 | 29 | 25 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Runtime/VmProfileRuntimeState.cs` | 15 | 6 | 9 | 6 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Runtime/VmRuntime.cs` | 57 | 34 | 23 | 34 | Low | High | 10/2 |
+| `src/Broiler.VM.Runtime/VmRuntime.cs` | 57 | 34 | 23 | 34 | Low | High | 11/2 |
 | `src/Broiler.VM.Runtime/VmRuntimeCreationOptions.cs` | 55 | 22 | 33 | 22 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmRuntimeState.cs` | 18 | 8 | 10 | 8 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmVerification.cs` | 12 | 8 | 4 | 8 | Low | High | 3/3 |
@@ -2362,7 +2363,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 3838 of the 3952 assessed units declare
+That is not a figure of speech. 3861 of the 3975 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

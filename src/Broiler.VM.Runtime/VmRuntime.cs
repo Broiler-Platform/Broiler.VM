@@ -9,7 +9,7 @@
 // Human-reviewed:   0/34
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         10/2
+// Criteria:         11/2
 // Resource impact:  8/10 max
 // Unverified:       34
 //
@@ -493,12 +493,19 @@ public sealed partial class VmRuntime : System.IDisposable
     }
 
     /// <summary>Reads this runtime's consumption and remaining allowance.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FE90E6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3A96C7
+    // Broiler-Falsified-If: a read taken while an operation runs reports less than that operation has been admitted
     // Broiler-Human:        PENDING
     public VmBudgetSnapshot GetBudgetSnapshot()
     {
         lock (gate)
         {
+            // Every operation of this runtime first, because every one of them can be holding fuel
+            // it has already been admitted and not yet committed. A host reading a running runtime
+            // is asking what has been spent, and a figure that stopped at the last poll of each
+            // operation would answer a different question.
+            runtimeLevel.FuelPreAdmissions!.SettleAll();
+
             return runtimeLevel.Snapshot();
         }
     }
@@ -511,7 +518,7 @@ public sealed partial class VmRuntime : System.IDisposable
     /// the tighter of its declared abandon budget and the runtime's unwind budget, so a parked
     /// operation can never block disposal indefinitely.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DA7B60
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=5CA1AB
     // Broiler-Falsified-If: the configured drain budget is read nowhere here, so disposal never waits for an operation
     // Broiler-Human:        PENDING
     public VmControlResult Dispose()
@@ -556,6 +563,10 @@ public sealed partial class VmRuntime : System.IDisposable
 
         lock (gate)
         {
+            // Hygiene, not correctness: a thread a step left running can still be holding fuel, and
+            // the table would otherwise keep a reference to a meter of a runtime that is finished.
+            runtimeLevel.FuelPreAdmissions!.SettleAll();
+
             instances.Clear();
             profiles.Clear();
             state = VmRuntimeState.Disposed;

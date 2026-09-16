@@ -400,7 +400,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=A3C1CE
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=0519BC
     // Broiler-Human:        PENDING
     private VmResumeResult RunResume(VmOperation operation, IVmProfileContinuation continuation)
     {
@@ -431,6 +431,11 @@ internal sealed class VmInstanceImplementation : VmInstance
         finally
         {
             scope.Leave();
+
+            // The step is over, so the fuel it was admitted and has not committed is committed now.
+            // The resume's own completion reads the uncharged-work counter, and this is what makes
+            // that read exact for every unit this step charged.
+            operation.Meter.SettlePreAdmittedFuel();
         }
 
         return Finish(operation, MapResume(operation, step));
@@ -501,7 +506,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=5D2AA9
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=F8070F
     // Broiler-Human:        PENDING
     private VmInvocationResult RunInvocation(VmOperation operation, in VmInvocationRequest request)
     {
@@ -529,6 +534,10 @@ internal sealed class VmInstanceImplementation : VmInstance
         finally
         {
             scope.Leave();
+
+            // As on the resume path: what the step spent from a block is committed before the
+            // outcome is mapped, and the uncharged-work counter the mapping reads is exact.
+            operation.Meter.SettlePreAdmittedFuel();
         }
 
         return Finish(operation, MapInvocation(operation, step));

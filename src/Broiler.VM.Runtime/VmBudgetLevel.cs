@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   11
-// Annotated:        11/11
+// Relevant units:   12
+// Annotated:        12/12
 // Exempt:           4
-// Human-reviewed:   0/11
+// Human-reviewed:   0/12
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         0/0
+// Criteria:         1/0
 // Resource impact:  1/10 max
-// Unverified:       11
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -33,13 +33,27 @@ internal sealed class VmBudgetLevel
     private readonly ulong[] ceilings;
     private readonly ulong[] consumed = new ulong[VmBudgetDimensions.Count];
 
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=977CB8
+    // Broiler-Falsified-If: a level at another scope carries a table, so two tables describe one runtime's fuel
+    // Broiler-Human:        PENDING
     internal VmBudgetLevel(VmBudgetScope scope, ulong[] ceilings)
     {
         Scope = scope;
         this.ceilings = ceilings;
+
+        // The table describes one runtime, and a runtime has exactly one runtime-scope level. It
+        // hangs here rather than on the runtime because it is the meters that reach it, and a meter
+        // holds its levels rather than the object that owns them.
+        FuelPreAdmissions = scope is VmBudgetScope.Runtime ? new VmFuelPreAdmissions() : null;
     }
 
     internal VmBudgetScope Scope { get; }
+
+    /// <summary>
+    /// On a runtime-scope level, the fuel blocks outstanding against that runtime. Null at every
+    /// other scope.
+    /// </summary>
+    internal VmFuelPreAdmissions? FuelPreAdmissions { get; }
 
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=0F4B8C
     // Broiler-Human:        PENDING

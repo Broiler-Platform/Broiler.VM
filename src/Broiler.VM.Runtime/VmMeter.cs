@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   20
-// Annotated:        20/20
-// Exempt:           18
-// Human-reviewed:   0/20
+// Relevant units:   31
+// Annotated:        31/31
+// Exempt:           20
+// Human-reviewed:   0/31
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         10/0
+// Criteria:         21/0
 // Resource impact:  1/10 max
-// Unverified:       20
+// Unverified:       31
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -73,6 +73,14 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     private ulong sinceLastPoll;
     private ulong pausedTicks;
     private long pauseStartedAt = -1;
+
+    // Fuel this meter may still admit without taking the gate. Raised only under the gate and only
+    // from zero; lowered lock-free by the fast path; taken to zero by a settle. Never negative.
+    private long preAdmittedFuel;
+
+    // The block as it was pre-admitted. Read and written only under the gate. Zero exactly when
+    // this meter is not in its runtime's pre-admission table.
+    private ulong preAdmissionSize;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A6A2A6
     // Broiler-Human:        PENDING
@@ -144,7 +152,15 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// profile that never polled at all, which is the limiting case of breaking the bound rather
     /// than an exemption from it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=9422B7
+    /// <remarks>
+    /// The counter is read here, so this meter's block is settled first: work admitted from a block
+    /// reaches the counter at the settle, and a breach decided before that would be decided on a
+    /// count of work the profile did rather than a count of work it was charged for. This settle
+    /// alone also covers a thread the step left running, which can charge after the step's own
+    /// settle and before this read.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=346ABD
+    // Broiler-Falsified-If: work charged since the last poll is missing from the count a breach is decided on
     // Broiler-Human:        PENDING
     internal bool UnpolledWorkExceedsBound
     {
@@ -152,6 +168,7 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
         {
             lock (gate)
             {
+                runtime.FuelPreAdmissions!.Settle(this);
                 return pollBound > 0 && sinceLastPoll > pollBound;
             }
         }
@@ -183,7 +200,13 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
         dimension is VmBudgetDimension.Fuel or VmBudgetDimension.VerifierWork;
 
     /// <summary>The invocation level's remaining allowance, for a nested load's request snapshot.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=E3117F
+    /// <remarks>
+    /// This reads a remaining value, so it settles first. An invocation level belongs to exactly one
+    /// meter - a fresh one is built for every invocation, instantiation and verification, and the
+    /// nested path reuses the requesting meter rather than its level - so settling this meter alone
+    /// covers every holder whose fuel this read could otherwise miss.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=57709C
     // Broiler-Falsified-If: a ceiling-class dimension is handed on as ceiling minus consumed, not as its effective ceiling
     // Broiler-Human:        PENDING
     internal VmLimitVector RemainingSnapshot
@@ -192,16 +215,208 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
         {
             lock (gate)
             {
+                runtime.FuelPreAdmissions!.Settle(this);
                 return invocation.AsRemainingVector();
             }
         }
     }
 
-    /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=A1D8C1
-    // Broiler-Falsified-If: one level commits while another refuses, or a refusal names Invocation where an outer level would, or a wall-clock ceiling reached during a run of charges is never reported at the next poll
+    // ---- pre-admitted fuel ---------------------------------------------------------------------
+
+    /// <summary>The block this meter holds, as it was pre-admitted. Read under the gate.</summary>
+    /// <remarks>
+    /// Zero exactly when this meter is not in its runtime's table, which is what lets the table be
+    /// asked whether a meter holds a block without searching it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=7DB20C
+    // Broiler-Falsified-If: this reads non-zero for a meter the table does not hold, or zero for one it does
     // Broiler-Human:        PENDING
+    internal ulong PreAdmissionSizeLocked => preAdmissionSize;
+
+    /// <summary>
+    /// Whether this meter may hold a block at all.
+    /// </summary>
+    /// <remarks>
+    /// Never under an aggregate parent. A parent is shared with sibling runtimes, and its own
+    /// admission, its snapshot and whether it is spent all read a sum this runtime would otherwise
+    /// be holding fuel back from. Under a parent every charge takes the exact locked path, which is
+    /// what it did before any of this existed.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=032026
+    // Broiler-Falsified-If: a meter whose runtime has an aggregate parent is allowed to hold a block
+    // Broiler-Human:        PENDING
+    internal bool MayPreAdmit => parent is null;
+
+    /// <summary>The runtime level this meter chains, which owns the table.</summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=EEBF50
+    // Broiler-Human:        PENDING
+    internal VmBudgetLevel RuntimeLevel => runtime;
+
+    /// <summary>The instance level this meter chains, if it has one.</summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=754D53
+    // Broiler-Human:        PENDING
+    internal VmBudgetLevel? InstanceLevel => instance;
+
+    /// <summary>The invocation level this meter chains.</summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=E4AA44
+    // Broiler-Human:        PENDING
+    internal VmBudgetLevel InvocationLevel => invocation;
+
+    /// <summary>The largest block this meter may hold.</summary>
+    /// <remarks>
+    /// Twice the declared poll bound, because a compliant profile charges at most its bound between
+    /// two polls and a poll re-admits, so anything larger buys nothing - and the factor two is what
+    /// lets a block that began at a charge rather than at a poll still reach the next poll. A
+    /// profile that declares no bound gets the flat maximum. Written to avoid overflowing the
+    /// doubling.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=35AA33
+    // Broiler-Falsified-If: a declared poll bound at the top of its range doubles past the maximum instead of saturating at it
+    // Broiler-Human:        PENDING
+    internal ulong BlockCap =>
+        pollBound == 0 || pollBound >= VmFuelPreAdmissions.MaxBlock / 2
+            ? VmFuelPreAdmissions.MaxBlock
+            : 2 * pollBound;
+
+    /// <summary>Whether <paramref name="level"/> is one of the three this meter charges.</summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=10791D
+    // Broiler-Falsified-If: a level this meter charges is not recognised, so its block is left out of that level's sum
+    // Broiler-Human:        PENDING
+    internal bool Chains(VmBudgetLevel level) =>
+        ReferenceEquals(level, runtime) ||
+        ReferenceEquals(level, instance) ||
+        ReferenceEquals(level, invocation);
+
+    /// <summary>Takes a block of <paramref name="size"/> units. Called under the gate only.</summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=A548C5
+    // Broiler-Falsified-If: a block is begun over one this meter still holds, so what was spent from the old one is lost
+    // Broiler-Human:        PENDING
+    internal void BeginPreAdmissionLocked(ulong size)
+    {
+        preAdmissionSize = size;
+        System.Threading.Volatile.Write(ref preAdmittedFuel, (long)size);
+    }
+
+    /// <summary>
+    /// Commits what this meter spent from its block to every level it chains, and to the
+    /// uncharged-work counter. Called under the gate only.
+    /// </summary>
+    /// <remarks>
+    /// The block is zeroed FIRST. A fast-path charge racing this either landed in what is still
+    /// there, in which case it is part of what is committed here, or fails its compare-exchange and
+    /// takes the locked path, where it waits for this lock section to end - so no charge is lost
+    /// and none is counted twice.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=3F7F04
+    // Broiler-Falsified-If: fuel spent from a block reaches a level twice, or reaches none of them, or bypasses the uncharged-work counter
+    // Broiler-Human:        PENDING
+    internal void CommitPreAdmittedFuelLocked()
+    {
+        var left = (ulong)System.Threading.Interlocked.Exchange(ref preAdmittedFuel, 0);
+        var used = preAdmissionSize - left;
+
+        preAdmissionSize = 0;
+
+        if (used == 0)
+        {
+            return;
+        }
+
+        runtime.Commit(VmBudgetDimension.Fuel, used);
+        instance?.Commit(VmBudgetDimension.Fuel, used);
+        invocation.Commit(VmBudgetDimension.Fuel, used);
+
+        // Fuel is work, so it counts toward the bound exactly as a per-charge commit would have.
+        sinceLastPoll += used;
+    }
+
+    /// <summary>
+    /// Settles this meter's block, taking the gate to do it. Step-end hygiene.
+    /// </summary>
+    /// <remarks>
+    /// A step that has ended holds a block nobody will spend, and its fuel is uncommitted until
+    /// something settles it. The operation's own completion reads the uncharged-work counter, so
+    /// this also makes that read exact on the thread that ran the step.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=6575FD
+    // Broiler-Falsified-If: a finished step leaves fuel it spent uncommitted at every level
+    // Broiler-Human:        PENDING
+    internal void SettlePreAdmittedFuel()
+    {
+        lock (gate)
+        {
+            runtime.FuelPreAdmissions!.Settle(this);
+        }
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// <para>
+    /// The head is the whole of the fast path. A fuel charge that fits inside the block this meter
+    /// has already been admitted is taken by one compare-exchange and no lock at all, because every
+    /// level cleared that block's whole size when it was pre-admitted. Everything else - every
+    /// other dimension, an undefined one, and every fuel charge that does not fit - falls through
+    /// to the exact body, which is where a refusal is decided and the only place one can be.
+    /// </para>
+    /// <para>
+    /// The dimension test is load-bearing rather than an optimisation. Without it a charge on
+    /// another dimension would be admitted against fuel and committed nowhere, so a host-call or
+    /// call-depth ceiling would simply stop being enforced.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=675B79
+    // Broiler-Falsified-If: a charge on a dimension other than Fuel is answered from a fuel block, or a fuel charge larger than the block is answered without the exact body
+    // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public bool TryCharge(VmBudgetDimension dimension, ulong amount)
+    {
+        if (dimension == VmBudgetDimension.Fuel)
+        {
+            var left = System.Threading.Volatile.Read(ref preAdmittedFuel);
+
+            while (amount <= (ulong)left)
+            {
+                var seen = System.Threading.Interlocked.CompareExchange(
+                    ref preAdmittedFuel, left - (long)amount, left);
+
+                if (seen == left)
+                {
+                    return true;
+                }
+
+                left = seen;
+            }
+        }
+
+        return TryChargeLocked(dimension, amount);
+    }
+
+    /// <summary>
+    /// The exact charge: today's body, with a settle before any decision it could affect and a
+    /// pre-admission after an admitted fuel charge.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A fuel charge settles its own block first, so what it spent is committed before anything is
+    /// decided. It then asks whether the OTHER holders' blocks still leave room for it: if they do,
+    /// every level admits it whatever those holders go on to spend, and the body runs against state
+    /// that is exact for the purposes of this decision. If they do not, every holder is settled and
+    /// the body runs against state that is exact outright - so a refusal, and which scope it names,
+    /// is never decided against fuel somebody has already spent.
+    /// </para>
+    /// <para>
+    /// Not inlined, deliberately. It is the slow path, and inlining it into the head would put a
+    /// lock section and the whole level chain into every caller of a charge that is meant to cost a
+    /// compare-exchange.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=DC8233
+    // Broiler-Falsified-If: one level commits while another refuses, or a refusal names Invocation where an outer level would, or a wall-clock ceiling reached during a run of charges is never reported at the next poll, or a refusal is decided while another holder's spending is uncommitted
+    // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+    private bool TryChargeLocked(VmBudgetDimension dimension, ulong amount)
     {
         if (!VmBudgetDimensions.IsDefined(dimension))
         {
@@ -221,6 +436,21 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
         // component: a verifier reading one byte at a time charges once per byte.
         lock (gate)
         {
+            // Only a fuel charge reads the state a block leaves uncommitted. Every other dimension
+            // is committed per charge at its own levels and never touches a block.
+            var preAdmissions = dimension is VmBudgetDimension.Fuel ? runtime.FuelPreAdmissions : null;
+            var contenders = 0;
+
+            if (preAdmissions is not null && !preAdmissions.IsEmpty)
+            {
+                preAdmissions.Settle(this);
+
+                if (!preAdmissions.IsEmpty && !preAdmissions.LeavesRoomFor(this, amount))
+                {
+                    contenders = preAdmissions.SettleAll();
+                }
+            }
+
             // Outermost first, and deliberately without committing: a level that would refuse must
             // be discoverable before a nearer level has already taken the charge.
             if (parent is not null &&
@@ -263,12 +493,25 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
                 sinceLastPoll += amount;
             }
 
+            // The charge is admitted and committed, so this meter is charging fuel and is worth a
+            // block. The size is decided here and nowhere else, against the state this section is
+            // about to leave behind.
+            preAdmissions?.PreAdmit(this, contenders);
+
             return true;
         }
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=86CFE4
+    /// <remarks>
+    /// A poll settles this meter's block before it reads the uncharged-work counter, and takes a
+    /// fresh one on the way out if it held one when it arrived. That pairing is what makes a block
+    /// worth having for a profile that polls on a window: the block is spent between two polls and
+    /// renewed at each, so the bound is decided on every unit charged and the charges themselves
+    /// stay off the lock.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=8621A4
+    // Broiler-Falsified-If: a poll decides the bound before the fuel admitted from a block has reached the counter
     // Broiler-Human:        PENDING
     public bool Poll()
     {
@@ -282,6 +525,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 
         lock (gate)
         {
+            var held = runtime.FuelPreAdmissions!.Settle(this);
+
             // The bound is on work performed between two polls. Exceeding it is how a profile
             // silently makes cancellation latency unbounded, so it is detected rather than trusted.
             if (pollBound > 0 && sinceLastPoll > pollBound)
@@ -313,6 +558,15 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
             if (invocation.Remaining(VmBudgetDimension.WallClock) == 0)
             {
                 return Refuse(VmBudgetDimension.WallClock, VmBudgetScope.Invocation);
+            }
+
+            // Only a meter that arrived holding a block takes another. A poll is not by itself
+            // evidence that anything is charging fuel: a profile polls on paths that charge
+            // nothing, and a block taken there would sit unspent against a level its holder is not
+            // using while some other operation needs it.
+            if (held)
+            {
+                runtime.FuelPreAdmissions.PreAdmit(this, 0);
             }
         }
 
@@ -346,7 +600,7 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// it has already seen the growth succeed.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0003 s12 row 9, ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=68B388
+    // Broiler-AI:           Origin=AI; Spec=ADR-0003 s12 row 9, ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=E6F911
     // Broiler-Falsified-If: a level commits a retention on a path where the parent refused that same retention
     // Broiler-Human:        PENDING
     public void ReportRetained(VmBudgetDimension dimension, ulong amount)
@@ -366,6 +620,14 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 
         lock (gate)
         {
+            // Every holder, not just this meter: a retention is admitted against the runtime and
+            // instance levels, which every operation of this runtime shares, so fuel any of them
+            // has spent and not yet committed is fuel this admission must already see.
+            if (dimension is VmBudgetDimension.Fuel)
+            {
+                runtime.FuelPreAdmissions!.SettleAll();
+            }
+
             if (!runtime.Admits(dimension, amount))
             {
                 refusedLocally = VmBudgetScope.Runtime;
@@ -406,6 +668,14 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 
         lock (gate)
         {
+            // The two sections are not one, here or before any of this existed: a fuel charge can
+            // land between them. Settling again is what keeps the blocks outstanding against a
+            // level within what that level has left across the gap this commit opens.
+            if (dimension is VmBudgetDimension.Fuel)
+            {
+                runtime.FuelPreAdmissions!.SettleAll();
+            }
+
             runtime.Commit(dimension, amount);
             instance?.Commit(dimension, amount);
             invocation.Commit(dimension, amount);
@@ -470,12 +740,18 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// <inheritdoc/>
     bool IVmBoundedAllocationMeter.Poll() => Poll();
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=536CA8
+    /// <remarks>
+    /// The invocation level belongs to this meter alone, so settling this meter is the whole of
+    /// what a consumption read here needs.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=2CA9E5
+    // Broiler-Falsified-If: the snapshot reports consumption that stops short of what this operation has been admitted
     // Broiler-Human:        PENDING
     internal VmBudgetSnapshot Snapshot()
     {
         lock (gate)
         {
+            runtime.FuelPreAdmissions!.Settle(this);
             return invocation.Snapshot();
         }
     }

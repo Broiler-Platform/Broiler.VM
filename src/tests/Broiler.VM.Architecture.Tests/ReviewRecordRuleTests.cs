@@ -1029,7 +1029,16 @@ public sealed class ReviewRecordRuleTests
         // calls, JsBaselineHandlers.cs; and the engine's half that enters emitted code and maps its
         // page, JsEngine.Baseline.cs. They are covered on the same terms as every other product
         // file, and nothing in them has been read by a human.
-        Assert.Equal(170, AssuranceSources.Files.Count);
+        //
+        // THE HUNDRED-AND-SEVENTY-FIRST IS THE RUNTIME'S FUEL PRE-ADMISSION TABLE,
+        // VmFuelPreAdmissions.cs, and it is counted here for the reason a reader would ask about
+        // first: it is the one place that decides how much fuel a meter may admit without taking
+        // the runtime's lock, so a review that did not read it would be a review of a budget it
+        // never saw enforced. It is a file of its own rather than a region of the meter because its
+        // subject is the whole runtime - which meters hold fuel at once, and what each of them is
+        // holding - while the meter's subject is one operation's chain. It is covered on the same
+        // terms as every other product file, and nothing in it has been read by a human.
+        Assert.Equal(171, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
