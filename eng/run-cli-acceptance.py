@@ -27,8 +27,19 @@ PROJECT = os.path.join(
 BINARY_NAME = "Broiler.VM.Composition.JavaScript.Cli"
 
 
+STREAMS = ("out", "err", "both")
+
+
 def rows(path):
-    """Every case: the argument words, the exit code, and the substring that must appear."""
+    """Every case: the argument words, the exit code, the substring, and the stream it is read on.
+
+    WHICH STREAM CARRIES A MESSAGE IS PART OF WHAT THIS HOST PROMISES, so a row can say it. The
+    fourth field is `out`, `err`, or absent for both together, and a substring that begins with `!`
+    must NOT appear in the stream named. Without the pair of them the placement is untestable: a
+    line that moved from standard error to standard output would still be found by a match over the
+    two concatenated, and the harness that hashes standard output as a lane's answer would be the
+    one to discover it.
+    """
     cases = []
 
     for number, line in enumerate(io.open(path, encoding="utf-8").read().splitlines(), start=1):
@@ -39,10 +50,18 @@ def rows(path):
 
         parts = text.split("|")
 
-        if len(parts) != 3:
-            raise SystemExit(f"{path}:{number}: `{text}` is not `args|exit|substring`")
+        if len(parts) not in (3, 4):
+            raise SystemExit(
+                f"{path}:{number}: `{text}` is not `args|exit|substring` or "
+                "`args|exit|substring|out|err`")
 
-        cases.append((number, parts[0].split(), int(parts[1]), parts[2]))
+        stream = parts[3] if len(parts) == 4 else "both"
+
+        if stream not in STREAMS:
+            raise SystemExit(
+                f"{path}:{number}: `{stream}` is not one of {', '.join(STREAMS)}")
+
+        cases.append((number, parts[0].split(), int(parts[1]), parts[2], stream))
 
     return cases
 
@@ -110,21 +129,32 @@ def main():
     print(f"# judging {host}")
     print(f"# over {len(cases)} command lines from {shorten(arguments.expected)}")
 
-    for number, words, expected_exit, substring in cases:
+    for number, words, expected_exit, substring, stream in cases:
         # The suite directory is the working directory, so every path in a row is relative to it
         # and no row carries an absolute path that would differ between two machines.
         done = subprocess.run(
             [host] + words, cwd=SUITE, capture_output=True, text=True,
             encoding="utf-8", errors="replace")
 
+        read = {
+            "out": done.stdout or "",
+            "err": done.stderr or "",
+            "both": (done.stdout or "") + (done.stderr or ""),
+        }[stream]
         output = (done.stdout or "") + (done.stderr or "")
         wrong = []
 
         if done.returncode != expected_exit:
             wrong.append(f"exit {done.returncode}, expected {expected_exit}")
 
-        if len(substring) != 0 and substring not in output:
-            wrong.append(f"output does not contain `{substring}`")
+        named = {"out": "standard output", "err": "standard error", "both": "output"}[stream]
+        forbidden = substring.startswith("!")
+        needle = substring[1:] if forbidden else substring
+
+        if len(needle) != 0 and forbidden and needle in read:
+            wrong.append(f"{named} contains `{needle}` and must not")
+        elif len(needle) != 0 and not forbidden and needle not in read:
+            wrong.append(f"{named} does not contain `{needle}`")
 
         shown = " ".join(words)
 

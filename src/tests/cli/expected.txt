@@ -1,14 +1,17 @@
 # The CLI acceptance suite: one row per command line, judged on the real binary.
 #
-# args|exit|substring
+# args|exit|substring         or  args|exit|substring|out    or  args|exit|substring|err
 #
 # NOTHING HERE INJECTS ANYTHING. Every row is a file this host is pointed at and an exit code it
 # must answer with; no source of this component is patched, no internal is reached for, and the
 # thing under test is the published binary rather than a type inside it. A control is an INPUT.
 #
-# The substring is matched against standard output and standard error together, because which of
-# the two carries a message is part of what this host promises and is asserted separately by the
-# rows that expect a value on stdout with nothing on stderr.
+# The substring is matched against standard output and standard error together UNLESS a row names
+# one of them in a fourth field, and a substring beginning with `!` must NOT appear in the stream
+# it is read on. Which of the two streams carries a message is part of what this host promises -
+# every measurement harness in `eng/` hashes standard output as the answer of a lane and would
+# break on a diagnostic that moved into it - so a row that cares says which stream it means. A row
+# that does not name one reads both, which is what every row here did before the field existed.
 
 # It runs what the manifest admits, and prints the completion value and nothing else.
 runs/a-product.js|0|42
@@ -379,11 +382,26 @@ limits/a-delegation-chain-with-no-bottom.js|1|uncaught RangeError: Maximum call 
 --version|0|manifest broiler.javascript.wide
 --version|0|docs/specification/ecma-262-es2026-spec.html
 
-# THE EFFECTIVE RUNTIME CONFIGURATION, and the second row is the one that matters: `--runtime` is
-# not a mode, so the option prints its line and the file still runs and still answers its value.
-# The substring is a key rather than a value, because every value on that line is the machine's.
---runtime --check runs/a-product.js|0|runtime-identifier=
---runtime runs/a-product.js|0|42
+# THE EFFECTIVE RUNTIME CONFIGURATION. Each substring is a KEY rather than a value, because every
+# value on that line is the machine's - and every key the line promises has a row, because a line
+# that quietly stopped reporting the garbage collector's mode or one of the two tiering sources
+# would still carry the first key and a single row would still pass. The line is read on standard
+# error, which is where a measurement harness needs it: the last two rows are the placement itself,
+# and they are what fails if the line moves into the answer stream.
+--runtime --check runs/a-product.js|0|runtime-identifier=|err
+--runtime --check runs/a-product.js|0|process-architecture=|err
+--runtime --check runs/a-product.js|0|gc-server=|err
+--runtime --check runs/a-product.js|0|gc-latency=|err
+--runtime --check runs/a-product.js|0|tiered-compilation-env=|err
+--runtime --check runs/a-product.js|0|tiered-compilation-config=|err
+--runtime --check runs/a-product.js|0|tiered-pgo-env=|err
+--runtime --check runs/a-product.js|0|tiered-pgo-config=|err
+--runtime --check runs/a-product.js|0|dynamic-code=|err
+
+# `--runtime` is not a mode: the file still runs and still answers its value, on standard output,
+# with the configuration line nowhere in it.
+--runtime runs/a-product.js|0|42|out
+--runtime runs/a-product.js|0|!runtime-identifier=|out
 
 # THE TWO DEFECTS THE OCTANE WORKLOADS FOUND, pinned as programs this repository holds rather than
 # as a benchmark it does not. Neither fixture needs a third-party file, and each row is the ANSWER
