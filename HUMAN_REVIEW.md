@@ -278,7 +278,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` | 40 | 24 | 16 | 24 | Low | High | 6/2 |
 | `src/Broiler.VM.Runtime/VmInstantiation.cs` | 15 | 9 | 6 | 9 | Low | Medium | 2/0 |
 | `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` | 3 | 3 | 0 | 3 | Low | High | 1/1 |
-| `src/Broiler.VM.Runtime/VmMeter.cs` | 51 | 31 | 20 | 31 | Low | Medium | 21/0 |
+| `src/Broiler.VM.Runtime/VmMeter.cs` | 51 | 31 | 20 | 31 | Low | Medium | 20/0 |
 | `src/Broiler.VM.Runtime/VmOperation.cs` | 54 | 25 | 29 | 25 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Runtime/VmProfileRuntimeState.cs` | 15 | 6 | 9 | 6 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmRuntime.cs` | 57 | 34 | 23 | 34 | Low | High | 11/2 |

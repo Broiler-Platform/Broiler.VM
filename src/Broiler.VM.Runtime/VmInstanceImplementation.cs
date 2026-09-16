@@ -433,8 +433,11 @@ internal sealed class VmInstanceImplementation : VmInstance
             scope.Leave();
 
             // The step is over, so the fuel it was admitted and has not committed is committed now.
-            // The resume's own completion reads the uncharged-work counter, and this is what makes
-            // that read exact for every unit this step charged.
+            // The resume's own completion reads the uncharged-work counter, and this settle makes
+            // that read exact JOINTLY with the settle the reader takes itself: on this path either
+            // one alone covers every unit this thread charged. The reader's is the one that must
+            // stay, because it also covers a thread the step left running that charges between here
+            // and the read.
             operation.Meter.SettlePreAdmittedFuel();
         }
 
@@ -536,7 +539,8 @@ internal sealed class VmInstanceImplementation : VmInstance
             scope.Leave();
 
             // As on the resume path: what the step spent from a block is committed before the
-            // outcome is mapped, and the uncharged-work counter the mapping reads is exact.
+            // outcome is mapped. The uncharged-work counter the mapping reads is exact jointly with
+            // the settle that reader takes itself, and the reader's is the one that must stay.
             operation.Meter.SettlePreAdmittedFuel();
         }
 

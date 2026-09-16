@@ -45,7 +45,12 @@ internal sealed class VmExecutionScope
 
     // The answer the last lookup gave, together with the execution context it was read under. Read
     // and written without a lock: every value ever stored is a true pair, so a thread that loses a
-    // race only misses the cache.
+    // race only misses the cache. One field rather than one per thread, and that is where the cost
+    // can go the wrong way: two operations of ONE scope charging on two threads at once - two
+    // instances of one profile in one runtime - displace each other's pair, so every lookup misses,
+    // allocates and writes a shared field. The answer stays right and the speed does not. The
+    // fallback, if a concurrent measurement ever finds that case slower than no cache at all, is
+    // three thread-static fields (scope, context, meter) that Leave clears for the leaving thread.
     private volatile Resolution? resolution;
 
     /// <summary>The meter of the step this thread is running inside, or null outside a step.</summary>
@@ -63,11 +68,18 @@ internal sealed class VmExecutionScope
     /// context of its own captures <c>ExecutionContext.Default</c>, which every such thread shares;
     /// that is a consistent pair with the null meter such a thread reads, and no pair of
     /// <c>Default</c> with a meter can ever be written, because entering a step installs a context.
-    /// A thread whose flow is suppressed captures null, and that lookup is answered but not cached.
+    /// A thread whose flow is suppressed captures null, and that lookup is answered but not cached -
+    /// deliberately, and that is the load-bearing half of it: null is a key every suppressed flow
+    /// shares, so a pair published under it would be handed straight to any other thread that looks
+    /// up with its own flow suppressed, including one that is inside no step and must be refused.
     /// </para>
     /// <para>
-    /// What is cached is one context object per scope, released at <see cref="Leave"/> and dropped
-    /// with the scope when the runtime is disposed. Nothing is stored on a thread: an
+    /// What is cached is at most one context object and one meter per scope at a time. <see
+    /// cref="Leave"/> releases the pair, and the next lookup takes one again - including a lookup
+    /// from a thread the step left running, which republishes the finished step's own context and
+    /// meter, and through them that operation's levels, until a later lookup displaces them or the
+    /// runtime is disposed and drops the scope. So the pin is bounded to one pair and is never
+    /// per-thread, but it is not over when the step is. Nothing is stored on a thread: an
     /// <c>AsyncLocal</c> entry, a value-changed handler or a thread-static would each be the VM-5
     /// leak class, which a disposed runtime must leave nothing of behind.
     /// </para>
@@ -115,7 +127,7 @@ internal sealed class VmExecutionScope
     }
 
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=AB35B4
-    // Broiler-Falsified-If: a scope that is not inside a step still holds the context the step ran under
+    // Broiler-Falsified-If: a step's own thread returns from here with the scope still holding the context that step ran under
     // Broiler-Human:        PENDING
     internal void Leave()
     {
@@ -125,6 +137,9 @@ internal sealed class VmExecutionScope
         // Releases the finished step's context at once. Not needed for the answer: the two writes
         // above have already put this thread under a new context object, so no stale hit is
         // possible on it, and a thread the step started keeps the meter it captured either way.
+        // A release and not a seal: a thread the step left running that looks up after this puts
+        // the finished step's pair back, and it stays until the next lookup or until the runtime
+        // drops the scope.
         resolution = null;
     }
 

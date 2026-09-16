@@ -9,7 +9,7 @@
 // Human-reviewed:   0/31
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         21/0
+// Criteria:         20/0
 // Resource impact:  1/10 max
 // Unverified:       31
 //
@@ -207,7 +207,7 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// covers every holder whose fuel this read could otherwise miss.
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=57709C
-    // Broiler-Falsified-If: a ceiling-class dimension is handed on as ceiling minus consumed, not as its effective ceiling
+    // Broiler-Falsified-If: a ceiling-class dimension is handed on as ceiling minus consumed, not as its effective ceiling, or a remainder is handed to a nested verification while this meter's own block is uncommitted
     // Broiler-Human:        PENDING
     internal VmLimitVector RemainingSnapshot
     {
@@ -335,11 +335,16 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// </summary>
     /// <remarks>
     /// A step that has ended holds a block nobody will spend, and its fuel is uncommitted until
-    /// something settles it. The operation's own completion reads the uncharged-work counter, so
-    /// this also makes that read exact on the thread that ran the step.
+    /// something settles it. It states no falsifiable claim of its own, and that is deliberate: the
+    /// operation's completion reads the uncharged-work counter, and that reader settles this same
+    /// meter itself, so on every path that reaches the read either settle alone makes it exact and
+    /// removing this one changes nothing an observation point can see. The reader's settle is also
+    /// the only one that covers a thread the step left running, which can charge between here and
+    /// the read. What this settle does on its own is free the table slot at once and drop the
+    /// reference to a finished operation's meter, rather than leaving both until some other meter's
+    /// charge evicts it.
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=6575FD
-    // Broiler-Falsified-If: a finished step leaves fuel it spent uncommitted at every level
     // Broiler-Human:        PENDING
     internal void SettlePreAdmittedFuel()
     {
@@ -363,15 +368,23 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// another dimension would be admitted against fuel and committed nowhere, so a host-call or
     /// call-depth ceiling would simply stop being enforced.
     /// </para>
+    /// <para>
+    /// The amount test is not load-bearing, and is there for what it costs rather than for what it
+    /// answers. A charge of no units is admitted either way - the exact body answers it before it
+    /// takes the gate - but without the test it satisfies the block test on a meter that holds no
+    /// block at all, because zero fits in zero, and every such charge then issues a lock-prefixed
+    /// write to a field other threads are reading. Two register compares instead, on the member
+    /// every charge in the component passes through.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=675B79
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=E1B1AC
     // Broiler-Falsified-If: a charge on a dimension other than Fuel is answered from a fuel block, or a fuel charge larger than the block is answered without the exact body
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public bool TryCharge(VmBudgetDimension dimension, ulong amount)
     {
-        if (dimension == VmBudgetDimension.Fuel)
+        if (dimension == VmBudgetDimension.Fuel && amount != 0)
         {
             var left = System.Threading.Volatile.Read(ref preAdmittedFuel);
 
@@ -601,7 +614,7 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0003 s12 row 9, ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=E6F911
-    // Broiler-Falsified-If: a level commits a retention on a path where the parent refused that same retention
+    // Broiler-Falsified-If: a level commits a retention on a path where the parent refused that same retention, or a retention is admitted or committed while any holder's fuel is uncommitted
     // Broiler-Human:        PENDING
     public void ReportRetained(VmBudgetDimension dimension, ulong amount)
     {
@@ -684,9 +697,21 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 
     /// <inheritdoc/>
     /// <remarks>
+    /// <para>
     /// The parent is credited exactly what it was debited, which the ordering in
     /// <see cref="ReportRetained"/> guarantees: a retention the parent refused was never committed
     /// locally, so it can never be released from the parent either.
+    /// </para>
+    /// <para>
+    /// This is the one fuel read in this type that deliberately does NOT settle first, and it is
+    /// safe for two reasons that have to hold together. The consumption read only chooses between
+    /// an early return and a release, and a release is a no-op at every level for any dimension
+    /// that is not ceiling-class, so fuel a block leaves uncommitted cannot change what this member
+    /// does. And a meter that holds a block has no aggregate parent, so the credit handed on below
+    /// is never computed from a short count either. Make fuel releasable at the invocation level,
+    /// or let a meter under a parent hold a block, and this member needs the settle the others
+    /// take.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=8030AD
     // Broiler-Falsified-If: the parent is credited more than it accepted, or an allowance-class dimension refunds at any level

@@ -1091,7 +1091,7 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1095 |
+| Units carrying a criterion | 1094 |
 | Units required to carry one | 1020 |
 | Required and missing | 0 |
 

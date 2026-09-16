@@ -152,6 +152,16 @@ internal sealed class VmFuelPreAdmissions
     /// <paramref name="contenders"/> is how many holders this same lock section has just settled
     /// for want of room, and zero on every other call.
     /// </summary>
+    /// <remarks>
+    /// When the table is full the oldest block is settled to make room, and that happens before the
+    /// size is known - so a pre-admission that ends up taking nothing has still sent one holder
+    /// back to the gate for its next charge. Exactness does not turn on it either way, because an
+    /// early settle is always safe; the cost does, and in the place it is hardest to see, which is
+    /// five or more meters charging against a level near its ceiling. It is left in this order
+    /// because the size an eviction makes room for cannot be known before the eviction: evicting
+    /// raises what the level has unreserved and lowers the divisor, so a size computed with the
+    /// victim still holding would refuse blocks this order grants. What it costs is unmeasured.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=26DE61
     // Broiler-Falsified-If: a block is pre-admitted under an aggregate parent, or larger than a level of the meter's chain has left
     // Broiler-Human:        PENDING
@@ -167,7 +177,8 @@ internal sealed class VmFuelPreAdmissions
             // One victim, the oldest block, rather than every holder: settling all four sends all
             // four back to the gate, and with a fifth concurrent meter that would happen on nearly
             // every pre-admission. The oldest is also the likeliest to belong to a finished
-            // operation, whose block is doing nothing for anybody.
+            // operation, whose block is doing nothing for anybody. Spent before the size below is
+            // known, and so possibly for nothing: see the remark on this member.
             holders[0]!.CommitPreAdmittedFuelLocked();
             RemoveAt(0);
         }
