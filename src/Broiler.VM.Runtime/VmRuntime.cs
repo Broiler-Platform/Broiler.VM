@@ -659,7 +659,7 @@ public sealed partial class VmRuntime : System.IDisposable
     /// such an entry records nothing and its return writes the depth back as it always did.
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=25797B
-    // Broiler-Falsified-If: the context a capability's return may put back is captured after the depth is raised, or is recorded while the flow is suppressed
+    // Broiler-Falsified-If: the context a capability's return may put back is captured after the depth is raised
     // Broiler-Human:        PENDING
     internal CapabilityEntry EnterCapability(VmCapabilityReentrancy reentrancy)
     {
@@ -704,9 +704,16 @@ public sealed partial class VmRuntime : System.IDisposable
     /// nest: without it an inner call's return would lower the depth a second time, while the outer
     /// non-reentrant capability is still running.
     /// </para>
+    /// <para>
+    /// An entry that recorded no context always writes the depth back. That is an entry made with
+    /// the flow suppressed, and a flow suppressed for the whole call captures no context at its
+    /// return either, so without asking what the entry recorded the absent context found at the
+    /// return would compare equal to the absent one recorded at entry. There is no context to put
+    /// back then, and asking to put back an absent one throws inside the call's own return.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=BF8933
-    // Broiler-Falsified-If: a capability's return puts back the context it was entered from while the capability left a different one installed, or leaves in place the depth its entry raised, or lowers the depth further than its entry raised it
+    // Broiler-Falsified-If: a capability's return puts back the context it was entered from while the capability left a different one installed, or puts a context back when its entry recorded none, or leaves in place the depth its entry raised, or lowers the depth further than its entry raised it
     // Broiler-Human:        PENDING
     internal void LeaveCapability(VmCapabilityReentrancy reentrancy, in CapabilityEntry entry)
     {

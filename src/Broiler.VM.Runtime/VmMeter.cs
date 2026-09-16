@@ -270,12 +270,16 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 
     /// <summary>The largest block this meter may hold.</summary>
     /// <remarks>
-    /// Twice the declared poll bound. A block is renewed only by the charge that finds it spent, so
-    /// the cap sets how often a meter charging steadily takes the locked path - once per cap's worth
-    /// of units - and how much fuel one holder keeps uncommitted and held back from the other
-    /// operations of its runtime. Twice the bound is a choice made by argument, not by measurement. A
-    /// profile that declares no bound gets the flat maximum. Written to avoid overflowing the
-    /// doubling.
+    /// Twice the declared poll bound. A block ends when it is settled - by a reader of what has been
+    /// consumed or what is left, a retention, another holder's charge that needs its room, an
+    /// eviction, the end of a step, or a charge of its own that does not fit what is left - and the
+    /// next locked fuel charge begins a new one: the charge that did not fit, or the first charge
+    /// after any other settle. A poll settles nothing. So only for a meter charging steadily in
+    /// single units, with nothing settling it in between, does the cap set how often it takes the
+    /// locked path - once per cap's worth of units; for every holder it sets how much fuel is kept
+    /// uncommitted and held back from the other operations of its runtime. Twice the bound is a
+    /// choice made by argument, not by measurement. A profile that declares no bound gets the flat
+    /// maximum. Written to avoid overflowing the doubling.
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=35AA33
     // Broiler-Falsified-If: a declared poll bound at the top of its range doubles past the maximum instead of saturating at it
@@ -539,8 +543,9 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// the bound what the block has admitted since this meter last polled, and records that count at
     /// the point where the count is reset. So the bound is decided on every unit charged, as it was
     /// when every charge was committed as it was made, while the block goes on being spent by charges
-    /// that take no lock, across as many polls as it lasts. The block is renewed by the locked charge
-    /// that finds it spent, and that charge settles it first.
+    /// that take no lock, across as many polls as it lasts. The block is renewed by the next locked
+    /// fuel charge - one that does not fit what is left, which settles it first, or the first charge
+    /// after something else settled it.
     /// </para>
     /// <para>
     /// The one read is a consistent cut. Nothing but the fast path writes the block's remainder while
