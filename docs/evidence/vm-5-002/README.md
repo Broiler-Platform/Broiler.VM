@@ -535,6 +535,10 @@ transcript, and git holds the text each one replaced.
 7. **The header says the bundle is collected.** `c9afb0d` kept `dbc8d37`'s header, whose collection
    line called the bundle incomplete and said every other section was waiting; that line and the
    paragraph on why `dbc8d37` came first are now quoted, as that commit wrote them, under the header.
+8. **Section 8's first trigger names the one kind of change that does not trip it**: a correction to
+   a file this directory retains, made by a commit that regenerates `hashes.txt` with it and is listed
+   here. Items 1, 2, 3 and 6 are such corrections. A change to any tracked file in the first three
+   sections of `hashes.txt` still trips it.
 
 ---
 
@@ -870,7 +874,9 @@ a hashed file changed since that commit instead of hashing the change.
 
 **Recertification triggers.** Any one of these invalidates this bundle:
 
-- a change to any file `hashes.txt` names;
+- a change to any file `hashes.txt` names, except a correction to a file this directory retains that is
+  made by a commit regenerating `hashes.txt` with it and listed in section 5.9 - without that exception
+  this bundle could not be corrected at all, and every such correction is listed where a reader looks;
 - a change to the metering path - the meter, the pre-admission table, the budget levels, the ambient
   meter's resolution, the step-end settles, or the fixture executor's poll;
 - a change to the core contract version or the reason-registry revision;
