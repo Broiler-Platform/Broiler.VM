@@ -540,6 +540,155 @@ transcript, and git holds the text each one replaced.
    here. Items 1, 2, 3 and 6 are such corrections. A change to any tracked file in the first three
    sections of `hashes.txt` still trips it.
 
+### 5.10 The owner-directed remedy
+
+This section and section 5.11 were committed after the remedy's product and test commits and before
+any run of the evidence collected again for it. Nothing in sections 5.1 to 5.9 is changed by them.
+
+**The remedy is directed by the owner after seeing the result.** The result is this bundle's first
+collection, as section 7.3 reads it: rule item 1 failed on its witness clause, because witnesses W8
+and W12 passed tests they were meant to fail, and rule item 4 failed in both bench-host pairs. After
+seeing that, on 2026-09-16, the owner directed that both failures be fixed before any per-block
+commit, that only the evidence the fix expires be collected again, and that the failing first runs
+be kept beside the new ones. The rule of section 5.1 names no change for a failure of item 1 or of
+item 4, so the remedy is not a change that rule triggers: it is made under the owner's direction.
+
+**What the owner decided, and what the owner did not.** The owner directed that the two failures be
+fixed. The owner did not choose how. **The departure from the default "`Poll` re-admits", the change
+to the capability boundary, and item 5 are not decided by the owner.** The remedy's design asked for
+the owner's word on each of those three before its product commits were written, and the questions
+were not put to the owner: the product commits were written on the direction of an orchestrating
+agent, which is not the owner's decision. For that reason item 5 of section 5.11 is reported without
+a verdict.
+
+**The commits of the remedy**, on branch `claude/fuel-credit-block-steps`, after `fc00248`:
+
+| Commit | Subject | What it carries |
+|---|---|---|
+| `4279862` | Witness a context change on one thread, a suppressed lookup after another, nested and context-changing capabilities, and a poll after a refused poll | Tests T19 to T23 in the fuel-exactness class; corrected remarks for T7, T12 and T18; and, in the review-regression class, a variant of the per-thread leak test whose capability returns under a different context object. The product is `fc00248`'s |
+| `9e9377d` | Count a held block's work at a poll instead of settling and renewing it there | Part A, below; the remarks of T2b, T4, T8, T9 and T14; regenerated assurance and review records |
+| `965e6ad` | Return a capability's caller to the context it entered from when the capability left it unchanged | Part B, below; regenerated assurance and review records |
+| `542c715` | Witness a host call made with the flow suppressed, a lookup through another runtime's scope, a poll beside a second charging thread, and a capability return that puts its caller's context back | Tests T24 to T26, a second row of T23, a value of its own for each invocation of T21, and a test in the review-regression class that a capability which changes nothing returns its caller to the very context object it was called under. The product is `965e6ad`'s |
+| `16e3d6d` | Say that any settle ends a held block, and that a capability's return puts no context back when its entry recorded none | Remarks of `VmMeter.BlockCap`, `VmMeter.Poll` and `VmRuntime.LeaveCapability`, and one falsifier clause moved from `VmRuntime.EnterCapability` to `VmRuntime.LeaveCapability`. No code |
+
+**Part A, the poll.** `VmMeter.Poll` no longer settles the polling meter's block and no longer takes a
+fresh one. It reads the block once, under the meter's gate, and decides the uncharged-work bound on
+the counter plus what the block has admitted since this meter last polled; where the count is reset
+it records what the block had admitted, in a new gate-only field of `VmMeter`. A refused poll writes
+nothing. `VmMeter.CommitPreAdmittedFuelLocked`, which every settle and every eviction of a block goes
+through, folds into the counter only what the block admitted since that record, and clears the record
+with the block. No fuel commit site is added or moved, and the settles
+of every reader of consumption or of what is left are unchanged. A block ends when it is settled or
+when a charge of its own does not fit what is left, and the next locked fuel charge begins a new
+one. The remarks of `VmMeter.BlockCap`, `VmMeter.UnpolledWorkExceedsBound`,
+`VmFuelPreAdmissions.MaxBlock` and the comment in `VmRuntime.GetBudgetSnapshot` say so. **This
+departs from the design default "`Poll` re-admits"**, which the owner's answers to that design left
+standing and which this bundle's first collection measured.
+
+**Part B, the capability boundary.** `VmRuntime.EnterCapability` captures the thread's execution
+context before it raises the capability depth, and the context the depth write installed, and
+returns both as a `VmRuntime.CapabilityEntry`. `VmRuntime.LeaveCapability` puts the entry context back
+and returns when the thread still runs under the context the depth write installed and the entry
+recorded one; in every other case it writes the depth back as before. `VmRuntime.EnterProviderCall`
+and `VmRuntime.LeaveProviderCall` carry the entry for a provider call, `VmCapabilityInvoker.TryEnter`,
+`Leave`, `Invoke` and `InvokeBytes` carry it for a capability call, and `VmArtifactLoadMediator.Answer`
+carries it from enter to leave. `VmExecutionScope` is unchanged.
+
+**What the remedy did to this bundle.** Its product commits changed files `hashes.txt` names and the
+metering path, so they hit the first two recertification triggers of section 8: **from `9e9377d`
+on, this bundle is expired**, and it stays expired until the commit that retains the re-collection
+regenerates `hashes.txt` against the remedy's head. The first collection's files, its verdicts and
+sections 5.1 to 5.3 stay exactly as they are; the re-collection is retained beside them, under
+`r2/`.
+
+### 5.11 How the re-collection is read, committed before any run of it
+
+The rule of section 5.1 is not changed. The re-collection is read against it item by item, as
+follows, and this reading is committed before any run of the re-collection. "The remedy head" is
+`16e3d6d`, the last product and test commit of the remedy; "the base" is `f127d92`, as in section 1.
+
+**What was known when this reading was fixed.** The readings of items 4 and 5 below were written after
+the first collection's result was seen, under the owner's direction; they are predeclared relative to
+the re-collection only. And every witness of the table below was driven on the remedy's commits
+before this section was written - once at `965e6ad` and once at `16e3d6d`, as development checks whose
+transcripts this bundle does not retain - so their results on the remedy head were known when the
+witness clause was fixed. The re-collection runs them again after this commit.
+
+1. **Item 1, every clause, on the remedy head.**
+   - *Build:* a cold `dotnet build Broiler.VM.slnx -c Release --no-incremental -warnaserror` of the
+     remedy head in a fresh worktree outside the repository.
+   - *Every test project passes:* `dotnet test Broiler.VM.slnx -c Release` at the remedy head.
+   - *Records regenerated and the public API file unchanged:* a test run of the architecture and
+     contract test projects with the assurance and API write switches set, then a plain run of both;
+     and `git diff --exit-code` of `docs/api/public-api.txt` from the base to every commit of the
+     series, the remedy's included.
+   - *The fuel-exactness tests pass on both builds:* the class at the remedy head, and the same test
+     file with the three fixture files `4490eda` changed, taken from the remedy head and copied onto the
+     base, on the base meter. The test file is not unchanged since the first collection - the remedy's
+     test commits changed it, and its diff from `fc00248` is retained - so this clause reads the file
+     as it stands at the remedy head on both meters.
+   - *Every injected-defect witness fails the test it names and passes again when reverted:* every
+     witness in the table below, each applied alone in a worktree outside the repository at the remedy
+     head, with the fuel-exactness class, both per-thread leak tests and the restore-path test run
+     under the defect; then the tree restored and the same tests run clean; then the named test run
+     alone, and its passing transcript retained. The same tests run clean once before the first
+     witness. A sampled witness (W4, W24) is read as the first collection read W4: its test alone is
+     run again, up to ten runs in all, until it fails, and every run is retained. **A witness that
+     passes its named test or row is a failure of this clause**, recorded as such and not rewritten.
+   - *Both profile assemblies byte-identical:* **satisfied by an empty source diff instead of a
+     rebuild.** `git diff --stat c98011a 16e3d6d` over every project in the reference closure of the
+     JavaScript and WebAssembly profile projects, and over `Directory.Build.props`,
+     `Directory.Packages.props`, `global.json` and the property files under `eng`, is retained, and
+     so is the diff from `c98011a` to `34dbd7a` that section 5.8 item 5 describes. `c98011a` is the
+     tree the assemblies of E4 were built from. If either diff is not empty, E4 is rebuilt. This
+     substitution is part of this reading and is committed with it.
+   - *The JavaScript checks, the corpus replay and host lifetime:* the credit transcripts of the
+     re-collection, plain and verbose, against the base transcripts the first collection retained, with
+     the same masked comparison.
+   - *Conformance parity:* section 5.2 applied to two credit whole-suite runs of the re-collection,
+     one per form, against the two base reports and the two lists of section 5.3 retained from the
+     first collection, with the hand rule and the four comparisons.
+   - *Low fuel:* the credit runs of the re-collection at fuel 1,000, 2,500, 10,000, 30,000 and 100,000
+     in both forms, driven by this branch's test262 driver, against the base reports the first
+     collection retained, pair by pair - including the two base bytecode reports section 5.8 item 7
+     says another branch's driver took. A pair not re-run is named as not re-collected, and the clause
+     is not met for it.
+   - *Fuel minima:* the minima the command-line host gives for the first collection's four programs on
+     the remedy head in both forms, against the base minima the first collection retained.
+2. **Item 2**, as section 5.1 states it, from a new run of all three lanes: the base with the
+   measurement patch of E9, the remedy head with the same patch, and a byte copy of the second as the
+   A/A lane.
+3. **Item 3**, as section 5.1 states it, from new runs, with these meanings:
+   - "the credit build" is the remedy head;
+   - "the build carrying only the pre-admission table" is **C2′**: the remedy head with
+     `src/Broiler.VM.Runtime/VmExecutionScope.cs` replaced by its blob at `e117162`, identified by that
+     blob's id and by the digest of the runtime assembly built from it. C2′ is not a commit;
+   - `concurrent-bench` and `concurrent-ambient` are read against a new base run, and T6's median over
+     five runs alternating builds against a new base run.
+4. **Item 4**, the per-instruction meter row, in two pairs of bench-host runs, the first base first and
+   the second credit first. Two readings, and **both must hold in both pairs**:
+   - *lane total:* the credit `candidate-ns` of `meter-per-instruction` is at or below the base
+     `candidate-ns` plus the base `aa-ns` of the same pair;
+   - *per instruction:* the credit `per-instruction-ns` is at or below the base `per-instruction-ns`
+     plus the base `aa-ns` of the same pair divided by 256, the instructions one invocation of the row
+     charges.
+5. **Item 5, the host-call row**, which the owner's direction names as one of the two failures seen
+   and which no item of section 5.1 reads. In each pair, the reading is whether the credit
+   `per-call-ns` of `host-call` is at or below the base `per-call-ns` plus the base `aa-ns` of that
+   pair. **It is reported without a verdict**, because the owner has not decided that it is an item
+   (section 5.10).
+
+**How a run is tied to its build.** Every transcript of the re-collection begins with lines its driver
+writes before the run: the branch and head of the main checkout, the tree the run used and that tree's
+head, which build it is, the start time, and the SHA-256 of `Broiler.VM.Runtime.dll` and of the host
+executable the run loads. The collector writes its own logs and no such lines, so a wrapper writes the
+same fields to a file of their own immediately before and after it runs.
+
+**What a failure does.** A cell that fails is named as failing, and nothing in this repository may
+describe the change as faster for it. No further change is made without the owner. Every run of the
+first collection stays where it is, beside the new one, and its verdict in section 7.3 stands as the
+first collection's.
+
 ---
 
 ## 6. Outputs
