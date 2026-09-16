@@ -608,6 +608,55 @@ public sealed class ReviewRegressionTests
             $"cost {baseline} bytes before them and {after} bytes after");
     }
 
+    private static readonly System.Threading.AsyncLocal<object?> CapabilityProbe = new();
+
+    [Fact]
+    public void A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context()
+    {
+        // The same invariant as the test above, reached through the other way out of a capability.
+        // That test's capability leaves its execution context untouched. This one sets a value of its
+        // own and clears it again before it answers, so it returns under a different context object
+        // carrying the same values - the case in which leaving the capability has to write the depth
+        // back rather than rely on anything else to release it. Both shapes are pinned, so neither way
+        // of leaving a capability can retain the depth, whichever of them a later change makes cheaper.
+        var baseline = AmbientWriteCost();
+
+        for (var index = 0; index < 500; index++)
+        {
+            using var runtime = FixtureComposition.Runtime(
+                FixtureComposition.AlphaCatalog(),
+                FixtureComposition.Options(
+                    capabilities: FixtureComposition.CapabilitiesWithDouble(DoubleAfterChangingTheContext)));
+
+            var artifact = FixtureComposition.Verify(
+                runtime, FixtureArtifactWriter.HostCall(21, FixtureHostCapabilities.DoubleBinding));
+
+            using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+            Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(instance).Outcome);
+        }
+
+        var after = AmbientWriteCost();
+
+        Assert.True(
+            after <= baseline * 4,
+            $"five hundred disposed runtimes whose capability changed its context left per-thread " +
+            $"state behind: an async-local write cost {baseline} bytes before them and {after} bytes after");
+    }
+
+    /// <summary>
+    /// Doubles its argument after setting and clearing a value of its own, which leaves every value
+    /// as it was and the thread under a new execution context object.
+    /// </summary>
+    private static VmHostCallOutcome DoubleAfterChangingTheContext(ReadOnlySpan<long> arguments, out long result)
+    {
+        CapabilityProbe.Value = new object();
+        CapabilityProbe.Value = null;
+
+        result = arguments.Length > 0 ? arguments[0] * 2 : 0;
+        return VmHostCallOutcome.Completed;
+    }
+
     /// <summary>What one async-local write costs on this thread, in bytes.</summary>
     /// <remarks>
     /// The measure is allocation rather than time because the growth is a map copy, and a copy is

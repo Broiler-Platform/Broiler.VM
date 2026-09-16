@@ -39,6 +39,12 @@ namespace Broiler.VM.Contract.Tests;
 /// whose assertions would survive the defect it names is not evidence of anything, so the figures
 /// are chosen to differ under the defect rather than merely to be correct today.
 /// </para>
+/// <para>
+/// T21 and T22 are about the capability boundary rather than about a charge. They live here because
+/// the environment meter's answer is held across a capability call, keyed on the execution context,
+/// and what a capability's return leaves installed decides whether the step's next charge can still
+/// use that answer - so a change made for the sake of a charge's cost reaches that boundary too.
+/// </para>
 /// </remarks>
 public sealed class FuelChargeExactnessTests
 {
@@ -505,8 +511,10 @@ public sealed class FuelChargeExactnessTests
     /// Neither run can reach the runtime ceiling, so each must be refused by the bound stated for
     /// it alone, and the pair must together have spent exactly the sum of the two. A charge
     /// admitted against the wrong operation's remainder shows up here as a total that is not
-    /// 70,000. Witness W8 - an ambient meter that answers from a cached context without checking it
-    /// - fails here, because one run's charges reach the other's levels.
+    /// 70,000. Before the resolved answer was held per thread, witness W8 - an ambient meter that
+    /// answers from a held context without checking it - failed here, because one run's charges
+    /// reached the other's levels. A second thread can no longer see the first thread's answer, so
+    /// T19 carries W8 on one thread.
     /// </remarks>
     [Fact]
     public void Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance()
@@ -740,9 +748,10 @@ public sealed class FuelChargeExactnessTests
     /// resolves to whichever operation is running. So a charge made on the step thread lands, a
     /// charge from a thread the step started lands too because the context flowed to it, and a
     /// charge from a thread started with the flow suppressed is refused - there is no operation
-    /// there to bill. Outside a step the same meter refuses everything. Witness W8 - a cached
-    /// resolution that does not compare contexts - fails here on the suppressed-flow thread and on
-    /// the test thread's own attempts.
+    /// there to bill. Outside a step the same meter refuses everything. Witness W8 - a held
+    /// resolution that does not compare contexts - fails here: the test thread's refused lookup
+    /// before the invocation leaves an answer for no meter, the defect hands that answer to the
+    /// step's own first charge, and the run is refused.
     /// </remarks>
     [Fact]
     public void Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context()
@@ -1148,10 +1157,14 @@ public sealed class FuelChargeExactnessTests
     /// The step thread charges five units with its own flow suppressed, and they land: suppressing
     /// the flow stops a context from reaching a new thread and does not take this thread out of its
     /// step, so the AsyncLocal still holds this operation's meter. A thread with no operation of
-    /// its own then charges eleven with its flow suppressed too, and must be refused. The defect is
-    /// a cache that publishes the pair it read under the absent context: the second charge is then
-    /// answered from the first one's meter, the thread is billed to an operation it is not in, and
-    /// the run ends eleven units over.
+    /// its own then charges eleven with its flow suppressed too, and must be refused.
+    /// </para>
+    /// <para>
+    /// The test pins the cross-thread shape the scope-wide cache got wrong, where a pair published
+    /// under the absent context was handed to the second thread. Since the answer moved to the
+    /// thread, a defect of the resolution fails it only if it both shares the held answer across
+    /// threads and holds it under the absent context. T20 carries the suppressed-flow witness on one
+    /// thread.
     /// </para>
     /// </remarks>
     [Fact]
@@ -1198,6 +1211,394 @@ public sealed class FuelChargeExactnessTests
         Assert.Equal(VmOutcome.Normal, result.Outcome);
         Assert.Equal(new[] { true, false }, answers);
         Assert.Equal(203UL + 5UL, Fuel(runtime));
+    }
+
+    // ---- T19: a context change on one thread ----------------------------------------------------
+
+    /// <summary>
+    /// A charge made on one thread under another operation's execution context bills that operation,
+    /// and each operation is still stopped by its own invocation allowance to the unit.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// B is held inside its capability call, having captured the context it runs under there. A runs
+    /// on the test thread with an invocation allowance of exactly what it charges. Inside A's
+    /// capability call the thread charges five units under its own context, then seven under B's
+    /// context, and then goes back to its own. The seven land on B, so A completes on 208 units and B
+    /// on 210.
+    /// </para>
+    /// <para>
+    /// Witness W8 - a lookup that returns the thread's held answer without comparing contexts -
+    /// answers the seven from A's meter, which it holds from the five-unit charge. A is then refused
+    /// before its last instructions, and the runtime ends seven units short of 418. This is the claim
+    /// T7 was written to carry, made on one thread, which is the only place a held answer can now be
+    /// reused.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_Charge_Made_Under_Another_Operations_Context_Bills_That_Operation()
+    {
+        IVmExecutionEnvironment? captured = null;
+        ExecutionContext? held = null;
+        var gate = new FixtureExecutionGate { HoldAt = FixtureGatePoint.Capability };
+        var calls = 0;
+        var answers = new List<bool>();
+
+        VmHostCallOutcome Handler(ReadOnlySpan<long> arguments, out long result)
+        {
+            result = 0;
+
+            if (Interlocked.Increment(ref calls) == 1)
+            {
+                held = ExecutionContext.Capture();
+                gate.Reached(FixtureGatePoint.Capability);
+                return VmHostCallOutcome.Completed;
+            }
+
+            var environment = captured!;
+            var inside = ExecutionContext.Capture()!;
+
+            answers.Add(environment.Meter.TryCharge(VmBudgetDimension.Fuel, 5));
+
+            ExecutionContext.Restore(held!);
+
+            try
+            {
+                answers.Add(environment.Meter.TryCharge(VmBudgetDimension.Fuel, 7));
+            }
+            finally
+            {
+                ExecutionContext.Restore(inside);
+            }
+
+            return VmHostCallOutcome.Completed;
+        }
+
+        using var runtime = FixtureComposition.Runtime(
+            Observing(FixtureVmProfileVariant.Conforming, environment => captured = environment),
+            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
+
+        var artifact = FixtureComposition.Verify(
+            runtime, FixtureArtifactWriter.NopsAroundHostCall(100, FixtureHostCapabilities.DoubleBinding, 100));
+
+        using var a = Instantiate(runtime, artifact, instanceFuel: 0);
+        using var b = Instantiate(runtime, artifact, instanceFuel: 0);
+
+        VmInvocationResult? bResult = null;
+        var bStep = new Thread(() => bResult = Invoke(b, 0));
+
+        bStep.Start();
+
+        try
+        {
+            Assert.True(gate.WaitForEntry(Patience), "B's host call never reached the handler");
+            Assert.NotNull(held);
+
+            var aResult = Invoke(a, 203UL + 5UL);
+
+            gate.Release();
+            Assert.True(bStep.Join(Patience), "B never finished");
+
+            Assert.Equal(VmOutcome.Normal, aResult.Outcome);
+            Assert.True(bResult.HasValue, "B finished without a result");
+            Assert.Equal(VmOutcome.Normal, bResult!.Value.Outcome);
+            Assert.Equal(new[] { true, true }, answers);
+            Assert.Equal((203UL + 5UL) + (203UL + 7UL), Fuel(runtime));
+        }
+        finally
+        {
+            gate.Release();
+        }
+    }
+
+    // ---- T20: two suppressed lookups on one thread ----------------------------------------------
+
+    /// <summary>
+    /// A lookup made with the flow suppressed is answered from the context it was made in, even when
+    /// an earlier suppressed lookup on the same thread was answered with a meter.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Inside the step's capability call the thread charges five units with its flow suppressed, and
+    /// they land. It then puts itself under a context captured outside any step, suppresses the flow
+    /// again, and charges eleven, which must be refused. The thread-held answer is what this guards:
+    /// a suppressed flow captures no context, so the absent context would be the same key for both
+    /// lookups.
+    /// </para>
+    /// <para>
+    /// Witness W12 - a suppressed lookup held under the absent context - answers the second charge
+    /// from the first one's meter, and the run ends eleven units over.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_Suppressed_Lookup_Is_Not_Answered_From_An_Earlier_One_On_The_Same_Thread()
+    {
+        IVmExecutionEnvironment? captured = null;
+        var answers = new List<bool>();
+        var outside = ExecutionContext.Capture();
+
+        Assert.NotNull(outside);
+
+        VmHostCallOutcome Handler(ReadOnlySpan<long> arguments, out long result)
+        {
+            var environment = captured!;
+            var inside = ExecutionContext.Capture()!;
+
+            using (ExecutionContext.SuppressFlow())
+            {
+                answers.Add(environment.Meter.TryCharge(VmBudgetDimension.Fuel, 5));
+            }
+
+            ExecutionContext.Restore(outside!);
+
+            try
+            {
+                using (ExecutionContext.SuppressFlow())
+                {
+                    answers.Add(environment.Meter.TryCharge(VmBudgetDimension.Fuel, 11));
+                }
+            }
+            finally
+            {
+                ExecutionContext.Restore(inside);
+            }
+
+            result = 0;
+            return VmHostCallOutcome.Completed;
+        }
+
+        using var runtime = FixtureComposition.Runtime(
+            Observing(FixtureVmProfileVariant.Conforming, environment => captured = environment),
+            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
+
+        var artifact = FixtureComposition.Verify(
+            runtime, FixtureArtifactWriter.NopsAroundHostCall(100, FixtureHostCapabilities.DoubleBinding, 100));
+
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+        var result = FixtureComposition.Invoke(instance);
+
+        Assert.Equal(VmOutcome.Normal, result.Outcome);
+        Assert.Equal(new[] { true, false }, answers);
+        Assert.Equal(203UL + 5UL, Fuel(runtime));
+    }
+
+    // ---- T21: what a capability's return puts back ---------------------------------------------
+
+    /// <summary>
+    /// A value a capability sets in its execution context is still set when the step's next
+    /// capability call runs, and the capability's depth is released when it returns.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This pins the behaviour of commit <c>f127d92</c>: a synchronous callee's AsyncLocal write is
+    /// seen by its caller afterwards. The first capability call of each invocation sets a value, and
+    /// the second reads it. A second invocation of the same instance must then be admitted, which it
+    /// is only if neither call left its non-reentrancy depth on the thread. Four instructions per
+    /// invocation, and two host calls each.
+    /// </para>
+    /// <para>
+    /// It is written down because putting back the context a call was entered from is a way of
+    /// leaving a capability that is cheaper than writing the depth back, and it must never discard a
+    /// change the capability made. Witness W16 - putting that context back without checking what the
+    /// capability left installed - loses the value, and the second call reads nothing. Witnesses W17
+    /// and W18 - dropping the write-back when the capability changed its context, and recording the
+    /// entry context after the depth was raised - leave the raised depth on the thread, and the
+    /// second invocation is refused as a call from inside a capability.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_Capability_That_Changes_Its_Context_Keeps_The_Change_And_Releases_Its_Depth()
+    {
+        const string Marker = "set by the first capability call";
+        var marker = new AsyncLocal<string?>();
+        var seen = new List<string?>();
+        var calls = 0;
+
+        VmHostCallOutcome Handler(ReadOnlySpan<long> arguments, out long result)
+        {
+            if (++calls % 2 == 1)
+            {
+                marker.Value = Marker;
+            }
+            else
+            {
+                seen.Add(marker.Value);
+            }
+
+            result = 0;
+            return VmHostCallOutcome.Completed;
+        }
+
+        using var runtime = FixtureComposition.Runtime(
+            FixtureComposition.Catalog(FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.Conforming)),
+            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
+
+        var artifact = FixtureComposition.Verify(
+            runtime,
+            FixtureArtifactWriter.Write(
+                [21],
+                [
+                    FixtureFormat.OpPushConst, 0,
+                    FixtureFormat.OpHostCall, FixtureHostCapabilities.DoubleBinding,
+                    FixtureFormat.OpHostCall, FixtureHostCapabilities.DoubleBinding,
+                    FixtureFormat.OpReturn,
+                ]));
+
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+        try
+        {
+            var first = FixtureComposition.Invoke(instance);
+
+            Assert.Equal(VmOutcome.Normal, first.Outcome);
+            Assert.Equal(new string?[] { Marker }, seen);
+
+            var second = FixtureComposition.Invoke(instance);
+
+            Assert.Equal(VmOutcome.Normal, second.Outcome);
+            Assert.Equal(new string?[] { Marker, Marker }, seen);
+            Assert.Equal(8UL, Fuel(runtime));
+            Assert.Equal(4UL, runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.HostCalls));
+        }
+        finally
+        {
+            // The value is this test's own, and it would otherwise stay on the thread that ran it.
+            marker.Value = null;
+        }
+    }
+
+    // ---- T22: a capability called from inside another ------------------------------------------
+
+    /// <summary>
+    /// A non-reentrant capability that calls another capability through the step's table is still
+    /// inside its own boundary when the inner call returns.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The handler's first call invokes the same capability again through the environment's capability
+    /// table, which enters the boundary a second time on the same thread, and then asks the runtime
+    /// to verify an artifact. That request is a runtime call from inside a non-reentrant capability
+    /// and must be refused as one, because the outer call has not returned. Once it has, the depth is
+    /// released and a second invocation is admitted. Two host calls and 203 units.
+    /// </para>
+    /// <para>
+    /// Nesting is the only shape in which leaving the inner call can release the outer call's depth.
+    /// Witness W19 - a return that puts back the context the inner call was entered from and then
+    /// writes the depth back as well - lowers the depth a second time, and the runtime call is
+    /// admitted.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_Capability_Called_From_Inside_Another_Leaves_The_Outer_Call_Inside_Its_Boundary()
+    {
+        IVmExecutionEnvironment? captured = null;
+        VmRuntime? current = null;
+        var calls = 0;
+        var nested = VmHostCallOutcome.Unavailable;
+        var refusal = VmReason.None;
+        var observed = false;
+
+        VmHostCallOutcome Handler(ReadOnlySpan<long> arguments, out long result)
+        {
+            result = 0;
+
+            if (++calls != 1)
+            {
+                return VmHostCallOutcome.Completed;
+            }
+
+            Span<long> inner = stackalloc long[1];
+            nested = captured!.Capabilities.Invoke(FixtureHostCapabilities.DoubleBinding, inner, out _);
+
+            var descriptor = FixtureComposition.Descriptor();
+            var attempt = current!.Verify(in descriptor, FixtureArtifactWriter.Constant(1), CancellationToken.None);
+
+            refusal = attempt.Reason;
+            observed = true;
+            attempt.TryGetArtifact(out var verified);
+            verified?.Dispose();
+
+            return VmHostCallOutcome.Completed;
+        }
+
+        using var runtime = FixtureComposition.Runtime(
+            Observing(FixtureVmProfileVariant.Conforming, environment => captured = environment),
+            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
+
+        current = runtime;
+
+        var artifact = FixtureComposition.Verify(
+            runtime, FixtureArtifactWriter.NopsAroundHostCall(100, FixtureHostCapabilities.DoubleBinding, 100));
+
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+        var result = FixtureComposition.Invoke(instance);
+
+        Assert.Equal(VmOutcome.Normal, result.Outcome);
+        Assert.True(observed, "the outer capability call never reached its runtime call");
+        Assert.Equal(VmHostCallOutcome.Completed, nested);
+        Assert.Equal(VmReason.ReentrantRuntimeCallFromCapability, refusal);
+        Assert.Equal(2UL, runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.HostCalls));
+        Assert.Equal(203UL, Fuel(runtime));
+
+        Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(instance).Outcome);
+    }
+
+    // ---- T23: a poll after a refused poll ------------------------------------------------------
+
+    /// <summary>
+    /// A poll refused on the uncharged-work bound is refused again while nothing has reset the count.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A refusal resets nothing, so a profile that ignores one and polls again must not be told the
+    /// breach went away. The fixture executor stops at its first refused poll, which is why the second
+    /// poll here is the handler's own.
+    /// </para>
+    /// <para>
+    /// The executor polled after its sixty-fourth instruction charge, so 38 units are unpolled when
+    /// the host call runs. The handler charges 27 more in one charge, one past the bound of 64, and
+    /// then polls twice: both are refused. The executor's own poll after its 128th instruction charge
+    /// is refused as well, and the run is a profile fault at 155 units. Witness W21 - a refused poll
+    /// that records what it counted as counted - answers the second poll true, lets the executor's
+    /// polls pass, and ends at 230. Witness W21b - the reset moved before the bound test - answers
+    /// every poll true.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_Poll_After_A_Refused_Poll_Is_Refused_Again()
+    {
+        IVmExecutionEnvironment? captured = null;
+        var answers = new List<bool>();
+
+        VmHostCallOutcome Handler(ReadOnlySpan<long> arguments, out long result)
+        {
+            var meter = captured!.Meter;
+
+            answers.Add(meter.TryCharge(VmBudgetDimension.Fuel, 27));
+            answers.Add(meter.Poll());
+            answers.Add(meter.Poll());
+
+            result = 0;
+            return VmHostCallOutcome.Completed;
+        }
+
+        using var runtime = FixtureComposition.Runtime(
+            Observing(FixtureVmProfileVariant.WindowedPolling, environment => captured = environment),
+            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
+
+        var artifact = FixtureComposition.Verify(
+            runtime, FixtureArtifactWriter.NopsAroundHostCall(100, FixtureHostCapabilities.DoubleBinding, 100));
+
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+        var result = FixtureComposition.Invoke(instance);
+
+        Assert.Equal(new[] { true, false, false }, answers);
+        Assert.Equal(VmOutcome.ProfileFault, result.Outcome);
+        Assert.Equal(VmReason.CancellationPollBoundExceeded, result.Reason);
+        Assert.Equal(155UL, Fuel(runtime));
     }
 
     private static VmAggregateBudget AggregateBudget(ulong liveRuntimes, ulong fuel)
