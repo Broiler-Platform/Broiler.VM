@@ -17,6 +17,17 @@ namespace Broiler.VM.Fixtures;
 /// </remarks>
 public sealed class FixtureVmExecutor : IVmProfileExecutor
 {
+    /// <summary>
+    /// How many per-instruction charges <see cref="FixtureVmProfileVariant.WindowedPolling"/> puts
+    /// between two polls.
+    /// </summary>
+    /// <remarks>
+    /// It is also that variant's declared bound, so the window and the core's uncharged-work
+    /// counter are the same size. A window larger than the bound would break the bound on every
+    /// run, and a smaller one would never let a charge sit unpolled long enough to be interesting.
+    /// </remarks>
+    public const uint PollWindow = 64;
+
     private readonly IVmExecutionEnvironment environment;
     private readonly FixtureVmProfileVariant variant;
     private readonly uint chargingGranularity;
@@ -50,6 +61,16 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
 
     /// <summary>The reason of the most recent guest-initiated load.</summary>
     public VmReason LastGuestLoadReason { get; private set; }
+
+    /// <summary>
+    /// The Fuel ceiling the most recent guest-initiated load was verified under.
+    /// </summary>
+    /// <remarks>
+    /// A nested verification runs on the requesting operation's remaining allowance rather than on
+    /// a runtime ceiling, so this is exactly what the operation had left when it asked. A test
+    /// reads it to pin that the remainder handed on counts every charge the operation had made.
+    /// </remarks>
+    public ulong LastGuestLoadFuelCeiling { get; private set; }
 
     /// <inheritdoc/>
     public VmExecutionStep Instantiate(
@@ -88,7 +109,7 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
 
         fixtureState.InvocationCount++;
 
-        return Run(fixtureState, 0, new long[32], 0, cancellationToken);
+        return Run(fixtureState, 0, new long[32], 0, 0, cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -102,7 +123,11 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
             return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
         }
 
-        return Run(fixtureState, parked.InstructionPointer, parked.Stack, parked.StackDepth, cancellationToken);
+        // The parked run's window phase travels with the continuation. A park is not a poll, and
+        // the core's uncharged-work counter keeps running across one.
+        return Run(
+            fixtureState, parked.InstructionPointer, parked.Stack, parked.StackDepth,
+            parked.SinceLastPoll, cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -130,12 +155,12 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
         int instructionPointer,
         long[] stack,
         int stackDepth,
+        uint sinceLastPoll,
         System.Threading.CancellationToken cancellationToken)
     {
         var code = state.Verified.Code;
         var constants = state.Verified.Constants;
         var meter = environment.Meter;
-        var sinceLastPoll = 0u;
 
         while (instructionPointer < code.Length)
         {
@@ -149,13 +174,13 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
 
             sinceLastPoll += chargingGranularity;
 
-            if (variant is not FixtureVmProfileVariant.PollBoundBreaker && !meter.Poll())
+            if (PollsAt(sinceLastPoll))
             {
-                return VmExecutionStep.ContractViolation(VmReason.Cancelled);
-            }
+                if (!meter.Poll())
+                {
+                    return VmExecutionStep.ContractViolation(VmReason.Cancelled);
+                }
 
-            if (variant is not FixtureVmProfileVariant.PollBoundBreaker)
-            {
                 sinceLastPoll = 0;
             }
 
@@ -207,7 +232,7 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
 
                 case FixtureFormat.OpYield:
                     return VmExecutionStep.Suspended(
-                        new FixtureContinuation(instructionPointer, stack, stackDepth),
+                        new FixtureContinuation(instructionPointer, stack, stackDepth, sinceLastPoll),
                         new FixtureSuspensionProjection(ProfileId, instructionPointer, stackDepth));
 
                 case FixtureFormat.OpFault:
@@ -282,6 +307,30 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
     }
 
     /// <summary>
+    /// Whether this variant polls now, having charged <paramref name="sinceLastPoll"/> units of
+    /// per-instruction work since its last one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The conforming shape polls after every charge. That is the easy case and it is what every
+    /// other executor here does, which is why the windowed variant exists: a real engine charges a
+    /// run of instructions and polls once at the end of it, and nothing exercised that.
+    /// </para>
+    /// <para>
+    /// The window counts per-instruction charges only, and never the bulk units a spin charges.
+    /// The core counts every unit of work against the declared bound, so a profile that counted
+    /// only its own instructions is exactly the profile that breaks the bound without noticing -
+    /// which is the condition the poll-bound rule exists to catch.
+    /// </para>
+    /// </remarks>
+    private bool PollsAt(uint sinceLastPoll) => variant switch
+    {
+        FixtureVmProfileVariant.PollBoundBreaker => false,
+        FixtureVmProfileVariant.WindowedPolling => sinceLastPoll >= PollWindow,
+        _ => true,
+    };
+
+    /// <summary>
     /// Requests one guest-initiated load, and converts its result into this profile's own terms.
     /// </summary>
     /// <remarks>
@@ -317,6 +366,14 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
 
         LastGuestLoadOutcome = result.Outcome;
         LastGuestLoadReason = result.Reason;
+
+        if (result.TryGetArtifact(out var nested))
+        {
+            // A nested handle's instantiation ceilings are the requesting operation's remaining
+            // allowance, materialized before the nested verifier read its first byte.
+            LastGuestLoadFuelCeiling =
+                nested.Identity.EffectiveCeilings.InstantiationCeilings[VmBudgetDimension.Fuel];
+        }
 
         if (result.IsSuccess)
         {

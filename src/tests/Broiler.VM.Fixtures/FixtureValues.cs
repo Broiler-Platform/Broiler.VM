@@ -145,11 +145,12 @@ public sealed class FixtureInstanceState : IVmInstanceState
 /// </remarks>
 public sealed class FixtureContinuation : IVmProfileContinuation
 {
-    internal FixtureContinuation(int instructionPointer, long[] stack, int stackDepth)
+    internal FixtureContinuation(int instructionPointer, long[] stack, int stackDepth, uint sinceLastPoll = 0)
     {
         InstructionPointer = instructionPointer;
         Stack = stack;
         StackDepth = stackDepth;
+        SinceLastPoll = sinceLastPoll;
     }
 
     internal int InstructionPointer { get; }
@@ -157,6 +158,17 @@ public sealed class FixtureContinuation : IVmProfileContinuation
     internal long[] Stack { get; }
 
     internal int StackDepth { get; }
+
+    /// <summary>
+    /// How much charged work the parked run had accumulated since its last poll.
+    /// </summary>
+    /// <remarks>
+    /// A park is not a poll. The declared bound is on work performed between two polls, and the
+    /// core's counter keeps running across a suspension, so a variant that polls on a window has to
+    /// resume on the same window phase it parked on. Restarting the window at zero would let a
+    /// resumed run go a whole window past a bound it never actually broke.
+    /// </remarks>
+    internal uint SinceLastPoll { get; }
 
     /// <summary>Whether the profile's terminal-unwind entry point has run for this continuation.</summary>
     public bool Unwound { get; internal set; }
