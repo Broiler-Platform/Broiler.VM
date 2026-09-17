@@ -1038,7 +1038,17 @@ public sealed class ReviewRecordRuleTests
         // subject is the whole runtime - which meters hold fuel at once, and what each of them is
         // holding - while the meter's subject is one operation's chain. It is covered on the same
         // terms as every other product file, and nothing in it has been read by a human.
-        Assert.Equal(171, AssuranceSources.Files.Count);
+        //
+        // THE HUNDRED-AND-SEVENTY-SECOND IS THE BASELINE FORM'S BLOCK PARTITION AND UNIT LAYOUT,
+        // JsBaselineBlocks.cs, and it is counted here because it is the one statement of which
+        // instructions run alone, where a block step stops, and what an emitted unit's body is,
+        // written for the emitter, the step and the scan to read rather than restate, so a review
+        // that did not read it would be a review of three parties agreeing about something it never
+        // saw. It is in the format assembly beside JsBaselineFrame.cs because the emitter
+        // and the engine both reference that assembly and neither may reference the other. It is
+        // covered on the same terms as every other product file, and nothing in it has been read by
+        // a human.
+        Assert.Equal(172, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

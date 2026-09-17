@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 171 |
-| Files carrying an annotation | 171 |
-| Code units | 6907 |
-| Relevant | 3976 |
-| Exempt by predicate | 2931 |
-| Annotated | 3976 of 3976 (100%) |
-| Human reviewed | 0 of 3976 (0%) |
-| Unverified | 3976 |
+| Files scanned | 172 |
+| Files carrying an annotation | 172 |
+| Code units | 6975 |
+| Relevant | 4015 |
+| Exempt by predicate | 2960 |
+| Annotated | 4015 of 4015 (100%) |
+| Human reviewed | 0 of 4015 (0%) |
+| Unverified | 4015 |
 
 ## Review states
 
@@ -28,17 +28,17 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 3976 |
+| HUMAN_PENDING | 4015 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2931 |
+| EXEMPT | 2960 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1587 |
+| None | 1626 |
 | Low | 3258 |
 | Medium | 89 |
 | High | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 6 |
-| Low | 669 |
-| Medium | 3239 |
-| High | 896 |
+| Low | 673 |
+| Medium | 3260 |
+| High | 910 |
 | Critical | 124 |
 | *not annotated* | 0 |
 
@@ -61,8 +61,8 @@ figures below are the measurement of how far from that claim the component is.
 | Metric | Value |
 |---|---:|
 | Maximum | 9 / 10 |
-| Average over annotated units | 1.9 / 10 |
-| Units scored | 3976 |
+| Average over annotated units | 1.8 / 10 |
+| Units scored | 4015 |
 
 ## High-security review areas
 
@@ -304,6 +304,20 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes.OperandWidth(JavaScriptOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes.PopCount(JavaScriptOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes.PushCount(JavaScriptOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Table` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.RunsAlone(JsOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.EndsBlock(JsOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.StopsAfter(byte[], int, int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.GroupHandlerOffsets(JsNativeProgramImage)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.TryPlan(JsNativeProgramImage, int, System.ReadOnlySpan<uint>, out JsBaselineUnitPlan, out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.LayoutLength(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Layout(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Tree(JsBaselineInstruction[], ref int, System.ReadOnlySpan<int>, int, int, int, System.ReadOnlySpan<JsBaselineBlock>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.TreeLength(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.BlockLength(JsBaselineBlock)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.HeadIndex(System.ReadOnlySpan<JsBaselineBlock>, int[], int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Build()` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineStatus` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineFrame.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineFrame` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineFrame.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineAbi` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineFrame.cs` - Security=High, human line PENDING
@@ -1091,8 +1105,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1095 |
-| Units required to carry one | 1020 |
+| Units carrying a criterion | 1111 |
+| Units required to carry one | 1034 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1119,14 +1133,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 834 |
-| ParameterAssigningConstructor | 95 |
+| TrivialPropertyOrAccessor | 839 |
+| ParameterAssigningConstructor | 97 |
 | TrivialExpressionBodiedMember | 45 |
 | CompilerSuppliedRecordOrEnumMember | 8 |
 | DelegatingOverrideOrOperator | 104 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 555 |
-| EnumMemberOfADeclaredVocabulary | 1290 |
+| FieldDeclaringStorage | 559 |
+| EnumMemberOfADeclaredVocabulary | 1308 |
 | DeclaredInSource | 0 |
 
 ## Per-unit exemptions
@@ -1146,7 +1160,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-6907 of them, exempt and relevant alike - with the fingerprint of its declaration.
+6975 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -1154,7 +1168,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 171 of them - with a
+Beside the units it lists **every covered file** - 172 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.
