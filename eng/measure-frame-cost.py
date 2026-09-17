@@ -69,13 +69,13 @@
 # is the recursion this script began with: a call instruction, which the baseline form gives a step
 # of its own. Most other families recurse through the object model instead - an accessor, an indexed
 # or global or `super` read, a setter or a `super` write, a private accessor, a coercion hook, a Proxy
-# trap, the native `__proto__` setter, `Symbol.hasInstance`, `with`, `for-in`, object spread, the
-# rendering of a thrown object. Those routes re-enter guest code from an instruction that the form may
-# be running inside a wider step, so what one level costs there is not what `plain` costs and cannot
-# be read off it. The rest keep a step of their own as `plain` does, but nest through a different
-# helper on the way to the callee - a built-in, a bound function or a callable Proxy, a field
-# initialiser under `super()`, a static element, or the iterator protocol's open, next, close and
-# delegation - so they are not `plain` either. Each family is measured on its own.
+# trap, the native `__proto__` getter and setter, `Symbol.hasInstance`, `with`, `for-in`, object
+# spread, the rendering of a thrown object. Those routes re-enter guest code from an instruction that
+# the form may be running inside a wider step, so what one level costs there is not what `plain` costs
+# and cannot be read off it. The rest keep a step of their own as `plain` does, but nest through a
+# different helper on the way to the callee - a built-in, a bound function or a callable Proxy, a
+# field initialiser under `super()`, a static element, or the iterator protocol's open, next, close
+# and delegation - so they are not `plain` either. Each family is measured on its own.
 #
 # EACH FAMILY IS A (RETURNING, THROWING) PAIR, and the pair is the point: the two depths must agree,
 # and a route where they do not has a throw costing stack that a call does not. Every throwing form
@@ -229,10 +229,10 @@ TEMPLATES = {
         'catch (x) { if (x !== e) { throw x; } } return "m"; } };',
         '"m"', '(function () { try { throw e; } catch (x) { if (x !== e) { throw x; } } return n; })()'),
 
-    # THE BLOCK ROUTES THE FAMILIES ABOVE DO NOT REACH: five more Proxy traps, the `__proto__` setter,
-    # the private accessors and the `super` write. WHERE SEVERAL INSTRUCTIONS REACH ONE TRAP, THE FAMILY
-    # RECURSES THROUGH THE ONE WHOSE ARM NESTS THE MOST NATIVE STACK PER LEVEL, and that was decided by
-    # reading, not by measuring: by counting the helper frames that stand between the arm in
+    # THE BLOCK ROUTES THE FAMILIES ABOVE DO NOT REACH: six more Proxy traps, the `__proto__` getter and
+    # setter, the private accessors and the `super` write. WHERE SEVERAL INSTRUCTIONS REACH ONE TRAP,
+    # THE FAMILY RECURSES THROUGH THE ONE WHOSE ARM NESTS THE MOST NATIVE STACK PER LEVEL, and that was
+    # decided by reading, not by measuring: by counting the helper frames that stand between the arm in
     # `ExecuteCore` and the `JsEngine.Call` of the trap, since every frame the helpers leave open
     # stays open under the level above. A tie is named where it falls. The indexed write wins most
     # of them, because `SetIndexed` stands in front of `SetProperty`, and a Proxy with no `set` trap
@@ -281,6 +281,27 @@ TEMPLATES = {
         'var n = %d; function F() { } var p = new Proxy({}, { getPrototypeOf: function () { '
         'if (n === 0) { @BASE@ } n = n - 1; p instanceof F; return null; } });',
         "null", "(function () { p instanceof F; return n; })()"),
+
+    # PROXY `getPrototypeOf` THROUGH THE NATIVE `__proto__` GETTER, a family of its own beside
+    # `proxyproto`, which keeps the direct route. A read of `__proto__` from a Proxy with no `get` trap
+    # is forwarded by `JsProxy.ProxyGet` to `GetWithReceiver`, whose `Lookup` finds the accessor on
+    # `Object.prototype` and calls its getter with the Proxy as the receiver, and the getter reads
+    # `Prototype` -> `ProxyGetPrototypeOf` -> the trap, two calls a level. The family leaves the getter
+    # where the realm installs it, so the arms are the instructions that read the key `__proto__`. The
+    # one chosen is `ResolveName`, asking a `with` object's `Symbol.unscopables`, which is the Proxy,
+    # whether it hides the name:
+    # `ResolveName` -> `Unscopable` -> `GetProperty` -> `Lookup` -> `ProxyGet` -> `GetWithReceiver` ->
+    # `Lookup` -> the getter's call, seven frames; from that call to the trap's, every arm takes the
+    # same frames. `GetIndex` (`GetIndexed`) is one frame fewer and `GetProperty` two. `SpreadObject`
+    # (`CopyDataProperties`) ties `GetIndex`, but reads the key only when the Proxy's `ownKeys` and
+    # `getOwnPropertyDescriptor` traps report a `__proto__` its target does not hold, so its level would
+    # enter those two traps as well. `LoadSuperProperty` (`Lookup`) is three frames fewer. The trap
+    # answers `null`, so the name is not hidden, and the `with` object's own read of `__proto__` then
+    # meets only its ordinary prototype.
+    "proxyprotoget": (
+        'var n = %d; var p = new Proxy({}, { getPrototypeOf: function () { if (n === 0) { @BASE@ } '
+        'n = n - 1; with (o) { __proto__; } return null; } }); var o = { [Symbol.unscopables]: p };',
+        "null", "(function () { with (o) { __proto__; } return n; })()"),
 
     # PROXY `isExtensible`: the same write, which `LandOnReceiver` sends through `JsProxy.Extensible`
     # -> `ProxyIsExtensible` -> the trap before it defines. `SetProperty` is one frame fewer and
