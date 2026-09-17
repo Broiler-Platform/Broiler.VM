@@ -59,3 +59,19 @@ reference and as a value type that holds one, because "is, or contains" is two q
 `X3-an-unmanaged-entry-outside-the-handler-file.cs.witness` sits at a path outside the handler file
 and is a native callback that both carries `[UnmanagedCallersOnly]` and parks an activation in the
 thread slot, because an author who adds the entry adds the slot access in the same edit.
+
+**Four of rule X4's five witnesses are edits rather than files**, and they are stored as the members
+the edit writes. The rule's test puts each one's members into the real file they belong to - the handler
+table or the activation - in place of the members of the same name, and adds the ones the real file
+lacks, because the files they edit are a hundred times the witness's size and a stored copy of either
+would go stale at its next edit, the reason rule X3's rejecting directions edit the real activation.
+`X4-a-call-routed-through-the-block-step.cs.witness` routes `Call` through the block step alone and
+gives `Nop` a step of its own, the uniform table a tidy-up produces. `X4-a-step-that-no-longer-checks-the-opcode.cs.witness`
+is `Step` without the comparison the template scan made unreachable from a verified payload, and
+`X4-a-step-whose-checks-are-joined-with-and.cs.witness` is `Step` with every comparison present and
+joined with `&&`, which is what a rule that found the comparisons by name would clear.
+`X4-a-wrapper-that-expects-another-opcode.cs.witness` has `Nop` and `Call` expect each other's opcode and
+`StepCall` answer `Construct`, and the test exchanges the two slots in the real table before it puts
+them in, so every check but the rule's own agrees with it. The fifth,
+`X4-a-layout-read-outside-the-scan-and-the-lowering.cs.witness`, is a whole file, read at a path in the
+profile assembly where it is reported and at a path in the lowering assembly where it is not.

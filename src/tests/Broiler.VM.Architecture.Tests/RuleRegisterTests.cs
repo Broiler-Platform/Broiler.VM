@@ -335,10 +335,22 @@ public sealed class RuleRegisterTests
         // restores it and, inside the activation, to the property's accessors and Step, which is what
         // keeps that slot an activation handle rather than the ambient holder N20 forbids. Neither
         // the Vacuous nor the Deferred count moves.
-        Assert.Equal(93, byStatus["Active"]);
+        // The per-block baseline steps add X4, in group X beside X2 and X3 because it holds what an
+        // entry point runs once native code has entered managed code through one. A unit now calls a
+        // handler only at a block head, and four properties rest on source no call site shows: each
+        // wrapper routes by JsBaselineBlocks.RunsAlone, so an instruction that runs alone is never
+        // under the block step's frame; Step still compares the cookie, the offset, its bound and the
+        // opcode before it runs anything, although the template scan now makes those comparisons
+        // unreachable from a verified payload, which leaves this rule their standing observation;
+        // JsBaselineBlocks.Layout and JsNativeTemplate.Fixed are named in the product only by the scan
+        // and the lowering, which the argument that an execution-only image holds no code generator
+        // rests on; and each slot, expected opcode and step's opcode is the one its wrapper is named
+        // for, without which routing by name routes nothing. Neither the Vacuous nor the Deferred count
+        // moves.
+        Assert.Equal(94, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(95, Loaded.Rules.Count);
+        Assert.Equal(96, Loaded.Rules.Count);
     }
 
     private static Register Load()

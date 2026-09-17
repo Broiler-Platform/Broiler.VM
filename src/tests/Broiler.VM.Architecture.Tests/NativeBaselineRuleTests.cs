@@ -10,8 +10,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>
-/// Rules X2 and X3: what the baseline native form hands emitted code, and where native code may
-/// enter managed code and find the activation it runs for.
+/// Rules X2, X3 and X4: what the baseline native form hands emitted code, where native code may
+/// enter managed code and find the activation it runs for, and what each entry point runs once it
+/// has.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -20,6 +21,13 @@ namespace Broiler.VM.Architecture.Tests;
 /// whether emitted code can reach a managed object the collector does not know it holds: what the
 /// frame it is handed contains, and which managed code it can call. Decision JSD-0025 argues both,
 /// and neither argument is visible at any call site.
+/// </para>
+/// <para>
+/// <b>X4 is the per-block steps' half.</b> Once a baseline unit calls a handler only at block heads,
+/// more properties rest on source no call site shows: each entry point routes by the partition under
+/// its own name, the step still checks what it is handed although the template scan now makes those
+/// checks unreachable from a verified payload, and the layout and a template's fixed bytes are named
+/// only where comparing or emitting is the point.
 /// </para>
 /// <para>
 /// Each rule is asserted twice, as every group here is: the checkout is clean, and the rule rejects
@@ -42,6 +50,24 @@ public sealed class NativeBaselineRuleTests
 
     /// <summary>The file that declares the thread slot and the step that reads it.</summary>
     internal const string ActivationFile = "src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs";
+
+    /// <summary>The file that states the block partition, whose <c>RunsAlone</c> rule X4 routes by.</summary>
+    internal const string BlocksFile = "src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs";
+
+    /// <summary>The file that declares the opcodes, whose names are the names a wrapper may carry.</summary>
+    internal const string OpcodeFile = "src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs";
+
+    /// <summary>The template scan: one of the two places rule X4 lets read the layout and the fixed bytes.</summary>
+    internal const string ScanFile = "src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs";
+
+    /// <summary>The file that declares a template and its fixed bytes.</summary>
+    internal const string TemplatesFile = "src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs";
+
+    /// <summary>The lowering assembly: the other place rule X4 lets read the layout and the fixed bytes.</summary>
+    internal const string LoweringAssembly = "Broiler.VM.Profile.JavaScript.Compiler";
+
+    /// <summary>The mode every entry point runs that does not run a step of its own opcode.</summary>
+    internal const string BlockMode = "JsStepBlock";
 
     /// <summary>The shipping source tree rule X1 sweeps, read once.</summary>
     private static readonly IReadOnlyList<NativeMappingRules.SourceUnit> Tree =
@@ -357,6 +383,526 @@ public sealed class NativeBaselineRuleTests
         Assert.Contains("S4", row.NonVacuousWhen, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void X4_Every_Wrapper_Routes_By_The_Partition()
+    {
+        // Non-vacuous before the clean answer is read: the three files clause (a) reads are in the
+        // sweep by path, and the clause decided an opcode on each side of the partition by name. A
+        // routing rule that read no pattern or found no wrapper would otherwise pass.
+        foreach (var path in new[] { HandlerFile, BlocksFile, OpcodeFile })
+        {
+            Assert.Contains(
+                Tree,
+                file => string.Equals(file.RelativePath, path, StringComparison.Ordinal));
+        }
+
+        var answer = X4Routing(Tree);
+
+        Assert.Contains("Call runs alone", answer.Decided);
+        Assert.Contains("Nop takes the block step", answer.Decided);
+        Assert.Empty(answer.Violations);
+    }
+
+    [Fact]
+    public void X4_Step_Keeps_Its_Pc_Bounds_Opcode_And_Cookie_Checks()
+    {
+        var answer = X4Checks(Tree);
+
+        // Non-vacuous: every one of the four comparisons was found, by name, where the clause looks.
+        foreach (var (name, _) in Comparisons)
+        {
+            Assert.Contains(name, answer.Decided);
+        }
+
+        Assert.Empty(answer.Violations);
+    }
+
+    [Fact]
+    public void X4_Only_The_Scan_And_The_Lowering_Read_The_Layout_And_The_Fixed_Bytes()
+    {
+        // Non-vacuous: a file of the lowering assembly is in the sweep, and the clause saw both places
+        // it allows actually read what it confines - a clause whose allowed places named nothing would
+        // pass the same way over a tree in which the members had been renamed.
+        Assert.Contains(
+            Tree,
+            static file => string.Equals(file.Assembly, LoweringAssembly, StringComparison.Ordinal));
+
+        var answer = X4Confinement(Tree);
+
+        Assert.Contains("the scan names Fixed", answer.Decided);
+        Assert.Contains("the lowering names Layout", answer.Decided);
+        Assert.Empty(answer.Violations);
+    }
+
+    [Fact]
+    public void X4_Each_Slot_Expected_Opcode_And_Step_Is_The_Wrappers_Own()
+    {
+        var answer = X4Names(Tree);
+
+        foreach (var decided in new[] { "slot Call", "slot Nop", "expected Call", "expected Nop", "StepCall.Opcode" })
+        {
+            Assert.Contains(decided, answer.Decided);
+        }
+
+        Assert.Empty(answer.Violations);
+    }
+
+    /// <summary>
+    /// A run-alone opcode routed through the block step, and a step of its own for an opcode that does
+    /// not run alone, are reported.
+    /// </summary>
+    [Fact]
+    public void X4_A_Call_Routed_Through_The_Block_Step_Is_Reported()
+    {
+        var handlers = WithWitnessMembers(
+            TreeFile(HandlerFile), "JsBaselineHandlers", "X4-a-call-routed-through-the-block-step.cs.witness");
+
+        var violations = X4Routing(Replacing(handlers)).Violations;
+
+        Assert.Contains(violations, static message => message.Contains(
+            "(a) Call runs alone, and its wrapper routes Step<JsStepBlock>", StringComparison.Ordinal));
+
+        Assert.Contains(violations, static message => message.Contains(
+            "declares StepNop, a step of Nop's own opcode, and Nop does not run alone", StringComparison.Ordinal));
+
+        Assert.Equal(2, violations.Count);
+
+        // ...and the edit is routing alone: every slot, expected opcode and step's answer is still the
+        // wrapper's own, so the clause that ties names does not see it and (a) is the only guard.
+        Assert.Empty(X4Names(Replacing(handlers)).Violations);
+    }
+
+    /// <summary>A step whose opcode comparison was removed is reported, and nothing else in it is.</summary>
+    [Fact]
+    public void X4_A_Step_That_No_Longer_Checks_The_Opcode_Is_Reported()
+    {
+        var answer = X4Checks(Replacing(WithWitnessMembers(
+            TreeFile(ActivationFile), "JsNativeActivation", "X4-a-step-that-no-longer-checks-the-opcode.cs.witness")));
+
+        Assert.Contains(answer.Violations, static message => message.Contains(
+            "(b) Step's condition does not join the opcode check", StringComparison.Ordinal));
+
+        Assert.Single(answer.Violations);
+        Assert.Contains("pc check", answer.Decided);
+    }
+
+    /// <summary>A step whose comparisons are all present but joined with <c>&amp;&amp;</c> is reported.</summary>
+    [Fact]
+    public void X4_A_Step_Whose_Checks_Are_Joined_With_And_Is_Reported()
+    {
+        var answer = X4Checks(Replacing(WithWitnessMembers(
+            TreeFile(ActivationFile), "JsNativeActivation", "X4-a-step-whose-checks-are-joined-with-and.cs.witness")));
+
+        foreach (var (name, _) in Comparisons)
+        {
+            Assert.Contains(answer.Violations, message => message.Contains(
+                $"(b) Step's condition does not join the {name}", StringComparison.Ordinal));
+        }
+
+        Assert.Equal(4, answer.Violations.Count);
+        Assert.Empty(answer.Decided);
+    }
+
+    /// <summary>
+    /// Each edit of the real <c>Step</c> that leaves a check disabled while its words stay is reported,
+    /// by content.
+    /// </summary>
+    /// <remarks>
+    /// The rejecting directions are the real file with one edit made, as for rule X3, so none of them
+    /// can go stale. Each is an edit that keeps the compiler and every check row green.
+    /// </remarks>
+    [Fact]
+    public void X4_Edits_That_Leave_A_Check_In_Step_Disabled_Are_Reported()
+    {
+        var activation = TreeFile(ActivationFile);
+
+        IReadOnlyList<string> Edited(params (string From, string To)[] edits)
+        {
+            var text = activation.Text;
+
+            foreach (var (from, to) in edits)
+            {
+                Assert.Contains(from, text, StringComparison.Ordinal);
+                text = text.Replace(from, to, StringComparison.Ordinal);
+            }
+
+            return X4Checks(Replacing(activation with { Text = text })).Violations;
+        }
+
+        static Action<string> Says(string content) => message =>
+            Assert.Contains(content, message, StringComparison.Ordinal);
+
+        // An inverted operator.
+        Assert.Collection(Edited(("act.Pc != pc", "act.Pc == pc")), Says("does not join the pc check"));
+
+        // A bound that admits the length itself, and one that admits a negative offset.
+        Assert.Collection(
+            Edited(("(uint)pc >= (uint)act.Code.Length", "(uint)pc > (uint)act.Code.Length")),
+            Says("does not join the bounds check"));
+
+        Assert.Collection(
+            Edited(("(uint)pc >= (uint)act.Code.Length", "pc >= act.Code.Length")),
+            Says("does not join the bounds check"));
+
+        // The cookie compared with itself.
+        Assert.Collection(
+            Edited(("act.Cookie != frame->Cookie", "act.Cookie != act.Cookie")),
+            Says("does not join the cookie check"));
+
+        // The opcode read before the bound is checked, which throws out of Step into emitted code.
+        Assert.Collection(
+            Edited((
+                "(uint)pc >= (uint)act.Code.Length ||\n            act.Code[pc] != (byte)expected)",
+                "act.Code[pc] != (byte)expected ||\n            (uint)pc >= (uint)act.Code.Length)")),
+            Says("compares the opcode before it checks the bounds"));
+
+        // The whole condition negated: every comparison is still there, and none is a term of the chain.
+        Assert.Equal(
+            4,
+            Edited(
+                ("if (act is null ||", "if (!(act is null ||"),
+                ("act.Code[pc] != (byte)expected)", "act.Code[pc] != (byte)expected))"))
+                .Count(static message => message.Contains("does not join the", StringComparison.Ordinal)));
+
+        // A term that moves the offset before it is compared.
+        Assert.Collection(
+            Edited(("act.Pc != pc ||", "(pc = act.Pc) < 0 ||\n            act.Pc != pc ||")),
+            Says("which assigns, steps or calls"));
+
+        // A refusal that is not a defect.
+        Assert.Collection(
+            Edited(("return (int)JsBaselineStatus.Defect;", "return (int)JsBaselineStatus.Exit;")),
+            Says("does not do exactly `return (int)JsBaselineStatus.Defect;`"));
+
+        // A statement between the check and the step, and one before the check.
+        Assert.Collection(
+            Edited((
+                "        try\n        {\n            _ = act.Engine",
+                "        act.Pc = 0;\n\n        try\n        {\n            _ = act.Engine")),
+            Says("something runs between Step's check and its first call of ExecuteCore"));
+
+        Assert.Contains(
+            Edited(("var act = current;", "var act = current;\n        act ??= current;")),
+            static message => message.Contains("Step's second statement is not an if", StringComparison.Ordinal));
+
+        // A lambda, which could run the loop on a path the check does not stand in front of.
+        Assert.Collection(
+            Edited(("act.Pending = escaped;", "act.Pending = escaped;\n            System.Func<int> again = () => 0;")),
+            Says("declares a local function or a lambda"));
+
+        // A second Step beside the real one, which a wrapper could reach instead.
+        Assert.Contains(
+            X4Checks(Replacing(WithMember(
+                activation,
+                "internal static int Step(JsBaselineFrame* frame, int pc) => 0;"))).Violations,
+            static message => message.Contains("declares 2 methods named Step", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// A product file outside the scan and the lowering that reads the layout and a template's fixed
+    /// bytes is reported; the same file in the lowering is not.
+    /// </summary>
+    [Fact]
+    public void X4_A_Layout_Read_Outside_The_Scan_And_The_Lowering_Is_Reported()
+    {
+        const string WitnessName = "X4-a-layout-read-outside-the-scan-and-the-lowering.cs.witness";
+
+        var outside = X4Confinement(
+            [.. Tree, Witness(
+                WitnessName, "src/Broiler.VM.Profile.JavaScript/JsBaselineReEmitter.cs", "Broiler.VM.Profile.JavaScript")])
+            .Violations;
+
+        Assert.Contains(outside, static message => message.Contains(
+            "(c) src/Broiler.VM.Profile.JavaScript/JsBaselineReEmitter.cs names Layout in Repair", StringComparison.Ordinal));
+
+        Assert.Contains(outside, static message => message.Contains(
+            "(c) src/Broiler.VM.Profile.JavaScript/JsBaselineReEmitter.cs names Fixed in Repair", StringComparison.Ordinal));
+
+        Assert.Equal(2, outside.Count);
+
+        // The accepting direction over the same text: in the lowering assembly it is what the clause
+        // allows, so the clause is about where the reads are and not about the reads.
+        Assert.Empty(X4Confinement(
+            [.. Tree, Witness(
+                WitnessName, "src/Broiler.VM.Profile.JavaScript.Compiler/JsBaselineReEmitter.cs", LoweringAssembly)])
+            .Violations);
+
+        // And a composition is outside the product source the clause sweeps, which is its stated limit.
+        Assert.Empty(X4Confinement(
+            [.. Tree, Witness(
+                WitnessName,
+                "src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/JsBaselineReEmitter.cs",
+                "Broiler.VM.Composition.JavaScript.ExecutionOnly")])
+            .Violations);
+    }
+
+    /// <summary>
+    /// A second door to the layout or to the fixed bytes, opened beside the members that declare them,
+    /// is reported.
+    /// </summary>
+    [Fact]
+    public void X4_A_Second_Door_To_The_Layout_Or_The_Fixed_Bytes_Is_Reported()
+    {
+        var blocks = TreeFile(BlocksFile);
+
+        // The layout, called from a member of the type that declares it other than Layout.
+        Assert.Collection(
+            X4Confinement(Replacing(WithMembers(
+                blocks, "JsBaselineBlocks", "public static int Count(JsBaselineUnitPlan plan) => Layout(plan).Length;")))
+                .Violations,
+            static message => Assert.Contains(
+                "JsBaselineBlocks.cs names Layout in Count", message, StringComparison.Ordinal));
+
+        // Lay, the internal walk Layout is made by, is not among the members the clause confines, and
+        // the row states that limit; this keeps the limit the one the row states.
+        Assert.Empty(
+            X4Confinement(Replacing(WithMembers(
+                blocks,
+                "JsBaselineBlocks",
+                "internal static bool Count<TSink>(JsBaselineUnitPlan plan, ref TSink sink) " +
+                "where TSink : struct, IJsBaselineLayoutSink => Lay<TSink>(plan, ref sink);")))
+                .Violations);
+
+        // A member of the template that hands its fixed bytes out under another name.
+        Assert.Collection(
+            X4Confinement(Replacing(WithMembers(
+                TreeFile(TemplatesFile), "JsNativeTemplate", "public byte[] Encoding => Fixed;")))
+                .Violations,
+            static message => Assert.Contains(
+                "JsNativeTemplates.cs names Fixed in Encoding", message, StringComparison.Ordinal));
+
+        // A static import that lets the layout be named bare, and a property pattern that reads the
+        // bytes without a member access.
+        var bare = X4Confinement(
+            [.. Tree, new NativeMappingRules.SourceUnit(
+                "src/Broiler.VM.Profile.JavaScript/JsBaselineCensus.cs",
+                "Broiler.VM.Profile.JavaScript",
+                "using static Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks;\n" +
+                "namespace Broiler.VM.Profile.JavaScript;\n" +
+                "internal static class JsBaselineCensus\n{\n" +
+                "    internal static int Entries(JsBaselineUnitPlan plan) => Layout(plan).Length;\n" +
+                "    internal static bool Empty(JsNativeTemplate template) => template is { Fixed.Length: 0 };\n}\n")])
+            .Violations;
+
+        Assert.Contains(bare, static message => message.Contains(
+            "JsBaselineCensus.cs names Layout in Entries", StringComparison.Ordinal));
+
+        Assert.Contains(bare, static message => message.Contains(
+            "JsBaselineCensus.cs names Fixed in Empty", StringComparison.Ordinal));
+
+        Assert.Equal(2, bare.Count);
+    }
+
+    /// <summary>
+    /// Exchanged slots, wrappers that expect each other's opcode and a step that answers another opcode
+    /// are reported, although routing, the table's self-check, the scan and Step's own check all pass them.
+    /// </summary>
+    [Fact]
+    public void X4_A_Wrapper_That_Expects_Another_Opcode_Is_Reported()
+    {
+        static string Slot(string opcode, string entry) =>
+            $"slots[(int)JsOpcode.{opcode}] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&{entry};";
+
+        var handlers = TreeFile(HandlerFile);
+        var nop = Slot("Nop", "Nop");
+        var call = Slot("Call", "Call");
+
+        Assert.Contains(nop, handlers.Text, StringComparison.Ordinal);
+        Assert.Contains(call, handlers.Text, StringComparison.Ordinal);
+
+        var exchanged = WithWitnessMembers(
+            handlers with
+            {
+                Text = handlers.Text
+                    .Replace(nop, Slot("Nop", "Call"), StringComparison.Ordinal)
+                    .Replace(call, Slot("Call", "Nop"), StringComparison.Ordinal),
+            },
+            "JsBaselineHandlers",
+            "X4-a-wrapper-that-expects-another-opcode.cs.witness");
+
+        var violations = X4Names(Replacing(exchanged)).Violations;
+
+        foreach (var expected in new[]
+                 {
+                     "(d) the slot of Nop holds the address of Call",
+                     "(d) the slot of Call holds the address of Nop",
+                     "(d) the wrapper Nop passes JsOpcode.Call as the opcode Step<JsStepBlock> expects",
+                     "(d) the wrapper Call passes JsOpcode.Nop as the opcode Step<StepCall> expects",
+                     "(d) the wrapper Call passes JsOpcode.Nop as the opcode Step<JsStepBlock> expects",
+                     "(d) StepCall.Opcode answers JsOpcode.Construct",
+                 })
+        {
+            Assert.Contains(violations, message => message.Contains(expected, StringComparison.Ordinal));
+        }
+
+        Assert.Equal(6, violations.Count);
+
+        // ...and the routing clause passes the same table, which is why the names need a clause of
+        // their own.
+        Assert.Empty(X4Routing(Replacing(exchanged)).Violations);
+    }
+
+    /// <summary>A wrapper or a partition clause (a) cannot read is reported rather than passed over.</summary>
+    [Fact]
+    public void X4_A_Wrapper_Or_A_Partition_It_Cannot_Read_Is_Reported()
+    {
+        var handlers = TreeFile(HandlerFile);
+
+        IReadOnlyList<string> Routed(params string[] members) =>
+            X4Routing(Replacing(WithMembers(handlers, "JsBaselineHandlers", members))).Violations;
+
+        const string Entry = "[System.Runtime.InteropServices.UnmanagedCallersOnly] private static int ";
+
+        // A wrapper that reaches Step through a helper is unreadable, which is the conservative direction.
+        Assert.Collection(
+            Routed(Entry + "Call(JsBaselineFrame* frame, int pc) => Route<StepCall>(frame, pc, JsOpcode.Call);"),
+            static message => Assert.Contains(
+                "(a) the wrapper Call is not one expression-bodied call of JsNativeActivation.Step", message, StringComparison.Ordinal));
+
+        // The choice turned round.
+        Assert.Collection(
+            Routed(Entry + "Call(JsBaselineFrame* frame, int pc) => PerOpcodeSteps ? " +
+                "JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Call) : JsNativeActivation.Step<StepCall>(frame, pc, JsOpcode.Call);"),
+            static message => Assert.Contains(
+                "(a) Call runs alone, and its wrapper routes PerOpcodeSteps ? Step<JsStepBlock> : Step<StepCall>", message, StringComparison.Ordinal));
+
+        // A block opcode given the choice, with a step it should not have.
+        Assert.Contains(
+            Routed(Entry + "Nop(JsBaselineFrame* frame, int pc) => PerOpcodeSteps ? " +
+                "JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Nop) : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Nop);"),
+            static message => message.Contains(
+                "(a) Nop does not run alone, and its wrapper routes PerOpcodeSteps ? Step<JsStepBlock> : Step<JsStepBlock>", StringComparison.Ordinal));
+
+        // An entry point named for no opcode.
+        Assert.Collection(
+            Routed(Entry + "Spare(JsBaselineFrame* frame, int pc) => JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Nop);"),
+            static message => Assert.Contains(
+                "declares the unmanaged entry point Spare, which is named for no opcode", message, StringComparison.Ordinal));
+
+        // A wrapper removed.
+        Assert.Collection(
+            X4Routing(Replacing(WithoutMember(handlers, "JsBaselineHandlers", "ImportMeta"))).Violations,
+            static message => Assert.Contains(
+                "declares no wrapper for 1 of the opcodes JsOpcode declares (ImportMeta)", message, StringComparison.Ordinal));
+
+        // The table made partial, so a wrapper could sit in a file the rule does not parse.
+        Assert.Contains(
+            X4Routing(Replacing(handlers with
+            {
+                Text = handlers.Text.Replace(
+                    "internal static unsafe class JsBaselineHandlers",
+                    "internal static unsafe partial class JsBaselineHandlers",
+                    StringComparison.Ordinal),
+            })).Violations,
+            static message => message.Contains("declares JsBaselineHandlers partial", StringComparison.Ordinal));
+
+        // A partition the clause cannot read: an arm with a guard.
+        var blocks = TreeFile(BlocksFile);
+
+        Assert.Contains("JsOpcode.RunStaticElements => true,", blocks.Text, StringComparison.Ordinal);
+
+        Assert.Collection(
+            X4Routing(Replacing(blocks with
+            {
+                Text = blocks.Text.Replace(
+                    "JsOpcode.RunStaticElements => true,",
+                    "JsOpcode.RunStaticElements when opcode != JsOpcode.Nop => true,",
+                    StringComparison.Ordinal),
+            })).Violations,
+            static message => Assert.Contains(
+                "(a) JsBaselineBlocks.RunsAlone is not one switch on its opcode", message, StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// The rule reports its own vacuity rather than passing over an input it never found.
+    /// </summary>
+    [Fact]
+    public void X4_Reports_An_Input_In_Which_It_Found_Nothing_To_Quantify_Over()
+    {
+        var empty = X4([]).ToArray();
+
+        foreach (var path in new[] { HandlerFile, ActivationFile, BlocksFile, OpcodeFile, ScanFile, TemplatesFile })
+        {
+            Assert.Contains(empty, message => message.Contains(
+                $"{path} is not in this input", StringComparison.Ordinal));
+        }
+
+        Assert.Contains(empty, static message => message.Contains(
+            "no file of the lowering assembly", StringComparison.Ordinal));
+
+        const string Profile = "Broiler.VM.Profile.JavaScript";
+        const string Format = "Broiler.VM.Profile.JavaScript.Format";
+
+        var hollow = X4(
+            [
+                new NativeMappingRules.SourceUnit(
+                    HandlerFile, Profile,
+                    "namespace Broiler.VM.Profile.JavaScript; internal static unsafe class JsBaselineHandlers { }"),
+                new NativeMappingRules.SourceUnit(
+                    ActivationFile, Profile,
+                    "namespace Broiler.VM.Profile.JavaScript; internal sealed unsafe class JsNativeActivation { }"),
+                new NativeMappingRules.SourceUnit(
+                    BlocksFile, Format,
+                    "namespace Broiler.VM.Profile.JavaScript.Format; public static class JsBaselineBlocks " +
+                    "{ public static bool RunsAlone(JsOpcode opcode) => opcode switch { _ => false }; }"),
+                new NativeMappingRules.SourceUnit(
+                    OpcodeFile, Format,
+                    "namespace Broiler.VM.Profile.JavaScript.Format; public enum JsOpcode : byte { Nop = 0x00 }"),
+                new NativeMappingRules.SourceUnit(
+                    ScanFile, Format,
+                    "namespace Broiler.VM.Profile.JavaScript.Format; public static class JsNativeScan { }"),
+                new NativeMappingRules.SourceUnit(
+                    TemplatesFile, Format,
+                    "namespace Broiler.VM.Profile.JavaScript.Format; public sealed class JsNativeTemplate { }"),
+                new NativeMappingRules.SourceUnit(
+                    "src/Broiler.VM.Profile.JavaScript.Compiler/AssemblyMarker.cs", LoweringAssembly,
+                    "namespace Broiler.VM.Profile.JavaScript.Compiler; internal sealed class AssemblyMarker { }"),
+            ])
+            .ToArray();
+
+        foreach (var expected in new[]
+                 {
+                     "RunsAlone names no opcode",
+                     "declares no unmanaged entry point",
+                     "declares no Step",
+                     "assigns no element of slots",
+                     "declares no JsBaselineBlocks.Layout",
+                     "declares no JsNativeTemplate.Fixed",
+                 })
+        {
+            Assert.Contains(hollow, message => message.Contains(expected, StringComparison.Ordinal));
+        }
+    }
+
+    [Fact]
+    public void X4_Holds_Its_Own_Register_Row_To_What_It_Proves()
+    {
+        var row = RuleRegisterTests.Loaded.Rules.Single(
+            static rule => string.Equals(rule.Id, "X4", StringComparison.Ordinal));
+
+        Assert.Equal("Active", row.Status);
+        Assert.Null(row.ActivationMilestone);
+        Assert.Equal("0001", row.OwningAdr);
+        Assert.Contains("JSD-0025", row.Statement, StringComparison.Ordinal);
+        Assert.Contains("RunsAlone", row.Statement, StringComparison.Ordinal);
+        Assert.Contains(LoweringAssembly, row.Statement, StringComparison.Ordinal);
+
+        // The statement names each comparison clause (b) holds in the words the clause compares, so a
+        // reader can see that a rewrite with the same meaning is reported rather than cleared.
+        foreach (var (_, text) in Comparisons)
+        {
+            Assert.Contains(text, row.Statement, StringComparison.Ordinal);
+        }
+
+        // The row must say what the rule does not decide: it reads source, it does not pin the fallback
+        // constant the design keeps, it does not sweep the compositions, and it does not confine Lay.
+        Assert.Contains("STATED LIMITS", row.NonVacuousWhen, StringComparison.Ordinal);
+        Assert.Contains("helper", row.NonVacuousWhen, StringComparison.Ordinal);
+        Assert.Contains("PerOpcodeSteps", row.NonVacuousWhen, StringComparison.Ordinal);
+        Assert.Contains("composition", row.NonVacuousWhen, StringComparison.Ordinal);
+        Assert.Contains("AND NOT LAY", row.NonVacuousWhen, StringComparison.Ordinal);
+    }
+
     /// <summary>
     /// X2: the baseline frame declares no field whose type is, or contains, a reference.
     /// </summary>
@@ -667,6 +1213,945 @@ public sealed class NativeBaselineRuleTests
         }
     }
 
+    /// <summary>What one clause of rule X4 reported, and what it decided by name on the way.</summary>
+    /// <remarks>
+    /// The decisions are what a clean direction asserts before it reads an empty answer, so a clause
+    /// that found nothing to decide cannot pass by saying nothing.
+    /// </remarks>
+    internal sealed record X4Answer(IReadOnlyList<string> Violations, IReadOnlySet<string> Decided);
+
+    /// <summary>The four comparisons clause (b) holds, by name and in the words it compares.</summary>
+    internal static readonly (string Name, string Text)[] Comparisons =
+    [
+        ("cookie check", "act.Cookie != frame->Cookie"),
+        ("pc check", "act.Pc != pc"),
+        ("bounds check", "(uint)pc >= (uint)act.Code.Length"),
+        ("opcode check", "act.Code[pc] != (byte)expected"),
+    ];
+
+    /// <summary>X4: every clause, for the group X report.</summary>
+    internal static IEnumerable<string> X4(IReadOnlyList<NativeMappingRules.SourceUnit> tree) =>
+    [
+        .. X4Routing(tree).Violations,
+        .. X4Checks(tree).Violations,
+        .. X4Confinement(tree).Violations,
+        .. X4Names(tree).Violations,
+    ];
+
+    /// <summary>
+    /// X4 (a): each entry point named for an opcode routes by <c>JsBaselineBlocks.RunsAlone</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The partition is read from its own source, and the routing is compared with it wrapper by
+    /// wrapper.</b> A wrapper whose opcode <c>RunsAlone</c>'s pattern does not name calls
+    /// <c>Step&lt;JsStepBlock&gt;</c> alone; one whose opcode it names is exactly
+    /// <c>PerOpcodeSteps ? Step&lt;Step{Opcode}&gt; : Step&lt;JsStepBlock&gt;</c>; and the handler file
+    /// declares no <c>Step{Opcode}</c> for an opcode that does not run alone.
+    /// </para>
+    /// <para>
+    /// <b>What it cannot read it reports.</b> A pattern that is not an <c>or</c> of opcodes answering
+    /// true and ending in <c>_ =&gt; false</c>, a wrapper that is not one call of <c>Step</c> or a choice
+    /// between two on <c>PerOpcodeSteps</c> - a wrapper reaching <c>Step</c> through a helper among them -
+    /// an opcode with no wrapper, and an entry point named for no opcode are failures rather than clean
+    /// results.
+    /// </para>
+    /// </remarks>
+    internal static X4Answer X4Routing(IReadOnlyList<NativeMappingRules.SourceUnit> tree)
+    {
+        var violations = new List<string>();
+        var decided = new HashSet<string>(StringComparer.Ordinal);
+
+        var opcodes = DeclaredOpcodes(TreeFile(tree, OpcodeFile), "a", violations);
+        var alone = RunsAloneNames(TreeFile(tree, BlocksFile), violations);
+        var handlers = HandlerType(TreeFile(tree, HandlerFile), "a", violations);
+
+        if (opcodes is null || alone is null || handlers is null)
+        {
+            return new(violations, decided);
+        }
+
+        foreach (var name in alone.Where(candidate => !opcodes.Contains(candidate)).Order(StringComparer.Ordinal))
+        {
+            violations.Add($"(a) JsBaselineBlocks.RunsAlone names {name}, which JsOpcode does not declare");
+        }
+
+        var wrappers = Wrappers(handlers);
+
+        foreach (var stray in handlers.SyntaxTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
+                     .Where(method => IsUnmanagedEntry(method) && method.Parent != handlers))
+        {
+            violations.Add(
+                $"(a) {HandlerFile} declares the unmanaged entry point {stray.Identifier.ValueText} outside " +
+                "JsBaselineHandlers' own members, where this rule does not read its route");
+        }
+
+        if (wrappers.Length == 0)
+        {
+            violations.Add("(a) JsBaselineHandlers declares no unmanaged entry point, so this rule found no wrapper to route");
+            return new(violations, decided);
+        }
+
+        var byName = wrappers
+            .GroupBy(static wrapper => wrapper.Identifier.ValueText, StringComparer.Ordinal)
+            .ToDictionary(static group => group.Key, static group => group.ToArray(), StringComparer.Ordinal);
+
+        foreach (var (name, declared) in byName.OrderBy(static pair => pair.Key, StringComparer.Ordinal))
+        {
+            if (declared.Length > 1)
+            {
+                violations.Add(
+                    $"(a) JsBaselineHandlers declares {declared.Length} unmanaged entry points named {name}, so the " +
+                    "one a slot takes need not be the one this rule reads");
+            }
+
+            if (string.Equals(name, "Undefined", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (!opcodes.Contains(name))
+            {
+                violations.Add(
+                    $"(a) JsBaselineHandlers declares the unmanaged entry point {name}, which is named for no opcode " +
+                    "JsOpcode declares, so the partition decides its route for nothing");
+
+                continue;
+            }
+
+            if (RouteOf(declared[0]) is not { } route)
+            {
+                violations.Add(
+                    $"(a) the wrapper {name} is not one expression-bodied call of JsNativeActivation.Step, nor a " +
+                    "choice between two on PerOpcodeSteps, so this rule cannot read where it routes; a wrapper " +
+                    "reaching Step through a helper is reported for that reason");
+
+                continue;
+            }
+
+            var runsAlone = alone.Contains(name);
+            decided.Add(runsAlone ? name + " runs alone" : name + " takes the block step");
+
+            if (runsAlone &&
+                !(route.Chosen &&
+                  string.Equals(route.Calls[0].Mode, "Step" + name, StringComparison.Ordinal) &&
+                  string.Equals(route.Calls[1].Mode, BlockMode, StringComparison.Ordinal)))
+            {
+                violations.Add(
+                    $"(a) {name} runs alone, and its wrapper routes {route.Describe()} where the partition asks " +
+                    $"for PerOpcodeSteps ? Step<Step{name}> : Step<{BlockMode}>");
+            }
+
+            if (!runsAlone &&
+                (route.Chosen || !string.Equals(route.Calls[0].Mode, BlockMode, StringComparison.Ordinal)))
+            {
+                violations.Add(
+                    $"(a) {name} does not run alone, and its wrapper routes {route.Describe()} where the partition " +
+                    $"asks for Step<{BlockMode}> alone");
+            }
+        }
+
+        var unrouted = opcodes.Where(opcode => !byName.ContainsKey(opcode)).ToArray();
+
+        if (unrouted.Length > 0)
+        {
+            violations.Add(
+                $"(a) JsBaselineHandlers declares no wrapper for {unrouted.Length} of the opcodes JsOpcode declares " +
+                $"({string.Join(", ", unrouted)}), so the partition routes nothing for them");
+        }
+
+        foreach (var step in StepStructs(handlers).Keys.Order(StringComparer.Ordinal))
+        {
+            var opcode = step["Step".Length..];
+
+            if (opcodes.Contains(opcode) && !alone.Contains(opcode))
+            {
+                violations.Add(
+                    $"(a) {HandlerFile} declares {step}, a step of {opcode}'s own opcode, and {opcode} does not run alone");
+            }
+        }
+
+        return new(violations, decided);
+    }
+
+    /// <summary>
+    /// X4 (b): <c>Step</c> refuses with a defect, before it runs anything, unless the frame's cookie, the
+    /// offset, its bound and the opcode at it are what the activation expects.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The checks are read in the shape that makes them checks, not by the words they contain.</b>
+    /// A rule that found the four comparisons by name passes them joined with <c>&amp;&amp;</c>, with an
+    /// operator inverted, behind a refusal that is not a defect, or with the offset reassigned before
+    /// they read it. So the one <c>Step</c> begins <c>var act = current;</c>, its next statement is an
+    /// <c>if</c> with no <c>else</c> that does exactly <c>return (int)JsBaselineStatus.Defect;</c>, the
+    /// four comparisons are terms of that condition's top-level <c>||</c> chain, the bound is checked
+    /// before the opcode is read, the condition assigns, steps and calls nothing, <c>Step</c> declares
+    /// no local function and no lambda, and its first call of <c>ExecuteCore</c>, over its own mode, is
+    /// the first thing the statement after the check does.
+    /// </para>
+    /// <para>
+    /// <b>An equivalent rewrite is reported too</b> - operands exchanged, or the chain written as the
+    /// negation of a chain joined with <c>&amp;&amp;</c> - which is the conservative direction for a check
+    /// nothing else observes.
+    /// </para>
+    /// </remarks>
+    internal static X4Answer X4Checks(IReadOnlyList<NativeMappingRules.SourceUnit> tree)
+    {
+        var violations = new List<string>();
+        var decided = new HashSet<string>(StringComparer.Ordinal);
+        var activation = TreeFile(tree, ActivationFile);
+
+        if (activation is null)
+        {
+            violations.Add($"(b) {ActivationFile} is not in this input, so this rule pins a place it never found");
+            return new(violations, decided);
+        }
+
+        var steps = ParsedRoot(activation).DescendantNodes().OfType<ClassDeclarationSyntax>()
+            .Where(static type => string.Equals(type.Identifier.ValueText, "JsNativeActivation", StringComparison.Ordinal))
+            .SelectMany(static type => type.Members.OfType<MethodDeclarationSyntax>())
+            .Where(static method => string.Equals(method.Identifier.ValueText, "Step", StringComparison.Ordinal))
+            .ToArray();
+
+        if (steps.Length == 0)
+        {
+            violations.Add("(b) JsNativeActivation declares no Step, so the checks this rule holds are nowhere");
+            return new(violations, decided);
+        }
+
+        if (steps.Length > 1)
+        {
+            violations.Add(
+                $"(b) JsNativeActivation declares {steps.Length} methods named Step, so a wrapper need not reach " +
+                "the one whose checks this rule reads");
+        }
+
+        var step = steps[0];
+        var statements = step.Body?.Statements ?? default;
+
+        if (statements.Count == 0 || !string.Equals(Tokens(statements[0]), "varact=current;", StringComparison.Ordinal))
+        {
+            violations.Add(
+                "(b) Step does not begin `var act = current;`, so the activation its checks compare need not be " +
+                "the one in the thread slot");
+        }
+
+        if (statements.Count < 2 || statements[1] is not IfStatementSyntax check)
+        {
+            violations.Add(
+                "(b) Step's second statement is not an if, so nothing this rule can read refuses before Step " +
+                "runs anything");
+
+            return new(violations, decided);
+        }
+
+        if (check.Else is not null)
+        {
+            violations.Add("(b) Step's check has an else, so a failed check does more than refuse");
+        }
+
+        var refusal = check.Statement is BlockSyntax block
+            ? block.Statements.Count == 1 ? block.Statements[0] : null
+            : check.Statement;
+
+        if (refusal is not ReturnStatementSyntax { Expression: { } refused } ||
+            !string.Equals(Tokens(refused), "(int)JsBaselineStatus.Defect", StringComparison.Ordinal))
+        {
+            violations.Add(
+                "(b) Step's check does not do exactly `return (int)JsBaselineStatus.Defect;`, so a failed check " +
+                "need not refuse with a defect");
+        }
+
+        var terms = new List<ExpressionSyntax>();
+        TopLevelOr(check.Condition, terms);
+
+        var texts = terms.Select(Tokens).ToList();
+        var at = new Dictionary<string, int>(StringComparer.Ordinal);
+
+        foreach (var (name, text) in Comparisons)
+        {
+            var index = texts.IndexOf(string.Concat(text.Where(static c => !char.IsWhiteSpace(c))));
+
+            if (index < 0)
+            {
+                violations.Add(
+                    $"(b) Step's condition does not join the {name}, `{text}`, with || at its top level, so a step " +
+                    "can run without it");
+
+                continue;
+            }
+
+            at[name] = index;
+            decided.Add(name);
+        }
+
+        if (at.TryGetValue("bounds check", out var bounds) &&
+            at.TryGetValue("opcode check", out var opcode) &&
+            opcode < bounds)
+        {
+            violations.Add(
+                "(b) Step compares the opcode before it checks the bounds, so an offset past the code throws out " +
+                "of Step into emitted code instead of answering a defect");
+        }
+
+        foreach (var effect in check.Condition.DescendantNodesAndSelf().Where(IsEffect))
+        {
+            violations.Add(
+                $"(b) Step's condition contains `{effect}`, which assigns, steps or calls, so what its checks " +
+                "compare need not be what they read");
+        }
+
+        foreach (var function in step.DescendantNodes().Where(static node =>
+                     node is LocalFunctionStatementSyntax or AnonymousFunctionExpressionSyntax))
+        {
+            violations.Add(
+                $"(b) Step declares a local function or a lambda, `{function}`, whose body could run the loop " +
+                "where the check does not stand before it");
+        }
+
+        var core = step.DescendantNodes().OfType<InvocationExpressionSyntax>().FirstOrDefault(static invocation =>
+            invocation.Expression switch
+            {
+                MemberAccessExpressionSyntax access => access.Name.Identifier.ValueText == "ExecuteCore",
+                SimpleNameSyntax name => name.Identifier.ValueText == "ExecuteCore",
+                _ => false,
+            });
+
+        if (core is null)
+        {
+            violations.Add("(b) Step calls no ExecuteCore, so there is no step for its checks to stand before");
+            return new(violations, decided);
+        }
+
+        if (statements.Count < 3 || !statements[2].Span.Contains(core.Span) || !RunsFirst(core, statements[2]))
+        {
+            violations.Add(
+                "(b) something runs between Step's check and its first call of ExecuteCore, so the step need not " +
+                "start from what the check compared");
+        }
+
+        var mode = step.TypeParameterList is { Parameters: [var parameter] } ? parameter.Identifier.ValueText : null;
+        var called = core.Expression switch
+        {
+            MemberAccessExpressionSyntax { Name: GenericNameSyntax generic } => generic,
+            GenericNameSyntax generic => generic,
+            _ => null,
+        };
+
+        if (mode is null || called is not { TypeArgumentList.Arguments: [var argument] } ||
+            !string.Equals(Tokens(argument), mode, StringComparison.Ordinal))
+        {
+            violations.Add(
+                "(b) Step's first call of ExecuteCore is not over Step's own mode, so the step that runs need not " +
+                "be the one the wrapper chose");
+        }
+
+        return new(violations, decided);
+    }
+
+    /// <summary>
+    /// X4 (c): in the product source, <c>JsBaselineBlocks.Layout</c> and <c>JsNativeTemplate.Fixed</c> are
+    /// named only by the scan and by the lowering, and inside the members that declare them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The two members are the ones the owner's answer names.</b> <c>Layout</c> answers a unit's whole
+    /// layout, and <c>Fixed</c> is the bytes a template fixes; together they are what an emitter needs from
+    /// the format assembly. Every simple name spelled either, outside comments, is a use - through a static
+    /// import, in a property pattern - whatever it resolves to, which is the conservative direction.
+    /// </para>
+    /// <para>
+    /// <b>The declaring members are allowed and nothing else beside them</b>: <c>Layout</c>, which reads its
+    /// sink's array, and <c>JsNativeTemplate</c>'s constructor and <c>Length</c>. A new member beside them
+    /// that hands either out under another name is reported.
+    /// </para>
+    /// <para>
+    /// <b><c>Lay</c> is not confined</b>, and that is a stated limit rather than an oversight: it is the
+    /// internal walk <c>Layout</c> is made by and the scan compares a payload through, it came after the
+    /// answer that names this clause's members, and it is visible only inside the format assembly.
+    /// </para>
+    /// </remarks>
+    internal static X4Answer X4Confinement(IReadOnlyList<NativeMappingRules.SourceUnit> tree)
+    {
+        var violations = new List<string>();
+        var decided = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var path in new[] { ScanFile, BlocksFile, TemplatesFile })
+        {
+            if (TreeFile(tree, path) is null)
+            {
+                violations.Add($"(c) {path} is not in this input, so this rule pins a place it never found");
+            }
+        }
+
+        if (!tree.Any(static file => string.Equals(file.Assembly, LoweringAssembly, StringComparison.Ordinal)))
+        {
+            violations.Add(
+                $"(c) no file of the lowering assembly, {LoweringAssembly}, is in this input, so one of the two " +
+                "places this clause allows was never swept");
+        }
+
+        foreach (var (path, type, member) in new[]
+                 {
+                     (BlocksFile, "JsBaselineBlocks", "Layout"),
+                     (TemplatesFile, "JsNativeTemplate", "Fixed"),
+                 })
+        {
+            if (TreeFile(tree, path) is { } file && !ParsedRoot(file).DescendantNodes().OfType<TypeDeclarationSyntax>()
+                    .Where(declaration => string.Equals(declaration.Identifier.ValueText, type, StringComparison.Ordinal))
+                    .SelectMany(static declaration => declaration.Members)
+                    .Any(declared => string.Equals(MemberKey(declared), member, StringComparison.Ordinal)))
+            {
+                violations.Add(
+                    $"(c) {path} declares no {type}.{member}, so the member this clause confines is not where it looks");
+            }
+        }
+
+        foreach (var file in tree.Where(static file =>
+                     !file.Assembly.StartsWith("Broiler.VM.Composition.", StringComparison.Ordinal) &&
+                     ConfinedName.IsMatch(file.Text)))
+        {
+            var inScan = string.Equals(file.RelativePath, ScanFile, StringComparison.Ordinal);
+            var inLowering = string.Equals(file.Assembly, LoweringAssembly, StringComparison.Ordinal);
+
+            foreach (var name in ParsedRoot(file).DescendantNodes().OfType<SimpleNameSyntax>())
+            {
+                var text = name.Identifier.ValueText;
+
+                if (text is not ("Layout" or "Fixed"))
+                {
+                    continue;
+                }
+
+                if (inScan || inLowering)
+                {
+                    decided.Add((inScan ? "the scan names " : "the lowering names ") + text);
+                    continue;
+                }
+
+                var member = EnclosingMember(name).Name;
+                var owner = name.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault()?.Identifier.ValueText;
+
+                if (DeclaringUses.Contains((file.RelativePath, owner, member, text)))
+                {
+                    continue;
+                }
+
+                violations.Add(
+                    $"(c) {file.RelativePath} names {text} in {member}, and outside the members that declare them " +
+                    $"JsBaselineBlocks.Layout and JsNativeTemplate.Fixed are named only by the scan, {ScanFile}, and " +
+                    $"by the lowering, {LoweringAssembly}");
+            }
+        }
+
+        return new(violations, decided);
+    }
+
+    /// <summary>
+    /// X4 (d): each slot, each wrapper's expected opcode and each step's opcode is the one the wrapper is
+    /// named for.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Routing by name is only as good as the names.</b> Clause (a) reads which step a wrapper named
+    /// Call runs; nothing there says the slot for Call holds that wrapper, that the wrapper expects Call,
+    /// or that its step answers Call. The table's own check sees only distinct entry points, the scan's
+    /// slot clause holds the payload and not the table, <c>Step</c> compares the byte with whatever the
+    /// wrapper passes, and the dispatch loop takes a per-opcode step's opcode from the step. So each slot
+    /// assigned is <c>slots[(int)JsOpcode.X]</c> holding the address of the wrapper <c>X</c>, once per
+    /// opcode; each wrapper passes <c>JsOpcode.X</c>; and each <c>StepX</c> a wrapper runs is declared in
+    /// the handler file with an <c>Opcode</c> answering <c>JsOpcode.X</c>.
+    /// </para>
+    /// </remarks>
+    internal static X4Answer X4Names(IReadOnlyList<NativeMappingRules.SourceUnit> tree)
+    {
+        var violations = new List<string>();
+        var decided = new HashSet<string>(StringComparer.Ordinal);
+
+        var opcodes = DeclaredOpcodes(TreeFile(tree, OpcodeFile), "d", violations);
+        var handlers = HandlerType(TreeFile(tree, HandlerFile), "d", violations);
+
+        if (opcodes is null || handlers is null)
+        {
+            return new(violations, decided);
+        }
+
+        var steps = StepStructs(handlers);
+
+        foreach (var wrapper in Wrappers(handlers))
+        {
+            var name = wrapper.Identifier.ValueText;
+
+            if (!opcodes.Contains(name))
+            {
+                continue;
+            }
+
+            if (RouteOf(wrapper) is not { } route)
+            {
+                violations.Add(
+                    $"(d) this rule cannot read the opcode the wrapper {name} expects, because it is not one " +
+                    "expression-bodied call of JsNativeActivation.Step nor a choice between two on PerOpcodeSteps");
+
+                continue;
+            }
+
+            decided.Add("expected " + name);
+
+            foreach (var call in route.Calls)
+            {
+                if (!string.Equals(call.Expected, "JsOpcode." + name, StringComparison.Ordinal))
+                {
+                    violations.Add(
+                        $"(d) the wrapper {name} passes {call.Expected} as the opcode Step<{call.Mode}> expects, and a " +
+                        "wrapper expects the opcode it is named for");
+                }
+
+                if (!string.Equals(call.Mode, BlockMode, StringComparison.Ordinal) && !steps.ContainsKey(call.Mode))
+                {
+                    violations.Add(
+                        $"(d) the wrapper {name} runs Step<{call.Mode}>, which {HandlerFile} does not declare, so the " +
+                        "opcode that step answers is not read here");
+                }
+            }
+        }
+
+        foreach (var (step, declared) in steps.OrderBy(static pair => pair.Key, StringComparer.Ordinal))
+        {
+            var opcode = step["Step".Length..];
+
+            if (declared.Length > 1)
+            {
+                violations.Add($"(d) {HandlerFile} declares {declared.Length} types named {step}");
+            }
+
+            var answers = OpcodeAnswers(declared[0]);
+
+            if (answers.Count != 1)
+            {
+                violations.Add(
+                    $"(d) {step} does not declare one Opcode that answers one expression, so this rule cannot read " +
+                    "the opcode it names");
+
+                continue;
+            }
+
+            decided.Add(step + ".Opcode");
+
+            if (!string.Equals(answers[0], "JsOpcode." + opcode, StringComparison.Ordinal))
+            {
+                violations.Add(
+                    $"(d) {step}.Opcode answers {answers[0]}, and a step answers the opcode it is named for");
+            }
+        }
+
+        var assigned = new Dictionary<string, int>(StringComparer.Ordinal);
+
+        var slots = handlers.SyntaxTree.GetRoot().DescendantNodes().OfType<AssignmentExpressionSyntax>()
+            .Where(static assignment => assignment.Left is ElementAccessExpressionSyntax
+            {
+                Expression: IdentifierNameSyntax { Identifier.ValueText: "slots" },
+            })
+            .ToArray();
+
+        if (slots.Length == 0)
+        {
+            violations.Add($"(d) {HandlerFile} assigns no element of slots, so this rule found no slot to tie to a wrapper");
+        }
+
+        foreach (var assignment in slots)
+        {
+            var access = (ElementAccessExpressionSyntax)assignment.Left;
+
+            if (!assignment.IsKind(SyntaxKind.SimpleAssignmentExpression) ||
+                access.ArgumentList.Arguments is not [var only] ||
+                Unparenthesized(only.Expression) is not CastExpressionSyntax
+                {
+                    Expression: MemberAccessExpressionSyntax slot,
+                } cast ||
+                !string.Equals(Tokens(cast.Type), "int", StringComparison.Ordinal) ||
+                !string.Equals(Tokens(slot.Expression), "JsOpcode", StringComparison.Ordinal))
+            {
+                violations.Add(
+                    $"(d) {HandlerFile} assigns `{Tokens(assignment)}`, which is not a slot indexed by (int)JsOpcode " +
+                    "and assigned once, so this rule cannot tie it to a wrapper");
+
+                continue;
+            }
+
+            var opcode = slot.Name.Identifier.ValueText;
+            assigned[opcode] = assigned.GetValueOrDefault(opcode) + 1;
+            decided.Add("slot " + opcode);
+
+            var target = assignment.Right;
+
+            while (target is CastExpressionSyntax or ParenthesizedExpressionSyntax)
+            {
+                target = target is CastExpressionSyntax converted
+                    ? converted.Expression
+                    : ((ParenthesizedExpressionSyntax)target).Expression;
+            }
+
+            if (target is not PrefixUnaryExpressionSyntax { Operand: IdentifierNameSyntax entry } address ||
+                !address.IsKind(SyntaxKind.AddressOfExpression))
+            {
+                violations.Add(
+                    $"(d) the slot of {opcode} is assigned `{Tokens(assignment.Right)}`, which is not the address of " +
+                    "an entry point named in this file");
+
+                continue;
+            }
+
+            if (!string.Equals(entry.Identifier.ValueText, opcode, StringComparison.Ordinal))
+            {
+                violations.Add(
+                    $"(d) the slot of {opcode} holds the address of {entry.Identifier.ValueText}, and a slot holds " +
+                    "the wrapper named for its own opcode");
+            }
+        }
+
+        foreach (var (opcode, count) in assigned.OrderBy(static pair => pair.Key, StringComparer.Ordinal))
+        {
+            if (!opcodes.Contains(opcode))
+            {
+                violations.Add($"(d) {HandlerFile} assigns a slot for {opcode}, which JsOpcode does not declare");
+            }
+            else if (count > 1)
+            {
+                violations.Add($"(d) {HandlerFile} assigns the slot of {opcode} {count} times");
+            }
+        }
+
+        var unassigned = opcodes.Where(opcode => slots.Length > 0 && !assigned.ContainsKey(opcode)).ToArray();
+
+        if (unassigned.Length > 0)
+        {
+            violations.Add(
+                $"(d) {HandlerFile} assigns no slot for {unassigned.Length} of the opcodes JsOpcode declares " +
+                $"({string.Join(", ", unassigned)})");
+        }
+
+        return new(violations, decided);
+    }
+
+    /// <summary>The members <c>JsOpcode</c> declares, or nothing when they cannot be read.</summary>
+    private static IReadOnlySet<string>? DeclaredOpcodes(
+        NativeMappingRules.SourceUnit? file, string clause, List<string> violations)
+    {
+        if (file is null)
+        {
+            violations.Add($"({clause}) {OpcodeFile} is not in this input, so this rule knows no opcode to decide");
+            return null;
+        }
+
+        var members = ParsedRoot(file).DescendantNodes().OfType<EnumDeclarationSyntax>()
+            .Where(static declaration => string.Equals(declaration.Identifier.ValueText, "JsOpcode", StringComparison.Ordinal))
+            .SelectMany(static declaration => declaration.Members)
+            .Select(static member => member.Identifier.ValueText)
+            .ToHashSet(StringComparer.Ordinal);
+
+        if (members.Count == 0)
+        {
+            violations.Add($"({clause}) {OpcodeFile} declares no member of JsOpcode, so this rule knows no opcode to decide");
+            return null;
+        }
+
+        return members;
+    }
+
+    /// <summary>The opcodes <c>JsBaselineBlocks.RunsAlone</c>'s pattern names, or nothing when it cannot be read.</summary>
+    private static IReadOnlySet<string>? RunsAloneNames(NativeMappingRules.SourceUnit? file, List<string> violations)
+    {
+        if (file is null)
+        {
+            violations.Add($"(a) {BlocksFile} is not in this input, so this rule routes by a partition it never found");
+            return null;
+        }
+
+        var methods = ParsedRoot(file).DescendantNodes().OfType<ClassDeclarationSyntax>()
+            .Where(static type => string.Equals(type.Identifier.ValueText, "JsBaselineBlocks", StringComparison.Ordinal))
+            .SelectMany(static type => type.Members.OfType<MethodDeclarationSyntax>())
+            .Where(static method => string.Equals(method.Identifier.ValueText, "RunsAlone", StringComparison.Ordinal))
+            .ToArray();
+
+        const string Unreadable =
+            "(a) JsBaselineBlocks.RunsAlone is not one switch on its opcode whose arms name opcodes joined by `or` " +
+            "and answer true, ending in `_ => false`, so this rule cannot read which opcodes run alone";
+
+        if (methods is not [{ ParameterList.Parameters: [var parameter] } method] ||
+            Unparenthesized(method.ExpressionBody?.Expression) is not SwitchExpressionSyntax switched ||
+            Unparenthesized(switched.GoverningExpression) is not IdentifierNameSyntax governing ||
+            !string.Equals(governing.Identifier.ValueText, parameter.Identifier.ValueText, StringComparison.Ordinal))
+        {
+            violations.Add(Unreadable);
+            return null;
+        }
+
+        var names = new HashSet<string>(StringComparer.Ordinal);
+
+        for (var index = 0; index < switched.Arms.Count; index++)
+        {
+            var arm = switched.Arms[index];
+            var answer = Tokens(arm.Expression);
+
+            var readable = arm.WhenClause is null && (index == switched.Arms.Count - 1
+                ? arm.Pattern is DiscardPatternSyntax && answer == "false"
+                : answer == "true" && OpcodesOf(arm.Pattern, names));
+
+            if (!readable)
+            {
+                violations.Add(Unreadable);
+                return null;
+            }
+        }
+
+        if (names.Count == 0)
+        {
+            violations.Add("(a) JsBaselineBlocks.RunsAlone names no opcode, so this rule routes nothing by it");
+        }
+
+        return names;
+    }
+
+    /// <summary>Adds the opcodes an <c>or</c> of constant patterns names, and answers whether that is all it is.</summary>
+    private static bool OpcodesOf(PatternSyntax pattern, HashSet<string> names)
+    {
+        switch (pattern)
+        {
+            case ParenthesizedPatternSyntax parenthesized:
+                return OpcodesOf(parenthesized.Pattern, names);
+
+            case BinaryPatternSyntax binary when binary.IsKind(SyntaxKind.OrPattern):
+                return OpcodesOf(binary.Left, names) && OpcodesOf(binary.Right, names);
+
+            case ConstantPatternSyntax { Expression: MemberAccessExpressionSyntax access }
+                when string.Equals(Tokens(access.Expression), "JsOpcode", StringComparison.Ordinal):
+                names.Add(access.Name.Identifier.ValueText);
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>The handler table's one declaration, or nothing when there is not exactly one.</summary>
+    private static ClassDeclarationSyntax? HandlerType(
+        NativeMappingRules.SourceUnit? file, string clause, List<string> violations)
+    {
+        if (file is null)
+        {
+            violations.Add($"({clause}) {HandlerFile} is not in this input, so this rule pins a place it never found");
+            return null;
+        }
+
+        var types = ParsedRoot(file).DescendantNodes().OfType<ClassDeclarationSyntax>()
+            .Where(static type => string.Equals(type.Identifier.ValueText, "JsBaselineHandlers", StringComparison.Ordinal))
+            .ToArray();
+
+        if (types.Length != 1)
+        {
+            violations.Add(
+                $"({clause}) {HandlerFile} declares {types.Length} types named JsBaselineHandlers, and this rule reads one table");
+
+            return null;
+        }
+
+        if (types[0].Modifiers.Any(SyntaxKind.PartialKeyword))
+        {
+            violations.Add(
+                $"({clause}) {HandlerFile} declares JsBaselineHandlers partial, so a wrapper, a slot or a step could " +
+                "sit in a file this rule does not parse");
+        }
+
+        return types[0];
+    }
+
+    /// <summary>The table's own methods that carry the unmanaged-entry attribute.</summary>
+    private static MethodDeclarationSyntax[] Wrappers(ClassDeclarationSyntax handlers) =>
+        handlers.Members.OfType<MethodDeclarationSyntax>().Where(IsUnmanagedEntry).ToArray();
+
+    private static bool IsUnmanagedEntry(MethodDeclarationSyntax method) =>
+        method.AttributeLists.SelectMany(static list => list.Attributes)
+            .Any(static attribute => UnmanagedEntry.IsMatch(attribute.Name.ToString()));
+
+    /// <summary>Every type in the handler file named <c>Step</c> and something, by name.</summary>
+    private static Dictionary<string, BaseTypeDeclarationSyntax[]> StepStructs(ClassDeclarationSyntax handlers) =>
+        handlers.SyntaxTree.GetRoot().DescendantNodes().OfType<BaseTypeDeclarationSyntax>()
+            .Where(static type => type.Identifier.ValueText.StartsWith("Step", StringComparison.Ordinal) &&
+                type.Identifier.ValueText.Length > "Step".Length)
+            .GroupBy(static type => type.Identifier.ValueText, StringComparer.Ordinal)
+            .ToDictionary(static group => group.Key, static group => group.ToArray(), StringComparer.Ordinal);
+
+    /// <summary>The expressions a step's <c>Opcode</c> answers, one per way it answers.</summary>
+    private static List<string> OpcodeAnswers(BaseTypeDeclarationSyntax step)
+    {
+        var answers = new List<string>();
+
+        if (step is not TypeDeclarationSyntax type)
+        {
+            return answers;
+        }
+
+        foreach (var property in type.Members.OfType<PropertyDeclarationSyntax>()
+                     .Where(static property => string.Equals(property.Identifier.ValueText, "Opcode", StringComparison.Ordinal)))
+        {
+            if (property.ExpressionBody is { } body)
+            {
+                answers.Add(Tokens(body.Expression));
+                continue;
+            }
+
+            foreach (var getter in property.AccessorList?.Accessors
+                         .Where(static accessor => accessor.IsKind(SyntaxKind.GetAccessorDeclaration)) ??
+                     Enumerable.Empty<AccessorDeclarationSyntax>())
+            {
+                answers.Add(getter switch
+                {
+                    { ExpressionBody: { } arrow } => Tokens(arrow.Expression),
+                    { Body.Statements: [ReturnStatementSyntax { Expression: { } returned }] } => Tokens(returned),
+                    _ => string.Empty,
+                });
+            }
+        }
+
+        return answers;
+    }
+
+    /// <summary>A wrapper's route: one call of <c>Step</c>, or a choice between two on <c>PerOpcodeSteps</c>.</summary>
+    private sealed record Route(bool Chosen, IReadOnlyList<StepCall> Calls)
+    {
+        internal string Describe() => Chosen
+            ? $"PerOpcodeSteps ? Step<{Calls[0].Mode}> : Step<{Calls[1].Mode}>"
+            : $"Step<{Calls[0].Mode}>";
+    }
+
+    /// <summary>One call of <c>JsNativeActivation.Step</c>: its mode and the opcode it expects.</summary>
+    private sealed record StepCall(string Mode, string Expected);
+
+    private static Route? RouteOf(MethodDeclarationSyntax wrapper) =>
+        Unparenthesized(wrapper.ExpressionBody?.Expression) switch
+        {
+            InvocationExpressionSyntax single when CallOf(single) is { } call => new(false, [call]),
+
+            ConditionalExpressionSyntax choice
+                when Unparenthesized(choice.Condition) is IdentifierNameSyntax { Identifier.ValueText: "PerOpcodeSteps" } &&
+                    CallOf(Unparenthesized(choice.WhenTrue)) is { } own &&
+                    CallOf(Unparenthesized(choice.WhenFalse)) is { } block => new(true, [own, block]),
+
+            _ => null,
+        };
+
+    private static StepCall? CallOf(ExpressionSyntax? expression) =>
+        expression is InvocationExpressionSyntax
+        {
+            Expression: MemberAccessExpressionSyntax
+            {
+                Name: GenericNameSyntax { Identifier.ValueText: "Step", TypeArgumentList.Arguments: [var mode] },
+            } access,
+            ArgumentList.Arguments: [_, _, var expected],
+        } && string.Equals(Tokens(access.Expression), "JsNativeActivation", StringComparison.Ordinal)
+            ? new StepCall(Tokens(mode), Tokens(expected.Expression))
+            : null;
+
+    /// <summary>The terms of a condition's top-level <c>||</c> chain; a parenthesized chain is one term.</summary>
+    private static void TopLevelOr(ExpressionSyntax condition, List<ExpressionSyntax> terms)
+    {
+        if (condition is BinaryExpressionSyntax binary && binary.IsKind(SyntaxKind.LogicalOrExpression))
+        {
+            TopLevelOr(binary.Left, terms);
+            TopLevelOr(binary.Right, terms);
+            return;
+        }
+
+        terms.Add(condition);
+    }
+
+    /// <summary>Whether a node of a condition assigns, steps, calls or makes a function.</summary>
+    private static bool IsEffect(SyntaxNode node) => node switch
+    {
+        AssignmentExpressionSyntax or InvocationExpressionSyntax or AnonymousFunctionExpressionSyntax
+            or ThrowExpressionSyntax => true,
+        PrefixUnaryExpressionSyntax prefix => prefix.Kind() is SyntaxKind.PreIncrementExpression
+            or SyntaxKind.PreDecrementExpression,
+        PostfixUnaryExpressionSyntax postfix => postfix.Kind() is SyntaxKind.PostIncrementExpression
+            or SyntaxKind.PostDecrementExpression,
+        _ => false,
+    };
+
+    /// <summary>
+    /// Whether nothing runs before a call inside a statement: every block on the way holds it as its
+    /// first statement, and every other node on the way evaluates it first.
+    /// </summary>
+    private static bool RunsFirst(SyntaxNode call, StatementSyntax statement)
+    {
+        for (var node = call; node != statement; node = node.Parent!)
+        {
+            var first = node.Parent switch
+            {
+                BlockSyntax block => block.Statements.FirstOrDefault() == node,
+                TryStatementSyntax attempt => attempt.Block == node,
+                ExpressionStatementSyntax or ReturnStatementSyntax or EqualsValueClauseSyntax
+                    or LocalDeclarationStatementSyntax => true,
+                VariableDeclaratorSyntax => true,
+                VariableDeclarationSyntax declaration => declaration.Variables.FirstOrDefault() == node,
+                AssignmentExpressionSyntax assignment =>
+                    assignment.Right == node && assignment.Left is IdentifierNameSyntax,
+                _ => false,
+            };
+
+            if (!first)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// The places inside the members that declare them where the confined names may be read: the file,
+    /// the type, the member, and the name.
+    /// </summary>
+    private static readonly HashSet<(string, string?, string, string)> DeclaringUses =
+    [
+        (BlocksFile, "JsBaselineBlocks", "Layout", "Layout"),
+        (TemplatesFile, "JsNativeTemplate", "JsNativeTemplate", "Fixed"),
+        (TemplatesFile, "JsNativeTemplate", "Length", "Fixed"),
+    ];
+
+    /// <summary>A file that may name one of the names clause (c) confines, before it is parsed.</summary>
+    private static readonly Regex ConfinedName = new(@"\b(?:Layout|Fixed)\b", RegexOptions.Compiled);
+
+    /// <summary>The name a member declaration is known by, for the members X4's inputs are edited through.</summary>
+    private static string? MemberKey(MemberDeclarationSyntax member) => member switch
+    {
+        MethodDeclarationSyntax method => method.Identifier.ValueText,
+        BaseTypeDeclarationSyntax type => type.Identifier.ValueText,
+        PropertyDeclarationSyntax property => property.Identifier.ValueText,
+        _ => null,
+    };
+
+    private static ExpressionSyntax? Unparenthesized(ExpressionSyntax? expression)
+    {
+        while (expression is ParenthesizedExpressionSyntax parenthesized)
+        {
+            expression = parenthesized.Expression;
+        }
+
+        return expression;
+    }
+
+    /// <summary>A node's tokens with every piece of trivia removed, comments and whitespace included.</summary>
+    private static string Tokens(SyntaxNode node) =>
+        string.Concat(node.DescendantTokens().Select(static token => token.Text));
+
+    private static SyntaxNode ParsedRoot(NativeMappingRules.SourceUnit file) =>
+        AssuranceSources.Parse(file.Text, file.RelativePath).GetRoot();
+
+    private static NativeMappingRules.SourceUnit? TreeFile(IReadOnlyList<NativeMappingRules.SourceUnit> tree, string path) =>
+        tree.FirstOrDefault(file => string.Equals(file.RelativePath, path, StringComparison.Ordinal));
+
     /// <summary>The attribute that makes a method callable from native code, either spelling.</summary>
     private static readonly Regex UnmanagedEntry =
         new(@"\bUnmanagedCallersOnly(?:Attribute)?\b", RegexOptions.Compiled);
@@ -922,6 +2407,79 @@ public sealed class NativeBaselineRuleTests
 
     private static string WitnessPath(string fileName) => Path.Combine(
         ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests", "witnesses", fileName);
+
+    /// <summary>The swept tree's file at a path.</summary>
+    private static NativeMappingRules.SourceUnit TreeFile(string path) =>
+        Tree.Single(file => string.Equals(file.RelativePath, path, StringComparison.Ordinal));
+
+    /// <summary>The swept tree with one file put in place of the file at its path.</summary>
+    private static IReadOnlyList<NativeMappingRules.SourceUnit> Replacing(NativeMappingRules.SourceUnit edited) =>
+        [.. Tree.Select(file => string.Equals(file.RelativePath, edited.RelativePath, StringComparison.Ordinal) ? edited : file)];
+
+    /// <summary>
+    /// A real file with a stored witness's members put in place of the members of the same name in one
+    /// type, and the witness's other members added to it.
+    /// </summary>
+    /// <remarks>
+    /// Rule X4's witnesses are edits of files a hundred times their size, and a stored copy of the whole
+    /// file would go stale at its next edit - the reason X3's rejecting directions edit the real
+    /// activation. The witness holds only what the edit makes, and this makes it.
+    /// </remarks>
+    private static NativeMappingRules.SourceUnit WithWitnessMembers(
+        NativeMappingRules.SourceUnit file, string typeName, string witnessFile)
+    {
+        var path = WitnessPath(witnessFile);
+
+        var members = AssuranceSources.Parse(File.ReadAllText(path), path).GetRoot()
+            .DescendantNodes().OfType<TypeDeclarationSyntax>()
+            .First(candidate => string.Equals(candidate.Identifier.ValueText, typeName, StringComparison.Ordinal))
+            .Members;
+
+        return WithMembers(file, typeName, members);
+    }
+
+    /// <summary>A real file with members, written as source, put in place of or beside one type's own.</summary>
+    private static NativeMappingRules.SourceUnit WithMembers(
+        NativeMappingRules.SourceUnit file, string typeName, params string[] members) =>
+        WithMembers(file, typeName, members.Select(static member =>
+            SyntaxFactory.ParseMemberDeclaration(member) ??
+            throw new InvalidOperationException($"`{member}` does not parse as a member")));
+
+    private static NativeMappingRules.SourceUnit WithMembers(
+        NativeMappingRules.SourceUnit file, string typeName, IEnumerable<MemberDeclarationSyntax> members)
+    {
+        var root = AssuranceSources.Parse(file.Text, file.RelativePath).GetRoot();
+
+        var type = root.DescendantNodes().OfType<TypeDeclarationSyntax>()
+            .First(candidate => string.Equals(candidate.Identifier.ValueText, typeName, StringComparison.Ordinal));
+
+        var edited = type;
+
+        foreach (var member in members)
+        {
+            var key = MemberKey(member);
+
+            var same = key is null ? null : edited.Members.FirstOrDefault(existing =>
+                existing.Kind() == member.Kind() && string.Equals(MemberKey(existing), key, StringComparison.Ordinal));
+
+            edited = same is null ? edited.AddMembers(member) : edited.ReplaceNode(same, member);
+        }
+
+        return file with { Text = root.ReplaceNode(type, edited).ToFullString() };
+    }
+
+    /// <summary>A real file with one type's member of a name removed.</summary>
+    private static NativeMappingRules.SourceUnit WithoutMember(
+        NativeMappingRules.SourceUnit file, string typeName, string memberName)
+    {
+        var root = AssuranceSources.Parse(file.Text, file.RelativePath).GetRoot();
+
+        var member = root.DescendantNodes().OfType<TypeDeclarationSyntax>()
+            .First(candidate => string.Equals(candidate.Identifier.ValueText, typeName, StringComparison.Ordinal))
+            .Members.Single(candidate => string.Equals(MemberKey(candidate), memberName, StringComparison.Ordinal));
+
+        return file with { Text = root.RemoveNode(member, SyntaxRemoveOptions.KeepNoTrivia)!.ToFullString() };
+    }
 
     /// <summary>A value type with no field, for the vacuity direction.</summary>
     private struct EmptyFrame

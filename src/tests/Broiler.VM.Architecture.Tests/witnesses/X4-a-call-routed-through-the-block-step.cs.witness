@@ -1,0 +1,32 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no
+// compilation includes it, and rule X4's test puts its members into the real JsBaselineHandlers.cs in
+// place of the members of the same name - a member the real file lacks is added - so that clause (a)
+// reads the real table with exactly this edit made, and a later edit of the table cannot leave the
+// witness describing a file that no longer exists.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES. After the block step landed, a hundred and three
+// wrappers call Step<JsStepBlock> and nineteen choose on PerOpcodeSteps, and the obvious tidy-up
+// makes them alike: a block step started at a Call head runs exactly that Call, with the same checks
+// and the same answer, so routing Call like its neighbours changes no result any check row reads.
+// What it costs is the stack-depth argument the per-block steps rest on - a recursion through a call
+// now nests the block step's frame, which holds every arm of the dispatch loop, on every level, and
+// the call-depth margin measured over the per-opcode frame no longer holds. The same tidy-up, working
+// down from the top of the table, gives Nop a step of its own, which is a per-opcode step for an
+// instruction the partition puts in a block.
+//
+// Both are written here, because an author who makes the routing uniform in one direction makes it
+// uniform in the other, and a rule that read only the wrappers would clear the struct.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal static unsafe class JsBaselineHandlers
+{
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int Call(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Call);
+
+    internal readonly struct StepNop : IJsExecutionMode
+    {
+        public static JsOpcode Opcode => JsOpcode.Nop;
+    }
+}
