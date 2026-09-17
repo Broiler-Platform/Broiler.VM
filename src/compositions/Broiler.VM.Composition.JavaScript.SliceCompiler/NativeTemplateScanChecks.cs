@@ -1019,6 +1019,7 @@ internal static class NativeTemplateScanChecks
     /// The wide programs the baseline rows compile, one family of instruction and landing each.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>EACH ONE REACHES A KIND OF LANDING OR TAIL THE OTHERS DO NOT.</b> Objects, strings and
     /// closures reach the plain fall-through tail; the class reaches <c>super</c> and private
     /// names; try, catch and finally reach region handler landings and a break through a finally;
@@ -1026,9 +1027,18 @@ internal static class NativeTemplateScanChecks
     /// holds, so an unsigned split is emitted - and resumes by <c>return()</c> and <c>throw()</c>;
     /// <c>yield*</c> reaches the delegating landing; the async programs reach <c>await</c> landings
     /// and the asynchronous iteration instructions that carry code targets; the parameter program
-    /// reaches <c>EnterBody</c>; the module reaches an import; and the last reaches a switch, a
+    /// reaches <c>EnterBody</c>; the module reaches an import; and the fourteenth reaches a switch, a
     /// labelled continue and <c>with</c>. A program with <c>Library</c> set compiles as a two-module
     /// graph whose main module imports <c>lib</c>.
+    /// </para>
+    /// <para>
+    /// <b>THE LAST SIX REACH WHAT A BLOCK DOES THAT AN INSTRUCTION ALONE DID NOT</b>: a long linear run
+    /// with a call that runs alone in its middle, so one run is split by a block of one; a loop head
+    /// reached linearly from inside a run, so a block branches to it; a getter, a <c>valueOf</c> and a
+    /// Proxy trap entering guest code from an instruction in the middle of a run; a throw from the middle
+    /// of a run caught in the same unit, so the step stops on a landing it did not fall to; and a
+    /// generator resumed at a landing in the middle of a run.
+    /// </para>
     /// </remarks>
     private static readonly (string Name, string Source, string? Library)[] WidePrograms =
     [
@@ -1046,6 +1056,12 @@ internal static class NativeTemplateScanChecks
         ("destructuring parameters with defaults", "function f({ a = 1, b } = {}, [c, d = 4] = []) { return a + (b || 0) + (c || 0) + d; } f() + f({ b: 2 }, [3]);", null),
         ("a module with an import", "import { add, n } from 'lib'; export const r = add(n, 2);", "export function add(a, b) { return a + b; } export let n = 1;"),
         ("a switch, a labelled continue and with", "var t = 0; outer: for (var i = 0; i < 3; i++) { for (var j = 0; j < 3; j++) { if (j === 1) { continue outer; } switch (i) { case 0: t += 1; break; case 1: t += 10; break; default: t += 100; } } } var o = { x: 5 }; with (o) { t += x; } t;", null),
+        ("a long linear run with a call in its middle", "var a = 1, b = 2, c = 3; function id(x) { return x; } var t = 0; for (var i = 0; i < 50; i++) { t = t + a * b - c + id(i) + (a << 2) + (b | c); } t;", null),
+        ("a loop head inside a linear run", "var t = 0, i = 0; do { t += i; t *= 2; t -= 1; i++; } while (i < 5); t;", null),
+        ("getter and valueOf re-entry from the middle of a run", "var n = 0; var o = { get g() { n += 1; return n; }, valueOf() { return n * 2; } }; var t = 0; for (var i = 0; i < 5; i++) { t = t + o.g + (+o) + o.g; } t;", null),
+        ("Proxy traps from the middle of a run", "var log = 0; var p = new Proxy({ a: 1 }, { get(t, k) { log += 1; return t[k]; } }); var s = 0; for (var i = 0; i < 4; i++) { s = s + p.a * 2 + p.a; } s + log;", null),
+        ("a throw from the middle of a run caught in the same unit", "var r = 0; for (var i = 0; i < 3; i++) { try { r = r + 1; r += null.x; r = r + 100; } catch (e) { r = r + 10; } } r;", null),
+        ("a generator resumed into the middle of a run", "function* g() { var x = 1; x = x + (yield x); x = x * 2 + (yield x); return x + 3; } var it = g(); it.next(); it.next(5); it.next(7).value;", null),
     ];
 
     /// <summary>
