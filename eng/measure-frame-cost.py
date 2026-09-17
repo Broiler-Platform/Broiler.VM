@@ -67,12 +67,15 @@
 #
 # AND THE SHAPE IS AN INPUT, BECAUSE THE ROUTE A LEVEL NESTS THROUGH DECIDES WHAT IT COSTS. `plain`
 # is the recursion this script began with: a call instruction, which the baseline form gives a step
-# of its own. Every other family recurses through the object model instead - an accessor, an indexed
-# or global or `super` read, a setter, a coercion hook, a Proxy trap, `Symbol.hasInstance`, `with`,
-# `for-in`, object spread, the rendering of a thrown object - or through the iterator protocol. Those
-# routes re-enter guest code from an instruction that the form may be running inside a wider step, so
-# what one level costs there is not what `plain` costs and cannot be read off it. There is one family
-# per route that can nest a chain of levels, and each is measured on its own.
+# of its own. Most other families recurse through the object model instead - an accessor, an indexed
+# or global or `super` read, a setter or a `super` write, a private accessor, a coercion hook, a Proxy
+# trap, the native `__proto__` setter, `Symbol.hasInstance`, `with`, `for-in`, object spread, the
+# rendering of a thrown object. Those routes re-enter guest code from an instruction that the form may
+# be running inside a wider step, so what one level costs there is not what `plain` costs and cannot
+# be read off it. The rest keep a step of their own as `plain` does, but nest through a different
+# helper on the way to the callee - a built-in, a bound function or a callable Proxy, a field
+# initialiser under `super()`, a static element, or the iterator protocol's open, next, close and
+# delegation - so they are not `plain` either. Each family is measured on its own.
 #
 # EACH FAMILY IS A (RETURNING, THROWING) PAIR, and the pair is the point: the two depths must agree,
 # and a route where they do not has a throw costing stack that a call does not. Every throwing form
@@ -225,6 +228,145 @@ TEMPLATES = {
         'var n = %d; var e = { get message() { if (n === 0) { @BASE@ } n = n - 1; try { throw e; } '
         'catch (x) { if (x !== e) { throw x; } } return "m"; } };',
         '"m"', '(function () { try { throw e; } catch (x) { if (x !== e) { throw x; } } return n; })()'),
+
+    # THE BLOCK ROUTES THE FAMILIES ABOVE DO NOT REACH: five more Proxy traps, the `__proto__` setter,
+    # the private accessors and the `super` write. WHERE SEVERAL INSTRUCTIONS REACH ONE TRAP, THE FAMILY
+    # RECURSES THROUGH THE ONE WHOSE ARM NESTS THE MOST NATIVE STACK PER LEVEL, and that was decided by
+    # reading, not by measuring: by counting the helper frames that stand between the arm in
+    # `ExecuteCore` and the `JsEngine.Call` of the trap, since every frame the helpers leave open
+    # stays open under the level above. A tie is named where it falls. The indexed write wins most
+    # of them, because `SetIndexed` stands in front of `SetProperty`, and a Proxy with no `set` trap
+    # is how a write reaches the receiver's own traps: `ProxySet` forwards to `SetWithReceiver`, which
+    # lands the write through `LandOnReceiver`.
+
+    # PROXY `set`: `SetIndex` -> `SetIndexed` -> `SetProperty` -> `JsProxy.ProxySet` -> the trap.
+    # `SetProperty` and `StoreGlobal` call `ProxySet` from `SetProperty` itself, one frame fewer.
+    "proxyset": (
+        'var n = %d; var k = "down"; var p = new Proxy({}, { set: function () { if (n === 0) { @BASE@ } '
+        'n = n - 1; p[k] = 1; return true; } });', "true", "(function () { p[k] = 1; return n; })()"),
+
+    # PROXY `deleteProperty`: `DeleteProperty` -> `JsProxy.DeleteOwnProperty` -> `ProxyDelete` -> the
+    # trap. `DeleteIndex` reaches the same override with the same two frames, because its
+    # `ToPropertyKey` returns before the override is called, so the two tie and the named form stands
+    # for both.
+    "proxydelete": (
+        'var n = %d; var p = new Proxy({}, { deleteProperty: function () { if (n === 0) { @BASE@ } '
+        'n = n - 1; delete p.down; return true; } });',
+        "true", "(function () { delete p.down; return n; })()"),
+
+    # PROXY `getOwnPropertyDescriptor`: `SetIndex` -> `SetIndexed` -> `SetProperty` -> `ProxySet` ->
+    # `SetWithReceiver` -> `LandOnReceiver` -> `JsProxy.TryGetOwnProperty` -> `ProxyGetOwnProperty` ->
+    # the trap. `SetProperty` is one frame fewer. `ForInStart` (`JsRealm.CreateEnumerator`),
+    # `SpreadObject` (`CopyDataProperties`) and `StoreSuperProperty` (`SetSuper`) call
+    # `TryGetOwnProperty` from their first helper, four frames fewer.
+    "proxydescriptor": (
+        'var n = %d; var k = "down"; var p = new Proxy({}, { getOwnPropertyDescriptor: function () { '
+        'if (n === 0) { @BASE@ } n = n - 1; p[k] = 1; return undefined; } });',
+        "undefined", "(function () { p[k] = 1; return n; })()"),
+
+    # PROXY `defineProperty`: the same write, which `LandOnReceiver` ends in
+    # `JsProxy.SetOwnProperty` -> `DefineOrThrow` -> `ProxyDefineOwnProperty` -> the trap.
+    # `SetProperty` is one frame fewer, and `StoreSuperProperty` calls `SetOwnProperty` from `SetSuper`,
+    # four frames fewer.
+    "proxydefine": (
+        'var n = %d; var k = "down"; var p = new Proxy({}, { defineProperty: function () { '
+        'if (n === 0) { @BASE@ } n = n - 1; p[k] = 1; return true; } });',
+        "true", "(function () { p[k] = 1; return n; })()"),
+
+    # PROXY `getPrototypeOf`: `InstanceOf` -> `JsEngine.InstanceOf` -> `JsProxy.Prototype` ->
+    # `ProxyGetPrototypeOf` -> the trap. `ForInStart` (`JsRealm.CreateEnumerator`) and
+    # `StoreSuperProperty` (`SetSuper`) read `Prototype` from their first helper too, so the three tie
+    # at the same three frames and `instanceof` stands for them.
+    "proxyproto": (
+        'var n = %d; function F() { } var p = new Proxy({}, { getPrototypeOf: function () { '
+        'if (n === 0) { @BASE@ } n = n - 1; p instanceof F; return null; } });',
+        "null", "(function () { p instanceof F; return n; })()"),
+
+    # PROXY `isExtensible`: the same write, which `LandOnReceiver` sends through `JsProxy.Extensible`
+    # -> `ProxyIsExtensible` -> the trap before it defines. `SetProperty` is one frame fewer and
+    # `StoreSuperProperty` (`SetSuper`) four fewer. The key is new at every level, because
+    # `LandOnReceiver` asks only for a key the receiver does not already hold, and each level's write
+    # defines its own.
+    "proxyextensible": (
+        'var n = %d; var p = new Proxy({}, { isExtensible: function () { if (n === 0) { @BASE@ } '
+        'n = n - 1; p["k" + n] = 1; return true; } });',
+        "true", '(function () { p["k" + n] = 1; return n; })()'),
+
+    # PROXY `setPrototypeOf`, WHICH A BLOCK INSTRUCTION OF LOWERED CODE REACHES ONLY THROUGH THE NATIVE
+    # `__proto__` SETTER:
+    # `SetIndex` -> `SetIndexed` -> `SetProperty` -> `ProxySet` -> `SetWithReceiver` -> the setter's call
+    # -> `ObjectSetPrototype` -> `ProxySetPrototypeOf` -> the trap, two calls a level. `SetProperty`
+    # reaches the setter one frame sooner.
+    "protoset": (
+        'var n = %d; var k = "__proto__"; var p = new Proxy({}, { setPrototypeOf: function () { '
+        'if (n === 0) { @BASE@ } n = n - 1; p[k] = null; return true; } });',
+        "true", "(function () { p[k] = null; return n; })()"),
+
+    # A PRIVATE ACCESSOR: `LoadPrivate` -> `ReadPrivate` -> the getter, and `StorePrivate` ->
+    # `WritePrivate` -> the setter. Each helper is reached by that one instruction alone.
+    "privateget": (
+        'var n = %d; class P { get #down() { if (n === 0) { @BASE@ } n = n - 1; return this.#down; } '
+        'read() { return this.#down; } } var o = new P();', "0", "o.read()"),
+    "privateset": (
+        'var n = %d; class P { set #down(v) { if (n === 0) { @BASE@ } n = n - 1; this.#down = v; } '
+        'write() { this.#down = 1; return n; } } var o = new P();', "", "o.write()"),
+
+    # A `super` WRITE: `StoreSuperProperty` -> `SetSuper` -> the setter found above the home object,
+    # and no other instruction reaches that call. A level is two setters, as `super`'s is two getters:
+    # the base's setter recurses by writing to the instance, whose own setter writes through `super`.
+    "superset": (
+        'var n = %d; var base = { set down(v) { if (n === 0) { @BASE@ } n = n - 1; this.down = v; } }; '
+        'var o = { __proto__: base, set down(v) { super.down = v; } };',
+        "", "(function () { o.down = 1; return n; })()"),
+
+    # THE RUN-ALONE ROUTES `plain`, `forof` AND `delegate` DO NOT REACH. Each instruction keeps its own
+    # step, and the level nests through a helper `plain` never enters. `for await` and an async
+    # `yield*` have no family: they settle through the job queue, and `family()` cannot write them.
+
+    # A FIELD INITIALISER UNDER `super()`: `SuperConstruct` constructs the base, then
+    # `InitialiseInstanceElements` -> `ApplyClassElements` calls the initialiser, which recurses.
+    # Three calls a level: the `new`, the initialiser and the recursion.
+    "superfield": (
+        'var n = %d; class B { } function make() { if (n === 0) { @BASE@ } n = n - 1; '
+        'class D extends B { x = make(); } return new D().x; }', "0", "make()"),
+
+    # A CALL THROUGH A BUILT-IN: `Array.prototype.map` calls the recursion back, so a level is the call
+    # of the built-in and the built-in's call of the guest.
+    "callback": (
+        'var n = %d; function down() { if (n === 0) { @BASE@ } n = n - 1; return [0].map(down)[0]; }',
+        "0", "down()"),
+
+    # A CALL THROUGH A BOUND FUNCTION: `JsEngine.Call` meets the `JsBoundFunction` and calls its target,
+    # two calls a level.
+    "bound": (
+        'var n = %d; var down = function () { if (n === 0) { @BASE@ } n = n - 1; return bound(); }; '
+        'var bound = down.bind(null);', "0", "bound()"),
+
+    # A CALL THROUGH A CALLABLE PROXY: `JsEngine.Call` -> `JsProxy.ProxyCall` -> the `apply` trap, two
+    # calls a level.
+    "proxyapply": (
+        'var n = %d; var p = new Proxy(function () { }, { apply: function () { if (n === 0) { @BASE@ } '
+        'n = n - 1; return p(); } });', "0", "p()"),
+
+    # ITERATOR OPEN: `IterateStart` -> `GetIterator` -> a guest `Symbol.iterator` method, which recurses.
+    "iterable": (
+        'var n = %d; var o = { [Symbol.iterator]: function () { if (n === 0) { @BASE@ } n = n - 1; '
+        'for (var x of o) { } return [][Symbol.iterator](); } };',
+        "[][Symbol.iterator]()", "(function () { for (var x of o) { } return n; })()"),
+
+    # ITERATOR CLOSE: a `break` -> `IterateClose` -> `CloseIterator` -> a guest `return`, which recurses.
+    "iterclose": (
+        'var n = %d; var o = { [Symbol.iterator]: function () { return this; }, '
+        'next: function () { return { done: false, value: 0 }; }, '
+        'return: function () { if (n === 0) { @BASE@ } n = n - 1; for (var x of o) { break; } '
+        'return {}; } };',
+        "{}", "(function () { for (var x of o) { break; } return n; })()"),
+
+    # A STATIC ELEMENT: `RunStaticElements` -> `ApplyClassElements` -> a static block, which recurses.
+    # A static field's initialiser is called from the same place.
+    "staticblock": (
+        'var n = %d; function f() { if (n === 0) { @BASE@ } n = n - 1; '
+        'class C { static { this.x = f(); } } return C.x; }', "0", "f()"),
 }
 
 
