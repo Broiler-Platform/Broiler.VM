@@ -422,7 +422,8 @@ public sealed class NativeBaselineRuleTests
     {
         // Non-vacuous: a file of the lowering assembly is in the sweep, and the clause saw both places
         // it allows actually read what it confines - a clause whose allowed places named nothing would
-        // pass the same way over a tree in which the members had been renamed.
+        // pass the same way over a tree in which the members had been renamed. The walk has its own two
+        // places, the scan and Layout, and the clause saw each of them name it.
         Assert.Contains(
             Tree,
             static file => string.Equals(file.Assembly, LoweringAssembly, StringComparison.Ordinal));
@@ -431,6 +432,8 @@ public sealed class NativeBaselineRuleTests
 
         Assert.Contains("the scan names Fixed", answer.Decided);
         Assert.Contains("the lowering names Layout", answer.Decided);
+        Assert.Contains("the scan names Lay", answer.Decided);
+        Assert.Contains("JsBaselineBlocks.Layout names Lay", answer.Decided);
         Assert.Empty(answer.Violations);
     }
 
@@ -637,6 +640,40 @@ public sealed class NativeBaselineRuleTests
     }
 
     /// <summary>
+    /// A file of the format assembly that walks the layout through <c>Lay</c> outside the scan and
+    /// <c>Layout</c> is reported, and so is the same file in the lowering; the same text read as the scan
+    /// is not.
+    /// </summary>
+    [Fact]
+    public void X4_A_Lay_Call_Outside_The_Scan_And_The_Layout_Is_Reported()
+    {
+        const string WitnessName = "X4-a-lay-call-outside-the-scan-and-the-layout.cs.witness";
+
+        IReadOnlyList<string> Added(string path, string assembly) =>
+            X4Confinement([.. Tree, Witness(WitnessName, path, assembly)]).Violations;
+
+        // Where the walk is visible: the format assembly, beside the layout it makes.
+        Assert.Collection(
+            Added("src/Broiler.VM.Profile.JavaScript.Format/JsBaselineLayoutCopy.cs", "Broiler.VM.Profile.JavaScript.Format"),
+            static message => Assert.Contains(
+                "(c) src/Broiler.VM.Profile.JavaScript.Format/JsBaselineLayoutCopy.cs names Lay in CopyTo",
+                message,
+                StringComparison.Ordinal));
+
+        // The lowering may name Layout and Fixed, and not the walk: the clause allows Lay in fewer places.
+        Assert.Collection(
+            Added($"src/{LoweringAssembly}/JsBaselineLayoutCopy.cs", LoweringAssembly),
+            static message => Assert.Contains(
+                $"(c) src/{LoweringAssembly}/JsBaselineLayoutCopy.cs names Lay in CopyTo",
+                message,
+                StringComparison.Ordinal));
+
+        // The accepting direction over the same text: read as the scan, it is where the clause allows the
+        // walk, so the clause is about where the walk is named and not about the walk.
+        Assert.Empty(X4Confinement(Replacing(Witness(WitnessName, ScanFile, "Broiler.VM.Profile.JavaScript.Format"))).Violations);
+    }
+
+    /// <summary>
     /// A second door to the layout or to the fixed bytes, opened beside the members that declare them,
     /// is reported.
     /// </summary>
@@ -653,15 +690,17 @@ public sealed class NativeBaselineRuleTests
             static message => Assert.Contains(
                 "JsBaselineBlocks.cs names Layout in Count", message, StringComparison.Ordinal));
 
-        // Lay, the internal walk Layout is made by, is not among the members the clause confines, and
-        // the row states that limit; this keeps the limit the one the row states.
-        Assert.Empty(
+        // Lay, the walk Layout is made by, called from a member of the same type other than Layout: the
+        // layout's entries handed out under another name, which the clause confines as it does Layout.
+        Assert.Collection(
             X4Confinement(Replacing(WithMembers(
                 blocks,
                 "JsBaselineBlocks",
                 "internal static bool Count<TSink>(JsBaselineUnitPlan plan, ref TSink sink) " +
                 "where TSink : struct, IJsBaselineLayoutSink => Lay<TSink>(plan, ref sink);")))
-                .Violations);
+                .Violations,
+            static message => Assert.Contains(
+                "JsBaselineBlocks.cs names Lay in Count", message, StringComparison.Ordinal));
 
         // A member of the template that hands its fixed bytes out under another name.
         Assert.Collection(
@@ -867,6 +906,7 @@ public sealed class NativeBaselineRuleTests
                      "declares no Step",
                      "assigns no element of slots",
                      "declares no JsBaselineBlocks.Layout",
+                     "declares no JsBaselineBlocks.Lay",
                      "declares no JsNativeTemplate.Fixed",
                  })
         {
@@ -894,13 +934,24 @@ public sealed class NativeBaselineRuleTests
             Assert.Contains(text, row.Statement, StringComparison.Ordinal);
         }
 
+        // Clause (c) confines Lay, and the statement says so with the two places it allows the walk; the
+        // row no longer states the limit that it does not.
+        Assert.Contains(
+            "JsBaselineBlocks.Lay, the walk Layout is made by and the template scan compares a payload through, " +
+            "is named only in JsNativeScan.cs and inside Layout",
+            row.Statement,
+            StringComparison.Ordinal);
+
+        Assert.DoesNotContain("AND NOT LAY", row.NonVacuousWhen, StringComparison.Ordinal);
+
         // The row must say what the rule does not decide: it reads source, it does not pin the fallback
-        // constant the design keeps, it does not sweep the compositions, and it does not confine Lay.
+        // constant the design keeps, it does not sweep the compositions, and it does not read the private
+        // helpers Lay is written with.
         Assert.Contains("STATED LIMITS", row.NonVacuousWhen, StringComparison.Ordinal);
         Assert.Contains("helper", row.NonVacuousWhen, StringComparison.Ordinal);
         Assert.Contains("PerOpcodeSteps", row.NonVacuousWhen, StringComparison.Ordinal);
         Assert.Contains("composition", row.NonVacuousWhen, StringComparison.Ordinal);
-        Assert.Contains("AND NOT LAY", row.NonVacuousWhen, StringComparison.Ordinal);
+        Assert.Contains("NOT THE HELPERS LAY IS WRITTEN WITH", row.NonVacuousWhen, StringComparison.Ordinal);
     }
 
     /// <summary>
@@ -1552,24 +1603,29 @@ public sealed class NativeBaselineRuleTests
 
     /// <summary>
     /// X4 (c): in the product source, <c>JsBaselineBlocks.Layout</c> and <c>JsNativeTemplate.Fixed</c> are
-    /// named only by the scan and by the lowering, and inside the members that declare them.
+    /// named only by the scan and by the lowering, and inside the members that declare them; and
+    /// <c>JsBaselineBlocks.Lay</c>, the walk <c>Layout</c> is made by, only by the scan and inside
+    /// <c>Layout</c>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>The two members are the ones the owner's answer names.</b> <c>Layout</c> answers a unit's whole
+    /// <b>The three members are the ones the owner's answers name.</b> <c>Layout</c> answers a unit's whole
     /// layout, and <c>Fixed</c> is the bytes a template fixes; together they are what an emitter needs from
-    /// the format assembly. Every simple name spelled either, outside comments, is a use - through a static
-    /// import, in a property pattern - whatever it resolves to, which is the conservative direction.
+    /// the format assembly. <c>Lay</c> hands out the same entries one at a time, so a member that walks it
+    /// is a <c>Layout</c> under another name. Every simple name spelled any of the three, outside comments,
+    /// is a use - through a static import, in a property pattern - whatever it resolves to, which is the
+    /// conservative direction.
     /// </para>
     /// <para>
-    /// <b>The declaring members are allowed and nothing else beside them</b>: <c>Layout</c>, which reads its
-    /// sink's array, and <c>JsNativeTemplate</c>'s constructor and <c>Length</c>. A new member beside them
-    /// that hands either out under another name is reported.
+    /// <b>The declaring members are allowed and nothing else beside them</b>: <c>Layout</c>, which walks
+    /// <c>Lay</c> and reads its sink's array, and <c>JsNativeTemplate</c>'s constructor and <c>Length</c>.
+    /// A new member beside them that hands any of the three out under another name is reported.
     /// </para>
     /// <para>
-    /// <b><c>Lay</c> is not confined</b>, and that is a stated limit rather than an oversight: it is the
-    /// internal walk <c>Layout</c> is made by and the scan compares a payload through, it came after the
-    /// answer that names this clause's members, and it is visible only inside the format assembly.
+    /// <b><c>Lay</c> is allowed in fewer places than the other two</b>: the scan, which compares a payload
+    /// through it, and <c>Layout</c>, which is made by it, and not the lowering, which reads the layout
+    /// through <c>Layout</c>. <c>Lay</c>'s own declaration is not a use of the name, and a call of
+    /// <c>Lay</c> inside <c>Lay</c> would be reported.
     /// </para>
     /// </remarks>
     internal static X4Answer X4Confinement(IReadOnlyList<NativeMappingRules.SourceUnit> tree)
@@ -1595,6 +1651,7 @@ public sealed class NativeBaselineRuleTests
         foreach (var (path, type, member) in new[]
                  {
                      (BlocksFile, "JsBaselineBlocks", "Layout"),
+                     (BlocksFile, "JsBaselineBlocks", "Lay"),
                      (TemplatesFile, "JsNativeTemplate", "Fixed"),
                  })
         {
@@ -1619,12 +1676,15 @@ public sealed class NativeBaselineRuleTests
             {
                 var text = name.Identifier.ValueText;
 
-                if (text is not ("Layout" or "Fixed"))
+                if (text is not ("Layout" or "Lay" or "Fixed"))
                 {
                     continue;
                 }
 
-                if (inScan || inLowering)
+                // The walk is allowed in fewer places than the layout and the fixed bytes: not the lowering.
+                var walk = text is "Lay";
+
+                if (inScan || (inLowering && !walk))
                 {
                     decided.Add((inScan ? "the scan names " : "the lowering names ") + text);
                     continue;
@@ -1635,13 +1695,16 @@ public sealed class NativeBaselineRuleTests
 
                 if (DeclaringUses.Contains((file.RelativePath, owner, member, text)))
                 {
+                    decided.Add($"{owner}.{member} names {text}");
                     continue;
                 }
 
-                violations.Add(
-                    $"(c) {file.RelativePath} names {text} in {member}, and outside the members that declare them " +
-                    $"JsBaselineBlocks.Layout and JsNativeTemplate.Fixed are named only by the scan, {ScanFile}, and " +
-                    $"by the lowering, {LoweringAssembly}");
+                violations.Add(walk
+                    ? $"(c) {file.RelativePath} names Lay in {member}, and JsBaselineBlocks.Lay, the walk the layout " +
+                      $"is made by, is named only by the scan, {ScanFile}, and inside JsBaselineBlocks.Layout"
+                    : $"(c) {file.RelativePath} names {text} in {member}, and outside the members that declare them " +
+                      $"JsBaselineBlocks.Layout and JsNativeTemplate.Fixed are named only by the scan, {ScanFile}, and " +
+                      $"by the lowering, {LoweringAssembly}");
             }
         }
 
@@ -2116,12 +2179,13 @@ public sealed class NativeBaselineRuleTests
     private static readonly HashSet<(string, string?, string, string)> DeclaringUses =
     [
         (BlocksFile, "JsBaselineBlocks", "Layout", "Layout"),
+        (BlocksFile, "JsBaselineBlocks", "Layout", "Lay"),
         (TemplatesFile, "JsNativeTemplate", "JsNativeTemplate", "Fixed"),
         (TemplatesFile, "JsNativeTemplate", "Length", "Fixed"),
     ];
 
     /// <summary>A file that may name one of the names clause (c) confines, before it is parsed.</summary>
-    private static readonly Regex ConfinedName = new(@"\b(?:Layout|Fixed)\b", RegexOptions.Compiled);
+    private static readonly Regex ConfinedName = new(@"\b(?:Layout|Lay|Fixed)\b", RegexOptions.Compiled);
 
     /// <summary>The name a member declaration is known by, for the members X4's inputs are edited through.</summary>
     private static string? MemberKey(MemberDeclarationSyntax member) => member switch

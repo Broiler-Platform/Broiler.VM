@@ -60,7 +60,7 @@ reference and as a value type that holds one, because "is, or contains" is two q
 and is a native callback that both carries `[UnmanagedCallersOnly]` and parks an activation in the
 thread slot, because an author who adds the entry adds the slot access in the same edit.
 
-**Four of rule X4's five witnesses are edits rather than files**, and they are stored as the members
+**Four of rule X4's six witnesses are edits rather than files**, and they are stored as the members
 the edit writes. The rule's test puts each one's members into the real file they belong to - the handler
 table or the activation - in place of the members of the same name, and adds the ones the real file
 lacks, because the files they edit are a hundred times the witness's size and a stored copy of either
@@ -74,4 +74,9 @@ joined with `&&`, which is what a rule that found the comparisons by name would 
 `StepCall` answer `Construct`, and the test exchanges the two slots in the real table before it puts
 them in, so every check but the rule's own agrees with it. The fifth,
 `X4-a-layout-read-outside-the-scan-and-the-lowering.cs.witness`, is a whole file, read at a path in the
-profile assembly where it is reported and at a path in the lowering assembly where it is not.
+profile assembly where it is reported and at a path in the lowering assembly where it is not. The
+sixth, `X4-a-lay-call-outside-the-scan-and-the-layout.cs.witness`, is a whole file too: a public member
+of the format assembly that copies a unit's layout out through `JsBaselineBlocks.Lay`, the walk `Layout`
+is made by, without naming `Layout` or `Fixed`. It is read at a path in the format assembly and at one
+in the lowering assembly, where the clause reports the walk although it allows the other two names,
+and in place of the template scan, where it is not reported.

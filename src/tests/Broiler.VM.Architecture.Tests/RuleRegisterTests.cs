@@ -343,7 +343,8 @@ public sealed class RuleRegisterTests
         // opcode before it runs anything, although the template scan now makes those comparisons
         // unreachable from a verified payload, which leaves this rule their standing observation;
         // JsBaselineBlocks.Layout and JsNativeTemplate.Fixed are named in the product only by the scan
-        // and the lowering, which the argument that an execution-only image holds no code generator
+        // and the lowering, and JsBaselineBlocks.Lay, the walk Layout is made by, only by the scan and
+        // inside Layout, which the argument that an execution-only image holds no code generator
         // rests on; and each slot, expected opcode and step's opcode is the one its wrapper is named
         // for, without which routing by name routes nothing. Neither the Vacuous nor the Deferred count
         // moves.
