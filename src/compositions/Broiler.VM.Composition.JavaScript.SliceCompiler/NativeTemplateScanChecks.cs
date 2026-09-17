@@ -1073,10 +1073,10 @@ internal static class NativeTemplateScanChecks
     /// <b>NOTHING HERE RUNS EMITTED CODE, AND BOTH CONVENTIONS ARE CHECKED ON EVERY HOST.</b> The
     /// emitter is a pure function of the image, so a System V emission is as available on Windows as
     /// a Windows one is; what these rows establish is that every emission scans clean against its own
-    /// table, that the table is exactly what the emitter writes, that the frame-shape clauses refuse
-    /// what they are written against, and that the verifier re-emits the same bytes. Whether the
-    /// handlers those bytes call answer what the interpreter answers is the business of the rows that
-    /// execute, beside the engine.
+    /// table and its own program's layout, that the table is exactly what the emitter writes, that the
+    /// frame-shape and layout clauses refuse what they are written against, and that the verifier
+    /// re-emits the same bytes. Whether the handlers those bytes call answer what the interpreter
+    /// answers is the business of the rows that execute, beside the engine.
     /// </para>
     /// <para>
     /// <b>The numeric rows above are not moved by any of this, and the last rows here say so
@@ -1105,13 +1105,16 @@ internal static class NativeTemplateScanChecks
             TheTwoConventionsEmitOneTemplateSequence(),
             BaselineReEmission(JsX64Abi.Windows),
             BaselineReEmission(JsX64Abi.SystemV),
-            AReEmittingVerifierRefusesAHandlerSwappedInThePayload(),
+            EveryVerifierRefusesAHandlerSwappedInThePayload(),
             TheArm64BackendRefusesTheWideManifest(),
             TheBaselinePartitionTableIsThePredicates(),
             EveryOpcodeIsClassifiedForTheBaselinePartition(),
             ThePlanKeepsItsOwnBooks(),
+            ABaselineLayoutIsBoundedByTheCodeItLaysOut(),
+            TheFrozenLayoutPayloadsStillTestWhatTheyName(),
         };
 
+        rows.AddRange(BaselineLayoutRefusals());
         rows.AddRange(BaselineRefusals());
         rows.AddRange(UnchangedAnswers());
         return rows;
@@ -1149,7 +1152,7 @@ internal static class NativeTemplateScanChecks
 
     /// <summary>
     /// Every wide program emits under the named convention and its image scans clean against the
-    /// baseline table.
+    /// baseline table, with the program read back out of the artifact for the layout clauses.
     /// </summary>
     /// <remarks>
     /// <b>A REFUSED PROGRAM FAILS THIS ROW, which is the difference from the numeric closure
@@ -1174,13 +1177,14 @@ internal static class NativeTemplateScanChecks
             }
 
             if (!NativeLifecycle.TryReadEmitted(
-                compiled.Artifact, out var code, out var symbols, out var refusal))
+                    compiled.Artifact, out var code, out var symbols, out var refusal) ||
+                !NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out refusal))
             {
                 return (name, false, program.Name + ": " + refusal);
             }
 
             var result = JsNativeScan.Scan(
-                abi.Architecture, JsNativeTier.Baseline, code, symbols, 16, instantiated);
+                abi.Architecture, JsNativeTier.Baseline, code, symbols, 16, image, instantiated);
 
             if (!result.Accepted)
             {
@@ -2620,18 +2624,21 @@ unit 3 at 512
     }
 
     /// <summary>
-    /// A payload whose one handler call was moved to another defined opcode's slot passes the scan
-    /// and fails re-emission.
+    /// A payload whose first handler call was moved to another defined opcode's slot is refused by the
+    /// scan at verification, with and without an emitter in the image.
     /// </summary>
     /// <remarks>
-    /// <b>THIS IS THE GAP THE SCAN CANNOT CLOSE, SHOWN TO BE CLOSED BY THE LAYER THAT CAN.</b> The
-    /// slot is admitted - it is eight times a defined opcode - so an execution-only image accepts the
-    /// payload and relies on the handler's own opcode check at run time; an image with the backend
-    /// re-emits and refuses it at verification.
+    /// <b>THE SCAN NOW PROVES WHICH HANDLER BELONGS AT WHICH HEAD, SO NEITHER IMAGE ADMITS THE SWAP.</b> The
+    /// slot is admitted by its field - it is eight times a defined opcode - but the layout of the program's
+    /// partition names the head's own opcode there, and the layout clauses run before re-emission in every
+    /// image. So the admitting door refuses with the scan's code, and the re-emitting door refuses with the
+    /// same code before it reaches the byte comparison. Until the layout clauses existed this row was about
+    /// re-emission closing a gap the scan left open; the handler's own opcode check that stood in the gap
+    /// in an execution-only image is now reached only by a build that removes the clause.
     /// </remarks>
-    private static (string, bool, string) AReEmittingVerifierRefusesAHandlerSwappedInThePayload()
+    private static (string, bool, string) EveryVerifierRefusesAHandlerSwappedInThePayload()
     {
-        const string Name = "a re-emitting verifier refuses a baseline payload whose handler call was swapped";
+        const string Name = "every verifier refuses a baseline payload whose handler call was swapped";
         var compiled = CompileWide(WidePrograms[0], JsNativeBackends.X64Windows);
 
         if (compiled.Artifact is null ||
@@ -2672,13 +2679,558 @@ unit 3 at 512
             JavaScriptProfile.DescriptorReEmittingWith(new JsX64Backend(JsX64Abi.Windows), EverySurface()),
             [("re-emitting", artifact)])[0];
 
+        var scanCode = " code " + (int)JavaScriptDiagnosticCode.NativePayloadNotTemplateClosed;
+
         return (
             Name,
-            admitting.Accepted && !reEmitting.Accepted &&
-                reEmitting.Detail.EndsWith(" code " + (int)JavaScriptDiagnosticCode.MalformedNativeSection, System.StringComparison.Ordinal),
+            !admitting.Accepted && admitting.Detail.EndsWith(scanCode, System.StringComparison.Ordinal) &&
+                !reEmitting.Accepted && reEmitting.Detail.EndsWith(scanCode, System.StringComparison.Ordinal),
             "the call at " + swapped + " swapped: without an emitter " +
-                (admitting.Accepted ? "verified" : "refused (" + admitting.Detail + ")") +
+                (admitting.Accepted ? "VERIFIED" : "refused, " + admitting.Detail) +
                 "; with one " + (reEmitting.Accepted ? "VERIFIED" : "refused, " + reEmitting.Detail));
+    }
+
+    // ---- the layout clauses: S5, S6 and S7 -------------------------------------------------------
+
+    /// <summary>One field of a real emission to change, and what the layout clauses must answer for it.</summary>
+    /// <param name="Program">The wide program the emission is of.</param>
+    /// <param name="Artifact">The program's artifact, unmutated.</param>
+    /// <param name="Code">The emitted payload, unmutated.</param>
+    /// <param name="Symbols">The payload's symbols.</param>
+    /// <param name="Image">The program, read back out of the artifact.</param>
+    /// <param name="Unit">The code unit the field is in.</param>
+    /// <param name="At">The instantiation the field belongs to, from the payload's first byte.</param>
+    /// <param name="Field">The byte of that instantiation the field starts at.</param>
+    /// <param name="Value">The thirty-two-bit value written there.</param>
+    /// <param name="What">What the change is, in words.</param>
+    private sealed record LayoutSite(
+        string Program,
+        byte[] Artifact,
+        byte[] Code,
+        JsNativeSymbolRow[] Symbols,
+        JsNativeProgramImage Image,
+        int Unit,
+        uint At,
+        int Field,
+        int Value,
+        string What);
+
+    /// <summary>
+    /// Real wide emissions with one field changed, each refused at verification with the scan's code and by a
+    /// direct scan with the clause the field belongs to at the instantiation it is in; and the scan refusing,
+    /// by name, a clean emission handed with no program or with a program that is not its units'.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>EACH CHANGE IS ONE FIELD TO A VALUE THE FIELD ADMITS</b>, so every clause before the layout accepts
+    /// the payload and the answer is the layout clauses': a dispatch compare naming a head that is not a
+    /// landing (S5), a call sequence passing the instruction after its head inside the head's block (S6), a
+    /// head's call through another defined opcode's slot (S6), and a fall-through tail comparing another head
+    /// than its successor (S7). The site of each is found through the unit's plan and layout, and the
+    /// instantiation there is decoded from the payload and required to be the template the layout names, so
+    /// a site the search picked wrongly fails the row rather than testing something else.
+    /// </para>
+    /// <para>
+    /// <b>THE VERIFIER IS THE ADMITTING DOOR, WHICH HAS NO EMITTER</b>, so what refuses is the scan and
+    /// nothing else. The retained corpus pins the same four clauses on a frozen payload, and
+    /// <c>TheFrozenLayoutPayloadsStillTestWhatTheyName</c> holds those.
+    /// </para>
+    /// </remarks>
+    private static System.Collections.Generic.List<(string, bool, string)> BaselineLayoutRefusals()
+    {
+        var rows = new System.Collections.Generic.List<(string, bool, string)>();
+        LayoutSite? dispatch = null;
+        LayoutSite? call = null;
+        LayoutSite? slot = null;
+        LayoutSite? tail = null;
+        (string Program, byte[] Code, JsNativeSymbolRow[] Symbols, JsNativeProgramImage Image)? clean = null;
+
+        foreach (var program in WidePrograms)
+        {
+            var compiled = CompileWide(program, JsNativeBackends.X64Windows);
+
+            if (compiled.Artifact is null ||
+                !NativeLifecycle.TryReadEmitted(compiled.Artifact, out var code, out var symbols, out var refusal) ||
+                !NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out refusal) ||
+                !TryDecodeUnits(JsNativeArchitecture.X64Windows, code, symbols, out var units, out refusal))
+            {
+                rows.Add(("the layout clauses refuse a changed field of a real emission", false, program.Name + ": " + Refusal(compiled)));
+                return rows;
+            }
+
+            if (clean is null && symbols.Length > 1)
+            {
+                clean = (program.Name, code, symbols, image);
+            }
+
+            var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+
+            for (var unit = 0; unit < image.Functions.Length; unit++)
+            {
+                if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out refusal))
+                {
+                    rows.Add(("the layout clauses refuse a changed field of a real emission", false, program.Name + ", unit " + unit + ": " + refusal));
+                    return rows;
+                }
+
+                var layout = JsBaselineBlocks.Layout(plan);
+                var blocks = plan.Blocks.ToArray();
+                var landings = new System.Collections.Generic.HashSet<int>(plan.Landings.ToArray());
+
+                LayoutSite Site(int entry, int value, string what)
+                {
+                    var template = JsNativeTemplates.For(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline)
+                        [TemplateIndex(layout[entry].Template)];
+                    var (at, text) = units[unit][BodyAfterPrologue + entry];
+
+                    return new LayoutSite(
+                        program.Name,
+                        compiled.Artifact,
+                        code,
+                        symbols,
+                        image,
+                        unit,
+                        text == template.Text ? at : uint.MaxValue,
+                        template.Fields[0].BitOffset / 8,
+                        value,
+                        what + " (the `" + text + "` at " + at + ", unit " + unit + " of " + program.Name + ")");
+                }
+
+                var notLanding = System.Array.FindIndex(blocks, block => !landings.Contains(block.Head));
+
+                if (dispatch is null && notLanding >= 0)
+                {
+                    var head = blocks[notLanding].Head;
+                    var entry = System.Array.FindIndex(layout, e => e.Role == JsBaselineRole.Dispatch && e.Template == JsBaselineTemplate.CmpEaxPc);
+                    dispatch = Site(entry, head, "a dispatch compare naming the head " + head + ", which is not a landing");
+                }
+
+                foreach (var block in blocks)
+                {
+                    if (call is null && block.Last > block.Head)
+                    {
+                        var following = block.Head + JsOpcodes.InstructionWidth(block.HeadOpcode);
+                        var entry = System.Array.FindIndex(layout, e => e.Template == JsBaselineTemplate.MovArg1Pc && e.Head == block.Head);
+                        call = Site(entry, following, "a call sequence passing " + following + ", inside the block of the head " + block.Head);
+                    }
+
+                    if (slot is null)
+                    {
+                        var other = block.HeadOpcode == JsOpcode.LoadNull ? JsOpcode.LoadTrue : JsOpcode.LoadNull;
+                        var entry = System.Array.FindIndex(layout, e => e.Template == JsBaselineTemplate.CallSlot && e.Head == block.Head);
+                        slot = Site(entry, (int)other * 8, "the call of the head " + block.Head + ", a `" + block.HeadOpcode + "`, through `" + other + "`'s slot");
+                    }
+
+                    var wrong = System.Array.FindIndex(blocks, other => other.Head != block.Following && other.Head != block.Target);
+
+                    if (tail is null && block.Tail == JsBaselineTail.FallThrough && wrong >= 0)
+                    {
+                        var head = blocks[wrong].Head;
+                        var entry = System.Array.FindLastIndex(layout, e => e.Role == JsBaselineRole.Tail && e.Template == JsBaselineTemplate.CmpEaxPc && e.Head == block.Head);
+                        tail = Site(entry, head, "the fall-through tail of the head " + block.Head + " comparing " + head + " where its successor is " + block.Following);
+                    }
+                }
+            }
+        }
+
+        foreach (var (site, expected) in new[]
+        {
+            (dispatch, JsNativeScanOutcome.DispatchNotTheLandings),
+            (call, JsNativeScanOutcome.CallsNotTheBlockHeads),
+            (slot, JsNativeScanOutcome.HandlerSlotNotTheOpcode),
+            (tail, JsNativeScanOutcome.TailNotTheBlockEnd),
+        })
+        {
+            rows.Add(LayoutRefused(site, expected));
+        }
+
+        if (clean is not { } program2)
+        {
+            rows.Add(("the layout clauses refuse a program that is not the payload's", false, "no wide program emits more than one unit"));
+            return rows;
+        }
+
+        var (name, cleanCode, cleanSymbols, cleanImage) = program2;
+        var reordered = (JsNativeSymbolRow[])cleanSymbols.Clone();
+        reordered[1] = reordered[1] with { FunctionIndex = 0 };
+
+        foreach (var (label, symbols, image, offset) in new (string, JsNativeSymbolRow[], JsNativeProgramImage?, uint)[]
+        {
+            ("with no program", cleanSymbols, null, 0),
+            ("with a program of one unit fewer", cleanSymbols, cleanImage with { Functions = cleanImage.Functions[..^1] }, 0),
+            ("with a program of one unit more, which no symbol names", cleanSymbols, cleanImage with { Functions = [.. cleanImage.Functions, cleanImage.Functions[^1]] }, 0),
+            ("whose second symbol names the first function", reordered, cleanImage, cleanSymbols[1].Offset),
+        })
+        {
+            var control = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, cleanCode, cleanSymbols, 16, cleanImage);
+            var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, cleanCode, symbols, 16, image);
+
+            rows.Add((
+                "the layout clauses refuse a clean emission scanned " + label,
+                control.Accepted && result.Outcome == JsNativeScanOutcome.BaselineWithoutProgram && result.Offset == offset,
+                name + ": with its own program and symbols " + (control.Accepted ? "accepted" : control.Outcome + " at " + control.Offset) +
+                    "; " + label + " " + result.Outcome + " at " + result.Offset + ": " + result.Reason));
+        }
+
+        return rows;
+    }
+
+    /// <summary>How many instantiations open a baseline unit before its body.</summary>
+    private const int BodyAfterPrologue = 6;
+
+    /// <summary>The index in a baseline table of the template a layout entry names, found by the template's name.</summary>
+    private static int TemplateIndex(JsBaselineTemplate template)
+    {
+        var name = template switch
+        {
+            JsBaselineTemplate.TestEax => "test eax, eax",
+            JsBaselineTemplate.JsLeave => "js rel32",
+            JsBaselineTemplate.CmpEaxPc => "cmp eax, pc",
+            JsBaselineTemplate.Je => "je rel32",
+            JsBaselineTemplate.Jne => "jne rel32",
+            JsBaselineTemplate.Ja => "ja rel32",
+            JsBaselineTemplate.Jmp => "jmp rel32",
+            JsBaselineTemplate.MovStatus => "mov eax, status",
+            JsBaselineTemplate.MovArg0R14 => "mov arg0, r14",
+            JsBaselineTemplate.MovArg1Pc => "mov arg1d, pc",
+            _ => "call [rbx+slot]",
+        };
+
+        return System.Array.FindIndex(
+            JsNativeTemplates.For(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline),
+            candidate => string.Equals(candidate.Text, name, System.StringComparison.Ordinal));
+    }
+
+    /// <summary>Changes one site's field, then requires the direct scan's clause and offset and the verifier's code.</summary>
+    private static (string, bool, string) LayoutRefused(LayoutSite? site, JsNativeScanOutcome expected)
+    {
+        var name = "the layout clauses refuse a real emission with one field changed, as " + expected;
+
+        if (site is null)
+        {
+            return (name, false, "no wide program has a site for this change");
+        }
+
+        if (site.At == uint.MaxValue)
+        {
+            return (name, false, site.What + ": the payload's instantiation there is not the template the layout names");
+        }
+
+        var code = (byte[])site.Code.Clone();
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(System.MemoryExtensions.AsSpan(code, (int)site.At + site.Field), site.Value);
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, code, site.Symbols, 16, site.Image);
+
+        var artifact = (byte[])site.Artifact.Clone();
+        var blob = System.MemoryExtensions.IndexOf(
+            System.MemoryExtensions.AsSpan(artifact),
+            System.MemoryExtensions.AsSpan(site.Code, 0, System.Math.Min(64, site.Code.Length)));
+
+        if (blob < 0)
+        {
+            return (name, false, site.What + ": the payload was not found in its artifact");
+        }
+
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(System.MemoryExtensions.AsSpan(artifact, blob + (int)site.At + site.Field), site.Value);
+        var verified = VerifyAll(JavaScriptProfile.Descriptor, [(site.Program, artifact)])[0];
+        var scanCode = " code " + (int)JavaScriptDiagnosticCode.NativePayloadNotTemplateClosed;
+
+        return (
+            name,
+            result.Outcome == expected && result.Offset == site.At &&
+                !verified.Accepted && verified.Detail.EndsWith(scanCode, System.StringComparison.Ordinal),
+            site.What + ": the scan answered " + result.Outcome + " at " + result.Offset + " - " + result.Reason +
+                "; the admitting verifier " + (verified.Accepted ? "VERIFIED it" : "refused, " + verified.Detail));
+    }
+
+    /// <summary>Decodes a baseline payload unit by unit into where each instantiation starts and which template it is.</summary>
+    private static bool TryDecodeUnits(
+        JsNativeArchitecture architecture,
+        byte[] code,
+        JsNativeSymbolRow[] symbols,
+        out System.Collections.Generic.List<(uint At, string Text)>[] units,
+        out string detail)
+    {
+        var table = JsNativeTemplates.For(architecture, JsNativeTier.Baseline);
+        units = new System.Collections.Generic.List<(uint At, string Text)>[symbols.Length];
+
+        for (var unit = 0; unit < symbols.Length; unit++)
+        {
+            units[unit] = [];
+            var at = (int)symbols[unit].Offset;
+            var limit = unit + 1 < symbols.Length ? (int)symbols[unit + 1].Offset : code.Length;
+            var afterReturn = false;
+
+            while (at < limit)
+            {
+                if (afterReturn && code[at] == JsNativeTemplates.X64PaddingByte)
+                {
+                    at++;
+                    continue;
+                }
+
+                JsNativeTemplate? found = null;
+
+                foreach (var template in table)
+                {
+                    var matches = at + template.Length <= limit;
+
+                    for (var index = 0; index < template.Length && matches; index++)
+                    {
+                        matches = (code[at + index] & template.Mask[index]) == template.Fixed[index];
+                    }
+
+                    if (matches)
+                    {
+                        found = template;
+                        break;
+                    }
+                }
+
+                if (found is null)
+                {
+                    detail = architecture + ": no baseline template matches at " + at;
+                    return false;
+                }
+
+                units[unit].Add(((uint)at, found.Text));
+                afterReturn = found.IsReturn;
+                at += found.Length;
+            }
+        }
+
+        detail = string.Empty;
+        return true;
+    }
+
+    /// <summary>
+    /// Every baseline layout is at most eight entries per head, three per landing and four, which is at most
+    /// eleven per instruction and four; and a scan of a unit whose layout would be large, against a payload
+    /// of one instruction, allocates less than that layout's entries would take.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE FIRST BOUND IS THE LAYOUT'S GRAMMAR, NOT A MEASUREMENT.</b> The dispatch is four entries and
+    /// at most three per landing, and a block at most eight: three for its call, two for a target compare
+    /// and three for a branching tail. Neither landings nor heads outnumber the unit's instructions, and no
+    /// instruction is shorter than a byte. It is asked of every unit of every wide program, of the golden
+    /// program, of the frozen corpus program, and of a unit of a hundred thousand jumps, each to the next
+    /// instruction, where every instruction is a head.
+    /// </para>
+    /// <para>
+    /// <b>THE SECOND BOUND IS THE SCAN'S, AND IT IS STATED IN THE PAYLOAD'S INSTRUCTIONS.</b> The layout
+    /// clauses compare a unit body with its layout entry by entry as the partition's walk makes the entries,
+    /// and stop at the first that differs, so they make no more of a layout than the body's instructions and
+    /// one; what the scan holds besides is the unit's plan, which is sized by the bytecode the artifact
+    /// carries. So the jump chain is scanned against a payload whose body is a single jump: it must be
+    /// refused at the body's first instruction, and the bytes allocated on this thread while the scan runs
+    /// must be fewer than the chain's layout would take as an array. A scan that built the layout before
+    /// comparing allocates that array and fails. The count is read from the runtime's own per-thread
+    /// allocation counter around one scan, after a first scan of the same payload.
+    /// </para>
+    /// <para>
+    /// <b>NEITHER BOUND IS CHARGED WORK.</b> This work is the verifier's and is not counted by the recorder
+    /// the core's proportionality row reads, which is why the bound is stated here.
+    /// </para>
+    /// </remarks>
+    private static (string, bool, string) ABaselineLayoutIsBoundedByTheCodeItLaysOut()
+    {
+        const string Name = "a baseline layout is bounded by the code it lays out, and the scan's by the payload's instructions";
+        const int Jumps = 100_000;
+        var images = new System.Collections.Generic.List<(string Label, JsNativeProgramImage Image)>();
+
+        foreach (var program in WidePrograms)
+        {
+            var compiled = CompileWide(program, JsNativeBackends.X64Windows);
+
+            if (compiled.Artifact is null || !NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out var refusal))
+            {
+                return (Name, false, program.Name + ": " + Refusal(compiled));
+            }
+
+            images.Add((program.Name, image));
+        }
+
+        if (!TryReadGoldenImage(out var golden, out var goldenRefusal))
+        {
+            return (Name, false, "the golden program: " + goldenRefusal);
+        }
+
+        var chain = JumpChain(Jumps);
+        images.Add(("the golden program", golden));
+        images.Add(("the frozen corpus program", WideCorpus.BaselineLayoutImage()));
+        images.Add(("a chain of " + Jumps + " jumps", chain));
+
+        var units = 0;
+
+        foreach (var (label, image) in images)
+        {
+            var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+
+            for (var unit = 0; unit < image.Functions.Length; unit++)
+            {
+                if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out var refusal))
+                {
+                    return (Name, false, label + ", unit " + unit + ": the plan refused - " + refusal);
+                }
+
+                var instructions = 0L;
+
+                for (var at = plan.First; at < plan.End; at += JsOpcodes.InstructionWidth((JsOpcode)image.Code[at]))
+                {
+                    instructions++;
+                }
+
+                var length = (long)JsBaselineBlocks.LayoutLength(plan);
+                var grammar = (8L * plan.Blocks.Length) + (3L * plan.Landings.Length) + 4;
+
+                if (length > grammar || grammar > (11 * instructions) + 4 || instructions > plan.End - plan.First)
+                {
+                    return (
+                        Name,
+                        false,
+                        label + ", unit " + unit + ": " + length + " entries for " + plan.Blocks.Length + " heads, " +
+                            plan.Landings.Length + " landings, " + instructions + " instructions and " + (plan.End - plan.First) + " bytes");
+                }
+
+                units++;
+            }
+        }
+
+        // ---- the scan, against a body of one jump ------------------------------------------------
+        byte[] prologue = [0x53, 0x41, 0x56, 0x48, 0x83, 0xEC, 0x28, 0x49, 0x89, 0xCE, 0x49, 0x8B, 0x1E, 0x89, 0xD0];
+        byte[] epilogue = [0x48, 0x83, 0xC4, 0x28, 0x41, 0x5E, 0x5B, 0xC3];
+        byte[] payload = [.. prologue, 0xE9, 0x00, 0x00, 0x00, 0x00, .. epilogue];
+        JsNativeSymbolRow[] symbols = [new JsNativeSymbolRow(0, 0)];
+
+        if (!JsBaselineBlocks.TryPlan(chain, 0, default, out var chainPlan, out var chainRefusal))
+        {
+            return (Name, false, "the jump chain: the plan refused - " + chainRefusal);
+        }
+
+        var layoutBytes = (long)JsBaselineBlocks.LayoutLength(chainPlan) *
+            System.Runtime.CompilerServices.Unsafe.SizeOf<JsBaselineInstruction>();
+
+        _ = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, payload, symbols, 16, chain);
+        var before = System.GC.GetAllocatedBytesForCurrentThread();
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, payload, symbols, 16, chain);
+        var allocated = System.GC.GetAllocatedBytesForCurrentThread() - before;
+
+        return (
+            Name,
+            result.Outcome == JsNativeScanOutcome.DispatchNotTheLandings && result.Offset == prologue.Length &&
+                allocated < layoutBytes,
+            units + " units of " + images.Count + " programs within eight entries per head, three per landing and four, " +
+                "and eleven per instruction and four; the chain of " + Jumps + " jumps scanned against a body of one jump answered " +
+                result.Outcome + " at " + result.Offset + ", allocating " + allocated + " bytes where its layout would take " +
+                layoutBytes);
+    }
+
+    /// <summary>
+    /// A one-unit program of jumps, each to the next instruction, ending in a return: every instruction is a
+    /// head, and the unit's layout is as long as its bytecode lets a layout be.
+    /// </summary>
+    private static JsNativeProgramImage JumpChain(int jumps)
+    {
+        var code = new byte[(jumps * 5) + 1];
+
+        for (var index = 0; index < jumps; index++)
+        {
+            var at = index * 5;
+            code[at] = (byte)JsOpcode.Jump;
+            System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(System.MemoryExtensions.AsSpan(code, at + 1), at + 5);
+        }
+
+        code[^1] = (byte)JsOpcode.ReturnUndefined;
+
+        return new JsNativeProgramImage(
+            code,
+            [new JsFunctionRow(0, 0, 0, 16, 0, (uint)code.Length, (uint)JsFormat.FunctionFlags.ProgramBody)],
+            [],
+            [],
+            16)
+        {
+            Tier = JsNativeTier.Baseline,
+            Regions = [],
+        };
+    }
+
+    /// <summary>
+    /// The frozen payload the retained corpus's layout rows carry scans clean with its program, and each of its
+    /// four mutations answers the outcome and the offset its corpus entry is named for.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE CORPUS ROWS PIN AN OFFSET AND A CODE, AND THE CODE IS ONE FOR ALL FOUR CLAUSES</b>, so a row
+    /// whose clause was misnamed at the same offset would still replay to its recorded answer. This row scans
+    /// the same four payloads directly and requires each named outcome. It reads the program, the payload, the
+    /// mutations and the artifact builder from <c>WideCorpus</c> itself, so it cannot hold a restatement of
+    /// them while the corpus moves on.
+    /// </para>
+    /// <para>
+    /// <b>A CHANGE TO THE PARTITION OR THE LAYOUT FAILS IT LOUDLY</b>: the unmutated payload stops being its
+    /// program's layout, and the row prints what this build emits for the program so that the re-base is a
+    /// commit that says so. The unmutated artifact must also verify under the admitting door, so the four
+    /// refusals are about the payload and not about a program the verifier would refuse anyway.
+    /// </para>
+    /// </remarks>
+    private static (string, bool, string) TheFrozenLayoutPayloadsStillTestWhatTheyName()
+    {
+        const string Name = "the frozen layout payloads still test what they name";
+        var image = WideCorpus.BaselineLayoutImage();
+        var symbols = WideCorpus.BaselineLayoutSymbols;
+        var failures = new System.Collections.Generic.List<string>();
+        var scanCode = " code " + (int)JavaScriptDiagnosticCode.NativePayloadNotTemplateClosed;
+
+        var unmutated = WideCorpus.BaselineLayoutMutated(-1);
+        var clean = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, unmutated, symbols, 16, image);
+
+        if (!clean.Accepted)
+        {
+            var emission = new JsX64Backend(JsX64Abi.Windows).TryEmit(image, out var emitted, out _, out var why)
+                ? System.Convert.ToHexString(emitted)
+                : "nothing, refused: " + why;
+
+            failures.Add(
+                "the unmutated payload is refused, " + clean.Outcome + " at " + clean.Offset + ": " + clean.Reason +
+                "; this build emits " + emission);
+        }
+
+        var verified = VerifyAll(JavaScriptProfile.Descriptor, [("unmutated", WideCorpus.BaselineLayoutArtifact(unmutated))])[0];
+
+        if (!verified.Accepted)
+        {
+            failures.Add("the unmutated artifact is refused at verification: " + verified.Detail);
+        }
+
+        for (var mutation = 0; mutation < WideCorpus.BaselineLayoutMutations.Length; mutation++)
+        {
+            var (entry, outcome, at, _, _) = WideCorpus.BaselineLayoutMutations[mutation];
+            var mutated = WideCorpus.BaselineLayoutMutated(mutation);
+            var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, mutated, symbols, 16, image);
+
+            if (result.Outcome != outcome || result.Offset != at)
+            {
+                failures.Add(
+                    entry + ": named for " + outcome + " at " + at + " and the scan answered " + result.Outcome + " at " +
+                    result.Offset + " - " + result.Reason);
+            }
+
+            var refused = VerifyAll(JavaScriptProfile.Descriptor, [(entry, WideCorpus.BaselineLayoutArtifact(mutated))])[0];
+
+            if (refused.Accepted || !refused.Detail.EndsWith(scanCode, System.StringComparison.Ordinal))
+            {
+                failures.Add(entry + ": at verification " + (refused.Accepted ? "VERIFIED" : refused.Detail));
+            }
+        }
+
+        return (
+            Name,
+            failures.Count == 0,
+            failures.Count == 0
+                ? "the unmutated payload scans clean with its program and its artifact verifies; each of " +
+                    WideCorpus.BaselineLayoutMutations.Length + " mutations answers the outcome and the offset its entry " +
+                    "is named for, and its artifact is refused with" + scanCode
+                : string.Join("; ", failures));
     }
 
     /// <summary>The arm64 backend refuses the wide manifest by name rather than emitting anything.</summary>
@@ -2784,8 +3336,11 @@ unit 3 at 512
     /// <b>THE FRAME-SHAPE ROWS ARE WHOLE UNITS WITH ONE THING WRONG</b>: a prologue and an epilogue
     /// that are both correct, and the one instruction or branch between or around them that breaks a
     /// clause. The control beside them branches to the epilogue's first instruction - the landing
-    /// every real exit uses - and is accepted, so the refusals are not satisfied by a scan that
-    /// refuses every branch toward the epilogue.
+    /// every real exit uses - and passes every frame and branch clause, so the refusals are not
+    /// satisfied by a scan that refuses every branch toward the epilogue. It is not accepted: with no
+    /// program handed with it the layout clauses answer that they have none, and a body of one jump
+    /// is no program's layout in any case. None of these rows passes a program, because each is
+    /// refused before the layout clauses would read one.
     /// </remarks>
     private static System.Collections.Generic.List<(string, bool, string)> BaselineRefusals()
     {
@@ -2829,14 +3384,19 @@ unit 3 at 512
             RefusedBaseline("a `jmp` back into the prologue", JsNativeTier.Baseline, Unit(0xE9, 0xEF, 0xFF, 0xFF, 0xFF), JsNativeScanOutcome.BranchIntoFrameSequence),
         };
 
-        // THE CONTROL: the same jump, to the epilogue's first instruction.
+        // THE CONTROL: the same jump, to the epilogue's first instruction. No program is handed with it,
+        // and the answer that says so comes only after every frame and branch clause has accepted the
+        // whole payload - so it is the control's pass, where an acceptance was before the layout clauses
+        // existed: a unit whose whole body is one jump is not the layout of any program.
         var control = JsNativeScan.Scan(
-            JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, Unit(0xE9, 0x00, 0x00, 0x00, 0x00), [new JsNativeSymbolRow(0, 0)], 16);
+            JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, Unit(0xE9, 0x00, 0x00, 0x00, 0x00), [new JsNativeSymbolRow(0, 0)], 16, image: null);
 
         rows.Add((
-            "the baseline scan accepts a `jmp` to the epilogue's first instruction",
-            control.Accepted,
-            control.Accepted ? "accepted" : control.Outcome + " at " + control.Offset + ": " + control.Reason));
+            "the baseline scan's frame clauses accept a `jmp` to the epilogue's first instruction",
+            control.Outcome == JsNativeScanOutcome.BaselineWithoutProgram,
+            control.Outcome == JsNativeScanOutcome.BaselineWithoutProgram
+                ? "every frame and branch clause accepted it, and the scan then asked for the program: " + control.Reason
+                : "expected BaselineWithoutProgram and the scan answered " + control.Outcome + " at " + control.Offset + ": " + control.Reason));
 
         // A NUMERIC UNIT UNDER WIDE, AND A BASELINE UNIT UNDER NUMERIC: each table refuses the
         // other's emission at its first instruction the two do not share.
@@ -2865,7 +3425,7 @@ unit 3 at 512
         string name, JsNativeTier tier, byte[] code, JsNativeScanOutcome expected)
     {
         var label = "the " + tier + " scan refuses " + name;
-        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, tier, code, [new JsNativeSymbolRow(0, 0)], 16);
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, tier, code, [new JsNativeSymbolRow(0, 0)], 16, image: null);
 
         return (
             label,
@@ -2880,7 +3440,7 @@ unit 3 at 512
         string name, byte[] code, JsNativeSymbolRow[] symbols, JsNativeTier tier)
     {
         var label = "the template scan refuses " + name;
-        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, tier, code, symbols, 16);
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, tier, code, symbols, 16, image: null);
 
         return (
             label,
@@ -2900,13 +3460,13 @@ unit 3 at 512
     private static System.Collections.Generic.List<(string, bool, string)> UnchangedAnswers()
     {
         var zeros = JsNativeScan.Scan(
-            JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, [0x00, 0x00, 0x00, 0x00], [new JsNativeSymbolRow(0, 0)], 16);
+            JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, [0x00, 0x00, 0x00, 0x00], [new JsNativeSymbolRow(0, 0)], 16, image: null);
 
         var armZeros = JsNativeScan.Scan(
-            JsNativeArchitecture.Arm64, JsNativeTier.Baseline, [0x00, 0x00, 0x00, 0x00], [new JsNativeSymbolRow(0, 0)], 4);
+            JsNativeArchitecture.Arm64, JsNativeTier.Baseline, [0x00, 0x00, 0x00, 0x00], [new JsNativeSymbolRow(0, 0)], 4, image: null);
 
         var armReturn = JsNativeScan.Scan(
-            JsNativeArchitecture.Arm64, JsNativeTier.Baseline, [0xC0, 0x03, 0x5F, 0xD6], [new JsNativeSymbolRow(0, 0)], 4);
+            JsNativeArchitecture.Arm64, JsNativeTier.Baseline, [0xC0, 0x03, 0x5F, 0xD6], [new JsNativeSymbolRow(0, 0)], 4, image: null);
 
         return
         [

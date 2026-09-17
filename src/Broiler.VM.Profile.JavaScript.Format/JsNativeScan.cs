@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   16
-// Annotated:        16/16
-// Exempt:           15
-// Human-reviewed:   0/16
+// Relevant units:   22
+// Annotated:        22/22
+// Exempt:           25
+// Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         5/5
+// Criteria:         11/11
 // Resource impact:  3/10 max
-// Unverified:       16
+// Unverified:       22
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -32,10 +32,13 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// can provoke while the table's entries are mutually exclusive - as this build's are;
 /// <see cref="UnknownArchitecture"/> is unreachable from the verifier, which has already refused
 /// every architecture value this build does not name, and is reachable from a caller of this scan
-/// that names one. Every other member is reached by bytes somebody could hand this build, and the
-/// composition lane beside the backends has a row for each.
+/// that names one. <see cref="BaselineWithoutProgram"/> is unreachable from the verifier too, which
+/// always hands the scan the program it read and has already held that program's function table to
+/// the symbol table row for row, and is reachable from a caller that hands no program or another
+/// one. Every other member is reached by bytes somebody could hand this build, and the composition
+/// lane beside the backends has a row for each.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=294341
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B353CE
 // Broiler-Human:        PENDING
 public enum JsNativeScanOutcome
 {
@@ -89,6 +92,24 @@ public enum JsNativeScanOutcome
 
     /// <summary>A baseline branch lands inside the prologue, or on an epilogue instruction after its first.</summary>
     BranchIntoFrameSequence = 14,
+
+    /// <summary>
+    /// A baseline x86-64 payload was scanned without the program its units were emitted from, or with
+    /// a program whose code units are not the payload's units one for one.
+    /// </summary>
+    BaselineWithoutProgram = 15,
+
+    /// <summary>A baseline unit's dispatch does not compare exactly its landings, or does not branch each to its head.</summary>
+    DispatchNotTheLandings = 16,
+
+    /// <summary>A baseline unit's handler calls are not exactly its block heads, in order.</summary>
+    CallsNotTheBlockHeads = 17,
+
+    /// <summary>A baseline call names a slot other than eight times the opcode at the head it passes.</summary>
+    HandlerSlotNotTheOpcode = 18,
+
+    /// <summary>A baseline block's tail is not the one its last instruction dictates.</summary>
+    TailNotTheBlockEnd = 19,
 }
 
 /// <summary>What a scan answered, and about which byte.</summary>
@@ -151,6 +172,14 @@ public readonly record struct JsNativeScanResult(
 /// well formed. Re-emission equality is the only layer that says otherwise, and what would pin the
 /// generator instead is a differential oracle, which is somebody else's stage.
 /// </para>
+/// <para>
+/// <b>THE x86-64 BASELINE FORM IS WHERE THE INSTRUCTIONS ARE PINNED AFTER ALL</b>, because what its
+/// units do is decided by the program's partition and not by a generator's choices: every unit body is
+/// held to the layout <see cref="JsBaselineBlocks"/> gives for the program the payload is scanned with,
+/// instruction for instruction, so a well-formed baseline payload of the wrong instructions is refused
+/// in an image with no emitter too. What such an image still trusts there is that each template's
+/// bytes are the encoder's, which the lane's closure and golden rows hold.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=31ACE8
 // Broiler-Falsified-If: a payload this scan accepts carries a byte no backend of this build could have emitted
@@ -183,7 +212,7 @@ public static class JsNativeScan
     /// never wrote, and no framing check has ever been able to see it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=885F63
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=61C6A9
     // Broiler-Falsified-If: a byte sequence no backend of this build can emit is accepted, or a sequence one of them emits is refused
     // Broiler-Human:        PENDING
     public static JsNativeScanResult Scan(
@@ -192,7 +221,7 @@ public static class JsNativeScan
         JsNativeSymbolRow[] symbols,
         uint alignment,
         System.Collections.Generic.ICollection<string>? instantiated = null) =>
-        Scan(architecture, JsNativeTier.Numeric, code, symbols, alignment, instantiated);
+        Scan(architecture, JsNativeTier.Numeric, code, symbols, alignment, image: null, instantiated);
 
     /// <summary>
     /// Scans an emitted payload against the template table for its architecture and native tier.
@@ -215,15 +244,51 @@ public static class JsNativeScan
     /// in the frame, at a slot the field kind holds to a defined opcode.
     /// </para>
     /// <para>
-    /// <b>WHAT THE CLAUSES CANNOT SAY IS WHICH HANDLER BELONGS AT WHICH PROGRAM COUNTER.</b> A unit
-    /// that calls the handler for one opcode where the bytecode holds another is closed and
-    /// well-shaped. The handler closes that gap at run time: it refuses a program counter the
-    /// managed side did not compute and an opcode byte that is not its own, and the unit answers a
-    /// defect rather than any JavaScript value.
+    /// <b>THEN THREE LAYOUT CLAUSES SAY WHICH HANDLER BELONGS AT WHICH PROGRAM COUNTER, AND THEY NEED
+    /// THE PROGRAM.</b> Once every unit has its frame and every branch its target, each unit of
+    /// <paramref name="image"/> is planned by <see cref="JsBaselineBlocks.TryPlan"/>, and the unit's
+    /// instantiations between its prologue and its epilogue must be the entries of its layout, one for
+    /// one: the same template, the same program counter, slot or status, and every branch landing on the
+    /// instantiation the entry names, or on the epilogue's first. S5: the dispatch compares exactly the
+    /// unit's landings and branches each to its own head's call. S6: the calls are exactly the block
+    /// heads, in ascending order, each through eight times the opcode at its head. S7: each head's tail
+    /// is exactly the one its block's last instruction dictates. The first entry that differs names the
+    /// clause by the part of the layout it belongs to; a body shorter than its layout is judged by the
+    /// entry it lacks and answers the unit's first byte, and a longer one answers that its calls are not
+    /// its heads. A payload is scanned against its layout only after every earlier clause has accepted
+    /// all of it, so a payload an earlier clause refuses keeps that answer whatever program is handed
+    /// with it, and <paramref name="image"/> is looked at only then.
+    /// </para>
+    /// <para>
+    /// <b>THE LAYOUT IS COMPARED AS IT IS MADE AND NEVER HELD.</b> The plan of a unit is sized by the
+    /// unit's bytecode, which the artifact carries; the layout is taken from the one walk that makes it,
+    /// entry by entry, and the walk stops at the first entry that differs, or at the entry past the last
+    /// instruction the body has. So the scan makes no more of a layout than the payload's instructions can
+    /// match, whatever the bytecode would lay out. The image's handler offsets are grouped by unit once,
+    /// so a scan reads each exception region once and not once per unit.
+    /// </para>
+    /// <para>
+    /// <b>THE LAYOUT CLAUSES HOLD INSTRUCTIONS AND NOT BYTES, AND x86-64 AND NOT arm64.</b> The padding
+    /// between units is held by the padding clause and the declared alignment by nothing here: re-emission
+    /// compares both where there is an emitter, and no branch can land in padding. A wide artifact that
+    /// declares arm64 is judged against the arm64 numeric table, which has none of these clauses; no host
+    /// of this build arms such a payload. The handler's own checks - a program counter the managed side
+    /// did not compute, an opcode byte that is not its own - stay behind all of this at run time, and a
+    /// payload this scan accepts no longer reaches them failing.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=DCCED6
-    // Broiler-Falsified-If: a baseline x86-64 payload is accepted whose unit writes RBX or RSP outside one prologue and one epilogue, branches into either sequence, or makes an indirect call other than through the handler table at a defined opcode's slot
+    /// <param name="architecture">The architecture the payload names.</param>
+    /// <param name="tier">The native tier the artifact's manifest selects.</param>
+    /// <param name="code">The emitted blob.</param>
+    /// <param name="symbols">One row per code unit, in the function table's order.</param>
+    /// <param name="alignment">The alignment the payload declares.</param>
+    /// <param name="image">
+    /// The program the payload's units were emitted from, which the x86-64 baseline tables' layout clauses
+    /// read; a caller scanning any other table may pass <see langword="null"/>.
+    /// </param>
+    /// <param name="instantiated">Collects the name of every template the scan decoded, when given.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=94C32C
+    // Broiler-Falsified-If: a baseline x86-64 payload is accepted whose unit writes RBX or RSP outside one prologue and one epilogue, branches into either sequence, or makes an indirect call other than through the handler table at a defined opcode's slot, or whose unit body is not, instruction for instruction, the layout JsBaselineBlocks gives for the program's own partition
     // Broiler-Human:        PENDING
     public static JsNativeScanResult Scan(
         JsNativeArchitecture architecture,
@@ -231,6 +296,7 @@ public static class JsNativeScan
         byte[] code,
         JsNativeSymbolRow[] symbols,
         uint alignment,
+        JsNativeProgramImage? image,
         System.Collections.Generic.ICollection<string>? instantiated = null)
     {
         var templates = JsNativeTemplates.For(architecture, tier);
@@ -260,10 +326,13 @@ public static class JsNativeScan
         var starts = new System.Collections.Generic.HashSet<uint>();
         var branches = new System.Collections.Generic.List<Branch>();
 
-        // THE FRAME-SHAPE CLAUSES NEED THE SEQUENCE OF TEMPLATES EACH UNIT INSTANTIATED, and the
-        // offsets no branch may land on; neither is collected for a table the clauses do not apply to.
+        // THE FRAME-SHAPE AND LAYOUT CLAUSES NEED THE SEQUENCE OF TEMPLATES EACH UNIT INSTANTIATED, and
+        // the offsets no branch may land on; neither is collected for a table the clauses do not apply
+        // to. The sequence is one list for every unit, and each unit's part of it starts where the
+        // unit's first instantiation was recorded.
         var framed = JsNativeTemplates.IsX64Baseline(templates);
         var sequence = framed ? new System.Collections.Generic.List<(uint At, int Index)>() : null;
+        var unitFirst = framed ? new int[symbols.Length + 1] : null;
         var frames = framed ? new System.Collections.Generic.HashSet<uint>() : null;
 
         for (var unit = 0; unit < symbols.Length; unit++)
@@ -281,7 +350,7 @@ public static class JsNativeScan
                     ", which is not a range inside the emitted blob that later units do not overlap");
             }
 
-            sequence?.Clear();
+            var first = sequence?.Count ?? 0;
 
             var decoded = Decode(
                 architecture, templates, code, start, limit, alignment, unit, starts, branches,
@@ -294,7 +363,8 @@ public static class JsNativeScan
 
             if (sequence is not null)
             {
-                var shaped = FrameShape(sequence, templates.Length, start, unit, frames!);
+                unitFirst![unit] = first;
+                var shaped = FrameShape(sequence, first, templates.Length, start, unit, frames!);
 
                 if (!shaped.Accepted)
                 {
@@ -305,7 +375,330 @@ public static class JsNativeScan
 
         var closed = Branches(code, symbols, starts, branches);
 
-        return !closed.Accepted || frames is null ? closed : FrameTargets(branches, frames);
+        if (!closed.Accepted || frames is null)
+        {
+            return closed;
+        }
+
+        var targeted = FrameTargets(branches, frames);
+
+        if (!targeted.Accepted)
+        {
+            return targeted;
+        }
+
+        unitFirst![symbols.Length] = sequence!.Count;
+        return BlockLayout(templates, code, symbols, image, sequence, unitFirst);
+    }
+
+    /// <summary>
+    /// Holds every unit body of a baseline x86-64 payload to the layout of the program's own partition:
+    /// clauses S5, S6 and S7.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE PROGRAM MUST BE THE PAYLOAD'S, UNIT FOR UNIT, BEFORE ANY UNIT IS PLANNED.</b> No program, a
+    /// program with more or fewer code units than the payload has symbols, or a symbol whose function index
+    /// is not its own position answers <see cref="JsNativeScanOutcome.BaselineWithoutProgram"/>, so a
+    /// caller of this public scan cannot have a unit of the program go unchecked by handing a payload of
+    /// fewer units, nor have a unit planned against another unit's code. The verifier has already refused
+    /// an artifact of any of these shapes.
+    /// </para>
+    /// <para>
+    /// <b>A UNIT THE PARTITION CANNOT PLAN HAS NO CALLS THAT ARE ITS HEADS</b>, so a plan's refusal answers
+    /// <see cref="JsNativeScanOutcome.CallsNotTheBlockHeads"/> at the unit's first byte, with the plan's own
+    /// sentence. No verified program reaches one.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=892601
+    // Broiler-Falsified-If: it accepts a payload with no program, with a program whose unit count or order is not the symbols', or with a unit body that is not, instruction for instruction, the layout of that unit's plan with the unit's own handler offsets - or it refuses a body that is
+    // Broiler-Human:        PENDING
+    private static JsNativeScanResult BlockLayout(
+        JsNativeTemplate[] templates,
+        byte[] code,
+        JsNativeSymbolRow[] symbols,
+        JsNativeProgramImage? image,
+        System.Collections.Generic.List<(uint At, int Index)> sequence,
+        int[] unitFirst)
+    {
+        if (image is null)
+        {
+            return new JsNativeScanResult(
+                JsNativeScanOutcome.BaselineWithoutProgram,
+                0,
+                -1,
+                "the baseline payload was scanned without the program its units were emitted from, so " +
+                "nothing can say which handler belongs at which program counter");
+        }
+
+        if (image.Functions.Length != symbols.Length)
+        {
+            return new JsNativeScanResult(
+                JsNativeScanOutcome.BaselineWithoutProgram,
+                0,
+                -1,
+                "the payload has " + symbols.Length + " code units and the program handed with it has " +
+                image.Functions.Length + ", so it is not the program the units were emitted from");
+        }
+
+        for (var unit = 0; unit < symbols.Length; unit++)
+        {
+            if (symbols[unit].FunctionIndex != (uint)unit)
+            {
+                return new JsNativeScanResult(
+                    JsNativeScanOutcome.BaselineWithoutProgram,
+                    symbols[unit].Offset,
+                    unit,
+                    "code unit " + unit + " of the payload names function " + symbols[unit].FunctionIndex +
+                    ", so the program's units are not the payload's units in order");
+            }
+        }
+
+        var indices = BaselineTemplateIndices(templates);
+        var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+
+        for (var unit = 0; unit < symbols.Length; unit++)
+        {
+            var start = symbols[unit].Offset;
+
+            if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out var refusal))
+            {
+                return new JsNativeScanResult(
+                    JsNativeScanOutcome.CallsNotTheBlockHeads,
+                    start,
+                    unit,
+                    "code unit " + unit + " of the program handed with the payload has no block plan, so no " +
+                    "call of it can be a block head: " + refusal);
+            }
+
+            var from = unitFirst[unit] + JsNativeTemplates.X64BaselinePrologue;
+            var count = unitFirst[unit + 1] - JsNativeTemplates.X64BaselineEpilogue - from;
+            var leave = sequence[unitFirst[unit + 1] - JsNativeTemplates.X64BaselineEpilogue].At;
+            var comparison = new LayoutComparison(templates, indices, code, sequence, from, count, leave);
+
+            if (JsBaselineBlocks.Lay(plan, ref comparison))
+            {
+                if (comparison.Taken >= count)
+                {
+                    continue;
+                }
+
+                // THE BODY IS LONGER THAN ITS LAYOUT: every entry matched, and what follows is an
+                // instruction no head, tail or dispatch of the partition accounts for.
+                var (extraAt, extraIndex) = sequence[from + comparison.Taken];
+
+                return new JsNativeScanResult(
+                    JsNativeScanOutcome.CallsNotTheBlockHeads,
+                    extraAt,
+                    unit,
+                    "code unit " + unit + "'s body has " + count + " instructions and the layout of the " +
+                    "program's partition has " + comparison.Taken + ": the first past it is the `" +
+                    templates[extraIndex].Text + "` at " + extraAt + ", which no block head accounts for");
+            }
+
+            return comparison.Refusal(unit, start);
+        }
+
+        return Ok;
+    }
+
+    /// <summary>
+    /// The index in a baseline table of the template each <see cref="JsBaselineTemplate"/> names, found by
+    /// the template's name, or minus one where the table has no template of that name.
+    /// </summary>
+    /// <remarks>
+    /// <b>By name and not by position</b>, so that the layout's vocabulary is tied to the table by the one
+    /// thing both state. A name the table does not have leaves an index no instantiation carries, so every
+    /// body refuses rather than any being accepted.
+    /// </remarks>
+    /// <param name="templates">An x86-64 baseline table.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=E4A85A
+    // Broiler-Falsified-If: for some JsBaselineTemplate it answers the index of a template whose name is not the one this file gives that member, or a non-negative index when the table has no template of that name
+    // Broiler-Human:        PENDING
+    private static int[] BaselineTemplateIndices(JsNativeTemplate[] templates)
+    {
+        var indices = new int[BaselineTemplateNames.Length];
+
+        for (var template = 0; template < indices.Length; template++)
+        {
+            indices[template] = System.Array.FindIndex(
+                templates,
+                candidate => string.Equals(candidate.Text, BaselineTemplateNames[template], System.StringComparison.Ordinal));
+        }
+
+        return indices;
+    }
+
+    /// <summary>The name of the table template each <see cref="JsBaselineTemplate"/> member is, by the member's value.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=F15041
+    // Broiler-Falsified-If: an entry names a template other than the one the JsBaselineTemplate member of its index documents
+    // Broiler-Human:        PENDING
+    private static readonly string[] BaselineTemplateNames =
+    [
+        "test eax, eax",
+        "js rel32",
+        "cmp eax, pc",
+        "je rel32",
+        "jne rel32",
+        "ja rel32",
+        "jmp rel32",
+        "mov eax, status",
+        "mov arg0, r14",
+        "mov arg1d, pc",
+        "call [rbx+slot]",
+    ];
+
+    /// <summary>
+    /// Compares one unit body's instantiations with the layout entries the partition's walk hands it, and
+    /// stops the walk at the first that differs.
+    /// </summary>
+    /// <remarks>
+    /// <b>AN ENTRY MATCHES WHEN ITS TEMPLATE, ITS OPERAND AND ITS BRANCH ARE THE INSTANTIATION'S.</b> Every
+    /// field of the instantiated template is read: a branch's destination must be the instantiation at the
+    /// index the entry names, or the epilogue's first for the unit's exit, and every other field must carry
+    /// the entry's operand - a program counter, eight times an opcode, or the defect status. A branch whose
+    /// named index the body does not have cannot land there, so it differs.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=A69F72
+    // Broiler-Falsified-If: it goes on after an entry whose template, operand or branch destination differs from the instantiation at the same index of the body, or stops at one whose three agree
+    // Broiler-Human:        PENDING
+    private struct LayoutComparison(
+        JsNativeTemplate[] templates,
+        int[] indices,
+        byte[] code,
+        System.Collections.Generic.List<(uint At, int Index)> sequence,
+        int from,
+        int count,
+        uint leave) : IJsBaselineLayoutSink
+    {
+        /// <summary>How many entries matched before the walk ended or stopped.</summary>
+        public int Taken { get; private set; }
+
+        /// <summary>The entry that differed, when the walk stopped.</summary>
+        private JsBaselineInstruction differed;
+
+        /// <summary>Whether the instantiation at the entry's index is another template, or absent.</summary>
+        private bool otherTemplate;
+
+        /// <summary>
+        /// Where the entry differed on a field: the value the instantiation carries, a branch's destination.
+        /// </summary>
+        private long carried;
+
+        /// <summary>Where the entry differed on a branch: the destination its layout names, or minus one for none.</summary>
+        private long named;
+
+        /// <summary>Compares the entry with the instantiation at its index.</summary>
+        /// <param name="index">The entry's index in the layout, which is its index in the body.</param>
+        /// <param name="entry">The entry.</param>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=0; Fingerprint=D7A644
+        // Broiler-Falsified-If: it answers true for an entry whose template, operand or branch destination differs from the instantiation at its index, or false for one whose three agree
+        // Broiler-Human:        PENDING
+        public bool Take(int index, JsBaselineInstruction entry)
+        {
+            if (index >= count ||
+                (uint)entry.Template >= (uint)indices.Length ||
+                sequence[from + index].Index != indices[(int)entry.Template])
+            {
+                differed = entry;
+                otherTemplate = true;
+                return false;
+            }
+
+            var (at, actual) = sequence[from + index];
+            var template = templates[actual];
+
+            foreach (var field in template.Fields)
+            {
+                var value = Extract(code, at, field);
+                long expected = entry.Operand;
+
+                if (field.Kind == JsNativeFieldKind.UnitLocalBranch)
+                {
+                    var origin = field.FromInstructionEnd ? at + (uint)template.Length : at;
+                    value += origin;
+
+                    expected = entry.Target == JsBaselineInstruction.Leave
+                        ? leave
+                        : entry.Target >= 0 && entry.Target < count
+                            ? sequence[from + entry.Target].At
+                            : -1;
+                }
+
+                if (value != expected)
+                {
+                    differed = entry;
+                    carried = value;
+                    named = expected;
+                    return false;
+                }
+            }
+
+            Taken = index + 1;
+            return true;
+        }
+
+        /// <summary>The refusal for the entry that differed, by the part of the layout it belongs to.</summary>
+        /// <param name="unit">The unit.</param>
+        /// <param name="start">The unit's first byte.</param>
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=53B907
+        // Broiler-Falsified-If: a differing dispatch entry answers other than DispatchNotTheLandings, a differing move answers other than CallsNotTheBlockHeads, a call through another slot answers other than HandlerSlotNotTheOpcode, another template where a call belongs answers other than CallsNotTheBlockHeads, or a differing tail entry answers other than TailNotTheBlockEnd
+        // Broiler-Human:        PENDING
+        public readonly JsNativeScanResult Refusal(int unit, uint start)
+        {
+            var index = Taken;
+            var entry = differed;
+            var shorter = index >= count;
+            var at = shorter ? start : sequence[from + index].At;
+
+            var outcome = entry.Role switch
+            {
+                JsBaselineRole.Dispatch => JsNativeScanOutcome.DispatchNotTheLandings,
+                JsBaselineRole.Slot when !otherTemplate => JsNativeScanOutcome.HandlerSlotNotTheOpcode,
+                JsBaselineRole.Tail => JsNativeScanOutcome.TailNotTheBlockEnd,
+                _ => JsNativeScanOutcome.CallsNotTheBlockHeads,
+            };
+
+            var wanted = (uint)entry.Template < (uint)BaselineTemplateNames.Length
+                ? BaselineTemplateNames[(int)entry.Template]
+                : entry.Template.ToString();
+
+            var branches = entry.Target != JsBaselineInstruction.None;
+
+            var found = shorter
+                ? "code unit " + unit + "'s body ends after " + count + " instructions"
+                : otherTemplate
+                    ? "instruction " + index + " of code unit " + unit + "'s body, at " + at + ", is `" +
+                        templates[sequence[from + index].Index].Text + "`"
+                    : "the `" + wanted + "` at " + at + ", instruction " + index + " of code unit " + unit +
+                        "'s body, " + (branches ? "branches to " : "carries ") + carried;
+
+            var layout = otherTemplate
+                ? " where the layout of the program's partition has `" + wanted + "`"
+                : !branches
+                    ? " where the layout of the program's partition has " + entry.Operand
+                    : entry.Target == JsBaselineInstruction.Leave
+                        ? " where the layout of the program's partition branches to the epilogue, at " + named
+                        : named < 0
+                            ? " where the layout of the program's partition branches to its entry " + entry.Target +
+                                ", which the body does not have"
+                            : " where the layout of the program's partition branches to " + named + ", its entry " +
+                                entry.Target;
+
+            var clause = outcome switch
+            {
+                JsNativeScanOutcome.DispatchNotTheLandings =>
+                    ", so the unit's dispatch does not compare exactly its landings and branch each to its head",
+                JsNativeScanOutcome.HandlerSlotNotTheOpcode =>
+                    ", so the call for the head " + entry.Head + " names a slot other than eight times the opcode there",
+                JsNativeScanOutcome.TailNotTheBlockEnd =>
+                    ", so the tail of the head " + entry.Head + " is not the one its last instruction dictates",
+                _ =>
+                    ", so the unit's handler calls are not exactly its block heads, in order",
+            };
+
+            return new JsNativeScanResult(outcome, at, unit, found + layout + clause);
+        }
     }
 
     /// <summary>
@@ -325,11 +718,12 @@ public static class JsNativeScan
     /// unit has exactly one return - which restores all three to what the caller left.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=50C955
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=AEA93C
     // Broiler-Falsified-If: a baseline unit is accepted whose instantiations do not open with exactly the prologue, close with exactly the epilogue, or carry a prologue or epilogue template elsewhere
     // Broiler-Human:        PENDING
     private static JsNativeScanResult FrameShape(
         System.Collections.Generic.List<(uint At, int Index)> sequence,
+        int first,
         int tableLength,
         uint start,
         int unit,
@@ -339,7 +733,7 @@ public static class JsNativeScan
         const int Epilogue = JsNativeTemplates.X64BaselineEpilogue;
 
         var epilogue = tableLength - Epilogue;
-        var count = sequence.Count;
+        var count = sequence.Count - first;
 
         if (count < Prologue + Epilogue)
         {
@@ -353,7 +747,7 @@ public static class JsNativeScan
 
         for (var position = 0; position < count; position++)
         {
-            var (at, index) = sequence[position];
+            var (at, index) = sequence[first + position];
             var tail = position - (count - Epilogue);
 
             if (position < Prologue)

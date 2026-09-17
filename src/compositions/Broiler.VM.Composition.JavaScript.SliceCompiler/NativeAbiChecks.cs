@@ -157,7 +157,7 @@ internal static class NativeAbiChecks
             checks.AddRange(BaselineEntryPointsSurvive(abi, row));
         }
 
-        checks.Add(ASwappedHandlerIsADefect(abi));
+        checks.Add(ASwappedHandlerNeverRuns(abi));
         checks.AddRange(FrequentCollections(abi));
 
         return checks;
@@ -520,7 +520,7 @@ internal static class NativeAbiChecks
         "a-misaligned-reservation-is-caught/" + JsNativeBackends.X64Windows,
         "a-misaligned-reservation-is-caught/" + JsNativeBackends.X64SystemV,
         "a-short-reservation-loses-a-saved-register/" + JsNativeBackends.X64Windows,
-        "a-swapped-handler-is-a-defect",
+        "a-swapped-handler-never-runs",
         "frequent-collections",
     ];
 
@@ -1029,20 +1029,22 @@ internal static class NativeAbiChecks
     }
 
     /// <summary>
-    /// A payload whose first handler call was moved to another defined opcode's slot is verified by
-    /// the admitting door and answers the internal-defect contract violation when run.
+    /// A payload whose first handler call was moved to another defined opcode's slot is refused at
+    /// verification by the admitting door, so it never runs; the unswapped control through the same door
+    /// answers a value.
     /// </summary>
     /// <remarks>
-    /// <b>THE OTHER HALF OF THE SCAN ROW THAT SHOWS RE-EMISSION REFUSING THE SAME SWAP.</b> An
-    /// execution-only image cannot re-emit, so the scan admits the payload - the slot is eight times a
-    /// defined opcode - and the only thing between it and a wrong answer is the handler's own check
-    /// that the byte at the program counter it was handed is its opcode. The row requires that check
-    /// to fire, and requires the unswapped control through the same door to answer a value, so the
-    /// refusal is not a door that refuses everything.
+    /// <b>THE OTHER HALF OF THE SCAN ROW THAT SHOWS EVERY VERIFIER REFUSING THE SAME SWAP.</b> The admitting
+    /// door has no emitter, so nothing re-emits the payload; what refuses it is the template scan, whose
+    /// layout clauses name the head's own opcode where the call's slot is, and the run answers the verifier's
+    /// refusal with the scan's code. The unswapped control through the same door answers a value, so the
+    /// refusal is not a door that refuses everything. The handler's own check that the byte at the program
+    /// counter it was handed is its opcode is no longer reached by this payload: a build with the layout
+    /// clause's slot comparison removed is what observes it firing.
     /// </remarks>
-    private static (string, bool, string) ASwappedHandlerIsADefect(JsX64Abi abi)
+    private static (string, bool, string) ASwappedHandlerNeverRuns(JsX64Abi abi)
     {
-        const string Name = "native/baseline/a-swapped-handler-is-a-defect";
+        const string Name = "native/baseline/a-swapped-handler-never-runs";
         var compiled = NativeLifecycle.CompileWide(WidePrograms[0].Source, JsOutputForm.Native, abi.Name);
 
         if (compiled.Artifact is null ||
@@ -1082,8 +1084,9 @@ internal static class NativeAbiChecks
         var run = NativeLifecycle.RunWideArtifact(
             artifact, JsOutputForm.Native, abi.Name, WideFuel, reEmit: false, module: false);
 
-        // A contract violation the executor answers reaches the host as a profile fault with its reason.
-        var expected = "invocation " + VmOutcome.ProfileFault + "/" + VmReason.ProfileContractViolation;
+        // A verification refusal reaches the run as the verifier's outcome, reason and profile code.
+        var expected = "the verifier refused: " + VmOutcome.InvalidArtifact + "/" + VmReason.InconsistentStructure +
+            " code " + (int)JavaScriptDiagnosticCode.NativePayloadNotTemplateClosed;
 
         return (
             Name,

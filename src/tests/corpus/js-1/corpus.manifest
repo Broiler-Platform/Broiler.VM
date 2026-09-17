@@ -114,6 +114,10 @@ wide-the-native-surface-a-composition-declined|cf4fc5e442254906f2d49bc635748811e
 wide-a-native-payload-for-an-architecture-no-host-arms|1d0d788c90688333a9ffb24ef21ff58a02db41d7e0b04b8b8a56e821a6ae664f|wide|ProfileFault|UnsatisfiedHostAssumption|0|-|-|-|-
 wide-a-native-payload-of-four-zero-bytes|947163565602db6001c0b5da51f28cbeea4cb02bc9a955c5cd6df053357e93d2|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:0:0:0|-|-
 wide-a-baseline-payload-calling-an-undefined-slot|bcf5d4007ed08768c21685b4536d5aac59dc4322f8f263cef6d512c6b8fb5183|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:23:0:0|-|-
+wide-a-baseline-dispatch-that-compares-a-non-landing|07f45dfb61b3448c71c42e78ed6d3de4192d80f06cbf124be3fb37f4347bb3f1|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:23:0:0|-|-
+wide-a-baseline-call-at-an-offset-inside-a-block|127adc33dcda591e0aad2343072b669c4e1e2a1874fd8a3b9ec3c6a9094d219e|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:88:0:0|-|-
+wide-a-baseline-call-through-another-opcodes-slot|45b93a705afdc46214ef9ca6c49156d2d03ac81614c9f45b0a28d9a1a0ff3d7c|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:118:0:0|-|-
+wide-a-baseline-tail-that-falls-to-the-wrong-block|0d023d13bf7678c3c9a177957136aedb7b2f0d1db74618e7de082b7bc9d56f54|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:99:0:0|-|-
 wide-an-emitted-unit-that-ends-without-a-return|203f4d897c54cf88f4bd9cc2484a144744cc1abf87fd6df820163b18733678b2|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:7:0:0|-|-
 wide-a-branch-that-leaves-its-code-unit|847ebde0cee732540857a724828806ec316fc17ed1ac32fb8fe998ca729b9ad9|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:0:0:0|-|-
 wide-a-return-code-no-backend-materialises|85bf93a4c8e53d486301f696a78fe4c6351c0b5a07bd9aff5a6f42b11b7d6e47|wide|InvalidArtifact|InconsistentStructure|1625|-|-1:0:0:0|-|-

@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 172 |
 | Files carrying an annotation | 172 |
-| Code units | 6767 |
-| Relevant | 3807 |
-| Exempt by predicate | 2960 |
-| Annotated | 3807 of 3807 (100%) |
-| Human reviewed | 0 of 3807 (0%) |
-| Unverified | 3807 |
+| Code units | 6790 |
+| Relevant | 3819 |
+| Exempt by predicate | 2971 |
+| Annotated | 3819 of 3819 (100%) |
+| Human reviewed | 0 of 3819 (0%) |
+| Unverified | 3819 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 3807 |
+| HUMAN_PENDING | 3819 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2960 |
+| EXEMPT | 2971 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1418 |
-| Low | 3258 |
+| None | 1430 |
+| Low | 3259 |
 | Medium | 89 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,10 +50,10 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 6 |
-| Low | 672 |
-| Medium | 3260 |
-| High | 703 |
-| Critical | 124 |
+| Low | 673 |
+| Medium | 3264 |
+| High | 708 |
+| Critical | 127 |
 | *not annotated* | 0 |
 
 ## Resource impact
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 9 / 10 |
 | Average over annotated units | 1.9 / 10 |
-| Units scored | 3807 |
+| Units scored | 3819 |
 
 ## High-security review areas
 
@@ -312,7 +312,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.TryPlan(JsNativeProgramImage, int, System.ReadOnlySpan<uint>, out JsBaselineUnitPlan, out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.LayoutLength(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Layout(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Tree(JsBaselineInstruction[], ref int, System.ReadOnlySpan<int>, int, int, int, System.ReadOnlySpan<JsBaselineBlock>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Lay<TSink>(JsBaselineUnitPlan, ref TSink)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Tree<TSink>(ref TSink, ref int, System.ReadOnlySpan<int>, int, int, int, System.ReadOnlySpan<JsBaselineBlock>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.TreeLength(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.BlockLength(JsBaselineBlock)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.HeadIndex(System.ReadOnlySpan<JsBaselineBlock>, int[], int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
@@ -333,8 +334,14 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeFrame` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeFrame.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, byte[], JsNativeSymbolRow[], uint, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, JsNativeTier, byte[], JsNativeSymbolRow[], uint, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameShape(System.Collections.Generic.List<(uint At, int Index)>, int, uint, int, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, JsNativeTier, byte[], JsNativeSymbolRow[], uint, JsNativeProgramImage?, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BlockLayout(JsNativeTemplate[], byte[], JsNativeSymbolRow[], JsNativeProgramImage?, System.Collections.Generic.List<(uint At, int Index)>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BaselineTemplateIndices(JsNativeTemplate[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BaselineTemplateNames` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison.Take(int, JsBaselineInstruction)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison.Refusal(int, uint)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameShape(System.Collections.Generic.List<(uint At, int Index)>, int, int, uint, int, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameTargets(System.Collections.Generic.List<Branch>, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.For(JsNativeArchitecture, JsNativeTier)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=Critical, human line PENDING
@@ -717,7 +724,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadNativeCode(ref VmBoundedReader, ulong, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadNativeSymbols(ref VmBoundedReader, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.LinkNative(Sections, JsCodeUnit[], IJsNativeEmitter?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsVerifier.ReEmit(Sections, JsNativeTier, byte[], JsNativeSymbolRow[], IJsNativeEmitter?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsVerifier.NativeImage(Sections, JsNativeTier)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsVerifier.ReEmit(Sections, byte[], JsNativeSymbolRow[], IJsNativeEmitter?, JsNativeProgramImage)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.LinkModules(Sections, JsCodeUnit[], IVmVerificationContext, JavaScriptReadAdapter, out JsModuleRecord[], out JsBinding[])` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.WasmDecoder(System.ReadOnlySpan<byte>, in VmReadBounds, WasmReadAdapter, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
@@ -898,8 +906,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 904 |
-| Units required to carry one | 827 |
+| Units carrying a criterion | 912 |
+| Units required to carry one | 835 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -926,14 +934,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 839 |
+| TrivialPropertyOrAccessor | 841 |
 | ParameterAssigningConstructor | 97 |
 | TrivialExpressionBodiedMember | 45 |
 | CompilerSuppliedRecordOrEnumMember | 8 |
 | DelegatingOverrideOrOperator | 104 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 559 |
-| EnumMemberOfADeclaredVocabulary | 1308 |
+| FieldDeclaringStorage | 563 |
+| EnumMemberOfADeclaredVocabulary | 1313 |
 | DeclaredInSource | 0 |
 
 ## Per-unit exemptions
@@ -953,7 +961,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-6767 of them, exempt and relevant alike - with the fingerprint of its declaration.
+6790 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

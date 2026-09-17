@@ -485,9 +485,10 @@ public static class JsNativeTemplates
         // it here and refusing it there is what keeps the two questions apart.
         JsNativeFieldKind.UnitLocalBranch or JsNativeFieldKind.UnitEntryBranch => true,
 
-        // A BYTECODE OFFSET, bounded by the format's own ceiling on a code section. The scan has no
-        // bytecode to tie it to an instruction start; the handler a unit calls does that at run
-        // time, by refusing any program counter the managed side did not compute.
+        // A BYTECODE OFFSET, bounded by the format's own ceiling on a code section. The field admits
+        // any offset below the ceiling; the scan's layout clauses tie each one to the partition of the
+        // program the payload was emitted from, and the handler a unit calls still refuses at run
+        // time any program counter the managed side did not compute.
         JsNativeFieldKind.BytecodePc =>
             value >= 0 && value < JsFormat.CeilingCodeBytes,
 
@@ -840,12 +841,12 @@ public static class JsNativeTemplates
             // mov eax, imm32: B8 id - the defect status and no other value.
             Field("mov eax, status", [0xB8, 0, 0, 0, 0], Imm32(1, JsNativeFieldKind.BaselineStatusValue)),
 
-            // ---- one instruction's call -----------------------------------------------------
+            // ---- one block head's call ------------------------------------------------------
 
             // mov rcx or rdi, r14: REX.WR 89 /r, the frame as the handler's first argument.
             Plain("mov arg0, r14", [0x4C, 0x89, windows ? (byte)0xF1 : (byte)0xF7]),
 
-            // mov edx or esi, imm32: B8+r id, the program counter of the instruction to run.
+            // mov edx or esi, imm32: B8+r id, the program counter of the head whose block is to run.
             Field(
                 "mov arg1d, pc",
                 [windows ? (byte)0xBA : (byte)0xBE, 0, 0, 0, 0],

@@ -242,9 +242,10 @@ internal sealed unsafe class JsNativeActivation
     /// RUNS NOTHING.</b> The frame's cookie must be the activation's, the offset the emitted code
     /// passes must be the one the previous step or the entry computed, and the byte at that offset
     /// must be the opcode this handler was built for, which for a block step is the opcode at the
-    /// block's head. The template scan proves that every emitted call lands somewhere in the handler
-    /// table; it cannot prove which handler belongs at which offset, and these checks close that gap
-    /// at run time. A misplaced call therefore answers a defect, never a different JavaScript answer.
+    /// block's head. The template scan holds every call of an x86-64 baseline payload to a block head of
+    /// the program's partition and to eight times the opcode there, in every image, so a verified payload
+    /// does not reach these checks failing; they stay as defence in depth, against a defect in the engine
+    /// or in the scan. A misplaced call therefore answers a defect, never a different JavaScript answer.
     /// </para>
     /// <para>
     /// <b>NOTHING CROSSES BACK INTO THE EMITTED CODE AS AN EXCEPTION.</b> A managed exception cannot

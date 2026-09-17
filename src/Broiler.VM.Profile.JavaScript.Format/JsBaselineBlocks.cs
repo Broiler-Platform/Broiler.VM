@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   39
-// Annotated:        39/39
-// Exempt:           29
-// Human-reviewed:   0/39
+// Relevant units:   44
+// Annotated:        44/44
+// Exempt:           30
+// Human-reviewed:   0/44
 // IP risk:          None
 // Security risk:    High
-// Criteria:         16/14
+// Criteria:         17/15
 // Resource impact:  2/10 max
-// Unverified:       39
+// Unverified:       44
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -44,7 +44,10 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// unit's code while it is built, and answers one entry per landing and one block per head; a layout is
 /// one array of exactly <see cref="LayoutLength"/> entries, whose branches to heads are found through the
 /// plan's blocks. No list here grows by doubling, and planning a unit reads no exception region at all:
-/// its handler offsets are handed to it.
+/// its handler offsets are handed to it. The layout's entries come out of one walk, in order and each
+/// final when it is made; <see cref="Layout"/> writes them into its array, and the template scan takes
+/// them one at a time and stops at the first that differs from the payload, so the scan never holds a
+/// layout and makes no more of one than the payload's instructions can match.
 /// </para>
 /// <para>
 /// <b>NOTHING HERE DECIDES WHAT AN INSTRUCTION DOES.</b> The partition says where a step would return to
@@ -52,13 +55,14 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// landed by the interpreter's own arm, whichever step runs it.
 /// </para>
 /// <para>
-/// <b>THE BASELINE EMITTER ENCODES THE LAYOUT, AND A BLOCK STEP STOPS WHERE <see cref="StopsAfter"/>
-/// HOLDS.</b> The emitter writes one template per entry of <see cref="Layout"/> and keeps no landing
-/// walk, tree or leaf size of its own, and the engine's block step asks the same stop rule at every
-/// boundary, so the block a handler runs and the tail emitted after its call come from one function. No
-/// verification step compares a payload with the layout: the template scan does not read the program a
-/// payload was emitted from, so an image with no emitter holds a baseline payload to its templates and
-/// frame, and an image with one holds it to its re-emission.
+/// <b>THE BASELINE EMITTER ENCODES THE LAYOUT, A BLOCK STEP STOPS WHERE <see cref="StopsAfter"/> HOLDS,
+/// AND THE TEMPLATE SCAN HOLDS EVERY x86-64 BASELINE PAYLOAD TO THE LAYOUT IN EVERY IMAGE.</b> The emitter
+/// writes one template per entry of <see cref="Layout"/> and keeps no landing walk, tree or leaf size of
+/// its own, and the engine's block step asks the same stop rule at every boundary, so the block a handler
+/// runs and the tail emitted after its call come from one function. The scan plans each unit of the
+/// program a payload is verified with and requires the unit's body to be the layout's instructions, one
+/// for one, so an image with no emitter refuses a baseline payload this build would not have emitted,
+/// and an image with one also holds it to its re-emission.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=DD3F28
@@ -601,8 +605,9 @@ public static class JsBaselineBlocks
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>THIS IS THE ONLY STATEMENT OF A BASELINE UNIT'S BODY.</b> The prologue and the epilogue are fixed
-    /// and are not part of it. What it answers, in order: the dispatch, which leaves on a negative answer
+    /// <b>THIS IS THE ONLY STATEMENT OF A BASELINE UNIT'S BODY</b>, made by the one internal walk the
+    /// template scan compares a payload through. The prologue and the epilogue are fixed and are not part
+    /// of it. What it answers, in order: the dispatch, which leaves on a negative answer
     /// and otherwise looks the answer up in a compare tree over the landings; the defect block, which
     /// materialises <see cref="JsBaselineStatus.Defect"/> and leaves; then, for each head in ascending
     /// order, the handler call for that head and its tail.
@@ -614,11 +619,13 @@ public static class JsBaselineBlocks
     /// its head and above to the right-hand range, and lays out the left-hand range before the right.
     /// </para>
     /// <para>
-    /// <b>THE ANSWER IS ONE ARRAY OF <see cref="LayoutLength"/> ENTRIES, WRITTEN IN PLACE.</b> Each block's
-    /// first index is counted from the grammar before anything is written, a branch to a head finds that
-    /// index through the plan's blocks by the head's offset, and a subtree's index is written into the
-    /// branch above it once the range to its left is laid out. Nothing is sized by the unit's code, and no
-    /// label is left to resolve afterwards.
+    /// <b>THE ANSWER IS ONE ARRAY OF <see cref="LayoutLength"/> ENTRIES, EACH WRITTEN ONCE AND IN
+    /// ORDER.</b> Each block's first index is counted from the grammar before anything is written, a branch
+    /// to a head finds that index through the plan's blocks by the head's offset, and an above-branch's
+    /// subtree index is counted from the grammar too, from the length of the range to its left. So every
+    /// entry is final when it is made, the entries are made in the order they stand, and no label is left
+    /// to resolve afterwards. Nothing is sized by the unit's code. The walk that makes them is the one the
+    /// template scan compares a payload through, entry by entry, which is why the order matters.
     /// </para>
     /// <para>
     /// <b>A TARGET IS AN INDEX INTO THE ANSWER</b>, or <see cref="JsBaselineInstruction.Leave"/> for the
@@ -631,14 +638,43 @@ public static class JsBaselineBlocks
     /// </para>
     /// </remarks>
     /// <param name="plan">A plan <see cref="TryPlan"/> answered.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9A72BA
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=CAE84F
     // Broiler-Falsified-If: for a plan TryPlan answered, the layout's dispatch sends a landing anywhere but its own head's call or another non-negative answer anywhere but the defect, a head's call names a pc other than the head or a slot other than eight times its opcode, a tail differs from the one its block's kind and target dictate, a branch resolves to an index other than the instruction it names, or the answer's length differs from LayoutLength
     // Broiler-Human:        PENDING
     public static JsBaselineInstruction[] Layout(JsBaselineUnitPlan plan)
     {
+        var filling = new LayoutFilling(new JsBaselineInstruction[LayoutLength(plan)]);
+        Lay(plan, ref filling);
+        return filling.Layout;
+    }
+
+    /// <summary>
+    /// Makes a plan's layout entry by entry, in order, handing each to a sink that may stop the walk.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THIS IS THE ONE WALK THE LAYOUT IS MADE BY.</b> <see cref="Layout"/> fills an array through it, and
+    /// the template scan compares a payload through it; neither states the layout's grammar a second time.
+    /// Each entry handed out is final and carries its own index, which is exactly the index
+    /// <see cref="Layout"/> writes it at.
+    /// </para>
+    /// <para>
+    /// <b>WHAT IT HOLDS IS THE LAYOUT INDEX OF EACH BLOCK'S CALL AND NOTHING ELSE</b>, one integer per head,
+    /// so that a branch to a head names its index before the head is reached. A sink that stops the walk
+    /// after the entries a payload has makes no more of the layout than that.
+    /// </para>
+    /// </remarks>
+    /// <param name="plan">A plan <see cref="TryPlan"/> answered.</param>
+    /// <param name="sink">What takes each entry; its answer false stops the walk.</param>
+    /// <typeparam name="TSink">The sink's type, a structure so that each take is a direct call.</typeparam>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=A0E4CD
+    // Broiler-Falsified-If: for a plan TryPlan answered, it hands out an entry other than the one Layout writes at the index it names, hands out indices other than zero upward one at a time, goes on after the sink answers false, or answers true when it stopped before the last entry
+    // Broiler-Human:        PENDING
+    internal static bool Lay<TSink>(JsBaselineUnitPlan plan, ref TSink sink)
+        where TSink : struct, IJsBaselineLayoutSink
+    {
         var landings = plan.Landings;
         var blocks = plan.Blocks;
-        var layout = new JsBaselineInstruction[LayoutLength(plan)];
 
         // ---- where each part begins, from the grammar alone ------------------------------------------
         var defect = 2 + TreeLength(landings.Length);
@@ -653,67 +689,81 @@ public static class JsBaselineBlocks
 
         // ---- the dispatch: a negative answer leaves, anything else is looked up ----------------------
         var next = 0;
-        layout[next++] = Dispatching(JsBaselineTemplate.TestEax, 0, JsBaselineInstruction.None);
-        layout[next++] = Dispatching(JsBaselineTemplate.JsLeave, 0, JsBaselineInstruction.Leave);
-        Tree(layout, ref next, landings, 0, landings.Length - 1, defect, blocks, starts);
+
+        if (!sink.Take(next++, Dispatching(JsBaselineTemplate.TestEax, 0, JsBaselineInstruction.None)) ||
+            !sink.Take(next++, Dispatching(JsBaselineTemplate.JsLeave, 0, JsBaselineInstruction.Leave)) ||
+            !Tree(ref sink, ref next, landings, 0, landings.Length - 1, defect, blocks, starts))
+        {
+            return false;
+        }
 
         // ---- the defect: an answer with no landing ---------------------------------------------------
-        layout[next++] = Dispatching(
-            JsBaselineTemplate.MovStatus, (int)JsBaselineStatus.Defect, JsBaselineInstruction.None);
-        layout[next++] = Dispatching(JsBaselineTemplate.Jmp, 0, JsBaselineInstruction.Leave);
+        if (!sink.Take(next++, Dispatching(JsBaselineTemplate.MovStatus, (int)JsBaselineStatus.Defect, JsBaselineInstruction.None)) ||
+            !sink.Take(next++, Dispatching(JsBaselineTemplate.Jmp, 0, JsBaselineInstruction.Leave)))
+        {
+            return false;
+        }
 
         // ---- one call and one tail per head, in ascending order ---------------------------------------
         foreach (var block in blocks)
         {
             var head = block.Head;
 
-            layout[next++] = new JsBaselineInstruction(
-                JsBaselineTemplate.MovArg0R14, 0, JsBaselineInstruction.None, JsBaselineRole.Head, head);
-            layout[next++] = new JsBaselineInstruction(
-                JsBaselineTemplate.MovArg1Pc, head, JsBaselineInstruction.None, JsBaselineRole.Head, head);
-            layout[next++] = new JsBaselineInstruction(
-                JsBaselineTemplate.CallSlot, (int)block.HeadOpcode * 8, JsBaselineInstruction.None, JsBaselineRole.Slot, head);
-
-            if (block.HasTarget)
+            if (!sink.Take(next++, new JsBaselineInstruction(
+                    JsBaselineTemplate.MovArg0R14, 0, JsBaselineInstruction.None, JsBaselineRole.Head, head)) ||
+                !sink.Take(next++, new JsBaselineInstruction(
+                    JsBaselineTemplate.MovArg1Pc, head, JsBaselineInstruction.None, JsBaselineRole.Head, head)) ||
+                !sink.Take(next++, new JsBaselineInstruction(
+                    JsBaselineTemplate.CallSlot, (int)block.HeadOpcode * 8, JsBaselineInstruction.None, JsBaselineRole.Slot, head)))
             {
-                layout[next++] = Tailing(JsBaselineTemplate.CmpEaxPc, block.Target, JsBaselineInstruction.None, head);
-                layout[next++] = Tailing(JsBaselineTemplate.Je, 0, HeadIndex(blocks, starts, block.Target), head);
+                return false;
             }
 
-            switch (block.Tail)
+            if (block.HasTarget &&
+                (!sink.Take(next++, Tailing(JsBaselineTemplate.CmpEaxPc, block.Target, JsBaselineInstruction.None, head)) ||
+                 !sink.Take(next++, Tailing(JsBaselineTemplate.Je, 0, HeadIndex(blocks, starts, block.Target), head))))
             {
-                case JsBaselineTail.Leave:
-                    layout[next++] = Tailing(JsBaselineTemplate.Jmp, 0, 0, head);
-                    break;
+                return false;
+            }
 
-                case JsBaselineTail.FallThrough:
-                    layout[next++] = Tailing(JsBaselineTemplate.CmpEaxPc, block.Following, JsBaselineInstruction.None, head);
-                    layout[next++] = Tailing(JsBaselineTemplate.Jne, 0, 0, head);
-                    break;
+            var taken = block.Tail switch
+            {
+                JsBaselineTail.Leave =>
+                    sink.Take(next++, Tailing(JsBaselineTemplate.Jmp, 0, 0, head)),
 
-                default:
-                    layout[next++] = Tailing(JsBaselineTemplate.CmpEaxPc, block.Following, JsBaselineInstruction.None, head);
-                    layout[next++] = Tailing(JsBaselineTemplate.Je, 0, HeadIndex(blocks, starts, block.Following), head);
-                    layout[next++] = Tailing(JsBaselineTemplate.Jmp, 0, 0, head);
-                    break;
+                JsBaselineTail.FallThrough =>
+                    sink.Take(next++, Tailing(JsBaselineTemplate.CmpEaxPc, block.Following, JsBaselineInstruction.None, head)) &&
+                    sink.Take(next++, Tailing(JsBaselineTemplate.Jne, 0, 0, head)),
+
+                _ =>
+                    sink.Take(next++, Tailing(JsBaselineTemplate.CmpEaxPc, block.Following, JsBaselineInstruction.None, head)) &&
+                    sink.Take(next++, Tailing(JsBaselineTemplate.Je, 0, HeadIndex(blocks, starts, block.Following), head)) &&
+                    sink.Take(next++, Tailing(JsBaselineTemplate.Jmp, 0, 0, head)),
+            };
+
+            if (!taken)
+            {
+                return false;
             }
         }
 
-        return layout;
+        return true;
     }
 
-    /// <summary>The compare tree over a sorted range of a unit's landings, written in place.</summary>
+    /// <summary>The compare tree over a sorted range of a unit's landings, handed to a sink in order.</summary>
     /// <remarks>
     /// <b>A LEAF IS A CHAIN AND AN INNER NODE SPLITS ON ITS MIDDLE, WITH AN UNSIGNED COMPARE.</b> The
     /// dispatch has already sent every negative answer out of the unit, so what reaches the tree is a
     /// non-negative offset and an above-branch orders it correctly. A chain ends in the defect, so an
-    /// offset the unit has no landing for never falls into whatever block follows.
+    /// offset the unit has no landing for never falls into whatever block follows. An above-branch goes to
+    /// the entry after the range to its left, whose length <see cref="TreeLength"/> counts, so it is made
+    /// before that range is.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=9676B4
-    // Broiler-Falsified-If: a landing in the range is compared anywhere but on a path that branches to its own head, an offset outside the range reaches anything but the defect, or it writes other than TreeLength entries for the range
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0D7902
+    // Broiler-Falsified-If: a landing in the range is compared anywhere but on a path that branches to its own head, an offset outside the range reaches anything but the defect, it hands out other than TreeLength entries for the range, or it goes on after the sink answers false
     // Broiler-Human:        PENDING
-    private static void Tree(
-        JsBaselineInstruction[] layout,
+    private static bool Tree<TSink>(
+        ref TSink sink,
         ref int next,
         System.ReadOnlySpan<int> landings,
         int low,
@@ -721,27 +771,37 @@ public static class JsBaselineBlocks
         int defect,
         System.ReadOnlySpan<JsBaselineBlock> blocks,
         int[] starts)
+        where TSink : struct, IJsBaselineLayoutSink
     {
         if (high - low + 1 <= LeafLandings)
         {
             for (var position = low; position <= high; position++)
             {
-                layout[next++] = Dispatching(JsBaselineTemplate.CmpEaxPc, landings[position], JsBaselineInstruction.None);
-                layout[next++] = Dispatching(JsBaselineTemplate.Je, 0, HeadIndex(blocks, starts, landings[position]));
+                if (!sink.Take(next++, Dispatching(JsBaselineTemplate.CmpEaxPc, landings[position], JsBaselineInstruction.None)) ||
+                    !sink.Take(next++, Dispatching(JsBaselineTemplate.Je, 0, HeadIndex(blocks, starts, landings[position]))))
+                {
+                    return false;
+                }
             }
 
-            layout[next++] = Dispatching(JsBaselineTemplate.Jmp, 0, defect);
-            return;
+            return sink.Take(next++, Dispatching(JsBaselineTemplate.Jmp, 0, defect));
         }
 
         var middle = (low + high) / 2;
 
-        layout[next++] = Dispatching(JsBaselineTemplate.CmpEaxPc, landings[middle], JsBaselineInstruction.None);
-        layout[next++] = Dispatching(JsBaselineTemplate.Je, 0, HeadIndex(blocks, starts, landings[middle]));
-        var above = next++;
-        Tree(layout, ref next, landings, low, middle - 1, defect, blocks, starts);
-        layout[above] = Dispatching(JsBaselineTemplate.Ja, 0, next);
-        Tree(layout, ref next, landings, middle + 1, high, defect, blocks, starts);
+        if (!sink.Take(next++, Dispatching(JsBaselineTemplate.CmpEaxPc, landings[middle], JsBaselineInstruction.None)) ||
+            !sink.Take(next++, Dispatching(JsBaselineTemplate.Je, 0, HeadIndex(blocks, starts, landings[middle]))))
+        {
+            return false;
+        }
+
+        // THE RIGHT-HAND RANGE STARTS AFTER THIS BRANCH AND THE WHOLE LEFT-HAND RANGE, which the grammar
+        // counts before either is made.
+        var right = next + 1 + TreeLength(middle - low);
+
+        return sink.Take(next++, Dispatching(JsBaselineTemplate.Ja, 0, right)) &&
+            Tree(ref sink, ref next, landings, low, middle - 1, defect, blocks, starts) &&
+            Tree(ref sink, ref next, landings, middle + 1, high, defect, blocks, starts);
     }
 
     /// <summary>How many entries the compare tree over a range of this many landings is.</summary>
@@ -901,6 +961,47 @@ public static class JsBaselineBlocks
 
         return table;
     }
+
+    /// <summary>The sink <see cref="Layout"/> fills its array through.</summary>
+    /// <param name="layout">The array, of exactly <see cref="LayoutLength"/> entries.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=1D704E
+    // Broiler-Human:        PENDING
+    private readonly struct LayoutFilling(JsBaselineInstruction[] layout) : IJsBaselineLayoutSink
+    {
+        /// <summary>The array being filled.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=86DDD9
+        // Broiler-Human:        PENDING
+        public JsBaselineInstruction[] Layout => layout;
+
+        /// <summary>Writes the entry at its index and always goes on.</summary>
+        /// <param name="index">The entry's index.</param>
+        /// <param name="entry">The entry.</param>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8D1364
+        // Broiler-Human:        PENDING
+        public bool Take(int index, JsBaselineInstruction entry)
+        {
+            layout[index] = entry;
+            return true;
+        }
+    }
+}
+
+/// <summary>What takes a baseline layout's entries, one at a time and in order, as they are made.</summary>
+/// <remarks>
+/// <b>IT IS INTERNAL TO THE FORMAT ASSEMBLY</b>, where the layout is made and where the template scan that
+/// compares a payload with it lives; a caller outside the assembly reads a whole layout through
+/// <see cref="JsBaselineBlocks.Layout"/>.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7760FA
+// Broiler-Human:        PENDING
+internal interface IJsBaselineLayoutSink
+{
+    /// <summary>Takes the entry at an index of the layout, and answers whether the walk goes on.</summary>
+    /// <param name="index">The entry's index in the layout.</param>
+    /// <param name="entry">The entry.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=105555
+    // Broiler-Human:        PENDING
+    bool Take(int index, JsBaselineInstruction entry);
 }
 
 /// <summary>The handler offsets of an image's exception regions, grouped by code unit.</summary>

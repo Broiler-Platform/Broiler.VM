@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   47
-// Annotated:        47/47
+// Relevant units:   48
+// Annotated:        48/48
 // Exempt:           38
-// Human-reviewed:   0/47
+// Human-reviewed:   0/48
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         6/6
+// Criteria:         7/7
 // Resource impact:  3/10 max
-// Unverified:       47
+// Unverified:       48
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1446,7 +1446,7 @@ internal sealed class JsVerifier
     /// question, and bytes with no symbols are a blob nothing can enter.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=5E7901
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=DE9B5A
     // Broiler-Falsified-If: an artifact whose symbol table names fewer units than the function table is admitted, or a symbol offset outside the emitted blob is
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome LinkNative(
@@ -1523,12 +1523,24 @@ internal sealed class JsVerifier
         // form, and the manifest has already been read and held to the descriptor; a field of the
         // native section naming the form would be a second statement of that fact for a forged
         // payload to contradict.
+        //
+        // FOR THE x86-64 BASELINE FORM THE SCAN ALSO HOLDS EVERY UNIT BODY TO THE PARTITION'S LAYOUT,
+        // so an image with no emitter refuses a baseline payload whose instructions are not the ones
+        // this build would emit, and what it still trusts is the encoder's agreement with the table -
+        // which the lane's closure and golden rows hold. Those clauses read the program, so the image
+        // is built once, here, and the scan and re-emission read one projection of the artifact. They
+        // hold instructions and not bytes: the padding's length is the padding clause's, and the
+        // declared alignment is compared with this build's by re-emission alone. A wide artifact
+        // declaring arm64 is judged against the arm64 numeric table and meets none of them; no host of
+        // this build arms it.
         var tier = state.ManifestId == JsNumericManifest.ManifestId
             ? JsNativeTier.Numeric
             : JsNativeTier.Baseline;
 
+        var image = NativeImage(state, tier);
+
         var scan = JsNativeScan.Scan(
-            state.NativeArchitecture, tier, blob, symbols, state.NativeCodeAlignment);
+            state.NativeArchitecture, tier, blob, symbols, state.NativeCodeAlignment, image);
 
         if (!scan.Accepted)
         {
@@ -1538,7 +1550,59 @@ internal sealed class JsVerifier
                 scan.Offset);
         }
 
-        return ReEmit(state, tier, blob, symbols, emitter);
+        return ReEmit(state, blob, symbols, emitter, image);
+    }
+
+    /// <summary>
+    /// The program an artifact's native payload was emitted from, projected from what this verifier read:
+    /// the code, the function rows, the constant pool, and for the baseline form the exception regions.
+    /// </summary>
+    /// <remarks>
+    /// <b>THE BASELINE FORM READS THE REGIONS AND THE NUMERIC FORM READS NONE</b>, so the image carries them
+    /// only for the tier that needs them - projected from the regions this verifier read, in the order the
+    /// artifact carries them, which is the order the lowering handed its backend. The scan's layout clauses
+    /// and re-emission both read this one image.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=5F3660
+    // Broiler-Falsified-If: the image differs from the artifact's own code, function rows, constant pool, or - for the baseline tier - exception regions in their order, or its tier differs from the one the manifest selects
+    // Broiler-Human:        PENDING
+    private static JsNativeProgramImage NativeImage(Sections state, JsNativeTier tier)
+    {
+        var pool = state.Constants!;
+        var values = new double[pool.Length];
+        var numbers = new bool[pool.Length];
+
+        for (var index = 0; index < pool.Length; index++)
+        {
+            numbers[index] = pool[index].IsNumber;
+            values[index] = pool[index].IsNumber ? pool[index].AsNumber() : 0;
+        }
+
+        var image = new JsNativeProgramImage(
+            state.Code!, state.FunctionRows!, values, numbers, state.DeclaredOperandStack);
+
+        if (tier != JsNativeTier.Baseline)
+        {
+            return image;
+        }
+
+        var regions = new JsExceptionRegionRow[state.Regions.Length];
+
+        for (var index = 0; index < regions.Length; index++)
+        {
+            var region = state.Regions[index];
+
+            regions[index] = new JsExceptionRegionRow(
+                region.Unit,
+                region.TryStart,
+                region.TryEnd,
+                region.Handler,
+                region.ScopeDepth,
+                region.StackHeight,
+                region.Kind);
+        }
+
+        return image with { Tier = JsNativeTier.Baseline, Regions = regions };
     }
 
     /// <summary>
@@ -1565,7 +1629,9 @@ internal sealed class JsVerifier
     /// trusting is PROVENANCE: that whoever produced the artifact ran a backend it has no way to
     /// re-run. That is a weaker thing than verification, it is the honest description of what is
     /// happening, and a composition that runs emitted code in that position owes its users the
-    /// sentence rather than a footnote.
+    /// sentence rather than a footnote. The template-closure scan that runs before this in every image
+    /// is the exception to "nothing whatever": it holds a payload to the table, and an x86-64 baseline
+    /// payload's instructions to the layout of the artifact's own partition.
     /// </para>
     /// <para>
     /// <b>The emitter's own version must be the one the artifact names, and the version check comes
@@ -1573,16 +1639,20 @@ internal sealed class JsVerifier
     /// answers "not equal" for a payload that was correct when it was written, which is a refusal
     /// with the wrong reason attached; refusing on the version says the true thing.
     /// </para>
+    /// <para>
+    /// <b>The image it emits from is the one the scan read</b>, built once by the caller from what this
+    /// verifier read.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=143E4A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=5982A5
     // Broiler-Falsified-If: an artifact whose emitted bytes differ from this image's own emission of its bytecode is admitted while an emitter is present
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReEmit(
         Sections state,
-        JsNativeTier tier,
         byte[] blob,
         JsNativeSymbolRow[] symbols,
-        IJsNativeEmitter? emitter)
+        IJsNativeEmitter? emitter,
+        JsNativeProgramImage image)
     {
         if (emitter is null)
         {
@@ -1597,43 +1667,6 @@ internal sealed class JsVerifier
                 VmReason.InconsistentStructure,
                 JavaScriptDiagnosticCode.MalformedNativeSection,
                 0);
-        }
-
-        var pool = state.Constants!;
-        var values = new double[pool.Length];
-        var numbers = new bool[pool.Length];
-
-        for (var index = 0; index < pool.Length; index++)
-        {
-            numbers[index] = pool[index].IsNumber;
-            values[index] = pool[index].IsNumber ? pool[index].AsNumber() : 0;
-        }
-
-        var image = new JsNativeProgramImage(
-            state.Code!, state.FunctionRows!, values, numbers, state.DeclaredOperandStack);
-
-        // THE BASELINE FORM READS THE REGIONS AND THE NUMERIC FORM READS NONE, so the image carries
-        // them only for the tier that needs them - projected from the regions this verifier read, in
-        // the order the artifact carries them, which is the order the lowering handed its backend.
-        if (tier == JsNativeTier.Baseline)
-        {
-            var regions = new JsExceptionRegionRow[state.Regions.Length];
-
-            for (var index = 0; index < regions.Length; index++)
-            {
-                var region = state.Regions[index];
-
-                regions[index] = new JsExceptionRegionRow(
-                    region.Unit,
-                    region.TryStart,
-                    region.TryEnd,
-                    region.Handler,
-                    region.ScopeDepth,
-                    region.StackHeight,
-                    region.Kind);
-            }
-
-            image = image with { Tier = JsNativeTier.Baseline, Regions = regions };
         }
 
         if (!emitter.TryEmit(image, out var emitted, out var table, out _) ||

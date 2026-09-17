@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 3807 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 3819 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 172 |
-| Code units | 6767 |
-| Relevant | 3807 |
-| Exempt | 2960 |
-| Assessed | 3807 of 3807 (100%) |
-| Human reviewed | 0 of 3807 (0%) |
-| Unverified | 3807 |
+| Code units | 6790 |
+| Relevant | 3819 |
+| Exempt | 2971 |
+| Assessed | 3819 of 3819 (100%) |
+| Human reviewed | 0 of 3819 (0%) |
+| Unverified | 3819 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 3807 |
+| HUMAN_PENDING | 3819 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2960 |
+| EXEMPT | 2971 |
 
 ## 5. Aliases In The Tree
 
@@ -174,12 +174,12 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptFormat.cs` | 26 | 14 | 12 | 14 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` | 40 | 10 | 30 | 10 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsArtifactWriter.cs` | 32 | 32 | 0 | 32 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` | 68 | 39 | 29 | 39 | None | High | 16/14 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` | 74 | 44 | 30 | 44 | None | High | 17/15 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineFrame.cs` | 16 | 9 | 7 | 9 | None | Critical | 8/8 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs` | 64 | 31 | 33 | 31 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` | 28 | 17 | 11 | 17 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeFrame.cs` | 17 | 3 | 14 | 3 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` | 31 | 16 | 15 | 16 | Low | Critical | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` | 47 | 22 | 25 | 22 | Low | Critical | 11/11 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` | 61 | 39 | 22 | 39 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNumericManifest.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 150 | 23 | 127 | 23 | None | Medium | 0/0 |
@@ -243,7 +243,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsSymbol.cs` | 6 | 2 | 4 | 2 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsThrow.cs` | 10 | 5 | 5 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsValue.cs` | 49 | 29 | 20 | 29 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` | 85 | 47 | 38 | 47 | Low | High | 6/6 |
+| `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` | 86 | 48 | 38 | 48 | Low | High | 7/7 |
 | `src/Broiler.VM.Profile.WebAssembly/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` | 63 | 39 | 24 | 39 | Low | Critical | 24/24 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` | 8 | 8 | 0 | 8 | Low | High | 5/5 |
@@ -792,10 +792,12 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a plan it answers omits the unit's entry, a handler offset it was given, the successor of a Yield, Await or EnterBody or a YieldDelegate from its landings, names a head that is not an instruction start of the unit, gives a head a last instruction other than the first after which StopsAfter holds on its linear walk, or it answers differently for the same image, unit and handler offsets
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.LayoutLength(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `4C8676`, PENDING
   - Falsified if: for a plan TryPlan answered it differs from the length of the array Layout answers for the same plan
-- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Layout(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `9A72BA`, PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Layout(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `CAE84F`, PENDING
   - Falsified if: for a plan TryPlan answered, the layout's dispatch sends a landing anywhere but its own head's call or another non-negative answer anywhere but the defect, a head's call names a pc other than the head or a slot other than eight times its opcode, a tail differs from the one its block's kind and target dictate, a branch resolves to an index other than the instruction it names, or the answer's length differs from LayoutLength
-- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Tree(JsBaselineInstruction[], ref int, System.ReadOnlySpan<int>, int, int, int, System.ReadOnlySpan<JsBaselineBlock>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `9676B4`, PENDING
-  - Falsified if: a landing in the range is compared anywhere but on a path that branches to its own head, an offset outside the range reaches anything but the defect, or it writes other than TreeLength entries for the range
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Lay<TSink>(JsBaselineUnitPlan, ref TSink)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `A0E4CD`, PENDING
+  - Falsified if: for a plan TryPlan answered, it hands out an entry other than the one Layout writes at the index it names, hands out indices other than zero upward one at a time, goes on after the sink answers false, or answers true when it stopped before the last entry
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Tree<TSink>(ref TSink, ref int, System.ReadOnlySpan<int>, int, int, int, System.ReadOnlySpan<JsBaselineBlock>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `0D7902`, PENDING
+  - Falsified if: a landing in the range is compared anywhere but on a path that branches to its own head, an offset outside the range reaches anything but the defect, it hands out other than TreeLength entries for the range, or it goes on after the sink answers false
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.TreeLength(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `A8605C`, PENDING
   - Falsified if: for some count it differs from the number of entries Tree writes for a range of that many landings
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.BlockLength(JsBaselineBlock)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `AB6E97`, PENDING
@@ -834,11 +836,23 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a field of this structure holds a reference the collector traces, or its declared offsets differ from the layout the runtime gives it
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, Spec=none cited, `31ACE8`, PENDING
   - Falsified if: a payload this scan accepts carries a byte no backend of this build could have emitted
-- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, byte[], JsNativeSymbolRow[], uint, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, Spec=none cited, `885F63`, PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, byte[], JsNativeSymbolRow[], uint, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, Spec=none cited, `61C6A9`, PENDING
   - Falsified if: a byte sequence no backend of this build can emit is accepted, or a sequence one of them emits is refused
-- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, JsNativeTier, byte[], JsNativeSymbolRow[], uint, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, Spec=none cited, `DCCED6`, PENDING
-  - Falsified if: a baseline x86-64 payload is accepted whose unit writes RBX or RSP outside one prologue and one epilogue, branches into either sequence, or makes an indirect call other than through the handler table at a defined opcode's slot
-- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameShape(System.Collections.Generic.List<(uint At, int Index)>, int, uint, int, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, Spec=none cited, `50C955`, PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, JsNativeTier, byte[], JsNativeSymbolRow[], uint, JsNativeProgramImage?, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, Spec=none cited, `94C32C`, PENDING
+  - Falsified if: a baseline x86-64 payload is accepted whose unit writes RBX or RSP outside one prologue and one epilogue, branches into either sequence, or makes an indirect call other than through the handler table at a defined opcode's slot, or whose unit body is not, instruction for instruction, the layout JsBaselineBlocks gives for the program's own partition
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BlockLayout(JsNativeTemplate[], byte[], JsNativeSymbolRow[], JsNativeProgramImage?, System.Collections.Generic.List<(uint At, int Index)>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, Spec=none cited, `892601`, PENDING
+  - Falsified if: it accepts a payload with no program, with a program whose unit count or order is not the symbols', or with a unit body that is not, instruction for instruction, the layout of that unit's plan with the unit's own handler offsets - or it refuses a body that is
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BaselineTemplateIndices(JsNativeTemplate[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, Spec=none cited, `E4A85A`, PENDING
+  - Falsified if: for some JsBaselineTemplate it answers the index of a template whose name is not the one this file gives that member, or a non-negative index when the table has no template of that name
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BaselineTemplateNames` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, Spec=none cited, `F15041`, PENDING
+  - Falsified if: an entry names a template other than the one the JsBaselineTemplate member of its index documents
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, Spec=none cited, `A69F72`, PENDING
+  - Falsified if: it goes on after an entry whose template, operand or branch destination differs from the instantiation at the same index of the body, or stops at one whose three agree
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison.Take(int, JsBaselineInstruction)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, Spec=none cited, `D7A644`, PENDING
+  - Falsified if: it answers true for an entry whose template, operand or branch destination differs from the instantiation at its index, or false for one whose three agree
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison.Refusal(int, uint)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, Spec=none cited, `53B907`, PENDING
+  - Falsified if: a differing dispatch entry answers other than DispatchNotTheLandings, a differing move answers other than CallsNotTheBlockHeads, a call through another slot answers other than HandlerSlotNotTheOpcode, another template where a call belongs answers other than CallsNotTheBlockHeads, or a differing tail entry answers other than TailNotTheBlockEnd
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameShape(System.Collections.Generic.List<(uint At, int Index)>, int, int, uint, int, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, Spec=none cited, `AEA93C`, PENDING
   - Falsified if: a baseline unit is accepted whose instantiations do not open with exactly the prologue, close with exactly the epilogue, or carry a prologue or epilogue template elsewhere
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameTargets(System.Collections.Generic.List<Branch>, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, Spec=none cited, `6A1345`, PENDING
   - Falsified if: a baseline payload is accepted with a branch whose target is a prologue instruction, a pop or a return
@@ -1602,9 +1616,11 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a declared length that disagrees with the bytes present is accepted, or an architecture value this build cannot name is
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadNativeSymbols(ref VmBoundedReader, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `F1C392`, PENDING
   - Falsified if: an offset outside the emitted blob is accepted, or two rows naming one code unit are
-- `Broiler.VM.Profile.JavaScript.JsVerifier.LinkNative(Sections, JsCodeUnit[], IJsNativeEmitter?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `5E7901`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsVerifier.LinkNative(Sections, JsCodeUnit[], IJsNativeEmitter?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `DE9B5A`, PENDING
   - Falsified if: an artifact whose symbol table names fewer units than the function table is admitted, or a symbol offset outside the emitted blob is
-- `Broiler.VM.Profile.JavaScript.JsVerifier.ReEmit(Sections, JsNativeTier, byte[], JsNativeSymbolRow[], IJsNativeEmitter?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `143E4A`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsVerifier.NativeImage(Sections, JsNativeTier)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `5F3660`, PENDING
+  - Falsified if: the image differs from the artifact's own code, function rows, constant pool, or - for the baseline tier - exception regions in their order, or its tier differs from the one the manifest selects
+- `Broiler.VM.Profile.JavaScript.JsVerifier.ReEmit(Sections, byte[], JsNativeSymbolRow[], IJsNativeEmitter?, JsNativeProgramImage)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `5982A5`, PENDING
   - Falsified if: an artifact whose emitted bytes differ from this image's own emission of its bytecode is admitted while an emitter is present
 - `Broiler.VM.Profile.JavaScript.JsVerifier.LinkModules(Sections, JsCodeUnit[], IVmVerificationContext, JavaScriptReadAdapter, out JsModuleRecord[], out JsBinding[])` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `8255D8`, PENDING
   - Falsified if: linking recurses to a depth the payload chooses, or a cyclic export resolution is answered by spending an allowance
@@ -1978,7 +1994,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 3693 of the 3807 assessed units declare
+That is not a figure of speech. 3705 of the 3819 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

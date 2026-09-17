@@ -231,8 +231,8 @@ internal static class NativeLifecycle
     /// <summary>Runs an already-compiled wide artifact through the lifecycle <see cref="RunWide"/> describes.</summary>
     /// <remarks>
     /// <b>SEPARATE SO THAT A ROW CAN HAND IT BYTES NO COMPILATION WROTE</b> - a payload whose handler
-    /// call was moved to another slot, verified by the admitting door because re-emission would refuse
-    /// it before the run the row is about.
+    /// call was moved to another slot, handed to the admitting door so that what refuses it is the
+    /// template scan every image runs and not a re-emission only some images can make.
     /// </remarks>
     internal static WideAnswer RunWideArtifact(
         byte[] artifact,
