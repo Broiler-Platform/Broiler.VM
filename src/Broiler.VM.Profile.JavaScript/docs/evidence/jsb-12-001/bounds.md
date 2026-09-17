@@ -318,6 +318,30 @@ a route in this table.**
 | dynamic import | `ImportCall` (`DynamicImport` → `Instantiate` → module evaluation) | A module key is instantiated once per realm, so repeating `import()` of a key does not evaluate it again. Nesting is bounded by the distinct modules the artifacts carry, not by a recursion. |
 | a module's initialisers from a script unit | `LoadImport`, `ImportMeta`, hand-assembled only | `Instantiate` records the graph before it runs any initialiser, so a second instruction finds it. The route runs once per artifact, and a second level cannot nest through it. |
 
+*Added 2026-09-17, after the per-block baseline steps were committed.* **This addition only narrows the
+depth claim.** It removes and relaxes nothing: every family, shape, bound and class above stands, and the
+route table still names 36 families. By the owner's answer of 2026-09-17 to a scope question raised when
+the `proxyprotoget` family was added, **the trap and accessor families of section 9.1 do not cover two
+constructs, and the depth clause claims nothing for either**:
+
+- **A copy of a native accessor installed under another key.** The `proxyprotoget` and `protoset` families
+  leave the `Object.prototype.__proto__` getter and setter where the realm installs them, so their arms
+  were chosen among the instructions that read or write the key `__proto__`. A copy of either installed
+  under another key is reached from arms and through chains those rows did not weigh.
+- **A Proxy whose target is another trap-less Proxy.** A trap-less Proxy, one with no trap for the
+  operation, forwards the operation to its target, and every Proxy the families create has an ordinary
+  object or a function as its target. A Proxy whose target is another trap-less Proxy forwards the
+  operation once more before a trap or an accessor is called, which puts about three more native frames
+  into each level: for a read, `JsProxy.ProxyGet`, `JsEngine.GetWithReceiver` and `Lookup` again.
+
+**What had been seen when this addition was written.** Section 1 says what had been seen when the values
+were set; this is what had been seen when this addition was written. The checks transcripts of `0293c62`,
+the commit that makes the baseline form run a block of instructions per step, **print a time for every
+row, and they had been seen**, as had those of `940b7d0`, a later commit that fixed one of that commit's
+review findings, and the other gate transcripts of both commits, among them the released-bounds logs of
+`eng/measure-frame-cost.py` in both forms and a test262 run of a subset in both forms. No figure from them
+is used here.
+
 ---
 
 ## 10. The conformance comparisons
