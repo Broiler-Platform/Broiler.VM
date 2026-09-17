@@ -347,7 +347,16 @@ jobs:
             case "$composition" in
               *ExecutionOnly) "$binary" --corpus "$corpus" ;;
               *SliceCompiler)
-                "$binary" --checks
+                # EVERY ROW BY NAME, NOT ONLY A COUNT. Without `--verbose` the image prints the rows
+                # that failed or could not run on this machine, and then a total. A green cell
+                # therefore said how many rows passed and never which. That matters most for the
+                # `x86-64-sysv` rows. A Windows machine cannot enter a unit emitted for System V,
+                # so those rows run only on a cell whose machine uses that convention, and linux-x64
+                # is the one such cell both callers take. Bundle JSB-11-001 records that no retained
+                # transcript names them as passed: they were only absent from the rows named as not
+                # run. With `--verbose` every row prints its verdict, its name and its detail, so
+                # this job's log is a transcript that names them.
+                "$binary" --checks --verbose
                 # THE SOURCE SURFACE'S SESSIONS, here rather than beside the artifact ones because
                 # they need a lowering and the execution-only image carries none. Four seeds, the
                 # same count the artifact sessions use, so the two answer the same question about
