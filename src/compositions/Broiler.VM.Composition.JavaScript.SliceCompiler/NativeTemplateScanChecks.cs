@@ -1100,6 +1100,8 @@ internal static class NativeTemplateScanChecks
             BaselineGolden(JsX64Abi.Windows, GoldenWindows),
             BaselineGolden(JsX64Abi.SystemV, GoldenSystemV),
             TheGoldenHandDecodeIsTheGoldenBytes(),
+            TheGoldenHandDecodeListingIsTheWidthWalk(),
+            TheGoldenHandDecodePlanIsThePlan(),
             TheTwoConventionsEmitOneTemplateSequence(),
             BaselineReEmission(JsX64Abi.Windows),
             BaselineReEmission(JsX64Abi.SystemV),
@@ -1664,6 +1666,16 @@ internal static class NativeTemplateScanChecks
     /// two constants above, so a later re-base that moved the bytes without the decode fails a row rather
     /// than leaving a stale decode beside new bytes.
     /// </para>
+    /// <para>
+    /// <b>THE LISTING AND THE PLAN ARE THE GOLDEN PROGRAM'S, AND TWO MORE ROWS SAY SO.</b> A lowering change
+    /// can move an operand no native byte carries - a constant, a scoped slot or a name index - and leave
+    /// every byte where it was. <c>TheGoldenHandDecodeListingIsTheWidthWalk</c> requires the listing to be
+    /// the width walk of the program the golden rows compile, line for line, and
+    /// <c>TheGoldenHandDecodePlanIsThePlan</c> requires the plan to be what
+    /// <see cref="JsBaselineBlocks.TryPlan"/> answers for it. The second is a consistency check and not
+    /// where the plan came from: the plan was derived by hand, before either row existed, and a difference
+    /// means the hand derivation or the partition has moved, which a reader then decides between.
+    /// </para>
     /// </remarks>
     private const string GoldenHandDecode = @"THE LISTING: the golden rows' walk of the code section by instruction width, one instruction a line
 unit 0 [0, 63), no regions
@@ -1991,7 +2003,8 @@ unit 3 at 512
     /// <b>IT ASKS THE OPCODE TABLE FOR WIDTHS AND SHAPES AND NOTHING ELSE, AND NEVER THE PARTITION.</b> It
     /// is the input the retained decode derives its landings, heads, last instructions and tails from by
     /// hand, so it must not be computed by the plan those are meant to check. It reads the code, function
-    /// and region sections through the reader the plan row reads them through.
+    /// and region sections through the reader the plan row reads them through. This is its one-line form,
+    /// for a row's detail; <see cref="WidthWalkListing"/> is the same walk in the decode's form.
     /// </remarks>
     private static string WidthWalk(JsNativeProgramImage image)
     {
@@ -2005,41 +2018,9 @@ unit 3 at 512
             text.Append(unit == 0 ? string.Empty : " | ")
                 .Append("unit ").Append(unit).Append(" [").Append(row.CodeOffset).Append(", ").Append(end).Append("):");
 
-            for (var at = (long)row.CodeOffset; at < end;)
+            foreach (var (at, instruction) in WalkByWidth(image, unit))
             {
-                var value = image.Code[at];
-
-                if (!JsOpcodes.IsDefined(value))
-                {
-                    text.Append(' ').Append(at).Append(" undefined byte ").Append(value).Append(';');
-                    break;
-                }
-
-                var opcode = (JsOpcode)value;
-                text.Append(' ').Append(at).Append(' ').Append(opcode);
-
-                switch (JsOpcodes.Shape(opcode))
-                {
-                    case JsOperandShape.U8:
-                        text.Append(' ').Append(image.Code[at + 1]);
-                        break;
-
-                    case JsOperandShape.U16:
-                        text.Append(' ').Append(System.BitConverter.ToUInt16(image.Code, (int)at + 1));
-                        break;
-
-                    case JsOperandShape.U32:
-                        text.Append(' ').Append(System.BitConverter.ToUInt32(image.Code, (int)at + 1));
-                        break;
-
-                    case JsOperandShape.U8U16:
-                        text.Append(' ').Append(image.Code[at + 1]).Append(' ')
-                            .Append(System.BitConverter.ToUInt16(image.Code, (int)at + 2));
-                        break;
-                }
-
-                text.Append(';');
-                at += JsOpcodes.InstructionWidth(opcode);
+                text.Append(' ').Append(at).Append(' ').Append(instruction).Append(';');
             }
 
             text.Append(" regions:");
@@ -2062,6 +2043,100 @@ unit 3 at 512
         }
 
         return text.ToString();
+    }
+
+    /// <summary>
+    /// The same width walk as <see cref="WidthWalk"/>, one line per unit heading and per instruction, in
+    /// the form the listing of <see cref="GoldenHandDecode"/> was written in.
+    /// </summary>
+    /// <remarks>
+    /// A unit's heading is its index, its code range and its regions, or <c>no regions</c>; an instruction's
+    /// line is its offset right-aligned in five columns after two spaces, two more spaces, then its opcode
+    /// and operands.
+    /// </remarks>
+    private static System.Collections.Generic.List<string> WidthWalkListing(JsNativeProgramImage image)
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        for (var unit = 0; unit < image.Functions.Length; unit++)
+        {
+            var row = image.Functions[unit];
+            var heading = new System.Text.StringBuilder()
+                .Append("unit ").Append(unit).Append(" [").Append(row.CodeOffset).Append(", ")
+                .Append((long)row.CodeOffset + row.CodeLength).Append("), ");
+            var any = false;
+
+            foreach (var region in image.Regions)
+            {
+                if (region.FunctionIndex == (uint)unit)
+                {
+                    heading.Append(any ? "; " : "regions ").Append("try [").Append(region.TryStart).Append(", ")
+                        .Append(region.TryEnd).Append(") handler ").Append(region.HandlerOffset);
+                    any = true;
+                }
+            }
+
+            lines.Add(any ? heading.ToString() : heading.Append("no regions").ToString());
+
+            foreach (var (at, instruction) in WalkByWidth(image, unit))
+            {
+                lines.Add("  " + at.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(5) + "  " + instruction);
+            }
+        }
+
+        return lines;
+    }
+
+    /// <summary>
+    /// One unit's instructions, found by stepping from its first byte by each instruction's width: each
+    /// one's offset, and its opcode and operands as text, ending at an undefined byte if the walk meets one.
+    /// </summary>
+    private static System.Collections.Generic.List<(long At, string Instruction)> WalkByWidth(
+        JsNativeProgramImage image,
+        int unit)
+    {
+        var walked = new System.Collections.Generic.List<(long, string)>();
+        var row = image.Functions[unit];
+        var end = (long)row.CodeOffset + row.CodeLength;
+
+        for (var at = (long)row.CodeOffset; at < end;)
+        {
+            var value = image.Code[at];
+
+            if (!JsOpcodes.IsDefined(value))
+            {
+                walked.Add((at, "undefined byte " + value));
+                break;
+            }
+
+            var opcode = (JsOpcode)value;
+            var text = new System.Text.StringBuilder().Append(opcode);
+
+            switch (JsOpcodes.Shape(opcode))
+            {
+                case JsOperandShape.U8:
+                    text.Append(' ').Append(image.Code[at + 1]);
+                    break;
+
+                case JsOperandShape.U16:
+                    text.Append(' ').Append(System.BitConverter.ToUInt16(image.Code, (int)at + 1));
+                    break;
+
+                case JsOperandShape.U32:
+                    text.Append(' ').Append(System.BitConverter.ToUInt32(image.Code, (int)at + 1));
+                    break;
+
+                case JsOperandShape.U8U16:
+                    text.Append(' ').Append(image.Code[at + 1]).Append(' ')
+                        .Append(System.BitConverter.ToUInt16(image.Code, (int)at + 2));
+                    break;
+            }
+
+            walked.Add((at, text.ToString()));
+            at += JsOpcodes.InstructionWidth(opcode);
+        }
+
+        return walked;
     }
 
     /// <summary>
@@ -2194,6 +2269,169 @@ unit 3 at 512
             instantiations + " instantiations decoded, " + (windows.Length / 2) + " bytes: the Windows column " +
                 (windowsMatch ? "is" : "IS NOT") + " the retained Windows bytes and the System V column " +
                 (systemVMatch ? "is" : "IS NOT") + " the retained System V bytes");
+    }
+
+    /// <summary>The retained decode's listing is the golden program's code section, walked by width.</summary>
+    /// <remarks>
+    /// <b>THE LISTING IS WHAT THE PLAN WAS DERIVED FROM, SO A LISTING LEFT BEHIND IS A DERIVATION FROM A
+    /// PROGRAM NO ROW COMPILES.</b> The byte columns pin every offset and opcode a call or a compare carries,
+    /// but not an operand no native byte carries: a lowering change that renumbered a constant, a scoped
+    /// slot or a name would leave every golden row green beside a stale listing. This row compiles the
+    /// golden program as the golden rows do, walks it with <see cref="WidthWalkListing"/>, which never asks
+    /// the partition, and requires the listing's lines to be those, in order.
+    /// </remarks>
+    private static (string, bool, string) TheGoldenHandDecodeListingIsTheWidthWalk()
+    {
+        const string Name = "the golden hand decode's listing is the golden program's width walk";
+
+        if (!TryReadGoldenImage(out var image, out var refusal))
+        {
+            return (Name, false, refusal);
+        }
+
+        var retained = GoldenHandDecodeSection("THE LISTING");
+        var walked = WidthWalkListing(image);
+        var difference = FirstDifference(retained, walked);
+
+        return (
+            Name,
+            retained.Count > 0 && difference.Length == 0,
+            difference.Length == 0
+                ? image.Functions.Length + " units, " + walked.Count + " lines: the retained listing is the walk"
+                : difference);
+    }
+
+    /// <summary>The retained decode's plan is the plan the partition answers for the golden program.</summary>
+    /// <remarks>
+    /// <b>IT IS A CONSISTENCY CHECK AND NOT WHERE THE PLAN CAME FROM.</b> The retained plan was derived by
+    /// hand from the listing, by the definitions, before this row existed. This row renders what
+    /// <see cref="JsBaselineBlocks.TryPlan"/> answers for each unit, given the unit's grouped handler
+    /// offsets, in the plan's own words - the landings, then each head with <c>landing</c> and
+    /// <c>runs alone</c> where they hold, its last instruction, the target it compares, and whether its
+    /// tail leaves, falls through or branches to the instruction after its last - and requires the two to
+    /// be the same lines, in order. A difference means that the hand derivation or the partition has moved;
+    /// which of the two is right is a reader's to decide, and this row does not decide it.
+    /// </remarks>
+    private static (string, bool, string) TheGoldenHandDecodePlanIsThePlan()
+    {
+        const string Name = "the golden hand decode's plan is the plan the partition answers";
+
+        if (!TryReadGoldenImage(out var image, out var refusal))
+        {
+            return (Name, false, refusal);
+        }
+
+        var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+        var planned = new System.Collections.Generic.List<string>();
+
+        for (var unit = 0; unit < image.Functions.Length; unit++)
+        {
+            if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out refusal))
+            {
+                return (Name, false, "unit " + unit + ": the plan refused - " + refusal);
+            }
+
+            planned.Add("unit " + unit + ": landings " + string.Join(", ", plan.Landings.ToArray()));
+
+            foreach (var block in plan.Blocks)
+            {
+                var landing = System.MemoryExtensions.Contains(plan.Landings, block.Head);
+                var alone = JsBaselineBlocks.RunsAlone(block.HeadOpcode);
+                var line = new System.Text.StringBuilder()
+                    .Append("  head ").Append(block.Head).Append(' ').Append(block.HeadOpcode)
+                    .Append(landing && alone ? " (landing, runs alone)" : landing ? " (landing)" : alone ? " (runs alone)" : string.Empty)
+                    .Append(": last ").Append(block.Last).Append(' ').Append((JsOpcode)image.Code[block.Last]);
+
+                if (block.HasTarget)
+                {
+                    line.Append(", compares its target ").Append(block.Target);
+                }
+
+                line.Append(
+                    block.Tail switch
+                    {
+                        JsBaselineTail.Leave => ", leaves",
+                        JsBaselineTail.FallThrough => ", falls through to " + block.Following,
+                        _ => ", branches to " + block.Following,
+                    });
+
+                planned.Add(line.ToString());
+            }
+        }
+
+        var retained = GoldenHandDecodeSection("THE PLAN");
+        var difference = FirstDifference(retained, planned);
+
+        return (
+            Name,
+            retained.Count > 0 && difference.Length == 0,
+            difference.Length == 0
+                ? image.Functions.Length + " units, " + planned.Count + " lines: the retained plan is the partition's"
+                : difference);
+    }
+
+    /// <summary>The golden program compiled for the Windows convention, read back as an image.</summary>
+    private static bool TryReadGoldenImage(out JsNativeProgramImage image, out string refusal)
+    {
+        image = null!;
+        var compiled = CompileWide(("golden", GoldenSource, null), JsNativeBackends.X64Windows);
+
+        if (!compiled.Succeeded || compiled.Artifact is null)
+        {
+            refusal = Refusal(compiled);
+            return false;
+        }
+
+        return NativeLifecycle.TryReadImage(compiled.Artifact, out image, out refusal);
+    }
+
+    /// <summary>
+    /// The lines of one section of <see cref="GoldenHandDecode"/>: every line after the one that starts with
+    /// the heading, up to the first empty line.
+    /// </summary>
+    private static System.Collections.Generic.List<string> GoldenHandDecodeSection(string heading)
+    {
+        var lines = new System.Collections.Generic.List<string>();
+        var inside = false;
+
+        foreach (var raw in GoldenHandDecode.Split('\n'))
+        {
+            var line = raw.TrimEnd('\r');
+
+            if (!inside)
+            {
+                inside = line.StartsWith(heading, System.StringComparison.Ordinal);
+                continue;
+            }
+
+            if (line.Length == 0)
+            {
+                break;
+            }
+
+            lines.Add(line);
+        }
+
+        return lines;
+    }
+
+    /// <summary>Where two lists of lines first differ, in words, or empty when they are the same lines.</summary>
+    private static string FirstDifference(
+        System.Collections.Generic.List<string> retained,
+        System.Collections.Generic.List<string> computed)
+    {
+        for (var index = 0; index < System.Math.Min(retained.Count, computed.Count); index++)
+        {
+            if (!string.Equals(retained[index], computed[index], System.StringComparison.Ordinal))
+            {
+                return "line " + (index + 1) + " is retained as \"" + retained[index] + "\" and computed as \"" +
+                    computed[index] + "\"";
+            }
+        }
+
+        return retained.Count == computed.Count
+            ? string.Empty
+            : retained.Count + " lines are retained and " + computed.Count + " computed";
     }
 
     /// <summary>Whether a column of the decode is whole bytes of upper-case hexadecimal.</summary>
