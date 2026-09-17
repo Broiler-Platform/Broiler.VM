@@ -1,0 +1,28 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no
+// compilation includes it, and rule X4's test adds its member to the real JsBaselineHandlers.cs, so
+// that clause (a) reads the real table with exactly this edit made, and a later edit of the table
+// cannot leave the witness describing a file that no longer exists.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES. Every wrapper of the table spells
+// JsNativeActivation.Step, and a type nested in the table is what that spelling binds to before the
+// activation itself. A relay nested here - to count steps while profiling, or to route every entry
+// point through one mode while a fallback is tried - leaves every wrapper's text as it was: the
+// run-alone wrappers still read PerOpcodeSteps ? Step<StepCall> : Step<JsStepBlock>, and every
+// comparison a rule reading that text makes still holds. What it costs is the stack-depth argument the
+// per-block steps rest on - all nineteen run-alone instructions now run under the block step's frame,
+// which holds every arm of the dispatch loop, on every level of a recursion through a call.
+//
+// The relay forwards to the real Step with the arguments it was given, so every answer, every check
+// row and the table's own self-check are unchanged; only the mode is not the wrapper's.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal static unsafe class JsBaselineHandlers
+{
+    private static class JsNativeActivation
+    {
+        internal static int Step<TMode>(JsBaselineFrame* frame, int pc, JsOpcode expected)
+            where TMode : struct, IJsExecutionMode =>
+            global::Broiler.VM.Profile.JavaScript.JsNativeActivation.Step<JsStepBlock>(frame, pc, expected);
+    }
+}

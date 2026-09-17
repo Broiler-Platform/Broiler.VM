@@ -1,0 +1,24 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no
+// compilation includes it, and rule X4's test adds it to the swept tree at a path in the JavaScript
+// profile's own assembly, so that clause (c) can be watched reading a use of the unit layout and of a
+// template's fixed bytes whose names are spelled through unicode escapes.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES, and it is the one a filter over raw text passes. The
+// compiler reads an identifier's escapes before it binds the name, so L\u0061yout below is the member
+// the clause confines, and Fi\u0078ed is the other; the file compiles, and it names neither as plain
+// text anywhere - this comment included, which is why the member names are not written out here. A
+// clause that parsed only the files whose text contains the confined names never opens this one. What
+// it costs is the argument that an execution-only image of the baseline form holds no code generator -
+// decision JSD-0025 section 10 - because this reads what such a generator needs in an image with no
+// lowering.
+
+using Broiler.VM.Profile.JavaScript.Format;
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal static class JsBaselineCensus
+{
+    internal static int Entries(JsBaselineUnitPlan plan) => JsBaselineBlocks.L\u0061yout(plan).Length;
+
+    internal static int Bytes(JsNativeTemplate template) => template.Fi\u0078ed.Length;
+}

@@ -346,8 +346,10 @@ public sealed class RuleRegisterTests
         // and the lowering, and JsBaselineBlocks.Lay, the walk Layout is made by, only by the scan and
         // inside Layout, which the argument that an execution-only image holds no code generator
         // rests on; and each slot, expected opcode and step's opcode is the one its wrapper is named
-        // for, without which routing by name routes nothing. Neither the Vacuous nor the Deferred count
-        // moves.
+        // for, without which routing by name routes nothing. Because the wrappers and slots are read as
+        // text, the names they are read by are held to the declarations they mean, and the table's static
+        // constructor is read whole, so no write beside a slot assignment goes unread. Neither the Vacuous
+        // nor the Deferred count moves.
         Assert.Equal(94, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);

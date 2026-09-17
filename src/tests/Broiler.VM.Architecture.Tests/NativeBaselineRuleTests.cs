@@ -442,7 +442,11 @@ public sealed class NativeBaselineRuleTests
     {
         var answer = X4Names(Tree);
 
-        foreach (var decided in new[] { "slot Call", "slot Nop", "expected Call", "expected Nop", "StepCall.Opcode" })
+        foreach (var decided in new[]
+                 {
+                     "slot Call", "slot Nop", "expected Call", "expected Nop", "StepCall.Opcode", "the static constructor",
+                     "Sound reads the slots",
+                 })
         {
             Assert.Contains(decided, answer.Decided);
         }
@@ -853,6 +857,214 @@ public sealed class NativeBaselineRuleTests
     }
 
     /// <summary>
+    /// A declaration that a wrapper's or a slot's text binds to in place of what the rule reads is reported,
+    /// although every text clauses (a) and (d) compare is unchanged.
+    /// </summary>
+    [Fact]
+    public void X4_A_Name_That_Shadows_What_A_Wrapper_Or_A_Slot_Names_Is_Reported()
+    {
+        var handlers = TreeFile(HandlerFile);
+
+        // A relay nested in the table under the activation's name: every wrapper still reads as it did.
+        var relayed = Replacing(WithWitnessMembers(
+            handlers, "JsBaselineHandlers", "X4-a-handler-table-that-shadows-the-activation.cs.witness"));
+
+        Assert.Collection(
+            X4Routing(relayed).Violations,
+            static message => Assert.Contains(
+                $"(a) {HandlerFile} declares a class named JsNativeActivation", message, StringComparison.Ordinal));
+
+        // ...and the names clause reads nothing wrong in it, so the routing clause is its only guard.
+        Assert.Empty(X4Names(relayed).Violations);
+
+        const string Check = "        if (!Sound(slots, undefined))\n";
+        const string Import = "using Broiler.VM.Profile.JavaScript.Format;\n";
+
+        Assert.Contains(Check, handlers.Text, StringComparison.Ordinal);
+        Assert.Contains(Import, handlers.Text, StringComparison.Ordinal);
+
+        // A local function of the constructor, which the slot's `&Call` binds to before the wrapper Call.
+        var local = Replacing(handlers with
+        {
+            Text = handlers.Text.Replace(
+                Check,
+                "        [System.Runtime.InteropServices.UnmanagedCallersOnly]\n" +
+                "        static int Call(JsBaselineFrame* frame, int pc) =>\n" +
+                "            JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Call);\n\n" + Check,
+                StringComparison.Ordinal),
+        });
+
+        Assert.Collection(
+            X4Routing(local).Violations,
+            static message => Assert.Contains(
+                $"(a) {HandlerFile} declares the unmanaged entry point Call as a local function", message, StringComparison.Ordinal));
+
+        var named = X4Names(local).Violations;
+
+        Assert.Contains(named, static message => message.Contains(
+            $"(d) {HandlerFile} declares a local function named Call beside the wrapper of that name", StringComparison.Ordinal));
+
+        Assert.Contains(named, static message => message.Contains(
+            "(d) the static constructor of JsBaselineHandlers has `[System.Runtime.InteropServices.UnmanagedCallersOnly]staticintCall(",
+            StringComparison.Ordinal));
+
+        Assert.Equal(2, named.Count);
+
+        // An alias of the block mode at the head of the file, and a type of the table named JsOpcode.
+        Assert.Collection(
+            X4Routing(Replacing(handlers with
+            {
+                Text = handlers.Text.Replace(
+                    Import, Import + "using JsStepBlock = Broiler.VM.Profile.JavaScript.JsStepRelay;\n", StringComparison.Ordinal),
+            })).Violations,
+            static message => Assert.Contains(
+                $"(a) {HandlerFile} declares a using alias named JsStepBlock", message, StringComparison.Ordinal));
+
+        Assert.Collection(
+            X4Names(Replacing(WithMembers(handlers, "JsBaselineHandlers", "private static class JsOpcode { }"))).Violations,
+            static message => Assert.Contains(
+                $"(d) {HandlerFile} declares a class named JsOpcode", message, StringComparison.Ordinal));
+
+        // A step moved out of the table to a type of its own name elsewhere, which the wrapper's text then
+        // binds to, answering another opcode.
+        const string Relay = "src/Broiler.VM.Profile.JavaScript/JsStepCall.cs";
+
+        var moved = X4Names(
+            [
+                .. Replacing(WithoutMember(handlers, "JsBaselineHandlers", "StepCall")),
+                new NativeMappingRules.SourceUnit(
+                    Relay,
+                    "Broiler.VM.Profile.JavaScript",
+                    "namespace Broiler.VM.Profile.JavaScript;\n" +
+                    "internal readonly struct StepCall : IJsExecutionMode\n{\n" +
+                    "    public static JsOpcode Opcode => JsOpcode.Construct;\n}\n"),
+            ])
+            .Violations;
+
+        Assert.Contains(moved, static message => message.Contains(
+            $"(d) the wrapper Call runs Step<StepCall>, which {HandlerFile} does not declare", StringComparison.Ordinal));
+
+        Assert.Contains(moved, static message => message.Contains(
+            $"(d) {Relay} declares a struct named StepCall outside JsBaselineHandlers", StringComparison.Ordinal));
+
+        Assert.Equal(2, moved.Count);
+
+        // A type named JsOpcode in the profile's own namespace, which the table's `JsOpcode.X` binds to
+        // before the enumeration it imports.
+        const string Remap = "src/Broiler.VM.Profile.JavaScript/JsOpcodeRemap.cs";
+
+        Assert.Collection(
+            X4Names(
+                [
+                    .. Tree,
+                    new NativeMappingRules.SourceUnit(
+                        Remap,
+                        "Broiler.VM.Profile.JavaScript",
+                        "namespace Broiler.VM.Profile.JavaScript;\ninternal enum JsOpcode : byte\n{\n    Nop = 0x70,\n    Call = 0x00,\n}\n"),
+                ])
+                .Violations,
+            static message => Assert.Contains(
+                $"(d) {Remap} declares an enum named JsOpcode", message, StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// A write to a slot or to the published table that is not a slot assignment is reported, although every
+    /// slot assignment is as it was and the table's own check passes it.
+    /// </summary>
+    /// <remarks>
+    /// Each is an edit of the real handler table, as for clause (b), so none can go stale.
+    /// </remarks>
+    [Fact]
+    public void X4_A_Write_To_A_Slot_Or_The_Table_Beside_The_Slot_Assignments_Is_Reported()
+    {
+        var handlers = TreeFile(HandlerFile);
+
+        IReadOnlyList<string> Edited(string from, string to)
+        {
+            Assert.Contains(from, handlers.Text, StringComparison.Ordinal);
+            return X4Names(Replacing(handlers with { Text = handlers.Text.Replace(from, to, StringComparison.Ordinal) })).Violations;
+        }
+
+        static Action<string> Says(string content) => message =>
+            Assert.Contains(content, message, StringComparison.Ordinal);
+
+        const string Check = "        if (!Sound(slots, undefined))\n";
+
+        // Two slots exchanged by a deconstruction: the entries stay distinct, so the table's check passes it,
+        // and Step's opcode check turns every call through either into a defect.
+        Assert.Collection(
+            Edited(
+                Check,
+                "        (slots[(int)JsOpcode.Nop], slots[(int)JsOpcode.LoadUndefined]) =\n" +
+                "            (slots[(int)JsOpcode.LoadUndefined], slots[(int)JsOpcode.Nop]);\n\n" + Check),
+            Says(
+                "has `(slots[(int)JsOpcode.Nop],slots[(int)JsOpcode.LoadUndefined])=" +
+                "(slots[(int)JsOpcode.LoadUndefined],slots[(int)JsOpcode.Nop]);` among its slot assignments"));
+
+        // A slot moved one byte into its entry point: distinct, non-zero and not the refusing one, so no check
+        // at all fails, and a call through it does not fail safe.
+        Assert.Collection(
+            Edited(Check, "        slots[(int)JsOpcode.Call]++;\n\n" + Check),
+            Says("has `slots[(int)JsOpcode.Call]++;` among its slot assignments"));
+
+        // A copy routine over the array.
+        Assert.Collection(
+            Edited(Check, "        System.Array.Reverse(slots, (int)JsOpcode.Nop, 2);\n\n" + Check),
+            Says("has `System.Array.Reverse(slots,(int)JsOpcode.Nop,2);` among its slot assignments"));
+
+        // A write to the table after its check, which nothing reads: the constructor no longer ends as it must.
+        var late = Edited(
+            "        Table = (nint)table;\n",
+            "        table[(int)JsOpcode.Call] = table[(int)JsOpcode.Construct];\n        Table = (nint)table;\n");
+
+        Assert.Contains(late, static message => message.Contains(
+            "(d) the static constructor of JsBaselineHandlers does not end `", StringComparison.Ordinal));
+
+        // ...and the check it displaced from the end is read among the slot assignments, which is where the
+        // clause now finds it.
+        Assert.Contains(late, static message => message.Contains(
+            "has `if(!Sound(slots,undefined)){Table=0;return;}` among its slot assignments", StringComparison.Ordinal));
+
+        Assert.Equal(2, late.Count);
+
+        // The check writing the array it is handed, and passing it on.
+        const string Seen = "        var seen = new System.Collections.Generic.HashSet<nint>();\n";
+
+        Assert.Collection(
+            Edited(Seen, Seen + "        slots[(int)JsOpcode.Call] = slots[(int)JsOpcode.Construct];\n"),
+            Says("(d) Sound uses its slots in `slots[(int)JsOpcode.Call]`"));
+
+        Assert.Collection(
+            Edited(Seen, Seen + "        System.Array.Reverse(slots);\n"),
+            Says("(d) Sound uses its slots in `slots`"));
+    }
+
+    /// <summary>
+    /// A product use of the layout and of a template's fixed bytes whose names are spelled through unicode
+    /// escapes is reported.
+    /// </summary>
+    [Fact]
+    public void X4_A_Layout_Named_Through_An_Escape_Is_Reported()
+    {
+        const string At = "src/Broiler.VM.Profile.JavaScript/JsBaselineCensus.cs";
+        var witness = Witness("X4-a-layout-named-through-an-escape.cs.witness", At, "Broiler.VM.Profile.JavaScript");
+
+        // The witness names neither member as plain text, so a clause that parsed only the files whose text
+        // contains the names would never open it.
+        Assert.DoesNotMatch(@"\b(?:Layout|Lay|Fixed)\b", witness.Text);
+
+        var violations = X4Confinement([.. Tree, witness]).Violations;
+
+        Assert.Contains(violations, static message => message.Contains(
+            $"(c) {At} names Layout in Entries", StringComparison.Ordinal));
+
+        Assert.Contains(violations, static message => message.Contains(
+            $"(c) {At} names Fixed in Bytes", StringComparison.Ordinal));
+
+        Assert.Equal(2, violations.Count);
+    }
+
+    /// <summary>
     /// The rule reports its own vacuity rather than passing over an input it never found.
     /// </summary>
     [Fact]
@@ -944,10 +1156,20 @@ public sealed class NativeBaselineRuleTests
 
         Assert.DoesNotContain("AND NOT LAY", row.NonVacuousWhen, StringComparison.Ordinal);
 
-        // The row must say what the rule does not decide: it reads source, it does not pin the fallback
-        // constant the design keeps, it does not sweep the compositions, and it does not read the private
-        // helpers Lay is written with.
+        // Clause (d) reads the static constructor whole, so the row no longer says that a write beside the
+        // slot assignments is the table's self-check to catch; and the names clauses (a) and (d) are read by
+        // are held to their declarations, which the statement says.
+        Assert.Contains("The static constructor of JsBaselineHandlers is exactly", row.Statement, StringComparison.Ordinal);
+        Assert.Contains("declares nothing named JsNativeActivation or JsStepBlock", row.Statement, StringComparison.Ordinal);
+        Assert.Contains("every name read by its identifier's value", row.Statement, StringComparison.Ordinal);
+        Assert.DoesNotContain("a write through a span, a reference or a copy routine", row.NonVacuousWhen, StringComparison.Ordinal);
+        Assert.Contains("NOT THE TABLE AFTER IT IS PUBLISHED", row.NonVacuousWhen, StringComparison.Ordinal);
+
+        // The row must say what the rule does not decide: it reads source, it holds names to declarations
+        // without binding them, it does not pin the fallback constant the design keeps, it does not sweep the
+        // compositions, and it does not read the private helpers Lay is written with.
         Assert.Contains("STATED LIMITS", row.NonVacuousWhen, StringComparison.Ordinal);
+        Assert.Contains("DOES NOT BIND THEM", row.NonVacuousWhen, StringComparison.Ordinal);
         Assert.Contains("helper", row.NonVacuousWhen, StringComparison.Ordinal);
         Assert.Contains("PerOpcodeSteps", row.NonVacuousWhen, StringComparison.Ordinal);
         Assert.Contains("composition", row.NonVacuousWhen, StringComparison.Ordinal);
@@ -1307,6 +1529,14 @@ public sealed class NativeBaselineRuleTests
     /// an opcode with no wrapper, and an entry point named for no opcode are failures rather than clean
     /// results.
     /// </para>
+    /// <para>
+    /// <b>The names a wrapper is read by are held to the declarations they mean.</b> A wrapper is read as
+    /// text, and the same text binds to whatever declaration of its name is nearest: so the handler file may
+    /// declare nothing named <c>JsNativeActivation</c> or <c>JsStepBlock</c> - no nested type, member, local
+    /// or alias - nor an unmanaged entry point as a local function; and product source may declare no other
+    /// type, namespace or alias of either name than the activation class at the top of its file and one
+    /// block-mode struct at the top of a namespace of the profile.
+    /// </para>
     /// </remarks>
     internal static X4Answer X4Routing(IReadOnlyList<NativeMappingRules.SourceUnit> tree)
     {
@@ -1328,13 +1558,69 @@ public sealed class NativeBaselineRuleTests
         }
 
         var wrappers = Wrappers(handlers);
+        var handlerRoot = handlers.SyntaxTree.GetRoot();
 
-        foreach (var stray in handlers.SyntaxTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
+        foreach (var stray in handlerRoot.DescendantNodes().OfType<MethodDeclarationSyntax>()
                      .Where(method => IsUnmanagedEntry(method) && method.Parent != handlers))
         {
             violations.Add(
                 $"(a) {HandlerFile} declares the unmanaged entry point {stray.Identifier.ValueText} outside " +
                 "JsBaselineHandlers' own members, where this rule does not read its route");
+        }
+
+        // A NAME THE ROUTE IS READ BY MUST BE THE DECLARATION THE RULE MEANS. A wrapper is read as text, so
+        // a type, an alias or a member of the table named JsNativeActivation or JsStepBlock would be what
+        // the same text binds to, and an entry point declared as a local function is one a slot's address
+        // can name while no wrapper of the table is it.
+        foreach (var (declared, declaration) in DeclaredNames(handlerRoot)
+                     .Where(static pair => pair.Name is "JsNativeActivation" or BlockMode))
+        {
+            violations.Add(
+                $"(a) {HandlerFile} declares {KindOf(declaration)} named {declared}, so the JsNativeActivation.Step " +
+                $"and the {BlockMode} a wrapper names need not be the ones this rule reads");
+        }
+
+        foreach (var local in handlerRoot.DescendantNodes().OfType<LocalFunctionStatementSyntax>()
+                     .Where(static local => IsUnmanagedEntry(local.AttributeLists)))
+        {
+            violations.Add(
+                $"(a) {HandlerFile} declares the unmanaged entry point {local.Identifier.ValueText} as a local " +
+                "function, where a slot's address can name it and this rule does not read its route");
+        }
+
+        var profile = TreeFile(tree, HandlerFile)!.Assembly;
+        var blockModes = 0;
+
+        foreach (var (file, declared, declaration) in TypeNamesOutsideTheTable(tree)
+                     .Where(static found => found.Name is "JsNativeActivation" or BlockMode))
+        {
+            var topLevel = declaration.Parent is BaseNamespaceDeclarationSyntax or CompilationUnitSyntax;
+
+            if (declared is "JsNativeActivation" && topLevel && declaration is ClassDeclarationSyntax &&
+                string.Equals(file.RelativePath, ActivationFile, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (declared is BlockMode && topLevel && declaration is StructDeclarationSyntax &&
+                string.Equals(file.Assembly, profile, StringComparison.Ordinal))
+            {
+                blockModes++;
+                continue;
+            }
+
+            violations.Add(
+                $"(a) {file.RelativePath} declares {KindOf(declaration)} named {declared}, and the one a wrapper means is " +
+                (declared is BlockMode
+                    ? $"a struct at the top of a namespace of {profile}"
+                    : $"the class at the top of {ActivationFile}"));
+        }
+
+        if (blockModes != 1)
+        {
+            violations.Add(
+                $"(a) product source declares {blockModes} structs named {BlockMode} at the top of a namespace of {profile}, " +
+                "so the block mode a wrapper names is not one declaration this rule can point at");
         }
 
         if (wrappers.Length == 0)
@@ -1614,7 +1900,8 @@ public sealed class NativeBaselineRuleTests
     /// the format assembly. <c>Lay</c> hands out the same entries one at a time, so a member that walks it
     /// is a <c>Layout</c> under another name. Every simple name spelled any of the three, outside comments,
     /// is a use - through a static import, in a property pattern - whatever it resolves to, which is the
-    /// conservative direction.
+    /// conservative direction. Every product file is parsed and the name compared is the identifier's value,
+    /// so a name spelled through a unicode escape is read as the name it is.
     /// </para>
     /// <para>
     /// <b>The declaring members are allowed and nothing else beside them</b>: <c>Layout</c>, which walks
@@ -1665,9 +1952,11 @@ public sealed class NativeBaselineRuleTests
             }
         }
 
+        // EVERY PRODUCT FILE IS PARSED, and none is passed over for not containing the names as text: a name
+        // spelled through a unicode escape, or with a formatting character inside it, is the same name to
+        // the compiler and to the parsed identifier's value, and a filter over the raw text sees neither.
         foreach (var file in tree.Where(static file =>
-                     !file.Assembly.StartsWith("Broiler.VM.Composition.", StringComparison.Ordinal) &&
-                     ConfinedName.IsMatch(file.Text)))
+                     !file.Assembly.StartsWith("Broiler.VM.Composition.", StringComparison.Ordinal)))
         {
             var inScan = string.Equals(file.RelativePath, ScanFile, StringComparison.Ordinal);
             var inLowering = string.Equals(file.Assembly, LoweringAssembly, StringComparison.Ordinal);
@@ -1726,6 +2015,21 @@ public sealed class NativeBaselineRuleTests
     /// opcode; each wrapper passes <c>JsOpcode.X</c>; and each <c>StepX</c> a wrapper runs is declared in
     /// the handler file with an <c>Opcode</c> answering <c>JsOpcode.X</c>.
     /// </para>
+    /// <para>
+    /// <b>The names are held to the declarations they mean.</b> A slot's <c>&amp;X</c> binds to a local or a
+    /// local function of the constructor before the wrapper, <c>JsOpcode.X</c> to a type or alias named
+    /// <c>JsOpcode</c> nearer than the imported enumeration, and <c>Step&lt;StepX&gt;</c> to a type of that
+    /// name wherever the table's own member is missing. So the handler file declares nothing named
+    /// <c>JsOpcode</c>, nothing named for an opcode but that opcode's wrapper, and no <c>StepX</c> but as a
+    /// member of the table itself; and product source declares no other <c>JsOpcode</c> than the enumeration
+    /// and no <c>StepX</c> at all.
+    /// </para>
+    /// <para>
+    /// <b>The static constructor is read whole.</b> A slot assignment is not the only statement that can
+    /// write a slot, so the constructor is exactly the refusing entry, the array and its fill, then one slot
+    /// assignment per statement, then the check, the copy and the publication; and <c>Sound</c>, the check,
+    /// reads the array's length and its elements and does nothing else with it.
+    /// </para>
     /// </remarks>
     internal static X4Answer X4Names(IReadOnlyList<NativeMappingRules.SourceUnit> tree)
     {
@@ -1740,7 +2044,61 @@ public sealed class NativeBaselineRuleTests
             return new(violations, decided);
         }
 
-        var steps = StepStructs(handlers);
+        // THE STEPS A WRAPPER'S TYPE ARGUMENT MEANS ARE THE TABLE'S OWN MEMBERS, because a nested type is what
+        // the name binds to first; one nested deeper, or declared anywhere else, is one the same text could
+        // reach instead once the member is gone, so it is reported rather than read.
+        var steps = handlers.Members.OfType<BaseTypeDeclarationSyntax>()
+            .Where(type => IsStepName(type.Identifier.ValueText, opcodes))
+            .GroupBy(static type => type.Identifier.ValueText, StringComparer.Ordinal)
+            .ToDictionary(static group => group.Key, static group => group.ToArray(), StringComparer.Ordinal);
+
+        var handlerRoot = handlers.SyntaxTree.GetRoot();
+
+        // A NAME A SLOT OR A WRAPPER IS READ BY MUST BE THE DECLARATION THE RULE MEANS. The slot's `&X` binds
+        // to a local or a local function of the static constructor before the wrapper X, and `JsOpcode.X` to
+        // a type or an alias of the table named JsOpcode before the opcode enumeration, so any such
+        // declaration is reported: a slot could hold another entry point, or be indexed and expected by
+        // another value, with every text this clause compares unchanged.
+        foreach (var (declared, declaration) in DeclaredNames(handlerRoot))
+        {
+            if (declared is "JsOpcode")
+            {
+                violations.Add(
+                    $"(d) {HandlerFile} declares {KindOf(declaration)} named JsOpcode, so the opcode a slot is indexed by " +
+                    "and a wrapper expects need not be JsOpcode's");
+            }
+            else if (opcodes.Contains(declared) &&
+                     !(declaration is MethodDeclarationSyntax method && method.Parent == handlers && IsUnmanagedEntry(method)))
+            {
+                violations.Add(
+                    $"(d) {HandlerFile} declares {KindOf(declaration)} named {declared} beside the wrapper of that name, so " +
+                    $"the `&{declared}` a slot holds need not be that wrapper");
+            }
+            else if (IsStepName(declared, opcodes) && declaration.Parent != handlers)
+            {
+                violations.Add(
+                    $"(d) {HandlerFile} declares {KindOf(declaration)} named {declared} other than as a member of " +
+                    $"JsBaselineHandlers itself, so the {declared} a wrapper runs need not be the one this rule reads");
+            }
+        }
+
+        foreach (var (file, declared, declaration) in TypeNamesOutsideTheTable(tree))
+        {
+            if (declared is "JsOpcode" &&
+                !(declaration is EnumDeclarationSyntax { Parent: BaseNamespaceDeclarationSyntax or CompilationUnitSyntax } &&
+                  string.Equals(file.RelativePath, OpcodeFile, StringComparison.Ordinal)))
+            {
+                violations.Add(
+                    $"(d) {file.RelativePath} declares {KindOf(declaration)} named JsOpcode, and the one a slot is indexed " +
+                    $"by and a wrapper expects is the enumeration at the top of {OpcodeFile}");
+            }
+            else if (IsStepName(declared, opcodes))
+            {
+                violations.Add(
+                    $"(d) {file.RelativePath} declares {KindOf(declaration)} named {declared} outside JsBaselineHandlers, so " +
+                    $"the {declared} a wrapper runs need not be the one this rule reads");
+            }
+        }
 
         foreach (var wrapper in Wrappers(handlers))
         {
@@ -1811,14 +2169,117 @@ public sealed class NativeBaselineRuleTests
 
         var assigned = new Dictionary<string, int>(StringComparer.Ordinal);
 
-        var slots = handlers.SyntaxTree.GetRoot().DescendantNodes().OfType<AssignmentExpressionSyntax>()
-            .Where(static assignment => assignment.Left is ElementAccessExpressionSyntax
-            {
-                Expression: IdentifierNameSyntax { Identifier.ValueText: "slots" },
-            })
+        // THE STATIC CONSTRUCTOR IS READ WHOLE, because a slot assignment is not the only statement that can
+        // write a slot: an exchange by deconstruction, an increment, a copy routine and a write to the table
+        // after its check all leave every assignment this clause reads as it was, and the table's own check
+        // passes each of them while the entries stay distinct. So the constructor is exactly the refusing
+        // entry, the array and its fill, then one slot assignment per statement, then the check, the copy
+        // and the publication - and Sound, the check, only reads the array it is handed.
+        var constructors = handlers.Members.OfType<ConstructorDeclarationSyntax>()
+            .Where(static constructor => constructor.Modifiers.Any(SyntaxKind.StaticKeyword))
             .ToArray();
 
-        if (slots.Length == 0)
+        var statements = constructors is [{ Body: { } body }] ? body.Statements : default;
+
+        if (constructors is not [{ Body: not null }])
+        {
+            violations.Add(
+                $"(d) JsBaselineHandlers declares {constructors.Length} static constructors, or one without a block body, " +
+                "so this rule cannot read the one place its slots are filled, checked and published");
+        }
+
+        var whole = statements.Count >= TableOpening.Length + TableClosing.Length;
+
+        var opens = whole && statements.Take(TableOpening.Length).Select(Tokens)
+            .SequenceEqual(TableOpening.Select(Squeezed), StringComparer.Ordinal);
+
+        var closes = whole && statements.Skip(statements.Count - TableClosing.Length).Select(Tokens)
+            .SequenceEqual(TableClosing.Select(Squeezed), StringComparer.Ordinal);
+
+        if (constructors is [{ Body: not null }] && !opens)
+        {
+            violations.Add(
+                "(d) the static constructor of JsBaselineHandlers does not begin `" + string.Join(" ", TableOpening) +
+                "`, so the slots this rule reads need not be the array the table is filled from");
+        }
+
+        if (constructors is [{ Body: not null }] && !closes)
+        {
+            violations.Add(
+                "(d) the static constructor of JsBaselineHandlers does not end `" + string.Join(" ", TableClosing) +
+                "`, so what it publishes need not be the slots this rule reads, checked by Sound and copied once");
+        }
+
+        var slots = new List<AssignmentExpressionSyntax>();
+
+        foreach (var statement in whole
+                     ? statements.Skip(TableOpening.Length).Take(statements.Count - TableOpening.Length - TableClosing.Length)
+                     : [])
+        {
+            if (statement is ExpressionStatementSyntax
+                {
+                    Expression: AssignmentExpressionSyntax
+                    {
+                        Left: ElementAccessExpressionSyntax { Expression: IdentifierNameSyntax { Identifier.ValueText: "slots" } },
+                    } assignment,
+                })
+            {
+                slots.Add(assignment);
+                continue;
+            }
+
+            violations.Add(
+                $"(d) the static constructor of JsBaselineHandlers has `{Tokens(statement)}` among its slot assignments, " +
+                "which is not one slot assigned, so a slot or the table can be written where this rule does not read it");
+        }
+
+        if (opens && closes && slots.Count == statements.Count - TableOpening.Length - TableClosing.Length)
+        {
+            decided.Add("the static constructor");
+        }
+
+        var sounds = handlers.Members.OfType<MethodDeclarationSyntax>()
+            .Where(static method => string.Equals(method.Identifier.ValueText, "Sound", StringComparison.Ordinal))
+            .ToArray();
+
+        if (sounds is not [{ ParameterList.Parameters: [{ Identifier.ValueText: "slots" }, _] } sound])
+        {
+            violations.Add(
+                $"(d) JsBaselineHandlers declares {sounds.Length} methods named Sound, or one whose first of two parameters " +
+                "is not slots, so this rule cannot read that the check the table is published after only reads it");
+        }
+        else
+        {
+            var reads = true;
+
+            foreach (var use in sound.DescendantNodes().OfType<IdentifierNameSyntax>()
+                         .Where(static name => string.Equals(name.Identifier.ValueText, "slots", StringComparison.Ordinal)))
+            {
+                var read = use.Parent switch
+                {
+                    MemberAccessExpressionSyntax { Name.Identifier.ValueText: "Length" } length =>
+                        length.Expression == use && !IsWrittenThrough(length),
+                    ElementAccessExpressionSyntax element => element.Expression == use && !IsWrittenThrough(element),
+                    _ => false,
+                };
+
+                if (!read)
+                {
+                    reads = false;
+
+                    violations.Add(
+                        $"(d) Sound uses its slots in `{Tokens(use.Parent!)}`, which is not a read of their length or of " +
+                        "one of them, so the check the table is published after could change the slots it checks");
+                }
+            }
+
+            if (reads)
+            {
+                decided.Add("Sound reads the slots");
+            }
+        }
+
+        if (slots.Count == 0)
         {
             violations.Add($"(d) {HandlerFile} assigns no element of slots, so this rule found no slot to tie to a wrapper");
         }
@@ -1886,7 +2347,7 @@ public sealed class NativeBaselineRuleTests
             }
         }
 
-        var unassigned = opcodes.Where(opcode => slots.Length > 0 && !assigned.ContainsKey(opcode)).ToArray();
+        var unassigned = opcodes.Where(opcode => slots.Count > 0 && !assigned.ContainsKey(opcode)).ToArray();
 
         if (unassigned.Length > 0)
         {
@@ -2034,9 +2495,144 @@ public sealed class NativeBaselineRuleTests
     private static MethodDeclarationSyntax[] Wrappers(ClassDeclarationSyntax handlers) =>
         handlers.Members.OfType<MethodDeclarationSyntax>().Where(IsUnmanagedEntry).ToArray();
 
-    private static bool IsUnmanagedEntry(MethodDeclarationSyntax method) =>
-        method.AttributeLists.SelectMany(static list => list.Attributes)
-            .Any(static attribute => UnmanagedEntry.IsMatch(attribute.Name.ToString()));
+    private static bool IsUnmanagedEntry(MethodDeclarationSyntax method) => IsUnmanagedEntry(method.AttributeLists);
+
+    /// <summary>Whether attribute lists carry the unmanaged-entry attribute, its name read by identifier value.</summary>
+    private static bool IsUnmanagedEntry(SyntaxList<AttributeListSyntax> lists) =>
+        lists.SelectMany(static list => list.Attributes)
+            .Any(static attribute => UnmanagedEntry.IsMatch(string.Join(
+                ".",
+                attribute.Name.DescendantTokens()
+                    .Where(static token => token.IsKind(SyntaxKind.IdentifierToken))
+                    .Select(static token => token.ValueText))));
+
+    /// <summary>Whether a name is <c>Step</c> followed by the name of a declared opcode.</summary>
+    private static bool IsStepName(string name, IReadOnlySet<string> opcodes) =>
+        name.Length > "Step".Length &&
+        name.StartsWith("Step", StringComparison.Ordinal) &&
+        opcodes.Contains(name["Step".Length..]);
+
+    /// <summary>
+    /// Every name declared at or below a node, with its declaration: namespaces, types, members, locals,
+    /// local functions, parameters, type parameters, pattern and query variables, and using and extern aliases.
+    /// </summary>
+    /// <remarks>
+    /// Each name is its identifier's value, so one spelled through an escape is the name it spells. A label
+    /// and a tuple element's name are left out, because neither is what a simple name in an expression or a
+    /// type binds to.
+    /// </remarks>
+    private static IEnumerable<(string Name, SyntaxNode Declaration)> DeclaredNames(SyntaxNode root) =>
+        root.DescendantNodesAndSelf().SelectMany(static node => NamesOf(node).Select(name => (name, node)));
+
+    /// <summary>The names one node declares: none, one, or each part of a namespace's dotted name.</summary>
+    private static IEnumerable<string> NamesOf(SyntaxNode node)
+    {
+        if (node is BaseNamespaceDeclarationSyntax space)
+        {
+            foreach (var part in space.Name.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>())
+            {
+                yield return part.Identifier.ValueText;
+            }
+
+            yield break;
+        }
+
+        {
+            SyntaxToken? identifier = node switch
+            {
+                BaseTypeDeclarationSyntax type => type.Identifier,
+                DelegateDeclarationSyntax callable => callable.Identifier,
+                MethodDeclarationSyntax method => method.Identifier,
+                LocalFunctionStatementSyntax local => local.Identifier,
+                PropertyDeclarationSyntax property => property.Identifier,
+                EventDeclarationSyntax raised => raised.Identifier,
+                EnumMemberDeclarationSyntax member => member.Identifier,
+                VariableDeclaratorSyntax variable => variable.Identifier,
+                ParameterSyntax parameter => parameter.Identifier,
+                TypeParameterSyntax typeParameter => typeParameter.Identifier,
+                SingleVariableDesignationSyntax designation => designation.Identifier,
+                ForEachStatementSyntax loop => loop.Identifier,
+                CatchDeclarationSyntax caught => caught.Identifier,
+                FromClauseSyntax source => source.Identifier,
+                LetClauseSyntax bound => bound.Identifier,
+                JoinClauseSyntax joined => joined.Identifier,
+                JoinIntoClauseSyntax grouped => grouped.Identifier,
+                QueryContinuationSyntax continued => continued.Identifier,
+                ExternAliasDirectiveSyntax externAlias => externAlias.Identifier,
+                UsingDirectiveSyntax { Alias: { } usingAlias } => usingAlias.Name.Identifier,
+                _ => null,
+            };
+
+            if (identifier is { ValueText.Length: > 0 } token)
+            {
+                yield return token.ValueText;
+            }
+        }
+    }
+
+    /// <summary>What kind of declaration a node is, as a message names it.</summary>
+    private static string KindOf(SyntaxNode declaration) => declaration switch
+    {
+        BaseNamespaceDeclarationSyntax => "a namespace",
+        UsingDirectiveSyntax => "a using alias",
+        ExternAliasDirectiveSyntax => "an extern alias",
+        ClassDeclarationSyntax => "a class",
+        StructDeclarationSyntax => "a struct",
+        RecordDeclarationSyntax => "a record",
+        InterfaceDeclarationSyntax => "an interface",
+        EnumDeclarationSyntax => "an enum",
+        DelegateDeclarationSyntax => "a delegate",
+        MethodDeclarationSyntax => "a method",
+        LocalFunctionStatementSyntax => "a local function",
+        PropertyDeclarationSyntax => "a property",
+        EventDeclarationSyntax => "an event",
+        EnumMemberDeclarationSyntax => "an enum member",
+        VariableDeclaratorSyntax { Parent.Parent: BaseFieldDeclarationSyntax } => "a field",
+        VariableDeclaratorSyntax => "a local",
+        ParameterSyntax => "a parameter",
+        TypeParameterSyntax => "a type parameter",
+        _ => "a variable",
+    };
+
+    /// <summary>
+    /// Every namespace, type and alias product source declares outside the handler file, with its file and
+    /// its name - the declarations a name the handler file spells can bind to from elsewhere.
+    /// </summary>
+    /// <remarks>
+    /// Only namespaces, type declarations and compilation units are descended into, because nothing below a
+    /// member declares a namespace, a type or an alias.
+    /// </remarks>
+    private static IEnumerable<(NativeMappingRules.SourceUnit File, string Name, SyntaxNode Declaration)> TypeNamesOutsideTheTable(
+        IReadOnlyList<NativeMappingRules.SourceUnit> tree) =>
+        tree.Where(static file =>
+                !file.Assembly.StartsWith("Broiler.VM.Composition.", StringComparison.Ordinal) &&
+                !string.Equals(file.RelativePath, HandlerFile, StringComparison.Ordinal))
+            .SelectMany(static file => ParsedRoot(file)
+                .DescendantNodesAndSelf(static node =>
+                    node is CompilationUnitSyntax or BaseNamespaceDeclarationSyntax or TypeDeclarationSyntax)
+                .Where(static node => node is BaseTypeDeclarationSyntax or DelegateDeclarationSyntax
+                    or BaseNamespaceDeclarationSyntax or UsingDirectiveSyntax { Alias: not null } or ExternAliasDirectiveSyntax)
+                .SelectMany(node => NamesOf(node).Select(name => (file, name, node))));
+
+    /// <summary>The statements the handler table's static constructor begins with, in order.</summary>
+    private static readonly string[] TableOpening =
+    [
+        "var undefined = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&Undefined;",
+        "var slots = new nint[JsBaselineAbi.HandlerSlots];",
+        "System.Array.Fill(slots, undefined);",
+    ];
+
+    /// <summary>The statements the handler table's static constructor ends with, after its slot assignments.</summary>
+    private static readonly string[] TableClosing =
+    [
+        "if (!Sound(slots, undefined)) { Table = 0; return; }",
+        "var table = (nint*)System.Runtime.InteropServices.NativeMemory.AllocZeroed((nuint)(JsBaselineAbi.HandlerSlots * sizeof(nint)));",
+        "for (var index = 0; index < slots.Length; index++) { table[index] = slots[index]; }",
+        "Table = (nint)table;",
+    ];
+
+    /// <summary>A statement's text with its whitespace removed, as <see cref="Tokens"/> answers it.</summary>
+    private static string Squeezed(string text) => string.Concat(text.Where(static c => !char.IsWhiteSpace(c)));
 
     /// <summary>Every type in the handler file named <c>Step</c> and something, by name.</summary>
     private static Dictionary<string, BaseTypeDeclarationSyntax[]> StepStructs(ClassDeclarationSyntax handlers) =>
@@ -2184,9 +2780,6 @@ public sealed class NativeBaselineRuleTests
         (TemplatesFile, "JsNativeTemplate", "Length", "Fixed"),
     ];
 
-    /// <summary>A file that may name one of the names clause (c) confines, before it is parsed.</summary>
-    private static readonly Regex ConfinedName = new(@"\b(?:Layout|Lay|Fixed)\b", RegexOptions.Compiled);
-
     /// <summary>The name a member declaration is known by, for the members X4's inputs are edited through.</summary>
     private static string? MemberKey(MemberDeclarationSyntax member) => member switch
     {
@@ -2210,8 +2803,24 @@ public sealed class NativeBaselineRuleTests
     private static string Tokens(SyntaxNode node) =>
         string.Concat(node.DescendantTokens().Select(static token => token.Text));
 
+    /// <summary>A file's parsed root, parsed once per file object.</summary>
+    /// <remarks>
+    /// Keyed by the object and not by its value, so an edited copy made with <c>with</c> is parsed on its
+    /// own; clause (c) and the declaration sweeps read every product file, and each rejecting direction
+    /// hands them the same tree with one file replaced.
+    /// </remarks>
     private static SyntaxNode ParsedRoot(NativeMappingRules.SourceUnit file) =>
-        AssuranceSources.Parse(file.Text, file.RelativePath).GetRoot();
+        ParsedRoots.GetValue(file, static unit =>
+            ProductTrees.TryGetValue(unit.RelativePath, out var product) && ReferenceEquals(product.Text, unit.Text)
+                ? product.Tree.GetRoot()
+                : AssuranceSources.Parse(unit.Text, unit.RelativePath).GetRoot());
+
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<NativeMappingRules.SourceUnit, SyntaxNode>
+        ParsedRoots = new();
+
+    /// <summary>The product files the assurance sweep has already parsed, by path, so the unedited ones are not parsed twice.</summary>
+    private static readonly Dictionary<string, AssuranceSourceFile> ProductTrees =
+        AssuranceSources.Files.ToDictionary(static file => file.RelativePath, StringComparer.Ordinal);
 
     private static NativeMappingRules.SourceUnit? TreeFile(IReadOnlyList<NativeMappingRules.SourceUnit> tree, string path) =>
         tree.FirstOrDefault(file => string.Equals(file.RelativePath, path, StringComparison.Ordinal));
@@ -2377,11 +2986,18 @@ public sealed class NativeBaselineRuleTests
     /// place that decides it, so <c>(current) = x</c> and <c>(current, _) = (x, 0)</c> are writes and
     /// not reads - a read is what the step is allowed, so a write mistaken for one would pass there.
     /// </remarks>
-    private static bool IsWrite(IdentifierNameSyntax identifier)
-    {
-        SyntaxNode target = identifier.Parent is MemberAccessExpressionSyntax access && access.Name == identifier
+    private static bool IsWrite(IdentifierNameSyntax identifier) =>
+        IsWrittenThrough(identifier.Parent is MemberAccessExpressionSyntax access && access.Name == identifier
             ? access
-            : identifier;
+            : identifier);
+
+    /// <summary>
+    /// Whether an expression is assigned to, deconstructed into, stepped, passed by reference, referenced or
+    /// has its address taken, walked up as <see cref="IsWrite"/> walks.
+    /// </summary>
+    private static bool IsWrittenThrough(ExpressionSyntax expression)
+    {
+        SyntaxNode target = expression;
 
         while (true)
         {
