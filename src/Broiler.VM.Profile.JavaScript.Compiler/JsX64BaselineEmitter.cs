@@ -153,7 +153,11 @@ internal static class JsX64BaselineEmitter
     /// <b>A LAYOUT THAT CANNOT FIT IS REFUSED BEFORE IT IS BUILT.</b> No template a layout names is
     /// shorter than two bytes, so a layout of more entries than half the ceiling's bytes would take the
     /// emission past the ceiling whatever it holds; refusing it then answers what writing it would have
-    /// answered, and keeps what a unit allocates bounded by the ceiling rather than by its bytecode.
+    /// answered. What that bounds by the ceiling is the layout and the positions and sites kept beside
+    /// it. It does not bound the plan: <see cref="JsBaselineBlocks.TryPlan"/> has already allocated a
+    /// mark per byte of the unit, its landings and its blocks by the time the layout's length is known,
+    /// and those are bounded by the unit's bytecode, which the plan refuses past the format's code
+    /// ceiling before it allocates any of them.
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=FF794B
