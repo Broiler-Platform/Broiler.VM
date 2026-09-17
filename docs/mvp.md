@@ -502,7 +502,13 @@ in bundle VM-5-002 section 7.2, under "After the remedy". The paragraph above co
 ambient meter's lookup without a failing witness; the lookup has three guards - the context comparison,
 the scope comparison and the refusal to hold a suppressed lookup - and the scope comparison had no
 witness either. In the bundle's re-collection on the remedy head each fails a test written for it (T19,
-T25 and T20), and the bundle reads its rule's correctness item as held there. The reading still rests on
+T25 and T20), and the bundle reads its rule's correctness item as held there. *Corrected 2026-09-17, after
+a review of the re-collection:* those witnesses fail through a lookup on one thread, and the table naming
+those tests was fixed during development and committed after the runs. T7 and T18, the two-thread tests
+the first collection named for the context comparison and the suppressed lookup, still pass under the same
+witnesses on the remedy head, so across threads neither guard has a failing witness: that a second thread
+is never answered from the first thread's lookup rests on the answer being held per thread (the bundle's
+section 5.14, item 9, and section 7.2). The reading still rests on
 the same argument and on sampled concurrent runs, and it is still not a proof; the route, and the
 question nobody has ruled on, are unchanged.
 

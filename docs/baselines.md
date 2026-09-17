@@ -264,6 +264,15 @@ of a value now, and the bench host carries an `independence` check - the same wo
 start of a run and again at the end - which fails the run if per-operation cost grows with the
 number of runtimes created. Witness: `A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind`.
 
+*Corrected 2026-09-17, after the owner-directed remedy.* Since `965e6ad` that test no longer witnesses
+this fix. Its capability leaves the execution context unchanged, so `VmRuntime.LeaveCapability` now puts
+back the context the capability was entered from and returns, and never reaches the depth write-back a
+regression of this fix would change: with a depth of zero stored instead of released, the test passes.
+The witness is now `A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context`,
+whose capability returns under a different context and so takes the write-back. Bundle VM-5-002's
+re-collection shows it as the one test that fails under that defect, as its witness W20 and as control 16
+run by hand. The fix is unchanged, and so is every figure in this section.
+
 Neither defect is a performance finding that VM-5 chose to act on. Both are correctness findings:
 a bound that does not bound what it says, and a resource that is never released.
 
