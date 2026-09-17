@@ -9524,3 +9524,38 @@ named above, and no human has read a line.
 
 **Authority and date.** Commit `fd3a2aa`; bundle [JSB-11-001](evidence/jsb-11-001/README.md) as extended
 on 2026-09-15, sections 3, 4, 8 and 9. 2026-09-15.
+
+---
+
+### JSC-225
+
+**Where:** the cost to core evidence that [JSC-21](#jsc-21) records of adopting the host component's
+assurance system; and, outside this profile, section 8 of core bundle
+[VM-5-002](../../../docs/evidence/vm-5-002/README.md#8-validity), which carries the record, and its section
+5.15, which lists it.
+
+**What the plan said.** [JSC-21](#jsc-21) records one cost to the core's evidence of adopting the host
+component's assurance system. A run of the architecture suite from profile work rewrote a line in the core's
+most recent evidence bundle, and that change was reverted rather than committed. Nothing in this profile's
+records said that a committed profile change could expire a core bundle.
+
+**What replaced it.** A profile commit can expire a core bundle, and the change that expires it stays in
+the tree rather than being reverted. `CODE-ASSURANCE.md` and `assurance.manifest.json` are generated over
+this profile's annotated members as well as the core's, and rule J5 fails a tree in which they differ from
+what their generator writes, so a commit that adds or changes such a member regenerates them. A core bundle whose
+`hashes.txt` names them is then expired by its own recertification trigger. On 2026-09-17 commit `ddf706f`,
+which adds `JsBaselineBlocks` to this profile's format assembly, did this to bundle VM-5-002, the core
+bundle of the core meter's fuel pre-admission (route MVP-9). The repository owner accepted that expiry on
+the same day, before the commit. The owner asked for the expiry to be recorded inside that bundle, with
+this entry pointing to it, and not in the core's ledger, whose update rule 6 keeps profile work out of it.
+The bundle's dated paragraph names the commit. It shows that, of the tracked files the bundle hashes, the
+commit changed only those two generated files, and that it changed no file of the core's runtime,
+abstractions or binary assemblies. It also says that the bundle's `hashes.txt` is left as it was.
+
+**What this entry does NOT do.** It cites no result of bundle VM-5-002 and copies no figure from it. It
+re-collects and recertifies nothing, moves no row of either ledger and accepts nothing. It does not edit
+[JSC-21](#jsc-21), whose account of the rewritten line stays true. No human has read a line.
+
+**Authority and date.** Bundle [VM-5-002](../../../docs/evidence/vm-5-002/README.md), the dated paragraph
+of 2026-09-17 in section 8 and item 5 of section 5.15; the repository owner's acceptance of the expiry, of
+the same date. 2026-09-17.

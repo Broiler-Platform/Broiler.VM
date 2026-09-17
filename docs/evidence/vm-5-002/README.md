@@ -73,6 +73,12 @@ the `c_call` shape in the native form**, with no remedy: nothing may describe th
 that cell. The rulings move no mark, re-run nothing and accept no milestone or change, and the rule is
 still not met as a whole (section 7.4).
 
+*Added 2026-09-17, this bundle's expiry:* commit `ddf706f`, which adds the JavaScript profile's baseline
+block partition to that profile's format assembly, **expired this bundle** by the first recertification
+trigger of section 8, because it regenerated `CODE-ASSURANCE.md` and `assurance.manifest.json`, which
+`hashes.txt` names. The metering path is unchanged. The owner accepted the expiry on 2026-09-17, before that
+commit, and nothing here is re-collected or re-read (section 8).
+
 ---
 
 ## Field coverage
@@ -88,7 +94,7 @@ The status ledger's section 3 fixes the fields a bundle must carry.
 | Procedure | Section 5 | 5.1 to 5.3 as `dbc8d37` committed them; 5.4 to 5.8 written at completion; 5.9 lists what later commits changed; 5.10 and 5.11 as `d5014f8` committed them, before the re-collection, with two dated notes in 5.10; 5.12 to 5.14 written after the re-collection; 5.15 lists what later commits changed in the re-collection's text |
 | Outputs | Section 6 | Written; 6.9 and 6.10 for the re-collection |
 | Decision | Section 7 | Written; 7.3 is the first collection's verdict and 7.4 the re-collection's, with the owner's dated rulings of 2026-09-17 on items 1 and 2 |
-| Validity | Section 8 | Written |
+| Validity | Section 8 | Written; with a dated note of 2026-09-17 naming the commit that expired this bundle |
 
 Section 9 carries the exclusions.
 
@@ -1027,6 +1033,16 @@ retained transcript, and git holds the text each one replaced.
    and the field coverage table gain a dated note or a pointer to it. No verdict mark changes. `hashes.txt`
    was regenerated with `measurement/make-hashes.py` and no row of it changed, because this README is the
    only file of this directory the correction touches and `hashes.txt` does not hash it.
+5. **The commit that expired this bundle is named.** This is not a finding of the review either: on
+   2026-09-17, before the JavaScript profile's per-block baseline work was committed, the owner accepted
+   that its commits expire this bundle through files `hashes.txt` names, and asked for the expiry to be
+   noted here, naming the commit that expired it and stating that the metering path is unchanged. Section 8
+   gains that note as a dated paragraph naming `ddf706f`, and the paragraph above section 1 and the field
+   coverage table gain a dated note or a pointer to it. No verdict mark changes. **`hashes.txt` could not be
+   regenerated, and no row of it changed**: `measurement/make-hashes.py`, run from the repository root with
+   this correction in place, refused because `CODE-ASSURANCE.md` differs between `16e3d6d` and the working
+   copy, and wrote nothing (section 8). This README is the only file of this directory the correction
+   touches, and `hashes.txt` does not hash it.
 
 ---
 
@@ -1700,6 +1716,38 @@ the recertification that regenerated `hashes.txt` against the remedy head, and t
 commit on. Corrections made after it are listed in section 5.15: the first of them to change a hashed file
 changed `measurement/make-hashes.py` again, to hash the bench host's sources, and regenerated `hashes.txt`
 with it.
+
+*Added 2026-09-17, after this bundle expired:* **commit `ddf706f` expired this bundle, by the first trigger
+above, through two generated files `hashes.txt` names.** That commit, of 2026-09-17, adds `JsBaselineBlocks`,
+the JavaScript profile's statement of its baseline block partition, to that profile's format assembly, with
+checks of it, and regenerates the component's generated review records `CODE-ASSURANCE.md`,
+`HUMAN_REVIEW.md` and `assurance.manifest.json`. The first section of `hashes.txt` names the first and the
+last of those. Every row of the first three sections of `hashes.txt`, which name tracked files, equals the
+digest of its file at `75ce956`, the parent of `ddf706f`. At `ddf706f` every one of those rows still does
+except the rows of `CODE-ASSURANCE.md` and `assurance.manifest.json`. No commit from the remedy head
+`16e3d6d` to `75ce956` changes a file those sections name. So `ddf706f` is the first commit since the remedy
+head to change a tracked file `hashes.txt` names, and this bundle is expired by the first trigger from that
+commit on.
+
+**The metering path is unchanged.** `git diff 16e3d6d ddf706f -- src/Broiler.VM.Runtime` prints nothing.
+So in source the meter, the pre-admission table, the budget levels, the ambient meter's resolution, the
+step-end settles and the capability boundary's restore are those of the remedy head, which the
+re-collection ran. The fixture executor's file and the bench host's sources are among the rows that still
+match at `ddf706f`. `git diff 16e3d6d ddf706f -- src/Broiler.VM.Abstractions src/Broiler.VM.Binary` prints
+nothing either, so the core contract version and the reason-registry revision are unchanged. No change that
+commit makes hits any other trigger in the list above.
+
+**The owner accepted this expiry on 2026-09-17, before `ddf706f` was committed.** The owner accepted it as
+a consequence of the JavaScript profile's per-block commits, which change files `hashes.txt` names, and
+asked for it to be noted in this bundle, with that profile's correction JSC-225 pointing here, and not in
+the core ledger, whose update rule 6 keeps profile work out of it. **Nothing is re-collected, and
+`hashes.txt` is not regenerated against a later head.** Its rows go on giving the digests of the files at
+the remedy head, and no figure, verdict or owner ruling of this bundle is re-read against `ddf706f` or any
+later commit. `measurement/make-hashes.py`, run from the repository root with this paragraph in place and
+the digests of the fifth section of `hashes.txt` as its argument, refuses with `REFUSED: CODE-ASSURANCE.md
+differs between 16e3d6d and the working copy` and writes nothing. That refusal is the script's guard against
+hashing a file changed since the retained commit, and it reports this expiry. So the correction that adds
+this paragraph leaves `hashes.txt` unchanged (section 5.15).
 
 ---
 
