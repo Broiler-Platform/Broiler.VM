@@ -3004,8 +3004,9 @@ unit 3 at 512
 
     /// <summary>
     /// Every baseline layout is at most eight entries per head, three per landing and four, which is at most
-    /// eleven per instruction and four; and a scan of a unit whose layout would be large, against a payload
-    /// of one instruction, allocates less than that layout's entries would take.
+    /// eleven per instruction and four, and every plan at most a fixed number of bytes per byte of its unit's
+    /// code; and a scan of a unit whose layout would be large allocates no more than that unit's plan and a
+    /// constant, whether its payload differs at the first entry or after a long matching prefix.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -3017,19 +3018,40 @@ unit 3 at 512
     /// instruction, where every instruction is a head.
     /// </para>
     /// <para>
-    /// <b>THE SECOND BOUND IS THE SCAN'S, AND IT IS STATED IN THE PAYLOAD'S INSTRUCTIONS.</b> The layout
-    /// clauses compare a unit body with its layout entry by entry as the partition's walk makes the entries,
-    /// and stop at the first that differs, so they make no more of a layout than the body's instructions and
-    /// one; what the scan holds besides is the unit's plan, which is sized by the bytecode the artifact
-    /// carries. So the jump chain is scanned against a payload whose body is a single jump: it must be
-    /// refused at the body's first instruction, and the bytes allocated on this thread while the scan runs
-    /// must be fewer than the chain's layout would take as an array. A scan that built the layout before
-    /// comparing allocates that array and fails. The count is read from the runtime's own per-thread
-    /// allocation counter around one scan, after a first scan of the same payload.
+    /// <b>THE PLAN'S BOUND IS ITS ARRAYS, COUNTED.</b> A plan holds one mark per byte of the unit's code, one
+    /// integer per landing and one block per head, and the layout's walk one integer per head besides; neither
+    /// landings nor heads outnumber the code's bytes, so that is at most thirty-seven bytes per byte of code
+    /// with this build's block, and the work that fills them is a fixed number of walks over the code. The
+    /// format's code ceiling, which the plan refuses beyond, bounds the whole. Every plan of the programs above
+    /// is asked to be within it.
     /// </para>
     /// <para>
-    /// <b>NEITHER BOUND IS CHARGED WORK.</b> This work is the verifier's and is not counted by the recorder
-    /// the core's proportionality row reads, which is why the bound is stated here.
+    /// <b>THE SCAN'S BOUND IS STATED IN THE PAYLOAD'S INSTRUCTIONS AND THE PLAN.</b> The layout clauses compare
+    /// a unit body with its layout entry by entry as the partition's walk makes the entries, and stop at the
+    /// first that differs or past the body's last instruction, so they make no more of a layout than the
+    /// body's instructions and one; what the scan holds besides is the unit's plan, which is sized by the
+    /// bytecode the artifact carries, and the payload's own decoded instructions. So the jump chain is scanned
+    /// twice: against a payload whose body is a single jump, refused at the body's first instruction, and
+    /// against the emitted body of a chain of 256 jumps and a return, whose layout is the long chain's entry
+    /// for entry until the call of that return, refused there with the slot outcome at the offset the decoded
+    /// body puts it. Each time the bytes allocated on this thread while the scan runs must be fewer than the
+    /// chain's plan and a constant under a twentieth of the chain's layout array, so a scan that built the
+    /// layout, or a twentieth of it, before or after the entries that match, fails. The count is read from the
+    /// runtime's own per-thread allocation counter around one scan, after a first scan of the same payload.
+    /// </para>
+    /// <para>
+    /// <b>WHAT NO ROW HERE OBSERVES IS A WALK THAT GOES ON WITHOUT HANDING OUT ENTRIES.</b> A walk that went on
+    /// handing entries to the scan after its first difference would move the offset or the outcome the frozen
+    /// corpus rows and the layout refusal rows pin; one that went on making entries and handed none to anyone
+    /// changes no answer and allocates nothing, and costs work bounded by the layout's length, which the first
+    /// bound states. That the walk stops is read in its code. The sink and the walk are internal to the format
+    /// assembly, which no product project may open to this one, so no counting sink is run here.
+    /// </para>
+    /// <para>
+    /// <b>NONE OF THESE BOUNDS IS CHARGED WORK, AND NONE IS POLLED.</b> This work is the verifier's: it is not
+    /// counted by the recorder the core's proportionality row reads, and the verifier's native link, which runs
+    /// the scan, polls no cancellation while it runs, where the bytecode walk polls once per unit. That is why
+    /// the bounds are stated here.
     /// </para>
     /// </remarks>
     private static (string, bool, string) ABaselineLayoutIsBoundedByTheCodeItLaysOut()
@@ -3082,25 +3104,22 @@ unit 3 at 512
 
                 var length = (long)JsBaselineBlocks.LayoutLength(plan);
                 var grammar = (8L * plan.Blocks.Length) + (3L * plan.Landings.Length) + 4;
+                var bytes = (long)(plan.End - plan.First);
 
-                if (length > grammar || grammar > (11 * instructions) + 4 || instructions > plan.End - plan.First)
+                if (length > grammar || grammar > (11 * instructions) + 4 || instructions > bytes ||
+                    PlanBytes(plan) > PlanBytesPerCodeByte * bytes)
                 {
                     return (
                         Name,
                         false,
                         label + ", unit " + unit + ": " + length + " entries for " + plan.Blocks.Length + " heads, " +
-                            plan.Landings.Length + " landings, " + instructions + " instructions and " + (plan.End - plan.First) + " bytes");
+                            plan.Landings.Length + " landings, " + instructions + " instructions and " + bytes + " bytes, " +
+                            "and a plan of " + PlanBytes(plan) + " bytes");
                 }
 
                 units++;
             }
         }
-
-        // ---- the scan, against a body of one jump ------------------------------------------------
-        byte[] prologue = [0x53, 0x41, 0x56, 0x48, 0x83, 0xEC, 0x28, 0x49, 0x89, 0xCE, 0x49, 0x8B, 0x1E, 0x89, 0xD0];
-        byte[] epilogue = [0x48, 0x83, 0xC4, 0x28, 0x41, 0x5E, 0x5B, 0xC3];
-        byte[] payload = [.. prologue, 0xE9, 0x00, 0x00, 0x00, 0x00, .. epilogue];
-        JsNativeSymbolRow[] symbols = [new JsNativeSymbolRow(0, 0)];
 
         if (!JsBaselineBlocks.TryPlan(chain, 0, default, out var chainPlan, out var chainRefusal))
         {
@@ -3110,19 +3129,100 @@ unit 3 at 512
         var layoutBytes = (long)JsBaselineBlocks.LayoutLength(chainPlan) *
             System.Runtime.CompilerServices.Unsafe.SizeOf<JsBaselineInstruction>();
 
-        _ = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, payload, symbols, 16, chain);
-        var before = System.GC.GetAllocatedBytesForCurrentThread();
-        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, payload, symbols, 16, chain);
-        var allocated = System.GC.GetAllocatedBytesForCurrentThread() - before;
+        var allowed = PlanBytes(chainPlan) + ScanBesideThePlan;
+
+        // ---- the scan, against a body of one jump ------------------------------------------------
+        byte[] prologue = [0x53, 0x41, 0x56, 0x48, 0x83, 0xEC, 0x28, 0x49, 0x89, 0xCE, 0x49, 0x8B, 0x1E, 0x89, 0xD0];
+        byte[] epilogue = [0x48, 0x83, 0xC4, 0x28, 0x41, 0x5E, 0x5B, 0xC3];
+        byte[] payload = [.. prologue, 0xE9, 0x00, 0x00, 0x00, 0x00, .. epilogue];
+        JsNativeSymbolRow[] symbols = [new JsNativeSymbolRow(0, 0)];
+
+        var (result, allocated) = ScannedWithAllocation(payload, symbols, chain);
+
+        // ---- the scan, against the emitted body of a shorter chain -------------------------------
+        // The layouts of the two chains are the same entry for entry up to the call of the shorter chain's
+        // last head, which returns where the longer chain jumps: a long matching prefix, refused at a slot.
+        if (!new JsX64Backend(JsX64Abi.Windows).TryEmit(JumpChain(PrefixJumps), out var prefix, out var prefixSymbols, out var why))
+        {
+            return (Name, false, "the chain of " + PrefixJumps + " jumps did not emit: " + why);
+        }
+
+        if (!TryDecodeUnits(JsNativeArchitecture.X64Windows, prefix, prefixSymbols, out var decoded, out var undecoded))
+        {
+            return (Name, false, "the chain of " + PrefixJumps + " jumps did not decode: " + undecoded);
+        }
+
+        // The body starts at the dispatch's sign test, the layout's first entry, and the slot is where the
+        // layout of the longer chain puts the call of the shorter chain's return.
+        var body = decoded[0].FindIndex(static instruction =>
+            string.Equals(instruction.Text, "test eax, eax", System.StringComparison.Ordinal));
+
+        var slot = System.Array.FindIndex(
+            JsBaselineBlocks.Layout(chainPlan),
+            static entry => entry.Role == JsBaselineRole.Slot && entry.Head == PrefixJumps * 5);
+
+        var differing = body < 0 || slot < 0 || body + slot >= decoded[0].Count
+            ? uint.MaxValue
+            : decoded[0][body + slot].At;
+
+        var (prefixResult, prefixAllocated) = ScannedWithAllocation(prefix, prefixSymbols, chain);
 
         return (
             Name,
             result.Outcome == JsNativeScanOutcome.DispatchNotTheLandings && result.Offset == prologue.Length &&
-                allocated < layoutBytes,
+                allocated < allowed &&
+                prefixResult.Outcome == JsNativeScanOutcome.HandlerSlotNotTheOpcode && prefixResult.Offset == differing &&
+                prefixAllocated < allowed,
             units + " units of " + images.Count + " programs within eight entries per head, three per landing and four, " +
-                "and eleven per instruction and four; the chain of " + Jumps + " jumps scanned against a body of one jump answered " +
-                result.Outcome + " at " + result.Offset + ", allocating " + allocated + " bytes where its layout would take " +
-                layoutBytes);
+                "eleven per instruction and four, and a plan of " + PlanBytesPerCodeByte + " bytes per byte of code; the chain of " +
+                Jumps + " jumps, whose plan takes " + PlanBytes(chainPlan) + " bytes and whose layout would take " + layoutBytes +
+                ", scanned against a body of one jump answered " + result.Outcome + " at " + result.Offset + ", allocating " +
+                allocated + " bytes, and against the body of " + PrefixJumps + " jumps and a return answered " +
+                prefixResult.Outcome + " at " + prefixResult.Offset + " where the slot of head " + (PrefixJumps * 5) + " is at " +
+                differing + ", allocating " + prefixAllocated + " bytes; each within the plan and " + ScanBesideThePlan);
+    }
+
+    /// <summary>How many jumps the shorter chain of <see cref="ABaselineLayoutIsBoundedByTheCodeItLaysOut"/> has.</summary>
+    private const int PrefixJumps = 256;
+
+    /// <summary>
+    /// What a baseline scan may allocate besides its unit's plan: the payload's decoded instructions, the handler
+    /// offsets, the template indices and the refusal, for a payload of at most a couple of thousand instructions.
+    /// </summary>
+    /// <remarks>
+    /// Less than a twentieth of the jump chain's layout array, so a scan that made a twentieth of that layout as
+    /// an array fails the row.
+    /// </remarks>
+    private const long ScanBesideThePlan = 1L << 19;
+
+    /// <summary>
+    /// The bytes a unit's plan holds for each byte of its code at most: one mark per byte, and one integer per
+    /// landing and a block and an integer per head, since neither landings nor heads outnumber the bytes.
+    /// </summary>
+    private static readonly long PlanBytesPerCodeByte =
+        1 + sizeof(int) + System.Runtime.CompilerServices.Unsafe.SizeOf<JsBaselineBlock>() + sizeof(int);
+
+    /// <summary>
+    /// The bytes a plan's arrays take, and the one array of the layout's walk: the marks over the unit's code,
+    /// the landings, the blocks, and the walk's index of each block's call.
+    /// </summary>
+    private static long PlanBytes(JsBaselineUnitPlan plan) =>
+        (long)(plan.End - plan.First) +
+        ((long)sizeof(int) * plan.Landings.Length) +
+        ((long)System.Runtime.CompilerServices.Unsafe.SizeOf<JsBaselineBlock>() + sizeof(int)) * plan.Blocks.Length;
+
+    /// <summary>
+    /// One baseline scan of a payload with its program, and the bytes this thread allocated while it ran, read
+    /// after a first scan of the same payload.
+    /// </summary>
+    private static (JsNativeScanResult Result, long Allocated) ScannedWithAllocation(
+        byte[] payload, JsNativeSymbolRow[] symbols, JsNativeProgramImage image)
+    {
+        _ = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, payload, symbols, 16, image);
+        var before = System.GC.GetAllocatedBytesForCurrentThread();
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, payload, symbols, 16, image);
+
+        return (result, System.GC.GetAllocatedBytesForCurrentThread() - before);
     }
 
     /// <summary>
