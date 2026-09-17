@@ -902,7 +902,11 @@ public static class JavaScriptProfile
         // megabytes and the capacity re-measured at 22,122 calls, which is 2.70 times this row
         // *(JSC-139)*. This row did not move: a ceiling a host may be granted is a policy figure,
         // and lowering it to fit a stack would be answering a question about the machine with a
-        // change to what a program is allowed to do.
+        // change to what a program is allowed to do. The guest stack was raised again on
+        // 2026-09-17, to two hundred and eight megabytes, because a route table wider than the
+        // plain call every figure above was taken on found the same ordering failing on routes
+        // those measurements never reached - and this row did not move, for the same reason
+        // *(JSC-226)*.
         values[(int)VmBudgetDimension.CallDepth] = 8_192;
         values[(int)VmBudgetDimension.VerifierWork] = 1_099_511_627_776;
         values[(int)VmBudgetDimension.ArtifactBytes] = 536_870_912;

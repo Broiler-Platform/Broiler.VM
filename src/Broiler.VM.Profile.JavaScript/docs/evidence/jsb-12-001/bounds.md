@@ -227,6 +227,59 @@ workflow and by the bundle. On a workstation it is applied with `git apply` to a
 repository, which is built there and removed afterwards. The bundle hashes it and does not re-create
 it.
 
+### 8.6 Addition of 2026-09-17: ladder step 2 is taken, and step 1 is skipped by owner ruling
+
+*Added 2026-09-17, after the per-block baseline steps were committed and after the depth runs below
+had been seen.* **This addition relaxes no bound.** It records that a remedy section 8.4 predeclared
+has been taken, and that the owner ruled the step before it out; it removes no family, shape, class or
+condition, it does not touch section 8.2's three conditions or their thresholds, and the route table
+still names 36 families. It states no figure, as this file states none.
+
+**Step 2 is taken.** `JsExecution.GuestStackBytes` is raised from 96 MB to **208 MB**, which is item 2
+of the ladder in section 8.4, and `eng/measure-frame-cost.py`'s `DEFAULT_STACK_BYTES` is moved with it
+in the same commit because that script states the figure rather than reading it. The raise is a
+correction of its own, committed **outside the contiguous per-block range and after it**, so that
+neither arm of measurement bundle `jsb-11-002` carries it; JSB-12's candidate, a later commit, does.
+Profile correction JSC-226 records the change, and the remarks on the constant, on
+`JsEngine.MaximumCallDepth` and on `JavaScriptProfile`'s `CallDepth` maximum carry a sentence each.
+
+**What that means for the terms of section 8.1.** Where 8.1 says `K` is read from a lifted log taken
+"with the declared guest stack of 96 MB", it means the guest stack the measured build declares. From
+the commit that takes step 2 that is 208 MB, and every lifted and released log the clause is judged on
+is re-taken on a build carrying it — on both runtime identifiers, in both forms, for all 36 families —
+exactly as 8.4 item 2 says ("re-measure both forms and every family"). Logs taken on the 96 MB stack
+count toward no condition, for the same reason the flip rule in 8.3 discards logs taken at the other
+value of `PerOpcodeSteps`. Nothing else in 8.1, 8.2 or 8.3 changes: the threshold is still
+`2 × 8,192`, `u(s)` is still the value measured on `win-x64`, and condition 3 still asks for bounded
+stops and equal depths across the forms at the released bounds.
+
+**Step 1 is skipped, by the repository owner's ruling of 2026-09-17, and this is the record of it.**
+Section 8.4 says to take its items in order. The owner ruled that item 1 — moving into the run-alone
+set every opcode whose arm reaches a failing family's helper — is **not** taken, on this evidence: the
+control arm already runs those opcodes one at a time, through the same kind of per-opcode step, and it
+still fails several of the same routes, so step 1 cannot make the clause pass by itself; and it would
+put a large share of block-eligible instructions back onto steps of their own, which risks the Native
+AOT image bound of section 6 and undoes most of what the stage measures. **This departs from 8.4's
+"in order" wording and from nothing else.** No bound, tolerance, class or condition is changed by it,
+item 3 of 8.4 (never lower the grantable `CallDepth` maximum) stands, and the stage's README states the
+ruling with its evidence when the stage is collected.
+
+**The `linux-x64` half.** It stays as 8.2 leaves it: unmet unless a dispatch of
+`frame-cost-javascript-profile.yml` runs at the commit that carries the raise, with both bounds, and
+**each dispatch needs the owner's approval at the time**. Nothing here claims that half.
+
+**What had been seen when this addition was written.** Section 1 says what had been seen when the
+values were set, and section 9's earlier addition says what had been seen when that one was written.
+When this one was written, the candidate figures seen were: the lifted-bounds depth logs of every
+route-table family in both forms at the last per-block commit, and the matching lifted-bounds logs of
+the control arm, all of which print depths and bytes per frame; a lifted-bounds re-probe of the
+bytecode `yield*` returning shape at the frame-fix commit after it; the released-bounds logs of every
+family in both forms on both arms; the JIT summary lines, code sizes and stack reservations of the
+interpreter, the block step and the run-alone instantiations on both arms; the Native AOT image sizes
+of the four composition roots; and the checks transcripts of the per-block commits, which print a time
+for every row. **No figure from any of them is used here**, and the arithmetic that chose 208 MB over a
+smaller value is the diagnosis's, not this file's.
+
 ---
 
 ## 9. The route table

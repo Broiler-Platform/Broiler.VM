@@ -565,7 +565,10 @@ internal sealed partial class JsEngine
     /// <b>22,122</b> calls, which is 3.69 times this bound and 2.70 times that ceiling
     /// <i>(JSC-139)</i>. Raising the stack rather than lowering this bound is the same choice
     /// JSC-85 made and for the same reason: this bound is about what a program may do, and the
-    /// stack is about what the machine can hold.
+    /// stack is about what the machine can hold. The stack moved once more on 2026-09-17, to two
+    /// hundred and eight megabytes, because a route table wider than the plain call every figure
+    /// above was taken on found the same ordering failing on routes those measurements never
+    /// reached - and this bound did not move, for the reason it has never moved <i>(JSC-226)</i>.
     /// </para>
     /// <para>
     /// <b>An <c>await</c>'s resumption does NOT stack, which is the one thing about this family

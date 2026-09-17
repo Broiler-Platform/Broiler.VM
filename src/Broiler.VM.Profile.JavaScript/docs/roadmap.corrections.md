@@ -9559,3 +9559,72 @@ re-collects and recertifies nothing, moves no row of either ledger and accepts n
 **Authority and date.** Bundle [VM-5-002](../../../docs/evidence/vm-5-002/README.md), the dated paragraph
 of 2026-09-17 in section 8 and item 5 of section 5.15; the repository owner's acceptance of the expiry, of
 the same date. 2026-09-17.
+
+---
+
+### JSC-226
+
+**Where:** [JSC-139](#jsc-139), which raised the guest stack to ninety-six megabytes to restore the
+ordering the call-depth ceiling depends on, and [JSC-192](#jsc-192), which re-measured the same shape on
+a second runtime identifier; the remarks those entries left on `JsExecution.GuestStackBytes`, on
+`JsEngine.MaximumCallDepth` and in `JavaScriptProfile`'s maxima; the `CallDepth` sentences of the JS-5
+row of [the ledger](roadmap.status.md#2-current-milestone-status); and section 8 of stage JSB-12's
+predeclared bounds [`jsb-12-001/bounds.md`](evidence/jsb-12-001/bounds.md), whose depth clause names the
+raise as step 2 of the ladder it prescribes when the clause fails.
+
+**What the plan said.** That ninety-six megabytes keeps the ordering the ceiling depends on: a guest
+stack holding at least twice the grantable `CallDepth` maximum, counted in the units that maximum
+counts. JSC-139 established that, and JSC-192 confirmed it on a second runtime identifier. Both
+measured **one shape** — a plain recursive call, in both forms, on a build with the bounds lifted —
+because that was the shape the instrument had. Nothing said which other ways one guest level can nest
+inside another, and nothing had measured any of them.
+
+**What was true.** A plain call is the cheapest of them. Stage JSB-12's route table enumerates every
+way an instruction of `JsEngine.ExecuteCore` can re-enter guest code — an accessor read or write, a
+coercion hook, a Proxy trap, a `super` reference, a bound or callback invocation, a generator
+resumption — and a level of any of those holds the dispatch arm's own helpers open across the
+recursion, so it costs several times a plain call's frame. Measured over that table with the bounds
+lifted, on ninety-six megabytes, **the ordering does not hold for every family**, and it does not hold
+in the bytecode form either, on routes of its own. The bytecode shortfall is older than any of the
+work that found it and is filed as its own correction by section 8.3 of the same bounds; the plain
+shape still passes in both forms, which is why six measurements of it reported nothing wrong.
+
+**What replaced it.** The guest stack, raised from ninety-six megabytes to **two hundred and eight**.
+That is item 2 of the ladder `bounds.md` section 8.4 predeclares, and the raise is what JSC-139 already
+called the right answer in this shape: a reservation of ADDRESS SPACE committed a page at a time, so a
+program that never recurses pays for none of it, against the alternative of lowering the grantable
+ceiling, which would answer a question about the machine by changing what a program is allowed to do.
+`eng/measure-frame-cost.py`'s own `DEFAULT_STACK_BYTES` is stated rather than read, so it moved with the
+constant, exactly as it did at JSC-139. The change is committed **outside the contiguous per-block
+range and after it**, so that neither arm of measurement bundle `jsb-11-002` carries it.
+
+**Step 1 of the ladder was SKIPPED, by the repository owner's ruling of 2026-09-17**, and that is part
+of this correction rather than an aside. Section 8.4 says to take its items in order. Item 1 moves into
+the run-alone set every opcode whose arm reaches a failing family's helper. The evidence against it is
+that the form which **already** runs those opcodes one at a time fails several of the same routes, so
+item 1 cannot make the clause pass by itself, while it would put a large share of block-eligible
+instructions back onto steps of their own and risk the stage's Native AOT image bound. The ruling
+departs from 8.4's "in order" wording and from nothing else; the bounds file carries it as a dated
+addition of the same day, and the stage's README states it with its evidence when the stage is
+collected.
+
+**A remark this raise made false is marked rather than left.** `CompilationStack.CompileStackBytes`
+said the compile walk gets "the same figure the guest gets, and deliberately the same". That stopped
+being true when the guest stack first moved, and this raise widens the gap again. The compile walk has
+no call-depth ceiling to keep an ordering against and is bounded by
+`SliceParseOptions.MaximumTreeDepth`, so the constant does not move with the guest's; its remark now
+says so, and says that the compile walk's own per-frame cost has not been re-measured.
+
+**What this entry does NOT do.** It moves no bound and relaxes none. `JsEngine.MaximumCallDepth`
+(6,000) and the profile's grantable `CallDepth` maximum (8,192) do not move, and item 3 of section 8.4
+forbids lowering the second. It accepts nothing, marks no milestone and claims no runtime identifier.
+It copies no figure from any run into any record: what each stack size holds is the stage bundle's to
+state. The `linux-x64` half of the depth clause stays unshown until a dispatch of
+`frame-cost-javascript-profile.yml` runs at a commit carrying the raise, which needs the repository
+owner's approval at the time. It does not edit [JSC-139](#jsc-139) or [JSC-192](#jsc-192), whose
+accounts of their own measurements stay true. No human has read a line.
+
+**Authority and date.** The repository owner's ruling of 2026-09-17, taking ladder step 2 at this value
+and skipping step 1; stage JSB-12's predeclared bounds
+[`jsb-12-001/bounds.md`](evidence/jsb-12-001/bounds.md), section 8.4 and its dated addition 8.6 of the
+same day. 2026-09-17.
