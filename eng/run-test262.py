@@ -30,7 +30,7 @@
 # THE OUTPUT FORM IS THE HARNESS'S TO CHECK AND NOT THIS SCRIPT'S. `--form native` compiles every
 # variant to emitted machine code beside its bytecode. A native run with no `--manifest` is taken
 # under the wide manifest, exactly as a bytecode run is: every unit is emitted in the baseline form,
-# each instruction one call into the interpreter's own dispatch for it, and the suite's harness
+# each block of instructions one call into the interpreter's own dispatch, and the suite's harness
 # prelude is loaded. Naming the numeric manifest takes the run under that manifest's computing form
 # instead, with no prelude; naming the slice manifest is refused by every shard before it scores
 # anything, because that manifest has no native form. `--backend` defaults, in the harness, to the

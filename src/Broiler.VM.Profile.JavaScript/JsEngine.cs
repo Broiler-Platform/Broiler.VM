@@ -4585,13 +4585,14 @@ internal sealed partial class JsEngine
     /// <see cref="JsInterpreted"/> is the loop as it always was: every test of the mode below is a
     /// comparison of two type tokens the importer folds, so that instantiation carries none of them.
     /// <see cref="JsNativeEntry"/> runs the prologue - including an abrupt resumption's raise and
-    /// landing - and stops at the first instruction without charging for it. Every other mode runs
-    /// exactly one charged instruction and stops at the next one, which is what one call from
+    /// landing - and stops at the first instruction without charging for it. A per-opcode mode runs
+    /// exactly one charged instruction and stops at the next; <see cref="JsStepBlock"/> runs charged
+    /// instructions until <see cref="JsBaselineBlocks.StopsAfter"/> holds, which is what one call from
     /// emitted code into the handler table asks for. Stopping is the one statement at the top of the
     /// inner loop, which every way back to an instruction passes through: a <c>break</c> out of an
     /// arm, a caught throw and a caught forced return all land there. So a step runs the same arm
     /// text, the same charge, the same filter and the same landing as the interpreter, because it is
-    /// the interpreter.
+    /// the interpreter; the block mode only moves the boundary at which it hands back to emitted code.
     /// </para>
     /// <para>
     /// <b>A step reads its state from the activation and writes it back only at the boundary.</b>
@@ -4600,8 +4601,8 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=972A12
-    // Broiler-Falsified-If: an instantiation over a step mode runs more or fewer than one charged instruction per call, or the interpreted instantiation behaves differently from the loop before it was made generic
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=2BD763
+    // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
         JsProgram program,
@@ -4685,10 +4686,16 @@ internal sealed partial class JsEngine
         // rather than from `self`.
         var active = self is null ? null : unit.IsArrow ? self.LexicalActiveFunction : self;
 
-        // AN ENTRY RUNS NO INSTRUCTION AND A STEP RUNS ONE. The flag starts set for the entry, so
-        // the first boundary it reaches stops it; a step clears the boundary once, runs its one
-        // instruction, and stops at the next.
+        // AN ENTRY RUNS NO INSTRUCTION, A PER-OPCODE STEP RUNS ONE, AND A BLOCK STEP RUNS UNTIL THE
+        // PARTITION STOPS IT. The flag starts set for the entry, so the first boundary it reaches
+        // stops it; a step clears the boundary once and runs its first instruction, so the stop rule
+        // is first asked about an instruction that has run, never about the value `current` starts
+        // with.
         var stepped = typeof(TMode) == typeof(JsNativeEntry);
+
+        // THE UNIT'S END, READ ONLY BY A BLOCK STEP. The comparison folds for every other mode, so
+        // the interpreted instantiation carries neither the read nor anything that uses it.
+        var unitEnd = typeof(TMode) == typeof(JsStepBlock) ? (int)(unit.CodeOffset + unit.CodeLength) : 0;
 
         while (true)
         {
@@ -4711,11 +4718,16 @@ internal sealed partial class JsEngine
                 while (true)
                 {
                     // THE STEP BOUNDARY. Every route back to an instruction reaches this line - an
-                    // arm's `break`, a landed throw and a landed forced return - so a mode that runs
-                    // one instruction stops here with the pointer the interpreter would run next.
+                    // arm's `break`, a landed throw and a landed forced return - so a step stops here
+                    // with the pointer the interpreter would run next: an entry at once, a per-opcode
+                    // step after its one instruction, and a block step where the baseline partition
+                    // says its block ends, which is the function the emitted unit's tails are laid out
+                    // from.
                     if (typeof(TMode) != typeof(JsInterpreted))
                     {
-                        if (stepped)
+                        if (stepped &&
+                            (typeof(TMode) != typeof(JsStepBlock) ||
+                                JsBaselineBlocks.StopsAfter(code, current, pc, unitEnd)))
                         {
                             act!.Sp = sp;
                             act.Pc = pc;
@@ -4728,7 +4740,7 @@ internal sealed partial class JsEngine
                     current = pc;
                     Charge(FuelPerInstruction);
 
-                    var opcode = typeof(TMode) == typeof(JsInterpreted) || typeof(TMode) == typeof(JsStepAny)
+                    var opcode = typeof(TMode) == typeof(JsInterpreted) || typeof(TMode) == typeof(JsStepBlock)
                         ? (JsOpcode)code[pc]
                         : TMode.Opcode;
 
@@ -7345,7 +7357,8 @@ internal sealed partial class JsEngine
 /// <para>
 /// <b>The opcode is a static member so a per-opcode mode can name its instruction as a constant.</b>
 /// A step built for one opcode switches over a constant, which lets the compiler keep only that arm;
-/// the modes that read the opcode from the code answer <c>default</c> and never have it asked.
+/// the modes that read the opcode from the code - the interpreter and the block step - answer
+/// <c>default</c> and never have it asked, and the entry runs no instruction to ask it for.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7F0A56
@@ -7384,18 +7397,29 @@ internal readonly struct JsNativeEntry : IJsExecutionMode
     public static JsOpcode Opcode => default;
 }
 
-/// <summary>One instruction of any opcode, read from the code: the fallback to per-opcode steps.</summary>
+/// <summary>A block of instructions read from the code: from a head until the baseline partition stops the step.</summary>
 /// <remarks>
-/// <b>It exists so that the per-opcode specialisation is a measurement and not a correctness
-/// property.</b> Every handler can run through this one instantiation instead, with the same checks
-/// and the same semantics, if compiling one step per opcode costs more than it saves.
+/// <para>
+/// <b>IT RUNS THE INTERPRETER'S OWN LOOP AND ONLY MOVES THE BOUNDARY.</b> Every instruction is charged,
+/// dispatched, filtered and landed exactly as the interpreted instantiation does it; the step hands back
+/// to emitted code where <see cref="JsBaselineBlocks.StopsAfter"/> holds, which is the same function the
+/// emitter's tails are laid out from. Entered at an instruction that runs alone it runs exactly that
+/// instruction, since a block ends after one, and that is what lets a run-alone handler run here when
+/// <see cref="JsBaselineHandlers.PerOpcodeSteps"/> is false.
+/// </para>
+/// <para>
+/// <b>Its frame holds every arm</b>, so a guest call nested under an instruction it runs sits under a frame
+/// the size of the interpreter's, not a per-opcode one. The instructions that nest a call on their common
+/// path run alone, so a call one of them makes sits under this frame only while per-opcode steps are off;
+/// a call an accessor, a Proxy trap or a coercion makes from inside a block sits under it always.
+/// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6071DF
-// Broiler-Falsified-If: the loop instantiated over this mode runs more or fewer than one charged instruction per call
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0FD013
+// Broiler-Falsified-If: the loop instantiated over this mode stops at its first boundary, runs an instruction after a later boundary at which JsBaselineBlocks.StopsAfter holds, or stops at a later boundary at which it does not
 // Broiler-Human:        PENDING
-internal readonly struct JsStepAny : IJsExecutionMode
+internal readonly struct JsStepBlock : IJsExecutionMode
 {
-    /// <summary>Never asked: this step reads its opcode from the code.</summary>
+    /// <summary>Never asked: a block step reads each opcode from the code.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=AA45B6
     // Broiler-Human:        PENDING
     public static JsOpcode Opcode => default;

@@ -5,7 +5,7 @@
 # HOLD A NATIVE-FORM TEST262 RUN TO THE BYTECODE RUN OF THE SAME CHECKOUT, VARIANT BY VARIANT.
 #
 # The baseline native form over `broiler.javascript.wide` runs every instruction through the
-# interpreter's own dispatch for that instruction, so its verdicts are expected to be the bytecode
+# interpreter's own dispatch, a block of them at a time, so its verdicts are expected to be the bytecode
 # form's verdicts. Expected is not checked, and a total is not a check at all: two runs can share a
 # pass count while disagreeing about hundreds of variants in both directions. So this script reads
 # the `result|` rows of two reports, joins them on (path, variant), and names every row whose verdict

@@ -575,8 +575,8 @@ jobs:
       #
       # The published image compiles every variant of `language/statements/class` and
       # `built-ins/Promise` in the baseline native form over the wide manifest - every unit emitted
-      # as x86-64 for this cell's calling convention, each instruction one call into the
-      # interpreter's own dispatch for it - and scores it with the harness prelude loaded. That
+      # as x86-64 for this cell's calling convention, each block of instructions one call into the
+      # interpreter's own dispatch - and scores it with the harness prelude loaded. That
       # executes the whole baseline form under System V on linux-x64 and under Win64 on win-x64 on
       # every lane run, which nothing else in the lane does over a suite. An arm64 cell has no
       # backend it arms, so a native run there would score every variant as a refused

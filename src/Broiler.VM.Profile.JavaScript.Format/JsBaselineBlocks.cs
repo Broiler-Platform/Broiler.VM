@@ -52,12 +52,13 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// landed by the interpreter's own arm, whichever step runs it.
 /// </para>
 /// <para>
-/// <b>AS OF THIS REVISION NO EMITTED UNIT FOLLOWS IT.</b> The baseline emitter still calls one handler
-/// per instruction and every handler still runs one instruction, so the partition, the plan and the
-/// layout here are held only by the SliceCompiler's rows that compare them with the predicates they are
-/// built from. The emitter also still walks its own landings and writes its own compare tree with its
-/// own leaf size, and no row compares that tree with the dispatch <see cref="Layout"/> answers: until the
-/// emitter encodes this layout, the two agree only by being written alike.
+/// <b>THE BASELINE EMITTER ENCODES THE LAYOUT, AND A BLOCK STEP STOPS WHERE <see cref="StopsAfter"/>
+/// HOLDS.</b> The emitter writes one template per entry of <see cref="Layout"/> and keeps no landing
+/// walk, tree or leaf size of its own, and the engine's block step asks the same stop rule at every
+/// boundary, so the block a handler runs and the tail emitted after its call come from one function. No
+/// verification step compares a payload with the layout: the template scan does not read the program a
+/// payload was emitted from, so an image with no emitter holds a baseline payload to its templates and
+/// frame, and an image with one holds it to its re-emission.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=DD3F28
@@ -68,8 +69,8 @@ public static class JsBaselineBlocks
     /// <summary>How many compares a leaf of a unit's landing tree makes before it gives up.</summary>
     /// <remarks>
     /// <b>Four, because a chain of four costs about what one more level of the tree would</b>, and a unit
-    /// with no suspension and no handler has a single landing, its entry. It is the number the baseline
-    /// emitter's own tree uses.
+    /// with no suspension and no handler has a single landing, its entry. The baseline emitter has no tree
+    /// of its own: it writes the one <see cref="Layout"/> answers.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=DDFFAD
     // Broiler-Human:        PENDING
@@ -296,11 +297,12 @@ public static class JsBaselineBlocks
     /// <b>VERIFIED BYTECODE REACHES NONE OF THE REFUSALS.</b> An empty or overrunning code range, an
     /// undefined opcode, an instruction past its unit's end, a landing and a target that is not an
     /// instruction start are all things the verifier has already refused, and they answer the sentences
-    /// the baseline emitter answers for them; they are here so that a producer's defect answers a
-    /// sentence rather than a wrong plan. Three refusals have sentences of their own: a unit index the
-    /// image does not have, which the emitter never asks for; a unit longer than the format's code
-    /// ceiling, which no verified code section holds and which is what bounds every length this class
-    /// answers; and a branch to an offset that is not a head, which is a defect of this class. They are
+    /// the baseline emitter answered for them when it walked its units itself, which it now passes on;
+    /// they are here so that a producer's defect answers a sentence rather than a wrong plan. Three
+    /// refusals have sentences of their own: a unit index the image does not have, which the emitter
+    /// never asks for; a unit longer than the format's code ceiling, which no verified code section
+    /// holds and which is what bounds every length this class answers; and a branch to an offset that is
+    /// not a head, which is a defect of this class. They are
     /// tested in this order: the unit index, the range, the ceiling, the walk, the landings (the smallest
     /// offending one is named), the targets in bytecode order, then the branches - all before anything is
     /// laid out, so a caller's own refusal, such as a ceiling on the code it writes, comes after every one
@@ -379,9 +381,9 @@ public static class JsBaselineBlocks
         var smallestBadLanding = long.MaxValue;
         marks[0] = LandingMark;
 
-        // THE FIRST WALK MARKS THE INSTRUCTION STARTS AND THE RESUME LANDINGS, refusing what the emitter
-        // refuses in the order it refuses it. A resume landing inside the unit is an instruction start
-        // once the walk completes; the only one that is not is the unit's end.
+        // THE FIRST WALK MARKS THE INSTRUCTION STARTS AND THE RESUME LANDINGS, refusing an undefined
+        // byte or an instruction past the unit's end where it meets one. A resume landing inside the unit
+        // is an instruction start once the walk completes; the only one that is not is the unit's end.
         for (var at = unitFirst; at < unitEnd;)
         {
             if (!JsOpcodes.IsDefined(code[at]))
@@ -434,8 +436,8 @@ public static class JsBaselineBlocks
             }
         }
 
-        // THE EMITTER SORTS ITS LANDINGS AND REFUSES THE FIRST THAT IS NOT AN INSTRUCTION START, which is
-        // the smallest such offset.
+        // THE SMALLEST LANDING THAT IS NOT AN INSTRUCTION START IS THE ONE NAMED, which is the one a walk
+        // over the sorted landings meets first.
         if (smallestBadLanding != long.MaxValue)
         {
             refusal =
@@ -450,8 +452,7 @@ public static class JsBaselineBlocks
         var headCount = landingCount;
 
         // THE SECOND WALK FILLS THE LANDINGS IN ASCENDING ORDER AND MARKS THE OTHER THREE KINDS OF HEAD,
-        // refusing a target that is not an instruction start where the emitter refused it: after every
-        // landing, in bytecode order.
+        // refusing a target that is not an instruction start after every landing, in bytecode order.
         for (var at = unitFirst; at < unitEnd;)
         {
             var index = at - unitFirst;
@@ -607,7 +608,7 @@ public static class JsBaselineBlocks
     /// order, the handler call for that head and its tail.
     /// </para>
     /// <para>
-    /// <b>THE TREE IS THE ONE THE BASELINE EMITTER WRITES FOR THE SAME LANDINGS.</b> A range of at most
+    /// <b>THE TREE IS A SEARCH OVER THE SORTED LANDINGS WITH A CHAIN AT EACH LEAF.</b> A range of at most
     /// <see cref="LeafLandings"/> landings is a chain of compares, each branching equal to its landing's
     /// head, ending in a jump to the defect; a longer range compares its middle landing, branches equal to
     /// its head and above to the right-hand range, and lays out the left-hand range before the right.
@@ -631,7 +632,7 @@ public static class JsBaselineBlocks
     /// </remarks>
     /// <param name="plan">A plan <see cref="TryPlan"/> answered.</param>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9A72BA
-    // Broiler-Falsified-If: for a plan TryPlan answered, the layout's dispatch differs from the compare tree the baseline emitter writes over the same landings, a head's call names a pc other than the head or a slot other than eight times its opcode, a tail differs from the one its block's kind and target dictate, a branch resolves to an index other than the instruction it names, or the answer's length differs from LayoutLength
+    // Broiler-Falsified-If: for a plan TryPlan answered, the layout's dispatch sends a landing anywhere but its own head's call or another non-negative answer anywhere but the defect, a head's call names a pc other than the head or a slot other than eight times its opcode, a tail differs from the one its block's kind and target dictate, a branch resolves to an index other than the instruction it names, or the answer's length differs from LayoutLength
     // Broiler-Human:        PENDING
     public static JsBaselineInstruction[] Layout(JsBaselineUnitPlan plan)
     {

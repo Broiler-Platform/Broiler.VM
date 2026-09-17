@@ -123,8 +123,9 @@ public enum JsNativeReturn
 /// than an implementation detail: it is stated here so that a corpus row pinning a resource
 /// exhaustion is not read as pinning it for both.
 /// <i>(Corrected 2026-09-15: the two forms meant here are the interpreter and the numeric form. The
-/// wide manifest's baseline form makes the managed call per instruction this paragraph calls out of
-/// reach for emitted code, and charges fuel at the interpreter's own point, so its exhaustion is
+/// wide manifest's baseline form makes the managed calls this paragraph calls out of reach for
+/// emitted code - one at every block head, whose step charges each instruction at the interpreter's
+/// own point - so its exhaustion is
 /// exact except where a guest-loaded program's verification is charged - JSC-219.)</i>
 /// </para>
 /// <para>

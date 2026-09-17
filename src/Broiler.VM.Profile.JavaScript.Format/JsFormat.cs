@@ -420,8 +420,9 @@ public static class JsFormat
     /// choosing one.
     /// <i>(Corrected 2026-09-15. "NO EMITTER EXISTS AT THIS BUILD" stopped being true on 2026-09-07,
     /// and the small-multiple reasoning above is the numeric emitter's. The wide manifest's baseline
-    /// emitter, decided by JSD-0025, writes a call sequence and a branch tail for every instruction and
-    /// a prologue, a dispatch tree and an epilogue for every unit, so its output is a far larger
+    /// emitter, decided by JSD-0025, writes a call sequence and a branch tail for every block head, which
+    /// can be every instruction, and a prologue, a dispatch tree and an epilogue for every unit, so its
+    /// output can be a far larger
     /// multiple of the bytecode it is given. The ceiling does not move for it: a program whose emitted
     /// code would pass this bound is refused whole at compile time, with a message naming the ceiling,
     /// and the bound stays what a payload may declare.)</i>

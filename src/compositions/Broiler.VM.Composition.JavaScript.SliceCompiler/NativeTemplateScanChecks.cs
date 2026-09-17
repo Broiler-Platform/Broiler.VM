@@ -1049,10 +1049,23 @@ internal static class NativeTemplateScanChecks
     ];
 
     /// <summary>
-    /// The program the golden rows retain the bytes of: two units, a property read, a branch and a
-    /// throw.
+    /// The program the golden rows retain the bytes of: a loop head inside a run, a conditional branch, a
+    /// call, a return, a throw, and a generator with more landings than a leaf of the tree compares.
     /// </summary>
-    private const string GoldenSource = "let o={a:1}; function f(x){ if (x) { return o.a; } throw 1; } f(1);";
+    /// <remarks>
+    /// <b>IT IS WIDE ENOUGH THAT THE RETAINED BYTES AND THEIR DECODE COVER EVERY SHAPE A UNIT'S BODY
+    /// TAKES.</b> The loop's head is reached linearly from the code before it, so the block from the
+    /// function's entry branches to the head after the loop rather than falling into it; the call runs
+    /// alone, so the block before it falls through to it; the return and the throw leave; the loop and the
+    /// conditional compare a target before their tails; and the generator's entry and the four places its
+    /// <c>yield</c>s resume at are five landings, so its dispatch splits on an above-branch.
+    /// <c>TheGoldenProgramReachesEveryTailKind</c> holds the program to all of that, so a later edit
+    /// cannot narrow it silently.
+    /// </remarks>
+    private const string GoldenSource =
+        "let o={a:1}; function g(y){ return y; } " +
+        "function f(x){ let t=0; do { t = t + 1; } while (t < x); if (x) { return o.a + g(t); } throw 1; } " +
+        "function* h(){ yield 1; yield 2; yield 3; yield 4; } f(1);";
 
     /// <summary>Every row about the baseline form's templates, its scan clauses and its emitter.</summary>
     /// <remarks>
@@ -1083,8 +1096,10 @@ internal static class NativeTemplateScanChecks
             BaselineCoverage(JsX64Abi.SystemV, systemV),
             TheBaselineTablesWriteNothingAndCallOnlyTheHandlerTable(),
             TheBaselineConstantsAreTheConventionTables(),
+            TheGoldenProgramReachesEveryTailKind(),
             BaselineGolden(JsX64Abi.Windows, GoldenWindows),
             BaselineGolden(JsX64Abi.SystemV, GoldenSystemV),
+            TheGoldenHandDecodeIsTheGoldenBytes(),
             TheTwoConventionsEmitOneTemplateSequence(),
             BaselineReEmission(JsX64Abi.Windows),
             BaselineReEmission(JsX64Abi.SystemV),
@@ -1594,53 +1609,355 @@ internal static class NativeTemplateScanChecks
 
     /// <summary>The Windows x64 bytes the golden program is retained as.</summary>
     private const string GoldenWindows =
-        "5341564883EC284989CE498B1E89D085C00F88BD0100003D000000000F840F000000E900000000B8FDFFFFFFE9A30100" +
-        "004C89F1BA00000000FF93080000003D010000000F85C5FFFFFF4C89F1BA01000000FF93900000003D050000000F85AC" +
-        "FFFFFF4C89F1BA05000000FF93C80000003D080000000F8593FFFFFF4C89F1BA08000000FF93800100003D0B0000000F" +
-        "857AFFFFFF4C89F1BA0B000000FF93A00000003D0E0000000F8561FFFFFF4C89F1BA0E000000FF93F80300003D110000" +
-        "000F8548FFFFFF4C89F1BA11000000FF93000100003D120000000F852FFFFFFF4C89F1BA12000000FF93280000003D15" +
-        "0000000F8516FFFFFF4C89F1BA15000000FF93300100003D180000000F85FDFEFFFF4C89F1BA18000000FF9308040000" +
-        "3D1B0000000F85E4FEFFFF4C89F1BA1B000000FF93980000003D1E0000000F85CBFEFFFF4C89F1BA1E000000FF930800" +
-        "00003D1F0000000F85B2FEFFFF4C89F1BA1F000000FF93280000003D220000000F8599FEFFFF4C89F1BA22000000FF93" +
-        "880100003D240000000F8580FEFFFF4C89F1BA24000000FF93900000003D280000000F8567FEFFFF4C89F1BA28000000" +
-        "FF93800000003D2C0000000F854EFEFFFF4C89F1BA2C000000FF9398010000E93BFEFFFF4883C428415E5BC390909090" +
-        "5341564883EC284989CE498B1E89D085C00F88DB0000003D2D0000000F840F000000E900000000B8FDFFFFFFE9C10000" +
-        "004C89F1BA2D000000FF93800000003D310000000F85C5FFFFFF4C89F1BA31000000FF93080300003D3D0000000F8450" +
-        "0000003D360000000F85A1FFFFFF4C89F1BA36000000FF93980000003D390000000F8588FFFFFF4C89F1BA39000000FF" +
-        "93100100003D3C0000000F856FFFFFFF4C89F1BA3C000000FF9398010000E95CFFFFFF4C89F1BA3D000000FF93280000" +
-        "003D400000000F8543FFFFFF4C89F1BA40000000FF9318030000E930FFFFFF4C89F1BA41000000FF93A0010000E91DFF" +
-        "FFFF4883C428415E5BC3";
+        "5341564883EC284989CE498B1E89D085C00F885F0000003D000000000F840F000000E900000000B8FDFFFFFFE9450000" +
+        "004C89F1BA00000000FF93080000003D340000000F85C5FFFFFF4C89F1BA34000000FF93880100003D360000000F85AC" +
+        "FFFFFF4C89F1BA36000000FF9390000000E999FFFFFF4883C428415E5BC390905341564883EC284989CE498B1E89D085" +
+        "C00F88400000003D3F0000000F840F000000E900000000B8FDFFFFFFE9260000004C89F1BA3F000000FF9380000000E9" +
+        "CBFFFFFF4C89F1BA44000000FF93A0010000E9B8FFFFFF4883C428415E5BC3905341564883EC284989CE498B1E89D085" +
+        "C00F88F60000003D450000000F840F000000E900000000B8FDFFFFFFE9DC0000004C89F1BA45000000FF93280000003D" +
+        "4C0000000F84100000003D680000000F8429000000E9B5FFFFFF4C89F1BA4C000000FF93800000003D4C0000000F84E7" +
+        "FFFFFF3D680000000F8591FFFFFF4C89F1BA68000000FF93800000003D830000000F84500000003D710000000F856DFF" +
+        "FFFF4C89F1BA71000000FF93980000003D7F0000000F8554FFFFFF4C89F1BA7F000000FF93880100003D810000000F85" +
+        "3BFFFFFF4C89F1BA81000000FF9300020000E928FFFFFF4C89F1BA83000000FF9328000000E915FFFFFF4C89F1BA8700" +
+        "0000FF93A0010000E902FFFFFF4883C428415E5BC390909090909090909090905341564883EC284989CE498B1E89D085" +
+        "C00F88B00000003D910000000F846C0000000F871B0000003D880000000F84350000003D8C0000000F843D000000E91B" +
+        "0000003D960000000F84530000003D9B0000000F845B000000E900000000B8FDFFFFFFE95F0000004C89F1BA88000000" +
+        "FF9328000000E994FFFFFF4C89F1BA8C000000FF9380030000E981FFFFFF4C89F1BA91000000FF9380030000E96EFFFF" +
+        "FF4C89F1BA96000000FF9380030000E95BFFFFFF4C89F1BA9B000000FF9380030000E948FFFFFF4883C428415E5BC3";
 
     /// <summary>The System V bytes the golden program is retained as.</summary>
     private const string GoldenSystemV =
-        "5341564883EC084989FE498B1E89F085C00F88BD0100003D000000000F840F000000E900000000B8FDFFFFFFE9A30100" +
-        "004C89F7BE00000000FF93080000003D010000000F85C5FFFFFF4C89F7BE01000000FF93900000003D050000000F85AC" +
-        "FFFFFF4C89F7BE05000000FF93C80000003D080000000F8593FFFFFF4C89F7BE08000000FF93800100003D0B0000000F" +
-        "857AFFFFFF4C89F7BE0B000000FF93A00000003D0E0000000F8561FFFFFF4C89F7BE0E000000FF93F80300003D110000" +
-        "000F8548FFFFFF4C89F7BE11000000FF93000100003D120000000F852FFFFFFF4C89F7BE12000000FF93280000003D15" +
-        "0000000F8516FFFFFF4C89F7BE15000000FF93300100003D180000000F85FDFEFFFF4C89F7BE18000000FF9308040000" +
-        "3D1B0000000F85E4FEFFFF4C89F7BE1B000000FF93980000003D1E0000000F85CBFEFFFF4C89F7BE1E000000FF930800" +
-        "00003D1F0000000F85B2FEFFFF4C89F7BE1F000000FF93280000003D220000000F8599FEFFFF4C89F7BE22000000FF93" +
-        "880100003D240000000F8580FEFFFF4C89F7BE24000000FF93900000003D280000000F8567FEFFFF4C89F7BE28000000" +
-        "FF93800000003D2C0000000F854EFEFFFF4C89F7BE2C000000FF9398010000E93BFEFFFF4883C408415E5BC390909090" +
-        "5341564883EC084989FE498B1E89F085C00F88DB0000003D2D0000000F840F000000E900000000B8FDFFFFFFE9C10000" +
-        "004C89F7BE2D000000FF93800000003D310000000F85C5FFFFFF4C89F7BE31000000FF93080300003D3D0000000F8450" +
-        "0000003D360000000F85A1FFFFFF4C89F7BE36000000FF93980000003D390000000F8588FFFFFF4C89F7BE39000000FF" +
-        "93100100003D3C0000000F856FFFFFFF4C89F7BE3C000000FF9398010000E95CFFFFFF4C89F7BE3D000000FF93280000" +
-        "003D400000000F8543FFFFFF4C89F7BE40000000FF9318030000E930FFFFFF4C89F7BE41000000FF93A0010000E91DFF" +
-        "FFFF4883C408415E5BC3";
+        "5341564883EC084989FE498B1E89F085C00F885F0000003D000000000F840F000000E900000000B8FDFFFFFFE9450000" +
+        "004C89F7BE00000000FF93080000003D340000000F85C5FFFFFF4C89F7BE34000000FF93880100003D360000000F85AC" +
+        "FFFFFF4C89F7BE36000000FF9390000000E999FFFFFF4883C408415E5BC390905341564883EC084989FE498B1E89F085" +
+        "C00F88400000003D3F0000000F840F000000E900000000B8FDFFFFFFE9260000004C89F7BE3F000000FF9380000000E9" +
+        "CBFFFFFF4C89F7BE44000000FF93A0010000E9B8FFFFFF4883C408415E5BC3905341564883EC084989FE498B1E89F085" +
+        "C00F88F60000003D450000000F840F000000E900000000B8FDFFFFFFE9DC0000004C89F7BE45000000FF93280000003D" +
+        "4C0000000F84100000003D680000000F8429000000E9B5FFFFFF4C89F7BE4C000000FF93800000003D4C0000000F84E7" +
+        "FFFFFF3D680000000F8591FFFFFF4C89F7BE68000000FF93800000003D830000000F84500000003D710000000F856DFF" +
+        "FFFF4C89F7BE71000000FF93980000003D7F0000000F8554FFFFFF4C89F7BE7F000000FF93880100003D810000000F85" +
+        "3BFFFFFF4C89F7BE81000000FF9300020000E928FFFFFF4C89F7BE83000000FF9328000000E915FFFFFF4C89F7BE8700" +
+        "0000FF93A0010000E902FFFFFF4883C408415E5BC390909090909090909090905341564883EC084989FE498B1E89F085" +
+        "C00F88B00000003D910000000F846C0000000F871B0000003D880000000F84350000003D8C0000000F843D000000E91B" +
+        "0000003D960000000F84530000003D9B0000000F845B000000E900000000B8FDFFFFFFE95F0000004C89F7BE88000000" +
+        "FF9328000000E994FFFFFF4C89F7BE8C000000FF9380030000E981FFFFFF4C89F7BE91000000FF9380030000E96EFFFF" +
+        "FF4C89F7BE96000000FF9380030000E95BFFFFFF4C89F7BE9B000000FF9380030000E948FFFFFF4883C408415E5BC3";
+
+    /// <summary>
+    /// The golden program's listing, the plan derived from it without the plan code, and both conventions'
+    /// bytes decoded one instantiation a line against the written template list.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE LISTING IS THE GOLDEN ROWS' WIDTH WALK, AND THE PLAN WAS DERIVED FROM IT BY THE DEFINITIONS, NOT
+    /// BY <see cref="JsBaselineBlocks.TryPlan"/>.</b> The landings are the unit's entry, its handler offsets,
+    /// the instruction after each <c>Yield</c>, <c>Await</c> and <c>EnterBody</c> and each <c>YieldDelegate</c>;
+    /// the heads add every code target, every instruction that runs alone and every successor of an
+    /// instruction that ends a block; a head's last instruction is the first on its linear walk that ends a
+    /// block, is the unit's last, or is followed by one that runs alone; and its tail leaves, falls through
+    /// to the next head or branches. The decode names each branch's target by the label bound there, and
+    /// every call's program counter and slot were checked against that plan.
+    /// </para>
+    /// <para>
+    /// <b>THE BYTE COLUMNS ARE THE RETAINED BYTES, AND A ROW SAYS SO.</b>
+    /// <c>TheGoldenHandDecodeIsTheGoldenBytes</c> concatenates each convention's column and requires the
+    /// two constants above, so a later re-base that moved the bytes without the decode fails a row rather
+    /// than leaving a stale decode beside new bytes.
+    /// </para>
+    /// </remarks>
+    private const string GoldenHandDecode = @"THE LISTING: the golden rows' walk of the code section by instruction width, one instruction a line
+unit 0 [0, 63), no regions
+      0  LoadUndefined
+      1  InitialiseScoped 0 0
+      5  DeclareGlobal 0
+      8  DeclareGlobal 1
+     11  DeclareGlobal 2
+     14  Closure 1
+     17  StoreGlobal 0
+     20  Closure 2
+     23  StoreGlobal 1
+     26  Closure 3
+     29  StoreGlobal 2
+     32  DeclareGlobalLet 5
+     35  NewObject
+     36  LoadConstant 4
+     39  DefineField 6
+     42  InitialiseGlobalLexical 5
+     45  LoadGlobal 1
+     48  LoadUndefined
+     49  LoadConstant 4
+     52  Call 1
+     54  InitialiseScoped 0 0
+     58  LoadScoped 0 0
+     62  Return
+unit 1 [63, 69), no regions
+     63  LoadScoped 0 0
+     67  Return
+     68  ReturnUndefined
+unit 2 [69, 136), no regions
+     69  LoadConstant 3
+     72  InitialiseScoped 0 1
+     76  LoadScoped 0 1
+     80  LoadConstant 4
+     83  Add
+     84  Duplicate
+     85  StoreScoped 0 1
+     89  Pop
+     90  LoadScoped 0 1
+     94  LoadScoped 0 0
+     98  LessThan
+     99  JumpIfTrue 76
+    104  LoadScoped 0 0
+    108  JumpIfFalse 131
+    113  LoadGlobal 5
+    116  GetProperty 6
+    119  LoadGlobal 0
+    122  LoadUndefined
+    123  LoadScoped 0 1
+    127  Call 1
+    129  Add
+    130  Return
+    131  LoadConstant 4
+    134  Throw
+    135  ReturnUndefined
+unit 3 [136, 157), no regions
+    136  LoadConstant 4
+    139  Yield
+    140  Pop
+    141  LoadConstant 7
+    144  Yield
+    145  Pop
+    146  LoadConstant 8
+    149  Yield
+    150  Pop
+    151  LoadConstant 9
+    154  Yield
+    155  Pop
+    156  ReturnUndefined
+
+THE PLAN, DERIVED BY HAND FROM THE LISTING: landings, then each head's last instruction and tail
+unit 0: landings 0
+  head 0 LoadUndefined (landing): last 49 LoadConstant, falls through to 52
+  head 52 Call (runs alone): last 52 Call, falls through to 54
+  head 54 InitialiseScoped: last 62 Return, leaves
+unit 1: landings 63
+  head 63 LoadScoped (landing): last 67 Return, leaves
+  head 68 ReturnUndefined: last 68 ReturnUndefined, leaves
+unit 2: landings 69
+  head 69 LoadConstant (landing): last 99 JumpIfTrue, compares its target 76, branches to 104
+  head 76 LoadScoped: last 99 JumpIfTrue, compares its target 76, falls through to 104
+  head 104 LoadScoped: last 108 JumpIfFalse, compares its target 131, falls through to 113
+  head 113 LoadGlobal: last 123 LoadScoped, falls through to 127
+  head 127 Call (runs alone): last 127 Call, falls through to 129
+  head 129 Add: last 130 Return, leaves
+  head 131 LoadConstant: last 134 Throw, leaves
+  head 135 ReturnUndefined: last 135 ReturnUndefined, leaves
+unit 3: landings 136, 140, 145, 150, 155
+  head 136 LoadConstant (landing): last 156 ReturnUndefined, leaves
+  head 140 Pop (landing): last 156 ReturnUndefined, leaves
+  head 145 Pop (landing): last 156 ReturnUndefined, leaves
+  head 150 Pop (landing): last 156 ReturnUndefined, leaves
+  head 155 Pop (landing): last 156 ReturnUndefined, leaves
+
+THE DECODE, AGAINST THE WRITTEN TEMPLATE LIST: offset, Windows bytes, System V bytes (= where the same), instruction, label bound here
+unit 0 at 0
+000000  53             =              push rbx
+000001  4156           =              push r14
+000003  4883EC28       4883EC08       sub rsp, frame
+000007  4989CE         4989FE         mov r14, arg0
+00000A  498B1E         =              mov rbx, [r14]
+00000D  89D0           89F0           mov eax, arg1d
+00000F  85C0           =              test eax, eax                      dispatch
+000011  0F885F000000   =              js -> leave
+000017  3D00000000     =              cmp eax, 0
+00001C  0F840F000000   =              je -> head 0
+000022  E900000000     =              jmp -> defect
+000027  B8FDFFFFFF     =              mov eax, -3 (Defect)               defect
+00002C  E945000000     =              jmp -> leave
+000031  4C89F1         4C89F7         mov arg0, r14                      head 0
+000034  BA00000000     BE00000000     mov arg1d, 0
+000039  FF9308000000   =              call [rbx+8] (LoadUndefined)
+00003F  3D34000000     =              cmp eax, 52
+000044  0F85C5FFFFFF   =              jne -> dispatch
+00004A  4C89F1         4C89F7         mov arg0, r14                      head 52
+00004D  BA34000000     BE34000000     mov arg1d, 52
+000052  FF9388010000   =              call [rbx+392] (Call)
+000058  3D36000000     =              cmp eax, 54
+00005D  0F85ACFFFFFF   =              jne -> dispatch
+000063  4C89F1         4C89F7         mov arg0, r14                      head 54
+000066  BA36000000     BE36000000     mov arg1d, 54
+00006B  FF9390000000   =              call [rbx+144] (InitialiseScoped)
+000071  E999FFFFFF     =              jmp -> dispatch
+000076  4883C428       4883C408       add rsp, frame                     leave
+00007A  415E           =              pop r14
+00007C  5B             =              pop rbx
+00007D  C3             =              ret
+00007E  90             =              padding
+00007F  90             =              padding
+unit 1 at 128
+000080  53             =              push rbx
+000081  4156           =              push r14
+000083  4883EC28       4883EC08       sub rsp, frame
+000087  4989CE         4989FE         mov r14, arg0
+00008A  498B1E         =              mov rbx, [r14]
+00008D  89D0           89F0           mov eax, arg1d
+00008F  85C0           =              test eax, eax                      dispatch
+000091  0F8840000000   =              js -> leave
+000097  3D3F000000     =              cmp eax, 63
+00009C  0F840F000000   =              je -> head 63
+0000A2  E900000000     =              jmp -> defect
+0000A7  B8FDFFFFFF     =              mov eax, -3 (Defect)               defect
+0000AC  E926000000     =              jmp -> leave
+0000B1  4C89F1         4C89F7         mov arg0, r14                      head 63
+0000B4  BA3F000000     BE3F000000     mov arg1d, 63
+0000B9  FF9380000000   =              call [rbx+128] (LoadScoped)
+0000BF  E9CBFFFFFF     =              jmp -> dispatch
+0000C4  4C89F1         4C89F7         mov arg0, r14                      head 68
+0000C7  BA44000000     BE44000000     mov arg1d, 68
+0000CC  FF93A0010000   =              call [rbx+416] (ReturnUndefined)
+0000D2  E9B8FFFFFF     =              jmp -> dispatch
+0000D7  4883C428       4883C408       add rsp, frame                     leave
+0000DB  415E           =              pop r14
+0000DD  5B             =              pop rbx
+0000DE  C3             =              ret
+0000DF  90             =              padding
+unit 2 at 224
+0000E0  53             =              push rbx
+0000E1  4156           =              push r14
+0000E3  4883EC28       4883EC08       sub rsp, frame
+0000E7  4989CE         4989FE         mov r14, arg0
+0000EA  498B1E         =              mov rbx, [r14]
+0000ED  89D0           89F0           mov eax, arg1d
+0000EF  85C0           =              test eax, eax                      dispatch
+0000F1  0F88F6000000   =              js -> leave
+0000F7  3D45000000     =              cmp eax, 69
+0000FC  0F840F000000   =              je -> head 69
+000102  E900000000     =              jmp -> defect
+000107  B8FDFFFFFF     =              mov eax, -3 (Defect)               defect
+00010C  E9DC000000     =              jmp -> leave
+000111  4C89F1         4C89F7         mov arg0, r14                      head 69
+000114  BA45000000     BE45000000     mov arg1d, 69
+000119  FF9328000000   =              call [rbx+40] (LoadConstant)
+00011F  3D4C000000     =              cmp eax, 76
+000124  0F8410000000   =              je -> head 76
+00012A  3D68000000     =              cmp eax, 104
+00012F  0F8429000000   =              je -> head 104
+000135  E9B5FFFFFF     =              jmp -> dispatch
+00013A  4C89F1         4C89F7         mov arg0, r14                      head 76
+00013D  BA4C000000     BE4C000000     mov arg1d, 76
+000142  FF9380000000   =              call [rbx+128] (LoadScoped)
+000148  3D4C000000     =              cmp eax, 76
+00014D  0F84E7FFFFFF   =              je -> head 76
+000153  3D68000000     =              cmp eax, 104
+000158  0F8591FFFFFF   =              jne -> dispatch
+00015E  4C89F1         4C89F7         mov arg0, r14                      head 104
+000161  BA68000000     BE68000000     mov arg1d, 104
+000166  FF9380000000   =              call [rbx+128] (LoadScoped)
+00016C  3D83000000     =              cmp eax, 131
+000171  0F8450000000   =              je -> head 131
+000177  3D71000000     =              cmp eax, 113
+00017C  0F856DFFFFFF   =              jne -> dispatch
+000182  4C89F1         4C89F7         mov arg0, r14                      head 113
+000185  BA71000000     BE71000000     mov arg1d, 113
+00018A  FF9398000000   =              call [rbx+152] (LoadGlobal)
+000190  3D7F000000     =              cmp eax, 127
+000195  0F8554FFFFFF   =              jne -> dispatch
+00019B  4C89F1         4C89F7         mov arg0, r14                      head 127
+00019E  BA7F000000     BE7F000000     mov arg1d, 127
+0001A3  FF9388010000   =              call [rbx+392] (Call)
+0001A9  3D81000000     =              cmp eax, 129
+0001AE  0F853BFFFFFF   =              jne -> dispatch
+0001B4  4C89F1         4C89F7         mov arg0, r14                      head 129
+0001B7  BA81000000     BE81000000     mov arg1d, 129
+0001BC  FF9300020000   =              call [rbx+512] (Add)
+0001C2  E928FFFFFF     =              jmp -> dispatch
+0001C7  4C89F1         4C89F7         mov arg0, r14                      head 131
+0001CA  BA83000000     BE83000000     mov arg1d, 131
+0001CF  FF9328000000   =              call [rbx+40] (LoadConstant)
+0001D5  E915FFFFFF     =              jmp -> dispatch
+0001DA  4C89F1         4C89F7         mov arg0, r14                      head 135
+0001DD  BA87000000     BE87000000     mov arg1d, 135
+0001E2  FF93A0010000   =              call [rbx+416] (ReturnUndefined)
+0001E8  E902FFFFFF     =              jmp -> dispatch
+0001ED  4883C428       4883C408       add rsp, frame                     leave
+0001F1  415E           =              pop r14
+0001F3  5B             =              pop rbx
+0001F4  C3             =              ret
+0001F5  90             =              padding
+0001F6  90             =              padding
+0001F7  90             =              padding
+0001F8  90             =              padding
+0001F9  90             =              padding
+0001FA  90             =              padding
+0001FB  90             =              padding
+0001FC  90             =              padding
+0001FD  90             =              padding
+0001FE  90             =              padding
+0001FF  90             =              padding
+unit 3 at 512
+000200  53             =              push rbx
+000201  4156           =              push r14
+000203  4883EC28       4883EC08       sub rsp, frame
+000207  4989CE         4989FE         mov r14, arg0
+00020A  498B1E         =              mov rbx, [r14]
+00020D  89D0           89F0           mov eax, arg1d
+00020F  85C0           =              test eax, eax                      dispatch
+000211  0F88B0000000   =              js -> leave
+000217  3D91000000     =              cmp eax, 145
+00021C  0F846C000000   =              je -> head 145
+000222  0F871B000000   =              ja -> subtree 1
+000228  3D88000000     =              cmp eax, 136
+00022D  0F8435000000   =              je -> head 136
+000233  3D8C000000     =              cmp eax, 140
+000238  0F843D000000   =              je -> head 140
+00023E  E91B000000     =              jmp -> defect
+000243  3D96000000     =              cmp eax, 150                       subtree 1
+000248  0F8453000000   =              je -> head 150
+00024E  3D9B000000     =              cmp eax, 155
+000253  0F845B000000   =              je -> head 155
+000259  E900000000     =              jmp -> defect
+00025E  B8FDFFFFFF     =              mov eax, -3 (Defect)               defect
+000263  E95F000000     =              jmp -> leave
+000268  4C89F1         4C89F7         mov arg0, r14                      head 136
+00026B  BA88000000     BE88000000     mov arg1d, 136
+000270  FF9328000000   =              call [rbx+40] (LoadConstant)
+000276  E994FFFFFF     =              jmp -> dispatch
+00027B  4C89F1         4C89F7         mov arg0, r14                      head 140
+00027E  BA8C000000     BE8C000000     mov arg1d, 140
+000283  FF9380030000   =              call [rbx+896] (Pop)
+000289  E981FFFFFF     =              jmp -> dispatch
+00028E  4C89F1         4C89F7         mov arg0, r14                      head 145
+000291  BA91000000     BE91000000     mov arg1d, 145
+000296  FF9380030000   =              call [rbx+896] (Pop)
+00029C  E96EFFFFFF     =              jmp -> dispatch
+0002A1  4C89F1         4C89F7         mov arg0, r14                      head 150
+0002A4  BA96000000     BE96000000     mov arg1d, 150
+0002A9  FF9380030000   =              call [rbx+896] (Pop)
+0002AF  E95BFFFFFF     =              jmp -> dispatch
+0002B4  4C89F1         4C89F7         mov arg0, r14                      head 155
+0002B7  BA9B000000     BE9B000000     mov arg1d, 155
+0002BC  FF9380030000   =              call [rbx+896] (Pop)
+0002C2  E948FFFFFF     =              jmp -> dispatch
+0002C7  4883C428       4883C408       add rsp, frame                     leave
+0002CB  415E           =              pop r14
+0002CD  5B             =              pop rbx
+0002CE  C3             =              ret
+";
 
     /// <summary>One program's baseline emission, compared with the bytes retained for it.</summary>
     /// <remarks>
-    /// <b>THE RETAINED BYTES WERE DECODED BY HAND AGAINST THE TEMPLATE LIST THE FORM WAS SPECIFIED
-    /// WITH, NOT AGAINST THE TABLE.</b> The closure rows prove the emitter and the table agree with
-    /// each other; this row pins both to the written specification - the prologue, the dispatch, the
-    /// one-landing leaf, the defect block, each instruction's call and tail, and the epilogue - so
-    /// that an encoder and a table that drifted together still move a row.
+    /// <b>THE RETAINED BYTES ARE DECODED IN <see cref="GoldenHandDecode"/> AGAINST THE TEMPLATE LIST THE FORM
+    /// WAS SPECIFIED WITH, NOT AGAINST THE TABLE, AND THEIR HEADS AGAINST A PLAN DERIVED FROM THE BYTECODE
+    /// LISTING, NOT FROM THE PLAN CODE.</b> The closure rows prove the emitter and the table agree with each
+    /// other; this row pins both to the written specification - the prologue, the dispatch with a leaf and
+    /// a split tree, the defect block, each block head's call and tail of every kind, and the epilogue - so
+    /// that an encoder and a table that drifted together still move a row, and
+    /// <c>TheGoldenHandDecodeIsTheGoldenBytes</c> keeps the decode the retained bytes'. Its detail carries
+    /// the listing the decode's plan was derived from, walked by instruction width.
     /// </remarks>
     private static (string, bool, string) BaselineGolden(JsX64Abi abi, string expected)
     {
-        var name = "`" + abi.Name + "` emits the retained baseline bytes for a property read, a branch and a throw";
+        var name = "`" + abi.Name + "` emits the retained baseline bytes for a loop, a branch, a call, a throw and a generator";
         var compiled = CompileWide(("golden", GoldenSource, null), abi.Name);
 
         if (!compiled.Succeeded || compiled.Artifact is null)
@@ -1653,11 +1970,249 @@ internal static class NativeTemplateScanChecks
             return (name, false, refusal);
         }
 
+        if (!NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out refusal))
+        {
+            return (name, false, refusal);
+        }
+
         var written = System.Convert.ToHexString(code);
+        var listing = "; the bytecode, walked by width: " + WidthWalk(image);
 
         return string.Equals(written, expected, System.StringComparison.Ordinal)
-            ? (name, true, code.Length + " bytes, " + symbols.Length + " symbols")
-            : (name, false, "the emitted bytes are not the retained ones; the emission reads " + written);
+            ? (name, true, code.Length + " bytes, " + symbols.Length + " symbols" + listing)
+            : (name, false, "the emitted bytes are not the retained ones; the emission reads " + written + listing);
+    }
+
+    /// <summary>
+    /// A program's code section as a plain listing: each unit's instructions, offset, opcode and operand,
+    /// found by stepping from the unit's first byte by each instruction's width, then its regions.
+    /// </summary>
+    /// <remarks>
+    /// <b>IT ASKS THE OPCODE TABLE FOR WIDTHS AND SHAPES AND NOTHING ELSE, AND NEVER THE PARTITION.</b> It
+    /// is the input the retained decode derives its landings, heads, last instructions and tails from by
+    /// hand, so it must not be computed by the plan those are meant to check. It reads the code, function
+    /// and region sections through the reader the plan row reads them through.
+    /// </remarks>
+    private static string WidthWalk(JsNativeProgramImage image)
+    {
+        var text = new System.Text.StringBuilder();
+
+        for (var unit = 0; unit < image.Functions.Length; unit++)
+        {
+            var row = image.Functions[unit];
+            var end = (long)row.CodeOffset + row.CodeLength;
+
+            text.Append(unit == 0 ? string.Empty : " | ")
+                .Append("unit ").Append(unit).Append(" [").Append(row.CodeOffset).Append(", ").Append(end).Append("):");
+
+            for (var at = (long)row.CodeOffset; at < end;)
+            {
+                var value = image.Code[at];
+
+                if (!JsOpcodes.IsDefined(value))
+                {
+                    text.Append(' ').Append(at).Append(" undefined byte ").Append(value).Append(';');
+                    break;
+                }
+
+                var opcode = (JsOpcode)value;
+                text.Append(' ').Append(at).Append(' ').Append(opcode);
+
+                switch (JsOpcodes.Shape(opcode))
+                {
+                    case JsOperandShape.U8:
+                        text.Append(' ').Append(image.Code[at + 1]);
+                        break;
+
+                    case JsOperandShape.U16:
+                        text.Append(' ').Append(System.BitConverter.ToUInt16(image.Code, (int)at + 1));
+                        break;
+
+                    case JsOperandShape.U32:
+                        text.Append(' ').Append(System.BitConverter.ToUInt32(image.Code, (int)at + 1));
+                        break;
+
+                    case JsOperandShape.U8U16:
+                        text.Append(' ').Append(image.Code[at + 1]).Append(' ')
+                            .Append(System.BitConverter.ToUInt16(image.Code, (int)at + 2));
+                        break;
+                }
+
+                text.Append(';');
+                at += JsOpcodes.InstructionWidth(opcode);
+            }
+
+            text.Append(" regions:");
+            var any = false;
+
+            foreach (var region in image.Regions)
+            {
+                if (region.FunctionIndex == (uint)unit)
+                {
+                    text.Append(" try [").Append(region.TryStart).Append(", ").Append(region.TryEnd)
+                        .Append(") handler ").Append(region.HandlerOffset).Append(';');
+                    any = true;
+                }
+            }
+
+            if (!any)
+            {
+                text.Append(" none;");
+            }
+        }
+
+        return text.ToString();
+    }
+
+    /// <summary>
+    /// The golden program's plan has a block of every tail kind, a head that runs alone, a tail that
+    /// compares a code target, and a unit with more landings than a leaf of the tree compares.
+    /// </summary>
+    /// <remarks>
+    /// <b>THE RETAINED BYTES ARE ONLY AS WIDE AS THE PROGRAM THEY WERE EMITTED FROM.</b> The golden rows
+    /// and the decode pin every shape a unit's body can take only while the program reaches all of them,
+    /// and this row is what says it does: a leave, a fall-through and a branch tail, a call through the
+    /// slot of an opcode that runs alone, a target compare, and an above-branch in a dispatch. It reads
+    /// the plan, which the plan row and the decode hold elsewhere; here it only decides whether the
+    /// program is wide enough.
+    /// </remarks>
+    private static (string, bool, string) TheGoldenProgramReachesEveryTailKind()
+    {
+        const string Name = "the golden program reaches every tail kind, a head that runs alone and a split landing tree";
+        var compiled = CompileWide(("golden", GoldenSource, null), JsNativeBackends.X64Windows);
+
+        if (!compiled.Succeeded || compiled.Artifact is null)
+        {
+            return (Name, false, Refusal(compiled));
+        }
+
+        if (!NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out var refusal))
+        {
+            return (Name, false, refusal);
+        }
+
+        var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+        var tails = new int[3];
+        var alone = 0;
+        var targets = 0;
+        var widest = 0;
+
+        for (var unit = 0; unit < image.Functions.Length; unit++)
+        {
+            if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out refusal))
+            {
+                return (Name, false, "unit " + unit + ": the plan refused - " + refusal);
+            }
+
+            widest = System.Math.Max(widest, plan.Landings.Length);
+
+            foreach (var block in plan.Blocks)
+            {
+                tails[(int)block.Tail]++;
+                alone += JsBaselineBlocks.RunsAlone(block.HeadOpcode) ? 1 : 0;
+                targets += block.HasTarget ? 1 : 0;
+            }
+        }
+
+        return (
+            Name,
+            tails[(int)JsBaselineTail.Leave] > 0 && tails[(int)JsBaselineTail.FallThrough] > 0 &&
+                tails[(int)JsBaselineTail.Branch] > 0 && alone > 0 && targets > 0 &&
+                widest > JsBaselineBlocks.LeafLandings,
+            image.Functions.Length + " units: " + tails[(int)JsBaselineTail.Leave] + " leave, " +
+                tails[(int)JsBaselineTail.FallThrough] + " fall-through and " + tails[(int)JsBaselineTail.Branch] +
+                " branch tails, " + alone + " heads that run alone, " + targets + " target compares, and at most " +
+                widest + " landings in a unit, where a leaf compares " + JsBaselineBlocks.LeafLandings);
+    }
+
+    /// <summary>The retained decode's byte columns, concatenated per convention, are the retained bytes.</summary>
+    /// <remarks>
+    /// <b>EVERY LINE AFTER THE DECODE'S HEADING IS A UNIT'S HEADING OR ONE INSTANTIATION, AND EACH
+    /// INSTANTIATION STARTS WHERE THE ONE BEFORE ENDED.</b> A line's first column is its offset, its second
+    /// the Windows bytes, and its third the System V bytes, or <c>=</c> where they are the Windows bytes;
+    /// the two conventions' instantiations are the same length. A decode that dropped, doubled or
+    /// misplaced an instantiation, or that was left behind by a re-base of either constant, fails here.
+    /// What the row cannot check is the decode's words - the instruction, the operand and the label - which
+    /// are the hand check itself.
+    /// </remarks>
+    private static (string, bool, string) TheGoldenHandDecodeIsTheGoldenBytes()
+    {
+        const string Name = "the golden hand decode is the golden bytes";
+        var windows = new System.Text.StringBuilder();
+        var systemV = new System.Text.StringBuilder();
+        var instantiations = 0;
+        var decoding = false;
+
+        foreach (var line in GoldenHandDecode.Split('\n'))
+        {
+            if (line.StartsWith("THE DECODE", System.StringComparison.Ordinal))
+            {
+                decoding = true;
+                continue;
+            }
+
+            if (!decoding || line.Length == 0 || line.StartsWith("unit ", System.StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var columns = line.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
+
+            if (columns.Length < 4 || columns[0].Length != 6 ||
+                !int.TryParse(
+                    columns[0],
+                    System.Globalization.NumberStyles.AllowHexSpecifier,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out var offset))
+            {
+                return (Name, false, "a line of the decode is neither a unit's heading nor an instantiation: " + line);
+            }
+
+            var systemVBytes = columns[2] == "=" ? columns[1] : columns[2];
+
+            if (offset != windows.Length / 2 || !IsHexBytes(columns[1]) || !IsHexBytes(systemVBytes) ||
+                systemVBytes.Length != columns[1].Length)
+            {
+                return (
+                    Name,
+                    false,
+                    "the instantiation at " + columns[0] + " does not follow the " + (windows.Length / 2) +
+                        " bytes before it with one length under both conventions: " + line);
+            }
+
+            windows.Append(columns[1]);
+            systemV.Append(systemVBytes);
+            instantiations++;
+        }
+
+        var windowsMatch = string.Equals(windows.ToString(), GoldenWindows, System.StringComparison.Ordinal);
+        var systemVMatch = string.Equals(systemV.ToString(), GoldenSystemV, System.StringComparison.Ordinal);
+
+        return (
+            Name,
+            decoding && instantiations > 0 && windowsMatch && systemVMatch,
+            instantiations + " instantiations decoded, " + (windows.Length / 2) + " bytes: the Windows column " +
+                (windowsMatch ? "is" : "IS NOT") + " the retained Windows bytes and the System V column " +
+                (systemVMatch ? "is" : "IS NOT") + " the retained System V bytes");
+    }
+
+    /// <summary>Whether a column of the decode is whole bytes of upper-case hexadecimal.</summary>
+    private static bool IsHexBytes(string column)
+    {
+        if (column.Length == 0 || column.Length % 2 != 0)
+        {
+            return false;
+        }
+
+        foreach (var character in column)
+        {
+            if (character is not ((>= '0' and <= '9') or (>= 'A' and <= 'F')))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>

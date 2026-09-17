@@ -23,7 +23,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// <b>THE TIER IS NOT A FIELD OF THE ARTIFACT, BECAUSE THE MANIFEST ALREADY SAYS IT.</b> An artifact
 /// declaring <c>broiler.javascript.numeric</c> carries computing templates over a slab of
 /// <c>double</c>; an artifact declaring <c>broiler.javascript.wide</c> carries the baseline form, whose
-/// every instruction is a call into the interpreter's own dispatch for that one instruction. A second
+/// emitted code calls into the interpreter's own dispatch at every block head. A second
 /// field naming the same fact would be a second place for the two to disagree, and the verifier would
 /// have to choose which one to believe.
 /// </para>

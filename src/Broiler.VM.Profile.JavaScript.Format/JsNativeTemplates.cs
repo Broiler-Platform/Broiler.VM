@@ -768,7 +768,7 @@ public static class JsNativeTemplates
     /// <para>
     /// <b>TWENTY-ONE TEMPLATES, AND THE ONLY INDIRECT TRANSFER AMONG THEM IS A CALL THROUGH THE
     /// HANDLER TABLE.</b> A baseline unit computes nothing: it saves two callee-saved registers,
-    /// loads the table base out of the frame it was handed, calls one handler per instruction and
+    /// loads the table base out of the frame it was handed, calls one handler per block head and
     /// follows the program counter the handler answers with through compares and direct branches.
     /// The one indirect call is <c>call qword [rbx+disp32]</c> with a displacement that is eight
     /// times a defined opcode, RBX is written only by the prologue's load and the epilogue's pop, and

@@ -1024,11 +1024,11 @@ public sealed class ReviewRecordRuleTests
         // where the activation it runs for is kept. The format's is the frame and its layout
         // constants, JsBaselineFrame.cs, in the assembly both the emitter and the handlers
         // reference. The lowering's is the emitter that writes every unit of a wide artifact as
-        // one call per instruction, JsX64BaselineEmitter.cs. The profile's three are the activation
-        // and the step that checks it, JsNativeActivation.cs; the table of entry points native code
-        // calls, JsBaselineHandlers.cs; and the engine's half that enters emitted code and maps its
-        // page, JsEngine.Baseline.cs. They are covered on the same terms as every other product
-        // file, and nothing in them has been read by a human.
+        // a handler call at every block head, JsX64BaselineEmitter.cs. The profile's three are the
+        // activation and the step that checks it, JsNativeActivation.cs; the table of entry points
+        // native code calls, JsBaselineHandlers.cs; and the engine's half that enters emitted code
+        // and maps its page, JsEngine.Baseline.cs. They are covered on the same terms as every other
+        // product file, and nothing in them has been read by a human.
         //
         // THE HUNDRED-AND-SEVENTY-FIRST IS THE RUNTIME'S FUEL PRE-ADMISSION TABLE,
         // VmFuelPreAdmissions.cs, and it is counted here for the reason a reader would ask about

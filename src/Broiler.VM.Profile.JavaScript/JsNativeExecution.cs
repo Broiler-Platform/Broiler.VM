@@ -239,8 +239,8 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
 /// observation would be the second execution arm this profile's non-goals refuse.
 /// <para>
 /// <b>THIS ARM RUNS THE NUMERIC MANIFEST'S EMITTED CODE AND NO OTHER.</b> An artifact compiled under
-/// <c>broiler.javascript.wide</c> with the native form carries the baseline form, whose every
-/// instruction calls into the engine's own dispatch loop; it needs a realm, a job queue and the guest
+/// <c>broiler.javascript.wide</c> with the native form carries the baseline form, whose emitted code
+/// calls into the engine's own dispatch loop; it needs a realm, a job queue and the guest
 /// stack, so the executor instantiates it through the engine's arm, and the engine enters its emitted
 /// code. What this arm says about slabs, a prepaid fuel counter and the one throw it knows is true of
 /// numeric artifacts only.

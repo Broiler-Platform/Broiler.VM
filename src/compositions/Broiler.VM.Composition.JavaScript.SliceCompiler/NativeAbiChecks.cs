@@ -741,7 +741,7 @@ internal static class NativeAbiChecks
     /// <remarks>
     /// <para>
     /// <b>THE UNIT IS THE BACKEND'S AND THE HANDLER IS NOT.</b> Every slot of the probe table is the same
-    /// check-only stub, so the first instruction the unit dispatches calls it, it answers exit, and the
+    /// check-only stub, so the first head the unit dispatches calls it, it answers exit, and the
     /// unit leaves - which exercises the prologue, the dispatch compare, one handler call and the
     /// epilogue, and nothing of the interpreter. What the rows establish is what the numeric rows
     /// above establish for their frame: the stack pointer at the handler's entry is eight past a

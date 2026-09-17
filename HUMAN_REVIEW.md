@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 4015 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 3807 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 172 |
-| Code units | 6975 |
-| Relevant | 4015 |
+| Code units | 6767 |
+| Relevant | 3807 |
 | Exempt | 2960 |
-| Assessed | 4015 of 4015 (100%) |
-| Human reviewed | 0 of 4015 (0%) |
-| Unverified | 4015 |
+| Assessed | 3807 of 3807 (100%) |
+| Human reviewed | 0 of 3807 (0%) |
+| Unverified | 3807 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 4015 |
+| HUMAN_PENDING | 3807 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -154,7 +154,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Abi.cs` | 11 | 9 | 2 | 9 | Low | High | 8/8 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Assembler.cs` | 95 | 65 | 30 | 65 | Low | Critical | 20/20 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Backend.cs` | 34 | 29 | 5 | 29 | Low | High | 17/17 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` | 6 | 6 | 0 | 6 | None | Critical | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` | 4 | 4 | 0 | 4 | None | Critical | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` | 28 | 16 | 12 | 16 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` | 7 | 7 | 0 | 7 | None | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructs.cs` | 61 | 6 | 55 | 6 | None | High | 4/4 |
@@ -194,7 +194,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs` | 28 | 20 | 8 | 20 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` | 62 | 33 | 29 | 33 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript/JsArray.cs` | 19 | 14 | 5 | 14 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` | 372 | 371 | 1 | 371 | None | Critical | 372/372 |
+| `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` | 166 | 165 | 1 | 165 | None | Critical | 166/166 |
 | `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 51 | 31 | 20 | 31 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 87 | 51 | 36 | 51 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` | 4 | 4 | 0 | 4 | None | Critical | 4/4 |
@@ -550,8 +550,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a field offset here differs from the offset the runtime gives that field of JsNativeFrame
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Backend` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Backend.cs` - Security=High, Spec=none cited, `35D721`, PENDING
   - Falsified if: an emitted unit answers a value the interpreter does not answer for the same bytecode and the same inputs
-- `Broiler.VM.Profile.JavaScript.Compiler.JsX64Backend.SemanticVersion` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Backend.cs` - Security=High, Spec=none cited, `B49274`, PENDING
-  - Falsified if: a template in this file changes without this number changing
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64Backend.SemanticVersion` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Backend.cs` - Security=High, Spec=none cited, `18E59B`, PENDING
+  - Falsified if: a template in this file, or the baseline block partition or layout the baseline emitter encodes, changes without this number changing
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Backend.TryEmit(JsNativeProgramImage, out byte[], out JsNativeSymbolRow[], out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Backend.cs` - Security=High, Spec=none cited, `8C91FD`, PENDING
   - Falsified if: an emission is produced in which some code unit has no emitted entry point
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Backend.TryReadBindings(JsNativeProgramImage, out System.Collections.Generic.Dictionary<int, int>, out System.Collections.Generic.HashSet<int>, out System.Collections.Generic.HashSet<int>, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Backend.cs` - Security=High, Spec=none cited, `FD3618`, PENDING
@@ -581,13 +581,11 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Backend.EmitCall(JsX64Assembler, JsNativeProgramImage, JsX64UnitPlan, JsX64Value[], int, int, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Backend.cs` - Security=High, Spec=none cited, `A494F3`, PENDING
   - Falsified if: a call is emitted to a unit whose parameter count differs from the argument count
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, Spec=none cited, `4CA3A6`, PENDING
-  - Falsified if: an emitted unit transfers control to a handler other than the one for the opcode at the program counter it passes, lands on an offset the managed side did not answer, or emits different bytes for the same image
-- `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter.TryEmit(JsNativeProgramImage, JsX64Abi, uint, out byte[], out JsNativeSymbolRow[], out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, Spec=none cited, `2FA82F`, PENDING
-  - Falsified if: an emission is produced in which some code unit has no entry point, some instruction has no handler call, or the bytes exceed the format's native-code ceiling
-- `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter.EmitUnit(JsX64Assembler, JsNativeProgramImage, int, JsX64Abi, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, Spec=none cited, `9C8358`, PENDING
-  - Falsified if: a unit's block for an instruction calls a slot other than eight times that instruction's opcode, passes a program counter other than that instruction's offset, or a branch site is left unpatched
-- `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter.Tree(JsX64Assembler, System.Collections.Generic.List<int>, int, int, int, int, int[], ref int, System.Collections.Generic.List<(int Site, int Label)>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=High, Spec=none cited, `CB5D94`, PENDING
-  - Falsified if: an offset in the landing set is dispatched anywhere but its own instruction's block, or an offset outside it anywhere but the defect block
+  - Falsified if: an emitted unit transfers control to a handler other than the one for the opcode at the head it passes, lands on an offset the managed side did not answer, or emits bytes other than the encoding of JsBaselineBlocks.Layout for the same image
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter.TryEmit(JsNativeProgramImage, JsX64Abi, uint, out byte[], out JsNativeSymbolRow[], out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, Spec=none cited, `D227C8`, PENDING
+  - Falsified if: an emission is produced in which some code unit has no entry point, some block head has no handler call, or the bytes exceed the format's native-code ceiling
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter.EmitUnit(JsX64Assembler, JsNativeProgramImage, int, System.ReadOnlySpan<uint>, JsX64Abi, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, Spec=none cited, `FF794B`, PENDING
+  - Falsified if: a unit's call for a block head names a slot other than eight times that head's opcode or passes a program counter other than the head's offset, the unit's body is not one template per entry of JsBaselineBlocks.Layout in its order, or a branch site is left unpatched or patched to a position other than that of the entry its target names
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueKind` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` - Security=High, Spec=none cited, `BF16E6`, PENDING
   - Falsified if: a value of a kind other than Number reaches an arithmetic instruction this emitter wrote
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Walk` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` - Security=High, Spec=none cited, `6C19B6`, PENDING
@@ -795,7 +793,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.LayoutLength(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `4C8676`, PENDING
   - Falsified if: for a plan TryPlan answered it differs from the length of the array Layout answers for the same plan
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Layout(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `9A72BA`, PENDING
-  - Falsified if: for a plan TryPlan answered, the layout's dispatch differs from the compare tree the baseline emitter writes over the same landings, a head's call names a pc other than the head or a slot other than eight times its opcode, a tail differs from the one its block's kind and target dictate, a branch resolves to an index other than the instruction it names, or the answer's length differs from LayoutLength
+  - Falsified if: for a plan TryPlan answered, the layout's dispatch sends a landing anywhere but its own head's call or another non-negative answer anywhere but the defect, a head's call names a pc other than the head or a slot other than eight times its opcode, a tail differs from the one its block's kind and target dictate, a branch resolves to an index other than the instruction it names, or the answer's length differs from LayoutLength
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Tree(JsBaselineInstruction[], ref int, System.ReadOnlySpan<int>, int, int, int, System.ReadOnlySpan<JsBaselineBlock>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `9676B4`, PENDING
   - Falsified if: a landing in the range is compared anywhere but on a path that branches to its own head, an offset outside the range reaches anything but the defect, or it writes other than TreeLength entries for the range
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.TreeLength(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `A8605C`, PENDING
@@ -944,410 +942,250 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this answers true for a table in which two defined opcodes share an entry point, a defined opcode has the refusing one, or an undefined byte has any other
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Undefined(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DFD818`, PENDING
   - Falsified if: this reads or writes any state, or answers anything but the defect status
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Nop(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `83B08B`, PENDING
-  - Falsified if: this runs any instruction other than one Nop at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadUndefined(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4A9181`, PENDING
-  - Falsified if: this runs any instruction other than one LoadUndefined at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadNull(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8596F7`, PENDING
-  - Falsified if: this runs any instruction other than one LoadNull at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadTrue(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D81D5C`, PENDING
-  - Falsified if: this runs any instruction other than one LoadTrue at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadFalse(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F5B412`, PENDING
-  - Falsified if: this runs any instruction other than one LoadFalse at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadConstant(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F5965D`, PENDING
-  - Falsified if: this runs any instruction other than one LoadConstant at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadThis(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C41896`, PENDING
-  - Falsified if: this runs any instruction other than one LoadThis at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.NewArguments(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A3A14D`, PENDING
-  - Falsified if: this runs any instruction other than one NewArguments at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadNewTarget(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1273ED`, PENDING
-  - Falsified if: this runs any instruction other than one LoadNewTarget at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadArgument(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E9D139`, PENDING
-  - Falsified if: this runs any instruction other than one LoadArgument at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.RestArguments(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AC5C1B`, PENDING
-  - Falsified if: this runs any instruction other than one RestArguments at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadScoped(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BE894E`, PENDING
-  - Falsified if: this runs any instruction other than one LoadScoped at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StoreScoped(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `92E4B7`, PENDING
-  - Falsified if: this runs any instruction other than one StoreScoped at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.InitialiseScoped(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A8B7C0`, PENDING
-  - Falsified if: this runs any instruction other than one InitialiseScoped at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadGlobal(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D81C4A`, PENDING
-  - Falsified if: this runs any instruction other than one LoadGlobal at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StoreGlobal(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3D0A78`, PENDING
-  - Falsified if: this runs any instruction other than one StoreGlobal at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadGlobalOrUndefined(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5D502D`, PENDING
-  - Falsified if: this runs any instruction other than one LoadGlobalOrUndefined at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.PushScope(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `004588`, PENDING
-  - Falsified if: this runs any instruction other than one PushScope at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.PopScope(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `66725F`, PENDING
-  - Falsified if: this runs any instruction other than one PopScope at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.CopyScope(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3D2AB7`, PENDING
-  - Falsified if: this runs any instruction other than one CopyScope at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeclareGlobal(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `101B09`, PENDING
-  - Falsified if: this runs any instruction other than one DeclareGlobal at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.PushObjectScope(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1C718A`, PENDING
-  - Falsified if: this runs any instruction other than one PushObjectScope at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ResolveName(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7306DA`, PENDING
-  - Falsified if: this runs any instruction other than one ResolveName at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.NewObject(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AA7494`, PENDING
-  - Falsified if: this runs any instruction other than one NewObject at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.NewArray(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8C63D9`, PENDING
-  - Falsified if: this runs any instruction other than one NewArray at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GetProperty(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `898108`, PENDING
-  - Falsified if: this runs any instruction other than one GetProperty at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SetProperty(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B2462B`, PENDING
-  - Falsified if: this runs any instruction other than one SetProperty at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GetIndex(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2BCC4E`, PENDING
-  - Falsified if: this runs any instruction other than one GetIndex at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SetIndex(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BC2ADF`, PENDING
-  - Falsified if: this runs any instruction other than one SetIndex at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineField(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `52DB75`, PENDING
-  - Falsified if: this runs any instruction other than one DefineField at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineIndexed(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D73387`, PENDING
-  - Falsified if: this runs any instruction other than one DefineIndexed at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeleteProperty(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C305CB`, PENDING
-  - Falsified if: this runs any instruction other than one DeleteProperty at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeleteIndex(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6C89CB`, PENDING
-  - Falsified if: this runs any instruction other than one DeleteIndex at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineGetter(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B424EC`, PENDING
-  - Falsified if: this runs any instruction other than one DefineGetter at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineSetter(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3128D1`, PENDING
-  - Falsified if: this runs any instruction other than one DefineSetter at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineMethod(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5C33BF`, PENDING
-  - Falsified if: this runs any instruction other than one DefineMethod at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadSuperProperty(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3C53C0`, PENDING
-  - Falsified if: this runs any instruction other than one LoadSuperProperty at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StoreSuperProperty(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B6FDAA`, PENDING
-  - Falsified if: this runs any instruction other than one StoreSuperProperty at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ArrayAppend(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F117B0`, PENDING
-  - Falsified if: this runs any instruction other than one ArrayAppend at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Closure(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AA6A7D`, PENDING
-  - Falsified if: this runs any instruction other than one Closure at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Call(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `88C946`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Nop(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5A6B2F`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Nop at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadUndefined(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A2C00C`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadUndefined at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadNull(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8B9C06`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadNull at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadTrue(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2F4548`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadTrue at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadFalse(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2931C8`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadFalse at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadConstant(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `248FC9`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadConstant at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadThis(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `449067`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadThis at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.NewArguments(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C8A81C`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one NewArguments at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadNewTarget(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BBD78E`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadNewTarget at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadArgument(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6F7F6A`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadArgument at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.RestArguments(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `428012`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one RestArguments at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadScoped(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1615E7`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadScoped at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StoreScoped(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `FDC027`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one StoreScoped at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.InitialiseScoped(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4B8647`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one InitialiseScoped at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadGlobal(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C3B020`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadGlobal at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StoreGlobal(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B243F9`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one StoreGlobal at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadGlobalOrUndefined(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D6C0AD`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadGlobalOrUndefined at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.PushScope(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8F8213`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one PushScope at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.PopScope(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `00838C`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one PopScope at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.CopyScope(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CDAF46`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one CopyScope at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeclareGlobal(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `07D66A`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DeclareGlobal at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.PushObjectScope(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `08ABD6`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one PushObjectScope at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ResolveName(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `07F9F9`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ResolveName at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.NewObject(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DBC04D`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one NewObject at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.NewArray(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `040661`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one NewArray at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GetProperty(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `272DF4`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one GetProperty at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SetProperty(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `963AD0`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one SetProperty at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GetIndex(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `696E20`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one GetIndex at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SetIndex(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `97167E`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one SetIndex at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineField(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `45AEC3`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DefineField at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineIndexed(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D354DA`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DefineIndexed at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeleteProperty(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9D3D19`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DeleteProperty at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeleteIndex(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9536FC`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DeleteIndex at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineGetter(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A4B9D5`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DefineGetter at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineSetter(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AD625A`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DefineSetter at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineMethod(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `31CC88`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DefineMethod at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadSuperProperty(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E6F89C`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadSuperProperty at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StoreSuperProperty(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6F2DF2`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one StoreSuperProperty at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ArrayAppend(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `ACA39C`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ArrayAppend at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Closure(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F5AF61`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Closure at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Call(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8F4FE3`, PENDING
   - Falsified if: this runs any instruction other than one Call at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Construct(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9C5153`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Construct(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8CCB64`, PENDING
   - Falsified if: this runs any instruction other than one Construct at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Return(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D3DEE3`, PENDING
-  - Falsified if: this runs any instruction other than one Return at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ReturnUndefined(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B442F9`, PENDING
-  - Falsified if: this runs any instruction other than one ReturnUndefined at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.CallEval(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `829105`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Return(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EB1C70`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Return at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ReturnUndefined(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D3C995`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ReturnUndefined at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.CallEval(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `98714F`, PENDING
   - Falsified if: this runs any instruction other than one CallEval at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SuperCall(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9E9DD8`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SuperCall(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B5B6F0`, PENDING
   - Falsified if: this runs any instruction other than one SuperCall at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SuperCallForwarded(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1F8C0A`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SuperCallForwarded(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `766C71`, PENDING
   - Falsified if: this runs any instruction other than one SuperCallForwarded at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.NewClass(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `12BAFD`, PENDING
-  - Falsified if: this runs any instruction other than one NewClass at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ArrayHoles(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C557C5`, PENDING
-  - Falsified if: this runs any instruction other than one ArrayHoles at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SpreadArray(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CCB353`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.NewClass(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E18E52`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one NewClass at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ArrayHoles(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9F10E0`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ArrayHoles at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SpreadArray(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1A3C48`, PENDING
   - Falsified if: this runs any instruction other than one SpreadArray at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SpreadObject(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C74FE7`, PENDING
-  - Falsified if: this runs any instruction other than one SpreadObject at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.CallSpread(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `950BA2`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SpreadObject(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D1B99A`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one SpreadObject at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.CallSpread(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4C237E`, PENDING
   - Falsified if: this runs any instruction other than one CallSpread at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ConstructSpread(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8CFDE8`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ConstructSpread(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A121AF`, PENDING
   - Falsified if: this runs any instruction other than one ConstructSpread at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SuperCallSpread(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `25D21E`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SuperCallSpread(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `574BF0`, PENDING
   - Falsified if: this runs any instruction other than one SuperCallSpread at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SetPrototypeLiteral(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `615426`, PENDING
-  - Falsified if: this runs any instruction other than one SetPrototypeLiteral at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Add(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DC1D75`, PENDING
-  - Falsified if: this runs any instruction other than one Add at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Subtract(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AAEF66`, PENDING
-  - Falsified if: this runs any instruction other than one Subtract at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Multiply(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8108E6`, PENDING
-  - Falsified if: this runs any instruction other than one Multiply at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Divide(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F872AD`, PENDING
-  - Falsified if: this runs any instruction other than one Divide at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Remainder(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7723F4`, PENDING
-  - Falsified if: this runs any instruction other than one Remainder at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Exponent(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `39FE33`, PENDING
-  - Falsified if: this runs any instruction other than one Exponent at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Negate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0B89CD`, PENDING
-  - Falsified if: this runs any instruction other than one Negate at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ToNumber(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7197D0`, PENDING
-  - Falsified if: this runs any instruction other than one ToNumber at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Not(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3D785F`, PENDING
-  - Falsified if: this runs any instruction other than one Not at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.BitwiseNot(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C515EC`, PENDING
-  - Falsified if: this runs any instruction other than one BitwiseNot at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LessThan(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BF00B1`, PENDING
-  - Falsified if: this runs any instruction other than one LessThan at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LessThanOrEqual(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `40CE31`, PENDING
-  - Falsified if: this runs any instruction other than one LessThanOrEqual at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GreaterThan(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B9C32C`, PENDING
-  - Falsified if: this runs any instruction other than one GreaterThan at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GreaterThanOrEqual(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3BD93D`, PENDING
-  - Falsified if: this runs any instruction other than one GreaterThanOrEqual at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StrictEquals(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D266CC`, PENDING
-  - Falsified if: this runs any instruction other than one StrictEquals at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StrictNotEquals(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6438EB`, PENDING
-  - Falsified if: this runs any instruction other than one StrictNotEquals at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LooseEquals(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F4CC11`, PENDING
-  - Falsified if: this runs any instruction other than one LooseEquals at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LooseNotEquals(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CE0D35`, PENDING
-  - Falsified if: this runs any instruction other than one LooseNotEquals at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.BitwiseOr(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `91E149`, PENDING
-  - Falsified if: this runs any instruction other than one BitwiseOr at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.BitwiseAnd(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `29011C`, PENDING
-  - Falsified if: this runs any instruction other than one BitwiseAnd at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.BitwiseXor(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5AD920`, PENDING
-  - Falsified if: this runs any instruction other than one BitwiseXor at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ShiftLeft(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `561B01`, PENDING
-  - Falsified if: this runs any instruction other than one ShiftLeft at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ShiftRight(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B77C26`, PENDING
-  - Falsified if: this runs any instruction other than one ShiftRight at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ShiftRightUnsigned(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `02D889`, PENDING
-  - Falsified if: this runs any instruction other than one ShiftRightUnsigned at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.TypeOf(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7321BC`, PENDING
-  - Falsified if: this runs any instruction other than one TypeOf at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.InstanceOf(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `33D660`, PENDING
-  - Falsified if: this runs any instruction other than one InstanceOf at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.In(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1E5DA2`, PENDING
-  - Falsified if: this runs any instruction other than one In at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Void(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6F674D`, PENDING
-  - Falsified if: this runs any instruction other than one Void at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.RequireCoercible(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `89B678`, PENDING
-  - Falsified if: this runs any instruction other than one RequireCoercible at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Jump(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0C9331`, PENDING
-  - Falsified if: this runs any instruction other than one Jump at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.JumpIfFalse(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E67CB5`, PENDING
-  - Falsified if: this runs any instruction other than one JumpIfFalse at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.JumpIfTrue(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AC8106`, PENDING
-  - Falsified if: this runs any instruction other than one JumpIfTrue at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Throw(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1AC7A7`, PENDING
-  - Falsified if: this runs any instruction other than one Throw at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ForInStart(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `64758B`, PENDING
-  - Falsified if: this runs any instruction other than one ForInStart at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ForInNext(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `50869D`, PENDING
-  - Falsified if: this runs any instruction other than one ForInNext at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateStart(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5F94B2`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SetPrototypeLiteral(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AFD8FD`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one SetPrototypeLiteral at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Add(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A8D14B`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Add at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Subtract(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BE0031`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Subtract at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Multiply(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E0CA13`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Multiply at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Divide(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `FA6A92`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Divide at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Remainder(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4B3DED`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Remainder at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Exponent(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AE7094`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Exponent at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Negate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EAEF1C`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Negate at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ToNumber(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F97078`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ToNumber at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Not(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4F9718`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Not at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.BitwiseNot(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `71BEDB`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one BitwiseNot at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LessThan(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A7AB60`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LessThan at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LessThanOrEqual(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `04D328`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LessThanOrEqual at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GreaterThan(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `08A3C4`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one GreaterThan at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GreaterThanOrEqual(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1AE0FB`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one GreaterThanOrEqual at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StrictEquals(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6B05E8`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one StrictEquals at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StrictNotEquals(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AB3870`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one StrictNotEquals at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LooseEquals(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5B4EA1`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LooseEquals at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LooseNotEquals(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F7564B`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LooseNotEquals at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.BitwiseOr(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7D4EC8`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one BitwiseOr at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.BitwiseAnd(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0CD898`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one BitwiseAnd at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.BitwiseXor(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E196D4`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one BitwiseXor at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ShiftLeft(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F8A8FE`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ShiftLeft at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ShiftRight(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5BAD97`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ShiftRight at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ShiftRightUnsigned(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F3C276`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ShiftRightUnsigned at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.TypeOf(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E772FA`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one TypeOf at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.InstanceOf(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0F49FC`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one InstanceOf at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.In(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4065E6`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one In at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Void(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C6A2E3`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Void at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.RequireCoercible(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D09ED2`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one RequireCoercible at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Jump(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E36AB7`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Jump at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.JumpIfFalse(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `72F3C2`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one JumpIfFalse at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.JumpIfTrue(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0EEE7F`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one JumpIfTrue at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Throw(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7BE2F7`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Throw at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ForInStart(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BDDE7C`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ForInStart at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ForInNext(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D6C4A4`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ForInNext at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateStart(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A585E6`, PENDING
   - Falsified if: this runs any instruction other than one IterateStart at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateNext(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `534ABA`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateNext(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EECFBB`, PENDING
   - Falsified if: this runs any instruction other than one IterateNext at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateRest(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A64800`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateRest(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3CA5FC`, PENDING
   - Falsified if: this runs any instruction other than one IterateRest at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateClose(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EEEE67`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateClose(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9668EC`, PENDING
   - Falsified if: this runs any instruction other than one IterateClose at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Yield(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `FBD791`, PENDING
-  - Falsified if: this runs any instruction other than one Yield at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.YieldDelegate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CAC651`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Yield(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F4A9AF`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Yield at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.YieldDelegate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `526D32`, PENDING
   - Falsified if: this runs any instruction other than one YieldDelegate at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Await(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `632E6C`, PENDING
-  - Falsified if: this runs any instruction other than one Await at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadImport(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C08536`, PENDING
-  - Falsified if: this runs any instruction other than one LoadImport at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ThrowImmutable(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7AF5CC`, PENDING
-  - Falsified if: this runs any instruction other than one ThrowImmutable at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineClassElement(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1697AF`, PENDING
-  - Falsified if: this runs any instruction other than one DefineClassElement at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Pop(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `84C4B7`, PENDING
-  - Falsified if: this runs any instruction other than one Pop at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Duplicate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6E333D`, PENDING
-  - Falsified if: this runs any instruction other than one Duplicate at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DuplicateTwo(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8D6AE6`, PENDING
-  - Falsified if: this runs any instruction other than one DuplicateTwo at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Swap(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DE7B3C`, PENDING
-  - Falsified if: this runs any instruction other than one Swap at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Pick(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DA2E13`, PENDING
-  - Falsified if: this runs any instruction other than one Pick at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.NewPrivateName(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CF7609`, PENDING
-  - Falsified if: this runs any instruction other than one NewPrivateName at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadPrivate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E044C3`, PENDING
-  - Falsified if: this runs any instruction other than one LoadPrivate at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StorePrivate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4885B8`, PENDING
-  - Falsified if: this runs any instruction other than one StorePrivate at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.HasPrivate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AE4747`, PENDING
-  - Falsified if: this runs any instruction other than one HasPrivate at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.RunStaticElements(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B35953`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Await(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `994FB9`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Await at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadImport(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9A9071`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadImport at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ThrowImmutable(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2CCCD5`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ThrowImmutable at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DefineClassElement(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `94C9EB`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DefineClassElement at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Pop(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `286CE5`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Pop at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Duplicate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0BE055`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Duplicate at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DuplicateTwo(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `305D59`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DuplicateTwo at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Swap(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CFE42C`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Swap at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Pick(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9C2483`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Pick at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.NewPrivateName(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A004F8`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one NewPrivateName at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadPrivate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7F2E6A`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one LoadPrivate at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StorePrivate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6D6450`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one StorePrivate at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.HasPrivate(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `12FE21`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one HasPrivate at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.RunStaticElements(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E3D87E`, PENDING
   - Falsified if: this runs any instruction other than one RunStaticElements at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateStartAsync(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `052888`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateStartAsync(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4FC94A`, PENDING
   - Falsified if: this runs any instruction other than one IterateStartAsync at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateNextAsync(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BFF4ED`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateNextAsync(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AE57F8`, PENDING
   - Falsified if: this runs any instruction other than one IterateNextAsync at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateAwaitStep(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7BB366`, PENDING
-  - Falsified if: this runs any instruction other than one IterateAwaitStep at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateCloseAsync(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `076C22`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateAwaitStep(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D00330`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one IterateAwaitStep at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateCloseAsync(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `048BF9`, PENDING
   - Falsified if: this runs any instruction other than one IterateCloseAsync at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateCloseCheck(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `350530`, PENDING
-  - Falsified if: this runs any instruction other than one IterateCloseCheck at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeclareGlobalLet(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `134B19`, PENDING
-  - Falsified if: this runs any instruction other than one DeclareGlobalLet at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeclareGlobalConst(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `FD3EA6`, PENDING
-  - Falsified if: this runs any instruction other than one DeclareGlobalConst at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.InitialiseGlobalLexical(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F779D8`, PENDING
-  - Falsified if: this runs any instruction other than one InitialiseGlobalLexical at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeleteGlobalBinding(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `80DA29`, PENDING
-  - Falsified if: this runs any instruction other than one DeleteGlobalBinding at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.EnterBody(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `598758`, PENDING
-  - Falsified if: this runs any instruction other than one EnterBody at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ImportCall(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BC391A`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.IterateCloseCheck(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AD4CEC`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one IterateCloseCheck at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeclareGlobalLet(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3E7F80`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DeclareGlobalLet at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeclareGlobalConst(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `505007`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DeclareGlobalConst at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.InitialiseGlobalLexical(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `654457`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one InitialiseGlobalLexical at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeleteGlobalBinding(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `713F2C`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DeleteGlobalBinding at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.EnterBody(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D249CF`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one EnterBody at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ImportCall(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8B3573`, PENDING
   - Falsified if: this runs any instruction other than one ImportCall at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ImportMeta(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `629FCF`, PENDING
-  - Falsified if: this runs any instruction other than one ImportMeta at the offset the managed side expects
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNop` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `382D07`, PENDING
-  - Falsified if: this step names an opcode other than Nop
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNop.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D7D8F6`, PENDING
-  - Falsified if: this answers any opcode other than Nop
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadUndefined` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5B5713`, PENDING
-  - Falsified if: this step names an opcode other than LoadUndefined
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadUndefined.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E0D46D`, PENDING
-  - Falsified if: this answers any opcode other than LoadUndefined
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadNull` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `88C1B8`, PENDING
-  - Falsified if: this step names an opcode other than LoadNull
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadNull.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8F90FD`, PENDING
-  - Falsified if: this answers any opcode other than LoadNull
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadTrue` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `264FAD`, PENDING
-  - Falsified if: this step names an opcode other than LoadTrue
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadTrue.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3D4366`, PENDING
-  - Falsified if: this answers any opcode other than LoadTrue
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadFalse` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A20665`, PENDING
-  - Falsified if: this step names an opcode other than LoadFalse
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadFalse.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `289B9B`, PENDING
-  - Falsified if: this answers any opcode other than LoadFalse
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadConstant` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `145A2F`, PENDING
-  - Falsified if: this step names an opcode other than LoadConstant
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadConstant.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A1257B`, PENDING
-  - Falsified if: this answers any opcode other than LoadConstant
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadThis` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `033581`, PENDING
-  - Falsified if: this step names an opcode other than LoadThis
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadThis.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `93E9E1`, PENDING
-  - Falsified if: this answers any opcode other than LoadThis
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNewArguments` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1AED01`, PENDING
-  - Falsified if: this step names an opcode other than NewArguments
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNewArguments.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A8B424`, PENDING
-  - Falsified if: this answers any opcode other than NewArguments
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadNewTarget` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DB6C51`, PENDING
-  - Falsified if: this step names an opcode other than LoadNewTarget
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadNewTarget.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D1003C`, PENDING
-  - Falsified if: this answers any opcode other than LoadNewTarget
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadArgument` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CB1D05`, PENDING
-  - Falsified if: this step names an opcode other than LoadArgument
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadArgument.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A879E1`, PENDING
-  - Falsified if: this answers any opcode other than LoadArgument
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepRestArguments` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2BFA7C`, PENDING
-  - Falsified if: this step names an opcode other than RestArguments
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepRestArguments.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CC6674`, PENDING
-  - Falsified if: this answers any opcode other than RestArguments
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadScoped` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B152D7`, PENDING
-  - Falsified if: this step names an opcode other than LoadScoped
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadScoped.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DA48FC`, PENDING
-  - Falsified if: this answers any opcode other than LoadScoped
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStoreScoped` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DC8CDA`, PENDING
-  - Falsified if: this step names an opcode other than StoreScoped
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStoreScoped.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3F1707`, PENDING
-  - Falsified if: this answers any opcode other than StoreScoped
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepInitialiseScoped` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E4F47C`, PENDING
-  - Falsified if: this step names an opcode other than InitialiseScoped
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepInitialiseScoped.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F14691`, PENDING
-  - Falsified if: this answers any opcode other than InitialiseScoped
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadGlobal` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `47E562`, PENDING
-  - Falsified if: this step names an opcode other than LoadGlobal
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadGlobal.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A7AB7B`, PENDING
-  - Falsified if: this answers any opcode other than LoadGlobal
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStoreGlobal` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2C67FF`, PENDING
-  - Falsified if: this step names an opcode other than StoreGlobal
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStoreGlobal.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F87126`, PENDING
-  - Falsified if: this answers any opcode other than StoreGlobal
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadGlobalOrUndefined` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `119420`, PENDING
-  - Falsified if: this step names an opcode other than LoadGlobalOrUndefined
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadGlobalOrUndefined.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `35BA98`, PENDING
-  - Falsified if: this answers any opcode other than LoadGlobalOrUndefined
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepPushScope` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `434E04`, PENDING
-  - Falsified if: this step names an opcode other than PushScope
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepPushScope.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6F0172`, PENDING
-  - Falsified if: this answers any opcode other than PushScope
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepPopScope` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7045C2`, PENDING
-  - Falsified if: this step names an opcode other than PopScope
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepPopScope.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `115BB4`, PENDING
-  - Falsified if: this answers any opcode other than PopScope
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCopyScope` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7B43D1`, PENDING
-  - Falsified if: this step names an opcode other than CopyScope
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCopyScope.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BDDF52`, PENDING
-  - Falsified if: this answers any opcode other than CopyScope
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeclareGlobal` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `364D14`, PENDING
-  - Falsified if: this step names an opcode other than DeclareGlobal
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeclareGlobal.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8DA33D`, PENDING
-  - Falsified if: this answers any opcode other than DeclareGlobal
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepPushObjectScope` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4A9195`, PENDING
-  - Falsified if: this step names an opcode other than PushObjectScope
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepPushObjectScope.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2FB524`, PENDING
-  - Falsified if: this answers any opcode other than PushObjectScope
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepResolveName` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `57D935`, PENDING
-  - Falsified if: this step names an opcode other than ResolveName
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepResolveName.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EFF26A`, PENDING
-  - Falsified if: this answers any opcode other than ResolveName
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNewObject` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7773C6`, PENDING
-  - Falsified if: this step names an opcode other than NewObject
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNewObject.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A62141`, PENDING
-  - Falsified if: this answers any opcode other than NewObject
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNewArray` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6BD1F2`, PENDING
-  - Falsified if: this step names an opcode other than NewArray
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNewArray.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CD07BC`, PENDING
-  - Falsified if: this answers any opcode other than NewArray
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepGetProperty` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D62B2C`, PENDING
-  - Falsified if: this step names an opcode other than GetProperty
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepGetProperty.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5835F4`, PENDING
-  - Falsified if: this answers any opcode other than GetProperty
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSetProperty` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F90B33`, PENDING
-  - Falsified if: this step names an opcode other than SetProperty
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSetProperty.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F1EBDB`, PENDING
-  - Falsified if: this answers any opcode other than SetProperty
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepGetIndex` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AE652E`, PENDING
-  - Falsified if: this step names an opcode other than GetIndex
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepGetIndex.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `37F5C2`, PENDING
-  - Falsified if: this answers any opcode other than GetIndex
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSetIndex` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `97240E`, PENDING
-  - Falsified if: this step names an opcode other than SetIndex
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSetIndex.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `19F768`, PENDING
-  - Falsified if: this answers any opcode other than SetIndex
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineField` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B754A2`, PENDING
-  - Falsified if: this step names an opcode other than DefineField
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineField.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BC936A`, PENDING
-  - Falsified if: this answers any opcode other than DefineField
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineIndexed` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `172214`, PENDING
-  - Falsified if: this step names an opcode other than DefineIndexed
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineIndexed.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `83BF75`, PENDING
-  - Falsified if: this answers any opcode other than DefineIndexed
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeleteProperty` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9F3C01`, PENDING
-  - Falsified if: this step names an opcode other than DeleteProperty
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeleteProperty.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CCED5A`, PENDING
-  - Falsified if: this answers any opcode other than DeleteProperty
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeleteIndex` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3286F1`, PENDING
-  - Falsified if: this step names an opcode other than DeleteIndex
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeleteIndex.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2C1D9C`, PENDING
-  - Falsified if: this answers any opcode other than DeleteIndex
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineGetter` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AD18BC`, PENDING
-  - Falsified if: this step names an opcode other than DefineGetter
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineGetter.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2316AF`, PENDING
-  - Falsified if: this answers any opcode other than DefineGetter
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineSetter` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F032AB`, PENDING
-  - Falsified if: this step names an opcode other than DefineSetter
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineSetter.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E0C41F`, PENDING
-  - Falsified if: this answers any opcode other than DefineSetter
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineMethod` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F07759`, PENDING
-  - Falsified if: this step names an opcode other than DefineMethod
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineMethod.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `00E07A`, PENDING
-  - Falsified if: this answers any opcode other than DefineMethod
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadSuperProperty` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F071D2`, PENDING
-  - Falsified if: this step names an opcode other than LoadSuperProperty
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadSuperProperty.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3430FE`, PENDING
-  - Falsified if: this answers any opcode other than LoadSuperProperty
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStoreSuperProperty` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `797FE3`, PENDING
-  - Falsified if: this step names an opcode other than StoreSuperProperty
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStoreSuperProperty.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9AB412`, PENDING
-  - Falsified if: this answers any opcode other than StoreSuperProperty
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepArrayAppend` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8D4F2F`, PENDING
-  - Falsified if: this step names an opcode other than ArrayAppend
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepArrayAppend.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D01310`, PENDING
-  - Falsified if: this answers any opcode other than ArrayAppend
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepClosure` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D1CFE8`, PENDING
-  - Falsified if: this step names an opcode other than Closure
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepClosure.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B9B08E`, PENDING
-  - Falsified if: this answers any opcode other than Closure
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ImportMeta(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BC6690`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ImportMeta at the offset the managed side expects
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCall` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `821976`, PENDING
   - Falsified if: this step names an opcode other than Call
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCall.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AEA809`, PENDING
@@ -1356,14 +1194,6 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this step names an opcode other than Construct
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepConstruct.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AB9410`, PENDING
   - Falsified if: this answers any opcode other than Construct
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepReturn` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2331CA`, PENDING
-  - Falsified if: this step names an opcode other than Return
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepReturn.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EF4A69`, PENDING
-  - Falsified if: this answers any opcode other than Return
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepReturnUndefined` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `744CBB`, PENDING
-  - Falsified if: this step names an opcode other than ReturnUndefined
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepReturnUndefined.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7D9B6E`, PENDING
-  - Falsified if: this answers any opcode other than ReturnUndefined
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCallEval` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5E042F`, PENDING
   - Falsified if: this step names an opcode other than CallEval
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCallEval.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D5D4C4`, PENDING
@@ -1376,22 +1206,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this step names an opcode other than SuperCallForwarded
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSuperCallForwarded.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6D1190`, PENDING
   - Falsified if: this answers any opcode other than SuperCallForwarded
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNewClass` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `538D6C`, PENDING
-  - Falsified if: this step names an opcode other than NewClass
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNewClass.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `254D0F`, PENDING
-  - Falsified if: this answers any opcode other than NewClass
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepArrayHoles` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2FFDBD`, PENDING
-  - Falsified if: this step names an opcode other than ArrayHoles
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepArrayHoles.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A0D86F`, PENDING
-  - Falsified if: this answers any opcode other than ArrayHoles
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSpreadArray` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0307E1`, PENDING
   - Falsified if: this step names an opcode other than SpreadArray
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSpreadArray.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `10C694`, PENDING
   - Falsified if: this answers any opcode other than SpreadArray
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSpreadObject` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0844B8`, PENDING
-  - Falsified if: this step names an opcode other than SpreadObject
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSpreadObject.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `90CFF0`, PENDING
-  - Falsified if: this answers any opcode other than SpreadObject
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCallSpread` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A5D0B7`, PENDING
   - Falsified if: this step names an opcode other than CallSpread
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCallSpread.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B10BF3`, PENDING
@@ -1404,150 +1222,6 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this step names an opcode other than SuperCallSpread
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSuperCallSpread.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `935410`, PENDING
   - Falsified if: this answers any opcode other than SuperCallSpread
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSetPrototypeLiteral` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `89B50B`, PENDING
-  - Falsified if: this step names an opcode other than SetPrototypeLiteral
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSetPrototypeLiteral.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F076A9`, PENDING
-  - Falsified if: this answers any opcode other than SetPrototypeLiteral
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepAdd` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `FFC7EE`, PENDING
-  - Falsified if: this step names an opcode other than Add
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepAdd.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5AF05B`, PENDING
-  - Falsified if: this answers any opcode other than Add
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSubtract` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C9669A`, PENDING
-  - Falsified if: this step names an opcode other than Subtract
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSubtract.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5768D1`, PENDING
-  - Falsified if: this answers any opcode other than Subtract
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepMultiply` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DE36AE`, PENDING
-  - Falsified if: this step names an opcode other than Multiply
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepMultiply.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E0007F`, PENDING
-  - Falsified if: this answers any opcode other than Multiply
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDivide` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `894DC9`, PENDING
-  - Falsified if: this step names an opcode other than Divide
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDivide.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `84FD41`, PENDING
-  - Falsified if: this answers any opcode other than Divide
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepRemainder` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `902936`, PENDING
-  - Falsified if: this step names an opcode other than Remainder
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepRemainder.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `129811`, PENDING
-  - Falsified if: this answers any opcode other than Remainder
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepExponent` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AAF31C`, PENDING
-  - Falsified if: this step names an opcode other than Exponent
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepExponent.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `914BD7`, PENDING
-  - Falsified if: this answers any opcode other than Exponent
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNegate` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EA6192`, PENDING
-  - Falsified if: this step names an opcode other than Negate
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNegate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C79B7B`, PENDING
-  - Falsified if: this answers any opcode other than Negate
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepToNumber` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `789217`, PENDING
-  - Falsified if: this step names an opcode other than ToNumber
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepToNumber.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C36BA6`, PENDING
-  - Falsified if: this answers any opcode other than ToNumber
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNot` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F65806`, PENDING
-  - Falsified if: this step names an opcode other than Not
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNot.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `75DF62`, PENDING
-  - Falsified if: this answers any opcode other than Not
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepBitwiseNot` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `125FA0`, PENDING
-  - Falsified if: this step names an opcode other than BitwiseNot
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepBitwiseNot.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F715CA`, PENDING
-  - Falsified if: this answers any opcode other than BitwiseNot
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLessThan` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BA9E4E`, PENDING
-  - Falsified if: this step names an opcode other than LessThan
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLessThan.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EEF32A`, PENDING
-  - Falsified if: this answers any opcode other than LessThan
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLessThanOrEqual` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8A5F19`, PENDING
-  - Falsified if: this step names an opcode other than LessThanOrEqual
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLessThanOrEqual.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F41DF2`, PENDING
-  - Falsified if: this answers any opcode other than LessThanOrEqual
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepGreaterThan` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0E011D`, PENDING
-  - Falsified if: this step names an opcode other than GreaterThan
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepGreaterThan.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E44031`, PENDING
-  - Falsified if: this answers any opcode other than GreaterThan
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepGreaterThanOrEqual` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1AB0AF`, PENDING
-  - Falsified if: this step names an opcode other than GreaterThanOrEqual
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepGreaterThanOrEqual.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6DF1AF`, PENDING
-  - Falsified if: this answers any opcode other than GreaterThanOrEqual
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStrictEquals` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `32EA23`, PENDING
-  - Falsified if: this step names an opcode other than StrictEquals
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStrictEquals.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A8BF70`, PENDING
-  - Falsified if: this answers any opcode other than StrictEquals
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStrictNotEquals` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CF6E47`, PENDING
-  - Falsified if: this step names an opcode other than StrictNotEquals
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStrictNotEquals.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1F0424`, PENDING
-  - Falsified if: this answers any opcode other than StrictNotEquals
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLooseEquals` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B52645`, PENDING
-  - Falsified if: this step names an opcode other than LooseEquals
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLooseEquals.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4B4670`, PENDING
-  - Falsified if: this answers any opcode other than LooseEquals
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLooseNotEquals` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `60920E`, PENDING
-  - Falsified if: this step names an opcode other than LooseNotEquals
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLooseNotEquals.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4EE2CC`, PENDING
-  - Falsified if: this answers any opcode other than LooseNotEquals
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepBitwiseOr` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `29E8EB`, PENDING
-  - Falsified if: this step names an opcode other than BitwiseOr
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepBitwiseOr.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `28A30B`, PENDING
-  - Falsified if: this answers any opcode other than BitwiseOr
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepBitwiseAnd` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `79FE8E`, PENDING
-  - Falsified if: this step names an opcode other than BitwiseAnd
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepBitwiseAnd.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D7BEA3`, PENDING
-  - Falsified if: this answers any opcode other than BitwiseAnd
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepBitwiseXor` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `06DE4D`, PENDING
-  - Falsified if: this step names an opcode other than BitwiseXor
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepBitwiseXor.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `B60E97`, PENDING
-  - Falsified if: this answers any opcode other than BitwiseXor
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepShiftLeft` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EAF572`, PENDING
-  - Falsified if: this step names an opcode other than ShiftLeft
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepShiftLeft.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0FC726`, PENDING
-  - Falsified if: this answers any opcode other than ShiftLeft
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepShiftRight` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8F4070`, PENDING
-  - Falsified if: this step names an opcode other than ShiftRight
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepShiftRight.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `58841A`, PENDING
-  - Falsified if: this answers any opcode other than ShiftRight
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepShiftRightUnsigned` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5C54C8`, PENDING
-  - Falsified if: this step names an opcode other than ShiftRightUnsigned
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepShiftRightUnsigned.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A421C0`, PENDING
-  - Falsified if: this answers any opcode other than ShiftRightUnsigned
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepTypeOf` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8919CF`, PENDING
-  - Falsified if: this step names an opcode other than TypeOf
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepTypeOf.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EA8853`, PENDING
-  - Falsified if: this answers any opcode other than TypeOf
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepInstanceOf` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `103340`, PENDING
-  - Falsified if: this step names an opcode other than InstanceOf
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepInstanceOf.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7A23DA`, PENDING
-  - Falsified if: this answers any opcode other than InstanceOf
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIn` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0C947A`, PENDING
-  - Falsified if: this step names an opcode other than In
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIn.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2A1104`, PENDING
-  - Falsified if: this answers any opcode other than In
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepVoid` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3E17A1`, PENDING
-  - Falsified if: this step names an opcode other than Void
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepVoid.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `172D6A`, PENDING
-  - Falsified if: this answers any opcode other than Void
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepRequireCoercible` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7E524F`, PENDING
-  - Falsified if: this step names an opcode other than RequireCoercible
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepRequireCoercible.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DD736E`, PENDING
-  - Falsified if: this answers any opcode other than RequireCoercible
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepJump` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A5BA52`, PENDING
-  - Falsified if: this step names an opcode other than Jump
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepJump.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `FDAF9E`, PENDING
-  - Falsified if: this answers any opcode other than Jump
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepJumpIfFalse` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `99CF26`, PENDING
-  - Falsified if: this step names an opcode other than JumpIfFalse
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepJumpIfFalse.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5DB205`, PENDING
-  - Falsified if: this answers any opcode other than JumpIfFalse
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepJumpIfTrue` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `9E7D28`, PENDING
-  - Falsified if: this step names an opcode other than JumpIfTrue
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepJumpIfTrue.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `5D29ED`, PENDING
-  - Falsified if: this answers any opcode other than JumpIfTrue
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepThrow` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E53BDA`, PENDING
-  - Falsified if: this step names an opcode other than Throw
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepThrow.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BAACFC`, PENDING
-  - Falsified if: this answers any opcode other than Throw
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepForInStart` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D67D0B`, PENDING
-  - Falsified if: this step names an opcode other than ForInStart
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepForInStart.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `6C92A5`, PENDING
-  - Falsified if: this answers any opcode other than ForInStart
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepForInNext` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F06054`, PENDING
-  - Falsified if: this step names an opcode other than ForInNext
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepForInNext.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `40210D`, PENDING
-  - Falsified if: this answers any opcode other than ForInNext
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIterateStart` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `74E822`, PENDING
   - Falsified if: this step names an opcode other than IterateStart
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIterateStart.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0C1F4F`, PENDING
@@ -1564,66 +1238,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this step names an opcode other than IterateClose
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIterateClose.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BF8374`, PENDING
   - Falsified if: this answers any opcode other than IterateClose
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepYield` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8A1AFC`, PENDING
-  - Falsified if: this step names an opcode other than Yield
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepYield.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `0E5713`, PENDING
-  - Falsified if: this answers any opcode other than Yield
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepYieldDelegate` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `96D383`, PENDING
   - Falsified if: this step names an opcode other than YieldDelegate
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepYieldDelegate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BB6777`, PENDING
   - Falsified if: this answers any opcode other than YieldDelegate
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepAwait` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F3ADAA`, PENDING
-  - Falsified if: this step names an opcode other than Await
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepAwait.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2F7951`, PENDING
-  - Falsified if: this answers any opcode other than Await
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadImport` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C1C1F1`, PENDING
-  - Falsified if: this step names an opcode other than LoadImport
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadImport.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `957D8D`, PENDING
-  - Falsified if: this answers any opcode other than LoadImport
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepThrowImmutable` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `295743`, PENDING
-  - Falsified if: this step names an opcode other than ThrowImmutable
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepThrowImmutable.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C977D7`, PENDING
-  - Falsified if: this answers any opcode other than ThrowImmutable
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineClassElement` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C227A8`, PENDING
-  - Falsified if: this step names an opcode other than DefineClassElement
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDefineClassElement.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `56A2D2`, PENDING
-  - Falsified if: this answers any opcode other than DefineClassElement
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepPop` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `407323`, PENDING
-  - Falsified if: this step names an opcode other than Pop
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepPop.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A61E2D`, PENDING
-  - Falsified if: this answers any opcode other than Pop
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDuplicate` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `74AEDB`, PENDING
-  - Falsified if: this step names an opcode other than Duplicate
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDuplicate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3E8968`, PENDING
-  - Falsified if: this answers any opcode other than Duplicate
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDuplicateTwo` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `16F384`, PENDING
-  - Falsified if: this step names an opcode other than DuplicateTwo
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDuplicateTwo.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `435C7A`, PENDING
-  - Falsified if: this answers any opcode other than DuplicateTwo
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSwap` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E9B6EE`, PENDING
-  - Falsified if: this step names an opcode other than Swap
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepSwap.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E79E80`, PENDING
-  - Falsified if: this answers any opcode other than Swap
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepPick` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F4FD35`, PENDING
-  - Falsified if: this step names an opcode other than Pick
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepPick.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A6A5C6`, PENDING
-  - Falsified if: this answers any opcode other than Pick
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNewPrivateName` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `95E075`, PENDING
-  - Falsified if: this step names an opcode other than NewPrivateName
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepNewPrivateName.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4B324A`, PENDING
-  - Falsified if: this answers any opcode other than NewPrivateName
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadPrivate` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F818BF`, PENDING
-  - Falsified if: this step names an opcode other than LoadPrivate
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadPrivate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E3F8D0`, PENDING
-  - Falsified if: this answers any opcode other than LoadPrivate
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStorePrivate` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3056BA`, PENDING
-  - Falsified if: this step names an opcode other than StorePrivate
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStorePrivate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E161C3`, PENDING
-  - Falsified if: this answers any opcode other than StorePrivate
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepHasPrivate` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `097FEA`, PENDING
-  - Falsified if: this step names an opcode other than HasPrivate
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepHasPrivate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `468A35`, PENDING
-  - Falsified if: this answers any opcode other than HasPrivate
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepRunStaticElements` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `4AD870`, PENDING
   - Falsified if: this step names an opcode other than RunStaticElements
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepRunStaticElements.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `276AB0`, PENDING
@@ -1636,46 +1254,14 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this step names an opcode other than IterateNextAsync
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIterateNextAsync.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `021DE0`, PENDING
   - Falsified if: this answers any opcode other than IterateNextAsync
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIterateAwaitStep` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `12DE68`, PENDING
-  - Falsified if: this step names an opcode other than IterateAwaitStep
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIterateAwaitStep.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `988400`, PENDING
-  - Falsified if: this answers any opcode other than IterateAwaitStep
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIterateCloseAsync` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `664AB9`, PENDING
   - Falsified if: this step names an opcode other than IterateCloseAsync
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIterateCloseAsync.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3D3E70`, PENDING
   - Falsified if: this answers any opcode other than IterateCloseAsync
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIterateCloseCheck` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `08A955`, PENDING
-  - Falsified if: this step names an opcode other than IterateCloseCheck
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepIterateCloseCheck.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `940D59`, PENDING
-  - Falsified if: this answers any opcode other than IterateCloseCheck
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeclareGlobalLet` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E2614E`, PENDING
-  - Falsified if: this step names an opcode other than DeclareGlobalLet
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeclareGlobalLet.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `FFF17F`, PENDING
-  - Falsified if: this answers any opcode other than DeclareGlobalLet
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeclareGlobalConst` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8C9FAB`, PENDING
-  - Falsified if: this step names an opcode other than DeclareGlobalConst
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeclareGlobalConst.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C6B233`, PENDING
-  - Falsified if: this answers any opcode other than DeclareGlobalConst
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepInitialiseGlobalLexical` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E8474D`, PENDING
-  - Falsified if: this step names an opcode other than InitialiseGlobalLexical
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepInitialiseGlobalLexical.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2F78D2`, PENDING
-  - Falsified if: this answers any opcode other than InitialiseGlobalLexical
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeleteGlobalBinding` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E5A638`, PENDING
-  - Falsified if: this step names an opcode other than DeleteGlobalBinding
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeleteGlobalBinding.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BFB32C`, PENDING
-  - Falsified if: this answers any opcode other than DeleteGlobalBinding
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepEnterBody` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `889496`, PENDING
-  - Falsified if: this step names an opcode other than EnterBody
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepEnterBody.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BD1929`, PENDING
-  - Falsified if: this answers any opcode other than EnterBody
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepImportCall` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `ECF250`, PENDING
   - Falsified if: this step names an opcode other than ImportCall
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepImportCall.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `33B0A7`, PENDING
   - Falsified if: this answers any opcode other than ImportCall
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepImportMeta` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A5E6F9`, PENDING
-  - Falsified if: this step names an opcode other than ImportMeta
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepImportMeta.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2803F5`, PENDING
-  - Falsified if: this answers any opcode other than ImportMeta
 - `Broiler.VM.Profile.JavaScript.JsFinalizationRegistryObject` in `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` - Security=High, Spec=none cited, `66E399`, PENDING
   - Falsified if: a cleanup callback registered here is ever invoked, or any guest code runs from a CLR finalizer
 - `Broiler.VM.Profile.JavaScript.JsEngine` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `7BBE7E`, PENDING
@@ -1740,8 +1326,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an async generator whose body is on the interpreter's stack is resumed again, or an `await` inside an async generator body settles a request the way a `yield` does
 - `Broiler.VM.Profile.JavaScript.JsEngine.Execute(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `1E35A3`, PENDING
   - Falsified if: a program whose form differs from the engine's reaches ExecuteCore or emitted code
-- `Broiler.VM.Profile.JavaScript.JsEngine.ExecuteCore<TMode>(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?, JsNativeActivation?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `972A12`, PENDING
-  - Falsified if: an instantiation over a step mode runs more or fewer than one charged instruction per call, or the interpreted instantiation behaves differently from the loop before it was made generic
+- `Broiler.VM.Profile.JavaScript.JsEngine.ExecuteCore<TMode>(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?, JsNativeActivation?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `2BD763`, PENDING
+  - Falsified if: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
 - `Broiler.VM.Profile.JavaScript.JsEngine.Delegate(JsFrame, JsValue[], ref int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `E53DC7`, PENDING
   - Falsified if: a `return` or a `throw` that arrives while a `yield*` is suspended is not offered to the inner iterator first
 - `Broiler.VM.Profile.JavaScript.JsEngine.DelegateAsync(JsFrame, JsValue[], ref int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `197F48`, PENDING
@@ -1758,8 +1344,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the loop instantiated over this mode stops before a return, a suspension or an escaping exception
 - `Broiler.VM.Profile.JavaScript.JsNativeEntry` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `9020C2`, PENDING
   - Falsified if: the loop instantiated over this mode charges for or runs an instruction
-- `Broiler.VM.Profile.JavaScript.JsStepAny` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `6071DF`, PENDING
-  - Falsified if: the loop instantiated over this mode runs more or fewer than one charged instruction per call
+- `Broiler.VM.Profile.JavaScript.JsStepBlock` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `0FD013`, PENDING
+  - Falsified if: the loop instantiated over this mode stops at its first boundary, runs an instruction after a later boundary at which JsBaselineBlocks.StopsAfter holds, or stops at a later boundary at which it does not
 - `Broiler.VM.Profile.JavaScript.JsPause` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `6E5458`, PENDING
   - Falsified if: anything reachable from the realm is published through this payload
 - `Broiler.VM.Profile.JavaScript.JsContinuation` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `231B03`, PENDING
@@ -1863,7 +1449,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Sp` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=High, Spec=none cited, `1FED1E`, PENDING
   - Falsified if: a step starts at a height other than the one the previous step or the entry stopped at
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Pc` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, Spec=none cited, `4E6E02`, PENDING
-  - Falsified if: a handler runs an instruction at any offset other than this one
+  - Falsified if: a handler starts a step at any offset other than this one
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Exited` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=High, Spec=none cited, `05335F`, PENDING
   - Falsified if: a handler runs an instruction after the activation exited
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Pending` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=High, Spec=none cited, `AE8477`, PENDING
@@ -1871,7 +1457,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Current` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, Spec=none cited, `859662`, PENDING
   - Falsified if: this is written anywhere but around the one call that enters emitted code, or is not restored when that call returns
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Step<TMode>(JsBaselineFrame*, int, JsOpcode)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, Spec=none cited, `EAD7FE`, PENDING
-  - Falsified if: an instruction runs whose offset, opcode or activation differs from what the managed side computed, or an exception escapes into emitted code
+  - Falsified if: a step starts at an offset, with an opcode or for an activation other than what the managed side computed, or an exception escapes into emitted code
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `7ABDB0`, PENDING
   - Falsified if: anything reachable from this instance holds a managed reference emitted code can dereference
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.OperandSlabSlots` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `A12001`, PENDING
@@ -2392,7 +1978,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 3901 of the 4015 assessed units declare
+That is not a figure of speech. 3693 of the 3807 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

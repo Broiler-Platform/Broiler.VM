@@ -66,8 +66,8 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// <i>(Corrected 2026-09-15. The last clause was written when no native form of the wide manifest
 /// was proposed, and the first paragraph's "the only admissible answer" was read as true of any
 /// native form. JSD-0025 decides a second one, the baseline form over the wide manifest, and it is
-/// not a step from this manifest either: it emits every instruction as a call into the
-/// interpreter's own dispatch for that instruction, so it is whole-artifact without a small
+/// not a step from this manifest either: its emitted code calls into the interpreter's own dispatch
+/// to run every instruction, so it is whole-artifact without a small
 /// language, and this manifest stays exactly as small as it is. The interpreter's method body still
 /// runs every instruction of a wide program, in either form. What this manifest remains the only
 /// answer to is a native form whose emitted code computes.)</i>

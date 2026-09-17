@@ -290,9 +290,9 @@ internal static class Program
     /// <para>
     /// <b><c>--native</c> WITHOUT <c>--numeric</c> ASKS FOR THE BASELINE FORM OVER THE WIDE
     /// SURFACE, AND THIS HOST PASSES IT THROUGH.</b> <i>(Added 2026-09-15.)</i> Every unit of the
-    /// wide artifact is emitted as x86-64 machine code whose control flow between instructions is
-    /// emitted and whose every instruction is one call into the interpreter's own dispatch for that
-    /// instruction, so a program this host runs in bytecode it also runs in that form. The same
+    /// wide artifact is emitted as x86-64 machine code whose control flow between blocks of
+    /// instructions is emitted and which runs each block by one call into the interpreter's own
+    /// dispatch, so a program this host runs in bytecode it also runs in that form. The same
     /// request reaches this host's source provider, because an instance has one form and a
     /// guest-loaded program of the other form is refused as a defect. The arm64 backend emits only
     /// for <c>--numeric</c>.
@@ -812,10 +812,10 @@ internal static class Program
         Console.WriteLine("              than run, and it admits a narrower set of instructions than");
         Console.WriteLine("              either x86-64 backend and refuses the rest at compile time.");
         Console.WriteLine("              Without --numeric it asks for the baseline form over the wide");
-        Console.WriteLine("              surface: every unit emitted, each instruction one call into the");
-        Console.WriteLine("              interpreter's own dispatch for it, the control flow between");
-        Console.WriteLine("              instructions emitted, and eval and import() compiled the same");
-        Console.WriteLine("              way. The arm64 backend emits only with --numeric.");
+        Console.WriteLine("              surface: every unit emitted, each block of instructions one call");
+        Console.WriteLine("              into the interpreter's own dispatch, the control flow between");
+        Console.WriteLine("              blocks emitted, and eval and import() compiled the same way. The");
+        Console.WriteLine("              arm64 backend emits only with --numeric.");
         Console.WriteLine("              None of this implies anything about speed: no measurement of");
         Console.WriteLine("              any output form is retained anywhere in this repository.");
         Console.WriteLine("              (Corrected 2026-09-08. This entry read \"Every backend this");

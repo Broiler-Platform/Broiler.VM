@@ -9,13 +9,14 @@
 #   machinecode   the native form, under `broiler.javascript.wide` with the harness prelude loaded
 #                 exactly as the bytecode run loads it. Every unit of the wide artifact is emitted
 #                 as x86-64 machine code for this runner's calling convention (x86-64-sysv on
-#                 ubuntu-latest). Each instruction is one call into the interpreter's own dispatch
-#                 for that instruction, and the control flow between instructions is emitted.
+#                 ubuntu-latest). Each block of instructions is one call into the interpreter's own
+#                 dispatch, and the control flow between blocks is emitted.
 #
 # WHAT A machinecode RUN WILL SAY, SO NOBODY READS IT AS A REGRESSION. Its verdicts are expected to
 # equal the bytecode run's over the same checkout, variant by variant, except in three named
 # classes: a variant that spends the wall clock in the native form where bytecode answered, because
-# each instruction costs more wall time; a variant that loads a guest program (eval, Function,
+# every call between emitted code and the interpreter costs wall time the bytecode run does not
+# spend; a variant that loads a guest program (eval, Function,
 # import()) and spends fuel at a different point, because the loaded program's larger native
 # payload is verified under the same allowance; and a variant refused because its emitted code
 # would exceed the format's native-code ceiling. eng/compare-test262-forms.py sorts a per-variant

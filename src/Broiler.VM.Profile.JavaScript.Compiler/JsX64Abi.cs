@@ -59,7 +59,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// The bytes a caller must reserve below its own frame before any call: thirty-two under Windows
 /// x64, none under System V. The numeric form reserves it even though its units call nothing outside
 /// their own emitted blob, because the obligation is the CALLER'S and an emitted unit is a caller;
-/// the baseline form's units call a managed handler per instruction, and the callee may use it.
+/// the baseline form's units call a managed handler at every block head, and the callee may use it.
 /// </param>
 /// <param name="StackAlignmentAtCall">
 /// What the stack pointer must be congruent to, modulo sixteen, at the moment a <c>call</c>
