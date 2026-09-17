@@ -508,7 +508,9 @@ those tests was fixed during development and committed after the runs. T7 and T1
 the first collection named for the context comparison and the suppressed lookup, still pass under the same
 witnesses on the remedy head, so across threads neither guard has a failing witness: that a second thread
 is never answered from the first thread's lookup rests on the answer being held per thread (the bundle's
-section 5.14, item 9, and section 7.2). The reading still rests on
+section 5.14, item 9, and section 7.2). *Added 2026-09-17:* the owner ruled on that date that the bundle's
+correctness item stands as held, with that qualification (the bundle's section 7.4); the ruling is on the
+bundle's verdict and not on this route. The reading still rests on
 the same argument and on sampled concurrent runs, and it is still not a proof; the route, and the
 question nobody has ruled on, are unchanged.
 

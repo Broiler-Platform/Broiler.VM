@@ -66,6 +66,13 @@ and section 6.9 the figures. Every first-collection verdict stands beside it, an
 first-collection file but `measurement/make-hashes.py`, which the re-collection's commit and a later
 correction changed in place (section 8).
 
+*Added 2026-09-17, the owner's rulings on items 1 and 2:* after the re-collection and the review of it,
+the owner accepted both verdicts as this bundle records them. **Item 1 stands `[MET]` with its stated
+qualification**, that the witness table was fixed during development, and **item 2 stays `[UNMET]` for
+the `c_call` shape in the native form**, with no remedy: nothing may describe the change as faster for
+that cell. The rulings move no mark, re-run nothing and accept no milestone or change, and the rule is
+still not met as a whole (section 7.4).
+
 ---
 
 ## Field coverage
@@ -80,7 +87,7 @@ The status ledger's section 3 fixes the fields a bundle must carry.
 | Environment | Section 4 | Written |
 | Procedure | Section 5 | 5.1 to 5.3 as `dbc8d37` committed them; 5.4 to 5.8 written at completion; 5.9 lists what later commits changed; 5.10 and 5.11 as `d5014f8` committed them, before the re-collection, with two dated notes in 5.10; 5.12 to 5.14 written after the re-collection; 5.15 lists what later commits changed in the re-collection's text |
 | Outputs | Section 6 | Written; 6.9 and 6.10 for the re-collection |
-| Decision | Section 7 | Written; 7.3 is the first collection's verdict and 7.4 the re-collection's |
+| Decision | Section 7 | Written; 7.3 is the first collection's verdict and 7.4 the re-collection's, with the owner's dated rulings of 2026-09-17 on items 1 and 2 |
 | Validity | Section 8 | Written |
 
 Section 9 carries the exclusions.
@@ -1013,6 +1020,13 @@ retained transcript, and git holds the text each one replaced.
    first trigger; the trigger's exception now points here for corrections after the re-collection. The
    paragraph above section 1, section 5.10 by a dated note, and section 5.13 no longer say that every
    first-collection file stayed exactly as retained.
+4. **The owner's rulings of 2026-09-17 on items 1 and 2 are recorded.** This is not a finding of the
+   review: after it, the owner accepted both verdicts of section 7.4 as recorded, item 1 `[MET]` with its
+   stated qualification and item 2 `[UNMET]` for the `c_call` shape in the native form, with no remedy.
+   Section 7.4 gains the rulings as a dated paragraph, and the paragraph above section 1, section 6.9.2
+   and the field coverage table gain a dated note or a pointer to it. No verdict mark changes. `hashes.txt`
+   was regenerated with `measurement/make-hashes.py` and no row of it changed, because this README is the
+   only file of this directory the correction touches and `hashes.txt` does not hash it.
 
 ---
 
@@ -1317,6 +1331,9 @@ quantities. That cell fails item 2 and is named here as failing. `r2/e10/e10-sha
 verdict line per cell and quantity, the JSON carries every repetition, and `r2/e10/lanes.txt` identifies
 the lanes.
 
+*Added 2026-09-17:* the owner ruled that this cell stays failing, with no remedy, and that nothing may
+describe the change as faster for it (section 7.4).
+
 #### 6.9.3 The core probe, E12
 
 Every figure below is nanoseconds per admitted charge, the minimum of three repetitions, copied from the
@@ -1594,6 +1611,19 @@ stays the first collection's verdict, of the tree of `34dbd7a`; this one is of t
 **What the failure triggers.** Item 2's failure is named here and in section 6.9.2, and it triggers no
 change: section 5.11 says that no further change is made without the owner. The measurement was not taken
 again.
+
+**The owner's rulings of 2026-09-17.** *Added 2026-09-17, after the re-collection and after the review of
+it that section 5.15 lists.* The owner accepted both open verdicts of this table as recorded:
+
+- **Item 1 stands `[MET]` with its stated qualification**: the witness clause holds against a witness
+  table fixed during development, with the development drives' results known, and first committed after
+  the runs, as the row above says (section 5.14, item 9; EX-121).
+- **Item 2 stays `[UNMET]` for the `c_call` shape in the native form.** No remedy is made for that cell,
+  and nothing in this repository may describe the change as faster for it.
+
+The rulings were made after these verdicts were written and seen. They move no mark, re-run nothing, and
+accept no milestone and no change: the predeclared rule is still not met as a whole, and no reviewer has
+read this work.
 
 **Reviewer:** none.
 
