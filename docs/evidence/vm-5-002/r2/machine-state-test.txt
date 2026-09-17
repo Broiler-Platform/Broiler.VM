@@ -1,0 +1,86 @@
+branch=claude/fuel-credit-block-steps
+head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+tree=D:/Broiler.VM
+tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+tree-changes=[]
+build=machine state test
+started=2026-09-16T22:54:29+02:00
+host=DESKTOP-UK9RCOH
+os=Microsoft Windows 11 Enterprise build 26200
+cpu=AMD Ryzen 7 5800X 8-Core Processor
+cores_physical=8 logical=16 maxclock_mhz=3801
+current_clock_mhz=3801 load_pct=45
+memory_total_kb=33473012 free_kb=9180708
+power_scheme=GUID des Energieschemas: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (HÃ¶chstleistung)
+dotnet=10.0.401
+python=3.11.9
+processes_with_at_least_60_cpu_s_test (id, name, cpu_s, working set MB, start time):
+  id=67012 claude cpu_s=97763.0 ws_mb=246.8 started=/Date(1789470714728)/
+  id=7804 explorer cpu_s=5633.3 ws_mb=233.5 started=/Date(1789293510172)/
+  id=42272 claude cpu_s=5501.0 ws_mb=810.0 started=/Date(1789390950515)/
+  id=32276 OOSU10PE cpu_s=4673.0 ws_mb=118.5 started=/Date(1789293531287)/
+  id=39756 claude cpu_s=4446.0 ws_mb=108.4 started=/Date(1789390950207)/
+  id=14856 EADesktop cpu_s=3197.7 ws_mb=94.5 started=/Date(1789293518000)/
+  id=58644 msedgewebview2 cpu_s=2734.6 ws_mb=21.2 started=/Date(1789473048193)/
+  id=34580 claude cpu_s=2502.7 ws_mb=360.1 started=/Date(1789463811513)/
+  id=35052 TGitCache cpu_s=2080.5 ws_mb=58.7 started=/Date(1789455302656)/
+  id=29844 claude cpu_s=1730.6 ws_mb=334.5 started=/Date(1789390949390)/
+  id=18476 claude cpu_s=1231.2 ws_mb=228.1 started=/Date(1789390952673)/
+  id=15096 steamwebhelper cpu_s=1187.6 ws_mb=82.3 started=/Date(1789293518682)/
+  id=56016 devenv cpu_s=1022.6 ws_mb=750.0 started=/Date(1789575254665)/
+  id=27272 claude cpu_s=974.2 ws_mb=202.5 started=/Date(1789415530956)/
+  id=11652 EALocalHostSvc cpu_s=902.5 ws_mb=15.9 started=/Date(1789293519121)/
+  id=28220 steam cpu_s=848.6 ws_mb=60.0 started=/Date(1789293517318)/
+  id=42584 claude cpu_s=790.6 ws_mb=190.6 started=/Date(1789409171981)/
+  id=16196 claude cpu_s=719.0 ws_mb=271.5 started=/Date(1789498592086)/
+  id=55828 claude cpu_s=685.0 ws_mb=197.2 started=/Date(1789466195938)/
+  id=25880 claude cpu_s=675.9 ws_mb=189.6 started=/Date(1789459077074)/
+  id=1792 claude cpu_s=629.3 ws_mb=254.2 started=/Date(1789539300320)/
+  id=7148 ChatGPT cpu_s=620.4 ws_mb=59.2 started=/Date(1789455278231)/
+  id=7928 ChatGPT Classic cpu_s=606.7 ws_mb=68.2 started=/Date(1789293534679)/
+  id=51132 claude cpu_s=566.0 ws_mb=240.7 started=/Date(1789499929388)/
+  id=33220 ChatGPT cpu_s=538.0 ws_mb=205.3 started=/Date(1789455277356)/
+  id=26952 ms-teams cpu_s=527.8 ws_mb=36.3 started=/Date(1789473048346)/
+  id=65572 msedgewebview2 cpu_s=448.7 ws_mb=12.8 started=/Date(1789473047975)/
+  id=45972 mstsc cpu_s=445.9 ws_mb=237.5 started=/Date(1789538604904)/
+  id=27500 UniGetUI cpu_s=444.2 ws_mb=15.5 started=/Date(1789293532387)/
+  id=31892 WhatsApp.Root cpu_s=422.8 ws_mb=197.0 started=/Date(1789293540733)/
+  id=52684 claude cpu_s=417.3 ws_mb=239.2 started=/Date(1789538828624)/
+  id=39204 claude cpu_s=390.6 ws_mb=314.6 started=/Date(1789580641316)/
+  id=58132 DevHub cpu_s=359.7 ws_mb=723.5 started=/Date(1789580519082)/
+  id=44784 VBCSCompiler cpu_s=342.5 ws_mb=556.3 started=/Date(1789590326855)/
+  id=31540 nvcontainer cpu_s=335.7 ws_mb=87.0 started=/Date(1789293510018)/
+  id=20772 Signal cpu_s=322.4 ws_mb=110.7 started=/Date(1789293516214)/
+  id=35928 claude cpu_s=310.7 ws_mb=227.4 started=/Date(1789543334249)/
+  id=12232 lghub_agent cpu_s=310.4 ws_mb=67.2 started=/Date(1789293520044)/
+  id=15460 lghub_system_tray cpu_s=298.2 ws_mb=32.8 started=/Date(1789293519963)/
+  id=13376 AdobeCollabSync cpu_s=282.8 ws_mb=73.3 started=/Date(1789293530293)/
+  id=25032 msedgewebview2 cpu_s=250.1 ws_mb=27.5 started=/Date(1789293542315)/
+  id=27620 ChatGPT cpu_s=234.1 ws_mb=225.6 started=/Date(1789455296900)/
+  id=14700 ms-teams cpu_s=218.0 ws_mb=49.8 started=/Date(1789293518925)/
+  id=55968 msedgewebview2 cpu_s=216.0 ws_mb=30.5 started=/Date(1789473046254)/
+  id=3068 EACefSubProcess cpu_s=183.0 ws_mb=225.5 started=/Date(1789293523271)/
+  id=14604 ChatGPT Classic cpu_s=176.0 ws_mb=179.4 started=/Date(1789293537162)/
+  id=63772 explorer cpu_s=171.3 ws_mb=203.5 started=/Date(1789568554434)/
+  id=13264 OneDrive.Sync.Service cpu_s=169.0 ws_mb=35.9 started=/Date(1789401734267)/
+  id=12400 msedgewebview2 cpu_s=166.9 ws_mb=18.2 started=/Date(1789293541802)/
+  id=5128 claude cpu_s=154.7 ws_mb=237.8 started=/Date(1789575671915)/
+  id=26960 steamwebhelper cpu_s=148.3 ws_mb=41.1 started=/Date(1789293519089)/
+  id=29192 msedgewebview2 cpu_s=134.6 ws_mb=50.5 started=/Date(1789293541690)/
+  id=10044 claude cpu_s=132.1 ws_mb=53.9 started=/Date(1789390953191)/
+  id=4764 Signal cpu_s=129.0 ws_mb=39.5 started=/Date(1789293516551)/
+  id=25220 ctfmon cpu_s=124.8 ws_mb=21.3 started=/Date(1789293514570)/
+  id=17928 ChatGPT Classic cpu_s=122.0 ws_mb=40.5 started=/Date(1789293535492)/
+  id=29700 CefSharp.BrowserSubprocess cpu_s=121.9 ws_mb=17.9 started=/Date(1789293529802)/
+  id=9456 Signal cpu_s=119.5 ws_mb=228.2 started=/Date(1789293516884)/
+  id=14396 EACefSubProcess cpu_s=116.8 ws_mb=46.3 started=/Date(1789293518940)/
+  id=28548 ChatGPT Classic cpu_s=116.6 ws_mb=25.9 started=/Date(1789293535508)/
+  id=50832 devenv cpu_s=98.3 ws_mb=1028.3 started=/Date(1789580502110)/
+  id=11004 WindowsPackageManagerServer cpu_s=95.7 ws_mb=52.1 started=/Date(1789293532825)/
+  id=15116 claude cpu_s=90.4 ws_mb=35.1 started=/Date(1789390950234)/
+  id=36856 ChatGPT cpu_s=90.3 ws_mb=281.3 started=/Date(1789455286960)/
+  id=38588 ChatGPT cpu_s=83.5 ws_mb=66.3 started=/Date(1789455300323)/
+  id=40904 Signal cpu_s=82.2 ws_mb=21.8 started=/Date(1789341621120)/
+  id=4524 ChatGPT cpu_s=79.5 ws_mb=39.7 started=/Date(1789455278247)/
+  id=32368 claude cpu_s=68.1 ws_mb=31.0 started=/Date(1789390953648)/
+  id=7332 EACefSubProcess cpu_s=65.8 ws_mb=22.9 started=/Date(1789293518965)/

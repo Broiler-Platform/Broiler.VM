@@ -1,0 +1,25 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[M docs/evidence/vm-5-002/README.md]
+# build=e13 readings
+# started=2026-09-17T08:25:29+02:00
+# binary=docs/evidence/vm-5-002/r2/measurement/bench-readings.py sha256=3bdb67303e52256618080e875bcca318990702bbc370871600cb3115731ac94d version=(no version resource)
+# command=python r2/measurement/bench-readings.py <re-collection e13 dir>
+pair 1, base first: meter-per-instruction
+  bench-base.log: candidate-ns=23291.8 per-instruction-ns=26.4637 aa-ns=255.8 valid=yes (measurements=10 invalid=0)
+  bench-credit.log: candidate-ns=20184.2 per-instruction-ns=13.5830 aa-ns=109.9 valid=yes (measurements=10 invalid=0)
+  item 4, lane total: credit 20184.2 <= base 23291.8 + base aa 255.8 = 23547.6 -> holds
+  item 4, per instruction: credit 13.5830 <= base 26.4637 + base aa 255.8 / 256 = 27.4629 -> holds
+  host-call: base per-call-ns=140.4050 aa-ns=23.6 candidate-ns=1202.6; credit per-call-ns=134.1550 aa-ns=1.1 candidate-ns=1178.4
+  item 5 reading, reported without a verdict: credit 134.1550 <= base 140.4050 + base aa 23.6 = 164.0050
+pair 2, credit first: meter-per-instruction
+  bench-base-run2.log: candidate-ns=23136.5 per-instruction-ns=27.2677 aa-ns=317.9 valid=yes (measurements=10 invalid=0)
+  bench-credit-run2.log: candidate-ns=20198.9 per-instruction-ns=13.5844 aa-ns=95.8 valid=yes (measurements=10 invalid=0)
+  item 4, lane total: credit 20198.9 <= base 23136.5 + base aa 317.9 = 23454.4 -> holds
+  item 4, per instruction: credit 13.5844 <= base 27.2677 + base aa 317.9 / 256 = 28.5095 -> holds
+  host-call: base per-call-ns=168.4000 aa-ns=19.5 candidate-ns=1183.2; credit per-call-ns=123.8700 aa-ns=13.1 candidate-ns=1200.5
+  item 5 reading, reported without a verdict: credit 123.8700 <= base 168.4000 + base aa 19.5 = 187.9000
+item 4, both readings in both pairs: hold
+# exit=0

@@ -1,0 +1,5 @@
+ .../FuelChargeExactnessTests.cs                    | 716 ++++++++++++++++++++-
+ 1 file changed, 693 insertions(+), 23 deletions(-)
+542c715 Witness a host call made with the flow suppressed, a lookup through another runtime's scope, a poll beside a second charging thread, and a capability return that puts its caller's context back
+9e9377d Count a held block's work at a poll instead of settling and renewing it there
+4279862 Witness a context change on one thread, a suppressed lookup after another, nested and context-changing capabilities, and a poll after a refused poll

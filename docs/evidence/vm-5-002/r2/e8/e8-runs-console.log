@@ -1,0 +1,12 @@
+E8 runs started 2026-09-17T07:26:48+02:00 branch=claude/fuel-credit-block-steps head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+=== EXIT credit bytecode fuel=1000 -> 1 (2026-09-17T07:31:00+02:00) ===
+=== EXIT credit native fuel=1000 -> 1 (2026-09-17T07:35:28+02:00) ===
+=== EXIT credit bytecode fuel=2500 -> 1 (2026-09-17T07:39:41+02:00) ===
+=== EXIT credit native fuel=2500 -> 1 (2026-09-17T07:43:54+02:00) ===
+=== EXIT credit bytecode fuel=10000 -> 1 (2026-09-17T07:47:55+02:00) ===
+=== EXIT credit native fuel=10000 -> 1 (2026-09-17T07:52:47+02:00) ===
+=== EXIT credit bytecode fuel=30000 -> 1 (2026-09-17T07:56:56+02:00) ===
+=== EXIT credit native fuel=30000 -> 1 (2026-09-17T08:01:30+02:00) ===
+=== EXIT credit bytecode fuel=100000 -> 1 (2026-09-17T08:05:44+02:00) ===
+=== EXIT credit native fuel=100000 -> 1 (2026-09-17T08:10:12+02:00) ===
+E8 DONE: runs 1000 2500 10000 30000 100000

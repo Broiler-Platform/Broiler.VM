@@ -1,0 +1,5 @@
+# moved aside 2026-09-17T06:46:16+02:00 by the resumed re-collection, intact and unchanged
+# the E7 native credit run started 2026-09-16T23:59:41+02:00 (its driver log's started= line) into artifacts/fc/rc/t262-credit-native
+# the machine restarted at 2026-09-17T00:31:52 local (the OS last boot time, Win32_OperatingSystem.LastBootUpTime) and killed it: 56 shard logs, no merged report, no exit line in its driver log
+# it is not a result: E7 native was run afresh into artifacts/fc/rc/t262-credit-native
+# shard logs: 56; shard directories: 55; merged report present: no

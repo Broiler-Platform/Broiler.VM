@@ -1,0 +1,23 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[]
+# build=credit
+# started=2026-09-16T22:48:27+02:00
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=14c4f4f5573fcdb7d574b53eb19430a027e11cbc316e4522d1af1ec5ea163568 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=291af53e6157badd5f34478c61a43cc1402cea15876c0d30efd02459560cdde5 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# command=env BROILER_ASSURANCE_WRITE=1 BROILER_API_WRITE=1 dotnet test src/tests/Broiler.VM.Contract.Tests -c Release
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+Test run for D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   263, Skipped:     0, Total:   263, Duration: 726 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+# exit=0
+# finished=2026-09-16T22:48:31+02:00

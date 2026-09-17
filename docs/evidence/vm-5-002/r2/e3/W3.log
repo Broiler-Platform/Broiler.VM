@@ -1,0 +1,505 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/broiler-arms/wit2
+# tree-head=16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# tree-changes=[M src/Broiler.VM.Runtime/VmMeter.cs]
+# build=wit2 with W3 injected
+# started=2026-09-16T22:50:41+02:00
+# binary=D:/broiler-arms/wit2/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=97d92b2a6c9b9d30b6600ae6c7662a39f022a982dfef928ef43ac6ae6f50198a version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/wit2/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=0583d430d8be2f016504ce48cd79da3642b10e0e4ca36938f14dfcda6462ba92 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# build-command=dotnet build src/tests/Broiler.VM.Contract.Tests -c Release (exit 0)
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> D:\broiler-arms\wit2\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> D:\broiler-arms\wit2\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Runtime -> D:\broiler-arms\wit2\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> D:\broiler-arms\wit2\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Contract.Tests -> D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.31
+# command=dotnet test src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter "FullyQualifiedName~FuelChargeExactnessTests|FullyQualifiedName~A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind|FullyQualifiedName~A_Capability_That_Changes_Nothing_Returns_Its_Caller" --logger console;verbosity=normal
+Test run for D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.06]   Discovering: Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.12]   Discovered:  Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.12]   Starting:    Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.24]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 50000) [FAIL]
+[xUnit.net 00:00:00.24]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.24]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.24]       Actual:   ProfileFault
+[xUnit.net 00:00:00.24]       Stack Trace:
+[xUnit.net 00:00:00.25]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(163,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.25]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.25]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.25]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 4096) [FAIL]
+[xUnit.net 00:00:00.25]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.25]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.25]       Actual:   ProfileFault
+[xUnit.net 00:00:00.25]       Stack Trace:
+[xUnit.net 00:00:00.25]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(163,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.25]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.25]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000100, expected: ResourceExhaustion, expectedFuel: 101) [58 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000101, expected: ResourceExhaustion, expectedFuel: 2000101) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000103, expected: ProfileFault, expectedFuel: 2000103) [1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 2) [1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 129) [< 1 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 50000) [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 163
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 4096) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 163
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1) [< 1 ms]
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1000) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.28]       Actual:   ProfileFault
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(163,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.28]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 64) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 63) [< 1 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1000) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 163
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 127) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.ReviewRegressionTests.A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context [80 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 65) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 128) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 62, after: 0, expected: ProfileFault, expectedFuel: 65) [< 1 ms]
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000, before: 0, units: 0, after: 0, expected: Normal, expectedFuel: 10002) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: Normal
+[xUnit.net 00:00:00.28]       Actual:   ProfileFault
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(596,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.28]            at InvokeStub_FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Object, Span`1)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 10, units: 60, after: 60, expected: ProfileFault, expectedFuel: 124) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: 124
+[xUnit.net 00:00:00.28]       Actual:   133
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(603,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.28]            at InvokeStub_FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Object, Span`1)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 0, invocationFuel: 5000, expected: Invocation) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.28]       Actual:   ProfileFault
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(233,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 0, expected: Instance) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.28]       Actual:   ProfileFault
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(233,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.28]            at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 0, expected: Runtime) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.28]       Actual:   ProfileFault
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(233,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.28]            at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 5000, expected: Instance) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.28]       Actual:   ProfileFault
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(233,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.28]            at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000, before: 0, units: 0, after: 0, expected: Normal, expectedFuel: 10002) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Normal
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 596
+   at InvokeStub_FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 61, after: 0, expected: Normal, expectedFuel: 64) [< 1 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 10, units: 60, after: 60, expected: ProfileFault, expectedFuel: 124) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 124
+Actual:   133
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 603
+   at InvokeStub_FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Passed Broiler.VM.Contract.Tests.ReviewRegressionTests.A_Capability_That_Changes_Nothing_Returns_Its_Caller_To_The_Context_It_Was_Called_Under [2 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 0, invocationFuel: 5000, expected: Invocation) [2 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 233
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 0, expected: Instance) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 233
+   at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 0, expected: Runtime) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 233
+   at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 5000, expected: Instance) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 233
+   at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 5000, invocationFuel: 0, expected: Runtime) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.28]       Actual:   ProfileFault
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(233,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.28]            at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 5000, expected: Runtime) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.28]       Actual:   ProfileFault
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(233,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.28]            at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27, expectedFuel: 155) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Collections differ
+[xUnit.net 00:00:00.28]                                   ↓ (pos 1)
+[xUnit.net 00:00:00.28]       Expected: bool[]     [True, False, False]
+[xUnit.net 00:00:00.28]       Actual:   List<bool> [True, True, True]
+[xUnit.net 00:00:00.28]                                   ↑ (pos 1)
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(1619,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(UInt64 units, UInt64 expectedFuel)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60002, expected: Normal, expectedFuel: 60002) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: Normal
+[xUnit.net 00:00:00.28]       Actual:   ProfileFault
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(191,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.28]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60001, expected: ResourceExhaustion, expectedFuel: 60001) [FAIL]
+[xUnit.net 00:00:00.28]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.28]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.28]       Actual:   ProfileFault
+[xUnit.net 00:00:00.28]       Stack Trace:
+[xUnit.net 00:00:00.28]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(191,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.28]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(Object, Span`1)
+[xUnit.net 00:00:00.28]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.37]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls [FAIL]
+[xUnit.net 00:00:00.37]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.37]       Expected: 0
+[xUnit.net 00:00:00.37]       Actual:   1306673
+[xUnit.net 00:00:00.37]       Stack Trace:
+[xUnit.net 00:00:00.37]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(1867,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls()
+[xUnit.net 00:00:00.37]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.37]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 5000, invocationFuel: 0, expected: Runtime) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 233
+   at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 5000, expected: Runtime) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 233
+   at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27, expectedFuel: 155) [8 ms]
+  Error Message:
+   Assert.Equal() Failure: Collections differ
+                            ↓ (pos 1)
+Expected: bool[]     [True, False, False]
+Actual:   List<bool> [True, True, True]
+                            ↑ (pos 1)
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(UInt64 units, UInt64 expectedFuel) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 1619
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 28, expectedFuel: 156) [< 1 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60002, expected: Normal, expectedFuel: 60002) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Normal
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 191
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60001, expected: ResourceExhaustion, expectedFuel: 60001) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 191
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Host_That_Invokes_With_The_Flow_Suppressed_Has_Its_Capability_Calls_Released [2 ms]
+  Passed Broiler.VM.Contract.Tests.ReviewRegressionTests.A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind [22 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls [109 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 0
+Actual:   1306673
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 1867
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.37]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block [FAIL]
+[xUnit.net 00:00:00.37]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.37]       Expected: Normal
+[xUnit.net 00:00:00.37]       Actual:   ProfileFault
+[xUnit.net 00:00:00.37]       Stack Trace:
+[xUnit.net 00:00:00.37]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(1047,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block()
+[xUnit.net 00:00:00.37]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.37]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.38]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance [FAIL]
+[xUnit.net 00:00:00.38]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.38]       Expected: ResourceExhaustion
+[xUnit.net 00:00:00.38]       Actual:   ProfileFault
+[xUnit.net 00:00:00.38]       Stack Trace:
+[xUnit.net 00:00:00.38]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(548,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance()
+[xUnit.net 00:00:00.38]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.38]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.38]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel [FAIL]
+[xUnit.net 00:00:00.38]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.38]       Expected: Normal
+[xUnit.net 00:00:00.38]       Actual:   ProfileFault
+[xUnit.net 00:00:00.38]       Stack Trace:
+[xUnit.net 00:00:00.38]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(647,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel()
+[xUnit.net 00:00:00.38]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.38]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.38]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit [FAIL]
+[xUnit.net 00:00:00.38]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.38]       Expected: Normal
+[xUnit.net 00:00:00.38]       Actual:   ProfileFault
+[xUnit.net 00:00:00.38]       Stack Trace:
+[xUnit.net 00:00:00.38]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(261,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit()
+[xUnit.net 00:00:00.38]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.38]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.38]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit [FAIL]
+[xUnit.net 00:00:00.38]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.38]       Expected: 70000
+[xUnit.net 00:00:00.38]       Actual:   384
+[xUnit.net 00:00:00.38]       Stack Trace:
+[xUnit.net 00:00:00.38]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(487,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit()
+[xUnit.net 00:00:00.38]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.38]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: WindowedPolling) [FAIL]
+[xUnit.net 00:00:00.39]       expected a suspension, got ProfileFault/CancellationPollBoundExceeded
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(687,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(FixtureVmProfileVariant variant)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Normal
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 1047
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance [2 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: ResourceExhaustion
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 548
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Normal
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 647
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Capability_That_Changes_Its_Context_Keeps_The_Change_And_Releases_Its_Depth [< 1 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Normal
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 261
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context [1 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 70000
+Actual:   384
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 487
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: Conforming) [4 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: WindowedPolling) [< 1 ms]
+  Error Message:
+   expected a suspension, got ProfileFault/CancellationPollBoundExceeded
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(FixtureVmProfileVariant variant) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 687
+   at InvokeStub_FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2) [FAIL]
+[xUnit.net 00:00:00.39]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.39]       Expected: Normal
+[xUnit.net 00:00:00.39]       Actual:   ProfileFault
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(981,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.TwoHolderRetention()
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(901,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(Int32 holders)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact [FAIL]
+[xUnit.net 00:00:00.39]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.39]       Expected: Normal
+[xUnit.net 00:00:00.39]       Actual:   ProfileFault
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(435,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact()
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level [FAIL]
+[xUnit.net 00:00:00.40]       Assert.Equal() Failure: Values differ
+[xUnit.net 00:00:00.40]       Expected: Normal
+[xUnit.net 00:00:00.40]       Actual:   ProfileFault
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(1017,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Suppressed_Flow_Is_Answered_But_Never_Cached [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Made_Under_Another_Operations_Context_Bills_That_Operation [1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 1) [< 1 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2) [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Normal
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.TwoHolderRetention() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 981
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(Int32 holders) in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 901
+   at InvokeStub_FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Thread_Started_Inside_A_Step_Still_Charges_Its_Operation_After_The_Step_Ends [< 1 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact [1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Normal
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 435
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Suppressed_Lookup_Is_Not_Answered_From_An_Earlier_One_On_The_Same_Thread [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Through_Another_Runtimes_Scope_Is_Not_Answered_From_This_Runtimes_Meter [< 1 ms]
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level [< 1 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: Normal
+Actual:   ProfileFault
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 1017
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:10.41]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge [FAIL]
+[xUnit.net 00:00:10.41]       the host call never reached the handler
+[xUnit.net 00:00:10.41]       Stack Trace:
+[xUnit.net 00:00:10.41]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(340,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge()
+[xUnit.net 00:00:10.41]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:10.41]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge [10 s]
+  Error Message:
+   the host call never reached the handler
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 340
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Capability_Called_From_Inside_Another_Leaves_The_Outer_Call_Inside_Its_Boundary [2 ms]
+[xUnit.net 00:00:20.41]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts [FAIL]
+[xUnit.net 00:00:20.41]       five steps were never held at once
+[xUnit.net 00:00:20.41]       Stack Trace:
+[xUnit.net 00:00:20.41]         D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(1115,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts()
+[xUnit.net 00:00:20.41]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:20.41]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts [10 s]
+  Error Message:
+   five steps were never held at once
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 1115
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:20.42]   Finished:    Broiler.VM.Contract.Tests
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Aggregate_Parent_Sees_Every_Charge_Of_A_Held_Step [2 ms]
+
+Test Run Failed.
+Total tests: 55
+     Passed: 29
+     Failed: 26
+ Total time: 20,8440 Seconds
+# exit=1
+# finished=2026-09-16T22:51:03+02:00
+# after revert: git status --porcelain --untracked-files=no -> []

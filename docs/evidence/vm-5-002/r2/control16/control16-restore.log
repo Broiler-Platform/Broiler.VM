@@ -1,0 +1,12 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/broiler-arms/wit2
+# tree-head=16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# tree-changes=[]
+# build=wit2 after control 16 reverted
+# started=2026-09-16T22:58:29+02:00
+# command=dotnet restore Broiler.VM.slnx
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+# exit=0
+# finished=2026-09-16T22:58:31+02:00

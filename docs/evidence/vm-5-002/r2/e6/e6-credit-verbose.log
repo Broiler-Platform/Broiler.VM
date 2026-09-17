@@ -1,0 +1,165 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[]
+# build=credit
+# started=2026-09-16T22:59:56+02:00
+# binary=D:/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.ExecutionOnly.exe sha256=e2dacff038d5b1c62f466243eb7c3bbbb2342277c4440fec304076d38dd7d28a version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.ExecutionOnly.dll sha256=220918fe1486557175b1aa6aecc533cd81d98feef42652e102e6a666dffb0e0f version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=14c4f4f5573fcdb7d574b53eb19430a027e11cbc316e4522d1af1ec5ea163568 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# command=dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly -c Release --no-build -- --corpus src/tests/corpus/js-1 --verbose
+     entry addition: Normal/NormalCompleted/0/42/-/-/-
+     entry division-by-zero: Normal/NormalCompleted/0/Infinity/-/-/-
+     entry zero-over-zero: Normal/NormalCompleted/0/NaN/-/-/-
+     entry negative-zero-division: Normal/NormalCompleted/0/-Infinity/-/-/-
+     entry remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-/-/-
+     entry bitwise-or-goes-through-to-int32: Normal/NormalCompleted/0/-2147483648/-/-/-
+     entry unsigned-shift-goes-through-to-uint32: Normal/NormalCompleted/0/4294967295/-/-/-
+     entry comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-/-/-
+     entry not-a-number-is-not-itself: Normal/NormalCompleted/0/false/-/-/-
+     entry a-boolean-adds-as-one: Normal/NormalCompleted/0/2/-/-/-
+     entry strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-/-/-
+     entry an-unassigned-local-is-undefined: Normal/NormalCompleted/0/undefined/-/-/-
+     entry a-counting-loop: Normal/NormalCompleted/0/55/-/-/-
+     entry a-taken-conditional: Normal/NormalCompleted/0/1/-/-/-
+     entry an-untaken-conditional: Normal/NormalCompleted/0/2/-/-/-
+     entry two-entry-points: Normal/NormalCompleted/0/1/-/-/-
+     entry source-multiplication-binds-tighter: Normal/NormalCompleted/0/7/-/-/-
+     entry source-parentheses-regroup: Normal/NormalCompleted/0/9/-/-/-
+     entry source-subtraction-is-left-associative: Normal/NormalCompleted/0/5/-/-/-
+     entry source-assignment-is-right-associative: Normal/NormalCompleted/0/14/-/-/-
+     entry source-unary-minus-binds-tighter-than-a-shift: Normal/NormalCompleted/0/4294967295/-/-/-
+     entry source-unary-plus-is-to-number: Normal/NormalCompleted/0/1/-/-/-
+     entry source-remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-/-/-
+     entry source-a-hexadecimal-literal: Normal/NormalCompleted/0/255/-/-/-
+     entry source-a-comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-/-/-
+     entry source-strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-/-/-
+     entry source-logical-or-answers-its-operand: Normal/NormalCompleted/0/5/-/-/-
+     entry source-logical-and-answers-its-operand: Normal/NormalCompleted/0/0/-/-/-
+     entry source-logical-and-does-not-evaluate-the-right-side: Normal/NormalCompleted/0/0/-/-/-
+     entry source-a-conditional-expression: Normal/NormalCompleted/0/10/-/-/-
+     entry source-a-var-is-visible-before-its-declaration: Normal/NormalCompleted/0/undefined/-/-/-
+     entry source-a-block-scopes-a-let: Normal/NormalCompleted/0/1/-/-/-
+     entry source-a-declaration-without-an-initialiser: Normal/NormalCompleted/0/undefined/-/-/-
+     entry source-a-counting-for-loop: Normal/NormalCompleted/0/55/-/-/-
+     entry source-break-leaves-the-loop: Normal/NormalCompleted/0/3/-/-/-
+     entry source-continue-reaches-the-update: Normal/NormalCompleted/0/12/-/-/-
+     entry source-a-do-while-runs-once: Normal/NormalCompleted/0/1/-/-/-
+     entry source-an-untaken-else: Normal/NormalCompleted/0/2/-/-/-
+     entry source-a-semicolon-is-inserted: Normal/NormalCompleted/0/3/-/-/-
+     entry source-a-comment-is-not-code: Normal/NormalCompleted/0/3/-/-/-
+     entry source-a-directive-prologue-is-not-the-completion-value: Normal/NormalCompleted/0/2/-/-/-
+     entry wrong-magic: InvalidArtifact/MalformedEncoding/1001/-/-1:0:0:0/-/-
+     entry unsupported-format-version: InvalidArtifact/UnsupportedProfileFormatVersion/1002/-/-/-/-
+     entry a-manifest-this-build-does-not-accept: InvalidArtifact/UnsupportedFeatureManifest/1004/-/-/-/-
+     entry a-manifest-identity-longer-than-the-format-admits: InvalidArtifact/InconsistentStructure/1005/-/-/-/-
+     entry an-overlong-variable-length-integer: InvalidArtifact/MalformedEncoding/1902/-/-/-/-
+     entry trailing-bytes: InvalidArtifact/InconsistentStructure/1104/-/-/-/-
+     entry an-unknown-section-kind: InvalidArtifact/UnknownFeature/1101/-/-/-/-
+     entry a-duplicated-section: InvalidArtifact/InconsistentStructure/1102/-/-/-/-
+     entry sections-out-of-order: InvalidArtifact/InconsistentStructure/1102/-/-/-/-
+     entry no-code-section: InvalidArtifact/InconsistentStructure/1103/-/-/-/-
+     entry a-section-shorter-than-it-declared: InvalidArtifact/InconsistentStructure/1105/-/-/-/-
+     entry a-truncated-payload: InvalidArtifact/Truncated/1901/-/-/-/-
+     entry more-frames-than-the-slice-has: InvalidArtifact/UnknownFeature/1202/-/-/-/-
+     entry a-declared-maximum-above-the-formats-own-ceiling: InvalidArtifact/InconsistentStructure/1201/-/-/-/-
+     entry an-interned-name-the-manifest-excludes: InvalidArtifact/UnknownFeature/1304/-/-/-/-
+     entry an-unknown-constant-tag: InvalidArtifact/UnknownFeature/1301/-/-/-/-
+     entry a-boolean-constant-that-is-neither: InvalidArtifact/MalformedEncoding/1302/-/-/-/-
+     entry more-constants-than-the-limits-section-admits: InvalidArtifact/InconsistentStructure/1303/-/-/-/-
+     entry a-constant-count-far-beyond-what-the-artifact-carries: InvalidArtifact/InconsistentStructure/1303/-/-/-/-
+     entry an-exception-region-the-manifest-excludes: InvalidArtifact/UnknownFeature/1507/-/-/-/-
+     entry a-suspension-target-the-manifest-excludes: InvalidArtifact/UnknownFeature/1508/-/-/-/-
+     entry an-unknown-opcode: InvalidArtifact/UnknownFeature/1401/-/2:0:0:0/-/-
+     entry a-code-section-of-no-length: InvalidArtifact/InconsistentStructure/1410/-/-/-/-
+     entry an-instruction-whose-operand-runs-off-the-end: InvalidArtifact/Truncated/1402/-/-/-/-
+     entry a-jump-out-of-range: InvalidArtifact/InconsistentStructure/1403/-/-/-/-
+     entry a-jump-into-an-operand: InvalidArtifact/InconsistentStructure/1403/-/-/-/-
+     entry an-operand-stack-underflow: InvalidArtifact/SemanticValidationFailed/1405/-/-/-/-
+     entry an-operand-stack-deeper-than-declared: InvalidArtifact/SemanticValidationFailed/1406/-/-/-/-
+     entry two-paths-reaching-one-offset-at-different-heights: InvalidArtifact/InconsistentStructure/1404/-/-/-/-
+     entry an-instruction-no-entry-point-reaches: InvalidArtifact/InconsistentStructure/1411/-/-/-/-
+     entry code-that-falls-off-the-end: InvalidArtifact/SemanticValidationFailed/1409/-/-/-/-
+     entry a-constant-index-past-the-pool: InvalidArtifact/SemanticValidationFailed/1407/-/-/-/-
+     entry a-local-index-past-the-frame: InvalidArtifact/SemanticValidationFailed/1408/-/-/-/-
+     entry a-return-that-leaves-more-than-the-completion-value: InvalidArtifact/SemanticValidationFailed/1412/-/-/-/-
+     entry no-entry-point: InvalidArtifact/InconsistentStructure/1501/-/-/-/-
+     entry a-duplicated-entry-point: InvalidArtifact/InconsistentStructure/1502/-/-/-/-
+     entry an-entry-point-inside-an-operand: InvalidArtifact/InconsistentStructure/1503/-/-/-/-
+     entry a-position-row-inside-an-operand: InvalidArtifact/InconsistentStructure/1506/-/2:1:1:1/-/-
+     entry an-entry-point-name-of-no-length: InvalidArtifact/InconsistentStructure/1504/-/-/-/-
+     entry an-entry-point-reached-with-operands-on-the-stack: InvalidArtifact/SemanticValidationFailed/1505/-/-/-/-
+     entry a-refusal-covered-by-the-second-position-row: InvalidArtifact/UnknownFeature/1401/-/2:3:7:5/-/-
+     entry an-artifact-larger-than-this-host-admits: ResourceExhaustion/CeilingReached/0/-/-/ArtifactBytes/Artifact
+     entry a-section-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/SectionCount/Artifact
+     entry a-declared-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/DeclaredCount/Artifact
+     entry a-structural-depth-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/StructuralDepth/Artifact
+     entry an-allocation-this-host-declined: ResourceExhaustion/AllowanceExhausted/0/-/-/AllocatedBytes/Runtime
+     entry a-verifier-work-allowance-this-host-spent: ResourceExhaustion/AllowanceExhausted/0/-/-/VerifierWork/Runtime
+     entry a-wall-clock-allowance-already-spent: ResourceExhaustion/AllowanceExhausted/0/-/-/WallClock/Runtime
+     entry a-token-that-was-already-cancelled: Cancellation/Cancelled/0/-/-/-/-
+     entry a-profile-the-catalog-does-not-hold: UnsupportedProfile/ProfileNotInCatalog/0/-/-/-/-
+     entry wide-a-function-row-the-format-cannot-represent: InvalidArtifact/InconsistentStructure/1601/-/-/-/-
+     entry wide-an-entry-point-naming-no-code-unit: InvalidArtifact/InconsistentStructure/1602/-/-/-/-
+     entry wide-code-units-that-do-not-tile-the-code-section: InvalidArtifact/InconsistentStructure/1603/-/-/-/-
+     entry wide-a-scope-popped-past-the-frame: InvalidArtifact/InconsistentStructure/1604/-/-/-/-
+     entry wide-an-exception-handler-outside-its-code-unit: InvalidArtifact/InconsistentStructure/1605/-/-/-/-
+     entry wide-a-surface-declared-twice: InvalidArtifact/InconsistentStructure/1606/-/-/-/-
+     entry wide-a-surface-this-build-does-not-implement: InvalidArtifact/UnknownFeature/1607/-/-/-/-
+     entry wide-a-surface-the-composition-declined: InvalidArtifact/UnsupportedFeatureManifest/1608/-/-/-/-
+     entry wide-a-suspension-outside-a-generator: InvalidArtifact/SemanticValidationFailed/1609/-/-/-/-
+     entry wide-a-generator-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1610/-/-/-/-
+     entry wide-an-await-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1611/-/-/-/-
+     entry wide-an-async-function-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1612/-/-/-/-
+     entry wide-an-async-iteration-step-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1630/-/-/-/-
+     entry wide-a-class-element-whose-flags-contradict: InvalidArtifact/InconsistentStructure/1621/-/-/-/-
+     entry wide-an-import-call-with-no-surface-declared: InvalidArtifact/UnknownFeature/1622/-/-/-/-
+     entry wide-a-native-payload-no-surface-declares: InvalidArtifact/UnknownFeature/1623/-/-/-/-
+     entry wide-a-native-code-section-that-disagrees-with-itself: InvalidArtifact/InconsistentStructure/1624/-/-/-/-
+     entry wide-the-native-surface-a-composition-declined: InvalidArtifact/UnsupportedFeatureManifest/1608/-/-/-/-
+     entry wide-a-native-payload-for-an-architecture-no-host-arms: ProfileFault/UnsatisfiedHostAssumption/0/-/-/-/-
+     entry wide-a-native-payload-of-four-zero-bytes: InvalidArtifact/InconsistentStructure/1625/-/-1:0:0:0/-/-
+     entry wide-a-baseline-payload-calling-an-undefined-slot: InvalidArtifact/InconsistentStructure/1625/-/-1:23:0:0/-/-
+     entry wide-an-emitted-unit-that-ends-without-a-return: InvalidArtifact/InconsistentStructure/1625/-/-1:7:0:0/-/-
+     entry wide-a-branch-that-leaves-its-code-unit: InvalidArtifact/InconsistentStructure/1625/-/-1:0:0:0/-/-
+     entry wide-a-return-code-no-backend-materialises: InvalidArtifact/InconsistentStructure/1625/-/-1:0:0:0/-/-
+     entry wide-a-word-after-an-emitted-units-return: InvalidArtifact/InconsistentStructure/1625/-/-1:4:0:0/-/-
+     entry wide-an-emitted-payload-every-word-of-which-is-a-template: ProfileFault/UnsatisfiedHostAssumption/0/-/-/-/-
+     entry wide-a-version-1-artifact-announced-as-version-2: InvalidArtifact/DescriptorMismatch/1003/-/-/-/-
+     entry wide-a-slice-manifest-announced-as-the-wide-one: InvalidArtifact/DescriptorMismatch/1006/-/-/-/-
+     entry wide-a-method-called-through-a-property: Normal/NormalCompleted/0/7/-/-/-
+     entry modules-a-module-section-no-surface-declares: InvalidArtifact/UnknownFeature/1613/-/-/-/-
+     entry modules-a-module-row-the-format-cannot-represent: InvalidArtifact/InconsistentStructure/1614/-/-/-/-
+     entry modules-a-request-naming-no-module: InvalidArtifact/InconsistentStructure/1615/-/-/-/-
+     entry modules-an-import-of-a-name-nothing-exports: InvalidArtifact/InconsistentStructure/1616/-/-/-/-
+     entry modules-a-name-two-star-re-exports-supply: InvalidArtifact/InconsistentStructure/1617/-/-/-/-
+     entry modules-a-cyclic-export-resolution: InvalidArtifact/InconsistentStructure/1618/-/-/-/-
+     entry modules-a-module-artifact-with-no-resolver: InvalidArtifact/UnsupportedFeatureManifest/1619/-/-/-/-
+     entry modules-the-module-surface-with-no-module-records: InvalidArtifact/InconsistentStructure/1620/-/-/-/-
+     entry modules-a-live-binding-read-after-a-write: Normal/NormalCompleted/0/3/-/-/-
+ok   unsupported-profile-examines-no-payload-byte: UnsupportedProfile/ProfileNotInCatalog over an empty payload
+ok   execution-step-kinds: Instantiated, Completed, Faulted as a ReferenceError, and ContractViolation from a resume
+ok   neither suspension row is declared and nothing this root runs parks: neither row is declared, and the pause this profile does make is a guest suspension between two job turns that only a host asking for the turn as its unit reaches; no entry this root replays asks
+ok   operand-stack-sized-from-verification: the artifact declared 16 and verification computed 2
+ok   the-caller-buffer-may-change-afterwards: the buffer was overwritten after verification and the answer did not move
+ok   the-fuzz-guidance-loop-is-wired: a new answer is kept, a repeat is not, and every offer is counted
+ok   corpus-replay: 129 entries replayed to their recorded answers
+ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
+ok   the-corpus-contains-passing-controls: 43 entries verify successfully
+ok   five-verifier-outcomes: Cancellation, InvalidArtifact, Normal, ProfileFault, ResourceExhaustion, UnsupportedProfile
+ok   every-invalid-artifact-carries-a-diagnostic-code: 75 entries, each with a code
+ok   an-exhaustion-names-a-dimension-and-a-scope-and-nothing-else-does: 7 exhaustion entries name a pair, 122 name none
+ok   every-dimension-this-host-can-tighten-is-pinned-by-one-entry: 7 dimensions, one entry each: AllocatedBytes, ArtifactBytes, DeclaredCount, SectionCount, StructuralDepth, VerifierWork, WallClock
+ok   two-siblings-under-one-parent-spend-one-total: 28 invocations completed and 100 were refused across two siblings; the parent spent 4000 of 4000 fuel. Which sibling was refused is not asserted: both draw on one total and the order is a race
+ok   a-parent-with-a-live-child-refuses-disposal: with 1 live child the parent answered InvalidState/AggregateBudgetHasLiveRuntimes; after the child was disposed it answered Accepted
+ok   a-sealed-parent-admits-no-further-runtime: sealing answered Accepted; a runtime created afterwards was refused with ResourceExhaustion/ParentExhausted
+ok   recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 356560 bytes at the midpoint to 351520 at the end, a factor of 0.99 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=354160 625=356496 1250=356496 1875=356496 2500=356496 3125=356560 3750=356560 4375=356560 5000=356560 5625=356688 6250=356688 6875=356688 7500=356688 8125=356688 8750=356688 9375=356688 10000=351520
+ok   a composition declining modules, and one with no resolver, each refuse by name: admitted: Normal/NormalCompleted/0; surface declined: InvalidArtifact/UnsupportedFeatureManifest/1608; no resolver: InvalidArtifact/UnsupportedFeatureManifest/1619
+ok   ceilings-are-materialised-before-the-first-byte-is-read: ResourceExhaustion/ArtifactBytes over 89 bytes against a ceiling of 4, with 0 meter events; 129 corpus entries are held to the two checks below
+ok   a-well-formed-artifact-does-charge-for-what-it-allocates: addition charges 88 allocated bytes and 97 work units across 91 meter events
+ok   a-declaration-past-its-bound-sizes-nothing: 4 entries refused with zero allocated bytes: a-constant-count-far-beyond-what-the-artifact-carries, more-constants-than-the-limits-section-admits, a-declared-maximum-above-the-formats-own-ceiling, more-frames-than-the-slice-has
+ok   allocation-is-proportional-to-the-bytes-present-not-to-what-they-declare: 129 entries under 64 allocated bytes per artifact byte; the highest is 3.3 at source-continue-reaches-the-update
+broiler-js-execution-only: 22 checks passed, core contract version 1
+# exit=0
+# finished=2026-09-16T22:59:58+02:00

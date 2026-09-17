@@ -1,0 +1,104 @@
+# 2026-09-17T08:13:44+02:00 before before: branch=claude/fuel-credit-block-steps head=d5014f8d551d5da4fb22b62ef53e7407891884ab build-test-host-processes=[]
+branch=claude/fuel-credit-block-steps
+head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+tree=D:/Broiler.VM
+tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+tree-changes=[M docs/evidence/vm-5-002/README.md]
+build=machine state before
+started=2026-09-17T08:13:44+02:00
+host=DESKTOP-UK9RCOH
+os=Microsoft Windows 11 Enterprise build 26200
+cpu=AMD Ryzen 7 5800X 8-Core Processor
+cores_physical=8 logical=16 maxclock_mhz=3801
+current_clock_mhz=3801 load_pct=8
+memory_total_kb=33473012 free_kb=17130344
+power_scheme=GUID des Energieschemas: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (Höchstleistung)
+dotnet=10.0.401
+python=3.11.9
+processes_with_at_least_60_cpu_s_before (id, name, cpu_s, working set MB, start time):
+  id=13908 claude cpu_s=195.2 ws_mb=482.2 started=/Date(1789620065010)/
+  id=26192 OOSU10PE cpu_s=148.3 ws_mb=252.1 started=/Date(1789620434355)/
+  id=14500 claude cpu_s=146.5 ws_mb=521.4 started=/Date(1789620026663)/
+# 2026-09-17T08:13:46+02:00 after before
+# 2026-09-17T08:13:47+02:00 before e10: branch=claude/fuel-credit-block-steps head=d5014f8d551d5da4fb22b62ef53e7407891884ab build-test-host-processes=[]
+lane base: D:/broiler-arms/e10-lanes/base, copied from D:/Broiler.VM-base/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0
+# binary=D:/broiler-arms/e10-lanes/base/Broiler.VM.Runtime.dll sha256=43e52ac9b159aed0233f2dda9cc25b73203caade40ae62e546c7298f46051fc0 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# every file of the lane equals its source byte for byte: True
+lane credit: D:/broiler-arms/e10-lanes/credit, copied from D:/broiler-arms/credit-measure/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0
+# binary=D:/broiler-arms/e10-lanes/credit/Broiler.VM.Runtime.dll sha256=a7bab14ea3b7987acea5e134732173bdefb83daf7695014d2b528afad7fe6be2 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# every file of the lane equals its source byte for byte: True
+lane aa: D:/broiler-arms/e10-lanes/aa, copied from D:/broiler-arms/credit-measure/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0
+# binary=D:/broiler-arms/e10-lanes/aa/Broiler.VM.Runtime.dll sha256=a7bab14ea3b7987acea5e134732173bdefb83daf7695014d2b528afad7fe6be2 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# every file of the lane equals its source byte for byte: True
+# e10 exit=0
+VERDICT a_numeric|bytecode|invoke base=1425.6 credit=911.9 aa=890.6 ratio=1.563 gap=513.7 aa_spread=178.0 below=True gap_exceeds_aa_spread=True
+VERDICT a_numeric|bytecode|process base=1608.1 credit=1097.6 aa=1074.3 ratio=1.465 gap=510.5 aa_spread=192.8 below=True gap_exceeds_aa_spread=True
+VERDICT a_numeric|native|invoke base=2731.5 credit=2209.4 aa=2222.5 ratio=1.236 gap=522.1 aa_spread=394.2 below=True gap_exceeds_aa_spread=True
+VERDICT a_numeric|native|process base=2932.8 credit=2414.3 aa=2427.2 ratio=1.215 gap=518.5 aa_spread=425.1 below=True gap_exceeds_aa_spread=True
+VERDICT b_property|bytecode|invoke base=1532.0 credit=1073.7 aa=1055.2 ratio=1.427 gap=458.3 aa_spread=196.7 below=True gap_exceeds_aa_spread=True
+VERDICT b_property|bytecode|process base=1715.5 credit=1261.5 aa=1242.6 ratio=1.36 gap=454.0 aa_spread=234.4 below=True gap_exceeds_aa_spread=True
+VERDICT b_property|native|invoke base=2949.6 credit=2436.3 aa=2446.8 ratio=1.211 gap=513.3 aa_spread=477.8 below=True gap_exceeds_aa_spread=True
+VERDICT b_property|native|process base=3174.8 credit=2639.4 aa=2650.9 ratio=1.203 gap=535.4 aa_spread=494.9 below=True gap_exceeds_aa_spread=True
+VERDICT c_call|bytecode|invoke base=1308.3 credit=1037.8 aa=1028.1 ratio=1.261 gap=270.5 aa_spread=198.0 below=True gap_exceeds_aa_spread=True
+VERDICT c_call|bytecode|process base=1493.7 credit=1222.7 aa=1216.9 ratio=1.222 gap=271.0 aa_spread=207.6 below=True gap_exceeds_aa_spread=True
+VERDICT c_call|native|invoke base=2319.9 credit=1958.8 aa=1953.3 ratio=1.184 gap=361.1 aa_spread=461.3 below=True gap_exceeds_aa_spread=False
+VERDICT c_call|native|process base=2520.7 credit=2161.0 aa=2157.6 ratio=1.166 gap=359.7 aa_spread=463.9 below=True gap_exceeds_aa_spread=False
+VERDICT d_fib|bytecode|invoke base=1280.4 credit=995.2 aa=995.0 ratio=1.287 gap=285.2 aa_spread=80.5 below=True gap_exceeds_aa_spread=True
+VERDICT d_fib|bytecode|process base=1458.9 credit=1177.6 aa=1175.4 ratio=1.239 gap=281.3 aa_spread=90.8 below=True gap_exceeds_aa_spread=True
+VERDICT d_fib|native|invoke base=2091.5 credit=1758.7 aa=1756.7 ratio=1.189 gap=332.8 aa_spread=164.0 below=True gap_exceeds_aa_spread=True
+VERDICT d_fib|native|process base=2289.7 credit=1955.5 aa=1953.2 ratio=1.171 gap=334.2 aa_spread=169.2 below=True gap_exceeds_aa_spread=True
+# 2026-09-17T08:20:37+02:00 after e10
+# 2026-09-17T08:20:38+02:00 before e12: branch=claude/fuel-credit-block-steps head=d5014f8d551d5da4fb22b62ef53e7407891884ab build-test-host-processes=[]
+credit trace exit=0 seconds=0.5 -> probe-trace-credit.txt
+credit stress exit=0 seconds=4.2 -> probe-stress-credit.txt
+base bench exit=0 seconds=11.3 -> probe-bench-base.txt
+credit bench exit=0 seconds=3.7 -> probe-bench-credit.txt
+base concurrent-bench exit=0 seconds=52.6 -> probe-concurrent-bench-base.txt
+credit concurrent-bench exit=0 seconds=2.3 -> probe-concurrent-bench-credit.txt
+base concurrent-ambient exit=0 seconds=83.5 -> probe-concurrent-ambient-base.txt
+c2r concurrent-ambient exit=0 seconds=5.5 -> probe-concurrent-ambient-c2r.txt
+credit concurrent-ambient exit=0 seconds=4.8 -> probe-concurrent-ambient-credit.txt
+# 2026-09-17T08:23:29+02:00 after e12
+# 2026-09-17T08:23:29+02:00 before e13: branch=claude/fuel-credit-block-steps head=d5014f8d551d5da4fb22b62ef53e7407891884ab build-test-host-processes=[]
+bench-base.log exit=0
+bench-credit.log exit=0
+bench-credit-run2.log exit=0
+bench-base-run2.log exit=0
+# 2026-09-17T08:24:52+02:00 after e13
+# 2026-09-17T08:24:52+02:00 before t6: branch=claude/fuel-credit-block-steps head=d5014f8d551d5da4fb22b62ef53e7407891884ab build-test-host-processes=[]
+{"rep": 0, "build": "base", "outcome": "Passed", "test_ms": 493.6, "process_ms": 1900.0, "exit": 0}
+{"rep": 0, "build": "credit", "outcome": "Passed", "test_ms": 231.1, "process_ms": 1621.7, "exit": 0}
+{"rep": 1, "build": "base", "outcome": "Passed", "test_ms": 488.5, "process_ms": 1845.0, "exit": 0}
+{"rep": 1, "build": "credit", "outcome": "Passed", "test_ms": 233.2, "process_ms": 1585.6, "exit": 0}
+{"rep": 2, "build": "base", "outcome": "Passed", "test_ms": 478.3, "process_ms": 1853.8, "exit": 0}
+{"rep": 2, "build": "credit", "outcome": "Passed", "test_ms": 231.6, "process_ms": 1573.5, "exit": 0}
+{"rep": 3, "build": "base", "outcome": "Passed", "test_ms": 483.2, "process_ms": 1843.9, "exit": 0}
+{"rep": 3, "build": "credit", "outcome": "Passed", "test_ms": 230.9, "process_ms": 1643.2, "exit": 0}
+{"rep": 4, "build": "base", "outcome": "Passed", "test_ms": 485.7, "process_ms": 1829.8, "exit": 0}
+{"rep": 4, "build": "credit", "outcome": "Passed", "test_ms": 234.8, "process_ms": 1634.3, "exit": 0}
+SUMMARY {"base": {"median_ms": 485.7, "min_ms": 478.3, "max_ms": 493.6, "n": 5}, "credit": {"median_ms": 231.6, "min_ms": 230.9, "max_ms": 234.8, "n": 5}}
+VERDICT {"base_median_ms": 485.7, "credit_median_ms": 231.6, "credit_at_or_below_base": true, "outcomes": ["Passed"]}
+# 2026-09-17T08:25:12+02:00 after t6
+# 2026-09-17T08:25:12+02:00 before after: branch=claude/fuel-credit-block-steps head=d5014f8d551d5da4fb22b62ef53e7407891884ab build-test-host-processes=[]
+branch=claude/fuel-credit-block-steps
+head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+tree=D:/Broiler.VM
+tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+tree-changes=[M docs/evidence/vm-5-002/README.md]
+build=machine state after
+started=2026-09-17T08:25:13+02:00
+host=DESKTOP-UK9RCOH
+os=Microsoft Windows 11 Enterprise build 26200
+cpu=AMD Ryzen 7 5800X 8-Core Processor
+cores_physical=8 logical=16 maxclock_mhz=3801
+current_clock_mhz=3801 load_pct=10
+memory_total_kb=33473012 free_kb=15771332
+power_scheme=GUID des Energieschemas: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (Höchstleistung)
+dotnet=10.0.401
+python=3.11.9
+processes_with_at_least_60_cpu_s_after (id, name, cpu_s, working set MB, start time):
+  id=13908 claude cpu_s=211.1 ws_mb=447.8 started=/Date(1789620065010)/
+  id=14500 claude cpu_s=206.8 ws_mb=597.5 started=/Date(1789620026663)/
+  id=14084 claude cpu_s=178.7 ws_mb=148.6 started=/Date(1789620024490)/
+# 2026-09-17T08:25:15+02:00 after after
+TIMING DONE: before e10 e12 e13 t6 after

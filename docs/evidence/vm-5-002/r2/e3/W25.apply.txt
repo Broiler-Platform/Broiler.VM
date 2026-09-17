@@ -1,0 +1,14 @@
+applied W25 to src/Broiler.VM.Runtime/VmRuntime.cs
+diff --git a/src/Broiler.VM.Runtime/VmRuntime.cs b/src/Broiler.VM.Runtime/VmRuntime.cs
+index 79f7485..4cf1deb 100644
+--- a/src/Broiler.VM.Runtime/VmRuntime.cs
++++ b/src/Broiler.VM.Runtime/VmRuntime.cs
+@@ -672,7 +672,7 @@ public sealed partial class VmRuntime : System.IDisposable
+ 
+         inCapabilityDepth.Value = CapabilityDepth + 1;
+ 
+-        return before is null
++        return before is null || true
+             ? default
+             : new CapabilityEntry(before, System.Threading.ExecutionContext.Capture()!);
+     }

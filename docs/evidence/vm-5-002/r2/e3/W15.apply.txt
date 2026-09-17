@@ -1,0 +1,13 @@
+applied W15 to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index c5ea60a..949ddec 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -335,7 +335,6 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+         var uncounted = used - usedAtLastPoll;
+ 
+         preAdmissionSize = 0;
+-        usedAtLastPoll = 0;
+ 
+         if (used == 0)
+         {

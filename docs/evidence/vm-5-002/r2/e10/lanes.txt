@@ -1,0 +1,54 @@
+lane base: D:/broiler-arms/e10-lanes/base, copied from D:/Broiler.VM-base/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM-base
+# tree-head=f127d92a03f92281de3a27438eae22903a70f316
+# tree-changes=[M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs]
+# build=e10 lane base, copied from D:/Broiler.VM-base/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0
+# started=2026-09-17T08:13:47+02:00
+# binary=D:/broiler-arms/e10-lanes/base/Broiler.VM.Abstractions.dll sha256=3b696dec6e3908e402cc5f742df2e2950ae2f304dff8bc58ea2f79d07974ecf2 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/broiler-arms/e10-lanes/base/Broiler.VM.Binary.dll sha256=3e3a4c04463e0114aeb50a59c2b2bee4c82eb65f112473b989d15f75bb719358 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/broiler-arms/e10-lanes/base/Broiler.VM.Composition.JavaScript.Cli.dll sha256=9a72d5ec15b1f3cf0a30b84c244cdc2a7ead03e6f68b1b0175e7909adea6e080 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/broiler-arms/e10-lanes/base/Broiler.VM.Composition.JavaScript.Cli.exe sha256=303609ca7286ace2560d67c9ae40b12e2ee366e5174afefde398c7587240ea01 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/broiler-arms/e10-lanes/base/Broiler.VM.Profile.JavaScript.Compiler.dll sha256=38f95fc663e46e6f5a568a7780316901bf2fe3b557d588aebacec662e8beb700 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/broiler-arms/e10-lanes/base/Broiler.VM.Profile.JavaScript.dll sha256=6fa04a7fdd2abdbb3f17336398c3fdfd7d93d94c75a13429e9bb520a4150abfa version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/broiler-arms/e10-lanes/base/Broiler.VM.Profile.JavaScript.Format.dll sha256=1a0fd0022354d1973c84d5838547c71b4785ddbc8614fc7a4bca72babf5eb8ea version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/broiler-arms/e10-lanes/base/Broiler.VM.Runtime.dll sha256=43e52ac9b159aed0233f2dda9cc25b73203caade40ae62e546c7298f46051fc0 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# every file of the lane equals its source byte for byte: True
+
+lane credit: D:/broiler-arms/e10-lanes/credit, copied from D:/broiler-arms/credit-measure/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/broiler-arms/credit-measure
+# tree-head=16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# tree-changes=[M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs]
+# build=e10 lane credit, copied from D:/broiler-arms/credit-measure/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0
+# started=2026-09-17T08:13:48+02:00
+# binary=D:/broiler-arms/e10-lanes/credit/Broiler.VM.Abstractions.dll sha256=399b3b8c73d73fd1889a3baec113316857592de5443da937bbdb6c8d5dff190e version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/credit/Broiler.VM.Binary.dll sha256=c5d0a28809c39c916dc63b3b716de3d7ef36433de991dce63496aaed0f3e95ba version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/credit/Broiler.VM.Composition.JavaScript.Cli.dll sha256=feee9abd617978a19f6e3bb0a6d944b0a2e81749680b3185859255b14d34df37 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/credit/Broiler.VM.Composition.JavaScript.Cli.exe sha256=baa397134a6e38388aee8b16e851035a3454ea4a87fdfe94fa99b55c2bf175d4 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/credit/Broiler.VM.Profile.JavaScript.Compiler.dll sha256=5dcb7c5aa360f6e4163c34b9c66b0b579ec295024821e9de6041e0c98a4ce511 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/credit/Broiler.VM.Profile.JavaScript.dll sha256=19c85aa7e728af96ac907ec407f3608251856bfd72702e463ce4b68eb121b03f version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/credit/Broiler.VM.Profile.JavaScript.Format.dll sha256=686afb83fad4c6f6373f6435fa199cf05d3637733ed3e164aa76734ec544f957 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/credit/Broiler.VM.Runtime.dll sha256=a7bab14ea3b7987acea5e134732173bdefb83daf7695014d2b528afad7fe6be2 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# every file of the lane equals its source byte for byte: True
+
+lane aa: D:/broiler-arms/e10-lanes/aa, copied from D:/broiler-arms/credit-measure/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/broiler-arms/credit-measure
+# tree-head=16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# tree-changes=[M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs]
+# build=e10 lane aa, copied from D:/broiler-arms/credit-measure/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0
+# started=2026-09-17T08:13:49+02:00
+# binary=D:/broiler-arms/e10-lanes/aa/Broiler.VM.Abstractions.dll sha256=399b3b8c73d73fd1889a3baec113316857592de5443da937bbdb6c8d5dff190e version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/aa/Broiler.VM.Binary.dll sha256=c5d0a28809c39c916dc63b3b716de3d7ef36433de991dce63496aaed0f3e95ba version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/aa/Broiler.VM.Composition.JavaScript.Cli.dll sha256=feee9abd617978a19f6e3bb0a6d944b0a2e81749680b3185859255b14d34df37 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/aa/Broiler.VM.Composition.JavaScript.Cli.exe sha256=baa397134a6e38388aee8b16e851035a3454ea4a87fdfe94fa99b55c2bf175d4 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/aa/Broiler.VM.Profile.JavaScript.Compiler.dll sha256=5dcb7c5aa360f6e4163c34b9c66b0b579ec295024821e9de6041e0c98a4ce511 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/aa/Broiler.VM.Profile.JavaScript.dll sha256=19c85aa7e728af96ac907ec407f3608251856bfd72702e463ce4b68eb121b03f version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/aa/Broiler.VM.Profile.JavaScript.Format.dll sha256=686afb83fad4c6f6373f6435fa199cf05d3637733ed3e164aa76734ec544f957 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/e10-lanes/aa/Broiler.VM.Runtime.dll sha256=a7bab14ea3b7987acea5e134732173bdefb83daf7695014d2b528afad7fe6be2 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# every file of the lane equals its source byte for byte: True
+

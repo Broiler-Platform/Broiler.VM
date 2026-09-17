@@ -1,0 +1,336 @@
+clean-before: total=55 passed=55 failed=0 compile-errors=0 (branch=claude/fuel-credit-block-steps head=d5014f8 tree=D:/broiler-arms/wit2 tree-head=16e3d6d)
+W1: S9 deleted: the SettleAll in the runtime's budget snapshot | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge -> FAILED
+    failing: FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W2: S3, S10 and S11 deleted together: the whole step-end settle | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 62 -> FAILED
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 62, after: 0, expected: ProfileFault, expectedFuel: 65)
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=4 passed=4 failed=0 compile-errors=0
+W3: Restated: in Poll, the read of the block and the write of usedAtLastPoll deleted, and the bound tested on sinceLastPoll alone | injected total=55 passed=29 failed=26 compile-errors=0
+    must fail: Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 10, units: 60 -> FAILED
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 50000)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 4096)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1000)
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000, before: 0, units: 0, after: 0, expected: Normal, expectedFuel: 10002)
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 10, units: 60, after: 60, expected: ProfileFault, expectedFuel: 124)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 0, invocationFuel: 5000, expected: Invocation)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 0, expected: Instance)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 0, expected: Runtime)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 5000, expected: Instance)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 5000, invocationFuel: 0, expected: Runtime)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 5000, expected: Runtime)
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27, expectedFuel: 155)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60002, expected: Normal, expectedFuel: 60002)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60001, expected: ResourceExhaustion, expectedFuel: 60001)
+    failing: FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls
+    failing: FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance
+    failing: FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel
+    failing: FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit
+    failing: FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: WindowedPolling)
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2)
+    failing: FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact
+    failing: FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level
+    failing: FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge
+    failing: FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=4 passed=4 failed=0 compile-errors=0
+W4: LeavesRoomFor answers true | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit -> FAILED
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W4b: S3, S10 and the SettleAll branch of S1 deleted | injected total=55 passed=52 failed=3 compile-errors=0
+    must fail: An_Instance_Allowance_Spans_Invocations_To_The_Unit -> FAILED
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 62, after: 0, expected: ProfileFault, expectedFuel: 65)
+    failing: FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W5: S4 deleted: the settle in RemainingSnapshot | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel -> FAILED
+    failing: FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W6: The MayPreAdmit test in PreAdmit deleted | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: An_Aggregate_Parent_Sees_Every_Charge_Of_A_Held_Step -> FAILED
+    failing: FuelChargeExactnessTests.An_Aggregate_Parent_Sees_Every_Charge_Of_A_Held_Step
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W7: The fast-path head returns false instead of calling TryChargeLocked | injected total=55 passed=0 failed=55 compile-errors=0
+    must fail: A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling -> FAILED
+    failing: FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000100, expected: ResourceExhaustion, expectedFuel: 101)
+    failing: ReviewRegressionTests.A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context
+    failing: FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000101, expected: ResourceExhaustion, expectedFuel: 2000101)
+    failing: FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000103, expected: ProfileFault, expectedFuel: 2000103)
+    failing: ReviewRegressionTests.A_Capability_That_Changes_Nothing_Returns_Its_Caller_To_The_Context_It_Was_Called_Under
+    failing: ReviewRegressionTests.A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 2)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 129)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 50000)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 4096)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 64)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 63)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1000)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 127)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 65)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 128)
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 62, after: 0, expected: ProfileFault, expectedFuel: 65)
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000, before: 0, units: 0, after: 0, expected: Normal, expectedFuel: 10002)
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 61, after: 0, expected: Normal, expectedFuel: 64)
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 10, units: 60, after: 60, expected: ProfileFault, expectedFuel: 124)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 0, invocationFuel: 5000, expected: Invocation)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 0, expected: Instance)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 0, expected: Runtime)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 5000, expected: Instance)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 5000, invocationFuel: 0, expected: Runtime)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 5000, expected: Runtime)
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27, expectedFuel: 155)
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 28, expectedFuel: 156)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60002, expected: Normal, expectedFuel: 60002)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60001, expected: ResourceExhaustion, expectedFuel: 60001)
+    failing: FuelChargeExactnessTests.A_Host_That_Invokes_With_The_Flow_Suppressed_Has_Its_Capability_Calls_Released
+    failing: FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls
+    failing: FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance
+    failing: FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel
+    failing: FuelChargeExactnessTests.A_Capability_That_Changes_Its_Context_Keeps_The_Change_And_Releases_Its_Depth
+    failing: FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit
+    failing: FuelChargeExactnessTests.Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit
+    failing: FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: Conforming)
+    failing: FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: WindowedPolling)
+    failing: FuelChargeExactnessTests.A_Suppressed_Flow_Is_Answered_But_Never_Cached
+    failing: FuelChargeExactnessTests.A_Charge_Made_Under_Another_Operations_Context_Bills_That_Operation
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 1)
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2)
+    failing: FuelChargeExactnessTests.A_Thread_Started_Inside_A_Step_Still_Charges_Its_Operation_After_The_Step_Ends
+    failing: FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact
+    failing: FuelChargeExactnessTests.A_Suppressed_Lookup_Is_Not_Answered_From_An_Earlier_One_On_The_Same_Thread
+    failing: FuelChargeExactnessTests.A_Charge_Through_Another_Runtimes_Scope_Is_Not_Answered_From_This_Runtimes_Meter
+    failing: FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level
+    failing: FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge
+    failing: FuelChargeExactnessTests.A_Capability_Called_From_Inside_Another_Leaves_The_Outer_Call_Inside_Its_Boundary
+    failing: FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts
+    failing: FuelChargeExactnessTests.An_Aggregate_Parent_Sees_Every_Charge_Of_A_Held_Step
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=11 passed=11 failed=0 compile-errors=0
+W8: VmExecutionScope.Current returns the thread's resolved meter without comparing contexts | injected total=55 passed=53 failed=2 compile-errors=0
+    must fail: Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context -> FAILED
+    must fail: A_Charge_Made_Under_Another_Operations_Context_Bills_That_Operation -> FAILED
+    failing: FuelChargeExactnessTests.Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context
+    failing: FuelChargeExactnessTests.A_Charge_Made_Under_Another_Operations_Context_Bills_That_Operation
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=2 passed=2 failed=0 compile-errors=0
+W9: S5 deleted: the SettleAll before retention's admission check | injected total=55 passed=53 failed=2 compile-errors=0
+    must fail: A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 1) -> FAILED
+    must fail: A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2) -> FAILED
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 1)
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2)
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=2 passed=2 failed=0 compile-errors=0
+W9b: S5 settles only the charging meter instead of every holder | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2) -> FAILED
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2)
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=2 passed=2 failed=0 compile-errors=0
+W10: The dimension test removed from the fast-path head | injected total=55 passed=37 failed=18 compile-errors=0
+    must fail: A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block -> FAILED
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27, expectedFuel: 155)
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 28, expectedFuel: 156)
+    failing: FuelChargeExactnessTests.A_Host_That_Invokes_With_The_Flow_Suppressed_Has_Its_Capability_Calls_Released
+    failing: FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls
+    failing: FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block
+    failing: FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel
+    failing: FuelChargeExactnessTests.A_Capability_That_Changes_Its_Context_Keeps_The_Change_And_Releases_Its_Depth
+    failing: FuelChargeExactnessTests.Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context
+    failing: FuelChargeExactnessTests.A_Suppressed_Flow_Is_Answered_But_Never_Cached
+    failing: FuelChargeExactnessTests.A_Charge_Made_Under_Another_Operations_Context_Bills_That_Operation
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 1)
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2)
+    failing: FuelChargeExactnessTests.A_Suppressed_Lookup_Is_Not_Answered_From_An_Earlier_One_On_The_Same_Thread
+    failing: FuelChargeExactnessTests.A_Charge_Through_Another_Runtimes_Scope_Is_Not_Answered_From_This_Runtimes_Meter
+    failing: FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level
+    failing: FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge
+    failing: FuelChargeExactnessTests.A_Capability_Called_From_Inside_Another_Leaves_The_Outer_Call_Inside_Its_Boundary
+    failing: FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W11: An eviction drops its victim's block instead of committing it | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Full_Table_Commits_The_Block_It_Evicts -> FAILED
+    failing: FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W12: A lookup with the flow suppressed is held under the null context | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Suppressed_Lookup_Is_Not_Answered_From_An_Earlier_One_On_The_Same_Thread -> FAILED
+    failing: FuelChargeExactnessTests.A_Suppressed_Lookup_Is_Not_Answered_From_An_Earlier_One_On_The_Same_Thread
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W13: In CommitPreAdmittedFuelLocked, the whole of what the block admitted is folded instead of what no poll counted | injected total=55 passed=31 failed=24 compile-errors=0
+    must fail: Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000 -> FAILED
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 50000)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 4096)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1000)
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000, before: 0, units: 0, after: 0, expected: Normal, expectedFuel: 10002)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 0, invocationFuel: 5000, expected: Invocation)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 0, expected: Instance)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 0, expected: Runtime)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 5000, expected: Instance)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 5000, invocationFuel: 0, expected: Runtime)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 5000, expected: Runtime)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60002, expected: Normal, expectedFuel: 60002)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60001, expected: ResourceExhaustion, expectedFuel: 60001)
+    failing: FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls
+    failing: FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance
+    failing: FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel
+    failing: FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit
+    failing: FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: WindowedPolling)
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2)
+    failing: FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact
+    failing: FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level
+    failing: FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge
+    failing: FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=4 passed=4 failed=0 compile-errors=0
+W14: In Poll, the write of usedAtLastPoll deleted | injected total=55 passed=29 failed=26 compile-errors=0
+    must fail: Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000 -> FAILED
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 129)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 50000)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 4096)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1000)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 128)
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000, before: 0, units: 0, after: 0, expected: Normal, expectedFuel: 10002)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 0, invocationFuel: 5000, expected: Invocation)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 0, expected: Instance)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 0, expected: Runtime)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 5000, expected: Instance)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 5000, invocationFuel: 0, expected: Runtime)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 5000, expected: Runtime)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60002, expected: Normal, expectedFuel: 60002)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60001, expected: ResourceExhaustion, expectedFuel: 60001)
+    failing: FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls
+    failing: FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance
+    failing: FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel
+    failing: FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit
+    failing: FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: WindowedPolling)
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2)
+    failing: FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact
+    failing: FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level
+    failing: FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge
+    failing: FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=4 passed=4 failed=0 compile-errors=0
+W15: In CommitPreAdmittedFuelLocked, the clearing of usedAtLastPoll deleted | injected total=55 passed=30 failed=25 compile-errors=0
+    must fail: Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000 -> FAILED
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 50000)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 4096)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1000)
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000, before: 0, units: 0, after: 0, expected: Normal, expectedFuel: 10002)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 0, invocationFuel: 5000, expected: Invocation)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 0, expected: Instance)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 0, expected: Runtime)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 5000, expected: Instance)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 5000, invocationFuel: 0, expected: Runtime)
+    failing: FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 5000, expected: Runtime)
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27, expectedFuel: 155)
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 28, expectedFuel: 156)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60002, expected: Normal, expectedFuel: 60002)
+    failing: FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60001, expected: ResourceExhaustion, expectedFuel: 60001)
+    failing: FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance
+    failing: FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel
+    failing: FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit
+    failing: FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: Conforming)
+    failing: FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: WindowedPolling)
+    failing: FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2)
+    failing: FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact
+    failing: FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge
+    failing: FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=4 passed=4 failed=0 compile-errors=0
+W16: In LeaveCapability, the entry context put back whenever one was recorded, with no identity test | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Capability_That_Changes_Its_Context_Keeps_The_Change_And_Releases_Its_Depth -> FAILED
+    failing: FuelChargeExactnessTests.A_Capability_That_Changes_Its_Context_Keeps_The_Change_And_Releases_Its_Depth
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W17: In LeaveCapability, the write-back after the restore branch deleted | injected total=55 passed=52 failed=3 compile-errors=0
+    must fail: A_Capability_That_Changes_Its_Context_Keeps_The_Change_And_Releases_Its_Depth -> FAILED
+    failing: FuelChargeExactnessTests.A_Host_That_Invokes_With_The_Flow_Suppressed_Has_Its_Capability_Calls_Released
+    failing: ReviewRegressionTests.A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context
+    failing: FuelChargeExactnessTests.A_Capability_That_Changes_Its_Context_Keeps_The_Change_And_Releases_Its_Depth
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W18: In EnterCapability, the entry context captured after the depth write | injected total=55 passed=50 failed=5 compile-errors=0
+    must fail: A_Capability_That_Changes_Its_Context_Keeps_The_Change_And_Releases_Its_Depth -> FAILED
+    failing: ReviewRegressionTests.A_Capability_That_Changes_Nothing_Returns_Its_Caller_To_The_Context_It_Was_Called_Under
+    failing: ReviewRegressionTests.A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind
+    failing: FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block
+    failing: FuelChargeExactnessTests.A_Capability_That_Changes_Its_Context_Keeps_The_Change_And_Releases_Its_Depth
+    failing: FuelChargeExactnessTests.A_Capability_Called_From_Inside_Another_Leaves_The_Outer_Call_Inside_Its_Boundary
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W19: In LeaveCapability, the return after Restore deleted | injected total=55 passed=53 failed=2 compile-errors=0
+    must fail: A_Capability_Called_From_Inside_Another_Leaves_The_Outer_Call_Inside_Its_Boundary -> FAILED
+    failing: ReviewRegressionTests.A_Capability_That_Changes_Nothing_Returns_Its_Caller_To_The_Context_It_Was_Called_Under
+    failing: FuelChargeExactnessTests.A_Capability_Called_From_Inside_Another_Leaves_The_Outer_Call_Inside_Its_Boundary
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W20: In LeaveCapability, a depth of zero stored instead of released (control 16's injection) | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context -> FAILED
+    failing: ReviewRegressionTests.A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W21: In Poll, a refused poll records what it counted as counted | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27 -> FAILED
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27, expectedFuel: 155)
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=2 passed=2 failed=0 compile-errors=0
+W21b: In Poll, the reset moved above the bound test | injected total=55 passed=52 failed=3 compile-errors=0
+    must fail: A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27 -> FAILED
+    must fail: A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 28 -> FAILED
+    must fail: Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 10, units: 60 -> FAILED
+    failing: FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 10, units: 60, after: 60, expected: ProfileFault, expectedFuel: 124)
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27, expectedFuel: 155)
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 28, expectedFuel: 156)
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=6 passed=6 failed=0 compile-errors=0
+W21c: In Poll, a refused poll resets the uncharged-work counter | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 28 -> FAILED
+    failing: FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 28, expectedFuel: 156)
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=2 passed=2 failed=0 compile-errors=0
+W22: In LeaveCapability, the test of whether the entry recorded a context removed | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Host_That_Invokes_With_The_Flow_Suppressed_Has_Its_Capability_Calls_Released -> FAILED
+    failing: FuelChargeExactnessTests.A_Host_That_Invokes_With_The_Flow_Suppressed_Has_Its_Capability_Calls_Released
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W23: In VmExecutionScope.Current, the scope comparison removed | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Charge_Through_Another_Runtimes_Scope_Is_Not_Answered_From_This_Runtimes_Meter -> FAILED
+    failing: FuelChargeExactnessTests.A_Charge_Through_Another_Runtimes_Scope_Is_Not_Answered_From_This_Runtimes_Meter
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W24: In Poll, the block read before the gate is taken | injected total=55 passed=50 failed=5 compile-errors=0
+    must fail: A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls -> FAILED
+    failing: FuelChargeExactnessTests.A_Meter_Charged_From_Two_Threads_Is_Polled_On_Exactly_The_Work_Between_Polls
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance
+    failing: FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit
+    failing: FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact
+    failing: FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+W25: In EnterCapability, every entry records nothing, so every return writes the depth back | injected total=55 passed=54 failed=1 compile-errors=0
+    must fail: A_Capability_That_Changes_Nothing_Returns_Its_Caller_To_The_Context_It_Was_Called_Under -> FAILED
+    failing: ReviewRegressionTests.A_Capability_That_Changes_Nothing_Returns_Its_Caller_To_The_Context_It_Was_Called_Under
+    control after revert: total=55 passed=55 failed=0 compile-errors=0
+    named tests alone after revert: total=1 passed=1 failed=0 compile-errors=0
+witnesses whose every named test and row failed: 29 of 29

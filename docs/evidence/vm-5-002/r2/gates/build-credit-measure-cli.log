@@ -1,0 +1,31 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/broiler-arms/credit-measure
+# tree-head=16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# tree-changes=[M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs]
+# build=credit-measure
+# started=2026-09-16T22:46:55+02:00
+# command=dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release -warnaserror
+  Determining projects to restore...
+  Restored D:\broiler-arms\credit-measure\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 99 ms).
+  Restored D:\broiler-arms\credit-measure\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj (in 86 ms).
+  Restored D:\broiler-arms\credit-measure\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj (in 86 ms).
+  Restored D:\broiler-arms\credit-measure\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj (in 99 ms).
+  Restored D:\broiler-arms\credit-measure\src\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj (in 99 ms).
+  Restored D:\broiler-arms\credit-measure\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj (in 86 ms).
+  Restored D:\broiler-arms\credit-measure\src\compositions\Broiler.VM.Composition.JavaScript.Cli\Broiler.VM.Composition.JavaScript.Cli.csproj (in 222 ms).
+  Broiler.VM.Binary -> D:\broiler-arms\credit-measure\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\broiler-arms\credit-measure\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\broiler-arms\credit-measure\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> D:\broiler-arms\credit-measure\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> D:\broiler-arms\credit-measure\src\Broiler.VM.Profile.JavaScript.Compiler\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.JavaScript -> D:\broiler-arms\credit-measure\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> D:\broiler-arms\credit-measure\src\compositions\Broiler.VM.Composition.JavaScript.Cli\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.03
+# exit=0
+# finished=2026-09-16T22:46:59+02:00

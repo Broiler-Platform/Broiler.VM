@@ -1,0 +1,212 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[]
+# build=credit
+# started=2026-09-16T22:59:33+02:00
+# binary=D:/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.exe sha256=81190b87b07dbe319debfaea6aef59004d0443691a8008282b302fd2413cbd1f version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll sha256=52122bf546a208af65561f40ca39a7513a1d479565536f09aa95829380f1eccd version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=14c4f4f5573fcdb7d574b53eb19430a027e11cbc316e4522d1af1ec5ea163568 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# command=dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler -c Release --no-build -- --checks --verbose
+ok   a-neighbours-maximum-does-not-reach-this-profile: the neighbour caps section count at 1 and this profile's artifact still verified
+ok   a-neighbours-adopted-default-does-reach-this-profile: adopting defaults beside a neighbour declaring 1 refused this artifact, naming SectionCount
+ok   a-foreign-payload-is-not-projected: the neighbour's payload completed and projected as neither of this profile's
+ok   registration-order-does-not-change-the-catalog-identity: both encodings are 637 bytes and equal
+ok   descriptor-admitted-and-its-refusals-named: admitted, and four named negative cases were each refused
+ok   every source the manifest admits compiles: 25 sources compiled
+ok   every source the manifest excludes is refused by name: 32 sources refused with the recorded code
+ok   every module-goal early error is refused with its own code: 5 sources, each refused by name
+ok   the lowering is deterministic: 25 sources compiled twice to identical bytes
+ok   two goals in one process do not reach each other: 200 concurrent script-and-module pairs, each answered by its own goal
+ok   deep nesting is refused rather than survived: 20 levels compiled; 100,000 levels refused as NestingTooDeep, with no stack overflow
+ok   an early error never produces bytes: 32 refusals, none carrying an artifact
+ok   the source fuzz guidance loop keeps a new answer and refuses a repeat: 1 of 3 offers kept, baseline 1
+ok   a declining composition refuses at verification: InvalidArtifact/UnsupportedFeatureManifest/1608
+ok   an admitting composition with no provider refuses at run time: EvalError
+ok   a typeof declares no surface and is answered rather than refused: undefined
+ok   an admitting composition runs what the declining one refused: 44
+ok   two runtimes mint one name and observe nothing of each other: the first answered 100/101/number/undefined and the second 200/201/undefined/number; each read back its own value under the same key text and neither could see the name the other alone minted
+ok   one shareable handle is instantiated by two runtimes: the verifying runtime answered 1 and a second runtime instantiating the same handle answered 1; each counted from zero, so neither realm was the other's
+ok   two runtimes read one handle concurrently with no synchronisation: 64 reads on each of two threads, every one answering 496, with no lock between them and no reader taken from the other's runtime
+ok   a handle carries nothing the runs that used it changed: three runtimes over one handle answered 256, 256, 256; each built its own store from nothing. This is behavioural and not the structural scan the gate names: a per-instance structure these programs never observe would not be caught here, and what bounds that is the construction rather than this check
+ok   a signature mismatch is refused when the runtime is created: creation answered HostFailure/CapabilitySignatureMismatch; the handler was never invoked, because there was no runtime to invoke it from
+ok   a kind mismatch is refused when the runtime is created: creation answered HostFailure/CapabilitySignatureMismatch
+ok   a version mismatch leaves an optional import unbound: the program completed with done and the handler registered at version 2 was reached 0 times; the import declares version 1 and matching is by identity and version together, so this is the unbound branch rather than a refusal
+ok   the unbound branch of an optional import is exercised: with no capability registered the program printed and completed with done; what it printed reached nowhere, which is the composition's answer and not a fault
+ok   a capability cancelling with the operation's own token is a cancellation: the invocation answered Cancellation/Cancelled
+ok   an exhausted meter at the host call is a resource exhaustion: the invocation answered ResourceExhaustion/AllowanceExhausted and the handler was reached 0 times; the charge that failed is this profile's own, taken before the boundary
+ok   any other capability failure is a host failure naming the capability: the invocation answered HostFailure/HostCapabilityFaulted naming `broiler.javascript.write`
+ok   string concatenation is charged proportionally to its input: declared n characters appended, one unit each, granularity 1; measured against its own control at n=32:64, n=64:128, n=128:256, n=256:512
+ok   string comparison is charged proportionally to its input: declared 8 comparisons over min(|a|,|b|) = n characters, granularity 1; measured against its own control at n=32:280, n=64:536, n=128:1048, n=256:2072
+ok   string equality is charged proportionally to its input: declared 8 comparisons over min(|a|,|b|) = n characters, granularity 1; measured against its own control at n=32:280, n=64:536, n=128:1048, n=256:2072
+ok   array copy is charged proportionally to its input: declared n elements copied, one unit each, granularity 1; measured against its own control at n=32:40, n=64:72, n=128:136, n=256:264
+ok   array sort is charged proportionally to its input: declared n elements ordered, at least one unit each, granularity 1; measured against its own control at n=32:175, n=64:380, n=128:867, n=256:1746
+ok   property enumeration is charged proportionally to its input: declared n own keys listed, one unit each, granularity 1; measured against its own control at n=32:42, n=64:74, n=128:138, n=256:266
+ok   regular-expression matching is charged proportionally to its input: declared 4 matches over a subject of n characters, granularity 1; measured against its own control at n=32:1048, n=64:1944, n=128:3736, n=256:7320
+ok   numeric conversion of large values is charged proportionally to its input: declared 8 conversions over a numeral of n digits, granularity 1; measured against its own control at n=32:320, n=64:576, n=128:1088, n=256:2112
+ok   a step parks and resumes across two suspensions: 2 pauses, each resumed, and the jobs ran once each in order: a,b,c. Every turn runs on a guest thread of its own, so no resume was on the thread that suspended
+ok   a host asking this profile to pause is told it is not declared: the composition enabled external suspension and the request answered Unsupported/ExternalSuspensionNotDeclared, while the step itself parked as a guest suspension (Suspension/GuestSuspended)
+ok   a continuation resumed twice is refused the second time: the first resume answered Suspension/GuestSuspended and the second InvalidState/ResumeTokenConsumed
+ok   a parked operation is abandoned and runs none of what it queued: the parked operation was disposed unresumed and the queue was dropped rather than run; a fresh instance that never stepped reports `` for what ran, which is nothing
+ok   the live-suspension bound is a named refusal: with one live suspension granted, a second park answered InvalidState/SuspendedOperationLimitReached
+ok   a return runs the finally it leaves through: expected `enter,finally,1` and the program recorded `enter,finally,1`
+ok   a break runs the finally it leaves through: expected `enter,finally,after` and the program recorded `enter,finally,after`
+ok   a continue runs the finally it leaves through: expected `0,f0,1,f1,done` and the program recorded `0,f0,1,f1,done`
+ok   a throw runs the finally it leaves through: expected `enter,finally,caught` and the program recorded `enter,finally,caught`
+ok   a finally that returns replaces the return: expected `outer` and the program recorded `outer`
+ok   a finally that returns replaces the throw: expected `replaced` and the program recorded `replaced`
+ok   nested handlers unwind innermost first: expected `inner,outer,caught` and the program recorded `inner,outer,caught`
+ok   an uncaught throw is a typed payload behind a fault: the invocation answered ProfileFault/ProfileFaultUnspecified carrying a TypeError: TypeError: from the guest
+ok   a host failure crosses the profile's frames and names the capability: the handler was reached 1 time(s) and the invocation answered HostFailure/HostCapabilityFaulted naming `broiler.javascript.write`
+ok   native/abi/stack-pointer-unchanged: before 0xce8ef7db80, after 0xce8ef7db80
+ok   native/abi/caller-pops-injection-is-caught: a callee that removed eight bytes moved the stack pointer by 8
+ok   native/abi/callee-saved-unchanged: every register this convention makes callee-saved came back as it went in
+ok   native/abi/clobber-injection-is-caught: the clobbered register was reported as R12
+ok   native/abi/frame-pointer-register: the frame pointer arrives in Rcx under x86-64-win64, and the callee read 0xce8ef7ddd0
+ok   native/abi/wrong-frame-pointer-register-is-caught: reading the argument from Rdi under x86-64-win64 answered 0xbad0bad0bad0bad
+ok   native/abi/stack-aligned-at-the-call: the stack pointer at the call was 0xce8ef7db90, which is 0 modulo sixteen
+ok   native/abi/misalignment-is-caught: a caller that reserved eight bytes more called with a stack pointer 8 modulo sixteen
+ok   native/abi/shadow-space-reserved: x86-64-win64 reserves 32 bytes of shadow space, and an emitted prologue claims 48 bytes with its own spill at 32
+ok   native/abi/the-two-conventions-disagree: RDI and RSI are callee-saved under Windows x64 and volatile under System V, the frame pointer arrives in RCX and RDI respectively, and only Windows x64 asks a caller for shadow space
+ok   native/abi/frame-offsets-match-the-runtime: the offsets an encoder computes with are the offsets the runtime gives the structures they describe
+ok   native/abi/emitted-entry-points-survive: 2 emitted entry points, each called 1000000 times, each leaving the stack pointer and every callee-saved register as it found them
+ok   native/differential/the-two-forms-agree: 4 programs, each lowered by one front end into both forms and run through the whole core lifecycle, answering the same value
+ok   native/backend/re-emission-is-byte-identical: 1075 bytes, emitted twice, identical
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/an object literal and a property read: both answered completed value=3 (number) printed=0#e3b0c44298fc fuel=21; bytecode 3 ms, native 318 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/string concatenation: both answered completed value=a012! (string) printed=0#e3b0c44298fc fuel=81; bytecode 1 ms, native 127 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/a closure counter: both answered completed value=2 (number) printed=0#e3b0c44298fc fuel=57; bytecode 1 ms, native 77 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/a class with super and private members: both answered completed value=6 (number) printed=0#e3b0c44298fc fuel=152; bytecode 4 ms, native 340 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/try, catch and finally with a break through the finally: both answered completed value=e0fgfg (string) printed=0#e3b0c44298fc fuel=110; bytecode 1 ms, native 43 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/a generator resumed by return() and throw() past a leaf of the tree: both answered completed value=true (boolean) printed=0#e3b0c44298fc fuel=157; bytecode 3 ms, native 23 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/yield* over a generator and over an array: both answered completed value=10 (number) printed=0#e3b0c44298fc fuel=252; bytecode 3 ms, native 89 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/async and await with a rejected await: both answered completed value=undefined (undefined) printed=0#e3b0c44298fc fuel=134; bytecode 2 ms, native 22 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/an async generator with for await and yield* into an async iterator: both answered completed value=[object Promise] (object) printed=0#e3b0c44298fc fuel=341; bytecode 4 ms, native 65 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/for-in: both answered completed value=ab (string) printed=0#e3b0c44298fc fuel=49; bytecode 1 ms, native 42 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/for-of with an early exit: both answered completed value=3 (number) printed=0#e3b0c44298fc fuel=97; bytecode 1 ms, native 44 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/destructuring parameters with defaults: both answered completed value=15 (number) printed=0#e3b0c44298fc fuel=181; bytecode 1 ms, native 71 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/a module with an import: both answered completed value=undefined (undefined) printed=0#e3b0c44298fc fuel=15; bytecode 9 ms, native 1 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/a switch, a labelled continue and with: both answered completed value=116 (number) printed=0#e3b0c44298fc fuel=262; bytecode 1 ms, native 49 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/recursion to RangeError at the engine's maximum call depth: both answered completed value=RangeError at depth 6000 (string) printed=0#e3b0c44298fc fuel=78037; bytecode 44 ms, native 77 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/a throw from depth 5000 caught at the top: both answered completed value=from the bottom (string) printed=0#e3b0c44298fc fuel=70066; bytecode 37 ms, native 65 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/a 100000-iteration throw and catch across a call: both answered completed value=100000 (number) printed=0#e3b0c44298fc fuel=3500022; bytecode 666 ms, native 723 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/a generator's return() through two finallys: both answered completed value=inner;outer;42:true (string) printed=0#e3b0c44298fc fuel=97; bytecode 1 ms, native 1 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/an uncaught TypeError: both answered uncaught value= () threw TypeError: TypeError: Cannot read properties of null (reading 'property') printed=0#e3b0c44298fc fuel=8; bytecode 0 ms, native 21 ms
+ok   native/baseline/two-forms-agree-over-the-wide-manifest/an eval of a function that is called later: both answered completed value=42 (number) printed=0#e3b0c44298fc; bytecode 3 ms, native 44 ms; fuel reported and not compared: bytecode 69, native 69
+ok   native/baseline/the-smallest-completing-allowance-is-one-figure/an object literal and a property read: bytecode completes at 21 and not at 20 (5 attempts; consumption at completion 21); native completes at 21 and not at 20 (5 attempts; consumption at completion 21)
+ok   native/baseline/the-smallest-completing-allowance-is-one-figure/a generator resumed by return() and throw() past a leaf of the tree: bytecode completes at 157 and not at 156 (8 attempts; consumption at completion 157); native completes at 157 and not at 156 (8 attempts; consumption at completion 157)
+ok   native/baseline/the-smallest-completing-allowance-is-one-figure/an async generator with for await and yield* into an async iterator: bytecode completes at 341 and not at 340 (9 attempts; consumption at completion 341); native completes at 341 and not at 340 (9 attempts; consumption at completion 341)
+SKIP not-run/native/baseline/entry-points-survive/x86-64-sysv: this machine uses x86-64-win64, so a unit emitted for x86-64-sysv was not entered; its bytes are held by the baseline closure, golden and cross-convention rows on every machine
+SKIP not-run/native/baseline/a-misaligned-reservation-is-caught/x86-64-sysv: this machine uses x86-64-win64, so a unit emitted for x86-64-sysv was not entered; its bytes are held by the baseline closure, golden and cross-convention rows on every machine
+ok   native/baseline/entry-points-survive/x86-64-win64: 2 units, each entered 1000 times: unit 0 entered at pc 0 reached its handler at 0xce8ef7cc78; unit 1 entered at pc 29 reached its handler at 0xce8ef7cc78
+ok   native/baseline/a-misaligned-reservation-is-caught/x86-64-win64: unit 0 widened by eight reached its handler at 0xce8ef7cc70; unit 1 widened by eight reached its handler at 0xce8ef7cc70
+ok   native/baseline/a-short-reservation-loses-a-saved-register/x86-64-win64: unit 0 shortened by sixteen came back with R14 changed and its stack aligned; unit 1 shortened by sixteen came back with R14 changed and its stack aligned
+ok   native/baseline/a-swapped-handler-is-a-defect: the call at 57 moved from slot 1 to slot 2: the unswapped control answered completed value=3 (number) printed=0#e3b0c44298fc; the swapped payload answered invocation ProfileFault/ProfileContractViolation value= () printed=0#e3b0c44298fc
+ok   native/baseline/frequent-collections/printing at every level of a 3000-deep recursion: both answered completed value=4501500 (number) printed=3001#9993d1cd7ffa fuel=123046; bytecode 87 ms, native 58 ms; collections forced: bytecode 3, native 3
+ok   native/baseline/frequent-collections/printing from a generator between yields and in its finally: both answered completed value=2001000 (number) printed=2002#04431fabe032 fuel=120127; bytecode 9 ms, native 11 ms; collections forced: bytecode 2, native 2
+ok   native/baseline/frequent-collections/printing from awaited continuations drained as jobs: both answered completed value=[object Promise] (object) printed=2501#019d03b77194 fuel=247570; bytecode 17 ms, native 27 ms; collections forced: bytecode 2, native 2
+ok   native/baseline/frequent-collections/printing from catches of throws across a call: both answered completed value=3123750 (number) printed=2500#d5217e28ce7d fuel=137522; bytecode 18 ms, native 27 ms; collections forced: bytecode 2, native 2
+ok   native/baseline/frequent-collections/printing from a function an eval defined: both answered completed value=6247500 (number) printed=2500#d9b1626371fb; bytecode 8 ms, native 32 ms; fuel reported and not compared: bytecode 117588, native 117588; collections forced: bytecode 2, native 2
+ok   native/baseline/frequent-collections/printing while closures and strings accumulate: both answered completed value=13890 (number) printed=3000#a7823306255f fuel=243032; bytecode 21 ms, native 28 ms; collections forced: bytecode 3, native 3
+ok   the encoder writes `stp x29, x30, [sp, #-64]!`: 0xA9BC7BFD, little-endian FD7BBCA9
+ok   the encoder writes `stp x19, x20, [sp, #16]`: 0xA90153F3, little-endian F35301A9
+ok   the encoder writes `ldp x21, x22, [sp, #32]`: 0xA9425BF5, little-endian F55B42A9
+ok   the encoder writes `ldp x29, x30, [sp], #64`: 0xA8C47BFD, little-endian FD7BC4A8
+ok   the encoder writes `ret`: 0xD65F03C0, little-endian C0035FD6
+ok   the encoder writes `mov x22, x0`: 0xAA0003F6, little-endian F60300AA
+ok   the encoder writes `mov x29, sp`: 0x910003FD, little-endian FD030091
+ok   the encoder writes `movz x9, #0x7FF8, lsl #48`: 0xD2EFFF09, little-endian 09FFEFD2
+ok   the encoder writes `movz w0, #3`: 0x52800060, little-endian 60008052
+ok   the encoder writes `movk w9, #1, lsl #16`: 0x72A00029, little-endian 2900A072
+ok   the encoder writes `fmov d0, x9`: 0x9E670120, little-endian 2001679E
+ok   the encoder writes `scvtf d0, x9`: 0x9E620120, little-endian 2001629E
+ok   the encoder writes `cset x9, mi`: 0x9A9F57E9, little-endian E9579F9A
+ok   the encoder writes `cset x10, vs`: 0x9A9F77EA, little-endian EA779F9A
+ok   the encoder writes `subs x9, x9, #8`: 0xF1002129, little-endian 292100F1
+ok   the encoder writes `orr x9, x9, x10`: 0xAA0A0129, little-endian 29010AAA
+ok   the encoder writes `ldr x19, [x22, #0]`: 0xF94002D3, little-endian D30240F9
+ok   the encoder writes `ldr x23, [x22, #40]`: 0xF94016D7, little-endian D71640F9
+ok   the encoder writes `str x23, [sp, #48]`: 0xF9001BF7, little-endian F71B00F9
+ok   the encoder writes `str w9, [x22, #48]`: 0xB90032C9, little-endian C93200B9
+ok   the encoder writes `ldr d0, [x21, #8]`: 0xFD4006A0, little-endian A00640FD
+ok   the encoder writes `str d0, [x19, #16]`: 0xFD000A60, little-endian 600A00FD
+ok   the encoder writes `fadd d0, d0, d1`: 0x1E612800, little-endian 0028611E
+ok   the encoder writes `fsub d0, d0, d1`: 0x1E613800, little-endian 0038611E
+ok   the encoder writes `fmul d0, d0, d1`: 0x1E610800, little-endian 0008611E
+ok   the encoder writes `fdiv d0, d0, d1`: 0x1E611800, little-endian 0018611E
+ok   the encoder writes `fneg d0, d0`: 0x1E614000, little-endian 0040611E
+ok   the encoder writes `fcmp d0, d1`: 0x1E612000, little-endian 0020611E
+ok   the encoder writes `fcmp d0, #0.0`: 0x1E602008, little-endian 0820601E
+ok   the encoder writes `b .+8`: 0x14000002
+ok   the encoder writes `b.ge .+20`: 0x540000AA
+ok   arm64 emits the retained bytes for straight-line arithmetic: 180 bytes, 1 symbols, alignment 4 - a record of what the encoder wrote and not of what a processor would do
+ok   arm64 emits the retained bytes for a block scope and repeated local reads: 260 bytes, 1 symbols, alignment 4 - a record of what the encoder wrote and not of what a processor would do
+ok   arm64 emits the retained bytes for a forward branch and a join: 460 bytes, 1 symbols, alignment 4 - a record of what the encoder wrote and not of what a processor would do
+ok   arm64 emits the retained bytes for a backward branch and a loop: 500 bytes, 1 symbols, alignment 4 - a record of what the encoder wrote and not of what a processor would do
+ok   a remainder is refused: no A64 instruction has its semantics: unit 0 at bytecode offset 22: the instruction `Remainder` has no A64 instruction: its JavaScript semantics are a library routine, and an emitted unit of this backend calls nothing
+ok   an exponentiation is refused: no A64 instruction has its semantics: unit 0 at bytecode offset 22: the instruction `Exponent` has no A64 instruction: its JavaScript semantics are a library routine, and an emitted unit of this backend calls nothing
+ok   a bitwise or is refused: ToInt32 is not what fcvtzs does: unit 0 at bytecode offset 22: the instruction `BitwiseOr` converts its operands with ToInt32, which truncates modulo two to the thirty-second, and A64's `fcvtzs` SATURATES for operands of magnitude two to the sixty-third or more instead; a template built on it would be right for small operands and silently wrong for large ones, which is the defect class a golden byte cannot see
+ok   a shift is refused: ToInt32 is not what fcvtzs does: unit 0 at bytecode offset 22: the instruction `ShiftLeft` converts its operands with ToInt32, which truncates modulo two to the thirty-second, and A64's `fcvtzs` SATURATES for operands of magnitude two to the sixty-third or more instead; a template built on it would be right for small operands and silently wrong for large ones, which is the defect class a golden byte cannot see
+ok   a strict equality is refused: a slab of doubles cannot tell undefined from NaN: unit 0 at bytecode offset 22: the instruction `StrictEquals` is the one family of operator that can tell `undefined` from a NaN, and this backend represents `undefined` as a NaN because a slab of doubles has no other encoding for it; a template here would be right for numbers and silently wrong for the completion value every program body carries
+ok   a loose equality is refused: a slab of doubles cannot tell undefined from NaN: unit 0 at bytecode offset 22: the instruction `LooseEquals` is the one family of operator that can tell `undefined` from a NaN, and this backend represents `undefined` as a NaN because a slab of doubles has no other encoding for it; a template here would be right for numbers and silently wrong for the completion value every program body carries
+ok   a global lexical binding is refused: the realm is an object graph: unit 0 at bytecode offset 5: the instruction `DeclareGlobalLet` reaches the realm, which is an object graph, and the frame an emitted unit is handed carries pointers to slabs of doubles and no managed reference at all - which is how this profile answers the rooting question by construction rather than by a scheme
+ok   a function declaration is refused: its program body reaches the realm: unit 0 at bytecode offset 5: the instruction `DeclareGlobal` reaches the realm, which is an object graph, and the frame an emitted unit is handed carries pointers to slabs of doubles and no managed reference at all - which is how this profile answers the rooting question by construction rather than by a scheme
+ok   a conditional branch past its reach is refused: the branch at word 262145 is -262145 words from its target, which the 19-bit displacement field cannot carry; a truncated displacement is a branch to somewhere else and is refused rather than encoded
+ok   a conditional branch at its reach is still encoded: 0x54800000
+ok   the arm64 frame offsets tile the declared layout: seven fields at 0, 8, 16, 24, 32, 40 and 48, and a stack frame of 64 bytes
+ok   everything `x86-64-win64` emits, the template scan accepts: 13 of 14 programs emitted and scanned, 11452 bytes in all, 1 refused by the backend before any byte was emitted
+ok   everything `x86-64-sysv` emits, the template scan accepts: 13 of 14 programs emitted and scanned, 11452 bytes in all, 1 refused by the backend before any byte was emitted
+ok   everything `arm64-aapcs64` emits, the template scan accepts: 9 of 14 programs emitted and scanned, 4048 bytes in all, 5 refused by the backend before any byte was emitted
+ok   every template `x86-64-win64` has is reached by one of these programs: 47 of 48 templates instantiated, with 1 named out of reach of this manifest (movq xmm0, rax)
+ok   every template `x86-64-sysv` has is reached by one of these programs: 47 of 48 templates instantiated, with 1 named out of reach of this manifest (movq xmm0, rax)
+ok   every template `arm64-aapcs64` has is reached by one of these programs: 44 of 44 templates instantiated
+ok   the template table's frame constants are the convention table's: both conventions agree about the frame size, the spill slot and the register the frame pointer arrives in
+ok   the template scan refuses a-native-payload-of-four-zero-bytes: NoTemplate at offset 0: the bytes at 0 match no instruction template this build's backends emit for this architecture
+ok   the template scan refuses an arm64 payload of four zero bytes: NoTemplate at offset 0: the bytes at 0 match no instruction template this build's backends emit for this architecture
+ok   the template scan refuses an indirect call through a register: NoTemplate at offset 0: the bytes at 0 match no instruction template this build's backends emit for this architecture
+ok   the template scan refuses a syscall instruction: NoTemplate at offset 0: the bytes at 0 match no instruction template this build's backends emit for this architecture
+ok   the template scan refuses a frame displacement between two declared fields: OperandOutOfRange at offset 0: the `mov rax, [r11+field]` at 0 carries 33 where its FrameField field admits no such value, so it is an instruction this build can spell and no backend of it asks for
+ok   the template scan refuses a slab displacement off the eight-byte grid: OperandOutOfRange at offset 0: the `mov rdx, [rbx+slab]` at 0 carries 4 where its SlabDisplacement field admits no such value, so it is an instruction this build can spell and no backend of it asks for
+ok   the template scan refuses a materialised immediate no unit answers with: OperandOutOfRange at offset 0: the `mov rax, imm64` at 0 carries 1 where its MaterialisedValue field admits no such value, so it is an instruction this build can spell and no backend of it asks for
+ok   the template scan refuses a unit that runs off its own end: UnitDoesNotEndInAReturn at offset 1: code unit 0 ends without a return, so control would run off its last instruction into whatever follows it
+ok   the template scan refuses a byte hidden in a unit's alignment padding: PaddingNotAlignment at offset 2: code unit 0 is followed by a byte that is neither an instruction of this unit nor the one-byte no-op an entry point is aligned with
+ok   the template scan refuses a branch that leaves the unit: BranchLeavesUnit at offset 0: the `jmp rel32` at 0 targets 21, which is outside the emitted range of code unit 0
+ok   the template scan refuses a branch into the middle of an instruction: BranchIntoInstruction at offset 0: the `jmp rel32` at 0 targets 6, which is inside an instruction rather than the first byte of one
+ok   the template scan refuses an image emitted for the other calling convention: the same 393 bytes: accepted as System V, and as Windows NoTemplate at offset 1
+ok   the unmutated image is accepted: 798 bytes emitted for one code unit
+ok   the template scan refuses an image with its last return removed: UnitDoesNotEndInAReturn at offset 796: code unit 0 ends without a return, so control would run off its last instruction into whatever follows it
+ok   the template scan refuses an image with one branch displacement moved: BranchIntoInstruction at offset 594: the `jmp rel32` at 594 targets 240, which is inside an instruction rather than the first byte of one
+ok   an x86-64 payload of four zero bytes is refused at verification: InvalidArtifact/InconsistentStructure code 1625
+ok   an arm64 payload of four zero bytes is refused at verification: InvalidArtifact/InconsistentStructure code 1625
+ok   a payload that is one instruction still verifies: verified, and NOTHING INSTANTIATED IT: the row is about the verifier's answer, and the architecture it names is one no host of this build arms
+ok   everything `x86-64-win64` emits for the wide manifest, the baseline scan accepts: all 14 programs emitted and scanned: 36 code units, 24486 bytes
+ok   everything `x86-64-sysv` emits for the wide manifest, the baseline scan accepts: all 14 programs emitted and scanned: 36 code units, 24486 bytes
+ok   every baseline template `x86-64-win64` has is reached by one of the wide programs: 21 of 21 templates instantiated, none out of reach
+ok   every baseline template `x86-64-sysv` has is reached by one of the wide programs: 21 of 21 templates instantiated, none out of reach
+ok   the baseline tables write no memory and transfer indirectly only through the handler table: 42 templates judged by their bytes: one handler-table call per table (FF 93 with a helper-slot disp32), no memory destination, no other transfer through memory or a register, no direct call, no unit-entry branch; 11 of 11 misnamed byte controls refused
+ok   the baseline reservation and argument registers are the convention table's: both conventions agree about the reservation, the frame register and the program-counter register
+ok   `x86-64-win64` emits the retained baseline bytes for a property read, a branch and a throw: 730 bytes, 2 symbols
+ok   `x86-64-sysv` emits the retained baseline bytes for a property read, a branch and a throw: 730 bytes, 2 symbols
+ok   the two conventions' baseline emissions are one template sequence: 5072 instantiations compared across 14 programs
+ok   every wide baseline artifact `x86-64-win64` writes re-emits byte for byte at verification: 14 artifacts verified with re-emission
+ok   every wide baseline artifact `x86-64-sysv` writes re-emits byte for byte at verification: 14 artifacts verified with re-emission
+ok   a re-emitting verifier refuses a baseline payload whose handler call was swapped: the call at 57 swapped: without an emitter verified; with one refused, InvalidArtifact/InconsistentStructure code 1624
+ok   the arm64 backend refuses the wide manifest's native form by name: 2104:ConstructOutsideManifest at 0:0: the arm64 backend emits only for the numeric manifest; the baseline form over `broiler.javascript.wide` has no arm64 emitter in this build
+ok   the Baseline scan refuses `call rax` in a baseline unit: NoTemplate at offset 15: the bytes at 15 match no instruction template this build's backends emit for this architecture
+ok   the Baseline scan refuses a handler call through the slot of undefined byte 0x0B: OperandOutOfRange at offset 23: the `call [rbx+slot]` at 23 carries 88 where its HelperSlot field admits no such value, so it is an instruction this build can spell and no backend of it asks for
+ok   the Baseline scan refuses a handler call between two slots: OperandOutOfRange at offset 23: the `call [rbx+slot]` at 23 carries 132 where its HelperSlot field admits no such value, so it is an instruction this build can spell and no backend of it asks for
+ok   the Baseline scan refuses `mov eax, 2`, a status no unit materialises: OperandOutOfRange at offset 15: the `mov eax, status` at 15 carries 2 where its BaselineStatusValue field admits no such value, so it is an instruction this build can spell and no backend of it asks for
+ok   the Baseline scan refuses a baseline unit with no prologue: FrameSequenceMalformed at offset 0: instruction 0 of code unit 0 is not the prologue's instruction 0, so the unit does not open with the one sequence that saves what it writes and loads the handler table
+ok   the Baseline scan refuses `push rbx` in the middle of a baseline unit: FrameSequenceMalformed at offset 15: instruction 6 of code unit 0 is a prologue or epilogue instruction outside the unit's one prologue and one epilogue, so the stack pointer or a saved register is written somewhere the scan cannot pair
+ok   the Baseline scan refuses a second `ret` in a baseline unit: FrameSequenceMalformed at offset 15: instruction 6 of code unit 0 is a prologue or epilogue instruction outside the unit's one prologue and one epilogue, so the stack pointer or a saved register is written somewhere the scan cannot pair
+ok   the Baseline scan refuses a `jmp` to the epilogue's `pop rbx`: BranchIntoFrameSequence at offset 15: the `jmp rel32` at 15 targets 26, which is inside code unit 0's prologue or past the first instruction of its epilogue
+ok   the Baseline scan refuses a `jmp` back into the prologue: BranchIntoFrameSequence at offset 15: the `jmp rel32` at 15 targets 3, which is inside code unit 0's prologue or past the first instruction of its epilogue
+ok   the baseline scan accepts a `jmp` to the epilogue's first instruction: accepted
+ok   the template scan refuses a numeric emission judged as baseline: NoTemplate at offset 1: the bytes at 1 match no instruction template this build's backends emit for this architecture
+ok   the template scan refuses a baseline emission judged as numeric: NoTemplate at offset 1: the bytes at 1 match no instruction template this build's backends emit for this architecture
+ok   unchanged: an x86-64 payload of four zero bytes under the wide manifest is no template at its first byte: NoTemplate at offset 0
+ok   unchanged: an arm64 payload of four zero bytes under the wide manifest is no template: NoTemplate at offset 0
+ok   unchanged: a one-instruction arm64 payload under the wide manifest is accepted: accepted against the arm64 table
+broiler-js-slice-compiler: 196 checks passed, 2 not run on this machine and claimed by nothing
+# exit=0
+# finished=2026-09-16T22:59:53+02:00

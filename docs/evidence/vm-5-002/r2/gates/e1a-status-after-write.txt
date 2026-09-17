@@ -1,0 +1,4 @@
+# git status --porcelain after both write runs, 2026-09-16T22:48:31+02:00:
+?? .broiler-review/
+?? docs/evidence/vm-5-002/r2/
+# end

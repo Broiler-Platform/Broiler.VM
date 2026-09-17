@@ -1,0 +1,24 @@
+# E1c: git diff --exit-code f127d92 <commit> -- docs/api/public-api.txt, for every commit from f127d92 to HEAD on this branch, 2026-09-16T22:48:53+02:00; branch=claude/fuel-credit-block-steps head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+e117162 exit=0 Admit fuel without the meter's lock inside a block checked at every level
+a416c7a exit=0 Resolve the ambient meter once per execution context
+4490eda exit=0 Request a guest load from a profile that polls on a window, so the remainder it is verified under is read with fuel outstanding
+738d9c7 exit=0 Answer a zero-unit fuel charge without a locked write, and make each settle say what it alone guarantees
+c98011a exit=0 Hold five steps of one runtime open, and suppress a flow on a thread that is in no step
+dbc8d37 exit=0 Predeclare the rule the fuel pre-admission evidence is read against
+34dbd7a exit=0 Hold the resolved meter on the thread rather than on the scope
+c9afb0d exit=0 Retain the evidence for fuel admitted in blocks as bundle VM-5-002
+ecf52bf exit=0 Record the fuel pre-admission route and the bundles it reaches
+fa7e859 exit=0 Withdraw the register from the files bundle VM-5-002 is tied to
+275e4df exit=0 Retain what the throwaway directory still shows about when VM-5-002's runs ran and on which build
+4e737f5 exit=0 Show the build clean with warnings as errors by cold builds of the base and of the product before the fallback
+cfd37af exit=0 Read VM-5-002's witness clause as failing on W12 as well as W8, and say what the revert runs were
+b19803b exit=0 Narrow four statements in VM-5-002 to what its files show
+229b14c exit=0 Correct VM-5-002's collection notes, and state the machine's load as a lower bound
+51e0bc6 exit=0 Let VM-5-002's header say the bundle is collected, and quote what dbc8d37 wrote above it
+fc00248 exit=0 Say which change to a hashed file does not expire VM-5-002
+4279862 exit=0 Witness a context change on one thread, a suppressed lookup after another, nested and context-changing capabilities, and a poll after a refused poll
+9e9377d exit=0 Count a held block's work at a poll instead of settling and renewing it there
+965e6ad exit=0 Return a capability's caller to the context it entered from when the capability left it unchanged
+542c715 exit=0 Witness a host call made with the flow suppressed, a lookup through another runtime's scope, a poll beside a second charging thread, and a capability return that puts its caller's context back
+16e3d6d exit=0 Say that any settle ends a held block, and that a capability's return puts no context back when its entry recorded none
+d5014f8 exit=0 Predeclare how VM-5-002 reads the evidence of the owner-directed remedy

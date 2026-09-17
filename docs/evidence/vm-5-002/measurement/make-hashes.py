@@ -9,6 +9,12 @@ docs/baselines.md was in the third set as first committed, as the register this 
 edit. It was withdrawn: no run, figure or verdict here reads it, and the dated note the change's own
 records commit adds to it hit this bundle's first recertification trigger (README section 8).
 
+Changed with the re-collection after the owner-directed remedy: tracked files are read at the remedy
+head 16e3d6d instead of at 34dbd7a, and the second set also names the files the remedy changed or rests
+on that it did not name before (README sections 5.10 and 8). The fourth set already took every file under
+this directory, r2/ included; the fifth takes the digests of the uncompressed reports behind every
+.report.gz here, which the argument, a JSON file, lists.
+
 python docs/evidence/vm-5-002/measurement/make-hashes.py   (from the repository root)
 """
 import hashlib
@@ -20,7 +26,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[4]
 BUNDLE = ROOT / "docs" / "evidence" / "vm-5-002"
-RETAINED = "34dbd7a"
+RETAINED = "16e3d6d"
 
 
 crlf_in_working_copy = set()
@@ -62,6 +68,10 @@ design_set = [
     "src/tests/Broiler.VM.Fixtures/FixtureVmProfile.cs",
     "docs/adr/0003-core-contract-v1-and-amendments.md",
     "docs/adr/0007-resource-authority-and-budgets.md",
+    "src/Broiler.VM.Runtime/VmCapabilityBinding.cs",
+    "src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs",
+    "src/tests/Broiler.VM.Contract.Tests/ReviewRegressionTests.cs",
+    "docs/adr/0011-source-level-profile-contract.md",
 ]
 
 drivers = [
@@ -91,7 +101,7 @@ lines = [
     "",
 ]
 lines += [row(blob(f), f) for f in collector_set if (ROOT / f).exists()]
-lines += ["", "## 2. The files design section 8.4 names: the metering path, the fuel-exactness tests, the fixture", "##    files the fuel work changed, and the two ADRs the change rests on without editing", ""]
+lines += ["", "## 2. The files design section 8.4 names: the metering path, the fuel-exactness tests, the fixture", "##    files the fuel work changed, and the two ADRs the change rests on without editing; and, since the", "##    re-collection, the capability boundary's files, the review-regression tests and ADR 0011, which the", "##    owner-directed remedy changed or rests on", ""]
 lines += [row(blob(f), f) for f in design_set]
 lines += ["", "## 3. The drivers and pins the runs used, and the public API file E1c compares", ""]
 lines += [row(blob(f), f) for f in drivers]

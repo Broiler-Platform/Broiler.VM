@@ -1,0 +1,21 @@
+applied W24 to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index c5ea60a..828db4c 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -568,11 +568,12 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+             return false;
+         }
+ 
++        // What the fast path has admitted from this meter's block, read once. With no block held,
++        // size and remainder are both zero.
++        var used = preAdmissionSize - (ulong)System.Threading.Volatile.Read(ref preAdmittedFuel);
++
+         lock (gate)
+         {
+-            // What the fast path has admitted from this meter's block, read once. With no block held,
+-            // size and remainder are both zero.
+-            var used = preAdmissionSize - (ulong)System.Threading.Volatile.Read(ref preAdmittedFuel);
+ 
+             // The bound is on work performed between two polls. Exceeding it is how a profile
+             // silently makes cancellation latency unbounded, so it is detected rather than trusted.

@@ -1,0 +1,13 @@
+applied W11 to src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
+diff --git a/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs b/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
+index 56d4c02..93bf122 100644
+--- a/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
++++ b/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
+@@ -177,7 +177,6 @@ internal sealed class VmFuelPreAdmissions
+             // every pre-admission. The oldest is also the likeliest to belong to a finished
+             // operation, whose block is doing nothing for anybody. Spent before the size below is
+             // known, and so possibly for nothing: see the remark on this member.
+-            holders[0]!.CommitPreAdmittedFuelLocked();
+             RemoveAt(0);
+         }
+ 

@@ -1,0 +1,108 @@
+{
+ "cmd": "D:/Broiler.VM/docs/evidence/vm-5-002/r2/measurement/measure-t6.py --outdir D:/Broiler.VM/artifacts/fc/rc/e13 --reps 5",
+ "test": "Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit",
+ "rows": [
+  {
+   "rep": 0,
+   "build": "base",
+   "outcome": "Passed",
+   "test_ms": 493.6,
+   "process_ms": 1900.0,
+   "exit": 0
+  },
+  {
+   "rep": 0,
+   "build": "credit",
+   "outcome": "Passed",
+   "test_ms": 231.1,
+   "process_ms": 1621.7,
+   "exit": 0
+  },
+  {
+   "rep": 1,
+   "build": "base",
+   "outcome": "Passed",
+   "test_ms": 488.5,
+   "process_ms": 1845.0,
+   "exit": 0
+  },
+  {
+   "rep": 1,
+   "build": "credit",
+   "outcome": "Passed",
+   "test_ms": 233.2,
+   "process_ms": 1585.6,
+   "exit": 0
+  },
+  {
+   "rep": 2,
+   "build": "base",
+   "outcome": "Passed",
+   "test_ms": 478.3,
+   "process_ms": 1853.8,
+   "exit": 0
+  },
+  {
+   "rep": 2,
+   "build": "credit",
+   "outcome": "Passed",
+   "test_ms": 231.6,
+   "process_ms": 1573.5,
+   "exit": 0
+  },
+  {
+   "rep": 3,
+   "build": "base",
+   "outcome": "Passed",
+   "test_ms": 483.2,
+   "process_ms": 1843.9,
+   "exit": 0
+  },
+  {
+   "rep": 3,
+   "build": "credit",
+   "outcome": "Passed",
+   "test_ms": 230.9,
+   "process_ms": 1643.2,
+   "exit": 0
+  },
+  {
+   "rep": 4,
+   "build": "base",
+   "outcome": "Passed",
+   "test_ms": 485.7,
+   "process_ms": 1829.8,
+   "exit": 0
+  },
+  {
+   "rep": 4,
+   "build": "credit",
+   "outcome": "Passed",
+   "test_ms": 234.8,
+   "process_ms": 1634.3,
+   "exit": 0
+  }
+ ],
+ "summary": {
+  "base": {
+   "median_ms": 485.7,
+   "min_ms": 478.3,
+   "max_ms": 493.6,
+   "n": 5
+  },
+  "credit": {
+   "median_ms": 231.6,
+   "min_ms": 230.9,
+   "max_ms": 234.8,
+   "n": 5
+  }
+ },
+ "verdict": {
+  "base_median_ms": 485.7,
+  "credit_median_ms": 231.6,
+  "credit_at_or_below_base": true,
+  "outcomes": [
+   "Passed"
+  ]
+ }
+}

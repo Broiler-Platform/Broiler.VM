@@ -1,0 +1,15 @@
+applied W8 to src/Broiler.VM.Runtime/VmExecutionScope.cs
+diff --git a/src/Broiler.VM.Runtime/VmExecutionScope.cs b/src/Broiler.VM.Runtime/VmExecutionScope.cs
+index b069614..b97420a 100644
+--- a/src/Broiler.VM.Runtime/VmExecutionScope.cs
++++ b/src/Broiler.VM.Runtime/VmExecutionScope.cs
+@@ -112,8 +112,7 @@ internal sealed class VmExecutionScope
+             var context = System.Threading.ExecutionContext.Capture();
+ 
+             if (context is not null &&
+-                ReferenceEquals(resolvedScope, this) &&
+-                ReferenceEquals(resolvedContext, context))
++                ReferenceEquals(resolvedScope, this))
+             {
+                 return resolvedMeter;
+             }

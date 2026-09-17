@@ -1,0 +1,19 @@
+left  D:/Broiler.VM/docs/evidence/vm-5-002/e5/e5-base-verbose.log: 199 lines
+right D:/Broiler.VM/artifacts/fc/rc/e5/e5-credit-verbose.log: 199 lines
+line counts equal: True
+lines differing after masking: 0
+
+left  D:/Broiler.VM/docs/evidence/vm-5-002/e5/e5-base-verbose.log: 199 lines
+right D:/Broiler.VM/artifacts/fc/rc/e5/e5-credit-verbose-run2.log: 199 lines
+line counts equal: True
+lines differing after masking: 0
+
+left  D:/Broiler.VM/docs/evidence/vm-5-002/e5/e5-base.log: 3 lines
+right D:/Broiler.VM/artifacts/fc/rc/e5/e5-credit.log: 3 lines
+line counts equal: True
+lines differing after masking: 0
+
+left  D:/Broiler.VM/artifacts/fc/rc/e5/e5-credit-verbose.log: 199 lines
+right D:/Broiler.VM/artifacts/fc/rc/e5/e5-credit-verbose-run2.log: 199 lines
+line counts equal: True
+lines differing after masking: 0

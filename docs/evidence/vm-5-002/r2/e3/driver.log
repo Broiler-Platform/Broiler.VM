@@ -1,0 +1,89 @@
+clean-before: total=55 passed=55 failed=0 compile-errors=0
+W1: total=55 passed=54 failed=1 compile-errors=0
+  W1 control: total=55 passed=55 failed=0 compile-errors=0
+  W1 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W2: total=55 passed=54 failed=1 compile-errors=0
+  W2 control: total=55 passed=55 failed=0 compile-errors=0
+  W2 named tests alone: total=4 passed=4 failed=0 compile-errors=0
+W3: total=55 passed=29 failed=26 compile-errors=0
+  W3 control: total=55 passed=55 failed=0 compile-errors=0
+  W3 named tests alone: total=4 passed=4 failed=0 compile-errors=0
+W4: total=55 passed=54 failed=1 compile-errors=0
+  W4 control: total=55 passed=55 failed=0 compile-errors=0
+  W4 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W4b: total=55 passed=52 failed=3 compile-errors=0
+  W4b control: total=55 passed=55 failed=0 compile-errors=0
+  W4b named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W5: total=55 passed=54 failed=1 compile-errors=0
+  W5 control: total=55 passed=55 failed=0 compile-errors=0
+  W5 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W6: total=55 passed=54 failed=1 compile-errors=0
+  W6 control: total=55 passed=55 failed=0 compile-errors=0
+  W6 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W7: total=55 passed=0 failed=55 compile-errors=0
+  W7 control: total=55 passed=55 failed=0 compile-errors=0
+  W7 named tests alone: total=11 passed=11 failed=0 compile-errors=0
+W8: total=55 passed=53 failed=2 compile-errors=0
+  W8 control: total=55 passed=55 failed=0 compile-errors=0
+  W8 named tests alone: total=2 passed=2 failed=0 compile-errors=0
+W9: total=55 passed=53 failed=2 compile-errors=0
+  W9 control: total=55 passed=55 failed=0 compile-errors=0
+  W9 named tests alone: total=2 passed=2 failed=0 compile-errors=0
+W9b: total=55 passed=54 failed=1 compile-errors=0
+  W9b control: total=55 passed=55 failed=0 compile-errors=0
+  W9b named tests alone: total=2 passed=2 failed=0 compile-errors=0
+W10: total=55 passed=37 failed=18 compile-errors=0
+  W10 control: total=55 passed=55 failed=0 compile-errors=0
+  W10 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W11: total=55 passed=54 failed=1 compile-errors=0
+  W11 control: total=55 passed=55 failed=0 compile-errors=0
+  W11 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W12: total=55 passed=54 failed=1 compile-errors=0
+  W12 control: total=55 passed=55 failed=0 compile-errors=0
+  W12 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W13: total=55 passed=31 failed=24 compile-errors=0
+  W13 control: total=55 passed=55 failed=0 compile-errors=0
+  W13 named tests alone: total=4 passed=4 failed=0 compile-errors=0
+W14: total=55 passed=29 failed=26 compile-errors=0
+  W14 control: total=55 passed=55 failed=0 compile-errors=0
+  W14 named tests alone: total=4 passed=4 failed=0 compile-errors=0
+W15: total=55 passed=30 failed=25 compile-errors=0
+  W15 control: total=55 passed=55 failed=0 compile-errors=0
+  W15 named tests alone: total=4 passed=4 failed=0 compile-errors=0
+W16: total=55 passed=54 failed=1 compile-errors=0
+  W16 control: total=55 passed=55 failed=0 compile-errors=0
+  W16 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W17: total=55 passed=52 failed=3 compile-errors=0
+  W17 control: total=55 passed=55 failed=0 compile-errors=0
+  W17 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W18: total=55 passed=50 failed=5 compile-errors=0
+  W18 control: total=55 passed=55 failed=0 compile-errors=0
+  W18 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W19: total=55 passed=53 failed=2 compile-errors=0
+  W19 control: total=55 passed=55 failed=0 compile-errors=0
+  W19 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W20: total=55 passed=54 failed=1 compile-errors=0
+  W20 control: total=55 passed=55 failed=0 compile-errors=0
+  W20 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W21: total=55 passed=54 failed=1 compile-errors=0
+  W21 control: total=55 passed=55 failed=0 compile-errors=0
+  W21 named tests alone: total=2 passed=2 failed=0 compile-errors=0
+W21b: total=55 passed=52 failed=3 compile-errors=0
+  W21b control: total=55 passed=55 failed=0 compile-errors=0
+  W21b named tests alone: total=6 passed=6 failed=0 compile-errors=0
+W21c: total=55 passed=54 failed=1 compile-errors=0
+  W21c control: total=55 passed=55 failed=0 compile-errors=0
+  W21c named tests alone: total=2 passed=2 failed=0 compile-errors=0
+W22: total=55 passed=54 failed=1 compile-errors=0
+  W22 control: total=55 passed=55 failed=0 compile-errors=0
+  W22 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W23: total=55 passed=54 failed=1 compile-errors=0
+  W23 control: total=55 passed=55 failed=0 compile-errors=0
+  W23 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W24: total=55 passed=50 failed=5 compile-errors=0
+  W24 control: total=55 passed=55 failed=0 compile-errors=0
+  W24 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+W25: total=55 passed=54 failed=1 compile-errors=0
+  W25 control: total=55 passed=55 failed=0 compile-errors=0
+  W25 named tests alone: total=1 passed=1 failed=0 compile-errors=0
+ALL WITNESSES DONE

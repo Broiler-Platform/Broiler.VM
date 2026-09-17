@@ -1,0 +1,14 @@
+applied W1 to src/Broiler.VM.Runtime/VmRuntime.cs
+diff --git a/src/Broiler.VM.Runtime/VmRuntime.cs b/src/Broiler.VM.Runtime/VmRuntime.cs
+index 79f7485..36212f1 100644
+--- a/src/Broiler.VM.Runtime/VmRuntime.cs
++++ b/src/Broiler.VM.Runtime/VmRuntime.cs
+@@ -505,8 +505,6 @@ public sealed partial class VmRuntime : System.IDisposable
+             // holder renews it or something settles it, and a poll does neither. A host reading a
+             // running runtime is asking what has been spent, and a figure that stopped at what each
+             // operation had committed would answer a different question.
+-            runtimeLevel.FuelPreAdmissions!.SettleAll();
+-
+             return runtimeLevel.Snapshot();
+         }
+     }

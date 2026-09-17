@@ -1,0 +1,40 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/broiler-arms/wit2
+# tree-head=16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# tree-changes=[]
+# build=wit2 after W21 reverted, named tests alone
+# started=2026-09-16T22:56:34+02:00
+# binary=D:/broiler-arms/wit2/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=e4052b70971d50eb76d6c670a1b9c7cf3fb90c80c48b74d96428413c22df4fda version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/wit2/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=0583d430d8be2f016504ce48cd79da3642b10e0e4ca36938f14dfcda6462ba92 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# build-command=dotnet build src/tests/Broiler.VM.Contract.Tests -c Release (exit 0)
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> D:\broiler-arms\wit2\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> D:\broiler-arms\wit2\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Runtime -> D:\broiler-arms\wit2\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> D:\broiler-arms\wit2\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Contract.Tests -> D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.30
+# command=dotnet test src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter "FullyQualifiedName~FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again" --logger console;verbosity=normal
+Test run for D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.06]   Discovering: Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.12]   Discovered:  Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.12]   Starting:    Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.24]   Finished:    Broiler.VM.Contract.Tests
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 27, expectedFuel: 155) [65 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Poll_After_A_Refused_Poll_Is_Refused_Again(units: 28, expectedFuel: 156) [< 1 ms]
+
+Test Run Successful.
+Total tests: 2
+     Passed: 2
+ Total time: 0,6952 Seconds
+# exit=0
+# finished=2026-09-16T22:56:35+02:00

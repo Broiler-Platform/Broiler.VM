@@ -1,0 +1,13 @@
+applied W19 to src/Broiler.VM.Runtime/VmRuntime.cs
+diff --git a/src/Broiler.VM.Runtime/VmRuntime.cs b/src/Broiler.VM.Runtime/VmRuntime.cs
+index 79f7485..3e3da57 100644
+--- a/src/Broiler.VM.Runtime/VmRuntime.cs
++++ b/src/Broiler.VM.Runtime/VmRuntime.cs
+@@ -723,7 +723,6 @@ public sealed partial class VmRuntime : System.IDisposable
+                 ReferenceEquals(System.Threading.ExecutionContext.Capture(), entry.Inside))
+             {
+                 System.Threading.ExecutionContext.Restore(entry.Before);
+-                return;
+             }
+ 
+             var depth = CapabilityDepth - 1;
