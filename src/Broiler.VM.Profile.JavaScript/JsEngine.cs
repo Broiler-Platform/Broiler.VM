@@ -4601,7 +4601,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=2BD763
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=CAC8EF
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -4693,10 +4693,6 @@ internal sealed partial class JsEngine
         // with.
         var stepped = typeof(TMode) == typeof(JsNativeEntry);
 
-        // THE UNIT'S END, READ ONLY BY A BLOCK STEP. The comparison folds for every other mode, so
-        // the interpreted instantiation carries neither the read nor anything that uses it.
-        var unitEnd = typeof(TMode) == typeof(JsStepBlock) ? (int)(unit.CodeOffset + unit.CodeLength) : 0;
-
         while (true)
         {
             try
@@ -4725,9 +4721,15 @@ internal sealed partial class JsEngine
                     // from.
                     if (typeof(TMode) != typeof(JsInterpreted))
                     {
+                        // THE UNIT'S END IS READ WHERE IT IS ASKED FOR, AND BY A BLOCK STEP ALONE.
+                        // The mode comparison in front of it folds, so no other instantiation carries
+                        // the read; holding it in a local instead would put it, and the two field
+                        // reads behind it, in every instantiation's prologue, including the
+                        // interpreter's.
                         if (stepped &&
                             (typeof(TMode) != typeof(JsStepBlock) ||
-                                JsBaselineBlocks.StopsAfter(code, current, pc, unitEnd)))
+                                JsBaselineBlocks.StopsAfter(
+                                    code, current, pc, (int)(unit.CodeOffset + unit.CodeLength))))
                         {
                             act!.Sp = sp;
                             act.Pc = pc;

@@ -219,12 +219,22 @@ internal sealed unsafe class JsNativeActivation
 
     /// <summary>Records that the unit left, and with what.</summary>
     /// <remarks>
+    /// <para>
     /// <b>It answers <c>default</c> because the dispatch loop's return value is not how a step's
     /// answer travels.</b> The value stays here, on the managed side, and the handler answers only
     /// the status that tells the emitted code to leave.
+    /// </para>
+    /// <para>
+    /// <b>It is inlined, because its callers are the dispatch loop's leaving arms.</b> Two field
+    /// writes behind a call cost the loop the argument registers and the call's own shadow space at
+    /// every one of those arms, and that is paid out of the frame the block instantiation reserves.
+    /// Inlined, the arms write the two fields where they stand.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E56FC1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=13132A
     // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal JsValue Exit(JsValue value)
     {
         Exited = true;
