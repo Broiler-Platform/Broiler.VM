@@ -489,6 +489,23 @@ was taken for, recorded as EX-112 and in the VM-5 row of [the status ledger](roa
 record**: a ruling that the change alters charging reverts the product commits as a defect, and no
 contract-bearing record's text has to be withdrawn with them.
 
+*Added 2026-09-17, after the owner-directed remedy.* The owner directed a remedy after seeing the
+bundle's result, and its two parts were accepted by the owner on 2026-09-17, after they were implemented:
+`Poll` now counts a held block's work toward the poll bound without committing it, instead of writing the
+block back and taking a fresh one (`9e9377d`), and a capability's return puts back the execution context
+it was entered from when the capability left it unchanged (`965e6ad`). **The row's words "written to the
+counters before anything reads them" are therefore narrower than they read.** A poll now decides the
+uncharged-work bound on a part of the block not yet written to the counter, read under the meter's gate,
+while every reader of consumption or of what is left still settles first; so the words stay true of the
+budget levels and are not true of the meter's own poll count, which rests on the counter identity argued
+in bundle VM-5-002 section 7.2, under "After the remedy". The paragraph above counted two arms of the
+ambient meter's lookup without a failing witness; the lookup has three guards - the context comparison,
+the scope comparison and the refusal to hold a suppressed lookup - and the scope comparison had no
+witness either. In the bundle's re-collection on the remedy head each fails a test written for it (T19,
+T25 and T20), and the bundle reads its rule's correctness item as held there. The reading still rests on
+the same argument and on sampled concurrent runs, and it is still not a proof; the route, and the
+question nobody has ruled on, are unchanged.
+
 **MVP-5 is recorded even though it costs almost nothing, and that is deliberate.** A register that
 holds only the uncomfortable rows is a register a reader learns to distrust, and a route dropped for
 good reasons is still a route nobody decided on.

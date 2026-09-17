@@ -134,13 +134,26 @@ that write and a fresh block inside each poll, where it used to pay for a lock i
 about what the change did to them, in either direction, may be made from this register** until it
 is re-measured.
 
+*Corrected 2026-09-17, after the owner-directed remedy.* The sentence "`Poll` is one of the places that
+write a block back, so a profile that polls after every charge - as the fixture executor behind this row
+does - now pays for that write and a fresh block inside each poll, where it used to pay for a lock inside
+each charge" has not been true since `9e9377d`. `Poll` no longer writes a block back or takes a fresh
+one: under the meter's lock it counts the work the polling meter's block has admitted toward the poll
+bound, without committing it. A block ends when it is settled or when a charge of its own does not fit
+what is left, and the next locked fuel charge begins a new one. The paragraph's conclusion stands: the
+row describes a metering path that no longer exists, and it is not re-measured in this register. Bundle
+VM-5-002 reads the row again on the remedy head, in its sections 5.11 and 7.4.
+
 **The verifier rows are reached too, more lightly.** The description of `verify-throughput` above -
 two interface calls per byte, each of which takes a lock and walks four budget scopes - is still
 true: a `VerifierWork` or `AllocatedBytes` charge is never admitted in a block and still takes the
 lock. But that path is not untouched. Every charge now tests whether it is a fuel charge before it
-takes the locked path, and every poll looks under the lock for a block the polling meter holds,
-which a verifier's meter never does. So `verify-throughput` and `verify-per-declared-count` are
+takes the locked path, and every poll reads, under the lock, the polling meter's own block fields,
+which for a verifier's meter hold no block. So `verify-throughput` and `verify-per-declared-count` are
 stale for this reason as well as for the 2026-08-31 one, and the same re-run closes both.
+*(Corrected 2026-09-17: this paragraph read "every poll looks under the lock for a block the polling
+meter holds, which a verifier's meter never does", which the owner-directed remedy made untrue; the
+conclusion is unchanged.)*
 
 **Where the runs are, and why the table stays as it is.** Bundle
 [VM-5-002](evidence/vm-5-002/README.md) retains runs of this benchmark host on both sides of the
@@ -150,6 +163,13 @@ benchmark log of `docs/evidence/vm-6`, and this note changes neither. No measure
 for the change either. The one that could show what it was made for - a profile that polls on a
 window rather than after every charge - is not in this register, and bundle VM-5-002 records that
 gap as its exclusion EX-112 instead of adding one.
+
+*Added 2026-09-17: the `host-call` and `guest-load-mediation` rows are reached too.* After the
+owner-directed remedy (`965e6ad`) both measure a capability boundary whose return puts back the
+execution context the capability was entered from when the capability left it unchanged, so neither
+describes the code it was measured on, and neither is re-measured in this register. Bundle VM-5-002's
+re-collection retains runs of this benchmark host on both sides of the remedy; none of its figures is
+copied here.
 
 ---
 
