@@ -108,11 +108,16 @@
 # CORRECTED 2026-09-15. "Because it cannot be compiled" is true under the numeric manifest, which is
 # the only manifest this harness compiles with, and it was read as true of the native form as such.
 # The JavaScript profile's JSD-0025 decides a second native form over broiler.javascript.wide, in
-# which emitted code calls into the interpreter's own dispatch to run every instruction and
+# which every instruction is a call into the interpreter's own dispatch for that instruction and
 # under which an Octane file is not refused for its constructs. This harness does not drive that
 # form. The note above that the two forms are not charged alike is the numeric form's alone: the
 # baseline form charges fuel per instruction at the interpreter's own point. Every rule at the head
 # of this file about figures applies unchanged to anyone who points a harness at the other form.
+#
+# CORRECTED 2026-09-17. "Every instruction is a call into the interpreter's own dispatch for that
+# instruction" stopped being true when the baseline form began calling that dispatch at block heads,
+# a block of instructions at a time. It still runs every instruction through that dispatch and still
+# charges fuel per instruction at the interpreter's own point, and the rest of the note above stands.
 #
 #   python3 eng/compare-forms.py [--binary-directory <dir>] [--kernels <dir>] [--only <stem>]...
 #                                [--repetitions N] [--warmup N] [--fuel N] [--wall MS]

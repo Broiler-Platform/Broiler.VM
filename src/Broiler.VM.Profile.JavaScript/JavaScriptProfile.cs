@@ -165,8 +165,13 @@ public static class JavaScriptProfile
     /// <i>(Corrected 2026-09-15. "The only shape that rule admits" is true of a native form whose
     /// emitted code computes, and it was read as true of any native form. JSD-0025 admits a second
     /// one, the baseline form over <see cref="WideManifest"/>, which is whole-artifact without a small
-    /// language because the code it emits calls into the interpreter's own dispatch to run every
-    /// instruction.)</i>
+    /// language because each instruction it emits is a call into the interpreter's own dispatch for
+    /// that instruction.)</i>
+    /// <i>(Corrected 2026-09-17. "Each instruction it emits is a call into the interpreter's own
+    /// dispatch for that instruction" stopped being true when the baseline form began calling that
+    /// dispatch at block heads, a block of instructions at a time. The form is whole-artifact without a
+    /// small language for the same reason as before: the code it emits calls into the interpreter's own
+    /// dispatch to run every instruction.)</i>
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F84EE9

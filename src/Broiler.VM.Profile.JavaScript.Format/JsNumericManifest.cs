@@ -66,11 +66,16 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// <i>(Corrected 2026-09-15. The last clause was written when no native form of the wide manifest
 /// was proposed, and the first paragraph's "the only admissible answer" was read as true of any
 /// native form. JSD-0025 decides a second one, the baseline form over the wide manifest, and it is
-/// not a step from this manifest either: its emitted code calls into the interpreter's own dispatch
-/// to run every instruction, so it is whole-artifact without a small
+/// not a step from this manifest either: it emits every instruction as a call into the
+/// interpreter's own dispatch for that instruction, so it is whole-artifact without a small
 /// language, and this manifest stays exactly as small as it is. The interpreter's method body still
 /// runs every instruction of a wide program, in either form. What this manifest remains the only
 /// answer to is a native form whose emitted code computes.)</i>
+/// <i>(Corrected 2026-09-17. "It emits every instruction as a call into the interpreter's own dispatch
+/// for that instruction" stopped being true when the baseline form began calling that dispatch at the
+/// block heads of <see cref="JsBaselineBlocks"/>' partition, a block of instructions at a time. Its
+/// emitted code still calls into the interpreter's own dispatch to run every instruction, so it is
+/// still whole-artifact without a small language, and the rest of the note above stands.)</i>
 /// </para>
 /// <para>
 /// <b>UNDEFINED IS IN THE ADMITTED SET AND IT IS THE ONE VALUE HERE THAT IS NOT A NUMBER.</b> The
