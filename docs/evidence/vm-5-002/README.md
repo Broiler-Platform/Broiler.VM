@@ -62,7 +62,9 @@ in one of the eight shape-and-form cells the credit median is below base by less
 **item 3 holds** in all three parts; and **item 4 holds** in both bench pairs on both readings. The
 host-call row, item 5 of section 5.11, is reported without a verdict: in both pairs the credit row is at
 or below base plus the base A/A figure. The predeclared rule is therefore still **not met as a whole**. Section 7.4 gives the verdict per item
-and section 6.9 the figures. Every first-collection file and verdict stands beside it.
+and section 6.9 the figures. Every first-collection verdict stands beside it, and so does every
+first-collection file but `measurement/make-hashes.py`, which the re-collection's commit and a later
+correction changed in place (section 8).
 
 ---
 
@@ -76,7 +78,7 @@ The status ledger's section 3 fixes the fields a bundle must carry.
 | Source | Section 2 | Written |
 | Dependencies and corpus | Section 3 | Written |
 | Environment | Section 4 | Written |
-| Procedure | Section 5 | 5.1 to 5.3 as `dbc8d37` committed them; 5.4 to 5.8 written at completion; 5.9 lists what later commits changed; 5.10 and 5.11 as `d5014f8` committed them, before the re-collection, with one dated note in 5.10; 5.12 to 5.14 written after the re-collection; 5.15 lists what later commits changed in the re-collection's text |
+| Procedure | Section 5 | 5.1 to 5.3 as `dbc8d37` committed them; 5.4 to 5.8 written at completion; 5.9 lists what later commits changed; 5.10 and 5.11 as `d5014f8` committed them, before the re-collection, with two dated notes in 5.10; 5.12 to 5.14 written after the re-collection; 5.15 lists what later commits changed in the re-collection's text |
 | Outputs | Section 6 | Written; 6.9 and 6.10 for the re-collection |
 | Decision | Section 7 | Written; 7.3 is the first collection's verdict and 7.4 the re-collection's |
 | Validity | Section 8 | Written |
@@ -675,6 +677,12 @@ regenerates `hashes.txt` against the remedy's head. The first collection's files
 sections 5.1 to 5.3 stay exactly as they are; the re-collection is retained beside them, under
 `r2/`.
 
+*Added 2026-09-17, after a review of the re-collection:* one file of the first collection did not stay
+exactly as it was. `measurement/make-hashes.py` was changed in place by the re-collection's commit, to read
+tracked files at the remedy head, and again by a correction section 5.15 lists, each time regenerating
+`hashes.txt` with it (section 8). Every other first-collection file, its verdicts and sections 5.1 to 5.3
+stay as they were.
+
 ### 5.11 How the re-collection is read, committed before any run of it
 
 The rule of section 5.1 is not changed. The re-collection is read against it item by item, as
@@ -804,7 +812,8 @@ lane holds, and says whether each equals its source byte for byte.
 "Reused" means that a file of the first collection is cited where it stands and was not run again. A
 reuse rests on the build it describes being unchanged - the base, `f127d92`, and for E4 the inputs of
 the two profile builds - and, for the base side of a comparison, on the same machine, which section 4
-records. The first collection's files, verdicts and sections 5.1 to 5.9 are unchanged.
+records. The first collection's files but `measurement/make-hashes.py` (section 8), its verdicts and
+sections 5.1 to 5.9 are unchanged.
 
 | Item | After the remedy | Why |
 |---|---|---|
@@ -832,7 +841,8 @@ records. The first collection's files, verdicts and sections 5.1 to 5.9 are unch
 | Collector | **Re-run** at the remedy head into `r2/`, with a wrapper writing the identity fields before and after it | The runtime assembly changed; the publish, trim and Native AOT steps now carry the capability boundary's context restore |
 | E1b over the bundle | **Re-run** over the finished bundle, and the architecture tests after this README | New files and text |
 
-**What stays exactly as retained:** sections 5.1 to 5.3; every file of the first collection, including
+**What stays exactly as retained:** sections 5.1 to 5.3; every file of the first collection but
+`measurement/make-hashes.py`, which the re-collection's commit changed in place (section 8), including
 the failing first runs of items 1, 3 and 4; and section 7.3, the first collection's verdict.
 
 ### 5.14 How the re-collection ran, and where it departed from the design
@@ -994,6 +1004,15 @@ retained transcript, and git holds the text each one replaced.
    section 5.12 say that only C2′'s runtime digest is retained, not its blob id. Section 5.14's timetable
    gives the end of the re-collection in the order its transcripts show. Section 6 says that sections 6.1
    to 6.8 are the first collection's outputs.
+3. **The bench host's sources are hashed, and the one first-collection file the re-collection changed is
+   named.** `measurement/make-hashes.py` - a file this directory retains - now also names the three source
+   files of `src/tests/Broiler.VM.Bench.Host` in the second set, and `hashes.txt` was regenerated with it:
+   the only rows that changed are the three new ones, the second section's heading and the script's own
+   digest. Section 8 gains a trigger for the bench host, a dated correction of its paragraph that said the
+   script reads tracked files at `34dbd7a`, and a dated note that the re-collection's commit re-anchored the
+   first trigger; the trigger's exception now points here for corrections after the re-collection. The
+   paragraph above section 1, section 5.10 by a dated note, and section 5.13 no longer say that every
+   first-collection file stayed exactly as retained.
 
 ---
 
@@ -1608,11 +1627,18 @@ bundle VM-6-001, not to this bundle. `measurement/make-hashes.py` was changed wi
 every tracked file at `34dbd7a` rather than at the checkout's head, so that running it again refuses
 a hashed file changed since that commit instead of hashing the change.
 
+*Corrected 2026-09-17, after a review of the re-collection:* the sentence above describes the script as
+it stood before the re-collection, and "now" in it is no longer true. Since the re-collection's commit the
+script reads every tracked file at the remedy head `16e3d6d`, as the last paragraph of this section says,
+and since a later correction its second set also names the bench host's sources (section 5.15).
+
 **Recertification triggers.** Any one of these invalidates this bundle:
 
 - a change to any file `hashes.txt` names, except a correction to a file this directory retains that is
   made by a commit regenerating `hashes.txt` with it and listed in section 5.9 - without that exception
-  this bundle could not be corrected at all, and every such correction is listed where a reader looks;
+  this bundle could not be corrected at all, and every such correction is listed where a reader looks
+  (*added 2026-09-17, after a review of the re-collection:* a correction made after the re-collection is
+  listed in section 5.15 instead);
 - a change to the metering path - the meter, the pre-admission table, the budget levels, the ambient
   meter's resolution, the step-end settles, or the fixture executor's poll;
 - a change to the core contract version or the reason-registry revision;
@@ -1621,7 +1647,12 @@ a hashed file changed since that commit instead of hashing the change.
 - an SDK change, since none is pinned (EX-03);
 - *added 2026-09-17, with the re-collection:* a change to the capability boundary's restore of the
   context a capability was entered from - `VmRuntime.EnterCapability`, `VmRuntime.LeaveCapability` and
-  the members that carry their entry.
+  the members that carry their entry;
+- *added 2026-09-17, after a review of the re-collection:* a change to the bench host,
+  `src/tests/Broiler.VM.Bench.Host`, from whose `meter-per-instruction` and `host-call` rows rule item 4
+  and item 5 of section 5.11 are read. Its sources are now hashed in the second section of `hashes.txt`;
+  they are unchanged from the base `f127d92` to the remedy head, so both sides of every bench pair ran the
+  same host source.
 
 **The remedy expired this bundle, and the re-collection's commit is what ties it to the remedy head.**
 The remedy's product commits changed files `hashes.txt` named and the metering path, so from `9e9377d`
@@ -1631,6 +1662,14 @@ every tracked file at the remedy head `16e3d6d` instead of at `34dbd7a`; its sec
 the files the remedy changed or rests on that it did not name before. So the triggers now read against
 the remedy head. The first collection's files stay hashed in its fourth section beside `r2/`, and the
 first collection's verdicts, in section 7.3, describe the tree of `34dbd7a` and not the remedy head.
+
+*Added 2026-09-17, after a review of the re-collection:* **that commit re-anchored the first trigger.**
+It changed `measurement/make-hashes.py`, a file of the first collection that `hashes.txt` named, in place,
+and section 5.9 does not list that change; it is not a correction under the trigger's exception but part of
+the recertification that regenerated `hashes.txt` against the remedy head, and the triggers read from that
+commit on. Corrections made after it are listed in section 5.15: the first of them to change a hashed file
+changed `measurement/make-hashes.py` again, to hash the bench host's sources, and regenerated `hashes.txt`
+with it.
 
 ---
 

@@ -178,7 +178,8 @@ e6126f7d0c7a41a76e4666854be0c2bd7909e8b4b814c3e48124d102de495eac  src/tests/corp
 ## 2. The files design section 8.4 names: the metering path, the fuel-exactness tests, the fixture
 ##    files the fuel work changed, and the two ADRs the change rests on without editing; and, since the
 ##    re-collection, the capability boundary's files, the review-regression tests and ADR 0011, which the
-##    owner-directed remedy changed or rests on
+##    owner-directed remedy changed or rests on; and, since a review of the re-collection, the bench host's
+##    sources, from which rule item 4 and the host-call row are read
 
 8fa63e53b4bc08e73f94d53cb5dcf4a8cd0cfd436422350fb483aa75ec90c4bc  src/Broiler.VM.Runtime/VmMeter.cs
 b0f15a7304ea86aa53714aa62af0b99332aa5b77519c5a8fe55c71ae459ace06  src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
@@ -199,6 +200,9 @@ ad4751c6e5b64a5fff82a29bfdf92b6e5af7473a358058f57f2894be3f1bb980  src/tests/Broi
 70d5b94fb4d9b6cec20845924c9f1e63e6d4cf6f5a67c187b66c3c217111cb0d  src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs
 b794f354debb174068dd7f30a6e0900811544810edf364aeba5de8e58054a7d7  src/tests/Broiler.VM.Contract.Tests/ReviewRegressionTests.cs
 31963b7e2e7efb0196b0b6eadd9d9183881fac0084143741106e582c4fdf7276  docs/adr/0011-source-level-profile-contract.md
+74a0ebd573fbcc4bae2eb0631b408a3ed177fb24ed2c1dcf2adadc933db5fdc7  src/tests/Broiler.VM.Bench.Host/Broiler.VM.Bench.Host.csproj
+bd41d9a0ff06b484e1187f5b0145ca61fae0d9b822f1ddbe2da60ad4297356e6  src/tests/Broiler.VM.Bench.Host/Harness.cs
+094dc8f49303b903886804da291235a1afb1669c75dbb899440f85f167798d85  src/tests/Broiler.VM.Bench.Host/Program.cs
 
 ## 3. The drivers and pins the runs used, and the public API file E1c compares
 
@@ -464,7 +468,7 @@ c7936c6b5d4db2b27cb2bbc09d55abb3764f246f85d7e6ab6907f85c1f73b738  gates/test-aft
 76fb46531b4730464a3ef9930e2248f76bc5d3768d8a01543b322a8f19ec1f37  measurement/e7-rule.py
 c62ec6f51ed43862dceda79e721e691f8046ebdab872553d0afddf5e9c060c66  measurement/e8-run.sh
 854e813d03374debf3f5aaa7945a4bfeb3b36bb930085c61934b885e1fcf920e  measurement/list-run-identity.py
-e5533b068d48708247d5704d7f210f89c8ef5f5839f5d21fe89ee206c358aa70  measurement/make-hashes.py
+6a432cf1aaa91bdfea30e24f6075b0d5c46877f2ecb613155c8ce7e3462bea4d  measurement/make-hashes.py
 e3ffbe40def15a5e2a921de4cdb9a196ef87caa8da18b46d307da02949935330  measurement/masked-compare.py
 2e82b567e4142a9673184cc405ed11c652faa532aca2a8b9b30615ac8005bee9  measurement/measure-shapes.py
 a5bc840bf5ddf195c07678b8e320d442f9321cecfadf172e4d321bd18cac17f8  measurement/measure-t6.py

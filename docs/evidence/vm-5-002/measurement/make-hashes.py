@@ -15,6 +15,11 @@ on that it did not name before (README sections 5.10 and 8). The fourth set alre
 this directory, r2/ included; the fifth takes the digests of the uncompressed reports behind every
 .report.gz here, which the argument, a JSON file, lists.
 
+Changed after a review of the re-collection: the second set also names the three source files of the
+bench host, src/tests/Broiler.VM.Bench.Host, from whose meter-per-instruction and host-call rows rule
+item 4 and item 5 of README section 5.11 are read, so that a change to how the host derives those rows
+trips the first recertification trigger (README sections 5.15 and 8).
+
 python docs/evidence/vm-5-002/measurement/make-hashes.py   (from the repository root)
 """
 import hashlib
@@ -72,6 +77,9 @@ design_set = [
     "src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs",
     "src/tests/Broiler.VM.Contract.Tests/ReviewRegressionTests.cs",
     "docs/adr/0011-source-level-profile-contract.md",
+    "src/tests/Broiler.VM.Bench.Host/Broiler.VM.Bench.Host.csproj",
+    "src/tests/Broiler.VM.Bench.Host/Harness.cs",
+    "src/tests/Broiler.VM.Bench.Host/Program.cs",
 ]
 
 drivers = [
@@ -101,7 +109,7 @@ lines = [
     "",
 ]
 lines += [row(blob(f), f) for f in collector_set if (ROOT / f).exists()]
-lines += ["", "## 2. The files design section 8.4 names: the metering path, the fuel-exactness tests, the fixture", "##    files the fuel work changed, and the two ADRs the change rests on without editing; and, since the", "##    re-collection, the capability boundary's files, the review-regression tests and ADR 0011, which the", "##    owner-directed remedy changed or rests on", ""]
+lines += ["", "## 2. The files design section 8.4 names: the metering path, the fuel-exactness tests, the fixture", "##    files the fuel work changed, and the two ADRs the change rests on without editing; and, since the", "##    re-collection, the capability boundary's files, the review-regression tests and ADR 0011, which the", "##    owner-directed remedy changed or rests on; and, since a review of the re-collection, the bench host's", "##    sources, from which rule item 4 and the host-call row are read", ""]
 lines += [row(blob(f), f) for f in design_set]
 lines += ["", "## 3. The drivers and pins the runs used, and the public API file E1c compares", ""]
 lines += [row(blob(f), f) for f in drivers]
