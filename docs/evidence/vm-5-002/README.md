@@ -146,8 +146,8 @@ in section 5.4: the runs before the fallback used the product at `c98011a` (`dbc
 README and nothing else), and the runs after it used the tree of `34dbd7a`. **The re-collection's
 credit build is the remedy head `16e3d6d`**, built in the main checkout at `d5014f8`, whose tree
 differs from the remedy head in this README alone, or in worktrees at `16e3d6d` itself; section 5.12
-says which run used which, and every re-collection transcript names its build's tree, head and binary
-digests.
+says which run used which, and the re-collection's transcripts name their build's tree and head and the
+digests of the binaries they load, except where section 5.14, item 5, says they do not.
 
 ---
 
@@ -253,8 +253,9 @@ in that state (EX-45).
 `r2/environment.txt` resolves the same SDKs and runtimes as `environment.txt`. The machine restarted once
 during the re-collection, between E7's bytecode run and its native run (section 5.14, item 1), and every
 timing run of the re-collection ran after the restart. The two snapshots bracket E10, E12, E13 and the T6
-timing and list every process by id, so the load between them is exact for the processes both list:
-section 5.14, item 7, gives it. No build ran during any timing run of the re-collection.
+timing and list by id the processes with at least 60 CPU-seconds, so what they show of the load between
+them is a lower bound: section 5.14, item 7, gives it. No build ran during any timing run of the
+re-collection.
 
 ---
 
@@ -765,20 +766,25 @@ first collection's.
 ### 5.12 The builds and runs of the re-collection
 
 Sections 5.12 to 5.14 were written after every run of the re-collection. Every build is Release. The
-re-collection's transcripts are under `r2/`, laid out as the first collection's are. **Every
-transcript begins with identity lines its driver wrote before the run** (`r2/measurement/identity.py`):
+re-collection's transcripts are under `r2/`, laid out as the first collection's are. **The transcript of
+every run of a build this bundle measures - a test, a probe, a bench-host run, a JavaScript run or a
+test262 run - begins with identity lines its driver wrote before the run**, apart from the collector's
+logs (`r2/measurement/identity.py`):
 the branch and head of the main checkout, the tree the run used and that tree's head and working-copy
 changes, which build it is, the start time with its offset, and for each binary the run loads its path,
-SHA-256 and product version, whose suffix is the commit the build was stamped with. A comparison or a
-rule transcript carries the same lines for the script it ran. Where a transcript departs from that,
-section 5.14 says so.
+SHA-256 and product version, whose suffix is the commit the build was stamped with. Most comparison
+transcripts carry the same lines, with the digest of the script they ran. **Not every transcript does:**
+some comparisons that carry a verdict, the merge and digest transcripts of E7 and E8, a build and a diff
+of E2, E3's driver log and E1a's status file carry no identity lines; the rule, diff, build and
+architecture transcripts carry them without a digest of what they ran; and one run's digests may not be
+of the binaries it loaded. Section 5.14, item 5, lists every one.
 
 | Build | Tree | Where it was built | Runs |
 |---|---|---|---|
 | Base | `f127d92`, with `measurement/patch_measure2.diff` applied to the command-line host | A worktree at `D:/Broiler.VM-base`, outside the repository, created for the re-collection and removed after it; `r2/gates/build-base.log` | E10's base lane, a byte copy of its command-line host's output directory; E12's base `bench`, `concurrent-bench` and `concurrent-ambient`; E13's base runs; the base runs of the T6 timing |
 | Credit | The main checkout at `d5014f8`, whose tree differs from the remedy head `16e3d6d` in this README alone; its binaries carry `d5014f8` as their stamp | `D:/Broiler.VM`; `r2/gates/build-credit.log` | E1a, E1b, E2's credit half, E5, E6, E7, E8, E12's credit runs, E13's credit runs, the credit runs of the T6 timing |
 | Credit-measure | `16e3d6d` with the same measurement patch | A worktree at `D:/broiler-arms/credit-measure`, removed afterwards; `r2/gates/build-credit-measure-cli.log` | E9; E10's credit lane, and the A/A lane, each a byte copy of its command-line host's output directory |
-| C2′ | `16e3d6d` with `src/Broiler.VM.Runtime/VmExecutionScope.cs` replaced by its blob at `e117162`, blob id `9264caa85d0179bde482880635b945829dd79a7c` | A worktree at `D:/broiler-arms/c2r`, removed afterwards; `r2/gates/build-c2r-runtime.log`. The runtime assembly's digest is in the identity lines of each file it ran | E12's C2′ column of `concurrent-ambient` |
+| C2′ | `16e3d6d` with `src/Broiler.VM.Runtime/VmExecutionScope.cs` replaced by its blob at `e117162`, blob id `9264caa85d0179bde482880635b945829dd79a7c`, which no retained file shows the worktree held (EX-123) | A worktree at `D:/broiler-arms/c2r`, removed afterwards; `r2/gates/build-c2r-runtime.log`. The runtime assembly's digest is in the identity lines of each file it ran, and is the only identity of C2′ retained | E12's C2′ column of `concurrent-ambient` |
 | Cold | `16e3d6d`, checked out fresh | A worktree at `D:/broiler-arms/cold-remedy`, removed afterwards | E1's cold build |
 | Oracle | `f127d92` with the remedy head's fuel-exactness test file and the three fixture files `4490eda` changed | A worktree at `D:/broiler-arms/oracle2`, removed afterwards | E2's base half |
 | Witnesses | `16e3d6d` with one injected defect at a time | A worktree at `D:/broiler-arms/wit2`, removed afterwards | E3, and control 16 by hand |
@@ -851,11 +857,14 @@ line or finish line of the transcript named, or from the reflog for a commit.
 | 06:46:30 to 07:26:12 | E7's native run, afresh |
 | 07:26:35 to 07:26:39 | E7's four comparisons and the rule of section 5.2 per form |
 | 07:26:48 to 08:10:19 | E8's ten runs, then its comparisons |
+| from 07:31:01 | This README being written, during E8 and the timing runs and after them: the identity lines of every run in the main checkout that began from then name it as a working-copy change (item 5), except the collector's, which ran with it restored to `d5014f8`'s text (item 2) |
 | 08:13:44 | Machine state recorded (`r2/machine-state-before.txt`); no build ran from here to 08:25:15 |
 | 08:13:47 to 08:25:12 | E10, E12, E13 pair 1 then pair 2, the T6 timing (`r2/timing-driver.log`) |
 | 08:25:13 | Machine state recorded again (`r2/machine-state-after.txt`) |
 | 08:26:17 to 08:29:30 | The collector |
-| after 08:29 | This README written, `hashes.txt` regenerated, then E1b over the finished bundle (section 6.10) |
+| 08:33:51 | E1b over the finished bundle, with this README written up to section 6.10 (`r2/gates/test-after-bundle.log`) |
+| 08:34:16 and 08:35:43 | The architecture tests over this README, first a draft and then as committed (`r2/gates/architecture-after-readme-draft.log`, `r2/gates/architecture-after-readme.log`) |
+| after 08:35:43 | `hashes.txt` regenerated, after all three (section 6.10) |
 
 **The drivers.** Every run was started by a driver under `r2/measurement/`: `run-logged.sh` for a single
 command, with `identity.py` for the identity lines; `run-witnesses.sh` and `witnesses.py` for E3, and
@@ -894,26 +903,59 @@ first collection's each checked against its recorded digest first - passed to it
    carry the oracle's digests while its test run loaded the main checkout's, as its own "Test run for"
    line shows. It is retained as `oracle-on-credit-identity-read-from-oracle2.log`; the driver was
    corrected and the run repeated as `oracle-on-credit.log`, whose identity lines are right.
-5. **Transcripts whose identity lines depart from section 5.12's form.** `r2/gates/r3a-architecture.log`
-   and `r2/gates/e1c-public-api-diff.log` carry one header line with the branch, head and time, and no
-   binary digests - neither loads a binary this bundle measures. Control 16's digests were read before the
-   test command rebuilt the injected tree, so they are of the clean build; its transcripts show the
-   recompile. E3's identity lines are written after each build and before each test run, so they are of
-   the binaries that ran. The collector's logs carry none, and `r2/collector-identity.txt` stands in for
-   them, as section 5.11 says. The identity lines of the runs that began from 07:31 to 08:25 on
-   2026-09-17 name this README as a working-copy change of the main checkout: it was being written while
-   those runs ran, and no binary depends on it.
+5. **Transcripts whose identity lines depart from section 5.12's form, or which carry none.** This list
+   was completed after a review of the re-collection (section 5.15).
+   - *One header line and no digests:* `r2/gates/r3a-architecture.log` and
+     `r2/gates/e1c-public-api-diff.log` carry one header line with the branch, head and time - neither
+     loads a binary this bundle measures.
+   - *No identity lines at all:* the comparisons that carry verdicts - `r2/e5/masked-compare.log`,
+     `r2/e6/masked-compare.log` and `r2/e9/e9-compare-with-base.log`; E7's merge transcripts
+     `r2/e7/t262-credit-bytecode-merge.log` and `r2/e7/t262-credit-native-merge.log`;
+     `base-reports-check.log` and `credit-report-digests.txt`, in both `r2/e7` and `r2/e8`;
+     `r2/e2/build-oracle.log`; `r2/e2/test-file-diff-stat.txt`, which does not say which commits it
+     compares; `r2/e3/driver.log`; and `r2/gates/e1a-status-after-write.txt`, which carries its time and
+     no branch or head. Each of those comparisons names the files it read, and the run transcripts it
+     read carry identity lines, but none of them gives a digest of the script that wrote it. The records
+     `r2/e2/oracle-transplant.txt`, `r2/e3/final-status.txt`, each witness's `.apply.txt`,
+     `r2/control16/control16.apply.txt` and `r2/e7/off-series/interrupted-run.txt` carry header lines of
+     their own rather than these.
+   - *Identity lines with no digest of what ran:* `r2/e7/e7-rule-bytecode.log` and
+     `r2/e7/e7-rule-native.log` carry none of `measurement/e7-rule.py`, and the three diffs in `r2/e4/`
+     none of `r2/measurement/profile-closure.py`; the build and restore transcripts - `r2/gates/build-base.log`,
+     `build-credit.log`, `build-credit-measure-cli.log`, `build-c2r-runtime.log` and
+     `cold-build-remedy.log` in `r2/gates`, `build-credit.log` in `r2/e5` and in `r2/e6`, and
+     `r2/control16/control16-build.log` and `control16-restore.log` - and the architecture transcripts
+     `r2/gates/architecture-after-readme.log` and `architecture-after-readme-draft.log` carry no digest of
+     a binary; and the two run consoles, `r2/e7/e7-runs-console.log` and `r2/e8/e8-runs-console.log`,
+     carry a branch and head line per run and no digest.
+   - *Digests that may not be of the binaries that ran:* control 16's were read before the test command
+     rebuilt the injected tree, so they are of the clean build; its transcripts show the recompile.
+     `r2/gates/test-after-bundle.log`'s were read before that test command's own build, after the
+     collector had rebuilt the main checkout's runtime assembly (item 2): the runtime digest it gives for
+     the runtime project's output is the collector's rebuild, with a different product version from the
+     copy beside the contract tests, and the test command then restored and built before it ran, so
+     neither digest is shown to be of an assembly the tests loaded.
+   - E3's identity lines are written after each build and before each test run, so they are of the
+     binaries that ran. The collector's logs carry none, and `r2/collector-identity.txt` stands in for
+     them, as section 5.11 says.
+   - The identity lines of the runs that began from 07:31 to 08:25 on 2026-09-17 name this README as a
+     working-copy change of the main checkout: it was being written while those runs ran, and no binary
+     depends on it.
 6. **The base worktree sat at `D:/Broiler.VM-base`**, where the design named `D:/broiler-arms/base`, so that
    the base build would be byte-identical to the first collection's, which section 5.12 shows it is.
-7. **The machine was not idle during the timing runs, and the snapshots now say by how much.** Between
-   the two snapshots, 689 seconds apart, the seven processes both list by process id accumulated 164.5
-   CPU-seconds, about a quarter of one of the sixteen logical processors; two more processes appear in the
-   second snapshot only, so what they used in between is not known. Both snapshots report the processor
-   load at or below ten percent. **During E7's native run, and not during any timing run**, fifteen MSBuild
-   worker processes were started at 07:08:29 by a process this collection did not start; no build output
-   in any tree this collection used had changed on 2026-09-17 when that was checked, after E8 and before
-   the collector, and the workers had exited before the timing runs began, which `r2/timing-driver.log`
-   records before each step.
+7. **The machine was not idle during the timing runs, and the snapshots bound how busy it was from
+   below.** Each snapshot lists only the processes with at least 60 CPU-seconds. Between the two, 689
+   seconds apart, the seven processes both list by process id accumulated 164.5 CPU-seconds, so the
+   machine's other work in that time was **at least 164.5 CPU-seconds, a lower bound**, which is about a
+   quarter of one of the sixteen logical processors. Two more processes crossed 60 CPU-seconds in between
+   and appear in the second snapshot only, so what they used is not known, and no process below 60
+   CPU-seconds is visible in either snapshot. Both snapshots report the processor load at or below ten
+   percent. **During E7's native run, and not during any timing run**, MSBuild worker processes that this
+   collection did not start were seen running, and a check made after E8 and before the collector found
+   no build output changed on 2026-09-17 in any tree this collection used. **Neither the process listing
+   nor that check is retained**, so how many workers there were, when they started and what the check
+   read rest on this README alone. What is retained is `r2/timing-driver.log`, which records before each
+   timing step that no `dotnet`, MSBuild, compiler-server or test-host process was running.
 8. **E11 was not re-run** (EX-118), and **the base sides of E5 to E9 and the base `trace` and `stress`
    files were reused** (EX-120), as section 5.13 says.
 9. **The witness table was not committed before the runs, and two of its witnesses name other tests than
@@ -941,10 +983,26 @@ retained transcript, and git holds the text each one replaced.
    names T7 and W12 no longer names T18, and that both tests still pass under them on the remedy head;
    section 7.2 says that the fourth item of its list still stands across threads; and EX-114's closing
    note and EX-121 say the same. No verdict mark changes.
+2. **Statements about identity lines, the machine's load, C2′, the timetable and section 6 were narrowed
+   to what the files show.** Section 5.12, section 1 and EX-117's closing
+   note no longer say that every transcript under `r2/` carries identity lines, and section 5.14, item 5,
+   now lists every transcript that carries none, carries them without a digest of what it ran, or gives
+   digests that may not be of the binaries that ran. Section 4 and section 5.14, item 7, say that the
+   machine-state snapshots list only processes with at least 60 CPU-seconds, so that the load they give is
+   a lower bound, and item 7 no longer gives a count or a time for the MSBuild workers seen during E7's
+   native run, since neither that listing nor the check of the build outputs is retained. EX-123 and
+   section 5.12 say that only C2′'s runtime digest is retained, not its blob id. Section 5.14's timetable
+   gives the end of the re-collection in the order its transcripts show. Section 6 says that sections 6.1
+   to 6.8 are the first collection's outputs.
 
 ---
 
 ## 6. Outputs
+
+*Added 2026-09-17, after a review of the re-collection:* **sections 6.1 to 6.8 are the first collection's
+outputs**, of the tree of `34dbd7a` and, where section 5.4 says so, of the product at `c98011a`, and every
+verdict in them is of that tree and not of the remedy head - 6.6's reading that item 4 fails in both pairs
+among them. Sections 6.9 and 6.10 are the re-collection's, of the remedy head.
 
 **What may be quoted here.** Core and fixture figures - the probe's (E12), the bench host's (E13) and
 the T6 timing - are quoted, each equal to its value in the retained file named beside it, because
@@ -1596,11 +1654,11 @@ first collection's verdicts, in section 7.3, describe the tree of `34dbd7a` and 
 | EX-114 | Open for the first collection; closed 2026-09-17 for the remedy head | **After the thread-static fallback, two arms of the ambient lookup have no failing witness.** Dropping the context comparison fails T12 and no longer fails T7, and holding a lookup made with the flow suppressed fails no test: both tests put a second thread where a scope-wide field would have leaked across threads, and a per-thread answer cannot. Both are failures of rule item 1's witness clause. Closed by: a test that changes context on one thread in the way each arm guards, with a witness that fails it. *Closed for the remedy head 2026-09-17:* the lookup has three guards, not the two this row counted - the context comparison, the scope comparison, and the refusal to hold a lookup made with the flow suppressed - and the scope comparison, present since `34dbd7a`, had no witness in the first collection either. In the re-collection each fails a test written for it: W8, the context comparison dropped, fails T12 and T19; W23, the scope comparison dropped, fails T25; W12, the suppressed lookup held, fails T20 (section 6.9). Under each of those witnesses, the failing lookup reuses an answer held on its own thread. **W8 no longer names T7, and W12 no longer names T18: both tests still pass under them on the remedy head**, so the two-thread cases those tests were written for still have no failing witness, and rest on the resolved answer being held per thread (sections 5.14 item 9, 6.2 and 7.2). What closes this row for the remedy head is its own closing condition, a one-thread test per arm with a witness that fails it. This row stays true, unchanged, of the tree of `34dbd7a` |
 | EX-115 | Open | **Part of the low-fuel series was driven while the checkout was on another branch.** From 16:22:56 to 16:52:03 the main checkout was on `main`. Four bytecode runs at fuel 30,000 and 100,000, base and credit, were driven by `main`'s test262 driver, and the identity of the credit binaries they used rests on file timestamps, not on anything in the reports. Six native runs in that window were taken under the numeric manifest; they are retained apart as off-series and were not counted, and the native series at those fuel values was run again afterwards |
 | EX-116 | Open for the first collection; superseded 2026-09-17 for the remedy head | **The JavaScript and conformance evidence was taken before the resolution fallback.** E4 to E9 used the product at `c98011a`; the fallback changed `VmExecutionScope` alone, and the design's fallback clause asks for E1 to E4, E12 and the T6 timing again but not for E5 to E9. E4's inputs are unchanged across the fallback; E5 to E9 were not re-run on `34dbd7a`. Closed by: re-running E5 to E9 on the head. *Superseded for the remedy head 2026-09-17:* the re-collection ran the credit side of E5, E6, E7, E8 and E9 on the remedy head, and E4's inputs are unchanged to it (EX-119). This row stays true, unchanged, of the first collection's runs, which are retained |
-| EX-117 | Open for the first collection; closed 2026-09-17 for the re-collection | **Which build most runs used, and when several of them ran, rests on the procedure and on file-system times, not on a retained stamp.** E3's transcripts name their commit, and the binaries of E9 and of E10's second run survived for their stamps and digests to be retained after the fact. For E2's credit half, E4 to E8, E10's first run, E11, E12 and E13, no retained file names the commit or holds a digest of the binary the run used, and E7's base and credit reports and E5's plain transcripts are byte-identical, so their content cannot tell the builds apart. No transcript of E4 to E9 carries a time: the times of E7 and E8 - including that both credit test262 runs began after the predeclared rule was committed - are output-directory creation and write times read from the throwaway directory after a review, and E4 to E6 have no time of their own. Closed by: a driver that writes the binary's commit stamp, its digest and its start time into its own transcript. *Closed for the re-collection 2026-09-17:* every transcript under `r2/` begins with identity lines its driver wrote - the main checkout's branch and head, the tree and its head and changes, the build, the start time, and each binary's digest and stamp - with the exceptions section 5.14 names. This row stays true, unchanged, of the first collection's runs |
+| EX-117 | Open for the first collection; closed 2026-09-17 for the re-collection | **Which build most runs used, and when several of them ran, rests on the procedure and on file-system times, not on a retained stamp.** E3's transcripts name their commit, and the binaries of E9 and of E10's second run survived for their stamps and digests to be retained after the fact. For E2's credit half, E4 to E8, E10's first run, E11, E12 and E13, no retained file names the commit or holds a digest of the binary the run used, and E7's base and credit reports and E5's plain transcripts are byte-identical, so their content cannot tell the builds apart. No transcript of E4 to E9 carries a time: the times of E7 and E8 - including that both credit test262 runs began after the predeclared rule was committed - are output-directory creation and write times read from the throwaway directory after a review, and E4 to E6 have no time of their own. Closed by: a driver that writes the binary's commit stamp, its digest and its start time into its own transcript. *Closed for the re-collection 2026-09-17:* every transcript under `r2/` begins with identity lines its driver wrote - the main checkout's branch and head, the tree and its head and changes, the build, the start time, and each binary's digest and stamp - with the exceptions section 5.14 names. *Narrowed 2026-09-17, after a review of the re-collection:* the sentence before this one says more than the files show, and closes the row only for which build each run used. The transcript of every run of a measured build under `r2/` apart from the collector's logs, for which `r2/collector-identity.txt` stands in, begins with those lines. Not every transcript under `r2/` does: the comparisons that carry the verdicts of E5, E6 and E9, the merge and report-digest transcripts of E7 and E8, and several others carry none, some carry them without a digest of the script or build they ran, and the digests of the run over the finished bundle were read before its own build. Section 5.14, item 5, lists every such transcript. This row stays true, unchanged, of the first collection's runs |
 | EX-118 | Open | **Octane (E11) was not re-collected after the remedy.** Its reports describe `34dbd7a`. No rule item reads it, and E7 and E8 carry the JavaScript correctness of the remedy head |
 | EX-119 | Open | **The profile assemblies (E4) were not rebuilt after the remedy.** Their equality rests on an empty source diff, retained, over every project in the reference closure of the two profile projects and the build-wide files, from `c98011a` - the tree E4's credit assemblies were built from - to the remedy head, and on the remedy changing only the runtime assembly, which neither profile assembly references |
 | EX-120 | Open | **The base sides of E5 to E9, the base `trace` and `stress` files, and the first collection's cold base build are reused.** The base build is unchanged, and the re-collection's base binaries are byte-identical to the first collection's where both are retained (section 5.12); the machine is the one section 4 records, restarted once during the re-collection. Where a reused base run's binaries are those whose identity EX-117 says is not retained - E5 to E8 - the reuse inherits that gap, and the base side of E8's bytecode runs at fuel 30,000 and 100,000 inherits EX-115 |
 | EX-121 | Open | **The readings of items 4 and 5 in section 5.11 were fixed after the first collection's result was seen**, under the owner's direction, so they are predeclared relative to the re-collection only. And every witness of E3 had been driven on the remedy's commits before `d5014f8` was committed, as development checks this bundle does not retain, so their results on the remedy head were known when the witness clause was fixed; E3 ran them again after that commit. *Extended 2026-09-17, after a review of the re-collection:* nor was the witness table itself committed before the runs. Section 5.11 refers to a table below it that `d5014f8` does not contain, and which tests each witness must fail was first committed by the re-collection's commit, as the table those development drives used; it names T19 for W8 and T20 for W12 where section 6.2 names T7 and T18, which still pass under them (section 5.14, item 9) |
 | EX-122 | Open | **The restore path of the capability boundary has no failing witness for its value-identity.** On the path it takes it gives every `AsyncLocal` reader what the write-back it replaces gave, so a test can fail only on a defect in its guards (W16, W18, and W22 for an entry that recorded no context), in the `return` that separates it from the write-back (W19), in the write-back it falls to (W17, W20), or in the path no longer being taken (W25). It rests on execution-context immutability, as the ambient resolution does. The restore-path test reaches the boundary through `VmCapabilityInvoker.Invoke`; that `VmCapabilityInvoker.InvokeBytes`, `VmRuntime.EnterProviderCall` and `VmArtifactLoadMediator.Answer` pass their entry through rests on reading |
-| EX-123 | Open | **C2′, the comparator of item 3's second part, is not a commit.** It is the remedy head with `VmExecutionScope.cs` taken from `e117162`, identified by that blob's id and by the digest of the runtime assembly built from it, which every `concurrent-ambient` file of C2′ carries in its identity lines |
+| EX-123 | Open | **C2′, the comparator of item 3's second part, is not a commit.** It is the remedy head with `VmExecutionScope.cs` taken from `e117162`, identified by that blob's id and by the digest of the runtime assembly built from it, which every `concurrent-ambient` file of C2′ carries in its identity lines. *Narrowed 2026-09-17, after a review of the re-collection:* **only the runtime assembly's digest is retained**, in the identity lines of `r2/e12/probe-concurrent-ambient-c2r.txt`. The blob id section 5.12 gives is `e117162`'s copy of that file, but it appears in no retained file: `r2/gates/build-c2r-runtime.log` and the C2′ probe file show only that the worktree's copy of `VmExecutionScope.cs` was modified, and the worktree was removed, so that the modification was that blob rests on the procedure |
 | EX-124 | Open | **That a poll reads the block as one cut under the gate rests on a sampled test.** The two-thread poll test runs a second thread charging the meter a step polls; W24, the read moved before the gate, fails it only when a renewal lands between the read and the lock. In E3 it failed on the first run |
