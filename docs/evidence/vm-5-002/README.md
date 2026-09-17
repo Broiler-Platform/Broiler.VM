@@ -94,7 +94,7 @@ The status ledger's section 3 fixes the fields a bundle must carry.
 | Procedure | Section 5 | 5.1 to 5.3 as `dbc8d37` committed them; 5.4 to 5.8 written at completion; 5.9 lists what later commits changed; 5.10 and 5.11 as `d5014f8` committed them, before the re-collection, with two dated notes in 5.10; 5.12 to 5.14 written after the re-collection; 5.15 lists what later commits changed in the re-collection's text |
 | Outputs | Section 6 | Written; 6.9 and 6.10 for the re-collection |
 | Decision | Section 7 | Written; 7.3 is the first collection's verdict and 7.4 the re-collection's, with the owner's dated rulings of 2026-09-17 on items 1 and 2 |
-| Validity | Section 8 | Written; with a dated note of 2026-09-17 naming the commit that expired this bundle |
+| Validity | Section 8 | Written; with a dated note of 2026-09-17 naming the commit that expired this bundle, and a later dated note of 2026-09-17 recording the owner's ratification of leaving `hashes.txt` unregenerated |
 
 Section 9 carries the exclusions.
 
@@ -1043,6 +1043,18 @@ retained transcript, and git holds the text each one replaced.
    this correction in place, refused because `CODE-ASSURANCE.md` differs between `16e3d6d` and the working
    copy, and wrote nothing (section 8). This README is the only file of this directory the correction
    touches, and `hashes.txt` does not hash it.
+6. **The owner's ratification of leaving `hashes.txt` unregenerated is recorded.** *Added 2026-09-17.* This
+   is not a finding of the review of the re-collection: a later review, of item 5's commit `969118f` among
+   others, found that the owner had asked for that correction to regenerate `hashes.txt`, and that
+   `969118f` left it unregenerated without putting that to the owner first. The owner ratified leaving
+   `hashes.txt` unregenerated, on 2026-09-17, after the fact, and asked for three things to be recorded in a
+   later correction listed here. Section 8 gains a dated paragraph recording them: that ratification; that a
+   run of `measurement/make-hashes.py` with only its refusal lifted, reading tracked files at `16e3d6d` and
+   writing outside the repository, reproduces `hashes.txt` byte for byte; and that the id JSC-225 was
+   allocated at commit time, where the owner had asked for a JSC entry. The field coverage table's Validity
+   row points to it. No verdict mark changes. **`hashes.txt` is not regenerated and no row of it changes,
+   and `measurement/make-hashes.py` is not changed**: this README is the only file of this directory the
+   correction touches, and `hashes.txt` does not hash it.
 
 ---
 
@@ -1748,6 +1760,28 @@ the digests of the fifth section of `hashes.txt` as its argument, refuses with `
 differs between 16e3d6d and the working copy` and writes nothing. That refusal is the script's guard against
 hashing a file changed since the retained commit, and it reports this expiry. So the correction that adds
 this paragraph leaves `hashes.txt` unchanged (section 5.15).
+
+*Added 2026-09-17, after a review of the note above:* **the owner ratified leaving `hashes.txt`
+unregenerated, on 2026-09-17, after the fact.** The owner's acceptance of this expiry had asked for the note
+to be made by a correction that regenerates `hashes.txt`. Commit `969118f`, which added the note, left
+`hashes.txt` unregenerated because `measurement/make-hashes.py` refused, and that was not put to the owner
+before the commit. A review named it, and the owner then ratified it.
+
+**A run with only the refusal lifted, reading tracked files at `16e3d6d` and writing outside the repository,
+reproduces `hashes.txt` byte for byte.** On 2026-09-17 a copy of `measurement/make-hashes.py` was made
+outside the repository, differing from the committed script in three places only: where the script refuses,
+the copy returns the file's bytes at `16e3d6d`, which are the bytes the script hashes in every case; its root
+names the repository, which the copy is not in; and it writes its output to a file outside the repository
+instead of to `hashes.txt`. The copy was run from the repository root, at `940b7d0` and again with this
+paragraph in place, with the digests of the fifth section of `hashes.txt` as its argument. Each run printed
+`hashes.txt: 197 tracked, 569 retained, 42 raw` and exited 0, and `cmp` of its output against `hashes.txt`
+printed nothing and exited 0. The committed script, run from the repository root in the same session,
+refused as the note above says and wrote nothing. Neither the committed script nor `hashes.txt` is
+changed.
+
+**The id JSC-225 was allocated at commit time.** The owner asked for a JSC entry pointing here, not for that
+id. The note above calls the entry "that profile's correction JSC-225" because `969118f` allocated the id
+when it committed the entry.
 
 ---
 
