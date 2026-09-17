@@ -531,10 +531,14 @@ public static class JavaScriptProfile
     /// the bytecode the artifact also carries and compare the result to the emitted bytes it
     /// carries, which is the only sense in which machine code is VERIFIABLE at all: a wrong
     /// backend produces a well-framed sequence of the wrong instructions, and no framing check ever
-    /// written catches that. An image built without one checks the framing and no more, and what it
-    /// is then trusting is PROVENANCE - that whoever produced the artifact ran a backend it has no
-    /// way to re-run - rather than verification. That distinction belongs in what a composition
-    /// tells its users and is stated here so that the two doors cannot be confused.
+    /// written catches that. An image built without one checks the framing and runs the
+    /// template-closure scan, which holds every instruction to this build's table and, for the x86-64
+    /// baseline form alone, every unit body to the layout of the artifact's own partition; outside
+    /// that form it does not say which instructions a unit should hold, and within it the padding's
+    /// length and the declared alignment are left to re-emission. For those what it is trusting is
+    /// PROVENANCE - that whoever produced the artifact ran a backend it has no way to re-run - rather
+    /// than verification. That distinction belongs in what a composition tells its users and is
+    /// stated here so that the two doors cannot be confused.
     /// </para>
     /// <para>
     /// <b>The emitter is a composition's choice and is fixed when the descriptor is registered,</b>

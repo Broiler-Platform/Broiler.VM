@@ -1611,27 +1611,29 @@ internal sealed class JsVerifier
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>THIS IS THE ONLY SENSE IN WHICH MACHINE CODE IS VERIFIABLE, AND EVERY OTHER CHECK IN THIS
-    /// FILE IS ABOUT FRAMING.</b> A wrong backend produces a well-framed sequence of the WRONG
-    /// instructions: the length agrees, the alignment agrees, every symbol is inside the blob, and
-    /// the artifact answers a different number from the one the language says. No structural check
-    /// ever written catches that, and this profile's verifier is not going to become a second
-    /// disassembler with a second opinion. What it can do is run the SAME deterministic emitter over
-    /// the SAME bytecode the artifact carries and require the same bytes, which reduces trusting the
-    /// payload to trusting this image's own backend.
+    /// <b>THIS IS THE ONE CHECK THAT REACHES THE GENERATOR, AND EVERY OTHER CHECK IN THIS FILE REACHES
+    /// ONLY THE PAYLOAD.</b> Outside the x86-64 baseline form, a wrong backend produces a well-framed
+    /// sequence of the WRONG instructions: the length agrees, the alignment agrees, every symbol is
+    /// inside the blob, every instruction is one the template table admits, and the artifact answers a
+    /// different number from the one the language says. No structural check ever written catches that,
+    /// and this profile's verifier is not going to become a second disassembler with a second opinion.
+    /// What it can do is run the SAME deterministic emitter over the SAME bytecode the artifact carries
+    /// and require the same bytes, which reduces trusting the payload to trusting this image's own
+    /// backend.
     /// </para>
     /// <para>
-    /// <b>WHERE THERE IS NO EMITTER IN THE IMAGE, NOTHING WHATEVER IS CHECKED ABOUT THE
-    /// INSTRUCTIONS, AND THAT IS SAID HERE RATHER THAN LEFT TO BE DISCOVERED.</b> An
-    /// execution-only image carries a verifier and an interpreter and no code generator by
-    /// construction - that absence is what makes it the composition it is - so it cannot re-emit
-    /// anything. Such an image admits a native payload on its FRAMING alone, and what it is
-    /// trusting is PROVENANCE: that whoever produced the artifact ran a backend it has no way to
-    /// re-run. That is a weaker thing than verification, it is the honest description of what is
-    /// happening, and a composition that runs emitted code in that position owes its users the
-    /// sentence rather than a footnote. The template-closure scan that runs before this in every image
-    /// is the exception to "nothing whatever": it holds a payload to the table, and an x86-64 baseline
-    /// payload's instructions to the layout of the artifact's own partition.
+    /// <b>WHERE THERE IS NO EMITTER IN THE IMAGE, WHAT GOES UNCHECKED IS SAID HERE RATHER THAN LEFT TO
+    /// BE DISCOVERED.</b> An execution-only image carries a verifier and an interpreter and no code
+    /// generator by construction - that absence is what makes it the composition it is - so it cannot
+    /// re-emit anything. Such an image admits a native payload on its framing and on the
+    /// template-closure scan that runs before this in every image, which holds every instruction to the
+    /// table and, for the x86-64 baseline form, every unit body to the layout of the artifact's own
+    /// partition, instruction for instruction. What that leaves is the generator: outside the baseline
+    /// form, which instructions a unit holds, and within it the padding's length and the declared
+    /// alignment. For those it is trusting PROVENANCE: that whoever produced the artifact ran a backend
+    /// it has no way to re-run. That is a weaker thing than verification, it is the honest description
+    /// of what is happening, and a composition that runs emitted code in that position owes its users
+    /// the sentence rather than a footnote.
     /// </para>
     /// <para>
     /// <b>The emitter's own version must be the one the artifact names, and the version check comes
