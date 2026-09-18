@@ -290,6 +290,13 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbiObservation.ToString() : virtual System.String
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbiObservation.op_Equality(Broiler.VM.Profile.JavaScript.JsNativeAbiObservation left, Broiler.VM.Profile.JavaScript.JsNativeAbiObservation right) : static System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbiObservation.op_Inequality(Broiler.VM.Profile.JavaScript.JsNativeAbiObservation left, Broiler.VM.Profile.JavaScript.JsNativeAbiObservation right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativePage..ctor(System.IDisposable handle, System.Func<System.Boolean> arm, System.Func<System.UInt32, System.IntPtr> at, System.Func<System.UInt32, System.IntPtr> entry) : void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativePage.Arm() : System.Boolean
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativePage.At(System.UInt32 offset) : System.IntPtr
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativePage.Dispose() : System.Void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativePage.Entry(System.UInt32 offset) : 
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativePage.Mapper : static System.Func<System.ReadOnlySpan<System.Byte>, Broiler.VM.Profile.JavaScript.JsNativePage> { get; set; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativePage.TryMap(System.ReadOnlySpan<System.Byte> code) : static Broiler.VM.Profile.JavaScript.JsNativePage
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsPause.Identity : Broiler.VM.VmPayloadIdentity { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsPause.PendingJobs : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsPause.Thrown : System.String { get; }
@@ -2069,6 +2076,7 @@ type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValue : s
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsHostValueKind : enum
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbi : static class
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbiObservation : struct System.IEquatable<Broiler.VM.Profile.JavaScript.JsNativeAbiObservation>
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativePage : sealed class System.IDisposable
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsPause : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsUncaught : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.IJsNativeBackend : interface

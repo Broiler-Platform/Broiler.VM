@@ -25,8 +25,27 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// </remarks>
 internal static class Program
 {
+    static Program()
+    {
+        InitializeNativeMapping();
+    }
+
+    internal static unsafe void InitializeNativeMapping()
+    {
+        JsNativePage.Mapper = static code =>
+        {
+            var page = Broiler.VM.Profile.MachineCode.VmNativePage.TryMap(code);
+            return page is null ? null : new JsNativePage(
+                page,
+                () => page.Arm(),
+                offset => page.At(offset),
+                offset => (nint)page.Entry(offset));
+        };
+    }
+
     private static int Main(string[] args)
     {
+        InitializeNativeMapping();
         try
         {
             if (args.Length >= 2 && string.Equals(args[0], "--write", StringComparison.Ordinal))

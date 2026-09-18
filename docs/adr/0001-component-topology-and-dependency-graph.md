@@ -1710,7 +1710,7 @@ exception.
 **What changes.** `Broiler.VM.Profile.MachineCode` is added under `src/`. It provides
 native W^X memory page mapping, verification, and execution for `broiler.machinecode` artifacts.
 
-**What is now true.** The graph goes from 26 projects and 85 edges to 27 and 87.
+**What is now true.** The graph goes from 26 projects and 85 edges to 27 and 88.
 The packable set is unchanged and still holds exactly three.
 
 **What is not edited.** Every revision above stands as written.

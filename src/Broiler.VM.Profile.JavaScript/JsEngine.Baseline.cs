@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   3
-// Annotated:        3/3
-// Exempt:           1
-// Human-reviewed:   0/3
+// Relevant units:   4
+// Annotated:        4/4
+// Exempt:           0
+// Human-reviewed:   0/4
 // IP risk:          None
 // Security risk:    Critical
-// Criteria:         3/3
+// Criteria:         4/4
 // Resource impact:  5/10 max
-// Unverified:       3
+// Unverified:       4
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -55,7 +55,7 @@ internal sealed partial class JsEngine
     /// and no guest can observe the trace.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=262CBB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=8C7329
     // Broiler-Falsified-If: emitted code runs while its activation or its page is unreachable from a managed root, or this answers a value for a status other than exit
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -71,24 +71,110 @@ internal sealed partial class JsEngine
         JsCell? thisBinding,
         JsFrame? frame)
     {
+        var page = NativePageOf(program) ??
+            throw new JsAbort(JsAbortKind.InternalDefect, "emitted code could not be mapped");
+
+        var act = new JsNativeActivation(
+            this, program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+            thisBinding, frame);
+
+        _ = ExecuteCore<JsNativeEntry>(
+            program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+            thisBinding, frame, act);
+
+        JsBaselineFrame native;
+        native.Handlers = JsBaselineHandlers.Table;
+        native.Cookie = act.Cookie;
+
         var previous = JsNativeActivation.Current;
-        JsNativeActivation.Current = null;
+        JsNativeActivation.Current = act;
+        int status;
+
         try
         {
-            throw new JsAbort(JsAbortKind.InternalDefect, "emitted code must be executed via Broiler.VM machinecode profile");
+            var entry = (delegate* unmanaged<JsBaselineFrame*, int, int>)page.At(
+                program.NativeSymbols[unitIndex].Offset);
+
+            status = entry(&native, act.Pc);
         }
         finally
         {
             JsNativeActivation.Current = previous;
+            System.GC.KeepAlive(page);
+            System.GC.KeepAlive(act);
         }
+
+        return status switch
+        {
+            (int)JsBaselineStatus.Exit => act.Result,
+            (int)JsBaselineStatus.Threw => throw act.Pending!,
+            _ => throw new JsAbort(
+                JsAbortKind.InternalDefect, "emitted code answered status " + status),
+        };
     }
 
-    internal object? NativePageOf(JsProgram program) => null;
+    /// <summary>The armed mapping of <paramref name="program"/>'s emitted code, mapped on first use.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE PAGE BELONGS TO THE PROGRAM AND NOT TO THE INSTANCE.</b> Closures, suspended frames,
+    /// module graphs and queued jobs all hold the program they run, so a page owned by the program
+    /// lives exactly as long as anything could still enter it - and a program a guest loads with
+    /// <c>eval</c> or an import gets its own page that goes when it does, instead of one mapping per
+    /// load kept for the life of the instance.
+    /// </para>
+    /// <para>
+    /// <b>Two threads may map the same program at once and one of them wins.</b> The winner's page
+    /// is published atomically; the loser releases its own and uses the winner's, so a program is
+    /// never seen with two pages and a published page is never replaced.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=D236B5
+    // Broiler-Falsified-If: a page this returns is not armed, or a program's published page is replaced or released while the program is reachable
+    // Broiler-Human:        PENDING
+    internal JsNativePage? NativePageOf(JsProgram program)
+    {
+        var published = program.NativePage;
+
+        if (published is not null)
+        {
+            return published;
+        }
+
+        var mapped = JsNativePage.TryMap(program.NativeCode);
+
+        if (mapped is null)
+        {
+            return null;
+        }
+
+        if (!mapped.Arm())
+        {
+            mapped.Dispose();
+            return null;
+        }
+
+        var raced = System.Threading.Interlocked.CompareExchange(ref program.NativePage, mapped, null);
+
+        if (raced is not null)
+        {
+            mapped.Dispose();
+            return raced;
+        }
+
+        return mapped;
+    }
 
     /// <summary>
-    /// Refuses a guest-loaded program whose output form is not this instance's.
+    /// Refuses a guest-loaded program whose output form is not this instance's, and maps one that is.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=EC8414
+    /// <remarks>
+    /// <b>A NESTED LOAD IS THE ONE ROUTE BY WHICH A SECOND FORM COULD ENTER A RUNNING INSTANCE</b>,
+    /// because the composition's provider compiled it after instantiation checked the first. A
+    /// mismatch is this profile's defect or a provider's, never the guest's, so it is an internal
+    /// defect rather than a language error. The page is mapped here as well, so a program that
+    /// cannot be mapped is refused where it was loaded rather than at its first call.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=08A11D
     // Broiler-Falsified-If: a guest-loaded program of the other form, of another architecture, or of the numeric manifest runs in a baseline instance
     // Broiler-Human:        PENDING
     private void RequireInstanceForm(JsProgram loaded)
@@ -104,9 +190,9 @@ internal sealed partial class JsEngine
                 "a guest-loaded program's output form differs from its instance's form");
         }
 
-        if (nativeForm)
+        if (nativeForm && NativePageOf(loaded) is null)
         {
-            throw new JsAbort(JsAbortKind.InternalDefect, "emitted code must be executed via Broiler.VM machinecode profile");
+            throw new JsAbort(JsAbortKind.InternalDefect, "emitted code could not be mapped");
         }
     }
 }

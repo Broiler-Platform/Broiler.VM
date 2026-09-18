@@ -90,9 +90,15 @@ internal static class NativeAbiChecks
     /// </remarks>
     private const int Repetitions = 1_000_000;
 
+    static NativeAbiChecks()
+    {
+        Program.InitializeNativeMapping();
+    }
+
     /// <summary>Runs the obligation table.</summary>
     internal static List<(string Name, bool Passed, string Detail)> Run()
     {
+        Program.InitializeNativeMapping();
         var checks = new List<(string, bool, string)>();
         var abi = JsX64Abi.Host;
 

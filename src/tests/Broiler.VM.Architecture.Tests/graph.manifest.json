@@ -184,7 +184,8 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Runtime",
         "Broiler.VM.Profile.JavaScript",
-        "Broiler.VM.Profile.JavaScript.Compiler"
+        "Broiler.VM.Profile.JavaScript.Compiler",
+        "Broiler.VM.Profile.MachineCode"
       ]
     },
     {

@@ -1053,7 +1053,7 @@ public sealed class ReviewRecordRuleTests
         // which decouples native machine code execution from the JavaScript profile into a first-class
         // VM profile (broiler.machinecode) and native compiler lowering pipeline. They are covered on
         // the same terms as every other product file, and nothing in them has been read by a human.
-        Assert.Equal(183, AssuranceSources.Files.Count);
+        Assert.Equal(184, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

@@ -17,10 +17,10 @@
 
 namespace Broiler.VM.Profile.MachineCode;
 
-// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=2F92BE
+// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=BDA384
 // Broiler-Falsified-If: this half is reached on a system it was not written for
 // Broiler-Human:        PENDING
-internal sealed unsafe partial class VmNativePage
+public sealed unsafe partial class VmNativePage
 {
     /// <summary>Readable and writable, and NOT executable: what a mapping starts as.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=A3E0E6

@@ -29,6 +29,11 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// </remarks>
 internal static class NativeLifecycle
 {
+    static NativeLifecycle()
+    {
+        Program.InitializeNativeMapping();
+    }
+
     /// <summary>The identity this composition verifies under.</summary>
     private const string Caller = "com.example.broiler.slice-compiler";
 

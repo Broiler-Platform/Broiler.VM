@@ -47,6 +47,7 @@
     <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.MachineCode\Broiler.VM.Profile.MachineCode.csproj" />
   </ItemGroup>
 
 </Project>

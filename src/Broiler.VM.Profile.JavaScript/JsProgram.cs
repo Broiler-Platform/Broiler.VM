@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   16
 // Annotated:        16/16
-// Exempt:           34
+// Exempt:           35
 // Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         0/0
+// Criteria:         1/1
 // Resource impact:  2/10 max
 // Unverified:       16
 //
@@ -312,6 +312,12 @@ internal sealed class JsProgram : IVmVerifiedState
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6FC5E6
     // Broiler-Human:        PENDING
     internal Format.JsNativeSymbolRow[] NativeSymbols { get; }
+
+    /// <summary>The armed mapping of <see cref="NativeCode"/>, once an engine of the baseline form mapped it.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=F05E06
+    // Broiler-Falsified-If: this is written more than once for one program, or holds a mapping that is not armed
+    // Broiler-Human:        PENDING
+    internal JsNativePage? NativePage;
 
     /// <summary>The module records, empty when the artifact carries none.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=68CF90

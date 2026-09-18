@@ -1,21 +1,23 @@
 # closure Broiler.VM.Composition.JavaScript.SliceCompiler rid=win-x64
 
-[jit] 7 non-framework assemblies
+[jit] 8 non-framework assemblies
 Broiler.VM.Abstractions
 Broiler.VM.Binary
 Broiler.VM.Composition.JavaScript.SliceCompiler
 Broiler.VM.Profile.JavaScript
 Broiler.VM.Profile.JavaScript.Compiler
 Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Profile.MachineCode
 Broiler.VM.Runtime
 
-[trimmed] 7 non-framework assemblies
+[trimmed] 8 non-framework assemblies
 Broiler.VM.Abstractions
 Broiler.VM.Binary
 Broiler.VM.Composition.JavaScript.SliceCompiler
 Broiler.VM.Profile.JavaScript
 Broiler.VM.Profile.JavaScript.Compiler
 Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Profile.MachineCode
 Broiler.VM.Runtime
 
 [aot] 0 non-framework assemblies

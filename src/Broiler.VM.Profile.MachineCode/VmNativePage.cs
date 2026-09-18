@@ -31,9 +31,9 @@ internal enum VmNativePageState
     Released = 2,
 }
 
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DD89CC
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B573A8
 // Broiler-Human:        PENDING
-internal sealed unsafe partial class VmNativePage : System.IDisposable
+public sealed unsafe partial class VmNativePage : System.IDisposable
 {
     private byte* address;
     private readonly nuint length;
@@ -91,11 +91,11 @@ internal sealed unsafe partial class VmNativePage : System.IDisposable
 
     internal VmNativePageState State => state;
 
-    internal nuint Length => length;
+    public nuint Length => length;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C2E188
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=039980
     // Broiler-Human:        PENDING
-    internal static VmNativePage? TryMap(System.ReadOnlySpan<byte> code)
+    public static VmNativePage? TryMap(System.ReadOnlySpan<byte> code)
     {
         if (code.Length == 0)
         {
@@ -121,9 +121,9 @@ internal sealed unsafe partial class VmNativePage : System.IDisposable
         return page;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7ECD5D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D59FB8
     // Broiler-Human:        PENDING
-    internal bool Arm()
+    public bool Arm()
     {
         if (state != VmNativePageState.Writable)
         {
@@ -144,9 +144,9 @@ internal sealed unsafe partial class VmNativePage : System.IDisposable
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A9EFE4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=76AD84
     // Broiler-Human:        PENDING
-    internal delegate* unmanaged<VmNativeFrame*, int> Entry(uint offset)
+    public delegate* unmanaged<VmNativeFrame*, int> Entry(uint offset)
     {
         if (state != VmNativePageState.Armed)
         {
@@ -162,9 +162,9 @@ internal sealed unsafe partial class VmNativePage : System.IDisposable
         return (delegate* unmanaged<VmNativeFrame*, int>)(address + offset);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=304FFB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3E916D
     // Broiler-Human:        PENDING
-    internal nint At(uint offset)
+    public nint At(uint offset)
     {
         if (state != VmNativePageState.Armed)
         {
