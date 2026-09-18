@@ -54,10 +54,22 @@
 # `CeilingReached on CallDepth` at such a depth is the stack. That inference is why the ceiling is
 # passed rather than left at the profile's default.
 #
+# THE OUTPUT FORM IS AN INPUT, BECAUSE THE NATIVE FORM'S CALL IS NOT THE INTERPRETER'S. `--form
+# native` hands the host `--native <backend>`, so the program is compiled in the baseline form over
+# the wide manifest and one JavaScript call also crosses an emitted unit's frame, the transition into
+# a handler and the handler's own frames before it reaches the call path the bytecode form takes. The
+# two forms therefore have two per-frame costs, and each is printed with the form it was taken in so
+# neither is read as the other. The backend defaults to the x86-64 convention this host uses, which
+# is the only one the host arms; an artifact emitted for any other refuses to instantiate and would
+# measure nothing.
+#
 #   python3 eng/measure-frame-cost.py [--binary-directory <dir>] [--stack-bytes <n>] [--ceiling <n>]
+#                                     [--form bytecode|native] [--backend <name>]
 
 import argparse
+import os
 import pathlib
+import platform
 import subprocess
 import sys
 import tempfile
@@ -98,7 +110,15 @@ BACKSTOP = "backstop"
 DIED = "died"
 
 
-def outcome(binary, scratch, shape, depth, ceiling, timeout):
+def host_backend():
+    """The x86-64 convention this host arms, or None where it arms none."""
+    if platform.machine().lower() not in ("amd64", "x86_64", "x64"):
+        return None
+
+    return "x86-64-win64" if os.name == "nt" else "x86-64-sysv"
+
+
+def outcome(binary, scratch, shape, depth, ceiling, timeout, form):
     """What the host did at this recursion depth."""
     source = scratch / "depth.js"
     source.write_text(shape % depth, encoding="utf-8")
@@ -110,7 +130,7 @@ def outcome(binary, scratch, shape, depth, ceiling, timeout):
                 "--call-depth", str(ceiling),
                 "--fuel", "100000000000",
                 "--wall", "600000",
-            ],
+            ] + form,
             capture_output=True, text=True, timeout=timeout,
         )
     except subprocess.TimeoutExpired:
@@ -147,16 +167,16 @@ def outcome(binary, scratch, shape, depth, ceiling, timeout):
     return DIED, f"exit {done.returncode}: {both.strip().splitlines()[-1] if both.strip() else ''}"
 
 
-def deepest(binary, scratch, shape, ceiling, timeout, label):
+def deepest(binary, scratch, shape, ceiling, timeout, label, form):
     """The deepest recursion of this shape that COMPLETES, and what stopped it going deeper."""
     low, high = 1, ceiling
-    verdict, why = outcome(binary, scratch, shape, low, ceiling, timeout)
+    verdict, why = outcome(binary, scratch, shape, low, ceiling, timeout, form)
 
     if verdict != COMPLETED:
         print(f"# {label}: the shallowest recursion did not complete: {why}", file=sys.stderr)
         return None, verdict
 
-    verdict, why = outcome(binary, scratch, shape, high, ceiling, timeout)
+    verdict, why = outcome(binary, scratch, shape, high, ceiling, timeout, form)
 
     if verdict == COMPLETED:
         print(f"# {label}: every depth up to {high} completed")
@@ -168,7 +188,7 @@ def deepest(binary, scratch, shape, ceiling, timeout, label):
 
     while high - low > 1:
         middle = (low + high) // 2
-        verdict, why = outcome(binary, scratch, shape, middle, ceiling, timeout)
+        verdict, why = outcome(binary, scratch, shape, middle, ceiling, timeout, form)
         print(f"#   {label} {middle}: {verdict} ({why})")
 
         if verdict == COMPLETED:
@@ -186,29 +206,56 @@ def main():
     parser.add_argument("--stack-bytes", type=int, default=DEFAULT_STACK_BYTES)
     parser.add_argument("--ceiling", type=int, default=100000)
     parser.add_argument("--timeout", type=int, default=300)
+    parser.add_argument("--form", choices=("bytecode", "native"), default="bytecode")
+    parser.add_argument(
+        "--backend", default=None, help="a native run's backend; defaults to this host's x86-64 convention")
     arguments = parser.parse_args()
 
+    if arguments.backend and arguments.form != "native":
+        parser.error("--backend names a native backend, and this run's form is bytecode")
+
+    form = []
+    backend = ""
+
+    if arguments.form == "native":
+        backend = arguments.backend or host_backend() or ""
+
+        if not backend:
+            print(
+                "# this host's architecture arms no backend, so a native run must name one with --backend",
+                file=sys.stderr)
+            return 2
+
+        form = ["--native", backend]
+
     binary = pathlib.Path(arguments.binary_directory) / "Broiler.VM.Composition.JavaScript.Cli"
+
+    # The published image carries a suffix on Windows, appended rather than substituted for the
+    # reason eng/run-test262.py records beside the same check.
+    if not binary.exists() and binary.with_name(binary.name + ".exe").exists():
+        binary = binary.with_name(binary.name + ".exe")
 
     if not binary.exists():
         print(f"# no binary at {binary}", file=sys.stderr)
         return 2
 
     print(f"# measuring against {binary}")
+    print(f"# form {arguments.form}" + (f" ({backend})" if backend else ""))
     print(f"# declared guest stack {arguments.stack_bytes} bytes")
 
     with tempfile.TemporaryDirectory(prefix="broiler-depth-") as directory:
         scratch = pathlib.Path(directory)
 
         returning, why_returning = deepest(
-            binary, scratch, RETURNING, arguments.ceiling, arguments.timeout, "returning")
+            binary, scratch, RETURNING, arguments.ceiling, arguments.timeout, "returning", form)
 
         throwing, why_throwing = deepest(
-            binary, scratch, THROWING, arguments.ceiling, arguments.timeout, "throwing")
+            binary, scratch, THROWING, arguments.ceiling, arguments.timeout, "throwing", form)
 
     if returning is None or throwing is None:
         return 1
 
+    print(f"form {arguments.form}" + (f" {backend}" if backend else ""))
     print(f"deepest-returning-recursion {returning}")
     print(f"stopped-by-returning {why_returning}")
     print(f"deepest-throwing-recursion {throwing}")

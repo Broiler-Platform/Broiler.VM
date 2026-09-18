@@ -1,0 +1,34 @@
+# Native AOT image sizes, read with: ls -l <path> (bytes in the fifth column)
+# (1) the images this collection published, commit 444f9c9, win-x64, artifacts/js-publish/<root>/aot
+-rwxr-xr-x 1 proof 197121 4121088 Sep 15 15:17 artifacts/js-publish/cli/aot/Broiler.VM.Composition.JavaScript.Cli.exe
+-rwxr-xr-x 1 proof 197121 5276672 Sep 15 15:16 artifacts/js-publish/conformance/aot/Broiler.VM.Composition.JavaScript.Conformance.exe
+-rwxr-xr-x 1 proof 197121 3422208 Sep 15 15:14 artifacts/js-publish/executiononly/aot/Broiler.VM.Composition.JavaScript.ExecutionOnly.exe
+-rwxr-xr-x 1 proof 197121 4903424 Sep 15 15:16 artifacts/js-publish/slicecompiler/aot/Broiler.VM.Composition.JavaScript.SliceCompiler.exe
+# (2) the images the AOT native test262 subset ran on, published from commit 444f9c9 earlier the same day, artifacts/aot/<root>
+#     Same byte sizes as (1), and NOT byte-identical to them: sha256sum gives a different digest for every pair (below).
+-rwxr-xr-x 1 proof 197121 4121088 Sep 15 14:02 artifacts/aot/Cli/Broiler.VM.Composition.JavaScript.Cli.exe
+-rwxr-xr-x 1 proof 197121 5276672 Sep 15 14:02 artifacts/aot/Conformance/Broiler.VM.Composition.JavaScript.Conformance.exe
+-rwxr-xr-x 1 proof 197121 3422208 Sep 15 14:02 artifacts/aot/ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.exe
+-rwxr-xr-x 1 proof 197121 4903424 Sep 15 14:02 artifacts/aot/SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.exe
+# sha256sum of (1) and (2), one pair per root
+#   Cli            (1) 83a7aded8398a08147241ae8ce25ea29ea10940504e754fbc5d4e5a5f740681b
+#                  (2) 70a04b277487112f6fdb7ef91a3771d54d10d05349a67e95318a323441081bc3
+#   Conformance    (1) 5fc06c31df810b6d5646c4b653efbd40c2051658b33e7ae26ea768bf2a6fa6bd
+#                  (2) b91a1db640db1ce65ed260a22e207f578d879ba361300385f80722d09141d494
+#   ExecutionOnly  (1) 7baa52dd2d4b274926a20089b3f2472ded5267d37328087d5d1be51da58b341b
+#                  (2) eb40860deb99fe8083f6395eb8b4d44a654f81a06049d237cb18a8ef156b2d60
+#   SliceCompiler  (1) f7d57891751600c08c9052751c4e97533ee4a3bcdd6cf8aaee1fd6602ac0468d
+#                  (2) 2b19613e53456f79018f36fcf81f3fa34c4553716e3cab02c7777dbda25e3471
+# (3) main d126172, the merge base, for comparison. Published after this collection, the same day, from a detached
+#     worktree at D:/bm (a short path: the linker refuses output paths past 260 characters), with
+#     dotnet publish <root>.csproj -c Release --nologo -r win-x64 -p:PublishAot=true -p:TreatWarningsAsErrors=true -o D:/bm/o/<root>
+#     and "Microsoft Visual Studio\Installer" on PATH. Every publish exited 0. git rev-parse HEAD in that worktree
+#     printed d1261725cbcd62a5108a1a01d583a88a16a491d7. The worktree was removed afterwards.
+-rwxr-xr-x 1 proof 197121 3753472 Sep 15 15:36 D:/bm/o/Cli/Broiler.VM.Composition.JavaScript.Cli.exe
+-rwxr-xr-x 1 proof 197121 4899840 Sep 15 15:36 D:/bm/o/Conformance/Broiler.VM.Composition.JavaScript.Conformance.exe
+-rwxr-xr-x 1 proof 197121 3066368 Sep 15 15:37 D:/bm/o/ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.exe
+-rwxr-xr-x 1 proof 197121 4413440 Sep 15 15:37 D:/bm/o/SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.exe
+# An earlier publish of d126172 in the same session, from other paths, has no output left and no retained ls output.
+# The session's notes record it at 3753984 bytes for the command-line host and at the three sizes above for the other
+# roots. So the command-line host differs by 512 bytes between two publishes of one commit from two paths. This file
+# does not explain that difference.

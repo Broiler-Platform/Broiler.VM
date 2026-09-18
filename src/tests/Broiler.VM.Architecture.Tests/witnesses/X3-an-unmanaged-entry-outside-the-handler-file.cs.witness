@@ -1,0 +1,44 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. Stored with a .witness extension so that no compilation
+// includes it, and read by rule X3 at a path outside the handler file so that the rule can be
+// watched rejecting a second place native code enters managed code and a second writer of the
+// activation slot.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES. An embedder's native print routine wants to call
+// back into the running guest, and the handler table is right there as a precedent: one more
+// [UnmanagedCallersOnly] entry, one read of the thread slot to find the activation, and a
+// set-and-restore around the call so a nested step does not see it. Each line is copied from a
+// file this rule allows. What it costs is the argument that makes the slot an activation handle
+// rather than an ambient holder: the slot is set only by the frame that entered emitted code and
+// read only by the step that checks the frame's cookie, and this entry does neither - it is reached
+// from native code with no frame at all, so no cookie stands between it and whatever activation
+// happens to be innermost on the thread.
+//
+// Both halves are written here, because an author who adds the entry adds the slot access in the
+// same edit, and a rule that knew only one of them would clear the other.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal static unsafe class JsNativeHostCallbacks
+{
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int Print(byte* text, int length)
+    {
+        var running = JsNativeActivation.Current;
+
+        if (running is null)
+        {
+            return -1;
+        }
+
+        JsNativeActivation.Current = null;
+
+        try
+        {
+            return length;
+        }
+        finally
+        {
+            JsNativeActivation.Current = running;
+        }
+    }
+}

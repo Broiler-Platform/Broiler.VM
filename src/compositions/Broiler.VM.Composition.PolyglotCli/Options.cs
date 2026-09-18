@@ -233,18 +233,20 @@ internal sealed record Options
             }
         }
 
-        // A NATIVE FORM EXISTS FOR ONE MANIFEST AND THE HOST SAYS SO RATHER THAN LETTING THE FRONT
-        // END SAY IT. `--native` without `--numeric` would be lowered and refused with a
-        // construct-outside-manifest diagnostic naming whatever the program's first object or
-        // string happened to be, which reads as a complaint about the program and is a complaint
-        // about the command line. The whole-artifact rule is the reason: there is no per-unit
-        // choice and no fallback, so the manifest a native artifact is emitted for is decided
+        // THE WIDE SURFACE'S NATIVE FORM IS NOT WIRED IN THIS COMPOSITION, AND THE HOST SAYS SO
+        // RATHER THAN LETTING A LATER STAGE SAY IT. `--native` without `--numeric` asks for the
+        // baseline form over the wide manifest. This root's source provider compiles every
+        // guest-loaded program to bytecode, and an instance of one form refuses a guest-loaded
+        // program of the other as a defect, so admitting the pair here would turn every `eval` and
+        // `import()` into an internal defect that reads as a fault of the program. The
+        // whole-artifact rule means there is no per-unit fallback either, so the refusal is decided
         // before a byte is read.
         if (backend.Length != 0 && !numeric)
         {
             complaint =
-                "--native emits machine code for the " + JavaScriptProfile.NumericManifest +
-                " surface and there is no native form of any other; pass --numeric with it";
+                "--native without --numeric asks for the native form of " + JavaScriptProfile.WideManifest +
+                ", and the native form is not wired in this composition; pass --numeric with it for the " +
+                JavaScriptProfile.NumericManifest + " surface";
 
             return false;
         }

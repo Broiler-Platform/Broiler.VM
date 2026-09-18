@@ -1,0 +1,103 @@
+=== wave A: 13 subtrees, form native
+# test262 3350 files, 6332 variants: pass 6078, fail 222, unsupported 22, exhausted 0, skipped 10
+coverage partial a named selection rather than the whole test tree: test/language/expressions/addition test/language/expressions/assignment test/language/expressions/call test/language/expressions/object test/language/statements/if test/language/statements/try test/language/statements/throw test/language/statements/switch test/language/statements/labeled test/language/statements/for-in test/language/statements/for-of test/built-ins/Array/prototype/map test/built-ins/Array/prototype/sort
+# the whole-run report is artifacts\waves-1\A\test262.report
+# the machine-readable report is artifacts\waves-1\A\test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language/expressions/addition test/language/expressions/assignment test/language/expressions/call test/language/expressions/object test/language/statements/if test/language/statements/try test/language/statements/throw test/language/statements/switch test/language/statements/labeled test/language/statements/for-in test/language/statements/for-of test/built-ins/Array/prototype/map test/built-ins/Array/prototype/sort
+intersected on 6332 shared variants
+reference total|53469|94545|70834|13315|1990|60|8346
+candidate total|3350|6332|6078|222|22|0|10
+
+transitions (reference -> candidate):
+     6078  Passed -> Passed
+      222  Failed -> Failed
+       22  Unsupported -> Unsupported
+       10  Skipped -> Skipped
+
+reference-pass, candidate-not: 0
+reference-not, candidate-pass: 0
+
+regressions grouped by detail:
+=== wave B: 3 subtrees, form native
+# test262 390 files, 755 variants: pass 739, fail 16, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/language/statements/generators test/language/expressions/yield test/built-ins/GeneratorPrototype
+# the whole-run report is artifacts\waves-1\B\test262.report
+# the machine-readable report is artifacts\waves-1\B\test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language/statements/generators test/language/expressions/yield test/built-ins/GeneratorPrototype
+intersected on 755 shared variants
+reference total|53469|94545|70834|13315|1990|60|8346
+candidate total|390|755|739|16|0|0|0
+
+transitions (reference -> candidate):
+      739  Passed -> Passed
+       16  Failed -> Failed
+
+reference-pass, candidate-not: 0
+reference-not, candidate-pass: 0
+
+regressions grouped by detail:
+=== wave C: 5 subtrees, form native
+# test262 2308 files, 4507 variants: pass 4448, fail 12, unsupported 8, exhausted 0, skipped 39
+coverage partial a named selection rather than the whole test tree: test/language/statements/async-function test/language/statements/async-generator test/language/statements/for-await-of test/language/expressions/await test/built-ins/Promise
+# the whole-run report is artifacts\waves-1\C\test262.report
+# the machine-readable report is artifacts\waves-1\C\test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language/statements/async-function test/language/statements/async-generator test/language/statements/for-await-of test/language/expressions/await test/built-ins/Promise
+intersected on 4507 shared variants
+reference total|53469|94545|70834|13315|1990|60|8346
+candidate total|2308|4507|4448|12|8|0|39
+
+transitions (reference -> candidate):
+     4448  Passed -> Passed
+       39  Skipped -> Skipped
+       12  Failed -> Failed
+        8  Unsupported -> Unsupported
+
+reference-pass, candidate-not: 0
+reference-not, candidate-pass: 0
+
+regressions grouped by detail:
+=== wave D: 4 subtrees, form native
+# test262 8971 files, 17638 variants: pass 17150, fail 458, unsupported 4, exhausted 0, skipped 26
+coverage partial a named selection rather than the whole test tree: test/language/statements/class test/language/expressions/class test/language/expressions/super test/language/statements/function
+# the whole-run report is artifacts\waves-1\D\test262.report
+# the machine-readable report is artifacts\waves-1\D\test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language/statements/class test/language/expressions/class test/language/expressions/super test/language/statements/function
+intersected on 17638 shared variants
+reference total|53469|94545|70834|13315|1990|60|8346
+candidate total|8971|17638|17150|458|4|0|26
+
+transitions (reference -> candidate):
+    17150  Passed -> Passed
+      458  Failed -> Failed
+       26  Skipped -> Skipped
+        4  Unsupported -> Unsupported
+
+reference-pass, candidate-not: 0
+reference-not, candidate-pass: 0
+
+regressions grouped by detail:
+=== wave E: 7 subtrees, form native
+# test262 2796 files, 3824 variants: pass 2610, fail 490, unsupported 6, exhausted 0, skipped 718
+coverage partial a named selection rather than the whole test tree: test/language/eval-code test/built-ins/eval test/built-ins/Function test/language/expressions/dynamic-import test/language/module-code test/language/import test/language/export
+# the whole-run report is artifacts\waves-1\E\test262.report
+# the machine-readable report is artifacts\waves-1\E\test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language/eval-code test/built-ins/eval test/built-ins/Function test/language/expressions/dynamic-import test/language/module-code test/language/import test/language/export
+intersected on 3824 shared variants
+reference total|53469|94545|70834|13315|1990|60|8346
+candidate total|2796|3824|2610|490|6|0|718
+
+transitions (reference -> candidate):
+     2610  Passed -> Passed
+      718  Skipped -> Skipped
+      490  Failed -> Failed
+        6  Unsupported -> Unsupported
+
+reference-pass, candidate-not: 0
+reference-not, candidate-pass: 0
+
+regressions grouped by detail:

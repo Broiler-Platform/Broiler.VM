@@ -287,12 +287,24 @@ public sealed class JsArm64Backend : IJsNativeBackend
     /// compile refuses the artifact, and the sentence names the unit, the bytecode offset and the
     /// instruction - because an author told only "arm64 declined" has no way to find out why.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=C3B8A0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=8956C1
     // Broiler-Falsified-If: this method answers true for a program containing a unit it emitted no entry point for, or answers true having emitted a template for an instruction it does not admit
     // Broiler-Human:        PENDING
     public bool TryEmit(JsAssembledProgram program, out JsNativeEmission emission, out string refusal)
     {
         emission = null!;
+
+        // THE WIDE MANIFEST HAS A NATIVE FORM ON x86-64 AND NONE HERE, and the refusal says which
+        // of the two facts an author ran into. The general sentence below would read as though the
+        // wide manifest had no native form at all.
+        if (program.ManifestId == JsFormat.ManifestId)
+        {
+            refusal =
+                "the arm64 backend emits only for the numeric manifest; the baseline form over " +
+                "`" + JsFormat.ManifestId + "` has no arm64 emitter in this build";
+
+            return false;
+        }
 
         if (program.ManifestId != JsNumericManifest.ManifestId)
         {

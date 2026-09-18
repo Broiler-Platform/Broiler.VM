@@ -1,0 +1,159 @@
+{
+  "schema": "broiler-js octane report",
+  "version": 1,
+  "produced-at": "2026-09-15T12:21:36Z",
+  "retained": false,
+  "not-a-baseline": "Produced by one run, with no predeclared rule, no control, no A/A lane and no repetitions. Roadmap section 17 and rule L1 govern any figure a document retains; no figure in this file may be written into one.",
+  "pin": {
+    "suite": "octane",
+    "upstream": "chromium/octane",
+    "revision": "570ad1ccfe86e3eecba0636c8f932ac08edec517",
+    "archive-sha256": "7bcf54bdaa32475eadb09bbed4283f46cb2e11ee69c10b3b79524d568db841c4",
+    "content-sha256": "aab618b86ebe2f18229c18f0147943e9a1bac69967582563e120d4cea273b4c4",
+    "files": 37
+  },
+  "host": {
+    "path": "C:\\Users\\proof\\AppData\\Local\\Temp\\claude\\D--Broiler-VM\\cbafeab9-f73a-434e-9481-38837a0bebe7\\scratchpad\\main-d126172\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+    "bytes": 162816,
+    "version": [
+      "broiler-js broiler.javascript manifest broiler.javascript.wide format 2",
+      "edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html"
+    ]
+  },
+  "allowances": {
+    "fuel": 1000000000000,
+    "wall-ms-requested": 3600000,
+    "live-bytes": 1000000000,
+    "max-depth": 512
+  },
+  "selection": {
+    "attempted": [
+      "richards",
+      "crypto",
+      "raytrace",
+      "splay",
+      "deltablue",
+      "navier-stokes"
+    ],
+    "excluded": [],
+    "of": 15
+  },
+  "benchmarks": [
+    {
+      "benchmark": "richards",
+      "exit": 0,
+      "score": "69.7",
+      "results": [
+        {
+          "name": "Richards",
+          "score": "69.7"
+        }
+      ],
+      "components": [
+        0.6969792694965459
+      ],
+      "seconds": 3.359,
+      "detail": null
+    },
+    {
+      "benchmark": "crypto",
+      "exit": 0,
+      "score": "53.5",
+      "results": [
+        {
+          "name": "Crypto",
+          "score": "53.5"
+        }
+      ],
+      "components": [
+        0.5347475698507247
+      ],
+      "seconds": 78.157,
+      "detail": null
+    },
+    {
+      "benchmark": "raytrace",
+      "exit": 0,
+      "score": "231",
+      "results": [
+        {
+          "name": "RayTrace",
+          "score": "231"
+        }
+      ],
+      "components": [
+        2.3077991194276315
+      ],
+      "seconds": 12.484,
+      "detail": null
+    },
+    {
+      "benchmark": "splay",
+      "exit": 0,
+      "score": "813",
+      "results": [
+        {
+          "name": "Splay",
+          "score": "357"
+        },
+        {
+          "name": "SplayLatency",
+          "score": "1852"
+        }
+      ],
+      "components": [
+        3.5706864654333015,
+        18.518863524210612
+      ],
+      "seconds": 4.828,
+      "detail": null
+    },
+    {
+      "benchmark": "deltablue",
+      "exit": 0,
+      "score": "83.9",
+      "results": [
+        {
+          "name": "DeltaBlue",
+          "score": "83.9"
+        }
+      ],
+      "components": [
+        0.8388425504229021
+      ],
+      "seconds": 4.453,
+      "detail": null
+    },
+    {
+      "benchmark": "navier-stokes",
+      "exit": 0,
+      "score": "80.6",
+      "results": [
+        {
+          "name": "NavierStokes",
+          "score": "80.6"
+        }
+      ],
+      "components": [
+        0.8062752555265044
+      ],
+      "seconds": 31.907,
+      "detail": null
+    }
+  ],
+  "aggregate": {
+    "score": 168.4389,
+    "definition": "100 * exp(sum(ln(r)) / n) over every ratio BenchmarkSuite.scores collected, which is what BenchmarkSuite.RunSuites computes for a whole-suite run.",
+    "ratios": 7,
+    "coverage": "partial|not selected: earley-boyer, regexp, pdfjs, mandreel, gbemu, code-load, box2d, zlib, typescript",
+    "whole": false,
+    "is-octane-score": false
+  },
+  "seconds": 135.188,
+  "environment": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "AMD64 Family 25 Model 33 Stepping 0, AuthenticAMD",
+    "python": "3.11.9"
+  }
+}

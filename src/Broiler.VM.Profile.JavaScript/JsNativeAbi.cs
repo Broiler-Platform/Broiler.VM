@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   3
-// Annotated:        3/3
+// Relevant units:   4
+// Annotated:        4/4
 // Exempt:           0
-// Human-reviewed:   0/3
+// Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         3/3
+// Criteria:         4/4
 // Resource impact:  5/10 max
-// Unverified:       3
+// Unverified:       4
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -172,6 +172,90 @@ public static unsafe class JsNativeAbi
                 {
                     saved[index] = probe.Saved[index];
                 }
+            }
+
+            return new JsNativeAbiObservation(
+                true, probe.StackBefore, probe.StackAfter, probe.Answer, saved);
+        }
+    }
+
+    /// <summary>
+    /// Maps <paramref name="blob"/>, arms it, and calls its trampoline over a baseline unit once per
+    /// element of <paramref name="handlerStacks"/>, with a probe frame whose handler table sends every
+    /// slot to the stub at <paramref name="stubOffset"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE HANDLER IS A STUB AND NOT THE INTERPRETER, AND THAT IS WHAT MAKES THE FRAME'S OBLIGATIONS
+    /// OBSERVABLE.</b> The product's handlers are managed entry points that check an activation this
+    /// method does not have; a stub the caller assembled can instead write down the stack pointer it
+    /// was entered with, into the scratch word this probe frame carries after the
+    /// <see cref="JsBaselineFrame"/> fields, and answer exit so the unit leaves at once. The scratch
+    /// word is cleared before each call and read after it into <paramref name="handlerStacks"/>, so a
+    /// call that never reached the stub reads zero.
+    /// </para>
+    /// <para>
+    /// <b>THE TABLE AND THE FRAME ARE THIS METHOD'S OWN STACK MEMORY</b>, which outlives every call it
+    /// makes; the emitted unit reads the table's address out of the frame's first field exactly as it
+    /// reads the product table's. The trampoline is the caller's, built with the backend's encoder and
+    /// handed the frame through the probe as <see cref="Run"/> hands it one, and it is the trampoline
+    /// that loads the entry program counter a unit takes as its second argument.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=1F95D2
+    // Broiler-Falsified-If: this records a handler stack pointer the stub did not write, sends a slot anywhere but the stub, or returns without releasing the mapping
+    // Broiler-Human:        PENDING
+    public static JsNativeAbiObservation RunBaseline(
+        System.ReadOnlySpan<byte> blob,
+        uint trampolineOffset,
+        uint unitOffset,
+        uint stubOffset,
+        System.Span<long> handlerStacks)
+    {
+        var page = JsNativePage.TryMap(blob);
+
+        if (page is null)
+        {
+            return new JsNativeAbiObservation(false, 0, 0, 0, []);
+        }
+
+        using (page)
+        {
+            if (!page.Arm())
+            {
+                return new JsNativeAbiObservation(false, 0, 0, 0, []);
+            }
+
+            var stub = page.At(stubOffset);
+            var table = stackalloc nint[JsBaselineAbi.HandlerSlots];
+
+            for (var slot = 0; slot < JsBaselineAbi.HandlerSlots; slot++)
+            {
+                table[slot] = stub;
+            }
+
+            // The frame and one scratch word after it, which is where the stub writes.
+            var words = stackalloc long[(JsBaselineAbi.FrameSize / sizeof(long)) + 1];
+            var frame = (JsBaselineFrame*)words;
+            frame->Handlers = (nint)table;
+            frame->Cookie = 0;
+
+            var probe = default(JsNativeAbiProbe);
+            var saved = new long[8];
+            var trampoline = page.Entry(trampolineOffset);
+            probe.Target = (void*)page.At(unitOffset);
+            probe.Frame = (JsNativeFrame*)words;
+
+            for (var attempt = 0; attempt < handlerStacks.Length; attempt++)
+            {
+                words[JsBaselineAbi.FrameSize / sizeof(long)] = 0;
+                ((delegate* unmanaged<JsNativeAbiProbe*, int>)trampoline)(&probe);
+                handlerStacks[attempt] = words[JsBaselineAbi.FrameSize / sizeof(long)];
+            }
+
+            for (var index = 0; index < saved.Length; index++)
+            {
+                saved[index] = probe.Saved[index];
             }
 
             return new JsNativeAbiObservation(

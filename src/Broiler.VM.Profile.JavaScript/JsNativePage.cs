@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
-// Exempt:           8
-// Human-reviewed:   0/8
+// Relevant units:   12
+// Annotated:        12/12
+// Exempt:           10
+// Human-reviewed:   0/12
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         12/12
+// Criteria:         18/18
 // Resource impact:  4/10 max
-// Unverified:       8
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -125,15 +125,89 @@ internal sealed unsafe partial class JsNativePage : System.IDisposable
     // Broiler-Human:        PENDING
     private JsNativePageState state;
 
+    /// <summary>The handle that releases the mapping, eagerly or when this page is collected.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=6AE526
+    // Broiler-Falsified-If: the mapping this handle owns is released while this page is reachable and not disposed, or is never released after this page becomes unreachable
+    // Broiler-Human:        PENDING
+    private readonly JsNativeMapping mapping;
+
     /// <summary>Maps <paramref name="bytes"/> bytes, readable and writable and not executable.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=29EF7E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=F190B6
     // Broiler-Falsified-If: a mapping is created with any execute permission
     // Broiler-Human:        PENDING
-    private JsNativePage(byte* mapped, nuint bytes)
+    private JsNativePage(JsNativeMapping owned, byte* mapped, nuint bytes)
     {
+        mapping = owned;
         address = mapped;
         length = bytes;
         state = JsNativePageState.Writable;
+    }
+
+    /// <summary>The ownership of one mapping, released exactly once.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A MAPPING IS RELEASED WHEN NOTHING CAN ENTER IT ANY MORE, EVEN IF NOBODY DISPOSED IT.</b> The
+    /// core never disposes an instance's state, and a baseline program's page is owned by a program
+    /// that lives as long as closures and frames refer to it - so a release that waited for a
+    /// <c>Dispose</c> would be a release that never happened, one mapping per instance and per
+    /// evaluated program for the life of the process. The runtime's own handle type releases it when
+    /// the page is collected, runs the release at most once whichever route reaches it first, and
+    /// does so where an ordinary finalizer could be skipped.
+    /// </para>
+    /// <para>
+    /// <b>The collector is told what the mapping costs</b>, because it cannot see memory it did not
+    /// allocate: a program that evaluates many small scripts would otherwise hold mappings the
+    /// collector saw as a few words each.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=3EE098
+    // Broiler-Falsified-If: a mapping is released twice, released while its page can still be entered, or its memory pressure is not removed when it is released
+    // Broiler-Human:        PENDING
+    private sealed unsafe class JsNativeMapping : System.Runtime.InteropServices.SafeHandle
+    {
+        /// <summary>How many bytes the mapping covers.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=65543D
+        // Broiler-Falsified-If: this differs from the number of bytes the mapping was made with
+        // Broiler-Human:        PENDING
+        private readonly nuint bytes;
+
+        /// <summary>Takes ownership of <paramref name="mapped"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=1A6726
+        // Broiler-Falsified-If: this owns an address this type did not map
+        // Broiler-Human:        PENDING
+        internal JsNativeMapping(byte* mapped, nuint length)
+            : base(System.IntPtr.Zero, ownsHandle: true)
+        {
+            bytes = length;
+            SetHandle((nint)mapped);
+        }
+
+        /// <inheritdoc/>
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7887B9
+        // Broiler-Falsified-If: this answers false for a handle that owns no mapping
+        // Broiler-Human:        PENDING
+        public override bool IsInvalid => handle == System.IntPtr.Zero;
+
+        /// <summary>Releases the mapping and the memory pressure it was reported with.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=975095
+        // Broiler-Falsified-If: this releases an address or a length the mapping does not own
+        // Broiler-Human:        PENDING
+        protected override bool ReleaseHandle()
+        {
+            var released = (byte*)handle;
+
+            if (System.OperatingSystem.IsWindows())
+            {
+                ReleaseWindows(released);
+            }
+            else
+            {
+                ReleaseUnix(released, bytes);
+            }
+
+            System.GC.RemoveMemoryPressure((long)bytes);
+            return true;
+        }
     }
 
     /// <summary>What this mapping currently is.</summary>
@@ -157,7 +231,7 @@ internal sealed unsafe partial class JsNativePage : System.IDisposable
     /// again. One method that maps, copies and returns a mapping still to be armed is the smallest
     /// surface that does the job.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=E8DB67
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=DD0825
     // Broiler-Falsified-If: a caller can write to a mapping this method returned after Arm has run
     // Broiler-Human:        PENDING
     internal static JsNativePage? TryMap(System.ReadOnlySpan<byte> code)
@@ -178,7 +252,12 @@ internal sealed unsafe partial class JsNativePage : System.IDisposable
             return null;
         }
 
-        var page = new JsNativePage(mapped, bytes);
+        // OWNERSHIP IS TAKEN BEFORE ANYTHING ELSE RUNS, so no exception between the mapping and the
+        // page can leave a mapping nothing will release.
+        var owned = new JsNativeMapping(mapped, bytes);
+        System.GC.AddMemoryPressure((long)bytes);
+
+        var page = new JsNativePage(owned, mapped, bytes);
         code.CopyTo(new System.Span<byte>(mapped, code.Length));
         return page;
     }
@@ -288,7 +367,7 @@ internal sealed unsafe partial class JsNativePage : System.IDisposable
     /// an unrelated part of the process, which is the shape of defect this whole file is written to
     /// avoid.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=A80C3A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=9B819A
     // Broiler-Falsified-If: a second call releases a mapping a second time
     // Broiler-Human:        PENDING
     public void Dispose()
@@ -299,15 +378,7 @@ internal sealed unsafe partial class JsNativePage : System.IDisposable
         }
 
         state = JsNativePageState.Released;
-        var released = address;
         address = null;
-
-        if (System.OperatingSystem.IsWindows())
-        {
-            ReleaseWindows(released);
-            return;
-        }
-
-        ReleaseUnix(released, length);
+        mapping.Dispose();
     }
 }

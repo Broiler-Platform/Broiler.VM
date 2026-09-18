@@ -98,6 +98,11 @@ public enum JsNativeReturn
 /// no string, no closure, no exception - so a frame of <c>double</c> is not a restriction of the
 /// value model for this manifest; it IS the value model for this manifest. Widen the manifest and
 /// this structure stops being sound, which is why the two are documented against each other.
+/// <i>(Corrected 2026-09-15. That sentence remains true of THIS frame, and it was read as saying the
+/// wide manifest could have no native form. It has one, decided by JSD-0025, and it neither widens
+/// this manifest nor uses this structure: a baseline unit is entered with JsBaselineFrame, which
+/// holds a handler table's address and an activation cookie, and every value it reaches stays in
+/// managed memory.)</i>
 /// </para>
 /// <para>
 /// <b>The layout is sequential and the field order is the declared one, so an emitter computes
@@ -117,6 +122,10 @@ public enum JsNativeReturn
 /// TWO FORMS EXHAUST AT DIFFERENT POINTS, and that is a real difference between the forms rather
 /// than an implementation detail: it is stated here so that a corpus row pinning a resource
 /// exhaustion is not read as pinning it for both.
+/// <i>(Corrected 2026-09-15: the two forms meant here are the interpreter and the numeric form. The
+/// wide manifest's baseline form makes the managed call per instruction this paragraph calls out of
+/// reach for emitted code, and charges fuel at the interpreter's own point, so its exhaustion is
+/// exact except where a guest-loaded program's verification is charged - JSC-219.)</i>
 /// </para>
 /// <para>
 /// <b><c>bailoutPc</c> is named for the field the refused design would have used and it is not that
@@ -130,6 +139,11 @@ public enum JsNativeReturn
 /// is emitted and no pointer here is ever dereferenced by anything in this repository. The
 /// structure exists so that the two encoders that will fill it are written against a contract that
 /// was decided once, in the open, rather than against whichever one of them was written first.
+/// <i>(Corrected 2026-09-15. Every factual clause of this paragraph was already overtaken on
+/// 2026-09-07, when the numeric form's encoders, the arming type and the numeric executor landed and
+/// began filling this structure and calling emitted code through it; the paragraph is marked rather
+/// than deleted, and the reason in its last sentence is what survives. This is the numeric form's
+/// frame only: the wide manifest's baseline form is entered through JsBaselineFrame.)</i>
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=B132E7

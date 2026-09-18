@@ -262,7 +262,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     public VmProfileId ProfileId { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D2A502
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=1A8791
     // Broiler-Falsified-If: a handle this profile did not verify produces an instance
     // Broiler-Human:        PENDING
     public VmExecutionStep Instantiate(
@@ -278,7 +278,15 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
             // emitted code has that form for as long as it exists, and one whose payload did not
             // never acquires it - which is the whole of this profile's one-form-per-handle
             // non-goal, written as a single `if`.
-            return JsNativeExecution.CarriesEmittedCode(wideProgram)
+            //
+            // THE MANIFEST PICKS WHICH NATIVE ARM, BECAUSE THE TWO NATIVE FORMS ARE RUN BY DIFFERENT
+            // THINGS. A numeric artifact's code computes over slabs of doubles and is run by its own
+            // arm, which has no realm. A wide artifact's code is the baseline form - every instruction
+            // a call into the dispatch loop - and needs the engine, the realm and the guest stack, so
+            // it is instantiated by the same arm as bytecode and that arm enters the emitted code.
+            return JsNativeExecution.CarriesEmittedCode(wideProgram) &&
+                string.Equals(
+                    wideProgram.ManifestId, JsNumericManifest.ManifestId, System.StringComparison.Ordinal)
                 ? JsNativeExecution.Instantiate(wideProgram, environment)
                 : JsExecution.Instantiate(
                     wideProgram, environment, hostSurface, cancellationToken);

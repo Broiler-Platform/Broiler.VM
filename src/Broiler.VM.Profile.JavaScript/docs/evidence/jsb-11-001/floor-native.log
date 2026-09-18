@@ -1,0 +1,3 @@
+$ Broiler.VM.Composition.JavaScript.Conformance.exe --floor src/tests/conformance/floors/test262-wide-native.floor --report artifacts/test262-native-wide-5000/test262.report
+broiler-js-conformance: the test262 floor holds at test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93 under broiler.javascript.wide: test262 53469 files, 94545 variants: pass 70834, fail 13315, unsupported 1990, exhausted 60, skipped 8346
+exit 0

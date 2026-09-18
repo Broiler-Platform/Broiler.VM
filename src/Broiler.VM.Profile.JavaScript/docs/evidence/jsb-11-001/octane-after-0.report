@@ -1,0 +1,159 @@
+{
+  "schema": "broiler-js octane report",
+  "version": 1,
+  "produced-at": "2026-09-15T12:17:09Z",
+  "retained": false,
+  "not-a-baseline": "Produced by one run, with no predeclared rule, no control, no A/A lane and no repetitions. Roadmap section 17 and rule L1 govern any figure a document retains; no figure in this file may be written into one.",
+  "pin": {
+    "suite": "octane",
+    "upstream": "chromium/octane",
+    "revision": "570ad1ccfe86e3eecba0636c8f932ac08edec517",
+    "archive-sha256": "7bcf54bdaa32475eadb09bbed4283f46cb2e11ee69c10b3b79524d568db841c4",
+    "content-sha256": "aab618b86ebe2f18229c18f0147943e9a1bac69967582563e120d4cea273b4c4",
+    "files": 37
+  },
+  "host": {
+    "path": "artifacts\\cli-int1\\Broiler.VM.Composition.JavaScript.Cli.exe",
+    "bytes": 162816,
+    "version": [
+      "broiler-js broiler.javascript manifest broiler.javascript.wide format 2",
+      "edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html"
+    ]
+  },
+  "allowances": {
+    "fuel": 1000000000000,
+    "wall-ms-requested": 3600000,
+    "live-bytes": 1000000000,
+    "max-depth": 512
+  },
+  "selection": {
+    "attempted": [
+      "richards",
+      "crypto",
+      "raytrace",
+      "splay",
+      "deltablue",
+      "navier-stokes"
+    ],
+    "excluded": [],
+    "of": 15
+  },
+  "benchmarks": [
+    {
+      "benchmark": "richards",
+      "exit": 0,
+      "score": "71.3",
+      "results": [
+        {
+          "name": "Richards",
+          "score": "71.3"
+        }
+      ],
+      "components": [
+        0.712828846153847
+      ],
+      "seconds": 3.89,
+      "detail": null
+    },
+    {
+      "benchmark": "crypto",
+      "exit": 0,
+      "score": "53.1",
+      "results": [
+        {
+          "name": "Crypto",
+          "score": "53.1"
+        }
+      ],
+      "components": [
+        0.5314993706523088
+      ],
+      "seconds": 77.25,
+      "detail": null
+    },
+    {
+      "benchmark": "raytrace",
+      "exit": 0,
+      "score": "211",
+      "results": [
+        {
+          "name": "RayTrace",
+          "score": "211"
+        }
+      ],
+      "components": [
+        2.1085841434797197
+      ],
+      "seconds": 13.563,
+      "detail": null
+    },
+    {
+      "benchmark": "splay",
+      "exit": 0,
+      "score": "874",
+      "results": [
+        {
+          "name": "Splay",
+          "score": "386"
+        },
+        {
+          "name": "SplayLatency",
+          "score": "1979"
+        }
+      ],
+      "components": [
+        3.8575621301775156,
+        19.793318208748193
+      ],
+      "seconds": 4.687,
+      "detail": null
+    },
+    {
+      "benchmark": "deltablue",
+      "exit": 0,
+      "score": "81.2",
+      "results": [
+        {
+          "name": "DeltaBlue",
+          "score": "81.2"
+        }
+      ],
+      "components": [
+        0.8115258397932819
+      ],
+      "seconds": 4.422,
+      "detail": null
+    },
+    {
+      "benchmark": "navier-stokes",
+      "exit": 0,
+      "score": "83.3",
+      "results": [
+        {
+          "name": "NavierStokes",
+          "score": "83.3"
+        }
+      ],
+      "components": [
+        0.8328890136102151
+      ],
+      "seconds": 31.188,
+      "detail": null
+    }
+  ],
+  "aggregate": {
+    "score": 170.1151,
+    "definition": "100 * exp(sum(ln(r)) / n) over every ratio BenchmarkSuite.scores collected, which is what BenchmarkSuite.RunSuites computes for a whole-suite run.",
+    "ratios": 7,
+    "coverage": "partial|not selected: earley-boyer, regexp, pdfjs, mandreel, gbemu, code-load, box2d, zlib, typescript",
+    "whole": false,
+    "is-octane-score": false
+  },
+  "seconds": 135.0,
+  "environment": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "AMD64 Family 25 Model 33 Stepping 0, AuthenticAMD",
+    "python": "3.11.9"
+  }
+}

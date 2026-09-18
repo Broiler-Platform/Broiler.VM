@@ -523,18 +523,17 @@ public sealed class JsCompiler
     /// second execution arm this profile's non-goals refuse, wearing a different hat.
     /// </para>
     /// <para>
-    /// <b>The native form is admitted only under the numeric manifest, and the refusal for asking
-    /// otherwise names that.</b> A form other than bytecode has to be a whole-artifact form, which
-    /// means every unit is emitted; only the numeric manifest admits a language every program of
-    /// which can be. Asking for machine code from the wide surface is asking for the mixed artifact
-    /// the non-goals refuse, so it is answered here rather than half-answered later.
+    /// <b>The native form is a whole-artifact form under either manifest.</b> Every unit is
+    /// emitted or the compilation is refused. Under the numeric manifest the emitted code computes
+    /// over doubles; under the wide manifest it is the baseline form, whose every instruction is a
+    /// call into the interpreter's own dispatch for that one instruction, so every program the wide
+    /// front end lowers can be emitted. There is no mixed artifact for a request to ask for.
     /// </para>
     /// <para>
-    /// <b>AT THIS BUILD EVERY NATIVE REQUEST IS REFUSED, because no backend encodes an
-    /// instruction.</b> The path is whole - the manifest is checked, the backend is looked up by
-    /// name, the assembled program is handed over and the answer becomes a diagnostic - and its
-    /// answer is a refusal that names the backend. That is what the caller is told, and it is what
-    /// is true.
+    /// <b>A native request is answered by the backend it names.</b> The manifest is checked, the
+    /// backend is looked up by name, the assembled program is handed over, and a refusal becomes a
+    /// diagnostic naming what the backend declined - the arm64 backend declines the wide manifest,
+    /// and the x86-64 backend declines a baseline emission past the format's native-code ceiling.
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=106931
@@ -973,25 +972,37 @@ public sealed class JsCompiler
 
     /// <summary>Asks the named backend for machine code, or records why there is none.</summary>
     /// <remarks>
-    /// <b>THREE REFUSALS AND THEY NAME THREE DIFFERENT MISTAKES.</b> Asking for machine code
-    /// outside the numeric manifest is asking for the mixed-form artifact this profile refuses;
+    /// <para>
+    /// <b>BOTH MANIFESTS HAVE A NATIVE FORM, AND EVERY UNIT OF AN ARTIFACT HAS THE ONE FORM.</b>
+    /// Under the numeric manifest a backend computes: values are doubles in slabs and the emitted
+    /// code does the arithmetic. Under the wide manifest a backend emits the baseline form: every
+    /// instruction is one call into the interpreter's own dispatch for that instruction and the
+    /// control flow between instructions is emitted, so no construct the wide lowering writes is
+    /// outside it. Either way the backend answers for the whole artifact or refuses it, which is
+    /// why there is still no mixed form for this method to be asked for.
+    /// </para>
+    /// <para>
+    /// <b>THREE REFUSALS AND THEY NAME THREE DIFFERENT MISTAKES.</b> Asking for machine code under
+    /// a manifest with no native form is asking for something this profile does not define;
     /// naming a backend this build does not carry is naming something that does not exist; and a
-    /// backend that will not emit has its own sentence to say. An author told the wrong one of the
-    /// three looks in the wrong place, which is the whole reason a refusal names a construct rather
-    /// than a stage.
+    /// backend that will not emit has its own sentence to say - an arm64 backend asked for the
+    /// wide manifest, or a baseline emission past the format's native-code ceiling. An author told
+    /// the wrong one of the three looks in the wrong place, which is the whole reason a refusal
+    /// names a construct rather than a stage.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=97B265
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5AAE40
     // Broiler-Human:        PENDING
     private JsNativeEmission? Emit(JsAssembledProgram assembled)
     {
-        if (request.Manifest != JsFeatureManifest.Numeric)
+        if (request.Manifest != JsFeatureManifest.Numeric && request.Manifest != JsFeatureManifest.Wide)
         {
             Refuse(
                 default,
                 SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "the native output form is admitted only by the `" +
-                JsNumericManifest.ManifestId + "` feature manifest, because an artifact whose " +
-                "units do not all have one form is the mixed form this profile refuses");
+                "the native output form is admitted by the `" + JsNumericManifest.ManifestId +
+                "` and `" + JsFormat.ManifestId + "` feature manifests, and every unit of an " +
+                "artifact has the one form");
 
             return null;
         }

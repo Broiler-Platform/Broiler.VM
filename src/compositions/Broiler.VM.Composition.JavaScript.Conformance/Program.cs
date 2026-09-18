@@ -142,7 +142,8 @@ internal static class Program
                     "--test262 <root>. A run adds --dialect native|ingested, --selfcheck <dir> and " +
                     "--expect <retained pin>. A --test262 run takes --manifest <id>, " +
                     "--form bytecode|native, --backend <name> (a native run's; it defaults to the " +
-                    "convention this process arms, and native implies broiler.javascript.numeric), " +
+                    "convention this process arms, and a native run is taken under " +
+                    "broiler.javascript.wide unless it names broiler.javascript.numeric), " +
                     "--decline <surface> (repeatable), --shard <k>/<n>, --expect <retained pin>, " +
                     "--report <file>, --json <file>, --digest-cache <file>, --test <path> and " +
                     "--dir <path> (both repeatable, and naming neither runs the whole test tree), " +

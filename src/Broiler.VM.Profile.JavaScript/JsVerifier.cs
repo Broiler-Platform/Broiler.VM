@@ -1446,7 +1446,7 @@ internal sealed class JsVerifier
     /// question, and bytes with no symbols are a blob nothing can enter.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7511FC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=5E7901
     // Broiler-Falsified-If: an artifact whose symbol table names fewer units than the function table is admitted, or a symbol offset outside the emitted blob is
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome LinkNative(
@@ -1517,8 +1517,18 @@ internal sealed class JsVerifier
         // composition that has no other check. It runs first for the same reason the version check
         // comes before the byte comparison: a payload that is not code at all should be refused as
         // that rather than as a difference from what this image would have emitted.
+        //
+        // THE TABLE IS CHOSEN BY THE MANIFEST THE ARTIFACT DECLARES AND BY NOTHING THE PAYLOAD
+        // SAYS. A numeric artifact carries computing templates and a wide one carries the baseline
+        // form, and the manifest has already been read and held to the descriptor; a field of the
+        // native section naming the form would be a second statement of that fact for a forged
+        // payload to contradict.
+        var tier = state.ManifestId == JsNumericManifest.ManifestId
+            ? JsNativeTier.Numeric
+            : JsNativeTier.Baseline;
+
         var scan = JsNativeScan.Scan(
-            state.NativeArchitecture, blob, symbols, state.NativeCodeAlignment);
+            state.NativeArchitecture, tier, blob, symbols, state.NativeCodeAlignment);
 
         if (!scan.Accepted)
         {
@@ -1528,7 +1538,7 @@ internal sealed class JsVerifier
                 scan.Offset);
         }
 
-        return ReEmit(state, blob, symbols, emitter);
+        return ReEmit(state, tier, blob, symbols, emitter);
     }
 
     /// <summary>
@@ -1564,11 +1574,15 @@ internal sealed class JsVerifier
     /// with the wrong reason attached; refusing on the version says the true thing.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=001336
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=143E4A
     // Broiler-Falsified-If: an artifact whose emitted bytes differ from this image's own emission of its bytecode is admitted while an emitter is present
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReEmit(
-        Sections state, byte[] blob, JsNativeSymbolRow[] symbols, IJsNativeEmitter? emitter)
+        Sections state,
+        JsNativeTier tier,
+        byte[] blob,
+        JsNativeSymbolRow[] symbols,
+        IJsNativeEmitter? emitter)
     {
         if (emitter is null)
         {
@@ -1597,6 +1611,30 @@ internal sealed class JsVerifier
 
         var image = new JsNativeProgramImage(
             state.Code!, state.FunctionRows!, values, numbers, state.DeclaredOperandStack);
+
+        // THE BASELINE FORM READS THE REGIONS AND THE NUMERIC FORM READS NONE, so the image carries
+        // them only for the tier that needs them - projected from the regions this verifier read, in
+        // the order the artifact carries them, which is the order the lowering handed its backend.
+        if (tier == JsNativeTier.Baseline)
+        {
+            var regions = new JsExceptionRegionRow[state.Regions.Length];
+
+            for (var index = 0; index < regions.Length; index++)
+            {
+                var region = state.Regions[index];
+
+                regions[index] = new JsExceptionRegionRow(
+                    region.Unit,
+                    region.TryStart,
+                    region.TryEnd,
+                    region.Handler,
+                    region.ScopeDepth,
+                    region.StackHeight,
+                    region.Kind);
+            }
+
+            image = image with { Tier = JsNativeTier.Baseline, Regions = regions };
+        }
 
         if (!emitter.TryEmit(image, out var emitted, out var table, out _) ||
             !System.MemoryExtensions.SequenceEqual(

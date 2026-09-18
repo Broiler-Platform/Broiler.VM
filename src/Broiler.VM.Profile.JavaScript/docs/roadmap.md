@@ -208,7 +208,9 @@ trimming, and Native AOT gates for the core boundary.
 
   *The line that replaces the implication is a property, not an intention: **the form is chosen when
   an artifact is compiled and fixed when it is verified, and a verified handle's form never
-  changes.** One executor, one form per handle, no promotion. A path that picks a form from run-time
+  changes.** One executor, one form per handle and per instance — nested loads included — no
+  promotion and no bail-out; the native form is admitted under the numeric and wide manifests, and
+  is whole-artifact under both *(corrected: JSC-215)*. A path that picks a form from run-time
   observation, or re-maps a handle's payload, is the second execution arm this paragraph refuses, and
   it is refused under the amendment exactly as it was before it. **This profile schedules no backend
   by writing this**: the milestone that would emit x86 is not written, is not in
@@ -226,6 +228,24 @@ trimming, and Native AOT gates for the core boundary.
   is still not written, still not in [the delivery document](roadmap.delivery.md), and still not in
   this profile's ledger. What the document adds is that the question now has a written answer a
   reader can disagree with, which is the difference between a plan and an intention.*
+
+  ***Amended again 2026-09-15, and widened in what it admits rather than in what it refuses.*** *The
+  property line above read "One executor, one form per handle, no promotion", and beside the backend
+  roadmap's numeric-only design it was read as leaving a native form one shape: a manifest small
+  enough that every program in it compiles whole.
+  [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) decides a second
+  native form, over `broiler.javascript.wide`, whose emitted code makes every instruction one call
+  into this profile's own interpreter dispatch for that instruction. **Every refusal of this
+  paragraph stands**: no IL, no expression tree, no delegate compiled at run time, no tier, no
+  promotion, no deoptimization, no on-stack replacement, and no path that picks a form from run-time
+  observation. **What changes is two things**: a form is one per instance as well as one per handle,
+  so a program a guest loads runs in its instance's form or is an internal defect; and the native
+  form is no longer the numeric manifest's alone. The route register's MVP-7 named an amendment to
+  this paragraph as the condition that settles it, and this is that amendment. The stage is the
+  backend roadmap's `JSB-11`, which is still a proposal-document stage with no milestone row in the
+  ledger; the ledger records its work only as observed repository state, in three rows
+  (corrected 2026-09-15, after collection: this sentence ended "in three `[NONE]` rows"; the rows are
+  marked `[PARTIAL]` since bundle JSB-11-001 was retained, and that mark is not acceptance).*
 - **A second verifier.** Whatever validates an artifact is this profile's verifier, reached
   through the core's one verification entry point. A build-time reimplementation that is merely
   supposed to agree with it is a security defect with a schedule attached.

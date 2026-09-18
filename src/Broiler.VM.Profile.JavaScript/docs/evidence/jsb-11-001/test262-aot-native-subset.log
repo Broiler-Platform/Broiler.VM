@@ -1,0 +1,46 @@
+json D:\Broiler.VM\artifacts\aot\t262-native\test262.json
+broiler-js-conformance: merged 16 test262 shard report(s)
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.modules, broiler.javascript.native; declined (none); form native (x86-64-win64)
+partition FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard; merged from 16 shards
+selection candidates=5044 selected=5044 merged=5044
+# unsupported families: 1 distinct, 12 variants
+#        12  a BigInt literal  e.g. test/built-ins/Promise/all/resolve-throws-iterator-return-is-not-callable.js [sloppy]
+# no variant spent an allowance
+# failure classification over 228 failing variant(s)
+#   by kind: 5 distinct, 228 variants
+#          92  an uncaught Test262Error  e.g. test/built-ins/Promise/any/resolve-from-same-thenable.js [sloppy]
+#          62  an uncaught EvalError  e.g. test/language/statements/class/elements/arrow-body-derived-cls-direct-eval-contains-superproperty-1.js [sloppy]
+#          40  a declared parse-phase error was raised at run time instead  e.g. test/language/statements/class/class-name-ident-let.js [sloppy]
+#          20  an uncaught ReferenceError  e.g. test/language/statements/class/elements/private-field-access-on-inner-function.js [sloppy]
+#          14  an uncaught TypeError  e.g. test/built-ins/Promise/proto-from-ctor-realm.js [sloppy]
+#   by area: 3 distinct, 228 variants
+#         224  test/language/statements/class  e.g. test/language/statements/class/accessor-name-inst/literal-numeric-non-canonical.js [sloppy]
+#           2  test/built-ins/Promise  e.g. test/built-ins/Promise/proto-from-ctor-realm.js [sloppy]
+#           2  test/built-ins/Promise/any  e.g. test/built-ins/Promise/any/resolve-from-same-thenable.js [sloppy]
+#   by declared feature (212 of 228 failing variants declare one; a variant with two is in two rows): 22 distinct, 504 taggings over 212 variants
+#         194  class  e.g. test/language/statements/class/accessor-name-inst/literal-numeric-non-canonical.js [sloppy]
+#         114  class-fields-public  e.g. test/language/statements/class/elements/arrow-body-derived-cls-direct-eval-contains-superproperty-1.js [sloppy]
+#          80  class-fields-private  e.g. test/language/statements/class/elements/arrow-body-private-derived-cls-direct-eval-contains-superproperty-1.js [sloppy]
+#          34  class-methods-private  e.g. test/language/statements/class/elements/private-getter-access-on-inner-function.js [sloppy]
+#          12  class-static-methods-private  e.g. test/language/statements/class/elements/private-static-getter-visible-to-direct-eval.js [sloppy]
+#          12  computed-property-names  e.g. test/language/statements/class/elements/computed-name-toprimitive-symbol.js [sloppy]
+#          12  new.target  e.g. test/language/statements/class/elements/arrow-body-direct-eval-err-contains-newtarget.js [sloppy]
+#           8  Symbol.toPrimitive  e.g. test/language/statements/class/elements/computed-name-toprimitive-symbol.js [sloppy]
+#           4  BigInt  e.g. test/language/statements/class/subclass-builtins/subclass-BigInt64Array.js [sloppy]
+#           4  TypedArray  e.g. test/language/statements/class/subclass-builtins/subclass-BigInt64Array.js [sloppy]
+#           4  class-static-block  e.g. test/language/statements/class/static-init-await-binding-invalid.js [sloppy]
+#           4  class-static-fields-private  e.g. test/language/statements/class/elements/private-static-field-visible-to-direct-eval.js [sloppy]
+#           4  class-static-fields-public  e.g. test/language/statements/class/elements/static-field-anonymous-function-name.js [sloppy]
+#           2  Promise.any  e.g. test/built-ins/Promise/any/resolve-from-same-thenable.js [sloppy]
+#           2  Reflect  e.g. test/built-ins/Promise/proto-from-ctor-realm.js [sloppy]
+#           2  SharedArrayBuffer  e.g. test/language/statements/class/subclass-builtins/subclass-SharedArrayBuffer.js [sloppy]
+#           2  Symbol  e.g. test/language/statements/class/elements/computed-name-toprimitive-symbol.js [sloppy]
+#           2  arrow-function  e.g. test/built-ins/Promise/any/resolve-from-same-thenable.js [sloppy]
+#           2  async-functions  e.g. test/language/statements/class/elements/syntax/early-errors/private-async-method-cannot-escape-token.js [sloppy]
+#           2  async-iteration  e.g. test/language/statements/class/elements/syntax/early-errors/private-async-generator-cannot-escape-token.js [sloppy]
+#           2  cross-realm  e.g. test/built-ins/Promise/proto-from-ctor-realm.js [sloppy]
+#           2  generators  e.g. test/language/statements/class/elements/syntax/early-errors/private-generator-cannot-escape-token.js [sloppy]
+# test262 5044 files, 9962 variants: pass 9669, fail 228, unsupported 12, exhausted 0, skipped 53
+coverage partial a named selection rather than the whole test tree: test/language/statements/class test/built-ins/Promise

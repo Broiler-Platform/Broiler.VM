@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   17
 // Annotated:        17/17
-// Exempt:           9
+// Exempt:           11
 // Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         4/4
+// Criteria:         5/5
 // Resource impact:  1/10 max
 // Unverified:       17
 //
@@ -127,14 +127,41 @@ public static class JsNativeValues
 /// reads an entry this array says false for, rather than substituting a value for it.
 /// </param>
 /// <param name="MaximumOperandStack">The deepest operand stack any unit declares.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E64DAB
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DD805A
 // Broiler-Human:        PENDING
 public sealed record JsNativeProgramImage(
     byte[] Code,
     JsFunctionRow[] Functions,
     double[] ConstantValues,
     bool[] ConstantIsNumber,
-    uint MaximumOperandStack);
+    uint MaximumOperandStack)
+{
+    /// <summary>Which of the two native forms the image is to be emitted as.</summary>
+    /// <remarks>
+    /// <b>Both parties that build an image read it off the same fact - the artifact's manifest -
+    /// and neither may choose it.</b> The lowering knows the manifest it compiled under and the
+    /// verifier knows the manifest the artifact declares; an image whose tier came from anywhere
+    /// else would be a re-emission of a different form from the one the payload was written in,
+    /// and equality would fail for a correct artifact. It defaults to the numeric form, so every
+    /// image built before the baseline form existed means what it meant.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6AB00A
+    // Broiler-Falsified-If: the compiler and the verifier build images of one artifact with different tiers
+    // Broiler-Human:        PENDING
+    public JsNativeTier Tier { get; init; }
+
+    /// <summary>Every exception region of the artifact, in the order the artifact carries them.</summary>
+    /// <remarks>
+    /// <b>The baseline form reads them for one thing: where a landing can put the program
+    /// counter.</b> A handler that catches answers the region's handler offset, and the emitted
+    /// unit has to be able to dispatch to it, so each handler offset is a landing the unit's
+    /// compare tree names. The numeric form admits no region and reads none, which is why the
+    /// default is empty rather than absent.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6CF892
+    // Broiler-Human:        PENDING
+    public JsExceptionRegionRow[] Regions { get; init; } = [];
+}
 
 /// <summary>
 /// An encoder of machine code for one architecture, seen from the side that only wants the bytes.

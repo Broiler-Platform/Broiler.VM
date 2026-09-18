@@ -38,7 +38,7 @@ assembly, and the component's graph is closed over its own five; B6 would need a
 referencing a test assembly, which cannot be built without breaking the graph. Both have
 witnessed project-file twins - A1 and A2 for B3, A4 for B6.
 
-**The two group X witnesses are the one place in this repository where the page protection that
+**Rule X1's two witnesses are the one place in this repository where the page protection that
 admits a write and an execute at once is written down**, and they are stored rather than
 constructed because a negative control nobody has watched failing is a control in name only.
 `X1-a-page-armed-read-write-and-execute.cs.witness` stands in for the arming path's Windows half
@@ -48,3 +48,14 @@ argument, which is what an author writes when the named constants do not have th
 wanted. `X1-a-second-place-that-maps-memory.cs.witness` sits at a path outside the arming path
 and names both platforms' spellings, because an author who copies one platform's imports copies
 the other's on the next machine. Neither file is compiled by anything.
+
+**Rule X2's witness is the one source witness that is compiled**, and it is compiled in memory by
+the rule's own test rather than by any project. X2 reads compiled metadata, which is why its
+neighbours in group B use types compiled into the test assembly; X2 cannot, because its witness has
+to be `JsBaselineFrame` at that type's full name, and a second type of that name in the test
+assembly would be one every other reader of that assembly could mistake for the real frame.
+`X2-a-baseline-frame-field-holding-a-reference.cs.witness` carries the defect as a field that is a
+reference and as a value type that holds one, because "is, or contains" is two questions.
+`X3-an-unmanaged-entry-outside-the-handler-file.cs.witness` sits at a path outside the handler file
+and is a native callback that both carries `[UnmanagedCallersOnly]` and parks an activation in the
+thread slot, because an author who adds the entry adds the slot access in the same edit.

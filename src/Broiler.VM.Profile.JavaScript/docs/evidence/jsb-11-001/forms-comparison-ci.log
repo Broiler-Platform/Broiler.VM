@@ -1,0 +1,23 @@
+# reference artifacts/ci-test262/bytecode/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 5000 ms
+#   total|53469|94545|70834|13315|1990|60|8346
+# candidate artifacts/ci-test262/machinecode/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-sysv); fuel 100000000; wall 5000 ms
+#   total|53469|94545|70834|13315|1990|60|8346
+# reading: realistic - class (c) is admitted, because a run was taken below 60000 ms; class (b) is admitted
+# 94545 variants in both reports, 10 differ; 0 variant(s) present in only one report were ignored
+
+## (c) a wall-clock exhaustion under a realistic allowance: 10 - admitted
+  test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [strict]: Exhausted/NestedLoadFanOut -> Exhausted/WallClock  the allowance was spent running the test
+  test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [sloppy]: Exhausted/WallClock -> Exhausted/Fuel  the allowance was spent running the test
+  test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [strict]: Exhausted/WallClock -> Exhausted/Fuel  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict]: Exhausted/WallClock -> Exhausted/Fuel  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-3-of-8.js [sloppy]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-5-of-8.js [sloppy]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-6-of-8.js [sloppy]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-6-of-8.js [strict]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+  test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict]: Exhausted/Fuel -> Exhausted/WallClock  the allowance was spent running the test
+
+# every difference is in an admitted class
+exit 0

@@ -96,10 +96,20 @@ internal sealed class Test262Manifest
     /// Whether the suite's harness files are loaded into the realm before the test.
     /// </summary>
     /// <remarks>
-    /// <b>The wide manifest loads them and the slice cannot, and that is a property of the manifest
-    /// rather than a choice this runner makes.</b> <c>broiler.javascript.slice</c> admits no call,
-    /// so <c>assert.js</c> is refused by its own front end before it could be installed; loading it
-    /// anyway would report the suite's own harness as an engine failure once per test.
+    /// <para>
+    /// <b>The wide manifest loads them and the slice and numeric manifests cannot, and that is a
+    /// property of the manifest rather than a choice this runner makes.</b>
+    /// <c>broiler.javascript.slice</c> admits no call and <c>broiler.javascript.numeric</c> admits
+    /// no object or string, so <c>assert.js</c> is refused by their front ends before it could be
+    /// installed; loading it anyway would report the suite's own harness as an engine failure once
+    /// per test.
+    /// </para>
+    /// <para>
+    /// <b>The output form does not move it.</b> A native run under the wide manifest compiles the
+    /// harness files into the same whole-artifact form as the test, so the prelude is in the realm
+    /// in both forms and the two runs answer the same question. A native wide run that silently
+    /// skipped the prelude would report every <c>assert</c> as a pass it never checked.
+    /// </para>
     /// </remarks>
     internal bool LoadsHarness { get; }
 
@@ -181,11 +191,20 @@ internal sealed class Test262Manifest
     /// <summary>Reads a manifest and an output form, refusing a pairing the compiler would refuse.</summary>
     /// <remarks>
     /// <para>
-    /// <b>THE NATIVE FORM IMPLIES THE NUMERIC MANIFEST, and naming another is refused here rather
-    /// than per variant.</b> The compiler admits the native form only under
-    /// <c>broiler.javascript.numeric</c>, because a form other than bytecode has to be a
-    /// whole-artifact form. A run that asked for machine code from the wide surface would score
-    /// every variant as the same refusal and report it as a family of the suite, which it is not.
+    /// <b>THE NATIVE FORM IS ADMITTED UNDER THE WIDE AND NUMERIC MANIFESTS, and a native run naming
+    /// neither defaults to the wide one.</b> The compiler emits every unit of a wide artifact in
+    /// the baseline form and every unit of a numeric artifact in the computing form, and both are
+    /// whole-artifact forms. The wide manifest is the default for the reason <see cref="Default"/>
+    /// gives: a native run that defaulted to the narrow surface would report an
+    /// <c>unsupported</c> column about the default rather than about the form. The slice manifest
+    /// has no native form, and naming it is refused here rather than per variant, because a run
+    /// that scored every variant as the same refusal would report it as a family of the suite,
+    /// which it is not.
+    /// </para>
+    /// <para>
+    /// <b>The form and the backend reach the manifest on every branch that admits them.</b> A
+    /// branch that built its manifest without them would take a bytecode run and label it with the
+    /// form the command line named, which is the one mislabelling a form comparison cannot see.
     /// </para>
     /// <para>
     /// <b>The backend defaults to the one this process can arm</b> - System V x64 or Windows x64 -
@@ -221,15 +240,16 @@ internal sealed class Test262Manifest
             return false;
         }
 
-        var name = named ?? (native ? JavaScriptProfile.NumericManifest.ToString() : Default);
+        var name = named ?? Default;
 
         if (native)
         {
-            if (!string.Equals(name, JavaScriptProfile.NumericManifest.ToString(), StringComparison.Ordinal))
+            if (!string.Equals(name, JavaScriptProfile.WideManifest.ToString(), StringComparison.Ordinal) &&
+                !string.Equals(name, JavaScriptProfile.NumericManifest.ToString(), StringComparison.Ordinal))
             {
                 failure =
-                    $"the native output form is admitted only by {JavaScriptProfile.NumericManifest}, " +
-                    $"and this run names `{name}`";
+                    $"the native output form is admitted by {JavaScriptProfile.WideManifest} and " +
+                    $"{JavaScriptProfile.NumericManifest}, and this run names `{name}`";
 
                 return false;
             }
@@ -303,7 +323,9 @@ internal sealed class Test262Manifest
                 JsFormat.FormatVersion,
                 loadsHarness: true,
                 admitted.ToImmutable(),
-                declinedInOrder.ToImmutable());
+                declinedInOrder.ToImmutable(),
+                chosenForm,
+                chosenBackend);
 
             failure = string.Empty;
             return true;

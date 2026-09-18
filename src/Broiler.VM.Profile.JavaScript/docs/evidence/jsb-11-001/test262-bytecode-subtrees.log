@@ -1,0 +1,119 @@
+# test262 tc39/test262 at ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+# 56560 files, content 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93 - the checkout answers to test262.pin
+# manifest broiler.javascript.wide; form bytecode; declined (none)
+# 32 shards across 8 processes, 100000000 fuel and 5000 ms per variant
+# retaining every shard's transcript under artifacts\g4-int
+--- shard 3 of 32 exited 1; artifacts\g4-int\logs\shard-0003.log
+--- shard 7 of 32 exited 1; artifacts\g4-int\logs\shard-0007.log
+--- shard 0 of 32 exited 1; artifacts\g4-int\logs\shard-0000.log
+--- shard 6 of 32 exited 1; artifacts\g4-int\logs\shard-0006.log
+--- shard 1 of 32 exited 1; artifacts\g4-int\logs\shard-0001.log
+--- shard 4 of 32 exited 1; artifacts\g4-int\logs\shard-0004.log
+--- shard 5 of 32 exited 1; artifacts\g4-int\logs\shard-0005.log
+--- shard 2 of 32 exited 1; artifacts\g4-int\logs\shard-0002.log
+--- shard 8 of 32 exited 1; artifacts\g4-int\logs\shard-0008.log
+--- shard 10 of 32 exited 1; artifacts\g4-int\logs\shard-0010.log
+--- shard 9 of 32 exited 1; artifacts\g4-int\logs\shard-0009.log
+--- shard 12 of 32 exited 1; artifacts\g4-int\logs\shard-0012.log
+--- shard 15 of 32 exited 1; artifacts\g4-int\logs\shard-0015.log
+--- shard 11 of 32 exited 1; artifacts\g4-int\logs\shard-0011.log
+--- shard 13 of 32 exited 1; artifacts\g4-int\logs\shard-0013.log
+--- shard 18 of 32 exited 1; artifacts\g4-int\logs\shard-0018.log
+--- shard 16 of 32 exited 1; artifacts\g4-int\logs\shard-0016.log
+--- shard 17 of 32 exited 1; artifacts\g4-int\logs\shard-0017.log
+--- shard 14 of 32 exited 1; artifacts\g4-int\logs\shard-0014.log
+--- shard 19 of 32 exited 1; artifacts\g4-int\logs\shard-0019.log
+--- shard 21 of 32 exited 1; artifacts\g4-int\logs\shard-0021.log
+--- shard 23 of 32 exited 1; artifacts\g4-int\logs\shard-0023.log
+--- shard 20 of 32 exited 1; artifacts\g4-int\logs\shard-0020.log
+--- shard 22 of 32 exited 1; artifacts\g4-int\logs\shard-0022.log
+--- shard 27 of 32 exited 1; artifacts\g4-int\logs\shard-0027.log
+--- shard 25 of 32 exited 1; artifacts\g4-int\logs\shard-0025.log
+--- shard 31 of 32 exited 1; artifacts\g4-int\logs\shard-0031.log
+--- shard 29 of 32 exited 1; artifacts\g4-int\logs\shard-0029.log
+--- shard 24 of 32 exited 1; artifacts\g4-int\logs\shard-0024.log
+--- shard 26 of 32 exited 1; artifacts\g4-int\logs\shard-0026.log
+--- shard 30 of 32 exited 1; artifacts\g4-int\logs\shard-0030.log
+--- shard 28 of 32 exited 1; artifacts\g4-int\logs\shard-0028.log
+json D:\Broiler.VM\artifacts\g4-int\test262.json
+broiler-js-conformance: merged 32 test262 shard report(s)
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.modules, broiler.javascript.native; declined (none)
+partition FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard; merged from 32 shards
+selection candidates=9762 selected=9762 merged=9762
+# unsupported families: 1 distinct, 52 variants
+#        52  a BigInt literal  e.g. test/built-ins/Array/fromAsync/asyncitems-arraylike-length-accessor-throws.js [sloppy]
+# exhausted dimensions: 1 distinct, 16 variants
+#        16  WallClock  e.g. test/built-ins/Array/prototype/lastIndexOf/length-near-integer-limit.js [sloppy]
+# exhausted test/built-ins/Array/prototype/lastIndexOf/length-near-integer-limit.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/lastIndexOf/length-near-integer-limit.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/reduceRight/length-near-integer-limit.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/reduceRight/length-near-integer-limit.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/splice/throws-if-integer-limit-exceeded.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/splice/throws-if-integer-limit-exceeded.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/toReversed/length-casted-to-zero.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/toReversed/length-casted-to-zero.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/toSorted/length-casted-to-zero.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/toSorted/length-casted-to-zero.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/toSpliced/length-casted-to-zero.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/toSpliced/length-casted-to-zero.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/unshift/length-near-integer-limit.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/unshift/length-near-integer-limit.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/unshift/throws-if-integer-limit-exceeded.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/unshift/throws-if-integer-limit-exceeded.js [strict] on WallClock
+# failure classification over 1093 failing variant(s)
+#   by kind: 7 distinct, 1093 variants
+#         600  an uncaught Test262Error  e.g. test/built-ins/Array/from/iter-cstm-ctor-err.js [sloppy]
+#         148  an asynchronous test reported its own failure  e.g. test/built-ins/Array/fromAsync/async-iterable-async-mapped-awaits-once.js [sloppy]
+#         144  an uncaught ReferenceError  e.g. test/built-ins/Array/prototype/at/typed-array-resizable-buffer.js [sloppy]
+#          74  an uncaught EvalError  e.g. test/language/expressions/object/scope-gen-meth-param-elem-var-close.js [sloppy]
+#          66  an uncaught TypeError  e.g. test/built-ins/Array/from/Array.from_forwards-length-for-array-likes.js [sloppy]
+#          58  a declared parse-phase error was raised at run time instead  e.g. test/language/expressions/object/getter-body-strict-inside.js [sloppy]
+#           3  an uncaught RangeError  e.g. test/language/statements/try/tco-catch-finally.js [strict]
+#   by area: 12 distinct, 1093 variants
+#         583  test/built-ins/Array/prototype  e.g. test/built-ins/Array/prototype/at/coerced-index-resize.js [sloppy]
+#         224  test/language/statements/class  e.g. test/language/statements/class/accessor-name-inst/literal-numeric-non-canonical.js [sloppy]
+#         156  test/built-ins/Array/fromAsync  e.g. test/built-ins/Array/fromAsync/async-iterable-async-mapped-awaits-once.js [sloppy]
+#          60  test/language/expressions/object  e.g. test/language/expressions/object/computed-property-name-topropertykey-before-value-evaluation.js [sloppy]
+#          18  test/built-ins/Array/from  e.g. test/built-ins/Array/from/Array.from_forwards-length-for-array-likes.js [sloppy]
+#          16  test/built-ins/Array/of  e.g. test/built-ins/Array/of/construct-this-with-the-number-of-arguments.js [sloppy]
+#          13  test/language/statements/try  e.g. test/language/statements/try/catch-parameter-boundnames-restriction-arguments-eval-throws.js [strict]
+#           7  test/language/statements/generators  e.g. test/language/statements/generators/eval-var-scope-syntax-err.js [sloppy]
+#           6  test/built-ins/Array  e.g. test/built-ins/Array/proto-from-ctor-realm-one.js [sloppy]
+#           6  test/built-ins/Array/length  e.g. test/built-ins/Array/length/define-own-prop-length-coercion-order-set.js [sloppy]
+#           2  test/built-ins/Promise  e.g. test/built-ins/Promise/proto-from-ctor-realm.js [sloppy]
+#           2  test/built-ins/Promise/any  e.g. test/built-ins/Promise/any/resolve-from-same-thenable.js [sloppy]
+#   by declared feature (837 of 1093 failing variants declare one; a variant with two is in two rows): 42 distinct, 1315 taggings over 837 variants
+#         198  class  e.g. test/language/expressions/object/fn-name-class.js [sloppy]
+#         156  Array.fromAsync  e.g. test/built-ins/Array/fromAsync/async-iterable-async-mapped-awaits-once.js [sloppy]
+#         152  resizable-arraybuffer  e.g. test/built-ins/Array/prototype/at/coerced-index-resize.js [sloppy]
+#         120  Symbol.species  e.g. test/built-ins/Array/prototype/concat/create-proto-from-ctor-realm-array.js [sloppy]
+#         114  class-fields-public  e.g. test/language/statements/class/elements/arrow-body-derived-cls-direct-eval-contains-superproperty-1.js [sloppy]
+#          80  class-fields-private  e.g. test/language/statements/class/elements/arrow-body-private-derived-cls-direct-eval-contains-superproperty-1.js [sloppy]
+#          61  Symbol.isConcatSpreadable  e.g. test/built-ins/Array/prototype/concat/Array.prototype.concat_array-like-length-to-string-throws.js [sloppy]
+#          49  Symbol  e.g. test/built-ins/Array/length/define-own-prop-length-coercion-order-set.js [sloppy]
+#          38  Proxy  e.g. test/built-ins/Array/of/return-abrupt-from-data-property-using-proxy.js [sloppy]
+#          38  exponentiation  e.g. test/built-ins/Array/prototype/pop/clamps-to-integer-limit.js [sloppy]
+#          34  class-methods-private  e.g. test/language/statements/class/elements/private-getter-access-on-inner-function.js [sloppy]
+#          34  cross-realm  e.g. test/built-ins/Array/from/proto-from-ctor-realm.js [sloppy]
+#          22  TypedArray  e.g. test/built-ins/Array/prototype/every/callbackfn-resize-arraybuffer.js [sloppy]
+#          18  generators  e.g. test/language/expressions/object/fn-name-gen.js [sloppy]
+#          14  Array.prototype.flatMap  e.g. test/built-ins/Array/prototype/flatMap/proxy-access-count.js [sloppy]
+#          12  Reflect  e.g. test/built-ins/Array/length/define-own-prop-length-coercion-order-set.js [sloppy]
+#          12  Reflect.construct  e.g. test/built-ins/Array/fromAsync/not-a-constructor.js [sloppy]
+#          12  Symbol.iterator  e.g. test/built-ins/Array/from/iter-cstm-ctor-err.js [sloppy]
+#          12  class-static-methods-private  e.g. test/language/statements/class/elements/private-static-getter-visible-to-direct-eval.js [sloppy]
+#          12  computed-property-names  e.g. test/language/statements/class/elements/computed-name-toprimitive-symbol.js [sloppy]
+#          12  new.target  e.g. test/language/statements/class/elements/arrow-body-direct-eval-err-contains-newtarget.js [sloppy]
+#          10  Array.prototype.includes  e.g. test/built-ins/Array/prototype/includes/coerced-searchelement-fromindex-resize.js [sloppy]
+#          10  Symbol.toPrimitive  e.g. test/built-ins/Array/length/define-own-prop-length-coercion-order-set.js [sloppy]
+#           9  let  e.g. test/language/expressions/object/literal-property-name-bigint.js [sloppy]
+#           9  object-spread  e.g. test/language/expressions/object/method-definition/async-gen-yield-identifier-spread-non-strict.js [sloppy]
+#          17  further row(s) not printed here; every one of them is in the report
+# test262 9762 files, 19227 variants: pass 18013, fail 1093, unsupported 52, exhausted 16, skipped 53
+coverage partial a named selection rather than the whole test tree: test/language/statements/class test/language/statements/generators test/language/statements/try test/language/expressions/object test/built-ins/Array test/built-ins/Promise
+# the whole-run report is artifacts\g4-int\test262.report
+# the machine-readable report is artifacts\g4-int\test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language/statements/class test/language/statements/generators test/language/statements/try test/language/expressions/object test/built-ins/Array test/built-ins/Promise

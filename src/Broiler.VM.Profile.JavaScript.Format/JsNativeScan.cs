@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           13
-// Human-reviewed:   0/13
+// Relevant units:   16
+// Annotated:        16/16
+// Exempt:           15
+// Human-reviewed:   0/16
 // IP risk:          Low
-// Security risk:    High
-// Criteria:         2/2
+// Security risk:    Critical
+// Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       13
+// Unverified:       16
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -35,7 +35,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// that names one. Every other member is reached by bytes somebody could hand this build, and the
 /// composition lane beside the backends has a row for each.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2D2D92
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=294341
 // Broiler-Human:        PENDING
 public enum JsNativeScanOutcome
 {
@@ -80,6 +80,15 @@ public enum JsNativeScanOutcome
 
     /// <summary>The bytes between one unit's last instruction and the next entry are not padding.</summary>
     PaddingNotAlignment = 12,
+
+    /// <summary>
+    /// A baseline unit does not open with exactly the prologue and close with exactly the epilogue,
+    /// or carries an instruction of either anywhere else.
+    /// </summary>
+    FrameSequenceMalformed = 13,
+
+    /// <summary>A baseline branch lands inside the prologue, or on an epilogue instruction after its first.</summary>
+    BranchIntoFrameSequence = 14,
 }
 
 /// <summary>What a scan answered, and about which byte.</summary>
@@ -174,7 +183,7 @@ public static class JsNativeScan
     /// never wrote, and no framing check has ever been able to see it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E9805F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=885F63
     // Broiler-Falsified-If: a byte sequence no backend of this build can emit is accepted, or a sequence one of them emits is refused
     // Broiler-Human:        PENDING
     public static JsNativeScanResult Scan(
@@ -182,9 +191,49 @@ public static class JsNativeScan
         byte[] code,
         JsNativeSymbolRow[] symbols,
         uint alignment,
+        System.Collections.Generic.ICollection<string>? instantiated = null) =>
+        Scan(architecture, JsNativeTier.Numeric, code, symbols, alignment, instantiated);
+
+    /// <summary>
+    /// Scans an emitted payload against the template table for its architecture and native tier.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE NUMERIC TIER IS THE SCAN ABOVE, CLAUSE FOR CLAUSE.</b> Every clause the overload
+    /// without a tier states is applied here to whichever table the tier selects: the units tile the
+    /// blob, every byte belongs to an admitted instantiation, a unit ends in a return, padding
+    /// follows a return only, and every branch lands on an instruction start of its own unit.
+    /// </para>
+    /// <para>
+    /// <b>THE x86-64 BASELINE TABLES ADD THREE FRAME-SHAPE CLAUSES, AND THEY ARE WHAT MAKE THE ONE
+    /// INDIRECT CALL SAFE.</b> A baseline unit's first six instantiations are exactly the prologue
+    /// in order and its last four exactly the epilogue in order, neither sequence's instructions
+    /// occur anywhere else, and no branch lands inside the prologue or on an epilogue instruction
+    /// after its first. RBX is then written once, at entry, by the load of the table base out of the
+    /// frame and restored once, at the single return; nothing in the table writes memory; so every
+    /// <c>call qword [rbx+disp32]</c> a scan-accepted unit makes reads the table the runtime stored
+    /// in the frame, at a slot the field kind holds to a defined opcode.
+    /// </para>
+    /// <para>
+    /// <b>WHAT THE CLAUSES CANNOT SAY IS WHICH HANDLER BELONGS AT WHICH PROGRAM COUNTER.</b> A unit
+    /// that calls the handler for one opcode where the bytecode holds another is closed and
+    /// well-shaped. The handler closes that gap at run time: it refuses a program counter the
+    /// managed side did not compute and an opcode byte that is not its own, and the unit answers a
+    /// defect rather than any JavaScript value.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=DCCED6
+    // Broiler-Falsified-If: a baseline x86-64 payload is accepted whose unit writes RBX or RSP outside one prologue and one epilogue, branches into either sequence, or makes an indirect call other than through the handler table at a defined opcode's slot
+    // Broiler-Human:        PENDING
+    public static JsNativeScanResult Scan(
+        JsNativeArchitecture architecture,
+        JsNativeTier tier,
+        byte[] code,
+        JsNativeSymbolRow[] symbols,
+        uint alignment,
         System.Collections.Generic.ICollection<string>? instantiated = null)
     {
-        var templates = JsNativeTemplates.For(architecture);
+        var templates = JsNativeTemplates.For(architecture, tier);
 
         if (templates.Length == 0)
         {
@@ -211,6 +260,12 @@ public static class JsNativeScan
         var starts = new System.Collections.Generic.HashSet<uint>();
         var branches = new System.Collections.Generic.List<Branch>();
 
+        // THE FRAME-SHAPE CLAUSES NEED THE SEQUENCE OF TEMPLATES EACH UNIT INSTANTIATED, and the
+        // offsets no branch may land on; neither is collected for a table the clauses do not apply to.
+        var framed = JsNativeTemplates.IsX64Baseline(templates);
+        var sequence = framed ? new System.Collections.Generic.List<(uint At, int Index)>() : null;
+        var frames = framed ? new System.Collections.Generic.HashSet<uint>() : null;
+
         for (var unit = 0; unit < symbols.Length; unit++)
         {
             var start = symbols[unit].Offset;
@@ -226,17 +281,167 @@ public static class JsNativeScan
                     ", which is not a range inside the emitted blob that later units do not overlap");
             }
 
+            sequence?.Clear();
+
             var decoded = Decode(
                 architecture, templates, code, start, limit, alignment, unit, starts, branches,
-                instantiated);
+                instantiated, sequence);
 
             if (!decoded.Accepted)
             {
                 return decoded;
             }
+
+            if (sequence is not null)
+            {
+                var shaped = FrameShape(sequence, templates.Length, start, unit, frames!);
+
+                if (!shaped.Accepted)
+                {
+                    return shaped;
+                }
+            }
         }
 
-        return Branches(code, symbols, starts, branches);
+        var closed = Branches(code, symbols, starts, branches);
+
+        return !closed.Accepted || frames is null ? closed : FrameTargets(branches, frames);
+    }
+
+    /// <summary>
+    /// Holds one baseline unit to one prologue at its start and one epilogue at its end, and to
+    /// neither sequence's instructions anywhere else.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>CLAUSE S1: THE FIRST SIX INSTANTIATIONS ARE THE PROLOGUE, IN ORDER.</b> Two pushes, the
+    /// reservation, the frame into R14, the table base into RBX and the entry program counter into
+    /// EAX. Nothing runs before the base is loaded, so no call can be made through an RBX the unit
+    /// did not set.
+    /// </para>
+    /// <para>
+    /// <b>CLAUSE S2: THE LAST FOUR ARE THE EPILOGUE, IN ORDER, AND NEITHER SEQUENCE'S TEMPLATES OCCUR
+    /// ANYWHERE ELSE.</b> So RBX, R14 and RSP are written in exactly two places, each once, and the
+    /// unit has exactly one return - which restores all three to what the caller left.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=50C955
+    // Broiler-Falsified-If: a baseline unit is accepted whose instantiations do not open with exactly the prologue, close with exactly the epilogue, or carry a prologue or epilogue template elsewhere
+    // Broiler-Human:        PENDING
+    private static JsNativeScanResult FrameShape(
+        System.Collections.Generic.List<(uint At, int Index)> sequence,
+        int tableLength,
+        uint start,
+        int unit,
+        System.Collections.Generic.HashSet<uint> frames)
+    {
+        const int Prologue = JsNativeTemplates.X64BaselinePrologue;
+        const int Epilogue = JsNativeTemplates.X64BaselineEpilogue;
+
+        var epilogue = tableLength - Epilogue;
+        var count = sequence.Count;
+
+        if (count < Prologue + Epilogue)
+        {
+            return new JsNativeScanResult(
+                JsNativeScanOutcome.FrameSequenceMalformed,
+                start,
+                unit,
+                "code unit " + unit + " has " + count + " instructions, which is fewer than one " +
+                "prologue and one epilogue");
+        }
+
+        for (var position = 0; position < count; position++)
+        {
+            var (at, index) = sequence[position];
+            var tail = position - (count - Epilogue);
+
+            if (position < Prologue)
+            {
+                if (index != position)
+                {
+                    return new JsNativeScanResult(
+                        JsNativeScanOutcome.FrameSequenceMalformed,
+                        at,
+                        unit,
+                        "instruction " + position + " of code unit " + unit + " is not the " +
+                        "prologue's instruction " + position + ", so the unit does not open with " +
+                        "the one sequence that saves what it writes and loads the handler table");
+                }
+
+                frames.Add(at);
+                continue;
+            }
+
+            if (tail >= 0)
+            {
+                if (index != epilogue + tail)
+                {
+                    return new JsNativeScanResult(
+                        JsNativeScanOutcome.FrameSequenceMalformed,
+                        at,
+                        unit,
+                        "instruction " + position + " of code unit " + unit + " is not the " +
+                        "epilogue's instruction " + tail + ", so the unit does not close with the " +
+                        "one sequence that restores what its prologue saved");
+                }
+
+                // THE EPILOGUE'S FIRST INSTRUCTION IS A LANDING AND THE REST ARE NOT. Every exit
+                // branches to the stack adjustment; a branch past it would pop what was not pushed.
+                if (tail > 0)
+                {
+                    frames.Add(at);
+                }
+
+                continue;
+            }
+
+            if (index < Prologue || index >= epilogue)
+            {
+                return new JsNativeScanResult(
+                    JsNativeScanOutcome.FrameSequenceMalformed,
+                    at,
+                    unit,
+                    "instruction " + position + " of code unit " + unit + " is a prologue or " +
+                    "epilogue instruction outside the unit's one prologue and one epilogue, so the " +
+                    "stack pointer or a saved register is written somewhere the scan cannot pair");
+            }
+        }
+
+        return Ok;
+    }
+
+    /// <summary>Refuses a baseline branch into a unit's prologue or past the start of its epilogue.</summary>
+    /// <remarks>
+    /// <b>CLAUSE S3.</b> The prologue runs once, at entry, and a branch back into it would load RBX
+    /// and reserve stack a second time; an epilogue entered after its stack adjustment would pop
+    /// registers the unit never pushed and return with the stack pointer where the caller did not
+    /// leave it. The first instruction of the epilogue is where every exit is meant to land.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=6A1345
+    // Broiler-Falsified-If: a baseline payload is accepted with a branch whose target is a prologue instruction, a pop or a return
+    // Broiler-Human:        PENDING
+    private static JsNativeScanResult FrameTargets(
+        System.Collections.Generic.List<Branch> branches,
+        System.Collections.Generic.HashSet<uint> frames)
+    {
+        foreach (var branch in branches)
+        {
+            if (branch.ToUnitEntry || !frames.Contains((uint)branch.Target))
+            {
+                continue;
+            }
+
+            return new JsNativeScanResult(
+                JsNativeScanOutcome.BranchIntoFrameSequence,
+                branch.Site,
+                branch.Unit,
+                "the `" + branch.Text + "` at " + branch.Site + " targets " + branch.Target +
+                ", which is inside code unit " + branch.Unit + "'s prologue or past the first " +
+                "instruction of its epilogue");
+        }
+
+        return Ok;
     }
 
     /// <summary>One branch site: where it is, where it goes, and which unit it belongs to.</summary>
@@ -254,7 +459,7 @@ public static class JsNativeScan
     /// the middle of a unit, where the encoder never writes one and where a decoder that met one
     /// would be re-synchronising against bytes nobody emitted.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DBDB40
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=ACBBC0
     // Broiler-Human:        PENDING
     private static JsNativeScanResult Decode(
         JsNativeArchitecture architecture,
@@ -266,7 +471,8 @@ public static class JsNativeScan
         int unit,
         System.Collections.Generic.HashSet<uint> starts,
         System.Collections.Generic.List<Branch> branches,
-        System.Collections.Generic.ICollection<string>? instantiated)
+        System.Collections.Generic.ICollection<string>? instantiated,
+        System.Collections.Generic.List<(uint At, int Index)>? sequence)
     {
         var at = start;
         var padding = architecture != JsNativeArchitecture.Arm64;
@@ -288,6 +494,7 @@ public static class JsNativeScan
 
             var template = matched.Template!;
             instantiated?.Add(template.Text);
+            sequence?.Add((at, matched.Index));
             starts.Add(at);
             lastWasReturn = template.IsReturn;
 
@@ -323,7 +530,7 @@ public static class JsNativeScan
         // refused above unless it is non-empty, so the loop above ran at least once, and its first
         // pass cannot have been padding - padding is recognised only after a return. So the flag
         // below is the answer for an empty unit as well as for one that ends in the wrong
-        // instruction, and there is no fourteenth outcome that nothing can produce.
+        // instruction, and there is no outcome of its own that nothing can produce.
         if (!lastWasReturn)
         {
             return new JsNativeScanResult(
@@ -378,20 +585,23 @@ public static class JsNativeScan
     /// spell and its backends never ask for - a load from four gigabytes past the frame, say. The
     /// first is a forgery or a truncation; the second is the one a wrong producer would write.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=06D2FF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B692D2
     // Broiler-Human:        PENDING
-    private static (JsNativeScanResult Result, JsNativeTemplate? Template) Match(
+    private static (JsNativeScanResult Result, JsNativeTemplate? Template, int Index) Match(
         JsNativeTemplate[] templates, byte[] code, uint at, uint limit, int unit)
     {
         JsNativeTemplate? shaped = null;
         JsNativeTemplate? accepted = null;
+        var acceptedIndex = -1;
         var shapedCrossed = false;
         var offending = JsNativeFieldKind.FrameField;
         var offendingValue = 0L;
         var matches = 0;
 
-        foreach (var template in templates)
+        for (var candidate = 0; candidate < templates.Length; candidate++)
         {
+            var template = templates[candidate];
+
             if (!Shaped(template, code, at, limit, out var crossed))
             {
                 continue;
@@ -436,6 +646,7 @@ public static class JsNativeScan
             }
 
             accepted = template;
+            acceptedIndex = candidate;
             matches++;
         }
 
@@ -448,12 +659,13 @@ public static class JsNativeScan
                     unit,
                     "the bytes at " + at + " match more than one template, so the byte belongs to " +
                     "two instantiations rather than to exactly one"),
-                null);
+                null,
+                -1);
         }
 
         if (accepted is not null)
         {
-            return (Ok, accepted);
+            return (Ok, accepted, acceptedIndex);
         }
 
         if (shapedCrossed && shaped is not null)
@@ -465,7 +677,8 @@ public static class JsNativeScan
                     unit,
                     "the `" + shaped.Text + "` at " + at + " runs past the end of code unit " +
                     unit + ", so its last bytes belong to the unit that follows it"),
-                null);
+                null,
+                -1);
         }
 
         if (shaped is not null)
@@ -478,7 +691,8 @@ public static class JsNativeScan
                     "the `" + shaped.Text + "` at " + at + " carries " + offendingValue +
                     " where its " + offending + " field admits no such value, so it is an " +
                     "instruction this build can spell and no backend of it asks for"),
-                null);
+                null,
+                -1);
         }
 
         return (
@@ -488,7 +702,8 @@ public static class JsNativeScan
                 unit,
                 "the bytes at " + at + " match no instruction template this build's backends emit " +
                 "for this architecture"),
-            null);
+            null,
+            -1);
     }
 
     /// <summary>Whether a template's fixed bits match, and whether it would cross the unit's end.</summary>

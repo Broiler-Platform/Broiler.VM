@@ -92,7 +92,1124 @@ internal static class NativeTemplateScanChecks
         rows.Add(APayloadDeclaredForTheOtherConvention());
         rows.AddRange(Mutations());
         rows.AddRange(Verification());
+        rows.AddRange(Baseline());
         return rows;
+    }
+
+    // ---- the baseline form over the wide manifest ----------------------------------------------
+
+    /// <summary>
+    /// The wide programs the baseline rows compile, one family of instruction and landing each.
+    /// </summary>
+    /// <remarks>
+    /// <b>EACH ONE REACHES A KIND OF LANDING OR TAIL THE OTHERS DO NOT.</b> Objects, strings and
+    /// closures reach the plain fall-through tail; the class reaches <c>super</c> and private
+    /// names; try, catch and finally reach region handler landings and a break through a finally;
+    /// the generator reaches a landing per <c>yield</c> - more than a leaf of the compare tree
+    /// holds, so an unsigned split is emitted - and resumes by <c>return()</c> and <c>throw()</c>;
+    /// <c>yield*</c> reaches the delegating landing; the async programs reach <c>await</c> landings
+    /// and the asynchronous iteration instructions that carry code targets; the parameter program
+    /// reaches <c>EnterBody</c>; the module reaches an import; and the last reaches a switch, a
+    /// labelled continue and <c>with</c>. A program with <c>Library</c> set compiles as a two-module
+    /// graph whose main module imports <c>lib</c>.
+    /// </remarks>
+    private static readonly (string Name, string Source, string? Library)[] WidePrograms =
+    [
+        ("an object literal and a property read", "var o = { a: 1, b: { c: 2 } }; o.b.c + o.a;", null),
+        ("string concatenation", "var s = 'a'; for (var i = 0; i < 3; i++) { s = s + i; } s + '!';", null),
+        ("a closure counter", "function counter() { var n = 0; return function () { n = n + 1; return n; }; } var c = counter(); c(); c();", null),
+        ("a class with super and private members", "class A { #x = 1; get x() { return this.#x; } m() { return 2; } } class B extends A { #y = 3; constructor() { super(); } m() { return super.m() + this.#y + this.x; } } new B().m();", null),
+        ("try, catch and finally with a break through the finally", "var log = ''; for (var i = 0; i < 3; i++) { try { try { if (i === 1) { break; } throw new Error('e' + i); } catch (e) { log += e.message; } finally { log += 'f'; } } finally { log += 'g'; } } log;", null),
+        ("a generator resumed by return() and throw() past a leaf of the tree", "function* g() { try { yield 1; yield 2; yield 3; yield 4; yield 5; yield 6; yield 7; yield 8; yield 9; yield 10; } finally { yield 11; } } var a = g(); a.next(); a.return(5); var b = g(); b.next(); try { b.throw(new Error('x')); } catch (e) { } a.next().done;", null),
+        ("yield* over a generator and over an array", "function* inner() { yield 1; yield 2; } function* outer() { yield* inner(); yield* [3, 4]; } var t = 0; for (var v of outer()) { t += v; } t;", null),
+        ("async and await with a rejected await", "async function f() { try { await Promise.reject(new Error('no')); } catch (e) { return e.message; } } var r; f().then(function (v) { r = v; }); r;", null),
+        ("an async generator with for await and yield* into an async iterator", "async function* ag() { yield 1; yield* (async function* () { yield 2; })(); } async function run() { var t = 0; for await (var v of ag()) { t += v; } return t; } run();", null),
+        ("for-in", "var o = { a: 1, b: 2 }; var k = ''; for (var p in o) { k += p; } k;", null),
+        ("for-of with an early exit", "var t = 0; for (var v of [1, 2, 3, 4]) { if (v > 2) { break; } t += v; } t;", null),
+        ("destructuring parameters with defaults", "function f({ a = 1, b } = {}, [c, d = 4] = []) { return a + (b || 0) + (c || 0) + d; } f() + f({ b: 2 }, [3]);", null),
+        ("a module with an import", "import { add, n } from 'lib'; export const r = add(n, 2);", "export function add(a, b) { return a + b; } export let n = 1;"),
+        ("a switch, a labelled continue and with", "var t = 0; outer: for (var i = 0; i < 3; i++) { for (var j = 0; j < 3; j++) { if (j === 1) { continue outer; } switch (i) { case 0: t += 1; break; case 1: t += 10; break; default: t += 100; } } } var o = { x: 5 }; with (o) { t += x; } t;", null),
+    ];
+
+    /// <summary>
+    /// The program the golden rows retain the bytes of: two units, a property read, a branch and a
+    /// throw.
+    /// </summary>
+    private const string GoldenSource = "let o={a:1}; function f(x){ if (x) { return o.a; } throw 1; } f(1);";
+
+    /// <summary>Every row about the baseline form's templates, its scan clauses and its emitter.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>NOTHING HERE RUNS EMITTED CODE, AND BOTH CONVENTIONS ARE CHECKED ON EVERY HOST.</b> The
+    /// emitter is a pure function of the image, so a System V emission is as available on Windows as
+    /// a Windows one is; what these rows establish is that every emission scans clean against its own
+    /// table, that the table is exactly what the emitter writes, that the frame-shape clauses refuse
+    /// what they are written against, and that the verifier re-emits the same bytes. Whether the
+    /// handlers those bytes call answer what the interpreter answers is the business of the rows that
+    /// execute, beside the engine.
+    /// </para>
+    /// <para>
+    /// <b>The numeric rows above are not moved by any of this, and the last rows here say so
+    /// explicitly</b> for the three payloads whose tables a wide artifact could have reached.
+    /// </para>
+    /// </remarks>
+    private static System.Collections.Generic.List<(string, bool, string)> Baseline()
+    {
+        var windows = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+        var systemV = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+
+        var rows = new System.Collections.Generic.List<(string, bool, string)>
+        {
+            BaselineClosure(JsX64Abi.Windows, windows),
+            BaselineClosure(JsX64Abi.SystemV, systemV),
+            BaselineCoverage(JsX64Abi.Windows, windows),
+            BaselineCoverage(JsX64Abi.SystemV, systemV),
+            TheBaselineTablesWriteNothingAndCallOnlyTheHandlerTable(),
+            TheBaselineConstantsAreTheConventionTables(),
+            BaselineGolden(JsX64Abi.Windows, GoldenWindows),
+            BaselineGolden(JsX64Abi.SystemV, GoldenSystemV),
+            TheTwoConventionsEmitOneTemplateSequence(),
+            BaselineReEmission(JsX64Abi.Windows),
+            BaselineReEmission(JsX64Abi.SystemV),
+            AReEmittingVerifierRefusesAHandlerSwappedInThePayload(),
+            TheArm64BackendRefusesTheWideManifest(),
+        };
+
+        rows.AddRange(BaselineRefusals());
+        rows.AddRange(UnchangedAnswers());
+        return rows;
+    }
+
+    /// <summary>Compiles one wide program to the baseline form for one backend.</summary>
+    private static JsCompilation CompileWide(
+        (string Name, string Source, string? Library) program, string backend)
+    {
+        var request = new JsCompileRequest(JsFeatureManifest.Wide, JsOutputForm.Native, backend);
+
+        return program.Library is null
+            ? JsCompiler.Compile(
+                [new JsScriptUnit("baseline.js", program.Source, SliceParseOptions.Script)],
+                [],
+                request)
+            : JsCompiler.Compile(
+                [],
+                [
+                    new JsModuleUnit("lib", program.Library, SliceParseOptions.Module),
+                    new JsModuleUnit(
+                        "main",
+                        program.Source,
+                        SliceParseOptions.Module,
+                        [new JsResolvedRequest("lib", "lib")]),
+                ],
+                request);
+    }
+
+    /// <summary>Why a compilation was refused, as one line.</summary>
+    private static string Refusal(JsCompilation compiled) =>
+        compiled.Diagnostics.Count == 0
+            ? "refused with no diagnostic"
+            : string.Join("; ", compiled.Diagnostics);
+
+    /// <summary>
+    /// Every wide program emits under the named convention and its image scans clean against the
+    /// baseline table.
+    /// </summary>
+    /// <remarks>
+    /// <b>A REFUSED PROGRAM FAILS THIS ROW, which is the difference from the numeric closure
+    /// rows.</b> Those backends compile a closed subset and refuse the rest by name; the baseline
+    /// form has one lowering per class of instruction and no type facts, so the only refusal a
+    /// verified wide program can meet is the size ceiling, and none of these is near it.
+    /// </remarks>
+    private static (string, bool, string) BaselineClosure(
+        JsX64Abi abi, System.Collections.Generic.HashSet<string> instantiated)
+    {
+        var name = "everything `" + abi.Name + "` emits for the wide manifest, the baseline scan accepts";
+        var bytes = 0;
+        var units = 0;
+
+        foreach (var program in WidePrograms)
+        {
+            var compiled = CompileWide(program, abi.Name);
+
+            if (!compiled.Succeeded || compiled.Artifact is null)
+            {
+                return (name, false, program.Name + ": " + Refusal(compiled));
+            }
+
+            if (!NativeLifecycle.TryReadEmitted(
+                compiled.Artifact, out var code, out var symbols, out var refusal))
+            {
+                return (name, false, program.Name + ": " + refusal);
+            }
+
+            var result = JsNativeScan.Scan(
+                abi.Architecture, JsNativeTier.Baseline, code, symbols, 16, instantiated);
+
+            if (!result.Accepted)
+            {
+                return (
+                    name,
+                    false,
+                    program.Name + ": the scan refused " + code.Length + " emitted bytes with " +
+                    result.Outcome + " at offset " + result.Offset + " - " + result.Reason +
+                    "; the bytes there read " + Around(code, result.Offset));
+            }
+
+            bytes += code.Length;
+            units += symbols.Length;
+        }
+
+        return (
+            name,
+            true,
+            "all " + WidePrograms.Length + " programs emitted and scanned: " + units +
+                " code units, " + bytes + " bytes");
+    }
+
+    /// <summary>Every template of the baseline table is instantiated by one of the wide programs.</summary>
+    private static (string, bool, string) BaselineCoverage(
+        JsX64Abi abi, System.Collections.Generic.HashSet<string> instantiated)
+    {
+        var name = "every baseline template `" + abi.Name + "` has is reached by one of the wide programs";
+        var table = JsNativeTemplates.For(abi.Architecture, JsNativeTier.Baseline);
+        var uncovered = new System.Collections.Generic.List<string>();
+
+        foreach (var template in table)
+        {
+            if (!instantiated.Contains(template.Text))
+            {
+                uncovered.Add(template.Text);
+            }
+        }
+
+        return (
+            name,
+            uncovered.Count == 0 && table.Length == 21,
+            uncovered.Count == 0
+                ? instantiated.Count + " of " + table.Length + " templates instantiated, none out of reach"
+                : "unreached: " + string.Join(", ", uncovered));
+    }
+
+    /// <summary>
+    /// The baseline tables carry no call to a unit entry, no memory destination, and exactly one
+    /// indirect transfer: the call through the handler table - judged from each template's bytes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>CLAUSE S4 IS A PROPERTY OF THE TABLE AND THIS ROW PINS IT.</b> The argument that every
+    /// indirect call lands in the handler table rests on nothing in the table writing memory - so
+    /// the frame's first word is still the table base the runtime stored - and on the one indirect
+    /// transfer indexing that table by a field kind that admits only defined opcodes. A template added
+    /// with a memory destination, or a second indirect form, turns this row red before any scan
+    /// accepts a payload that uses it.
+    /// </para>
+    /// <para>
+    /// <b>A TEMPLATE'S NAME IS NOT EVIDENCE, SO THE ROW DECODES WHAT THE SCAN COMPARES.</b> The scan
+    /// matches bytes under a mask and never reads a name; a template named <c>mov eax, arg1d</c> whose
+    /// bytes are <c>49 89 1E</c> writes through R14 all the same. So each template's fixed bytes are
+    /// decoded as exactly one x86-64 instruction, with every prefix, opcode, ModRM and SIB bit fixed by
+    /// the mask, and the decoding is conservative: an opcode it has no rule for is a failure, not a
+    /// pass. The controls at the end are byte sequences under misleading names that the judgement must
+    /// refuse, so a judgement weakened into accepting them turns the row red as well.
+    /// </para>
+    /// </remarks>
+    private static (string, bool, string) TheBaselineTablesWriteNothingAndCallOnlyTheHandlerTable()
+    {
+        const string Name =
+            "the baseline tables write no memory and transfer indirectly only through the handler table";
+
+        var failures = new System.Collections.Generic.List<string>();
+        var judged = 0;
+
+        foreach (var architecture in new[] { JsNativeArchitecture.X64Windows, JsNativeArchitecture.X64SystemV })
+        {
+            var calls = 0;
+
+            foreach (var template in JsNativeTemplates.For(architecture, JsNativeTier.Baseline))
+            {
+                judged++;
+                var refusal = WhyABaselineTemplateIsRefused(template, out var isHandlerCall);
+
+                if (refusal is not null)
+                {
+                    failures.Add(architecture + ": `" + template.Text + "` " + refusal);
+                }
+
+                if (isHandlerCall)
+                {
+                    calls++;
+                }
+            }
+
+            if (calls != 1)
+            {
+                failures.Add(architecture + ": " + calls + " handler-table calls where one is expected");
+            }
+        }
+
+        var slot = new JsNativeTemplateField(JsNativeFieldKind.HelperSlot, 16, 32, true, 1, false);
+        var pc = new JsNativeTemplateField(JsNativeFieldKind.BytecodePc, 8, 32, true, 1, false);
+        var controls = new[]
+        {
+            // mov [r14], rbx - the finding's own example, under a prologue template's name.
+            new JsNativeTemplate("mov eax, arg1d", [0x49, 0x89, 0x1E], false),
+
+            // mov qword [rbx+0], imm32.
+            new JsNativeTemplate("add rsp, frame", [0x48, 0xC7, 0x83, 0, 0, 0, 0, 0, 0, 0, 0], false),
+
+            // sete byte [rax].
+            new JsNativeTemplate("test eax, eax", [0x0F, 0x94, 0x00], false),
+
+            // pop qword [r14].
+            new JsNativeTemplate("pop rbx", [0x41, 0x8F, 0x06], false),
+
+            // call rax.
+            new JsNativeTemplate("call [rbx+slot]", [0xFF, 0xD0], false),
+
+            // call qword [rdx+disp32], with the displacement a helper-slot field.
+            new JsNativeTemplate("call [rbx+slot]", [0xFF, 0x92, 0, 0, 0, 0], false, slot),
+
+            // jmp qword [rbx+disp32], with the displacement a helper-slot field.
+            new JsNativeTemplate("call [rbx+slot]", [0xFF, 0xA3, 0, 0, 0, 0], false, slot),
+
+            // call rel32.
+            new JsNativeTemplate("jmp rel32", [0xE8, 0, 0, 0, 0], false),
+
+            // cmp eax, imm32 followed by mov [rax], ebx inside the same template.
+            new JsNativeTemplate("cmp eax, pc", [0x3D, 0, 0, 0, 0, 0x89, 0x18], false, pc),
+
+            // An opcode byte a field covers, so the mask compares nothing there.
+            new JsNativeTemplate(
+                "ret",
+                [0xC3, 0, 0, 0],
+                true,
+                new JsNativeTemplateField(JsNativeFieldKind.BytecodePc, 0, 32, true, 1, false)),
+
+            // imul eax, eax - legal, harmless, and an opcode the judgement has no rule for.
+            new JsNativeTemplate("push rbx", [0x0F, 0xAF, 0xC0], false),
+        };
+
+        var refused = 0;
+
+        foreach (var control in controls)
+        {
+            if (WhyABaselineTemplateIsRefused(control, out var called) is not null && !called)
+            {
+                refused++;
+            }
+            else
+            {
+                failures.Add(
+                    "control " + System.Convert.ToHexString(control.Fixed) + " named `" + control.Text +
+                    "` was not refused by its bytes");
+            }
+        }
+
+        return (
+            Name,
+            failures.Count == 0,
+            failures.Count == 0
+                ? judged + " templates judged by their bytes: one handler-table call per table (FF 93 with a helper-slot " +
+                  "disp32), no memory destination, no other transfer through memory or a register, no direct call, " +
+                  "no unit-entry branch; " + refused + " of " + controls.Length + " misnamed byte controls refused"
+                : string.Join("; ", failures));
+    }
+
+    /// <summary>
+    /// Why the bytes of one baseline template break clause S4, or <see langword="null"/> when they
+    /// are exactly one instruction that writes no memory and transfers control only as the handler
+    /// call or a direct branch does.
+    /// </summary>
+    /// <remarks>
+    /// <b>EVERY OPCODE HERE HAS A RULE, AND AN OPCODE WITHOUT ONE IS A REFUSAL.</b> The rules cover
+    /// what the baseline form can plausibly grow into - pushes and pops, register moves and loads,
+    /// arithmetic and compares with an immediate, conditional sets, direct branches, the two indirect
+    /// groups of <c>FF</c> - so a new template either decodes under one of them and is judged, or
+    /// fails here and makes its author extend the judgement deliberately. A ModRM <c>mod</c> of three
+    /// names a register and anything else names memory; for an opcode whose r/m operand is its
+    /// destination, that is a memory write.
+    /// </remarks>
+    private static string? WhyABaselineTemplateIsRefused(JsNativeTemplate template, out bool isHandlerCall)
+    {
+        isHandlerCall = false;
+        var bytes = template.Fixed;
+        var mask = template.Mask;
+
+        foreach (var field in template.Fields)
+        {
+            if (field.Kind == JsNativeFieldKind.UnitEntryBranch)
+            {
+                return "branches to a unit entry";
+            }
+        }
+
+        bool IsFixed(int index) => index < bytes.Length && mask[index] == 0xFF;
+
+        var at = 0;
+        var wide = false;
+
+        if (IsFixed(0) && (bytes[0] & 0xF0) == 0x40)
+        {
+            wide = (bytes[0] & 0x08) != 0;
+            at = 1;
+        }
+
+        if (!IsFixed(at))
+        {
+            return "leaves its opcode to a field or ends before one";
+        }
+
+        var opcode = bytes[at++];
+        var second = -1;
+        var hasModRm = false;
+        var writesRm = false;
+        var immediate = 0;
+
+        switch (opcode)
+        {
+            case >= 0x50 and <= 0x5F:
+            case 0x90:
+            case 0xC3:
+                break;
+            case >= 0xB8 and <= 0xBF:
+                immediate = wide ? 8 : 4;
+                break;
+            case 0x3D:
+            case 0xE9:
+                immediate = 4;
+                break;
+            case 0xE8:
+                return "is a direct call, which reaches something other than the handler table";
+            case 0x84:
+            case 0x85:
+            case 0x8A:
+            case 0x8B:
+            case 0xFF:
+                hasModRm = true;
+                break;
+            case 0x88:
+            case 0x89:
+            case 0x8F:
+                hasModRm = true;
+                writesRm = true;
+                break;
+            case 0x80:
+            case 0x83:
+            case 0xC6:
+                hasModRm = true;
+                writesRm = true;
+                immediate = 1;
+                break;
+            case 0x81:
+            case 0xC7:
+                hasModRm = true;
+                writesRm = true;
+                immediate = 4;
+                break;
+            case 0x0F:
+                if (!IsFixed(at))
+                {
+                    return "leaves its second opcode byte to a field or ends before one";
+                }
+
+                second = bytes[at++];
+
+                if (second is >= 0x80 and <= 0x8F)
+                {
+                    immediate = 4;
+                }
+                else if (second is >= 0x90 and <= 0x9F)
+                {
+                    hasModRm = true;
+                    writesRm = true;
+                }
+                else
+                {
+                    return "carries the opcode 0F " + second.ToString("X2", System.Globalization.CultureInfo.InvariantCulture) +
+                           ", which this judgement has no rule for";
+                }
+
+                break;
+            default:
+                return "carries the opcode " + opcode.ToString("X2", System.Globalization.CultureInfo.InvariantCulture) +
+                       ", which this judgement has no rule for";
+        }
+
+        var memory = false;
+
+        if (hasModRm)
+        {
+            if (!IsFixed(at))
+            {
+                return "leaves its ModRM byte to a field or ends before one";
+            }
+
+            var modRm = bytes[at++];
+            var mod = modRm >> 6;
+            var reg = (modRm >> 3) & 7;
+            var rm = modRm & 7;
+            memory = mod != 3;
+
+            if (memory && rm == 4)
+            {
+                if (!IsFixed(at))
+                {
+                    return "leaves its SIB byte to a field or ends before one";
+                }
+
+                if (mod == 0 && (bytes[at] & 7) == 5)
+                {
+                    at += 4;
+                }
+
+                at++;
+            }
+
+            at += mod switch
+            {
+                1 => 1,
+                2 => 4,
+                0 when rm == 5 => 4,
+                _ => 0,
+            };
+
+            if (opcode is 0x80 or 0x81 or 0x83 && reg == 7)
+            {
+                writesRm = false;
+            }
+
+            if (opcode is 0x8F or 0xC6 or 0xC7 && reg != 0)
+            {
+                return "carries the undefined extension /" + reg + " of its opcode";
+            }
+
+            if (opcode == 0xFF)
+            {
+                switch (reg)
+                {
+                    case 0:
+                    case 1:
+                        writesRm = true;
+                        break;
+                    case >= 2 and <= 5:
+                        if (template.Length != 6 || bytes[0] != 0xFF || modRm != 0x93 || template.Fields.Length != 1 ||
+                            template.Fields[0].Kind != JsNativeFieldKind.HelperSlot ||
+                            template.Fields[0].BitOffset != 16 || template.Fields[0].BitWidth != 32)
+                        {
+                            return "transfers control through memory or a register other than as call qword [rbx+disp32] " +
+                                   "with the displacement a helper-slot field";
+                        }
+
+                        isHandlerCall = true;
+                        break;
+                    default:
+                        return "carries the extension /" + reg + " of FF, which this judgement has no rule for";
+                }
+            }
+        }
+
+        if (writesRm && memory)
+        {
+            return "has a memory destination";
+        }
+
+        if (at + immediate != template.Length)
+        {
+            isHandlerCall = false;
+            return "is " + template.Length + " bytes where the one instruction it opens with is " + (at + immediate);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// The baseline form's reservation and argument registers agree across the format, the template
+    /// table and the convention table.
+    /// </summary>
+    private static (string, bool, string) TheBaselineConstantsAreTheConventionTables()
+    {
+        const string Name = "the baseline reservation and argument registers are the convention table's";
+        var failures = new System.Collections.Generic.List<string>();
+
+        foreach (var abi in JsX64Abi.Rows)
+        {
+            var table = JsNativeTemplates.For(abi.Architecture, JsNativeTier.Baseline);
+            var expected = abi.Architecture == JsNativeArchitecture.X64Windows ? JsX64Register.Rdx : JsX64Register.Rsi;
+
+            if (abi.BaselineFrameBytes != JsBaselineAbi.FrameBytes(abi.Architecture))
+            {
+                failures.Add(abi.Name + ": the convention reserves " + abi.BaselineFrameBytes + " and the format " + JsBaselineAbi.FrameBytes(abi.Architecture));
+            }
+
+            if (abi.SecondArgumentRegister != expected)
+            {
+                failures.Add(abi.Name + ": the second argument register is " + abi.SecondArgumentRegister);
+            }
+
+            if (table[2].Fixed[3] != abi.BaselineFrameBytes || table[17].Fixed[3] != abi.BaselineFrameBytes)
+            {
+                failures.Add(abi.Name + ": the table's reservation is not the convention's");
+            }
+
+            if (table[3].Fixed[2] != (byte)(0xC0 | (((int)abi.FramePointerRegister & 7) << 3) | 6) ||
+                table[14].Fixed[2] != (byte)(0xC0 | (6 << 3) | ((int)abi.FramePointerRegister & 7)))
+            {
+                failures.Add(abi.Name + ": the table moves the frame through a register other than " + abi.FramePointerRegister);
+            }
+
+            if (table[5].Fixed[1] != (byte)(0xC0 | (((int)abi.SecondArgumentRegister & 7) << 3)) ||
+                table[15].Fixed[0] != (byte)(0xB8 + ((int)abi.SecondArgumentRegister & 7)))
+            {
+                failures.Add(abi.Name + ": the table passes the program counter through a register other than " + abi.SecondArgumentRegister);
+            }
+        }
+
+        return (
+            Name,
+            failures.Count == 0,
+            failures.Count == 0
+                ? "both conventions agree about the reservation, the frame register and the program-counter register"
+                : string.Join("; ", failures));
+    }
+
+    /// <summary>The Windows x64 bytes the golden program is retained as.</summary>
+    private const string GoldenWindows =
+        "5341564883EC284989CE498B1E89D085C00F88BD0100003D000000000F840F000000E900000000B8FDFFFFFFE9A30100" +
+        "004C89F1BA00000000FF93080000003D010000000F85C5FFFFFF4C89F1BA01000000FF93900000003D050000000F85AC" +
+        "FFFFFF4C89F1BA05000000FF93C80000003D080000000F8593FFFFFF4C89F1BA08000000FF93800100003D0B0000000F" +
+        "857AFFFFFF4C89F1BA0B000000FF93A00000003D0E0000000F8561FFFFFF4C89F1BA0E000000FF93F80300003D110000" +
+        "000F8548FFFFFF4C89F1BA11000000FF93000100003D120000000F852FFFFFFF4C89F1BA12000000FF93280000003D15" +
+        "0000000F8516FFFFFF4C89F1BA15000000FF93300100003D180000000F85FDFEFFFF4C89F1BA18000000FF9308040000" +
+        "3D1B0000000F85E4FEFFFF4C89F1BA1B000000FF93980000003D1E0000000F85CBFEFFFF4C89F1BA1E000000FF930800" +
+        "00003D1F0000000F85B2FEFFFF4C89F1BA1F000000FF93280000003D220000000F8599FEFFFF4C89F1BA22000000FF93" +
+        "880100003D240000000F8580FEFFFF4C89F1BA24000000FF93900000003D280000000F8567FEFFFF4C89F1BA28000000" +
+        "FF93800000003D2C0000000F854EFEFFFF4C89F1BA2C000000FF9398010000E93BFEFFFF4883C428415E5BC390909090" +
+        "5341564883EC284989CE498B1E89D085C00F88DB0000003D2D0000000F840F000000E900000000B8FDFFFFFFE9C10000" +
+        "004C89F1BA2D000000FF93800000003D310000000F85C5FFFFFF4C89F1BA31000000FF93080300003D3D0000000F8450" +
+        "0000003D360000000F85A1FFFFFF4C89F1BA36000000FF93980000003D390000000F8588FFFFFF4C89F1BA39000000FF" +
+        "93100100003D3C0000000F856FFFFFFF4C89F1BA3C000000FF9398010000E95CFFFFFF4C89F1BA3D000000FF93280000" +
+        "003D400000000F8543FFFFFF4C89F1BA40000000FF9318030000E930FFFFFF4C89F1BA41000000FF93A0010000E91DFF" +
+        "FFFF4883C428415E5BC3";
+
+    /// <summary>The System V bytes the golden program is retained as.</summary>
+    private const string GoldenSystemV =
+        "5341564883EC084989FE498B1E89F085C00F88BD0100003D000000000F840F000000E900000000B8FDFFFFFFE9A30100" +
+        "004C89F7BE00000000FF93080000003D010000000F85C5FFFFFF4C89F7BE01000000FF93900000003D050000000F85AC" +
+        "FFFFFF4C89F7BE05000000FF93C80000003D080000000F8593FFFFFF4C89F7BE08000000FF93800100003D0B0000000F" +
+        "857AFFFFFF4C89F7BE0B000000FF93A00000003D0E0000000F8561FFFFFF4C89F7BE0E000000FF93F80300003D110000" +
+        "000F8548FFFFFF4C89F7BE11000000FF93000100003D120000000F852FFFFFFF4C89F7BE12000000FF93280000003D15" +
+        "0000000F8516FFFFFF4C89F7BE15000000FF93300100003D180000000F85FDFEFFFF4C89F7BE18000000FF9308040000" +
+        "3D1B0000000F85E4FEFFFF4C89F7BE1B000000FF93980000003D1E0000000F85CBFEFFFF4C89F7BE1E000000FF930800" +
+        "00003D1F0000000F85B2FEFFFF4C89F7BE1F000000FF93280000003D220000000F8599FEFFFF4C89F7BE22000000FF93" +
+        "880100003D240000000F8580FEFFFF4C89F7BE24000000FF93900000003D280000000F8567FEFFFF4C89F7BE28000000" +
+        "FF93800000003D2C0000000F854EFEFFFF4C89F7BE2C000000FF9398010000E93BFEFFFF4883C408415E5BC390909090" +
+        "5341564883EC084989FE498B1E89F085C00F88DB0000003D2D0000000F840F000000E900000000B8FDFFFFFFE9C10000" +
+        "004C89F7BE2D000000FF93800000003D310000000F85C5FFFFFF4C89F7BE31000000FF93080300003D3D0000000F8450" +
+        "0000003D360000000F85A1FFFFFF4C89F7BE36000000FF93980000003D390000000F8588FFFFFF4C89F7BE39000000FF" +
+        "93100100003D3C0000000F856FFFFFFF4C89F7BE3C000000FF9398010000E95CFFFFFF4C89F7BE3D000000FF93280000" +
+        "003D400000000F8543FFFFFF4C89F7BE40000000FF9318030000E930FFFFFF4C89F7BE41000000FF93A0010000E91DFF" +
+        "FFFF4883C408415E5BC3";
+
+    /// <summary>One program's baseline emission, compared with the bytes retained for it.</summary>
+    /// <remarks>
+    /// <b>THE RETAINED BYTES WERE DECODED BY HAND AGAINST THE TEMPLATE LIST THE FORM WAS SPECIFIED
+    /// WITH, NOT AGAINST THE TABLE.</b> The closure rows prove the emitter and the table agree with
+    /// each other; this row pins both to the written specification - the prologue, the dispatch, the
+    /// one-landing leaf, the defect block, each instruction's call and tail, and the epilogue - so
+    /// that an encoder and a table that drifted together still move a row.
+    /// </remarks>
+    private static (string, bool, string) BaselineGolden(JsX64Abi abi, string expected)
+    {
+        var name = "`" + abi.Name + "` emits the retained baseline bytes for a property read, a branch and a throw";
+        var compiled = CompileWide(("golden", GoldenSource, null), abi.Name);
+
+        if (!compiled.Succeeded || compiled.Artifact is null)
+        {
+            return (name, false, Refusal(compiled));
+        }
+
+        if (!NativeLifecycle.TryReadEmitted(compiled.Artifact, out var code, out var symbols, out var refusal))
+        {
+            return (name, false, refusal);
+        }
+
+        var written = System.Convert.ToHexString(code);
+
+        return string.Equals(written, expected, System.StringComparison.Ordinal)
+            ? (name, true, code.Length + " bytes, " + symbols.Length + " symbols")
+            : (name, false, "the emitted bytes are not the retained ones; the emission reads " + written);
+    }
+
+    /// <summary>
+    /// One program's two emissions decode, each against its own table, to one sequence of templates
+    /// with one set of non-register operands.
+    /// </summary>
+    /// <remarks>
+    /// <b>THE CONVENTIONS DIFFER IN REGISTERS AND A RESERVATION, AND IN NOTHING THE PROGRAM
+    /// DECIDES.</b> Every template has the same length under both, so the branch displacements, the
+    /// program counters, the handler slots and the symbol offsets must all agree; a difference in any
+    /// of them is an emitter that consulted the convention for something other than the registers.
+    /// </remarks>
+    private static (string, bool, string) TheTwoConventionsEmitOneTemplateSequence()
+    {
+        const string Name = "the two conventions' baseline emissions are one template sequence";
+        var compared = 0;
+
+        foreach (var program in WidePrograms)
+        {
+            var left = CompileWide(program, JsNativeBackends.X64Windows);
+            var right = CompileWide(program, JsNativeBackends.X64SystemV);
+
+            if (left.Artifact is null || right.Artifact is null ||
+                !NativeLifecycle.TryReadEmitted(left.Artifact, out var windowsCode, out var windowsSymbols, out _) ||
+                !NativeLifecycle.TryReadEmitted(right.Artifact, out var systemVCode, out var systemVSymbols, out _))
+            {
+                return (Name, false, program.Name + ": did not emit under both conventions");
+            }
+
+            if (!TryDecode(JsNativeArchitecture.X64Windows, windowsCode, out var windows, out var why) ||
+                !TryDecode(JsNativeArchitecture.X64SystemV, systemVCode, out var systemV, out why))
+            {
+                return (Name, false, program.Name + ": " + why);
+            }
+
+            if (!System.Linq.Enumerable.SequenceEqual(windows, systemV) ||
+                !System.Linq.Enumerable.SequenceEqual(windowsSymbols, systemVSymbols))
+            {
+                var at = 0;
+
+                while (at < windows.Count && at < systemV.Count && windows[at] == systemV[at])
+                {
+                    at++;
+                }
+
+                return (
+                    Name,
+                    false,
+                    program.Name + ": the sequences part at instantiation " + at + " (" +
+                    (at < windows.Count ? windows[at] : "end") + " against " +
+                    (at < systemV.Count ? systemV[at] : "end") + ")");
+            }
+
+            compared += windows.Count;
+        }
+
+        return (Name, true, compared + " instantiations compared across " + WidePrograms.Length + " programs");
+    }
+
+    /// <summary>Decodes a baseline image linearly into template names with their operand values.</summary>
+    private static bool TryDecode(
+        JsNativeArchitecture architecture,
+        byte[] code,
+        out System.Collections.Generic.List<string> sequence,
+        out string detail)
+    {
+        sequence = [];
+        var table = JsNativeTemplates.For(architecture, JsNativeTier.Baseline);
+        var at = 0;
+        var afterReturn = false;
+
+        while (at < code.Length)
+        {
+            if (afterReturn && code[at] == JsNativeTemplates.X64PaddingByte)
+            {
+                at++;
+                continue;
+            }
+
+            JsNativeTemplate? found = null;
+
+            foreach (var template in table)
+            {
+                if (at + template.Length > code.Length)
+                {
+                    continue;
+                }
+
+                var matches = true;
+
+                for (var index = 0; index < template.Length && matches; index++)
+                {
+                    matches = (code[at + index] & template.Mask[index]) == template.Fixed[index];
+                }
+
+                if (matches)
+                {
+                    found = template;
+                    break;
+                }
+            }
+
+            if (found is null)
+            {
+                detail = architecture + ": no baseline template matches at " + at;
+                return false;
+            }
+
+            var text = new System.Text.StringBuilder(found.Text);
+
+            foreach (var field in found.Fields)
+            {
+                text.Append(' ').Append(
+                    System.BitConverter.ToInt32(code, at + (field.BitOffset / 8))
+                        .ToString(System.Globalization.CultureInfo.InvariantCulture));
+            }
+
+            sequence.Add(text.ToString());
+            afterReturn = found.IsReturn;
+            at += found.Length;
+        }
+
+        detail = string.Empty;
+        return true;
+    }
+
+    /// <summary>
+    /// Every wide program's artifact verifies under a descriptor that re-emits with the backend that
+    /// wrote it.
+    /// </summary>
+    /// <remarks>
+    /// <b>THE VERIFIER BUILDS ITS OWN IMAGE - CODE, FUNCTION ROWS, REGIONS AND TIER - FROM WHAT IT
+    /// READ, AND REQUIRES THE SAME BYTES.</b> An emitter that read anything the artifact does not
+    /// carry, or iterated something in an order the artifact does not fix, would fail here for a
+    /// correct artifact; so would a verifier that chose the tier from anything but the manifest.
+    /// </remarks>
+    private static (string, bool, string) BaselineReEmission(JsX64Abi abi)
+    {
+        var name = "every wide baseline artifact `" + abi.Name + "` writes re-emits byte for byte at verification";
+        var artifacts = new System.Collections.Generic.List<(string, byte[])>();
+
+        foreach (var program in WidePrograms)
+        {
+            var compiled = CompileWide(program, abi.Name);
+
+            if (!compiled.Succeeded || compiled.Artifact is null)
+            {
+                return (name, false, program.Name + ": " + Refusal(compiled));
+            }
+
+            artifacts.Add((program.Name, compiled.Artifact));
+        }
+
+        var answers = VerifyAll(
+            JavaScriptProfile.DescriptorReEmittingWith(new JsX64Backend(abi), EverySurface()),
+            artifacts);
+
+        foreach (var (label, accepted, detail) in answers)
+        {
+            if (!accepted)
+            {
+                return (name, false, label + ": " + detail);
+            }
+        }
+
+        return (name, answers.Count == WidePrograms.Length, answers.Count + " artifacts verified with re-emission");
+    }
+
+    /// <summary>
+    /// A payload whose one handler call was moved to another defined opcode's slot passes the scan
+    /// and fails re-emission.
+    /// </summary>
+    /// <remarks>
+    /// <b>THIS IS THE GAP THE SCAN CANNOT CLOSE, SHOWN TO BE CLOSED BY THE LAYER THAT CAN.</b> The
+    /// slot is admitted - it is eight times a defined opcode - so an execution-only image accepts the
+    /// payload and relies on the handler's own opcode check at run time; an image with the backend
+    /// re-emits and refuses it at verification.
+    /// </remarks>
+    private static (string, bool, string) AReEmittingVerifierRefusesAHandlerSwappedInThePayload()
+    {
+        const string Name = "a re-emitting verifier refuses a baseline payload whose handler call was swapped";
+        var compiled = CompileWide(WidePrograms[0], JsNativeBackends.X64Windows);
+
+        if (compiled.Artifact is null ||
+            !NativeLifecycle.TryReadEmitted(compiled.Artifact, out var code, out _, out _))
+        {
+            return (Name, false, "the program did not emit: " + Refusal(compiled));
+        }
+
+        var artifact = (byte[])compiled.Artifact.Clone();
+        var blob = System.MemoryExtensions.IndexOf(
+            System.MemoryExtensions.AsSpan(artifact),
+            System.MemoryExtensions.AsSpan(code, 0, System.Math.Min(64, code.Length)));
+
+        var swapped = -1;
+
+        for (var at = 0; blob >= 0 && at + 6 <= code.Length; at++)
+        {
+            if (code[at] != 0xFF || code[at + 1] != 0x93)
+            {
+                continue;
+            }
+
+            var slot = System.BitConverter.ToInt32(code, at + 2);
+            var replacement = slot == (int)JsOpcode.LoadNull * 8 ? (int)JsOpcode.LoadTrue * 8 : (int)JsOpcode.LoadNull * 8;
+            System.BitConverter.TryWriteBytes(System.MemoryExtensions.AsSpan(artifact, blob + at + 2), replacement);
+            swapped = at;
+            break;
+        }
+
+        if (swapped < 0)
+        {
+            return (Name, false, "the emission carries no handler call to swap");
+        }
+
+        var admitting = VerifyAll(JavaScriptProfile.Descriptor, [("admitting", artifact)])[0];
+
+        var reEmitting = VerifyAll(
+            JavaScriptProfile.DescriptorReEmittingWith(new JsX64Backend(JsX64Abi.Windows), EverySurface()),
+            [("re-emitting", artifact)])[0];
+
+        return (
+            Name,
+            admitting.Accepted && !reEmitting.Accepted &&
+                reEmitting.Detail.EndsWith(" code " + (int)JavaScriptDiagnosticCode.MalformedNativeSection, System.StringComparison.Ordinal),
+            "the call at " + swapped + " swapped: without an emitter " +
+                (admitting.Accepted ? "verified" : "refused (" + admitting.Detail + ")") +
+                "; with one " + (reEmitting.Accepted ? "VERIFIED" : "refused, " + reEmitting.Detail));
+    }
+
+    /// <summary>The arm64 backend refuses the wide manifest by name rather than emitting anything.</summary>
+    private static (string, bool, string) TheArm64BackendRefusesTheWideManifest()
+    {
+        const string Name = "the arm64 backend refuses the wide manifest's native form by name";
+        var compiled = CompileWide(WidePrograms[0], JsNativeBackends.Arm64);
+        var refusal = Refusal(compiled);
+
+        return (
+            Name,
+            !compiled.Succeeded && refusal.Contains("no arm64 emitter", System.StringComparison.Ordinal),
+            compiled.Succeeded ? "the arm64 backend emitted a wide artifact" : refusal);
+    }
+
+    /// <summary>Every surface this build implements, as the descriptor doors take them.</summary>
+    private static VmFeatureManifestId[] EverySurface()
+    {
+        var surfaces = new VmFeatureManifestId[JsSurfaces.All.Length];
+
+        for (var index = 0; index < surfaces.Length; index++)
+        {
+            surfaces[index] = VmFeatureManifestId.Parse(JsSurfaces.All[index]);
+        }
+
+        return surfaces;
+    }
+
+    /// <summary>Verifies wide artifacts under one descriptor, one runtime for all of them.</summary>
+    private static System.Collections.Generic.List<(string Label, bool Accepted, string Detail)> VerifyAll(
+        VmProfileDescriptor profile,
+        System.Collections.Generic.List<(string Label, byte[] Artifact)> artifacts)
+    {
+        var answers = new System.Collections.Generic.List<(string, bool, string)>();
+        var catalog = VmCatalog.CreateBuilder().Add(profile).Build();
+        var ceilings = System.Collections.Immutable.ImmutableArray.CreateBuilder<VmCeilingSpec>();
+
+        foreach (var dimension in VmBudgetDimensions.All)
+        {
+            ceilings.Add(dimension == VmBudgetDimension.LiveRuntimes
+                ? VmCeilingSpec.AdoptParentRemaining(dimension)
+                : VmCeilingSpec.AdoptProfileDefault(dimension));
+        }
+
+        var created = VmRuntime.Create(catalog, new VmRuntimeCreationOptions(
+            aggregateBudget: null,
+            ceilings: ceilings.ToImmutable(),
+            maxSuspendedResidency: System.TimeSpan.FromMinutes(1),
+            maxLiveSuspendedOperations: 1,
+            guestLoadBounds: VmGuestLoadBoundsSpec.AdoptProfileMaxima,
+            externalSuspension: VmExternalSuspensionMode.Disabled,
+
+            // THE MODULE SURFACE ASKS FOR A RESOLVER BEFORE IT READS A GRAPH, and these rows verify a
+            // module artifact; the graph was bundled by key, so confirming every request is the rule.
+            capabilities:
+            [
+                VmCapabilityRegistration.Value(
+                    JavaScriptProfile.ResolveCapability,
+                    (VmBytes argument, out VmOpaqueRef result) =>
+                    {
+                        result = default;
+                        return VmHostCallOutcome.Completed;
+                    }),
+            ]));
+
+        if (!created.TryGetRuntime(out var runtime))
+        {
+            foreach (var (label, _) in artifacts)
+            {
+                answers.Add((label, false, "the runtime refused creation: " + created.Outcome));
+            }
+
+            return answers;
+        }
+
+        using (runtime)
+        {
+            foreach (var (label, artifact) in artifacts)
+            {
+                var descriptor = new VmArtifactDescriptor(
+                    JavaScriptProfile.Id,
+                    JsFormat.FormatVersion,
+                    JavaScriptProfile.WideManifest,
+                    default,
+                    VmCallerIdentity.FromCanonicalIdentity("com.example.broiler.slice-compiler"));
+
+                var verified = runtime.Verify(in descriptor, artifact, System.Threading.CancellationToken.None);
+
+                answers.Add((
+                    label,
+                    verified.TryGetArtifact(out _),
+                    verified.Outcome + "/" + verified.Reason + " code " + verified.Diagnostics.ProfileDiagnosticCode));
+            }
+        }
+
+        return answers;
+    }
+
+    /// <summary>
+    /// Hand-built baseline payloads, each legal machine code, each refused by the clause it names.
+    /// </summary>
+    /// <remarks>
+    /// <b>THE FRAME-SHAPE ROWS ARE WHOLE UNITS WITH ONE THING WRONG</b>: a prologue and an epilogue
+    /// that are both correct, and the one instruction or branch between or around them that breaks a
+    /// clause. The control beside them branches to the epilogue's first instruction - the landing
+    /// every real exit uses - and is accepted, so the refusals are not satisfied by a scan that
+    /// refuses every branch toward the epilogue.
+    /// </remarks>
+    private static System.Collections.Generic.List<(string, bool, string)> BaselineRefusals()
+    {
+        byte[] prologue = [0x53, 0x41, 0x56, 0x48, 0x83, 0xEC, 0x28, 0x49, 0x89, 0xCE, 0x49, 0x8B, 0x1E, 0x89, 0xD0];
+        byte[] epilogue = [0x48, 0x83, 0xC4, 0x28, 0x41, 0x5E, 0x5B, 0xC3];
+
+        var undefinedByte = 0x0B;
+
+        while (JsOpcodes.IsDefined((byte)undefinedByte))
+        {
+            undefinedByte++;
+        }
+
+        byte[] Unit(params byte[] body) => [.. prologue, .. body, .. epilogue];
+
+        byte[] Call(int slot) =>
+        [
+            0x4C, 0x89, 0xF1,
+            0xBA, 0x00, 0x00, 0x00, 0x00,
+            0xFF, 0x93, (byte)slot, (byte)(slot >> 8), 0x00, 0x00,
+        ];
+
+        var rows = new System.Collections.Generic.List<(string, bool, string)>
+        {
+            RefusedBaseline("`call rax` in a baseline unit", JsNativeTier.Baseline, Unit(0xFF, 0xD0), JsNativeScanOutcome.NoTemplate),
+            RefusedBaseline(
+                "a handler call through the slot of undefined byte 0x" + undefinedByte.ToString("X2", System.Globalization.CultureInfo.InvariantCulture),
+                JsNativeTier.Baseline,
+                Unit(Call(undefinedByte * 8)),
+                JsNativeScanOutcome.OperandOutOfRange),
+            RefusedBaseline("a handler call between two slots", JsNativeTier.Baseline, Unit(Call(0x84)), JsNativeScanOutcome.OperandOutOfRange),
+            RefusedBaseline("`mov eax, 2`, a status no unit materialises", JsNativeTier.Baseline, Unit(0xB8, 0x02, 0x00, 0x00, 0x00), JsNativeScanOutcome.OperandOutOfRange),
+            RefusedBaseline(
+                "a baseline unit with no prologue",
+                JsNativeTier.Baseline,
+                [.. Call((int)JsOpcode.LoadUndefined * 8), .. Call((int)JsOpcode.Pop * 8), .. Call((int)JsOpcode.ReturnUndefined * 8), 0xB8, 0xFD, 0xFF, 0xFF, 0xFF, .. epilogue],
+                JsNativeScanOutcome.FrameSequenceMalformed),
+            RefusedBaseline("`push rbx` in the middle of a baseline unit", JsNativeTier.Baseline, Unit(0x53), JsNativeScanOutcome.FrameSequenceMalformed),
+            RefusedBaseline("a second `ret` in a baseline unit", JsNativeTier.Baseline, Unit(0xC3), JsNativeScanOutcome.FrameSequenceMalformed),
+            RefusedBaseline("a `jmp` to the epilogue's `pop rbx`", JsNativeTier.Baseline, Unit(0xE9, 0x06, 0x00, 0x00, 0x00), JsNativeScanOutcome.BranchIntoFrameSequence),
+            RefusedBaseline("a `jmp` back into the prologue", JsNativeTier.Baseline, Unit(0xE9, 0xEF, 0xFF, 0xFF, 0xFF), JsNativeScanOutcome.BranchIntoFrameSequence),
+        };
+
+        // THE CONTROL: the same jump, to the epilogue's first instruction.
+        var control = JsNativeScan.Scan(
+            JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, Unit(0xE9, 0x00, 0x00, 0x00, 0x00), [new JsNativeSymbolRow(0, 0)], 16);
+
+        rows.Add((
+            "the baseline scan accepts a `jmp` to the epilogue's first instruction",
+            control.Accepted,
+            control.Accepted ? "accepted" : control.Outcome + " at " + control.Offset + ": " + control.Reason));
+
+        // A NUMERIC UNIT UNDER WIDE, AND A BASELINE UNIT UNDER NUMERIC: each table refuses the
+        // other's emission at its first instruction the two do not share.
+        var numeric = JsCompiler.Compile(
+            [new JsScriptUnit("numeric.js", "1 + 2;", SliceParseOptions.Script)],
+            [],
+            new JsCompileRequest(JsFeatureManifest.Numeric, JsOutputForm.Native, JsNativeBackends.X64Windows));
+
+        var wide = CompileWide(WidePrograms[0], JsNativeBackends.X64Windows);
+
+        if (numeric.Artifact is null || wide.Artifact is null ||
+            !NativeLifecycle.TryReadEmitted(numeric.Artifact, out var numericCode, out var numericSymbols, out _) ||
+            !NativeLifecycle.TryReadEmitted(wide.Artifact, out var wideCode, out var wideSymbols, out _))
+        {
+            rows.Add(("the two tiers refuse each other's emissions", false, "a program did not emit"));
+            return rows;
+        }
+
+        rows.Add(Crossed("a numeric emission judged as baseline", numericCode, numericSymbols, JsNativeTier.Baseline));
+        rows.Add(Crossed("a baseline emission judged as numeric", wideCode, wideSymbols, JsNativeTier.Numeric));
+        return rows;
+    }
+
+    /// <summary>Requires the scan to refuse one Windows x64 payload under one tier with one outcome.</summary>
+    private static (string, bool, string) RefusedBaseline(
+        string name, JsNativeTier tier, byte[] code, JsNativeScanOutcome expected)
+    {
+        var label = "the " + tier + " scan refuses " + name;
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, tier, code, [new JsNativeSymbolRow(0, 0)], 16);
+
+        return (
+            label,
+            result.Outcome == expected,
+            result.Outcome == expected
+                ? result.Outcome + " at offset " + result.Offset + ": " + result.Reason
+                : "expected " + expected + " and the scan answered " + result.Outcome + " at " + result.Offset + ": " + result.Reason);
+    }
+
+    /// <summary>Requires a real emission scanned under the other tier to be refused as no template.</summary>
+    private static (string, bool, string) Crossed(
+        string name, byte[] code, JsNativeSymbolRow[] symbols, JsNativeTier tier)
+    {
+        var label = "the template scan refuses " + name;
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, tier, code, symbols, 16);
+
+        return (
+            label,
+            result.Outcome == JsNativeScanOutcome.NoTemplate,
+            result.Outcome + " at offset " + result.Offset + ": " + result.Reason);
+    }
+
+    /// <summary>The answers a wide artifact could already reach, stated as unchanged.</summary>
+    /// <remarks>
+    /// <b>A WIDE ARTIFACT'S PAYLOAD WAS JUDGED AGAINST THE NUMERIC TABLES UNTIL THE BASELINE TIER
+    /// EXISTED, AND THREE RETAINED ANSWERS DEPEND ON WHAT THAT JUDGEMENT SAID.</b> Four zero bytes
+    /// declared as x86-64 are still no template at their first byte; the arm64 table is the one a
+    /// wide arm64 payload is still judged against, so four zero bytes are still refused there and a
+    /// single <c>ret</c> is still accepted. The verification rows above run the same three through
+    /// the whole verifier, whose tier is now read off the manifest.
+    /// </remarks>
+    private static System.Collections.Generic.List<(string, bool, string)> UnchangedAnswers()
+    {
+        var zeros = JsNativeScan.Scan(
+            JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, [0x00, 0x00, 0x00, 0x00], [new JsNativeSymbolRow(0, 0)], 16);
+
+        var armZeros = JsNativeScan.Scan(
+            JsNativeArchitecture.Arm64, JsNativeTier.Baseline, [0x00, 0x00, 0x00, 0x00], [new JsNativeSymbolRow(0, 0)], 4);
+
+        var armReturn = JsNativeScan.Scan(
+            JsNativeArchitecture.Arm64, JsNativeTier.Baseline, [0xC0, 0x03, 0x5F, 0xD6], [new JsNativeSymbolRow(0, 0)], 4);
+
+        return
+        [
+            (
+                "unchanged: an x86-64 payload of four zero bytes under the wide manifest is no template at its first byte",
+                zeros.Outcome == JsNativeScanOutcome.NoTemplate && zeros.Offset == 0,
+                zeros.Outcome + " at offset " + zeros.Offset),
+            (
+                "unchanged: an arm64 payload of four zero bytes under the wide manifest is no template",
+                armZeros.Outcome == JsNativeScanOutcome.NoTemplate && armZeros.Offset == 0,
+                armZeros.Outcome + " at offset " + armZeros.Offset),
+            (
+                "unchanged: a one-instruction arm64 payload under the wide manifest is accepted",
+                armReturn.Accepted,
+                armReturn.Accepted ? "accepted against the arm64 table" : armReturn.Outcome + ": " + armReturn.Reason),
+        ];
     }
 
     // ---- everything the backends emit, the scanner accepts ---------------------------------

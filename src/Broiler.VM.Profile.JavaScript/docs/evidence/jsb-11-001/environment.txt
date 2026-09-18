@@ -1,0 +1,95 @@
+os:                    Windows-10-10.0.26200-SP0
+machine:               AMD64
+python:                3.11.9
+dotnet --info exit:    0
+
+.NET SDK:
+ Version:           10.0.400
+ Commit:            14fbf8d527
+ Workload version:  10.0.400-manifests.b0ae88bd
+ MSBuild version:   18.9.6+14fbf8d52
+
+Laufzeitumgebung:
+ OS Name:     Windows
+ OS Version:  10.0.26200
+ OS Platform: Windows
+ RID:         win-x64
+ Base Path:   C:\program files\dotnet\sdk\10.0.400\
+
+Installierte .NET-Workloads:
+ [maccatalyst]
+   Installationsquelle: VS 18.9.12120.119, VS 18.9.12120.119
+   Manifestversion:    26.5.10301/10.0.100
+   Manifestpfad:       C:\program files\dotnet\sdk-manifests\10.0.100\microsoft.net.sdk.maccatalyst\26.5.10301\WorkloadManifest.json
+   Installationstyp:              Msi
+
+ [ios]
+   Installationsquelle: VS 18.9.12120.119, VS 18.9.12120.119
+   Manifestversion:    26.5.10301/10.0.100
+   Manifestpfad:       C:\program files\dotnet\sdk-manifests\10.0.100\microsoft.net.sdk.ios\26.5.10301\WorkloadManifest.json
+   Installationstyp:              Msi
+
+ [wasm-tools]
+   Installationsquelle: VS 18.9.12120.119, VS 18.9.12120.119
+   Manifestversion:    10.0.111/10.0.100
+   Manifestpfad:       C:\program files\dotnet\sdk-manifests\10.0.100\microsoft.net.workload.mono.toolchain.current\10.0.111\WorkloadManifest.json
+   Installationstyp:              Msi
+
+ [android]
+   Installationsquelle: VS 18.9.12120.119, VS 18.9.12120.119
+   Manifestversion:    36.1.69/10.0.100
+   Manifestpfad:       C:\program files\dotnet\sdk-manifests\10.0.100\microsoft.net.sdk.android\36.1.69\WorkloadManifest.json
+   Installationstyp:              Msi
+
+ [maui-windows]
+   Installationsquelle: VS 18.9.12120.119, VS 18.9.12120.119
+   Manifestversion:    10.0.20/10.0.100
+   Manifestpfad:       C:\program files\dotnet\sdk-manifests\10.0.100\microsoft.net.sdk.maui\10.0.20\WorkloadManifest.json
+   Installationstyp:              Msi
+
+Für die Verwendung von workload sets bei der Installation neuer Manifeste konfiguriert.
+Es sind keine Workloadsätze installiert. Führen Sie „dotnet workload restore“ aus, um einen Workloadsatz zu installieren.
+
+Host:
+  Version:      10.0.11
+  Architecture: x64
+  Commit:       e2f47b0110
+
+.NET SDKs installed:
+  5.0.416 [C:\program files\dotnet\sdk]
+  9.0.317 [C:\program files\dotnet\sdk]
+  10.0.100-rc.1.25451.107 [C:\program files\dotnet\sdk]
+  10.0.400 [C:\program files\dotnet\sdk]
+
+.NET runtimes installed:
+  Microsoft.AspNetCore.App 3.1.32 [C:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 5.0.17 [C:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 8.0.30 [C:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 9.0.19 [C:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.AspNetCore.App 10.0.11 [C:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+  Microsoft.NETCore.App 3.1.32 [C:\program files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 5.0.17 [C:\program files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 8.0.30 [C:\program files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 9.0.19 [C:\program files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.NETCore.App 10.0.11 [C:\program files\dotnet\shared\Microsoft.NETCore.App]
+  Microsoft.WindowsDesktop.App 3.1.32 [C:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 5.0.17 [C:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 8.0.30 [C:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 9.0.19 [C:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+  Microsoft.WindowsDesktop.App 10.0.11 [C:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+
+Other architectures found:
+  x86   [C:\Program Files (x86)\dotnet]
+    registered at [HKLM\SOFTWARE\dotnet\Setup\InstalledVersions\x86\InstallLocation]
+
+Environment variables:
+  Not set
+
+global.json file:
+  Not found
+
+Learn more:
+  https://aka.ms/dotnet/info
+
+Download .NET:
+  https://aka.ms/dotnet/download

@@ -9113,3 +9113,414 @@ this was reachable in the first place.
 slice compiler's checks lane, both run from this working tree on `win-x64` after the change; and the
 consumer suite that found it, which passes in full against a provider built on this profile.
 2026-09-09.
+
+---
+
+### JSC-215
+
+**Where:** [the plan](roadmap.md#non-goals)'s non-goals, the *second execution arm* entry as
+[JSC-197](#jsc-197) amended it, and every document that quotes its property line — the backend
+roadmap's [section 1](roadmap.backends.md#1-the-target-stated-as-an-artifact-rather-than-as-a-speed)
+and [section 3](roadmap.backends.md#3-the-constraint-this-whole-document-is-organised-around) among
+them.
+
+**What the plan said.** The property JSC-197 put in place of the implication that what this profile
+compiles is bytecode: **the form is chosen when an artifact is compiled and fixed when it is verified,
+and a verified handle's form never changes** — "one executor, one form per handle, no promotion". The
+line named no manifest. Read beside the backend roadmap's section 3 and
+[MVP-7](../../../docs/mvp.md#5-routes-taken-without-a-decision), it was taken as leaving a native form
+exactly one shape: a manifest small enough that every program in it compiles whole, which was
+`broiler.javascript.numeric`.
+
+**What replaced it.** One executor, **one form per handle and per instance — nested loads included —**
+no promotion and no bail-out; the native output form is admitted under `broiler.javascript.numeric` and
+`broiler.javascript.wide`, and is whole-artifact under both. Every refusal of the paragraph stands: no
+IL, no expression tree, no delegate compiled at run time, no tier, no deoptimization, no on-stack
+replacement, and no path that picks a form from run-time observation or re-maps a handle's payload.
+
+**Why the instance clause was needed, which is the half that is not a relaxation.** Under the wide
+manifest's native form a program a guest loads — through `eval`, the `Function` constructor or an
+import — is compiled by the composition's provider and verified into a handle of its own. *One form per
+handle* would be satisfied by a native instance running an evaluated program as bytecode, and that
+instance would then be running two forms at once, which is the mixed-form artifact reached through a
+load rather than through a compile. The corrected line refuses it, and the design enforces it at
+instantiation, at load, and where a program reaches an engine of the other form.
+
+**This is MVP-7's settling condition, and it reverses no entry.** The route register named "an amendment
+to the profile's non-goals, or a recorded refusal of one" as what settles that row, and this is the
+amendment. JSC-197's property is kept whole and made one clause stricter; what changes is which
+manifests a native form may be compiled under.
+
+**Authority and date.** [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md),
+sections 2 and 10. 2026-09-15.
+
+---
+
+### JSC-216
+
+**Where:** [`docs/mvp.md`](../../../docs/mvp.md#5-routes-taken-without-a-decision) section 5, row MVP-7
+and its commentary, and the new row MVP-8; [`roadmap.backends.md`](roadmap.backends.md)'s header, its
+section 1, section 3's statement that this profile cannot state where its references are rooted, the answer
+that section proposes, and its closing paragraphs, section 4's whole-artifact bullet, section 6's opening and
+its new stage `JSB-11`, and section 8's promises about managed references and about the language —
+the readings [JSC-199](#jsc-199) and [JSC-204](#jsc-204) put there.
+
+**What the plan said.** That the native output form is a whole-artifact form **under a restricted
+feature manifest**: `broiler.javascript.numeric` admits a numeric subset and refuses everything else by
+name at compile time, so "**the compilable language is small and it is not JavaScript**"; that the wide
+manifest "stays bytecode-only, and the interpreter remains the only thing in this component that runs
+real JavaScript"; and that "widening the manifest is a different design with a rooting scheme in it and
+not a later increment of this one", which nothing proposed.
+
+**What replaced it.** The native form is whole-artifact under **either** of two manifests, with a
+template table per manifest: under `broiler.javascript.numeric` the computing templates that already
+exist, and under `broiler.javascript.wide` **baseline** templates, whose every instruction is one call
+into the interpreter's own dispatch for that one instruction while the control flow between
+instructions is emitted. **The different design those sentences expected now exists, and it has no
+rooting scheme in emitted code**: every value stays in managed memory and the emitted frame holds a
+table address and a cookie. The numeric manifest is not widened, and every sentence about its language
+stays true of it. MVP-7 is marked ended on its own settling condition, [JSC-215](#jsc-215). The route
+the wide form rests on beside its decision — calling back once per instruction rather than once per
+block, which JSD-0025 takes and no measurement weighed — is filed as MVP-8, with a value-carrying tier named as
+the alternative a later decision could take against a retained measurement.
+
+**The stage is `JSB-11`, and the number is recorded because the obvious one was taken.** The backend
+roadmap already names `JSB-7` — the arming path — and a stage identifier is never reused, so the
+stage this decision owns is numbered after the ten that exist and its evidence bundle is named
+`jsb-11-001`.
+
+**This does not reverse JSC-199.** The per-unit design that entry retracted stays refused: the baseline
+form emits every unit of an artifact, has no entry guard and no fallback, and chooses nothing at run
+time.
+
+**What this entry does not record.** It records no evidence and no acceptance. The code this reading
+describes is being written on this entry's date; `jsb-11-001` is to be collected and does not exist;
+no row of the ledger reaches beyond `[NONE]` for any of it; and no human has read a line.
+
+**Authority and date.** [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md).
+2026-09-15.
+
+---
+
+### JSC-217
+
+**Where:** [`roadmap.backends.md`](roadmap.backends.md) section 4, the bullet on whether the emitted
+body computes or delegates; section 3's bullet describing the emitted frame; and
+[`docs/mvp.md`](../../../docs/mvp.md#5-routes-taken-without-a-decision)'s MVP-3 row, which describes the
+same frame.
+
+**What the plan said.** That the alternative design — "one call per opcode into the managed helpers the
+interpreter's own switch arms already call" — has the property that "**every one of its frames holds
+managed references, which is the thing section 3 refuses**", and that "**No decision record has weighed
+the two**". And, in section 3 and MVP-3, that the frame handed to emitted code carries pointers to
+operand, local and constant storage, a fuel cell, **and a helper table**.
+
+**What replaced it.** **The emitted frames of a delegating form need hold no managed reference, and the
+baseline form's hold none.** A design that passes emitted code an operand stack or a value to hand on
+does put references in its frames; the baseline form passes a frame pointer and a bytecode offset and
+nothing else. Every reference lives in a managed activation, rooted by the local of the managed frame
+that entered the emitted code and by a thread-static slot that frame sets for the length of the call and
+restores after it, and that slot is read only by the handler step, after it checks the frame's cookie
+against the activation's. [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md)
+section 3 weighs the two forms and keeps both, one per manifest. **The helper table was never in the
+numeric frame**: `JsNativeFrame` declares operand, local and constant pointers, their counts, a fuel
+pointer and the offset the unit had reached, and the numeric form's emitted code calls no helper: its
+only calls are direct `call rel32` transfers to a code unit of the same artifact. The structure that carries a table of calls is the wide manifest's `JsBaselineFrame`.
+
+**Why the first sentence was not simply wrong.** It described the design as section 4 imagined it, in
+which emitted code would carry the operand stack into each helper. No record had described the version in which the helpers reach the stack themselves, from managed code, so the property was attributed to
+delegation rather than to one arrangement of it.
+
+**Authority and date.** [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md),
+sections 3 and 4; `src/Broiler.VM.Profile.JavaScript.Format/JsNativeFrame.cs` and
+`JsBaselineFrame.cs` for the two frames' fields. 2026-09-15.
+
+---
+
+### JSC-218
+
+**Where:** [`roadmap.backends.md`](roadmap.backends.md)'s
+[JSB-5](roadmap.backends.md#jsb-5--verification-of-a-payload-that-is-code-and-what-it-cannot-catch),
+the list of named clauses the template-closure scan answers with and the checks lane's list of legal
+machine code no backend emits.
+
+**What the plan said.** That the scan refuses "**a call whose target is not a unit's entry point**", and
+that the checks lane refuses by name, as legal machine code no backend emits, "**an indirect call through
+a register**" — stated of the scan as such, since there was one family of tables to state it of.
+
+**What replaced it.** **Both stand unchanged for the numeric tables**, for each x86-64 convention and
+for arm64, and the numeric golden rows and corpus answers do not move. **The baseline tables for the
+wide manifest admit exactly one call**: `call qword [rbx+disp32]`, whose displacement must be eight times
+a byte that is a defined opcode. Any other register-indirect call, a call through any other register,
+and a displacement naming a byte no opcode takes are still refused. Four shape clauses bind the baseline
+tables alone — the prologue exactly once and first, the epilogue exactly once and last, no branch into
+either, and no cross-unit branch or memory-destination template in the tables — reported under the
+existing `NativePayloadNotTemplateClosed` code with two new named outcomes. Together they make every
+indirect call land in the handler table, and they cannot make the right handler be at the right
+offset: a handler checks that when it runs, so a misplaced call is an internal defect and not a
+JavaScript answer.
+
+**What this entry does not record: any change to rule X1's statement.** The design carried, until
+implementation, a read-only mapped page for the handler table, which would have added a third
+protection value to the arming path and a sentence to that rule. It was dropped
+([JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) section 3): the table is
+unmanaged process memory allocated once and never written after it is filled, no baseline template has a memory destination —
+the only memory an emitted unit writes is its own stack, below the stack pointer, through the prologue's
+pushes and each call's return address, which cannot reach the table or the frame `RunNative` stored —
+and rule X1's statement and test are unchanged.
+
+**Authority and date.** [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md),
+section 2. 2026-09-15.
+
+---
+
+### JSC-219
+
+**Where:** the fuel remark on `JsNativeFrame` in
+`src/Broiler.VM.Profile.JavaScript.Format/JsNativeFrame.cs`, and
+[JSB-10](roadmap.backends.md#jsb-10--the-differential-oracle-one-source-two-forms)'s exit-gate clause
+that compares values and not budget outcomes.
+
+**What the plan said.** That "**THE TWO FORMS EXHAUST AT DIFFERENT POINTS**", because the interpreter
+charges its meter per instruction "which emitted code cannot do without a managed call per instruction";
+and that a differential lane compares values and not budget outcomes because "an emitted body cannot
+charge per instruction the way the dispatch loop does".
+
+**What replaced it.** **Both are true of the numeric form and of it only.** The baseline form makes the
+managed call per instruction those sentences put out of reach, and its handler charges fuel at the
+interpreter's own point in the interpreter's own method, so exhaustion lands on the same instruction and
+the polls happen at the same crossings. **The one named divergence is a program a guest loads**: its
+verification charges verifier work to fuel and its native payload is larger than its bytecode, so a
+variant that loads a program may exhaust fuel at a different point in the two forms. A lane comparing
+the baseline form therefore compares budget outcomes as well as values, for every program that loads
+nothing, and excludes loading programs from that comparison by name. And a form that is slower per
+instruction reaches a wall-clock allowance after fewer instructions, which is a difference of budget and
+not of semantics.
+
+**Authority and date.** [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md),
+section 5. 2026-09-15.
+
+---
+
+### JSC-220
+
+**Where:** every published statement that the native form implies the numeric manifest. Corrected in
+place in this change: [`docs/support.md`](../../../docs/support.md) section 3a's x86-64 row and section
+7; [the ledger](roadmap.status.md)'s observed-repository-state paragraph saying "the wide manifest
+stays bytecode-only" and its bullet saying the numeric manifest is "the only one the backend admits";
+and the remarks — outside every fingerprint — on `JsNumericManifest`, on `JsNativeFrame`, on
+`JsFormat.CeilingNativeCodeBytes`, and on `JavaScriptProfile.NumericManifest` and
+`JavaScriptProfile.NativeManifest`, together with `src/tests/forms/README.md` and the header comment of
+`eng/compare-forms.py`.
+
+**What the plan said.** That a native artifact is a numeric artifact: "The language it compiles is
+`broiler.javascript.numeric` and it is not JavaScript"; "the wide manifest stays bytecode-only"; a
+numeric manifest that is "the only one the backend admits" and whose existence is "the only shape that
+rule admits"; "nothing here is a step towards compiling" the wide manifest; and "there is no version of
+'Octane under the native form' to run".
+
+**What replaced it.** Each is scoped to the numeric form, with a dated note in the document's own
+convention quoting what it read, and each says that a second native form over the wide manifest is being
+written and that nothing about it is collected or claimed.
+
+**What this entry does not record as corrected.** Several statements of the same reading sit in files
+this change does not own, because other changes own their code: the machine-code workflow's header and
+its manifest choice; `eng/run-test262.py`'s header, help text and native default; the conformance
+composition's `Test262Manifests` remarks, its refusal message and its usage text; the remarks and the refusal message of `JsCompiler.Emit`; the remarks of the
+`JsCompiler.Compile` overload that takes a compile request, which say the native form is admitted only
+under the numeric manifest; the x86-64 backend's remark that what it emits is a closed subset of the
+numeric manifest (`JsX64Backend`); the summary of `JsFeatureManifest.Numeric` as the subset a whole
+artifact can be emitted from; the arm64 backend's refusal message; `JsNativeExecution`'s
+remarks; the polyglot and end-user command lines' option messages; and the profile project's
+description. They are corrected by the changes that own those files, and this entry does not claim any
+of them as corrected on its date.
+
+**Authority and date.** [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md).
+2026-09-15.
+
+---
+
+### JSC-221
+
+**Where:** [`roadmap.backends.md`](roadmap.backends.md) section 4's arm64 bullet and
+[JSB-9](roadmap.backends.md#jsb-9--the-arm64-encoder-emitting-only)'s state bullet, and
+[`docs/support.md`](../../../docs/support.md) section 3a's arm64 row, each corrected in place with a
+dated note.
+
+**What the plan said.** Nothing about a wide artifact naming arm64, because no wide artifact could carry
+emitted code: arm64 was the second architecture of the numeric form, **emitting-only**, and an image
+asked to instantiate an arm64 artifact refused by name. A reader could fairly take "arm64 emits into the
+same sections" as a statement about any native form.
+
+**What replaced it.** **arm64 stays emitting-only for the numeric manifest and emits nothing for the
+wide one.** The arm64 backend refuses to emit for `broiler.javascript.wide`, with a message naming the
+baseline form as having no arm64 emitter. A wide artifact that names arm64 anyway is scanned against the
+unchanged arm64 table, verifies only if it is closed under it, and is refused at instantiation with an
+unsatisfied host assumption on every host — the same refusal, before any fuel is charged, that the
+retained corpus entry for an architecture no host arms already pins. And on an arm64 host no x86-64
+architecture is armed, so every wide native artifact is refused there too. None of it is a fallback.
+
+**Authority and date.** [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md),
+section 8. 2026-09-15.
+
+---
+
+### JSC-222
+
+**Where:** `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs`, the numeric instance's `Dispose` and
+the mapping it releases; `JsNativePage`'s ownership of a mapping; and the reading of
+[JSD-0011](decisions/0011-the-value-frame-and-call-abi.md)'s Row 2 that a native code mapping has to
+answer to.
+
+**What the checkout did.** A numeric native instance maps and arms its page when it is created and
+releases the mapping only in `JsNativeInstance.Dispose`, whose own falsification line reads "a mapping
+outlives the instance that owns it". **No code in `Broiler.VM.Runtime` disposes the state object an
+instance holds** — a search of that assembly for `IDisposable` finds only `VmAggregateBudget` and
+`VmRuntime` — so a disposed core instance leaves its native mapping in place until the process exits.
+Nothing said so; this is a correction to code rather than to a sentence, recorded because the design
+that follows depends on the release path being real.
+
+**What replaced it, as decided and not as observed.** A mapping is owned by a `SafeHandle` whose release
+calls the existing platform release path and removes the memory pressure the mapping reported when it
+was made; an explicit `Dispose` still releases at once. For the wide manifest's form a page belongs to
+the program rather than to the instance, so a program a guest loads releases its page when the program
+becomes unreachable. **JSD-0011's Row 2 is read as scoped to value-holding regions**, which is how its
+own first sentence states its subject — "Every value-holding region is a managed array of the value
+struct" — so a handle over executable bytes, which holds no value, is not the "handle table" or the
+"finalizer" that row refuses, and the row is not amended.
+
+**What this entry does not record.** The ownership change is being written on this entry's date, and
+this entry does not claim the defect repaired: a retained replay of the eval-heavy conformance subtrees
+with the process's private bytes watched is what would show it, and it is to be collected.
+
+**Authority and date.** [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md),
+section 4; `JsNativeExecution.cs` and the `Broiler.VM.Runtime` assembly as read on this date.
+2026-09-15.
+
+---
+
+### JSC-223
+
+**Where:** [the ledger](roadmap.status.md#2-current-milestone-status)'s paragraph on the second native
+form and its three item rows, with the two earlier sentences of that section that described the form
+as being written; [`roadmap.backends.md`](roadmap.backends.md)'s JSB-11 State bullet and the two
+sentences of that file that repeat it; [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md)'s
+Milestone paragraph and section 9; the paragraph of [`roadmap.md`](roadmap.md) that names the stage;
+and, outside this profile, [`docs/support.md`](../../../docs/support.md) sections 3a and 7 and
+[`docs/mvp.md`](../../../docs/mvp.md#5-routes-taken-without-a-decision)'s MVP-8 row.
+
+**What the plan said.** That the baseline native form over the wide manifest "is being written" and
+that "nothing about it is collected"; that `jsb-11-001` "is to be collected and does not exist", which
+[JSC-216](#jsc-216) recorded; and that the ledger's three items for the form are `[NONE]` because no
+bundle retains anything about them.
+
+**What was true.** The code landed on 2026-09-15, and bundle
+[JSB-11-001](evidence/jsb-11-001/README.md) was collected from it the same day on one `win-x64`
+workstation. The bundle retains conformance runs of both forms and their per-variant comparisons, the
+slice compiler's checks and the corpus replay in JIT, trimmed and Native AOT images, the rules and
+witnesses passing, frame-cost measures, a JIT summary, Native AOT image sizes and benchmark reports.
+It meets one clause of JSB-11's gate on that machine and shows parts of the others. No unit emitted
+for the System V convention was entered, no control was watched failing and passing after revert, and
+the interpreter audit was not performed. One of its comparisons fails the comparison script with
+differences it does not classify.
+
+**What replaced it.** The three ledger items cite the bundle and are `[PARTIAL]`, each naming what
+the bundle leaves open. The JSB-11 State bullet names, clause by clause, what the bundle meets and
+what it does not. Each sentence that said the form was being written, or that nothing about it was
+collected, carries a dated note pointing here.
+
+**What this entry does NOT do.** It does not accept anything, moves no milestone row and claims no
+runtime identifier. No item is `[FULL]`, no figure from the bundle is copied into any record named
+above, and no human has read a line. [JSC-216](#jsc-216) is not edited; this entry supersedes its
+sentence about the bundle.
+
+**Authority and date.** Bundle [JSB-11-001](evidence/jsb-11-001/README.md), retained on 2026-09-15,
+and its sections 8 and 9; the ledger's update rules 1 and 2. 2026-09-15.
+
+---
+
+### JSC-224
+
+**Where:** class (c) of `eng/compare-test262-forms.py` as commit `fd3a2aa` changed it, together with
+the comment that commit changed in `.github/workflows/broiler-vm-lane.yml` to describe the class; the
+conformance clause of
+[JSB-11](roadmap.backends.md#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference)'s
+exit gate, **which is not changed**; that stage's State bullet, in its lead sentence and in its
+sub-bullets on the two forms and on the conformance suite;
+[the ledger](roadmap.status.md#2-current-milestone-status)'s paragraph on the second native form and
+two of its item rows (the baseline form and the two-forms check); `docs/support.md`, in section 3a (its
+paragraph on the two forms beyond bytecode and the x86-64 row of its table) and in section 7; and
+bundle [JSB-11-001](evidence/jsb-11-001/README.md), in its introduction and sections 1, 2, 3, 4, 8 and
+9.
+
+**What the plan said.** The State bullet said that the bundle showed the gate's clauses "on one
+`win-x64` workstation, in the Windows convention only", that "the System V half has executed nowhere"
+and that the lane that would run its rows had not run, and that "neither workflow run nor any shard's
+job limit has been observed". The ledger said that no item was `[FULL]` because, among other things,
+"the System V convention has executed nowhere"; its baseline-form row listed "any execution under
+`x86-64-sysv`" as open, and its two-forms row listed every `x86-64-sysv` row as not run and the
+workflow runs and their shard limits as unobserved. `docs/support.md` said the bundle retained a
+collection "in the Windows convention only", and that the wide-manifest form's System V convention had
+been executed nowhere. Beside those records, the comparison script at `06e1462` admitted into class (c)
+a wall-clock exhaustion under a realistic allowance in two shapes. In the first, the native run ran out
+of wall where the bytecode run answered or exhausted another allowance; in the second, the bytecode run
+ran out of wall where the native run passed. **The second shape is not a wall-clock exhaustion in the
+native form either, so it is not a class the gate names**, and a comparison could already pass the
+script without meeting the gate. On 2026-09-15 two workflow runs of the conformance suite on that
+commit, one in each form, were compared through it, and it refused the pair. Some of their differences
+were a bytecode wall-clock exhaustion against a native fuel exhaustion, a shape it had no class for.
+
+**What changed in the script, and when.** **After that observation**, the same day, commit `fd3a2aa`
+added a third shape to class (c): the bytecode run out of wall and the native run out of another
+allowance, admitted under a realistic wall only. Under it the pair compares clean. The bundle retains
+hand-built reports run through the script at `fd3a2aa`, which show where the new shape stops. A native
+failure or refusal against a bytecode wall-clock exhaustion stays unclassified. The new shape stays
+unclassified when both runs were taken at the deterministic lane's allowance, and is admitted below it.
+The bundle also retains that, when the script finds no test262 checkout, the new shape takes in
+differences whose native side is a nested-load-byte exhaustion on a variant that loads a program, which
+class (b) would otherwise hold.
+
+**The justification recorded with the change.** A comparison of two bytecode runs, with no native run
+in it, shows the same split. It holds the workstation's whole-suite bytecode reference from main against
+the workflow's bytecode run, and variants run out of wall clock in one and out of fuel in the other, in
+exactly that shape. The script's comment argues from this that the machine, not the form, decides which
+allowance trips first in a variant that exhausts both. The bundle retains that comparison, and records
+it as an argument from one run of each and not as a demonstration.
+
+**What was not changed: the gate.** JSB-11's conformance clause says that under a wall-clock allowance
+the only additional class is a wall-clock exhaustion in the native form. It also says that any other
+difference is a defect, fixed before the clause is met rather than classified into it. **Its text was
+deliberately not amended by this change.** Widening a classification after seeing the evidence it then
+passes is exactly what that sentence forbids for the clause itself, so the script's reading is recorded
+as the script's and nothing more. **The bundle's clause readings rest on the classes the gate names,
+row by row, and not on the script's exit code at either commit.** The pair compares clean under the
+widened script. Under the gate as written, some of its differences are in no named class, so **the
+conformance clause stays not met on this evidence**. The same holds for the bundle's comparison against
+a native run at a longer wall-clock allowance, which the widened script also passes when guest loads
+are exempted: its differences are in no class the gate names, two of them because their native side is
+a nested-load-byte exhaustion rather than a fuel exhaustion.
+
+**What replaced it.** On `06e1462`, the pull-request lane's Linux job executed the System V convention
+over two subtrees, and the machine-code workflow run executed it over the whole suite; the bytecode
+workflow run, which has no calling convention, is the run it was compared with. Both workflow runs
+succeeded, and each of their shard jobs finished inside its limit. The bundle retains the workflow runs'
+identity, merge logs and merged reports, and selected lines of the lane job. So the State bullet now
+names the System V convention as executed in the machine-code workflow run and a lane job, and says
+that the System V half of the two-forms clause is not shown for its rows, because **no retained
+transcript names the two System V checks rows as passed**: that lane's transcript names no passing row.
+It names the workflow half of the conformance clause as observed and the clause as not met, because
+some differences are in no named class. The ledger drops "the System V convention has executed nowhere"
+as a reason, lists the System V checks rows named as passed as open in place of any execution under
+that convention, and names the differences the gate does not classify in place of the unobserved
+workflow runs. `docs/support.md` keeps every sentence and adds a dated note beside each, saying that
+the bundle now retains the form's System V convention executed on hosted Linux runners and that no
+runtime identifier, `linux-x64` included, is claimed. Each revised sentence carries a dated note
+pointing here or to the bundle.
+
+**What this entry does NOT do.** It accepts nothing, moves no milestone row, claims no runtime
+identifier and marks no item `[FULL]`. It amends no gate. It does not edit the script or the lane's
+comment, which stay as commit `fd3a2aa` left them. No figure from the bundle is copied into any record
+named above, and no human has read a line.
+
+**Authority and date.** Commit `fd3a2aa`; bundle [JSB-11-001](evidence/jsb-11-001/README.md) as extended
+on 2026-09-15, sections 3, 4, 8 and 9. 2026-09-15.

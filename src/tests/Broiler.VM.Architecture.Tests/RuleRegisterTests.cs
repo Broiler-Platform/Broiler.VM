@@ -325,10 +325,20 @@ public sealed class RuleRegisterTests
         // and therefore does not get the core's boundary charge - so a member added without one is
         // a member a guest drives for free while the ceiling that was supposed to bound it goes on
         // bounding the capability table. Neither the Vacuous nor the Deferred count moves.
-        Assert.Equal(91, byStatus["Active"]);
+        // The baseline native form over the wide manifest adds X2 and X3, in group X beside X1
+        // because they are the rooting half of the property X1 is the mapping half of, and they
+        // are the two claims decision JSD-0025's rooting argument makes that no call site shows.
+        // X2 holds the frame handed to emitted code to carrying no reference, because the collector
+        // does not scan an emitted frame and a reference parked in one is held where nothing roots
+        // it. X3 pins where native code may enter managed code to the handler file, and the thread
+        // slot a handler finds its activation through to one entering file that saves, sets and
+        // restores it and, inside the activation, to the property's accessors and Step, which is what
+        // keeps that slot an activation handle rather than the ambient holder N20 forbids. Neither
+        // the Vacuous nor the Deferred count moves.
+        Assert.Equal(93, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(93, Loaded.Rules.Count);
+        Assert.Equal(95, Loaded.Rules.Count);
     }
 
     private static Register Load()

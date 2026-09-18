@@ -26,6 +26,17 @@ native form" to run — not a slow one, not a partial one. `eng/compare-forms.py
 rather than asserting it: it compiles a named Octane file under the numeric manifest and prints
 the host's own refusal.
 
+*(Corrected 2026-09-15. Two sentences above are true of the numeric native form and were read as
+true of any native form: "The native output forms admit a smaller surface still" and "there is no
+version of "Octane under the native form" to run". From 2026-09-15 a second native form is being
+written over `broiler.javascript.wide`, decided in
+[JSD-0025](../../Broiler.VM.Profile.JavaScript/docs/decisions/0025-the-baseline-native-form-over-the-wide-manifest.md),
+in which every instruction is a call into the interpreter's own dispatch for that instruction and no
+construct the wide manifest admits is refused. **These kernels and `eng/compare-forms.py` do not
+drive that form**: they compile under the numeric manifest and compare the numeric form, and nothing
+they print is about the other one — which is also why the rule below, that no figure from them is
+retained, says nothing about it either.)*
+
 **What the native x86-64 backends additionally refuse**, measured against these kernels on
 2026-09-07 and stated here so a reader adding a kernel is not surprised:
 

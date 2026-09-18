@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   53
-// Annotated:        53/53
-// Exempt:           26
-// Human-reviewed:   0/53
+// Relevant units:   65
+// Annotated:        65/65
+// Exempt:           30
+// Human-reviewed:   0/65
 // IP risk:          Low
-// Security risk:    High
-// Criteria:         13/13
+// Security risk:    Critical
+// Criteria:         20/20
 // Resource impact:  2/10 max
-// Unverified:       53
+// Unverified:       65
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -610,12 +610,13 @@ public sealed class JsX64Assembler
 
     /// <summary><c>call rel32</c>: <c>E8 id</c>.</summary>
     /// <remarks>
-    /// <b>A DIRECT CALL AND NEVER AN INDIRECT ONE.</b> Every call this backend emits is to a code
-    /// unit of the same artifact, at a displacement fixed when the artifact was compiled; there is
-    /// no table of pointers to be relocated at load, no register holding a target, and no path by
+    /// <b>A DIRECT CALL AND NEVER AN INDIRECT ONE.</b> Every call the numeric form emits is to a
+    /// code unit of the same artifact, at a displacement fixed when the artifact was compiled; there
+    /// is no table of pointers to be relocated at load, no register holding a target, and no path by
     /// which a value a guest program computed becomes an address. That is what makes the emitted
     /// blob position-independent, byte-identical on re-emission, and unable to transfer control
-    /// anywhere the emitter did not write.
+    /// anywhere the emitter did not write. The baseline form's one call is
+    /// <see cref="CallRbxDisp32"/>, through a table the runtime supplies and no guest value indexes.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=767753
     // Broiler-Falsified-If: a call whose target is not a code unit of the same artifact is emitted
@@ -630,7 +631,8 @@ public sealed class JsX64Assembler
     /// <remarks>
     /// <b>THE BACKEND EMITS NONE OF THESE AND THIS EXISTS FOR THE TRAMPOLINE THAT CHECKS IT.</b>
     /// Every call in an emitted artifact is a direct <c>call rel32</c> to a code unit of the same
-    /// artifact, which is what keeps the blob position-independent and keeps a value a guest
+    /// artifact, or - in the baseline form - a call through the handler table the runtime supplies,
+    /// which is what keeps the blob position-independent and keeps a value a guest
     /// computed from ever becoming an address. A trampoline is a different thing: it calls an
     /// address it was handed, precisely so that it can stand between a caller and an emitted entry
     /// point and watch what the calling convention actually did.
@@ -804,4 +806,173 @@ public sealed class JsX64Assembler
         bytes.Add(0x7E);
         ModRmRegister(source, (int)destination);
     }
+
+    // ---- the baseline form's instructions ------------------------------------------------------
+
+    /// <summary><c>sub rsp, imm8</c>: <c>REX.W 83 /5 ib</c>.</summary>
+    /// <remarks>
+    /// <b>The one eight-bit immediate this encoder writes, and it is not a displacement.</b> The
+    /// reservation a baseline prologue makes is one of two constants of the convention - forty or
+    /// eight - so there is no later edit that can grow it past the byte without changing the
+    /// convention table first.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0247BA
+    // Broiler-Falsified-If: this emits bytes other than 48 83 EC followed by the immediate
+    // Broiler-Human:        PENDING
+    public void SubRspImm8(sbyte value)
+    {
+        bytes.Add(0x48);
+        bytes.Add(0x83);
+        bytes.Add(0xEC);
+        bytes.Add((byte)value);
+    }
+
+    /// <summary><c>add rsp, imm8</c>: <c>REX.W 83 /0 ib</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C87914
+    // Broiler-Falsified-If: this emits bytes other than 48 83 C4 followed by the immediate
+    // Broiler-Human:        PENDING
+    public void AddRspImm8(sbyte value)
+    {
+        bytes.Add(0x48);
+        bytes.Add(0x83);
+        bytes.Add(0xC4);
+        bytes.Add((byte)value);
+    }
+
+    /// <summary><c>mov rbx, [r14]</c>: <c>REX.WB 8B /r</c> with no displacement.</summary>
+    /// <remarks>
+    /// <b>The one memory operand this encoder writes without a thirty-two-bit displacement, and it
+    /// is fixed rather than general.</b> It reads the first field of a structure whose layout is a
+    /// format constant, so there is no displacement to grow; and a general no-displacement form
+    /// would have to know that RBP, RSP, R12 and R13 cannot be spelled that way, which this one
+    /// never asks.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=97690A
+    // Broiler-Falsified-If: this emits bytes other than 49 8B 1E
+    // Broiler-Human:        PENDING
+    public void MovRbxFromR14()
+    {
+        bytes.Add(0x49);
+        bytes.Add(0x8B);
+        bytes.Add(0x1E);
+    }
+
+    /// <summary><c>mov eax, r32</c>: <c>89 /r</c>, from the register a second argument arrives in.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=497634
+    // Broiler-Human:        PENDING
+    public void MovEaxFromArgument1(JsX64Register argument)
+    {
+        Rex(false, (int)argument, 0, 0);
+        bytes.Add(0x89);
+        ModRmRegister((int)argument, 0);
+    }
+
+    /// <summary><c>mov r32, imm32</c>: <c>B8+r id</c>, into the register a second argument travels in.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=2904BE
+    // Broiler-Human:        PENDING
+    public void MovArgument1Imm32(JsX64Register argument, int value)
+    {
+        Rex(false, 0, 0, (int)argument);
+        bytes.Add((byte)(0xB8 + ((int)argument & 7)));
+        EmitInt32(value);
+    }
+
+    /// <summary><c>mov eax, imm32</c>: <c>B8 id</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=3F5EAC
+    // Broiler-Human:        PENDING
+    public void MovEaxImm32(int value)
+    {
+        bytes.Add(0xB8);
+        EmitInt32(value);
+    }
+
+    /// <summary><c>cmp eax, imm32</c>: <c>3D id</c>, the short form the accumulator has.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C5B70A
+    // Broiler-Human:        PENDING
+    public void CmpEaxImm32(int value)
+    {
+        bytes.Add(0x3D);
+        EmitInt32(value);
+    }
+
+    /// <summary><c>call qword [rbx+disp32]</c>: <c>FF /2</c> over a memory operand.</summary>
+    /// <remarks>
+    /// <b>THE ONE INDIRECT CALL AN EMITTED ARTIFACT MAKES, AND ITS BASE IS FIXED.</b> The baseline
+    /// form calls a handler by indexing the table whose base its prologue loaded into RBX; the
+    /// template table admits this instruction only with RBX as the base and a displacement of eight
+    /// times a defined opcode, and nothing else in that table can write RBX or any memory. A general
+    /// indirect call would be a door the scan could not close, so there is none.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=94AF39
+    // Broiler-Falsified-If: this emits an indirect call through any base other than RBX, or bytes other than FF 93 followed by the displacement
+    // Broiler-Human:        PENDING
+    public void CallRbxDisp32(int displacement)
+    {
+        bytes.Add(0xFF);
+        ModRmMemory(2, (int)JsX64Register.Rbx, displacement);
+    }
+
+    /// <summary>
+    /// <c>jcc rel32</c> with its displacement left zero, answering the site the caller patches.
+    /// </summary>
+    /// <remarks>
+    /// <b>A BASELINE UNIT HAS A POTENTIAL TARGET AT EVERY INSTRUCTION, AND A LABEL EACH WOULD BE A
+    /// LIST EACH.</b> The label mechanism above holds a pending-site list per label, which is
+    /// right for a numeric unit with a handful of joins and wasteful for a form that binds every
+    /// bytecode offset of an artifact that can be megabytes long. So the baseline emitter keeps one
+    /// array of bound positions and one list of sites, and asks for the site here; what it owes in
+    /// return is that every site it was handed is patched before it takes the bytes, which it checks.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D48702
+    // Broiler-Falsified-If: this emits a short conditional form, or answers a site that is not the first byte of the four-byte displacement
+    // Broiler-Human:        PENDING
+    public int JccRel32(JsX64JumpCondition condition)
+    {
+        bytes.Add(0x0F);
+        bytes.Add((byte)condition);
+        var site = bytes.Count;
+        EmitInt32(0);
+        return site;
+    }
+
+    /// <summary><c>jmp rel32</c> with its displacement left zero, answering the site the caller patches.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=ED0ED4
+    // Broiler-Falsified-If: this emits the two-byte EB form, or answers a site that is not the first byte of the displacement
+    // Broiler-Human:        PENDING
+    public int JmpRel32()
+    {
+        bytes.Add(0xE9);
+        var site = bytes.Count;
+        EmitInt32(0);
+        return site;
+    }
+
+    /// <summary>Patches a rel32 site so the branch lands on <paramref name="target"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=B3F5EE
+    // Broiler-Falsified-If: the patched displacement is not the distance from the end of the branch instruction to the target
+    // Broiler-Human:        PENDING
+    public void PatchRel32(int site, int target) => Patch(site, target - (site + 4));
+}
+
+/// <summary>The four conditional branches the baseline form emits, as the second opcode byte each carries.</summary>
+/// <remarks>
+/// <b>A second enumeration rather than four more members of <see cref="JsX64Condition"/></b>, because
+/// that one names exactly the conditions the numeric form's template field admits, and a member added
+/// there would be spelled by the encoder and refused by the table.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4048E9
+// Broiler-Human:        PENDING
+public enum JsX64JumpCondition
+{
+    /// <summary><c>je</c>: <c>0F 84</c>.</summary>
+    Equal = 0x84,
+
+    /// <summary><c>jne</c>: <c>0F 85</c>.</summary>
+    NotEqual = 0x85,
+
+    /// <summary><c>ja</c>: <c>0F 87</c>, unsigned.</summary>
+    Above = 0x87,
+
+    /// <summary><c>js</c>: <c>0F 88</c>.</summary>
+    Sign = 0x88,
 }

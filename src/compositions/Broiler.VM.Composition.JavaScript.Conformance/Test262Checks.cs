@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Broiler Platform contributors
 // SPDX-License-Identifier: Apache-2.0
 
+using Broiler.VM.Profile.JavaScript;
+using Broiler.VM.Profile.JavaScript.Compiler;
 using System.Globalization;
 using System.Text.Json;
 
@@ -46,7 +48,160 @@ internal static class Test262Checks
         AWholeRunFloorHoldsAndRegressesInBothDirections(),
         AWholeRunFloorIsNeverComparedAcrossARevisionOrAManifest(),
         ARunTakenWithoutAPinMayNotBeRetainedOrSetAFloor(),
+        ANativeRunNamingNoManifestIsTakenUnderTheWideManifestWithTheHarness(),
+        ANativeRunNamingTheSliceManifestIsRefused(),
+        AReportOfTheNativeFormRoundTripsItsFormRow(),
+        AWholeRunFloorIsNeverComparedAcrossAnOutputForm(),
     ];
+
+    private static (string, bool, string) ANativeRunNamingNoManifestIsTakenUnderTheWideManifestWithTheHarness()
+    {
+        // THE SILENT-BYTECODE TRAP, CHECKED WHERE IT WAS SET. The wide branch once built its manifest
+        // without the form and the backend, so a native run under the wide manifest would have
+        // compiled every variant to bytecode and been compared as though it were native. The
+        // backend is named rather than defaulted, so the row answers alike on a host that arms none.
+        var parsed = Test262Manifest.TryParse(
+            null, [], Test262Manifest.Native, JsNativeBackends.X64SystemV, out var manifest, out var failure);
+
+        var request = parsed ? manifest.CompileRequest : null;
+
+        // And the numeric manifest's native run is the one it was: no harness, the numeric request.
+        var numeric = Test262Manifest.TryParse(
+            JavaScriptProfile.NumericManifest.ToString(),
+            [],
+            Test262Manifest.Native,
+            JsNativeBackends.X64SystemV,
+            out var narrow,
+            out _);
+
+        var held = parsed && manifest.IsWide && manifest.IsNative && manifest.LoadsHarness &&
+            string.Equals(manifest.Backend, JsNativeBackends.X64SystemV, StringComparison.Ordinal) &&
+            request is { Manifest: JsFeatureManifest.Wide, Form: JsOutputForm.Native } &&
+            string.Equals(request.Backend, JsNativeBackends.X64SystemV, StringComparison.Ordinal) &&
+            manifest.Describe().EndsWith("; form native (x86-64-sysv)", StringComparison.Ordinal) &&
+            numeric && narrow.IsNumeric && narrow.IsNative && !narrow.LoadsHarness &&
+            narrow.CompileRequest is { Manifest: JsFeatureManifest.Numeric, Form: JsOutputForm.Native };
+
+        return (
+            "a-native-run-naming-no-manifest-is-taken-under-the-wide-manifest-with-the-harness-loaded",
+            held,
+            parsed
+                ? "--form native with no --manifest reads as: " + manifest.Describe()
+                : "--form native with no --manifest was refused: " + failure);
+    }
+
+    private static (string, bool, string) ANativeRunNamingTheSliceManifestIsRefused()
+    {
+        // THE SLICE MANIFEST HAS NO NATIVE FORM, and a run that asked for one is refused before it
+        // scores a variant rather than reporting every variant as the same refusal. The refusal
+        // names both manifests that do admit the form, so the reader learns what to ask for.
+        var refused = !Test262Manifest.TryParse(
+            JavaScriptProfile.SliceManifest.ToString(),
+            [],
+            Test262Manifest.Native,
+            JsNativeBackends.X64SystemV,
+            out _,
+            out var failure);
+
+        var named = failure.Contains(JavaScriptProfile.WideManifest.ToString(), StringComparison.Ordinal) &&
+            failure.Contains(JavaScriptProfile.NumericManifest.ToString(), StringComparison.Ordinal) &&
+            failure.Contains(JavaScriptProfile.SliceManifest.ToString(), StringComparison.Ordinal);
+
+        // A backend on a bytecode run is still refused, whichever manifest it names.
+        var backendRefused = !Test262Manifest.TryParse(
+            null, [], Test262Manifest.Bytecode, JsNativeBackends.X64SystemV, out _, out _);
+
+        return (
+            "a-native-run-naming-the-slice-manifest-is-refused-before-it-scores-anything",
+            refused && named && backendRefused,
+            refused
+                ? "refused: " + failure
+                : "a native run under the slice manifest was admitted");
+    }
+
+    private static (string, bool, string) AReportOfTheNativeFormRoundTripsItsFormRow()
+    {
+        // THE ROW A FORM COMPARISON STANDS ON. A native report writes `form|native|<backend>` and
+        // reads it back; a bytecode report writes no form row at all, so every report taken before
+        // a run could name a form is still the document it was.
+        var files = Paths(12);
+        var bytecode = ReportOver(files, Sharding.AllShards, 1, files);
+        var native = bytecode with { Form = Test262Manifest.Native, Backend = JsNativeBackends.X64SystemV };
+        var path = Path.Combine(Path.GetTempPath(), "broiler-js-conformance-test262-native-report.txt");
+
+        try
+        {
+            File.WriteAllText(path, native.Render());
+            var read = Test262Report.Read(path);
+
+            var same = string.Equals(read.Render(), native.Render(), StringComparison.Ordinal) &&
+                string.Equals(read.Form, Test262Manifest.Native, StringComparison.Ordinal) &&
+                string.Equals(read.Backend, JsNativeBackends.X64SystemV, StringComparison.Ordinal);
+
+            var written = native.Render().Contains("\nform|native|x86-64-sysv\n", StringComparison.Ordinal);
+            var absent = !bytecode.Render().Contains("\nform|", StringComparison.Ordinal);
+
+            return (
+                "a-test262-report-of-the-native-form-round-trips-its-form-row",
+                same && written && absent,
+                same && written
+                    ? "a native report writes and reads back `form|native|x86-64-sysv`, and a bytecode " +
+                        "report writes no form row"
+                    : $"the native report read back as form `{read.Form}` backend `{read.Backend}`");
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    private static (string, bool, string) AWholeRunFloorIsNeverComparedAcrossAnOutputForm()
+    {
+        // A NATIVE RUN'S TOTALS DIFFER FROM A BYTECODE RUN'S BY NAMED CLASSES, and a floor that
+        // compared them would read a form's declared costs as a regression. Changing the form - or
+        // the backend of a native one - re-bases; the same form holds; and a floor naming no form is
+        // a bytecode floor, byte for byte the file it was.
+        var files = Paths(30);
+        var run = ReportOver(files, Sharding.AllShards, 1, files);
+        var floor = Test262Floor.From(run);
+        var native = run with { Form = Test262Manifest.Native, Backend = JsNativeBackends.X64SystemV };
+        var otherConvention = native with { Backend = JsNativeBackends.X64Windows };
+        var nativeFloor = Test262Floor.From(native);
+
+        var rebasedOntoNative = floor.Compare(native, out var why) == Floor.Verdict.Rebased &&
+            why.Any(static complaint => complaint.Contains("form", StringComparison.Ordinal));
+
+        var rebasedOntoBytecode = nativeFloor.Compare(run, out _) == Floor.Verdict.Rebased;
+        var rebasedOntoConvention = nativeFloor.Compare(otherConvention, out _) == Floor.Verdict.Rebased;
+        var heldNative = nativeFloor.Compare(native, out _) == Floor.Verdict.Held;
+        var bytecodeUnchanged = !floor.Render().Contains("\nform ", StringComparison.Ordinal);
+
+        var round = Path.Combine(Path.GetTempPath(), "broiler-js-conformance-test262-native-floor.txt");
+        var trip = false;
+
+        try
+        {
+            var rebased = nativeFloor.Rebase(otherConvention, "the backend moved");
+            File.WriteAllText(round, rebased.Render());
+            var read = Test262Floor.Read(round);
+
+            trip = string.Equals(read.Render(), rebased.Render(), StringComparison.Ordinal) &&
+                string.Equals(read.Form, Test262Manifest.Native, StringComparison.Ordinal) &&
+                string.Equals(read.Backend, JsNativeBackends.X64Windows, StringComparison.Ordinal) &&
+                read.Render().Contains("\nform native x86-64-win64\n", StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(round);
+        }
+
+        return (
+            "a-whole-run-floor-re-bases-across-an-output-form-and-holds-within-one",
+            rebasedOntoNative && rebasedOntoBytecode && rebasedOntoConvention && heldNative &&
+                bytecodeUnchanged && trip,
+            "a bytecode floor re-bases onto a native run and back, a native floor re-bases onto another " +
+                "backend and holds its own run, and the form line round-trips");
+    }
 
     private static (string, bool, string) AReportOfAnEarlierFormatIsRefusedAndNotHalfRead()
     {

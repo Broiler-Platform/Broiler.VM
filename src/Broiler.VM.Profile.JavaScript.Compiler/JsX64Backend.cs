@@ -107,7 +107,7 @@ internal sealed record JsX64UnitPlan(
 
 /// <summary>
 /// The x86-64 backend: it turns one whole numeric-manifest artifact into machine code for one of
-/// the two x86-64 calling conventions.
+/// the two x86-64 calling conventions, and hands a wide-manifest artifact to the baseline emitter.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -198,7 +198,7 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
     /// decoded. Two decoders would be two chances to disagree, and re-emission equality is exactly
     /// a test of whether the two projections agree.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F67D3E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D97A3D
     // Broiler-Human:        PENDING
     public bool TryEmit(JsAssembledProgram program, out JsNativeEmission emission, out string refusal)
     {
@@ -225,6 +225,37 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
         for (var index = 0; index < rows.Length; index++)
         {
             rows[index] = program.Functions[index];
+        }
+
+        // THE WIDE MANIFEST'S ARTIFACT IS EMITTED IN THE BASELINE FORM, AND ITS REGIONS GO WITH IT.
+        // The form does no arithmetic of its own and carries no value, so a region is not something
+        // it has to emit - only a landing its units dispatch to - and the refusal below is the
+        // numeric form's alone.
+        if (program.ManifestId == JsFormat.ManifestId)
+        {
+            var regions = new JsExceptionRegionRow[program.ExceptionRegions.Count];
+
+            for (var index = 0; index < regions.Length; index++)
+            {
+                regions[index] = program.ExceptionRegions[index];
+            }
+
+            var baseline = new JsNativeProgramImage(
+                program.Code, rows, values, numbers, program.MaximumOperandStack)
+            {
+                Tier = JsNativeTier.Baseline,
+                Regions = regions,
+            };
+
+            if (!TryEmit(baseline, out var baselineCode, out var baselineSymbols, out refusal))
+            {
+                return false;
+            }
+
+            emission = new JsNativeEmission(
+                Architecture, SemanticVersion, CodeAlignment, baselineCode, baselineSymbols);
+
+            return true;
         }
 
         if (program.ExceptionRegions.Count != 0)
@@ -256,7 +287,7 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
     /// and those no" would be making the per-unit choice that paragraph refuses, so the only two
     /// answers here are every unit and none.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=86EFA0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=8C91FD
     // Broiler-Falsified-If: an emission is produced in which some code unit has no emitted entry point
     // Broiler-Human:        PENDING
     public bool TryEmit(
@@ -265,6 +296,15 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
         out JsNativeSymbolRow[] symbols,
         out string refusal)
     {
+        // THE TIER IS READ FIRST AND THE NUMERIC BODY BELOW IS UNTOUCHED BY IT. An image of the
+        // wide manifest's baseline form shares nothing with the computing form but the encoder and
+        // the convention row, so it is handed to its own emitter whole.
+        if (image.Tier == JsNativeTier.Baseline)
+        {
+            return JsX64BaselineEmitter.TryEmit(
+                image, abi, CodeAlignment, out code, out symbols, out refusal);
+        }
+
         code = [];
         symbols = [];
 

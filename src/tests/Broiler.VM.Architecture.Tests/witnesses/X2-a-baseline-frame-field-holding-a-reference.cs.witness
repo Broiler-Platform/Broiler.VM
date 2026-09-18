@@ -1,0 +1,37 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no project
+// compiles it, and rule X2's test compiles it in memory and points the same metadata reader that
+// clears the built Format assembly at the result, so a reader can watch the rule reject a baseline
+// frame that holds a reference.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES. Every handler begins by finding its activation
+// through a thread slot and comparing a cookie, and the obvious simplification is to hand the
+// activation over in the frame itself - one field, no lookup, no cookie. What it costs is the
+// rooting argument the whole form rests on: the frame is on a stack the collector does not scan,
+// so the object in that field is held where nothing roots it and is not updated when it moves, and
+// the first collection during a call leaves the handler reading a stale address.
+//
+// It carries the defect twice, because "is, or contains" is two questions. `Activation` IS a
+// reference. `Resume` is a value type, and a rule that stopped at "is it a value type" would clear
+// it, while the exception it parks for the entering frame is as much a reference as the activation
+// is. `Handlers` and `Cookie` are the real frame's fields and must not be reported.
+
+namespace Broiler.VM.Profile.JavaScript.Format;
+
+[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+public struct JsBaselineFrame
+{
+    public nint Handlers;
+
+    public long Cookie;
+
+    public object? Activation;
+
+    public JsBaselineResume Resume;
+}
+
+public struct JsBaselineResume
+{
+    public int Pc;
+
+    public System.Exception? Pending;
+}

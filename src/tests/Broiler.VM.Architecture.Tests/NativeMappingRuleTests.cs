@@ -214,7 +214,12 @@ public sealed class NativeMappingRuleTests
     [Fact]
     public void RuleMessages_For_Group_X_Are_Written_When_Asked_For()
     {
-        RuleReport.Write("X", [("X1", () => NativeMappingRules.X1(Tree))]);
+        RuleReport.Write("X",
+        [
+            ("X1", () => NativeMappingRules.X1(Tree)),
+            ("X2", () => NativeBaselineRuleTests.X2Report()),
+            ("X3", () => NativeBaselineRuleTests.X3(Tree)),
+        ]);
 
         if (RuleReport.Destination is { } destination)
         {

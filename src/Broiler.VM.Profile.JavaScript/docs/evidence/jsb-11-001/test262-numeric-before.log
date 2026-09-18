@@ -1,0 +1,158 @@
+# test262 tc39/test262 at ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+# 56560 files, content 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93 - the checkout answers to test262.pin
+# manifest broiler.javascript.numeric; form native; declined (none)
+# 56 shards across 14 processes, 100000000 fuel and 5000 ms per variant
+# retaining every shard's transcript under artifacts\test262-native
+--- shard 6 of 56 exited 1; artifacts\test262-native\logs\shard-0006.log
+--- shard 12 of 56 exited 0; artifacts\test262-native\logs\shard-0012.log
+--- shard 4 of 56 exited 1; artifacts\test262-native\logs\shard-0004.log
+--- shard 7 of 56 exited 1; artifacts\test262-native\logs\shard-0007.log
+--- shard 11 of 56 exited 0; artifacts\test262-native\logs\shard-0011.log
+--- shard 9 of 56 exited 1; artifacts\test262-native\logs\shard-0009.log
+--- shard 8 of 56 exited 1; artifacts\test262-native\logs\shard-0008.log
+--- shard 0 of 56 exited 1; artifacts\test262-native\logs\shard-0000.log
+--- shard 2 of 56 exited 1; artifacts\test262-native\logs\shard-0002.log
+--- shard 5 of 56 exited 1; artifacts\test262-native\logs\shard-0005.log
+--- shard 10 of 56 exited 0; artifacts\test262-native\logs\shard-0010.log
+--- shard 13 of 56 exited 1; artifacts\test262-native\logs\shard-0013.log
+--- shard 1 of 56 exited 1; artifacts\test262-native\logs\shard-0001.log
+--- shard 3 of 56 exited 1; artifacts\test262-native\logs\shard-0003.log
+--- shard 16 of 56 exited 1; artifacts\test262-native\logs\shard-0016.log
+--- shard 14 of 56 exited 1; artifacts\test262-native\logs\shard-0014.log
+--- shard 22 of 56 exited 1; artifacts\test262-native\logs\shard-0022.log
+--- shard 17 of 56 exited 0; artifacts\test262-native\logs\shard-0017.log
+--- shard 15 of 56 exited 1; artifacts\test262-native\logs\shard-0015.log
+--- shard 19 of 56 exited 0; artifacts\test262-native\logs\shard-0019.log
+--- shard 18 of 56 exited 0; artifacts\test262-native\logs\shard-0018.log
+--- shard 20 of 56 exited 1; artifacts\test262-native\logs\shard-0020.log
+--- shard 21 of 56 exited 1; artifacts\test262-native\logs\shard-0021.log
+--- shard 23 of 56 exited 1; artifacts\test262-native\logs\shard-0023.log
+--- shard 25 of 56 exited 1; artifacts\test262-native\logs\shard-0025.log
+--- shard 24 of 56 exited 1; artifacts\test262-native\logs\shard-0024.log
+--- shard 26 of 56 exited 0; artifacts\test262-native\logs\shard-0026.log
+--- shard 27 of 56 exited 1; artifacts\test262-native\logs\shard-0027.log
+--- shard 30 of 56 exited 1; artifacts\test262-native\logs\shard-0030.log
+--- shard 32 of 56 exited 1; artifacts\test262-native\logs\shard-0032.log
+--- shard 29 of 56 exited 1; artifacts\test262-native\logs\shard-0029.log
+--- shard 34 of 56 exited 1; artifacts\test262-native\logs\shard-0034.log
+--- shard 33 of 56 exited 1; artifacts\test262-native\logs\shard-0033.log
+--- shard 35 of 56 exited 1; artifacts\test262-native\logs\shard-0035.log
+--- shard 28 of 56 exited 1; artifacts\test262-native\logs\shard-0028.log
+--- shard 37 of 56 exited 0; artifacts\test262-native\logs\shard-0037.log
+--- shard 31 of 56 exited 0; artifacts\test262-native\logs\shard-0031.log
+--- shard 36 of 56 exited 1; artifacts\test262-native\logs\shard-0036.log
+--- shard 39 of 56 exited 1; artifacts\test262-native\logs\shard-0039.log
+--- shard 40 of 56 exited 1; artifacts\test262-native\logs\shard-0040.log
+--- shard 38 of 56 exited 1; artifacts\test262-native\logs\shard-0038.log
+--- shard 41 of 56 exited 1; artifacts\test262-native\logs\shard-0041.log
+--- shard 43 of 56 exited 1; artifacts\test262-native\logs\shard-0043.log
+--- shard 42 of 56 exited 1; artifacts\test262-native\logs\shard-0042.log
+--- shard 44 of 56 exited 1; artifacts\test262-native\logs\shard-0044.log
+--- shard 47 of 56 exited 1; artifacts\test262-native\logs\shard-0047.log
+--- shard 45 of 56 exited 1; artifacts\test262-native\logs\shard-0045.log
+--- shard 46 of 56 exited 1; artifacts\test262-native\logs\shard-0046.log
+--- shard 50 of 56 exited 1; artifacts\test262-native\logs\shard-0050.log
+--- shard 49 of 56 exited 1; artifacts\test262-native\logs\shard-0049.log
+--- shard 48 of 56 exited 1; artifacts\test262-native\logs\shard-0048.log
+--- shard 51 of 56 exited 1; artifacts\test262-native\logs\shard-0051.log
+--- shard 53 of 56 exited 1; artifacts\test262-native\logs\shard-0053.log
+--- shard 52 of 56 exited 0; artifacts\test262-native\logs\shard-0052.log
+--- shard 54 of 56 exited 0; artifacts\test262-native\logs\shard-0054.log
+--- shard 55 of 56 exited 1; artifacts\test262-native\logs\shard-0055.log
+json D:\Broiler.VM\artifacts\test262-native\test262.json
+broiler-js-conformance: merged 56 test262 shard report(s)
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.numeric at format version 2; harness not loaded; admitted surfaces broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.modules, broiler.javascript.native; declined (none); form native (x86-64-win64)
+partition FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard; merged from 56 shards
+selection candidates=53469 selected=53469 merged=53469
+# unsupported families: 54 distinct, 80261 variants
+#     24942  a call to anything but a function this program declares  e.g. test/annexB/built-ins/Date/prototype/getYear/B.2.4.js [sloppy]
+#     10644  an object literal  e.g. test/annexB/built-ins/Array/from/iterator-method-emulates-undefined.js [sloppy]
+#      5600  a class declaration  e.g. test/built-ins/Array/prototype/concat/Array.prototype.concat_non-array.js [sloppy]
+#      4512  a binding with no initialiser  e.g. test/annexB/built-ins/Date/prototype/setYear/time-clip.js [sloppy]
+#      4503  a class expression  e.g. test/built-ins/Function/prototype/toString/class-expression-explicit-ctor.js [sloppy]
+#      4326  a `new` expression  e.g. test/annexB/built-ins/Date/prototype/getYear/nan.js [sloppy]
+#      4203  an Array literal  e.g. test/built-ins/AggregateError/cause-property.js [sloppy]
+#      2892  a Boolean literal  e.g. test/annexB/language/expressions/assignmenttargettype/callexpression-as-for-in-lhs.js [sloppy]
+#      2320  a property access  e.g. test/annexB/built-ins/Date/prototype/getYear/this-not-date.js [sloppy]
+#      2160  a generator function  e.g. test/annexB/built-ins/RegExp/RegExp-control-escape-russian-letter.js [sloppy]
+#      1783  a String literal  e.g. test/annexB/built-ins/escape/unmodified.js [sloppy]
+#      1680  a BigInt literal  e.g. test/annexB/built-ins/escape/argument_bigint.js [sloppy]
+#      1197  a function body that can fall off its end  e.g. test/annexB/language/function-code/function-redeclaration-block.js [sloppy]
+#      1100  a `throw` statement  e.g. test/built-ins/Array/of/return-abrupt-from-contructor.js [sloppy]
+#      1061  a function expression  e.g. test/annexB/language/expressions/assignment/dstr/object-pattern-emulates-undefined.js [sloppy]
+#       964  an assignment to anything but a binding  e.g. test/built-ins/Array/S15.4.1_A1.1_T1.js [sloppy]
+#       944  a `try` statement  e.g. test/annexB/language/eval-code/direct/var-env-lower-lex-catch-non-strict.js [sloppy]
+#       699  a module graph  e.g. test/built-ins/Proxy/preventExtensions/trap-is-undefined-target-is-proxy.js [module]
+#       596  a regular-expression literal  e.g. test/annexB/built-ins/RegExp/RegExp-invalid-control-escape-character-class-range.js [sloppy]
+#       563  an async function  e.g. test/annexB/language/statements/for-await-of/iterator-close-return-emulates-undefined-throws-when-called.js [sloppy]
+#       537  a `for`-`of` statement  e.g. test/built-ins/Array/prototype/every/resizable-buffer.js [sloppy]
+#       471  a destructuring binding  e.g. test/language/statements/const/dstr/ary-name-iter-val.js [sloppy]
+#       435  the `null` literal  e.g. test/built-ins/Promise/all/ctx-ctor.js [sloppy]
+#       312  an arrow function  e.g. test/built-ins/Array/prototype/copyWithin/resizable-buffer.js [sloppy]
+#       244  `this`  e.g. test/built-ins/Array/prototype/every/15.4.4.16-5-1.js [sloppy]
+#       203  the `delete` operator  e.g. test/built-ins/Array/prototype/every/15.4.4.16-7-3.js [sloppy]
+#       187  the `&&` operator  e.g. test/built-ins/Array/prototype/every/15.4.4.16-7-b-12.js [sloppy]
+#       145  a parameter with a default  e.g. test/built-ins/Array/fromAsync/this-constructor-operations.js [sloppy]
+#       138  a destructuring parameter  e.g. test/language/destructuring/binding/initialization-requires-object-coercible-null.js [sloppy]
+#       115  the `typeof` operator  e.g. test/built-ins/Array/prototype/map/15.4.4.19-8-c-i-17.js [sloppy]
+#       113  the `instanceof` operator  e.g. test/built-ins/Array/prototype/every/15.4.4.16-1-11.js [sloppy]
+#        98  a nested function declaration  e.g. test/annexB/language/function-code/block-decl-nested-blocks-with-fun-decl.js [sloppy]
+#        94  a labelled statement  e.g. test/annexB/language/statements/labeled/function-declaration.js [sloppy]
+#        54  a top-level `var` binding of a Number is refused: it holds `undefined` between the program body's entry and its assignment, and a slab of doubles cannot carry that through an arithmetic instruction without answering a number the interpreter would not  e.g. test/language/asi/S7.9_A7_T1.js [sloppy]
+#        52  a dynamic `import()`  e.g. test/language/expressions/dynamic-import/always-create-new-promise.js [sloppy]
+#        50  the `//` operator  e.g. test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js [sloppy]
+#        49  a `switch` statement  e.g. test/annexB/language/global-code/switch-case-global-existing-fn-update.js [sloppy]
+#        47  a destructuring assignment  e.g. test/language/expressions/assignment/dstr/ident-name-prop-name-literal-break-escaped.js [sloppy]
+#        46  a `for`-`in` statement  e.g. test/built-ins/Boolean/prototype/S15.6.3.1_A4.js [sloppy]
+#        38  a template literal  e.g. test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-eval-indirect.js [sloppy]
+#        28  the `void` operator  e.g. test/language/expressions/bitwise-not/S11.4.8_A3_T4.js [sloppy]
+#        24  a conditional expression  e.g. test/built-ins/Array/prototype/filter/15.4.4.20-9-b-13.js [sloppy]
+#        20  a rest parameter  e.g. test/built-ins/Reflect/apply/arguments-list-is-not-array-like-but-still-valid.js [sloppy]
+#        15  a `with` statement  e.g. test/language/comments/hashbang/use-strict.js [raw]
+#        12  a comma expression  e.g. test/language/expressions/comma/S11.14_A2.1_T1.js [sloppy]
+#         9  the `in` operator  e.g. test/language/eval-code/indirect/var-env-var-strict.js [sloppy]
+#         6  the `&&=` compound assignment  e.g. test/language/expressions/logical-assignment/lgcl-and-assignment-operator-namedevaluation-arrow-function.js [sloppy]
+#         6  the `//=` compound assignment  e.g. test/language/expressions/logical-assignment/lgcl-or-assignment-operator-namedevaluation-arrow-function.js [sloppy]
+#         6  the `??=` compound assignment  e.g. test/language/expressions/logical-assignment/lgcl-nullish-assignment-operator-namedevaluation-arrow-function.js [sloppy]
+#         5  a `return` with no value  e.g. test/language/asi/S7.9.2_A1_T4.js [sloppy]
+#         4  a tagged template  e.g. test/language/expressions/template-literal/tv-null-character-escape-sequence.js [sloppy]
+#         4  code unit 0: bytecode offset 5: a realm binding this artifact does not declare is read, so its value would come from the realm - which is an object graph an emitted frame carries no reference to  e.g. test/language/expressions/postfix-decrement/eval-nostrict.js [sloppy]
+#         3  code unit 0: bytecode offset 9: a realm binding this artifact does not declare is assigned  e.g. test/language/expressions/assignmenttargettype/simple-basic-identifierreference-arguments.js [sloppy]
+#         2  an optional chain  e.g. test/language/expressions/optional-chaining/short-circuiting.js [sloppy]
+# no variant spent an allowance
+# failure classification over 189 failing variant(s)
+#   by kind: 1 distinct, 189 variants
+#         189  the front end refused a source this manifest admits  e.g. test/annexB/language/comments/multi-line-html-close.js [sloppy]
+#   by area: 18 distinct, 189 variants
+#         120  test/language/identifiers  e.g. test/language/identifiers/part-unicode-10.0.0-class.js [sloppy]
+#          16  test/language/statementList  e.g. test/language/statementList/block-regexp-literal-flags.js [sloppy]
+#          13  test/annexB/language/comments  e.g. test/annexB/language/comments/multi-line-html-close.js [sloppy]
+#           6  test/built-ins/RegExp/named-groups  e.g. test/built-ins/RegExp/named-groups/non-unicode-property-names-valid.js [sloppy]
+#           4  test/language/expressions/optional-chaining  e.g. test/language/expressions/optional-chaining/member-expression.js [sloppy]
+#           4  test/language/literals/string  e.g. test/language/literals/string/line-separator.js [sloppy]
+#           4  test/staging/sm/class  e.g. test/staging/sm/class/newTargetDefaults.js [sloppy]
+#           3  test/annexB/language/expressions  e.g. test/annexB/language/expressions/assignmenttargettype/callexpression-in-compound-assignment.js [sloppy]
+#           3  test/language/statements/labeled  e.g. test/language/statements/labeled/value-await-non-module.js [sloppy]
+#           2  test/built-ins/RegExp/match-indices  e.g. test/built-ins/RegExp/match-indices/indices-array-unicode-property-names.js [sloppy]
+#           2  test/language/expressions/division  e.g. test/language/expressions/division/no-magic-asi.js [sloppy]
+#           2  test/language/expressions/tagged-template  e.g. test/language/expressions/tagged-template/invalid-escape-sequences.js [sloppy]
+#           2  test/language/statements/function  e.g. test/language/statements/function/S13.2.1_A1_T1.js [sloppy]
+#           2  test/language/statements/with  e.g. test/language/statements/with/let-block-with-newline.js [sloppy]
+#           2  test/staging/sm/destructuring  e.g. test/staging/sm/destructuring/order-super.js [sloppy]
+#           2  test/staging/sm/generators  e.g. test/staging/sm/generators/syntax.js [sloppy]
+#           1  test/language/expressions/arrow-function  e.g. test/language/expressions/arrow-function/syntax/arrowparameters-bindingidentifier-yield.js [sloppy]
+#           1  test/staging/sm/expressions  e.g. test/staging/sm/expressions/optional-chain.js [sloppy]
+#   by declared feature (80 of 189 failing variants declare one; a variant with two is in two rows): 6 distinct, 142 taggings over 80 variants
+#          64  class  e.g. test/language/identifiers/part-unicode-10.0.0-class.js [sloppy]
+#          60  class-fields-private  e.g. test/language/identifiers/part-unicode-10.0.0-class.js [sloppy]
+#           8  regexp-named-groups  e.g. test/built-ins/RegExp/match-indices/indices-array-unicode-property-names.js [sloppy]
+#           4  json-superset  e.g. test/language/literals/string/line-separator.js [sloppy]
+#           4  optional-chaining  e.g. test/language/expressions/optional-chaining/member-expression.js [sloppy]
+#           2  regexp-match-indices  e.g. test/built-ins/RegExp/match-indices/indices-array-unicode-property-names.js [sloppy]
+# test262 53469 files, 94545 variants: pass 5749, fail 189, unsupported 80261, exhausted 0, skipped 8346
+coverage whole
+# the whole-run report is artifacts\test262-native\test262.report
+# the machine-readable report is artifacts\test262-native\test262.json
+# this run may be retained: pinned, whole, and its verdicts account for it

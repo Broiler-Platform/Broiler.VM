@@ -237,6 +237,14 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
 /// it exists, and a handle whose payload did not never acquires one. Nothing here observes a run,
 /// counts a call or promotes anything, because a code path that selected a form from run-time
 /// observation would be the second execution arm this profile's non-goals refuse.
+/// <para>
+/// <b>THIS ARM RUNS THE NUMERIC MANIFEST'S EMITTED CODE AND NO OTHER.</b> An artifact compiled under
+/// <c>broiler.javascript.wide</c> with the native form carries the baseline form, whose every
+/// instruction calls into the engine's own dispatch loop; it needs a realm, a job queue and the guest
+/// stack, so the executor instantiates it through the engine's arm, and the engine enters its emitted
+/// code. What this arm says about slabs, a prepaid fuel counter and the one throw it knows is true of
+/// numeric artifacts only.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=65CC7E
 // Broiler-Falsified-If: the form an invocation runs under differs from the form its handle carried when it was minted
@@ -338,8 +346,8 @@ internal static unsafe class JsNativeExecution
 
         // THE DRAIN IS ANSWERED AND NOT REFUSED, AND THE REASON IS THE MANIFEST RATHER THAN A
         // CONVENIENCE. A host that drives an event loop asks for `#drain-jobs` after the last
-        // script, because it cannot know whether the guest queued anything. A native artifact is
-        // compiled under `broiler.javascript.numeric`, which admits no promise, no job and no queue
+        // script, because it cannot know whether the guest queued anything. An artifact this arm runs
+        // is compiled under `broiler.javascript.numeric`, which admits no promise, no job and no queue
         // to drain - so the honest answer to "run whatever is queued" is that nothing is, and that
         // is a completion rather than a missing entry point. Refusing it instead would make every
         // ordinary host fail on its last call after the program had already produced the right

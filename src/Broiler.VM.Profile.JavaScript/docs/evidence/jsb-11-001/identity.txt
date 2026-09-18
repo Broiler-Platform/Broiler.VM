@@ -1,0 +1,16 @@
+bundle:                JSB-11-001
+milestone:             JSB-11
+collected (UTC):       2026-09-15T13:13:37+00:00
+component commit:      444f9c92f581feb4d4d3ed547f122f5146a04c72
+branch:                claude/wide-native-baseline-form
+working tree:          DIRTY
+dirty entries:         2
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+  ?? .broiler-review/
+  ?? src/tests/conformance/floors/test262-wide-native.floor

@@ -20,6 +20,22 @@ below and the correction is [JSC-199](roadmap.corrections.md#jsc-199). The old r
 there rather than deleted, because a reader who planned against a per-unit backend is owed the
 retraction.
 
+**AND ON 2026-09-15 THE WIDE MANIFEST WAS GIVEN A NATIVE FORM OF ITS OWN, WHOLE-ARTIFACT TOO.** The
+numeric form this document was built around is unchanged. Beside it,
+[JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) decides a **baseline
+form** over `broiler.javascript.wide`: every unit emitted, the control flow between instructions
+emitted, and every instruction one call into the interpreter's own dispatch for that one instruction,
+with every value left in managed memory and no managed reference in any emitted frame. It is still
+whole-artifact or nothing, and *one form per handle* becomes one form per handle **and per instance**
+([JSC-215](roadmap.corrections.md#jsc-215), [JSC-216](roadmap.corrections.md#jsc-216)). **Its code
+landed on that date, and a bundle collected the same day retains some of what would show it true and
+names the rest as open** *(corrected 2026-09-15, after collection: this read "Its code is being
+written on that date and nothing about it is collected")*; the stage that records what would show it
+true is
+[JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference),
+and its State bullet names which of its clauses [bundle JSB-11-001](evidence/jsb-11-001/README.md)
+meets and which it does not. **None of that is acceptance.**
+
 **What this document is not.** It is not the ledger and it moves no row in one:
 [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) remains the only
 authority on what this component has done. **This profile now owns backend code** — a numeric
@@ -113,17 +129,28 @@ whole or is not native at all.** Concretely:
 - **There is no per-unit choice, so "one form per handle" holds literally rather than nearly.** A
   backend's two answers are *the whole artifact* and *a refusal naming a reason*; there is no third
   answer of the form "this unit yes, that unit no". **This is what a per-unit design could not have,
-  and it is the whole reason the compilable language had to become small** — section 3.
+  and it is the whole reason the compilable language had to become small** — section 3. *(From
+  2026-09-15 the second half of that sentence is the numeric form's alone. The baseline form over the
+  wide manifest keeps the first half without a small language, because what it emits for an
+  instruction is a call into the interpreter's own dispatch for that instruction rather than the
+  instruction's semantics, so every unit the wide lowering produces can be emitted:
+  [JSC-216](roadmap.corrections.md#jsc-216).)*
 - **The form is a property of the artifact and never of a moment.** Which form a program is compiled
   to is an input to the compile request, fixed when the artifact is written and pinned when it is
   verified. Nothing observes a running program and changes what runs it. This is the profile's own
-  amended non-goal — one executor, one form per handle, no promotion.
+  amended non-goal — one executor, one form per handle and per instance, no promotion *(corrected:
+  [JSC-215](roadmap.corrections.md#jsc-215))*.
 - **There is no entry guard, because there is nothing for one to fall back to.** A native artifact's
   executor never reaches the interpreter; what it does when a machine cannot run the artifact's
   architecture is refuse to instantiate it, deterministically and by name, and that refusal is the
   only transfer of control this design has. *(This bullet said the opposite until 2026-09-07, when it
   described an entry-point check that failed to the interpreter at a unit's first instruction:
-  [JSC-199](roadmap.corrections.md#jsc-199).)*
+  [JSC-199](roadmap.corrections.md#jsc-199).)* *(And from 2026-09-15 "never reaches the interpreter"
+  is read for the numeric form's executor, which runs no managed code between instructions. The
+  baseline form's handlers are the interpreter's own method body, specialised to one instruction and
+  reached only from emitted code: that is where the form's semantics live, not a second form it falls
+  back to, and nothing chooses between the two at run time —
+  [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) section 2.)*
 
 **The target is not a speed and no stage below is justified by one.** Throughput, baselines and the
 measurement lane are `JS-10`'s subject in [section 19](roadmap.delivery.md#19-milestones), and
@@ -213,12 +240,17 @@ dangling pointer with no diagnostic anywhere near it.
 says that a profile which cannot state where its emitted code's references are rooted has not earned
 the form, whatever its benchmarks say. This profile is the one that cannot, as things stand: every
 operand on the interpreter's stack, every scope slot and every constant of a textual kind is a
-`JsValue`, and half of what a `JsValue` may be is a reference.
+`JsValue`, and half of what a `JsValue` may be is a reference. *(From 2026-09-15 "as things stand" is
+read as of this paragraph's writing and for the numeric form: the profile states where the wide
+manifest's baseline form roots its references — nowhere in emitted code, and in a managed activation
+the collector traces — in [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md)
+section 4: [JSC-216](roadmap.corrections.md#jsc-216).)*
 
 **A SECOND RULE BOUNDS THE ANSWER, AND THE TWO TOGETHER EXCLUDE THE OBVIOUS DESIGN** *(this
 subsection is new on 2026-09-07 and it is why the rest of the section changed:
 [JSC-199](roadmap.corrections.md#jsc-199))*. The first rule is the rooting one above. The second is
-this profile's own amended non-goal — **one executor, one form per handle, no promotion** — under
+this profile's own amended non-goal — **one executor, one form per handle and per instance, no
+promotion** *(corrected: [JSC-215](roadmap.corrections.md#jsc-215))* — under
 which a path that picks a form from run-time observation, or that re-maps a verified handle's
 payload, is the second execution arm the paragraph refuses, and the core's risk row says the same
 thing in its own words.
@@ -233,7 +265,11 @@ admissible without amending a record this MVP is not empowered to amend, and thi
 the first of them until the day it was read against the rule.
 
 **The answer this roadmap proposes is therefore not a rooting scheme and not an eligibility test. It
-is a manifest whose whole language has nothing to root.**
+is a manifest whose whole language has nothing to root.** *(From 2026-09-15 this is the numeric form's
+answer. The wide manifest's baseline form answers the same two rules differently — every unit emitted,
+and every value left in managed memory that emitted code never addresses — and it has no rooting
+scheme either: [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) sections 2
+and 4, [JSC-216](roadmap.corrections.md#jsc-216).)*
 
 - **A third feature manifest, `broiler.javascript.numeric`, admits a numeric subset and refuses
   everything else at compile time, by name.** Number values, the arithmetic, comparison, bitwise and
@@ -250,8 +286,14 @@ is a manifest whose whole language has nothing to root.**
   rather than a nearly-true one.
 - **The emitted frame holds no managed reference at all**, and it holds none by construction rather
   than by an eligibility test somebody has to keep correct. The structure handed to an emitted entry
-  point is unmanaged and fixed-layout — pointers to operand, local and constant storage, a fuel cell,
-  and a helper table — and **the manifest admits no value that could put a reference in one**.
+  point is unmanaged and fixed-layout — pointers to operand, local and constant storage and the operand and local counts, a fuel cell,
+  and the bytecode offset the unit had reached when it stopped — and **the manifest admits no value
+  that could put a reference in one** *(corrected 2026-09-15: this sentence listed **a helper table**
+  where that offset is and named no counts, and `JsNativeFrame` has never declared a helper table —
+  the numeric form's emitted code calls no helper: its only calls are direct `call rel32` transfers to
+  a code unit of the same artifact. The frame that carries a table of calls is the wide manifest's `JsBaselineFrame`,
+  which holds that table's address and an activation cookie and nothing else:
+  [JSC-217](roadmap.corrections.md#jsc-217))*.
   Nothing in it needs reporting, and there is no scheme for the collector to get wrong because there
   is nothing for the collector to find.
 - **No guard, no bailout, no deoptimization, no on-stack replacement, no tiering, and no map from an
@@ -277,15 +319,27 @@ string or catches an error is not compiled differently, it is **refused**, befor
 exists, with a diagnostic naming the construct and its position. Where the earlier design would have
 declined such a program unit by unit and still produced a working artifact, this one produces no
 artifact at all — **the cost moved from coverage inside an artifact to admission of the program**,
-and it is the larger cost of the two. What the wide manifest gets is unchanged: it stays
+and it is the larger cost of the two. **That cost is the numeric form's, and from 2026-09-15 it is
+not the wide manifest's.** The wide manifest gets a native form of its own — the baseline form of
+[JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference)
+— whose every instruction is a call into the interpreter's own dispatch for that instruction, so the
+interpreter's method body still runs every instruction of real JavaScript in this component, in either
+form *(corrected 2026-09-15: this sentence read "What the wide manifest gets is unchanged: it stays
 bytecode-only, and the interpreter remains the only thing in this component that runs real
-JavaScript.
+JavaScript"; the first half is withdrawn and the second holds in the sense just stated:
+[JSC-216](roadmap.corrections.md#jsc-216))*.
 
 **A subset is a real thing to have and it is not a general one**, and any record that lets the first
 fact imply the second is the untruthful support claim both ledgers make a stop condition. The honest
 sentence is that this design buys a demonstrable, verifiable native form over a narrow and precisely
 stated **language**, and that widening it is not a later increment of the same work but a different
-design with a rooting scheme in it, which nothing here proposes.
+design. **That different design now exists, and it has no rooting scheme in emitted code at all**:
+[JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) keeps every value in
+managed memory, hands emitted code a frame of two fields neither of which is a reference, and leaves
+`broiler.javascript.numeric` exactly as narrow as it was, so nothing here was widened *(corrected
+2026-09-15: this sentence ended "a different design with a rooting scheme in it, which nothing here
+proposes", and the design that arrived answers the rooting question without one:
+[JSC-216](roadmap.corrections.md#jsc-216))*.
 
 ---
 
@@ -295,7 +349,10 @@ design with a rooting scheme in it, which nothing here proposes.
 MVP programme this component is running requires that where a route is taken in place of a decision,
 the route is named where its consequence is rather than only in the record that defers it. Four are
 taken above — three from the first writing and one added on 2026-09-07 when the design changed — and
-each is recorded here as **taken without a decision**:
+each is recorded here as **taken without a decision** — and from 2026-09-15 the second of them has
+a decision record behind it, which its bullet says rather than dropping the bullet; on the same date
+the fourth ended, which its bullet also says, and a fifth route taken without a decision — that the wide
+manifest's form calls back once per instruction — is recorded inside the fourth bullet as MVP-8:
 
 - **That the bytecode is the back-end-neutral form**, rather than building the intermediate form
   [section 9](roadmap.md#9-the-semantic-front-end-and-lowering) promises. The alternative is real work
@@ -303,13 +360,29 @@ each is recorded here as **taken without a decision**:
   control-flow graph and a place to put an analysis, none of which the bytecode gives it. This
   document proposes the cheaper route because it is the one that does not fork the front end, and **no
   decision record has chosen between them.**
-- **That the emitted body computes rather than delegates.** The alternative design emits one call per
-  opcode into the managed helpers the interpreter's own switch arms already call, keeping the operand
-  stack as it is and removing only dispatch and operand decoding. It compiles a far larger subset, it
-  answers identically to the interpreter by construction rather than by testing — and every one of its
-  frames holds managed references, which is the thing section 3 refuses. This document proposes the
-  numeric route because it is the one that answers the rooting question. **No decision record has
-  weighed the two**, and a reader should not read section 3's confidence as one having been taken.
+- **That the numeric form's emitted body computes rather than delegates — taken without a decision on
+  2026-09-07, and weighed by one on 2026-09-15.** The alternative design emits one call per opcode
+  into the managed helpers the interpreter's own switch arms already call, keeping the operand stack as it is and removing only dispatch and operand
+  decoding. It compiles a far larger subset and it answers identically to the interpreter by
+  construction rather than by testing. This document proposed the numeric route because it answered
+  the rooting question, and
+  [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) section 3 weighs the
+  two and keeps both: the computing form for the numeric manifest, and the delegating form — the
+  baseline form of
+  [JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference)
+  — for the wide one. **The reason the delegating design was set aside was a claim about one way of
+  building it**, and that claim is corrected rather than kept: a design that passes emitted code an
+  operand stack or a value does put references in its frames, and the baseline form passes a frame
+  pointer and an offset and nothing else, so **its emitted frames hold none** — the references live in
+  a managed activation rooted by the managed frame that entered the emitted code and by a thread-static
+  slot that frame sets and restores *(corrected 2026-09-15: this bullet's lead read "That the emitted
+  body computes rather than delegates."; its reason read "This document proposes the numeric route
+  because it is the one that answers the rooting question"; and it read "and every one of its frames
+  holds managed references, which is the thing section 3 refuses" and "**No decision record has weighed
+  the two**, and a reader should not read section 3's confidence as one having been taken". The frames
+  sentence described one arrangement of delegation, and the rest were true of the checkout they were
+  written against:
+  [JSC-217](roadmap.corrections.md#jsc-217))*.
 - **That `arm64` is the second architecture and `x86-32` is not.** `x86-32` is the only callee-pops
   convention in the declared matrix and is exactly where the core's retained accident happened;
   `arm64` has a fixed-width encoding, one calling convention across its platforms, and a return
@@ -323,7 +396,11 @@ each is recorded here as **taken without a decision**:
   what happens on a declared platform with no backend — belongs to whoever schedules the work.
   **The arm64 encoder now exists and the exclusion is unchanged by that**: it emits, its output is
   pinned against known-good encodings, and an image asked to instantiate an arm64 artifact refuses
-  by name. Emitting is not arming, and nothing here claims otherwise.
+  by name. Emitting is not arming, and nothing here claims otherwise. *(From 2026-09-15 it emits for
+  the numeric manifest only. The wide manifest's baseline form has no arm64 emitter, the arm64 backend
+  is decided to refuse that manifest by name, and a wide artifact naming arm64 anyway is scanned
+  against the unchanged arm64 table and refused at instantiation on every host; that code is being
+  written: [JSC-221](roadmap.corrections.md#jsc-221).)*
 
 - **That the native form is a WHOLE-ARTIFACT form under a restricted manifest**, rather than a
   mixed-form artifact with per-unit compilation and an interpreter fallback. This is the route the
@@ -335,7 +412,18 @@ each is recorded here as **taken without a decision**:
   and not for this MVP. **It is [MVP-7](../../../docs/mvp.md#5-routes-taken-without-a-decision) in the
   route register**, with the alternative named there, and the consequence is here: the compilable
   language is small, it is not JavaScript, and a program outside it is refused rather than partly
-  compiled.
+  compiled. **From 2026-09-15 that consequence is the numeric form's alone, and the route register's
+  row has ended.** Its settling condition — an amendment to the profile's non-goals — happened
+  ([JSC-215](roadmap.corrections.md#jsc-215)), and
+  [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) keeps the
+  whole-artifact property and drops the restriction: the native form is whole-artifact under
+  `broiler.javascript.numeric` with computing templates and under `broiler.javascript.wide` with
+  baseline templates, one form per handle and per instance. The mixed-form alternative is still what
+  the rules forbid and is still not built. **The route the wide manifest's form rests on beside its
+  decision** — that it calls back once per instruction, rather than once per block or not at all, which
+  JSD-0025 takes and no measurement weighs — is a new route taken without a decision, and it is
+  [MVP-8](../../../docs/mvp.md#5-routes-taken-without-a-decision) *(corrected 2026-09-15:
+  [JSC-216](roadmap.corrections.md#jsc-216))*.
 
 **There is also a route this document explicitly does not take.** A managed compiled form — blocks
 lowered to objects, or threaded through function pointers to statically compiled managed methods —
@@ -406,6 +494,17 @@ is not**, so a State bullet names the unmet clauses individually instead of summ
 the stage is. And **the order in which the work actually landed is recorded even where it is not the
 order this document set out** — two stages that were declared prerequisites were not done first, which
 is stated in their own bullets rather than left for a reader to notice from a green suite.
+
+**An eleventh stage was added on 2026-09-15, and it is numbered after the ten rather than among them**
+*(added with [JSC-216](roadmap.corrections.md#jsc-216))*.
+[JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference)
+is the baseline native form over the wide manifest that
+[JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) decides. A decision
+behind a stage is not acceptance of it either, and its State bullet names which of its clauses
+[bundle JSB-11-001](evidence/jsb-11-001/README.md) meets and which it does not *(corrected
+2026-09-15, after collection: this sentence ended "its State bullet says that its code is being
+written and that nothing about it is collected")*. **It is not `JSB-7`**, which the arming path already
+names, and a stage identifier is never reused.
 
 ### JSB-1 — Determinism over bytecode, before determinism over machine code
 
@@ -608,8 +707,9 @@ is stated in their own bullets rather than left for a reader to notice from a gr
   byte sequence matching **no** template, a byte sequence matching **two**, an operand outside the set
   its field admits, an instantiation crossing the end of the unit it began in, a branch leaving its
   unit, a branch landing inside an instruction rather than on one, a call whose target is not a unit's
-  entry point, a unit whose last instruction is not a return, and a byte hidden in the alignment
-  padding between one unit and the next.
+  entry point *(the numeric tables' clause: from 2026-09-15 the baseline tables admit exactly one
+  call, in the bullet on the baseline tables below)*, a unit whose last instruction is not a return,
+  and a byte hidden in the alignment padding between one unit and the next.
 
 - **What holds the two directions, observed on this working tree on `win-x64` on 2026-09-08.** The
   slice compiler's `--checks` lane carries both. *Everything the backends emit, the scanner accepts*: a
@@ -625,7 +725,8 @@ is stated in their own bullets rather than left for a reader to notice from a gr
   — the frame size, the spill slot and the register the frame pointer arrives in — to be the convention
   table's, because two records of one fact is a place for them to part company. The other direction is
   the checkable negative half: byte strings that are **legal machine code no backend emits** are
-  refused by name — an indirect call through a register, a `syscall`, a frame displacement between two
+  refused by name — an indirect call through a register *(by the numeric tables; the baseline tables
+  admit one register-indirect form and refuse every other, below)*, a `syscall`, a frame displacement between two
   declared fields, a slab displacement off the eight-byte grid, a materialised immediate no unit
   answers with, a unit that runs off its own end, a byte hidden in a unit's padding, a branch that
   leaves its unit, a branch into the middle of an instruction — as are a real emitted image with its
@@ -685,6 +786,37 @@ is stated in their own bullets rather than left for a reader to notice from a gr
   a backend version this build does not emit is refused by the structural layer and not by this one,
   and an artifact of well-formed instructions computing the wrong function is refused by neither.
 
+- **The baseline tables, from 2026-09-15, and which clauses above are the numeric tables' alone.**
+  [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) adds a template table
+  per x86-64 convention for the wide manifest's form, selected by the artifact's manifest rather than
+  by a field it carries. **Every clause above applies to them except the call clause**: where the
+  numeric tables admit no call but to a unit's entry, the baseline tables admit exactly one call and no
+  other — `call qword [rbx+disp32]`, whose displacement must be eight times a byte that is a defined
+  opcode. A register-indirect call in any other form, a call through any other register, and a
+  displacement naming a byte no opcode takes are all still refused. **Four shape clauses are added for
+  the baseline tables alone**, reported under the same diagnostic code with two new named outcomes, a
+  malformed frame sequence and a branch into one: (S1) a unit's first six instantiations are exactly
+  the prologue templates, in order; (S2) those occur nowhere else, the unit's last four are exactly the
+  epilogue templates, and those occur nowhere else; (S3) no unit-local branch lands on the prologue, on
+  a `pop` of the epilogue or on its `ret`; (S4) the tables contain no cross-unit branch template and no
+  template with a memory destination. **Why every indirect call then lands in the handler table**: RBX
+  is written only by the prologue's load from the frame and by the epilogue's restore, and S3 keeps
+  both from being re-entered; the frame pointer's register is written only by the prologue and the
+  epilogue; every callee is managed code that preserves both; no template has a memory destination, and the
+  only memory an emitted unit writes is its own stack, below the stack pointer, through the prologue's
+  pushes and each call's return address, which cannot reach the frame the managed entry stored — so the
+  slot the prologue loads is still the table address that entry stored; so every call reads a
+  defined opcode's slot of that table. **What the scan cannot establish is which handler belongs at
+  which offset**: a payload whose calls are closed under the table and name the wrong opcodes is
+  closed. The handler closes that at run time by refusing an offset the managed side did not compute,
+  a byte that is not its own opcode, or a frame cookie that is not its activation's, so a misplaced
+  call is an internal defect and never a JavaScript answer ([JSC-218](roadmap.corrections.md#jsc-218)).
+  **State**: the tables, the clauses and their checks-lane rows are being written against that decision
+  on 2026-09-15, **nothing about them is observed in this bullet**, and the rows that would observe
+  them are
+  [JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference)'s
+  gate.
+
 - **Open clauses**: **the table is a restatement of what the encoders emit and not a derivation from
   them** — its own falsification line says that a template differing from the bytes the encoder method
   it names emits is what falsifies it — so the two can drift, nothing generates one from the other, and
@@ -739,6 +871,19 @@ is stated in their own bullets rather than left for a reader to notice from a gr
 
 - **Open clauses**: no bundle, and the cross-machine half of the determinism obligation — identical
   bytes across processes and machines of one architecture — has been observed on one machine only.
+
+- **This stage is the numeric form's, and from 2026-09-15 a second x86-64 encoder answers the same gate
+  in another stage** *(added 2026-09-15)*. The objective's *eligibility test section 3 fixes* is the
+  numeric manifest's admission pass, and nothing in this stage's gate or State bullets is about the
+  baseline form of
+  [JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference),
+  whose encoder is a second emitter in the same backend, selected by the artifact's manifest. **Every
+  clause of this gate is one the baseline form owes too**, and JSB-11 restates them against its own
+  frame rather than reading this stage's observations across: every unit emitted or the artifact
+  refused whole — refused only past the format's native-code ceiling, because the wide manifest admits
+  nothing the baseline encoder cannot emit; a frame whose declaration contains no reference type,
+  which for `JsBaselineFrame` is to be asserted by a registered rule; branches in the wide displacement
+  form only; an encoder that is a pure function of its input; and re-emission equality.
 
 ### JSB-7 — The arming path, one place, with a negative control
 
@@ -844,7 +989,11 @@ is stated in their own bullets rather than left for a reader to notice from a gr
   it, which is the external step this stage asks for by name and the bundle would have to record as
   external; the branch-displacement range check refusing rather than truncating is written and is not
   pinned by a case; and no bundle retains any of it. **The execution half is excluded and remains
-  excluded**, on the reason it always carried and not on a shortage of machines.
+  excluded**, on the reason it always carried and not on a shortage of machines. *(Corrected
+  2026-09-15: "emits into the same sections" is true of numeric-manifest artifacts only. The arm64
+  backend is decided to refuse `broiler.javascript.wide`, whose baseline form has no arm64 emitter, and
+  a wide artifact naming arm64 is refused at instantiation on every host:
+  [JSC-221](roadmap.corrections.md#jsc-221).)*
 
 ### JSB-10 — The differential oracle: one source, two forms
 
@@ -857,7 +1006,11 @@ is stated in their own bullets rather than left for a reader to notice from a gr
   one probe that actually enters it, asserted rather than assumed, since a lane that compares two runs
   of the interpreter has compared nothing; **values are compared and budget outcomes are not**, because
   an emitted body cannot charge per instruction the way the dispatch loop does and its accounting
-  granularity necessarily differs — so the resource-exhaustion dimensions rule N11's retained corpus
+  granularity necessarily differs *(a statement about the numeric form from 2026-09-15: the baseline
+  form charges per instruction at the dispatch loop's own point, so
+  [JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference)'s
+  lane compares budget outcomes as well as values, for every program that loads no program —
+  [JSC-219](roadmap.corrections.md#jsc-219))* — so the resource-exhaustion dimensions rule N11's retained corpus
   pins per dimension will legitimately disagree across forms, and the bundle states that consequence
   rather than letting a lane go red for the right reason; and a negative control corrupts one emitted
   instruction and is watched failing. **Without this lane a backend is an unfalsifiable claim**, which
@@ -873,6 +1026,156 @@ is stated in their own bullets rather than left for a reader to notice from a gr
   this stage calls the difference between a lane that compares two runs and a lane that has compared
   something; the negative control that corrupts one emitted instruction and is watched failing does
   not exist; and no bundle retains the lane.
+
+### JSB-11 — The baseline form over the wide manifest, and a frame that still holds no managed reference
+
+- **Objective.** The wide manifest has a native output form: every unit of a `broiler.javascript.wide`
+  artifact is emitted as x86-64 machine code for the Windows and System V conventions, the control flow
+  between instructions is emitted, and each instruction is one call into the interpreter's own dispatch
+  for that one instruction — so that the form runs every program the wide manifest runs, answers what
+  the interpreter answers, and holds no managed reference in any emitted frame.
+  [JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) is the decision; this
+  stage is where what would show it true is written down.
+- **Waits on.** JSB-5 for the scan the new tables join, JSB-6 for the backend the new encoder sits
+  beside, JSB-7 for the arming path it maps through, whose protections and files are
+  unchanged and whose release becomes `SafeHandle`-owned and, for this form, program-owned
+  ([JSC-222](roadmap.corrections.md#jsc-222)), JSB-8 for the calling-convention
+  obligations it inherits for both conventions, and JSB-10 for the differential lane it extends. **Every
+  one of those owns code and none is accepted**, so this stage waits on code rather than on evidence,
+  which is the order the stages above record as the one taken rather than the one asked for.
+- **Exit gate.** Conditions a run decides. Every tolerance or bound a clause names is **predeclared in
+  the stage's bundle before the run it judges**, and none is stated here.
+  - **The bytecode form is unchanged by the interpreter becoming generic.** On one machine, against the
+    merge base: the interpreted instantiation of `JsEngine.ExecuteCore` reaches optimised code rather
+    than minimum-optimisation code, and its code size and stack reservation are within the bundle's
+    tolerance of `Execute` at the merge base; the bytecode frame-cost measure and the benchmark
+    geometric mean are within the bundle's tolerance; a bytecode conformance run over named subtrees
+    gives per-variant verdict rows identical before and after; and the retained corpus replays to its
+    recorded answers with no difference in the tree.
+  - **The per-step instantiations are what the design says, or the fallback is taken and recorded.**
+    After tier-up in the JIT-built conformance binary every per-opcode step instantiation is within the
+    bundle's size bound and has no jump table; a fresh process whose first variant runs in the native
+    form costs no more than the bundle's bound over the same variant in bytecode; a fresh process that
+    recurses to the call-depth ceiling answers `RangeError` and never a call-depth abort; the native
+    frame-cost measure admits the call-depth ceiling with the bundle's margin; and each Native AOT
+    image's growth is recorded against the bundle's bound. **If any of these fails, every wrapper calls
+    the one shared step instantiation**, and the bundle records the failure and the switch.
+  - **The scan closes over what the encoder emits, and refuses what it does not.** A named set of
+    programs — an object literal and a property read, string concatenation, a closure counter, a class
+    with `super` and private members, `try`/`catch`/`finally` with a `break` through the `finally`, a
+    generator resumed by `return()` and `throw()` with enough yields to emit a branch of the compare
+    tree, `yield*` over a generator and over an array, a rejected `await`, an async generator with
+    `for await` and `yield*`, `for-in`, `for-of` with an early exit, destructuring parameters with
+    defaults, a module with an import, and `switch` with a labelled `continue` and `with` — compiles
+    under both conventions, **the bytes read back out of the artifact**, and scans clean; every template
+    of both baseline tables is instantiated by one of them; each hand-built refusal — a call through a
+    register, a call naming a byte no opcode takes, a call past the table, a status other than the
+    defect status, a unit with no prologue, a push inside a unit, a second return, a branch into the
+    epilogue, a numeric unit under the wide manifest and a baseline unit under the numeric one — is
+    refused under `NativePayloadNotTemplateClosed` with its stated outcome; one program's golden bytes
+    per convention match a hand check against the templates; the two conventions' images decode to
+    equal template sequences with equal non-register fields; re-emission is byte-identical under both;
+    and every numeric and arm64 row the lane already carries keeps its answer.
+  - **The two forms agree, by run, over the wide manifest.** On an x86-64 host
+    `TheTwoFormsAgreeOverTheWideManifest` gives identical answers — completion value, `typeof`, uncaught
+    error name and message, printed lines, outcome and fuel spent — for those programs and for named
+    probes: recursion to `RangeError` at the call-depth ceiling, a throw from deep recursion caught at
+    the top within the bundle's bound, a long throw-and-catch loop, a generator `return()` through two
+    `finally` blocks, an uncaught `TypeError`, and an `eval` of a function called later. For the
+    programs that load nothing, the smallest fuel ceiling at which each completes is equal in both forms.
+    `ASwappedHandlerIsADefect` answers an internal defect for an emitted call rewritten to another
+    defined opcode. `BaselineEntryPointsSurvive` shows the stack aligned at entry, the stack pointer
+    identical either side of a call, and every callee-saved register preserved. The probes agree with
+    collections forced during the run. **The System V half runs in the continuous-integration lane on
+    a Linux runner, which retains nothing**, so the bundle names where each half was observed.
+  - **Rules hold the two properties the decision's rooting argument rests on.** One asserts that
+    `JsBaselineFrame` declares no field that is or contains a reference; one asserts the only places the
+    unmanaged-entry attribute and the activation slot may appear; each carries a witness **watched
+    failing and watched passing after revert**.
+  - **The retained corpus replays unchanged**, including the entry for an architecture no host arms,
+    with one entry added for a baseline payload calling a slot no opcode takes.
+  - **The conformance suite, in the two forms, differs only in named classes.** On one build and one
+    machine, over the pinned suite: under a deterministic allowance every per-variant difference
+    between the forms is a refusal naming the native-code ceiling or a fuel exhaustion on a variant that
+    loads a program; under a wall-clock allowance the only additional class is a wall-clock exhaustion in
+    the native form; the machine-code workflow run and the bytecode workflow run on one commit compare
+    the same way through the per-variant comparison script; and every shard of the machine-code run
+    completes inside its job limit. **Any other difference is a defect**, fixed before this clause is
+    met rather than classified into it.
+  - **A bundle retains all of it**, as `jsb-11-001`, naming members rather than lines, and records the
+    audit the design depends on: that no arm of the interpreter assigns a parameter or a local declared
+    before its loop other than the stack pointer, the program counter, the current offset and the
+    region; that no `continue` or `goto` bypasses the step boundary; and that every catch filter in the
+    profile assembly is pure.
+
+- **State on 2026-09-15, after collection: the code is committed, and
+  [bundle JSB-11-001](evidence/jsb-11-001/README.md) meets one clause of the gate above and shows
+  parts of the others: on one `win-x64` workstation in the Windows convention, and, in the System V
+  convention, in the machine-code workflow run of the conformance suite (compared with a bytecode
+  workflow run) and a pull-request lane job on hosted Linux runners.** *(Revised the
+  same day, after those runs: this sentence ended "on one `win-x64` workstation, in the Windows
+  convention only": [JSC-224](roadmap.corrections.md#jsc-224).)* *(Replaced the
+  same day. This bullet read "code is being written, and nothing is collected", and said that
+  `jsb-11-001` did not exist, that no gate had been run into a retained record and that no witness had
+  been watched failing: [JSC-223](roadmap.corrections.md#jsc-223).)* A clause is met or it is not, so each is named:
+  - **Met on that machine: the retained corpus replays unchanged**, in a JIT, a trimmed and a Native
+    AOT image of the execution-only root, and it carries the entry for a baseline payload calling a
+    slot no opcode takes.
+  - **Not met: the bytecode form is unchanged.** Shown in part: the interpreted instantiation of
+    `JsEngine.ExecuteCore` reaches fully optimised code; the bytecode frame-cost measure stops at the
+    declared bound at this commit and at the merge base alike; a bytecode run over named subtrees gives
+    verdict rows identical to the merge base's, and a whole-suite bytecode run from the collected build
+    gives a merged report byte-identical to the merge base's; and the benchmark comparison's raw reports are
+    retained, with no figure read from them. Not shown: **no tolerance was predeclared in the bundle
+    before the runs it would judge**, because the bundle did not exist before them, so the code size,
+    the frame-cost measure and the benchmark geometric mean meet none; the stack reservation was not
+    collected; and the subtree run and the benchmark were taken at an integration commit rather than
+    the collected one.
+  - **Not met: the per-step instantiations.** The native frame-cost measure stops at the declared
+    bound, which reports what the build promises and not a margin. Each Native AOT image's size is
+    retained at the collected commit and at the merge base, and no bound was predeclared to record the
+    growth against. Not collected: each instantiation's size and jump tables, the fresh-process cost,
+    and a fresh process per variant recursing to the ceiling. The fallback was not taken.
+  - **Not met: the scan closes over what the encoder emits.** Shown on that machine, in the slice
+    compiler's checks under all three publish modes: the named programs compile, scan clean and
+    re-emit identically under both conventions, every template of both baseline tables is reached, the
+    two conventions decode to one template sequence, retained bytes match per convention, and the
+    refusals the transcript names are refused. Not identifiable in the transcript: a refusal of a call
+    past the table, the verifier's reason named on each refusal, and a hand check of the golden bytes.
+  - **Not met: the two forms agree over the wide manifest.** The Windows half is shown for the named
+    programs and probes, the swapped handler, the entry points and forced collections. **The System V
+    half is not shown for these rows.** Its two entry-point rows did not run on that machine. The
+    pull-request lane's Linux job, which ran after the collection, names no passing row, so the
+    bundle's selected lines of that job show those rows only as absent from the rows not run
+    *(revised 2026-09-15: this read "The System V half has executed nowhere" and said that the lane
+    that would run them had not run; that lane and a workflow run have since executed the convention:
+    [JSC-224](roadmap.corrections.md#jsc-224))*. The smallest completing fuel ceiling was compared for some of the
+    programs that load nothing and not for all, and no bound for the deep throw was predeclared.
+  - **Not met: rules hold the rooting argument.** Both rules and their witnesses pass in the suite; no
+    injection into the tree watched failing and passing after revert is retained.
+  - **Not met: the conformance suite in the two forms.** A whole-suite native run was compared variant
+    by variant with a bytecode run under one wall-clock allowance with no difference, **and again with a
+    bytecode run from the native run's own binaries, with no difference**. The bundle also retains a comparison against a native run at a
+    longer wall-clock allowance **that the comparison script, as it stood at the collection, does not
+    pass**: its differences, all in exhausted dimension and none in a verdict, are neither admitted nor
+    classified, and this clause calls such a difference a defect (section 3 of the bundle). **The
+    machine-code and bytecode workflow runs were taken on one commit, every shard job completed inside
+    its limit, and no verdict differs between them. They compare clean only under the comparison
+    script as widened after they were seen.** Under this clause as written, some of their differences —
+    wall-clock exhaustions in the bytecode form against another allowance's exhaustion in the native
+    form — are in no named class. This clause calls them defects, so **it is not met on them**. With
+    guest loads exempted, the widened script also passes the longer-allowance comparison; there too
+    the differences are in no class this clause names, including two whose native side is not a fuel
+    exhaustion. The gate above was not amended ([JSC-224](roadmap.corrections.md#jsc-224)). No like-for-like
+    comparison under a deterministic allowance exists *(revised 2026-09-15: this sentence also read "and
+    neither workflow run nor any shard's job limit has been observed", and the sentence before it read
+    "that the comparison script does not pass")*.
+  - **Not met: a bundle retains all of it.** The audit this clause names — assignments before the
+    loop, `continue` and `goto` against the step boundary, and pure catch filters — is not recorded.
+
+  **None of that is acceptance**, no human has read a line, and a reader who meets this stage's
+  objective and infers that the wide manifest runs natively on a supported runtime identifier has
+  inferred what this bullet does not say.
 
 ---
 
@@ -909,6 +1212,9 @@ JSB-4 needs JSB-3's exit to have something to write; JSB-5 needs JSB-4's section
 check; JSB-6 needs all three and JSB-2 besides; JSB-8 and JSB-10 close over JSB-6 from two directions
 — one pins the interface, the other pins the answers — and neither substitutes for the other. JSB-9 is
 last because it inherits every obligation above it and adds a platform question none of them has.
+**JSB-11 comes after all of them** *(added 2026-09-15)*: it inherits JSB-5's scan, JSB-6's backend,
+JSB-7's arming path, JSB-8's obligations and JSB-10's lane, and adds a second template table, a second
+emitter and a change to the interpreter's own method, none of which any of them owns.
 
 **One dependency sits outside this component**, and it is the one VM-7 already carries: rule B5's
 widening and the composition register's declaration column are the core's to write, and the core's own
@@ -942,11 +1248,18 @@ different programme rather than a later one:
 - **No register allocator in the MVP.** The abstract operand stack is the allocation. Register
   allocation is where the determinism obligation bites hardest, which makes it exactly the thing to
   leave out of a first backend rather than the thing to be clever about.
-- **No managed reference in an emitted frame, ever, under any manifest.** Widening the compiled
-  language past what section 3 admits is a different design with a rooting scheme in it, and this
-  document proposes no rooting scheme. **The manifest is what holds this**, not an eligibility test
-  over an opcode stream, so widening it is a change to a published language surface and not a
-  loosening of a predicate somebody could relax quietly.
+- **No managed reference in an emitted frame, ever, under any manifest.** That sentence is unchanged,
+  and from 2026-09-15 it binds two forms. **Under `broiler.javascript.numeric` the manifest is what
+  holds it**, not an eligibility test over an opcode stream, so widening that manifest is a change to a
+  published language surface and not a loosening of a predicate somebody could relax quietly. **Under
+  `broiler.javascript.wide` the design holds it**: emitted code is handed a frame of a table address
+  and a cookie, every value stays in a managed activation the collector roots, and the frame's
+  declaration is to be held by a registered rule rather than by reading
+  ([JSD-0025](decisions/0025-the-baseline-native-form-over-the-wide-manifest.md) section 4)
+  *(corrected 2026-09-15: this bullet continued "Widening the compiled language past what section 3
+  admits is a different design with a rooting scheme in it, and this document proposes no rooting
+  scheme"; the design that arrived for the wide manifest has no rooting scheme in emitted code and
+  proposes none: [JSC-216](roadmap.corrections.md#jsc-216))*.
 - **No `x86-32`.** It is the only callee-pops convention in the declared matrix and the exact source of
   the accident the core retains as a fixture. Excluding it is a rule here, not a backlog item.
 - **No claim about speed, and this is the promise the built form puts under the most pressure.** No
@@ -963,7 +1276,11 @@ different programme rather than a later one:
   **What it did do is mint a third manifest that is smaller than both existing ones**, and a reader must
   not read a new manifest identity as new language: `broiler.javascript.numeric` admits strictly less
   than `broiler.javascript.slice` admits of anything but numbers, and a program the wide manifest runs
-  today is a program the numeric one refuses.
+  today is a program the numeric one refuses *(a statement about the numeric form from 2026-09-15: the
+  same program compiled under the wide manifest has the baseline form of
+  [JSB-11](#jsb-11--the-baseline-form-over-the-wide-manifest-and-a-frame-that-still-holds-no-managed-reference),
+  which admits no construct the wide manifest refuses and widens no manifest, so this bullet's first
+  sentence stands — [JSC-216](roadmap.corrections.md#jsc-216))*.
 - **And it does not accept anything.** No stage moves a ledger row, and a stage's exit gate being met
   is not acceptance: acceptance needs an owner and a reviewer decision, which nothing in this component
   has.

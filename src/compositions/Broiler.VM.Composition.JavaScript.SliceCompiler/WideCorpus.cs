@@ -314,7 +314,7 @@ internal static class WideCorpus
                 nativeSymbolOffset: 0,
                 nativeArchitecture: JsNativeArchitecture.Arm64)),
 
-        // ---- six rows about the template-closure scan, which is the layer this root HAS --------
+        // ---- seven rows about the template-closure scan, which is the layer this root HAS ------
         //
         // THIS ROOT CARRIES NO BACKEND, SO RE-EMISSION EQUALITY IS NOT AVAILABLE TO IT AND THE
         // TEMPLATE-CLOSURE SCAN IS THE WHOLE OF WHAT IT CAN CHECK ABOUT AN EMITTED PAYLOAD. That
@@ -325,7 +325,7 @@ internal static class WideCorpus
         // the BYTE the scan named as well as by the code, because every one of them refuses with
         // 1625 and the offset is the only column that tells them apart.
         //
-        // FIVE OF THE SIX DECLARE arm64 AND THAT IS A RULE OF THIS FILE RATHER THAN A PREFERENCE.
+        // FIVE OF THE SEVEN DECLARE arm64 AND THAT IS A RULE OF THIS FILE RATHER THAN A PREFERENCE.
         // A corpus entry is replayed by a root that ARMS what it verifies and that also draws
         // mutants from these same bytes, so a retained x86-64 payload is a payload some mutation of
         // which this machine will jump into. `JsNativeExecution.HostArchitecture` answers
@@ -334,7 +334,7 @@ internal static class WideCorpus
         // host-independent AND makes their bytes unreachable, both of which the 2026-09-08
         // correction above already had to learn once.
         //
-        // THE ONE EXCEPTION IS THE INCIDENT ITSELF. `JSC-208` records four zero bytes carried as an
+        // THE FIRST EXCEPTION IS THE INCIDENT ITSELF. `JSC-208` records four zero bytes carried as an
         // x86-64 payload, verified, armed, jumped into, and an access violation in
         // `JsNativeExecution.Invoke`; the architecture is half of what that row records and an
         // arm64 twin would be a different row. It is safe to retain under the architecture it names
@@ -354,6 +354,25 @@ internal static class WideCorpus
             [0x00, 0x00, 0x00, 0x00],
             JsNativeArchitecture.X64Windows,
             offset: 0),
+
+        // THE SECOND x86-64 EXCEPTION, AND IT IS THE BASELINE FORM'S OWN INCIDENT SHAPE: a whole
+        // baseline unit - prologue, one handler call, epilogue - whose call reads the table slot of
+        // byte 0x0B, which no opcode takes. The instruction is one the encoder spells and the slot is
+        // eight times a byte, so a check that judged the displacement by its width or its alignment
+        // would admit it; the scan names the `call [rbx+slot]` at offset twenty-three, after fifteen
+        // bytes of prologue and the two argument loads. It is refused at verification on every
+        // machine and is safe to retain under the architecture it names for the reason the row above
+        // is and one more: any neighbour of these bytes the baseline scan admits calls only the
+        // table, whose entry points refuse a program counter their activation did not compute.
+        Scan(
+            "wide-a-baseline-payload-calling-an-undefined-slot",
+            [
+                0x53, 0x41, 0x56, 0x48, 0x83, 0xEC, 0x28, 0x49, 0x89, 0xCE, 0x49, 0x8B, 0x1E, 0x89, 0xD0,
+                0x4C, 0x89, 0xF1, 0xBA, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x93, 0x58, 0x00, 0x00, 0x00,
+                0x48, 0x83, 0xC4, 0x28, 0x41, 0x5E, 0x5B, 0xC3,
+            ],
+            JsNativeArchitecture.X64Windows,
+            offset: 23),
 
         // The prologue with its epilogue cut off: two words that are both templates, and a unit
         // that would run off its last instruction into whatever the allocator put after it.
@@ -394,7 +413,7 @@ internal static class WideCorpus
             JsNativeArchitecture.Arm64,
             offset: 4),
 
-        // ---- and the control, without which the five above are satisfied by refusing everything -
+        // ---- and the control, without which the six above are satisfied by refusing everything --
         //
         // NINE WORDS THAT ARE ALL TEMPLATES, AND THE ROW RECORDS THAT VERIFICATION PASSED. The
         // entry is refused at INSTANTIATION for the architecture it names, which is the only reason
