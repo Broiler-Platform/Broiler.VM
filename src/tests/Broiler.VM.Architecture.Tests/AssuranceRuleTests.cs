@@ -240,7 +240,6 @@ public sealed class AssuranceRuleTests
         AssertTheRegisterRowIsWhatTheRulesImplement("J1");
 
         var violations = CoverageViolations(ProductUnits);
-        File.WriteAllLines(@"C:\Users\proof\.gemini\antigravity\brain\d5f9ef41-22bc-498e-ab9d-9f538b686c7b\scratch\violations.txt", violations);
         // The clean direction, over the tree the generator would leave behind.
         Assert.Empty(violations);
 
