@@ -1,0 +1,45 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no
+// compilation includes it, and rule X4's test puts its members into the real JsBaselineHandlers.cs in
+// place of the members of the same name, after exchanging the slots of Nop and Call in the real
+// table's static constructor, so that clause (d) reads the real table with exactly this edit made.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES. The slots of Nop and Call hold each other's wrapper,
+// and each wrapper expects the other's opcode, which is the edit a merge of two reorderings of the
+// table produces. Every other check agrees with it. The table's self-check sees two distinct entry
+// points. The template scan's slot clause holds a call to eight times the opcode at its head, which it
+// still is. Step's opcode check compares the byte at the head with the opcode the wrapper passes, and
+// they match. The routing clause reads Nop's wrapper calling the block step alone and Call's choosing
+// on PerOpcodeSteps, as the partition asks. And a Call now runs inside the block step, so a recursion
+// through it nests the block step's frame on every level, with every answer unchanged.
+//
+// StepCall also answers Construct, the second half of the same defect: the dispatch loop takes a
+// per-opcode step's opcode from the step and never compares it with the byte at the offset, so a step
+// that names another opcode runs that opcode's arm over the instruction it was handed.
+//
+// All three are written here, because each is a name that stopped matching the name beside it, and a
+// rule that tied only one of them to the wrapper would clear the other two.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal static unsafe class JsBaselineHandlers
+{
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int Nop(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Call);
+
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int Call(JsBaselineFrame* frame, int pc) =>
+        PerOpcodeSteps
+            ? JsNativeActivation.Step<StepCall>(frame, pc, JsOpcode.Nop)
+            : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Nop);
+
+    internal readonly struct StepCall : IJsExecutionMode
+    {
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.Construct;
+        }
+    }
+}

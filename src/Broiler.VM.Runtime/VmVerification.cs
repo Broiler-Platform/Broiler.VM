@@ -201,6 +201,16 @@ public sealed partial class VmRuntime
         var ceilings = new VmEffectiveCeilings(effective, effective);
 
         var invocationLevel = new VmBudgetLevel(VmBudgetScope.Invocation, ToArray(effective));
+
+        // A caller-driven verification builds its own meter, and nothing settles that meter when the
+        // verification ends. It becomes a fuel holder at all only if the profile's verifier charges
+        // Fuel through the verification context, which no verifier in this tree does, and if one
+        // did every reader settles it anyway - so no figure a host or a guest can read is wrong.
+        // What a stale holder costs instead is headroom: its block stays subtracted whole from what
+        // the runtime level offers concurrent operations, and it occupies one of the four slots,
+        // until a reader settles it or it is evicted as the oldest. A settle here would take the
+        // runtime gate once more per verification to buy that back; a verifier that charges fuel is
+        // what would make it worth buying.
         var meter = requestingMeter ?? new VmMeter(
             Gate, invocationLevel, null, RuntimeLevel, Parent, profile.MaxUnchargedWork, cancellationToken);
 

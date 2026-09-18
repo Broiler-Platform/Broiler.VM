@@ -1,0 +1,76 @@
+diff --git a/src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs b/src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs
+index af41f30..889f92a 100644
+--- a/src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs
++++ b/src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs
+@@ -98,7 +98,9 @@ internal static class WideHost
+                 Path.GetFullPath(files[index].Path).Replace('\\', '/')));
+         }
+ 
++        var measureT0 = System.Diagnostics.Stopwatch.GetTimestamp();
+         var compiled = JsCompiler.Compile(scripts, modules, asked);
++        MeasureCompile = System.Diagnostics.Stopwatch.GetElapsedTime(measureT0).TotalMilliseconds;
+ 
+         if (!compiled.Succeeded || compiled.Artifact is null)
+         {
+@@ -131,16 +133,24 @@ internal static class WideHost
+ 
+         using (runtime)
+         {
+-            return Run(
++            var measured = Run(
+                 runtime,
+                 compiled.Artifact,
+                 scripts.Count,
+                 modules.Count != 0,
+                 checkOnly,
+                 asked.Manifest);
++            if (System.Environment.GetEnvironmentVariable("BROILER_MEASURE") == "1")
++            {
++                System.Console.Error.WriteLine(string.Create(System.Globalization.CultureInfo.InvariantCulture,
++                    $"MEASURE compile_ms={MeasureCompile:F1} verify_ms={MeasureVerify:F1} instantiate_ms={MeasureInstantiate:F1} invoke_ms={MeasureInvoke:F1} artifact_bytes={compiled.Artifact.Length}"));
++            }
++            return measured;
+         }
+     }
+ 
++    private static double MeasureCompile, MeasureVerify, MeasureInstantiate, MeasureInvoke;
++
+     private static RunResult Run(
+         VmRuntime runtime,
+         byte[] artifact,
+@@ -164,7 +174,9 @@ internal static class WideHost
+             default,
+             VmCallerIdentity.FromCanonicalIdentity(Caller));
+ 
++        var measureT1 = System.Diagnostics.Stopwatch.GetTimestamp();
+         var verified = runtime.Verify(in descriptor, artifact, CancellationToken.None);
++        MeasureVerify = System.Diagnostics.Stopwatch.GetElapsedTime(measureT1).TotalMilliseconds;
+ 
+         if (!verified.TryGetArtifact(out var verifiedArtifact))
+         {
+@@ -193,7 +205,9 @@ internal static class WideHost
+             return new RunResult(RunStatus.Completed, string.Empty, string.Empty, []);
+         }
+ 
++        var measureT2 = System.Diagnostics.Stopwatch.GetTimestamp();
+         var instantiated = runtime.Instantiate(verifiedArtifact, CancellationToken.None);
++        MeasureInstantiate = System.Diagnostics.Stopwatch.GetElapsedTime(measureT2).TotalMilliseconds;
+ 
+         if (!instantiated.TryGetInstance(out var instance))
+         {
+@@ -237,7 +251,15 @@ internal static class WideHost
+             var request = new VmInvocationRequest(
+                 new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(name)));
+ 
++            var measureT3 = System.Diagnostics.Stopwatch.GetTimestamp();
+             var result = instance.Invoke(in request, CancellationToken.None);
++            MeasureInvoke += System.Diagnostics.Stopwatch.GetElapsedTime(measureT3).TotalMilliseconds;
++            if (System.Environment.GetEnvironmentVariable("BROILER_MEASURE_BUDGET") == "1")
++            {
++                var budget = runtime.GetBudgetSnapshot();
++                System.Console.Error.WriteLine(string.Create(System.Globalization.CultureInfo.InvariantCulture,
++                    $"BUDGET script={index} outcome={result.Outcome} reason={result.Reason} dimension={result.Diagnostics.ExhaustedDimension} scope={result.Diagnostics.ExhaustedScope} runtime_fuel_consumed={budget.Consumed(VmBudgetDimension.Fuel)} runtime_calldepth_consumed={budget.Consumed(VmBudgetDimension.CallDepth)} runtime_livebytes_consumed={budget.Consumed(VmBudgetDimension.LiveBytes)}"));
++            }
+ 
+             if (result.Outcome == VmOutcome.ResourceExhaustion)
+             {

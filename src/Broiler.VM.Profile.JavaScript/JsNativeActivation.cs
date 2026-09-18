@@ -35,8 +35,8 @@ namespace Broiler.VM.Profile.JavaScript;
 /// </para>
 /// <para>
 /// <b>The entry values are kept exactly as the dispatch loop received them</b>, because a step is
-/// that loop run for one instruction and reads the same parameters on every call: an arm that reads
-/// the receiver, the arguments or the frame reads what the interpreter would have read.
+/// that loop, run from the instruction it is handed, and reads the same parameters on every call: an
+/// arm that reads the receiver, the arguments or the frame reads what the interpreter would have read.
 /// </para>
 /// <para>
 /// <b>The thread slot is not an ambient holder, and the difference is its extent.</b> It is set by
@@ -165,8 +165,7 @@ internal sealed unsafe class JsNativeActivation
     /// <summary>The operand stack, set by the entry and shared by every step.</summary>
     /// <remarks>
     /// <b>These four are fields rather than properties because a step reads each of them for every
-    /// instruction it runs</b>, and they are written by the dispatch loop's entry and step boundary
-    /// only.
+    /// step it runs</b>, and they are written by the dispatch loop's entry and step boundary only.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=5C6FE1
     // Broiler-Falsified-If: a step runs over a stack other than the one the entry built or borrowed from the frame
@@ -185,9 +184,9 @@ internal sealed unsafe class JsNativeActivation
     // Broiler-Human:        PENDING
     internal int Sp;
 
-    /// <summary>The instruction the next step must be asked for.</summary>
+    /// <summary>The instruction the next step must start at.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=4E6E02
-    // Broiler-Falsified-If: a handler runs an instruction at any offset other than this one
+    // Broiler-Falsified-If: a handler starts a step at any offset other than this one
     // Broiler-Human:        PENDING
     internal int Pc;
 
@@ -220,12 +219,22 @@ internal sealed unsafe class JsNativeActivation
 
     /// <summary>Records that the unit left, and with what.</summary>
     /// <remarks>
+    /// <para>
     /// <b>It answers <c>default</c> because the dispatch loop's return value is not how a step's
     /// answer travels.</b> The value stays here, on the managed side, and the handler answers only
     /// the status that tells the emitted code to leave.
+    /// </para>
+    /// <para>
+    /// <b>It is inlined, because its callers are the dispatch loop's leaving arms.</b> Two field
+    /// writes behind a call cost the loop the argument registers and the call's own shadow space at
+    /// every one of those arms, and that is paid out of the frame the block instantiation reserves.
+    /// Inlined, the arms write the two fields where they stand.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E56FC1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=13132A
     // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     internal JsValue Exit(JsValue value)
     {
         Exited = true;
@@ -234,18 +243,19 @@ internal sealed unsafe class JsNativeActivation
     }
 
     /// <summary>
-    /// Runs one instruction for the emitted code, after checking that it is the instruction the
-    /// managed side expects.
+    /// Runs one step for the emitted code - one instruction, or a block of them - after checking that
+    /// it starts at the instruction the managed side expects.
     /// </summary>
     /// <remarks>
     /// <para>
     /// <b>THREE CHECKS STAND BETWEEN AN EMITTED CALL AND THE INTERPRETER, AND ANY ONE OF THEM FAILING
     /// RUNS NOTHING.</b> The frame's cookie must be the activation's, the offset the emitted code
     /// passes must be the one the previous step or the entry computed, and the byte at that offset
-    /// must be the opcode this handler was built for. The template scan proves that every emitted
-    /// call lands somewhere in the handler table; it cannot prove which handler belongs at which
-    /// offset, and these checks close that gap at run time. A misplaced call therefore answers a
-    /// defect, never a different JavaScript answer.
+    /// must be the opcode this handler was built for, which for a block step is the opcode at the
+    /// block's head. The template scan holds every call of an x86-64 baseline payload to a block head of
+    /// the program's partition and to eight times the opcode there, in every image, so a verified payload
+    /// does not reach these checks failing; they stay as defence in depth, against a defect in the engine
+    /// or in the scan. A misplaced call therefore answers a defect, never a different JavaScript answer.
     /// </para>
     /// <para>
     /// <b>NOTHING CROSSES BACK INTO THE EMITTED CODE AS AN EXCEPTION.</b> A managed exception cannot
@@ -258,7 +268,7 @@ internal sealed unsafe class JsNativeActivation
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=EAD7FE
-    // Broiler-Falsified-If: an instruction runs whose offset, opcode or activation differs from what the managed side computed, or an exception escapes into emitted code
+    // Broiler-Falsified-If: a step starts at an offset, with an opcode or for an activation other than what the managed side computed, or an exception escapes into emitted code
     // Broiler-Human:        PENDING
     internal static int Step<TMode>(JsBaselineFrame* frame, int pc, JsOpcode expected)
         where TMode : struct, IJsExecutionMode

@@ -226,10 +226,15 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// bytecode is recompiled by the same deterministic backend and the result must be byte-equal
     /// to the bytes carried. Without one, the structural checks still run - framing, length,
     /// alignment, every symbol offset inside and aligned, an architecture this build names, a
-    /// backend version this image is - and NOTHING WHATEVER IS CHECKED ABOUT THE INSTRUCTIONS. An
-    /// image in that position is trusting PROVENANCE and not verification, and a composition that
-    /// runs emitted code without an emitter in its own closure is asking its users to trust
-    /// whoever produced the artifact.
+    /// backend version this image is - and so does the template-closure scan, which holds every
+    /// instruction to this build's template table and, for the x86-64 baseline form, every unit
+    /// body to the layout of the artifact's own partition, instruction for instruction. WHAT NO
+    /// CHECK REACHES WITHOUT AN EMITTER IS THE GENERATOR: outside that form, which instructions a
+    /// unit holds is not compared with anything, and within it the padding's length and the
+    /// declared alignment are compared with this build's by re-emission alone. For those an image in
+    /// that position is trusting PROVENANCE and not verification, and a composition that runs
+    /// emitted code without an emitter in its own closure is asking its users to trust whoever
+    /// produced the artifact for them.
     /// </para>
     /// <para>
     /// <b>It is held on the verifier object rather than passed to the pass</b>, for the same reason

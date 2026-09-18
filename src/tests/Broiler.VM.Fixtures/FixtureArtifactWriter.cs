@@ -87,6 +87,111 @@ public static class FixtureArtifactWriter
                 FixtureFormat.OpReturn,
             ]);
 
+    /// <summary>
+    /// A run of <paramref name="count"/> nops, then a constant and a return.
+    /// </summary>
+    /// <remarks>
+    /// Charges <c>count + 2</c> units at a granularity of one: one per nop, one for the push and
+    /// one for the return. A long run of instructions that do nothing else is what makes a fuel
+    /// figure an instruction count and nothing more.
+    /// </remarks>
+    public static byte[] Nops(int count)
+    {
+        // OpNop is zero, so the run of nops is already in place.
+        var code = new byte[count + 3];
+
+        code[count] = FixtureFormat.OpPushConst;
+        code[count + 1] = 0;
+        code[count + 2] = FixtureFormat.OpReturn;
+
+        return Write([count], code);
+    }
+
+    /// <summary>
+    /// Nops, then one spin of <paramref name="units"/>, then more nops, a constant and a return.
+    /// </summary>
+    /// <remarks>
+    /// Charges <c>before + after + 3</c> units for its instructions, plus <paramref name="units"/>
+    /// in one charge at the spin. The bulk charge is the one an executor does not count against its
+    /// own poll window, which is how a run breaks a declared bound without the profile noticing.
+    /// </remarks>
+    public static byte[] NopsSpinNops(int before, long units, int after)
+    {
+        var code = new byte[before + after + 5];
+        var offset = before;
+
+        code[offset++] = FixtureFormat.OpSpin;
+        code[offset++] = 0;
+        offset += after;
+        code[offset++] = FixtureFormat.OpPushConst;
+        code[offset++] = 0;
+        code[offset] = FixtureFormat.OpReturn;
+
+        return Write([units], code);
+    }
+
+    /// <summary>
+    /// Nops, then one host call on <paramref name="bindingIndex"/>, then more nops and a return.
+    /// </summary>
+    /// <remarks>
+    /// Charges <c>before + after + 3</c> units in all, of which <c>before + 2</c> are charged by
+    /// the time the handler runs: the nops, the push of its argument, and the host-call
+    /// instruction itself. A test that holds the handler is therefore standing at a known figure.
+    /// </remarks>
+    public static byte[] NopsAroundHostCall(int before, int bindingIndex, int after)
+    {
+        var code = new byte[before + after + 5];
+        var offset = before;
+
+        code[offset++] = FixtureFormat.OpPushConst;
+        code[offset++] = 0;
+        code[offset++] = FixtureFormat.OpHostCall;
+        code[offset++] = (byte)bindingIndex;
+        offset += after;
+        code[offset] = FixtureFormat.OpReturn;
+
+        return Write([21], code);
+    }
+
+    /// <summary>Nops, then a yield, then more nops, a constant and a return.</summary>
+    /// <remarks>
+    /// Charges <c>before + after + 3</c> units in all, of which <c>before + 1</c> are charged by
+    /// the time it parks. What it has spent is spent: an allowance does not refund at a park.
+    /// </remarks>
+    public static byte[] NopsAroundYield(int before, int after)
+    {
+        var code = new byte[before + after + 4];
+        var offset = before;
+
+        code[offset++] = FixtureFormat.OpYield;
+        offset += after;
+        code[offset++] = FixtureFormat.OpPushConst;
+        code[offset++] = 0;
+        code[offset] = FixtureFormat.OpReturn;
+
+        return Write([7], code);
+    }
+
+    /// <summary>Nops, then one guest-initiated load, then a constant and a return.</summary>
+    /// <remarks>
+    /// Charges <c>before + 3</c> units in all, of which <c>before + 1</c> are charged by the time
+    /// the load is requested. The nested verification then runs on what is left of the requesting
+    /// operation's allowance, so the remainder it is handed is a figure a test can state exactly.
+    /// </remarks>
+    public static byte[] NopsThenLoad(int before, long specifier, long value)
+    {
+        var code = new byte[before + 5];
+        var offset = before;
+
+        code[offset++] = FixtureFormat.OpLoad;
+        code[offset++] = 0;
+        code[offset++] = FixtureFormat.OpPushConst;
+        code[offset++] = 1;
+        code[offset] = FixtureFormat.OpReturn;
+
+        return Write([specifier, value], code);
+    }
+
     /// <summary>How an artifact is deliberately damaged.</summary>
     public enum Corruption
     {

@@ -1,0 +1,15 @@
+# Architecture tests over the README as committed, at 34dbd7ab688094c2457adad6230b6cc4bb700850, 2026-09-16T18:58:45+02:00
+# dotnet test src/tests/Broiler.VM.Architecture.Tests -c Release
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Architecture.Tests -> D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+Test run for D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   238, Skipped:     0, Total:   238, Duration: 7 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+# exit 0
+# finished 2026-09-16T18:58:56+02:00

@@ -608,6 +608,109 @@ public sealed class ReviewRegressionTests
             $"cost {baseline} bytes before them and {after} bytes after");
     }
 
+    private static readonly System.Threading.AsyncLocal<object?> CapabilityProbe = new();
+
+    [Fact]
+    public void A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context()
+    {
+        // The same invariant as the test above, reached through the other way out of a capability.
+        // That test's capability leaves its execution context untouched. This one sets a value of its
+        // own and clears it again before it answers, so it returns under a different context object
+        // carrying the same values - the case in which leaving the capability has to write the depth
+        // back rather than rely on anything else to release it. Both shapes are pinned, so neither way
+        // of leaving a capability can retain the depth, whichever of them a later change makes cheaper.
+        var baseline = AmbientWriteCost();
+
+        for (var index = 0; index < 500; index++)
+        {
+            using var runtime = FixtureComposition.Runtime(
+                FixtureComposition.AlphaCatalog(),
+                FixtureComposition.Options(
+                    capabilities: FixtureComposition.CapabilitiesWithDouble(DoubleAfterChangingTheContext)));
+
+            var artifact = FixtureComposition.Verify(
+                runtime, FixtureArtifactWriter.HostCall(21, FixtureHostCapabilities.DoubleBinding));
+
+            using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+            Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(instance).Outcome);
+        }
+
+        var after = AmbientWriteCost();
+
+        Assert.True(
+            after <= baseline * 4,
+            $"five hundred disposed runtimes whose capability changed its context left per-thread " +
+            $"state behind: an async-local write cost {baseline} bytes before them and {after} bytes after");
+    }
+
+    [Fact]
+    public void A_Capability_That_Changes_Nothing_Returns_Its_Caller_To_The_Context_It_Was_Called_Under()
+    {
+        // Leaving a non-reentrant capability either writes the depth back, which installs a new
+        // execution context carrying the same values, or - when the capability left the thread under
+        // the very context its entry installed - puts back the context the call was entered from.
+        // Every value is the same either way, so no test of behaviour can tell the two apart, and
+        // the second exists only for what it saves: a context write per call, and the step's next
+        // lookup of its environment meter. A change that stopped taking it would pass every other
+        // test here and cost exactly what it was written to save. So this pins that it is taken. A
+        // capability calls another through the step's capability table, neither changes anything,
+        // and the context the outer one runs under after the inner call returns must be the very
+        // object it ran under before. An entry that records nothing, or a return that always writes
+        // the depth back, leaves a new object there instead.
+        IVmExecutionEnvironment? captured = null;
+        System.Threading.ExecutionContext? before = null;
+        System.Threading.ExecutionContext? after = null;
+        var nested = VmHostCallOutcome.Unavailable;
+        var calls = 0;
+
+        VmHostCallOutcome Handler(ReadOnlySpan<long> arguments, out long result)
+        {
+            result = 0;
+
+            if (++calls != 1)
+            {
+                return VmHostCallOutcome.Completed;
+            }
+
+            Span<long> inner = stackalloc long[1];
+
+            before = System.Threading.ExecutionContext.Capture();
+            nested = captured!.Capabilities.Invoke(FixtureHostCapabilities.DoubleBinding, inner, out _);
+            after = System.Threading.ExecutionContext.Capture();
+
+            return VmHostCallOutcome.Completed;
+        }
+
+        using var runtime = FixtureComposition.Runtime(
+            FixtureComposition.Catalog(FixtureVmProfile.DescriptorFor(
+                FixtureVmProfileVariant.Conforming, environment => captured = environment)),
+            FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(Handler)));
+
+        var artifact = FixtureComposition.Verify(
+            runtime, FixtureArtifactWriter.NopsAroundHostCall(100, FixtureHostCapabilities.DoubleBinding, 100));
+
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+        Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(instance).Outcome);
+        Assert.Equal(VmHostCallOutcome.Completed, nested);
+        Assert.NotNull(before);
+        Assert.Same(before, after);
+    }
+
+    /// <summary>
+    /// Doubles its argument after setting and clearing a value of its own, which leaves every value
+    /// as it was and the thread under a new execution context object.
+    /// </summary>
+    private static VmHostCallOutcome DoubleAfterChangingTheContext(ReadOnlySpan<long> arguments, out long result)
+    {
+        CapabilityProbe.Value = new object();
+        CapabilityProbe.Value = null;
+
+        result = arguments.Length > 0 ? arguments[0] * 2 : 0;
+        return VmHostCallOutcome.Completed;
+    }
+
     /// <summary>What one async-local write costs on this thread, in bytes.</summary>
     /// <remarks>
     /// The measure is allocation rather than time because the growth is a map copy, and a copy is

@@ -400,7 +400,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=A3C1CE
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=0519BC
     // Broiler-Human:        PENDING
     private VmResumeResult RunResume(VmOperation operation, IVmProfileContinuation continuation)
     {
@@ -431,6 +431,14 @@ internal sealed class VmInstanceImplementation : VmInstance
         finally
         {
             scope.Leave();
+
+            // The step is over, so the fuel it was admitted and has not committed is committed now.
+            // The resume's own completion reads the uncharged-work counter, and this settle makes
+            // that read exact JOINTLY with the settle the reader takes itself: on this path either
+            // one alone covers every unit this thread charged. The reader's is the one that must
+            // stay, because it also covers a thread the step left running that charges between here
+            // and the read.
+            operation.Meter.SettlePreAdmittedFuel();
         }
 
         return Finish(operation, MapResume(operation, step));
@@ -501,7 +509,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=5D2AA9
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=F8070F
     // Broiler-Human:        PENDING
     private VmInvocationResult RunInvocation(VmOperation operation, in VmInvocationRequest request)
     {
@@ -529,6 +537,11 @@ internal sealed class VmInstanceImplementation : VmInstance
         finally
         {
             scope.Leave();
+
+            // As on the resume path: what the step spent from a block is committed before the
+            // outcome is mapped. The uncharged-work counter the mapping reads is exact jointly with
+            // the settle that reader takes itself, and the reader's is the one that must stay.
+            operation.Meter.SettlePreAdmittedFuel();
         }
 
         return Finish(operation, MapInvocation(operation, step));

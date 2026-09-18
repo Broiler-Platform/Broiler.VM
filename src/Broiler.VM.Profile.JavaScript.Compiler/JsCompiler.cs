@@ -525,8 +525,8 @@ public sealed class JsCompiler
     /// <para>
     /// <b>The native form is a whole-artifact form under either manifest.</b> Every unit is
     /// emitted or the compilation is refused. Under the numeric manifest the emitted code computes
-    /// over doubles; under the wide manifest it is the baseline form, whose every instruction is a
-    /// call into the interpreter's own dispatch for that one instruction, so every program the wide
+    /// over doubles; under the wide manifest it is the baseline form, whose emitted code calls into
+    /// the interpreter's own dispatch at every block head, so every program the wide
     /// front end lowers can be emitted. There is no mixed artifact for a request to ask for.
     /// </para>
     /// <para>
@@ -975,9 +975,9 @@ public sealed class JsCompiler
     /// <para>
     /// <b>BOTH MANIFESTS HAVE A NATIVE FORM, AND EVERY UNIT OF AN ARTIFACT HAS THE ONE FORM.</b>
     /// Under the numeric manifest a backend computes: values are doubles in slabs and the emitted
-    /// code does the arithmetic. Under the wide manifest a backend emits the baseline form: every
-    /// instruction is one call into the interpreter's own dispatch for that instruction and the
-    /// control flow between instructions is emitted, so no construct the wide lowering writes is
+    /// code does the arithmetic. Under the wide manifest a backend emits the baseline form: each block
+    /// of instructions is one call into the interpreter's own dispatch and the control flow between
+    /// blocks is emitted, so no construct the wide lowering writes is
     /// outside it. Either way the backend answers for the whole artifact or refuses it, which is
     /// why there is still no mixed form for this method to be asked for.
     /// </para>

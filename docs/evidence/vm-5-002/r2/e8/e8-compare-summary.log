@@ -1,0 +1,18 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[M docs/evidence/vm-5-002/README.md]
+# build=e8 comparison
+# started=2026-09-17T08:10:19+02:00
+# binary=eng/compare-test262-forms.py sha256=536c6385709a893f79f9ed7795f413a5c49ba7fbf217f04e0c2e3ef778e9b00d version=(no version resource)
+bytecode  1000    sorted-row-diff=0 compare-exit=0 Fuel-lines base=2257 credit=2257 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+native    1000    sorted-row-diff=0 compare-exit=0 Fuel-lines base=2257 credit=2257 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+bytecode  2500    sorted-row-diff=0 compare-exit=0 Fuel-lines base=729 credit=729 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+native    2500    sorted-row-diff=0 compare-exit=0 Fuel-lines base=729 credit=729 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+bytecode  10000   sorted-row-diff=0 compare-exit=0 Fuel-lines base=49 credit=49 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+native    10000   sorted-row-diff=0 compare-exit=0 Fuel-lines base=49 credit=49 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+bytecode  30000   sorted-row-diff=0 compare-exit=0 Fuel-lines base=41 credit=41 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+native    30000   sorted-row-diff=0 compare-exit=0 Fuel-lines base=41 credit=41 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+bytecode  100000  sorted-row-diff=0 compare-exit=0 Fuel-lines base=35 credit=35 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+native    100000  sorted-row-diff=0 compare-exit=0 Fuel-lines base=35 credit=35 | 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored

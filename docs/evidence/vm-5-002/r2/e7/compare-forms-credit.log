@@ -1,0 +1,20 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[]
+# build=e7 comparison
+# started=2026-09-17T07:26:38+02:00
+# binary=eng/compare-test262-forms.py sha256=536c6385709a893f79f9ed7795f413a5c49ba7fbf217f04e0c2e3ef778e9b00d version=(no version resource)
+# command=python eng/compare-test262-forms.py --exempt-guest-loads --suite artifacts/t262/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e <re-collection credit bytecode report> <re-collection credit native report>
+# reference D:/Broiler.VM/artifacts/fc/rc/t262-credit-bytecode/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 60000 ms
+#   total|53469|94545|70834|13315|1990|60|8346
+# candidate D:/Broiler.VM/artifacts/fc/rc/t262-credit-native/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-win64); fuel 100000000; wall 60000 ms
+#   total|53469|94545|70834|13315|1990|60|8346
+# reading: deterministic - class (c) is not admitted, because both runs were taken at or above 60000 ms; class (b) is admitted
+# 94545 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+
+# every difference is in an admitted class
+# exit=0

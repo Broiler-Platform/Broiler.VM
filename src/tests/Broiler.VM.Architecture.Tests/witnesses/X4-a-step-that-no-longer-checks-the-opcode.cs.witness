@@ -1,0 +1,57 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no
+// compilation includes it, and rule X4's test puts its Step into the real JsNativeActivation.cs in
+// place of the real one, so that clause (b) reads the real activation with exactly this edit made.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES. The template scan holds every call of an x86-64
+// baseline payload to a block head of the program's partition and to eight times the opcode there,
+// in every image, so no verified payload reaches Step with the wrong opcode, and the comparison reads
+// as dead code a profiler charges for on every step. What it costs is the defence it is there for:
+// against a defect in the engine's stop rule or in the scan itself, the comparison is what turns a
+// block step started at the wrong instruction into a defect rather than a different JavaScript
+// answer, and once it is gone nothing at run time notices.
+//
+// Only the opcode comparison is removed. The pc, bounds and cookie comparisons are the real ones, and
+// the rule must not report them.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal sealed unsafe class JsNativeActivation
+{
+    internal static int Step<TMode>(JsBaselineFrame* frame, int pc, JsOpcode expected)
+        where TMode : struct, IJsExecutionMode
+    {
+        var act = current;
+
+        if (act is null ||
+            frame is null ||
+            act.Cookie != frame->Cookie ||
+            act.Exited ||
+            act.Pc != pc ||
+            (uint)pc >= (uint)act.Code.Length)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        try
+        {
+            _ = act.Engine.ExecuteCore<TMode>(
+                act.Program,
+                act.UnitIndex,
+                act.Environment,
+                act.ThisValue,
+                act.Arguments,
+                act.Self,
+                act.NewTarget,
+                act.ThisBinding,
+                act.Frame,
+                act);
+
+            return act.Exited ? (int)JsBaselineStatus.Exit : act.Pc;
+        }
+        catch (System.Exception escaped)
+        {
+            act.Pending = escaped;
+            return (int)JsBaselineStatus.Threw;
+        }
+    }
+}

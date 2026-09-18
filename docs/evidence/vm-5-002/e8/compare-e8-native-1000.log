@@ -1,0 +1,10 @@
+# reference artifacts/fc/low-base-native-1000/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-win64); fuel 1000; wall 600000 ms
+#   total|9295|18329|14924|1044|52|2256|53
+# candidate artifacts/fc/low-credit-native-1000/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-win64); fuel 1000; wall 600000 ms
+#   total|9295|18329|14924|1044|52|2256|53
+# same-form: two native runs, from two builds, read on either side - class (c') is admitted at any wall allowance, because two builds differ in speed by construction and were run at different times; classes (a) and (b) are read on either side; class (b) is not admitted without --exempt-guest-loads
+# 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+
+# every difference is in an admitted class

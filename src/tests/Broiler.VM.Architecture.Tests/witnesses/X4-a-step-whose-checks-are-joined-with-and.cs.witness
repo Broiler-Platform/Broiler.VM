@@ -1,0 +1,56 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no
+// compilation includes it, and rule X4's test puts its Step into the real JsNativeActivation.cs in
+// place of the real one, so that clause (b) reads the real activation with exactly this edit made.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES. Every comparison is still here, word for word, which
+// is what a rule that looked for the four comparisons by name would clear. The condition has been
+// rewritten as the list of things that go wrong, joined the way a list is read aloud, and joined with
+// && the step refuses only when every one of them is wrong at once - which no misplaced call is. A
+// wrong cookie, a stale offset, an offset past the code or a different opcode each runs the loop.
+//
+// Clause (b) reads a condition joined with || at its top level and finds each comparison among its
+// terms, so here it must report all four.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal sealed unsafe class JsNativeActivation
+{
+    internal static int Step<TMode>(JsBaselineFrame* frame, int pc, JsOpcode expected)
+        where TMode : struct, IJsExecutionMode
+    {
+        var act = current;
+
+        if (act is null &&
+            frame is null &&
+            act.Cookie != frame->Cookie &&
+            act.Exited &&
+            act.Pc != pc &&
+            (uint)pc >= (uint)act.Code.Length &&
+            act.Code[pc] != (byte)expected)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        try
+        {
+            _ = act.Engine.ExecuteCore<TMode>(
+                act.Program,
+                act.UnitIndex,
+                act.Environment,
+                act.ThisValue,
+                act.Arguments,
+                act.Self,
+                act.NewTarget,
+                act.ThisBinding,
+                act.Frame,
+                act);
+
+            return act.Exited ? (int)JsBaselineStatus.Exit : act.Pc;
+        }
+        catch (System.Exception escaped)
+        {
+            act.Pending = escaped;
+            return (int)JsBaselineStatus.Threw;
+        }
+    }
+}

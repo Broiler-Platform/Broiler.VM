@@ -1,0 +1,10 @@
+# reference artifacts/fc/t262-credit-bytecode/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form bytecode; fuel 100000000; wall 60000 ms
+#   total|53469|94545|70834|13315|1990|60|8346
+# candidate artifacts/fc/t262-credit-native/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-win64); fuel 100000000; wall 60000 ms
+#   total|53469|94545|70834|13315|1990|60|8346
+# reading: deterministic - class (c) is not admitted, because both runs were taken at or above 60000 ms; class (b) is admitted
+# 94545 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+
+# every difference is in an admitted class

@@ -1,0 +1,137 @@
+{
+  "schema": "broiler-js octane report",
+  "version": 1,
+  "produced-at": "2026-09-16T16:15:07Z",
+  "retained": false,
+  "not-a-baseline": "Produced by one run, with no predeclared rule, no control, no A/A lane and no repetitions. Roadmap section 17 and rule L1 govern any figure a document retains; no figure in this file may be written into one.",
+  "pin": {
+    "suite": "octane",
+    "upstream": "chromium/octane",
+    "revision": "570ad1ccfe86e3eecba0636c8f932ac08edec517",
+    "archive-sha256": "7bcf54bdaa32475eadb09bbed4283f46cb2e11ee69c10b3b79524d568db841c4",
+    "content-sha256": "aab618b86ebe2f18229c18f0147943e9a1bac69967582563e120d4cea273b4c4",
+    "files": 37
+  },
+  "host": {
+    "path": "src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+    "bytes": 162816,
+    "version": [
+      "broiler-js broiler.javascript manifest broiler.javascript.wide format 2",
+      "edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html"
+    ]
+  },
+  "allowances": {
+    "fuel": 1000000000000,
+    "wall-ms-requested": 3600000,
+    "live-bytes": 1000000000,
+    "max-depth": 512
+  },
+  "selection": {
+    "attempted": [
+      "richards",
+      "deltablue",
+      "crypto",
+      "raytrace",
+      "navier-stokes"
+    ],
+    "excluded": [],
+    "of": 15
+  },
+  "benchmarks": [
+    {
+      "benchmark": "richards",
+      "exit": 0,
+      "score": "98.2",
+      "results": [
+        {
+          "name": "Richards",
+          "score": "98.2"
+        }
+      ],
+      "components": [
+        0.981584905660378
+      ],
+      "seconds": 3.375,
+      "detail": null
+    },
+    {
+      "benchmark": "deltablue",
+      "exit": 0,
+      "score": "112",
+      "results": [
+        {
+          "name": "DeltaBlue",
+          "score": "112"
+        }
+      ],
+      "components": [
+        1.1190183752417806
+      ],
+      "seconds": 3.407,
+      "detail": null
+    },
+    {
+      "benchmark": "crypto",
+      "exit": 0,
+      "score": "69.6",
+      "results": [
+        {
+          "name": "Crypto",
+          "score": "69.6"
+        }
+      ],
+      "components": [
+        0.6960551517988856
+      ],
+      "seconds": 66.578,
+      "detail": null
+    },
+    {
+      "benchmark": "raytrace",
+      "exit": 0,
+      "score": "236",
+      "results": [
+        {
+          "name": "RayTrace",
+          "score": "236"
+        }
+      ],
+      "components": [
+        2.3639460916442063
+      ],
+      "seconds": 11.375,
+      "detail": null
+    },
+    {
+      "benchmark": "navier-stokes",
+      "exit": 0,
+      "score": "110",
+      "results": [
+        {
+          "name": "NavierStokes",
+          "score": "110"
+        }
+      ],
+      "components": [
+        1.1043207292684065
+      ],
+      "seconds": 23.265,
+      "detail": null
+    }
+  ],
+  "aggregate": {
+    "score": 114.8228,
+    "definition": "100 * exp(sum(ln(r)) / n) over every ratio BenchmarkSuite.scores collected, which is what BenchmarkSuite.RunSuites computes for a whole-suite run.",
+    "ratios": 5,
+    "coverage": "partial|not selected: earley-boyer, regexp, splay, pdfjs, mandreel, gbemu, code-load, box2d, zlib, typescript",
+    "whole": false,
+    "is-octane-score": false
+  },
+  "seconds": 108.0,
+  "environment": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "AMD64 Family 25 Model 33 Stepping 0, AuthenticAMD",
+    "python": "3.11.9"
+  }
+}

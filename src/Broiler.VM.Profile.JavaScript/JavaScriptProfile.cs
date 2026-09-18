@@ -167,6 +167,11 @@ public static class JavaScriptProfile
     /// one, the baseline form over <see cref="WideManifest"/>, which is whole-artifact without a small
     /// language because each instruction it emits is a call into the interpreter's own dispatch for
     /// that instruction.)</i>
+    /// <i>(Corrected 2026-09-17. "Each instruction it emits is a call into the interpreter's own
+    /// dispatch for that instruction" stopped being true when the baseline form began calling that
+    /// dispatch at block heads, a block of instructions at a time. The form is whole-artifact without a
+    /// small language for the same reason as before: the code it emits calls into the interpreter's own
+    /// dispatch to run every instruction.)</i>
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F84EE9
@@ -526,10 +531,14 @@ public static class JavaScriptProfile
     /// the bytecode the artifact also carries and compare the result to the emitted bytes it
     /// carries, which is the only sense in which machine code is VERIFIABLE at all: a wrong
     /// backend produces a well-framed sequence of the wrong instructions, and no framing check ever
-    /// written catches that. An image built without one checks the framing and no more, and what it
-    /// is then trusting is PROVENANCE - that whoever produced the artifact ran a backend it has no
-    /// way to re-run - rather than verification. That distinction belongs in what a composition
-    /// tells its users and is stated here so that the two doors cannot be confused.
+    /// written catches that. An image built without one checks the framing and runs the
+    /// template-closure scan, which holds every instruction to this build's table and, for the x86-64
+    /// baseline form alone, every unit body to the layout of the artifact's own partition; outside
+    /// that form it does not say which instructions a unit should hold, and within it the padding's
+    /// length and the declared alignment are left to re-emission. For those what it is trusting is
+    /// PROVENANCE - that whoever produced the artifact ran a backend it has no way to re-run - rather
+    /// than verification. That distinction belongs in what a composition tells its users and is
+    /// stated here so that the two doors cannot be confused.
     /// </para>
     /// <para>
     /// <b>The emitter is a composition's choice and is fixed when the descriptor is registered,</b>
@@ -893,7 +902,11 @@ public static class JavaScriptProfile
         // megabytes and the capacity re-measured at 22,122 calls, which is 2.70 times this row
         // *(JSC-139)*. This row did not move: a ceiling a host may be granted is a policy figure,
         // and lowering it to fit a stack would be answering a question about the machine with a
-        // change to what a program is allowed to do.
+        // change to what a program is allowed to do. The guest stack was raised again on
+        // 2026-09-17, to two hundred and eight megabytes, because a route table wider than the
+        // plain call every figure above was taken on found the same ordering failing on routes
+        // those measurements never reached - and this row did not move, for the same reason
+        // *(JSC-226)*.
         values[(int)VmBudgetDimension.CallDepth] = 8_192;
         values[(int)VmBudgetDimension.VerifierWork] = 1_099_511_627_776;
         values[(int)VmBudgetDimension.ArtifactBytes] = 536_870_912;

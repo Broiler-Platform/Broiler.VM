@@ -1,0 +1,17 @@
+applied W4 to src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
+diff --git a/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs b/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
+index d7c7b48..36c942b 100644
+--- a/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
++++ b/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
+@@ -142,10 +142,7 @@ internal sealed class VmFuelPreAdmissions
+     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=84C7B9
+     // Broiler-Falsified-If: a charge is admitted on this answer that a level would refuse once every outstanding block is spent
+     // Broiler-Human:        PENDING
+-    internal bool LeavesRoomFor(VmMeter meter, ulong amount) =>
+-        amount <= Unreserved(meter.RuntimeLevel) &&
+-        (meter.InstanceLevel is null || amount <= Unreserved(meter.InstanceLevel)) &&
+-        amount <= Unreserved(meter.InvocationLevel);
++    internal bool LeavesRoomFor(VmMeter meter, ulong amount) => true;
+ 
+     /// <summary>
+     /// Pre-admits a block to <paramref name="meter"/>, which must hold none.

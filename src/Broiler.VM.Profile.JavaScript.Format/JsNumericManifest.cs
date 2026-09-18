@@ -71,6 +71,11 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// language, and this manifest stays exactly as small as it is. The interpreter's method body still
 /// runs every instruction of a wide program, in either form. What this manifest remains the only
 /// answer to is a native form whose emitted code computes.)</i>
+/// <i>(Corrected 2026-09-17. "It emits every instruction as a call into the interpreter's own dispatch
+/// for that instruction" stopped being true when the baseline form began calling that dispatch at the
+/// block heads of <see cref="JsBaselineBlocks"/>' partition, a block of instructions at a time. Its
+/// emitted code still calls into the interpreter's own dispatch to run every instruction, so it is
+/// still whole-artifact without a small language, and the rest of the note above stands.)</i>
 /// </para>
 /// <para>
 /// <b>UNDEFINED IS IN THE ADMITTED SET AND IT IS THE ONE VALUE HERE THAT IS NOT A NUMBER.</b> The

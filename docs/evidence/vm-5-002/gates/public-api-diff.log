@@ -1,0 +1,19 @@
+# E1c at collection: git diff --exit-code f127d92 34dbd7a -- docs/api/public-api.txt
+# exit 0
+# git diff --exit-code f127d92 e117162 -- docs/api/public-api.txt -> 0
+# git diff --exit-code f127d92 a416c7a -- docs/api/public-api.txt -> 0
+# git diff --exit-code f127d92 4490eda -- docs/api/public-api.txt -> 0
+# git diff --exit-code f127d92 738d9c7 -- docs/api/public-api.txt -> 0
+# git diff --exit-code f127d92 c98011a -- docs/api/public-api.txt -> 0
+# git diff --exit-code f127d92 dbc8d37 -- docs/api/public-api.txt -> 0
+# git diff --exit-code f127d92 34dbd7a -- docs/api/public-api.txt -> 0
+# product assemblies touched f127d92..34dbd7a:
+ src/Broiler.VM.Runtime/VmBudgetLevel.cs            |  24 +-
+ src/Broiler.VM.Runtime/VmExecutionScope.cs         | 105 ++++++-
+ src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs      | 280 +++++++++++++++++
+ src/Broiler.VM.Runtime/VmInstanceImplementation.cs |  17 +-
+ src/Broiler.VM.Runtime/VmInstantiation.cs          |   7 +-
+ src/Broiler.VM.Runtime/VmMeter.cs                  | 331 ++++++++++++++++++++-
+ src/Broiler.VM.Runtime/VmRuntime.cs                |  17 +-
+ src/Broiler.VM.Runtime/VmVerification.cs           |  10 +
+ 8 files changed, 760 insertions(+), 31 deletions(-)

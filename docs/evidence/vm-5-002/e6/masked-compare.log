@@ -1,0 +1,14 @@
+left  e6/e6-base-verbose.log: 152 lines
+right e6/e6-credit-verbose.log: 152 lines
+line counts equal: True
+lines differing after masking: 0
+
+left  e6/e6-base-verbose.log: 152 lines
+right e6/e6-base-verbose-run2.log: 152 lines
+line counts equal: True
+lines differing after masking: 0
+
+left  e6/e6-credit-verbose.log: 152 lines
+right e6/e6-credit-verbose-run2.log: 152 lines
+line counts equal: True
+lines differing after masking: 0

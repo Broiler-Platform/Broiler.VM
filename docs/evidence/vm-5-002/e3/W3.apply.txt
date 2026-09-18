@@ -1,0 +1,26 @@
+applied W3 to src/Broiler.VM.Runtime/VmMeter.cs
+applied W3 to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index 1f0287d..b557b1e 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -538,8 +538,6 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+ 
+         lock (gate)
+         {
+-            var held = runtime.FuelPreAdmissions!.Settle(this);
+-
+             // The bound is on work performed between two polls. Exceeding it is how a profile
+             // silently makes cancellation latency unbounded, so it is detected rather than trusted.
+             if (pollBound > 0 && sinceLastPoll > pollBound)
+@@ -577,10 +575,6 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+             // evidence that anything is charging fuel: a profile polls on paths that charge
+             // nothing, and a block taken there would sit unspent against a level its holder is not
+             // using while some other operation needs it.
+-            if (held)
+-            {
+-                runtime.FuelPreAdmissions.PreAdmit(this, 0);
+-            }
+         }
+ 
+         return true;

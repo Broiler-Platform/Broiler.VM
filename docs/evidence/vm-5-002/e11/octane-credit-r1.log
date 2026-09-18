@@ -1,0 +1,44 @@
+# octane chromium/octane at 570ad1ccfe86e3eecba0636c8f932ac08edec517
+# 37 files, content aab618b86ebe2f18229c18f0147943e9a1bac69967582563e120d4cea273b4c4
+# judging src\compositions\Broiler.VM.Composition.JavaScript.Cli\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.Cli.exe
+--- richards (exit 0, 3s)
+    start Richards
+    result Richards 98.2
+    score 98.2
+    component 0.981584905660378
+--- deltablue (exit 0, 3s)
+    start DeltaBlue
+    result DeltaBlue 112
+    score 112
+    component 1.1190183752417806
+--- crypto (exit 0, 67s)
+    start Crypto
+    result Crypto 69.6
+    score 69.6
+    component 0.6960551517988856
+--- raytrace (exit 0, 11s)
+    start RayTrace
+    result RayTrace 236
+    score 236
+    component 2.3639460916442063
+--- navier-stokes (exit 0, 23s)
+    start NavierStokes
+    result NavierStokes 110
+    score 110
+    component 1.1043207292684065
+# 5 of 5 benchmarks reported a score and exited zero
+# 108s over 5 benchmarks, under a REQUESTED wall of 3600s each
+#
+# benchmark         score  ratios  seconds
+# richards           98.2       1      3.4
+# deltablue           112       1      3.4
+# crypto             69.6       1     66.6
+# raytrace            236       1     11.4
+# navier-stokes       110       1     23.3
+# PARTIAL AGGREGATE 114.8 over 5 of 15 benchmarks, 5 ratios - THIS IS NOT OCTANE'S SCORE.
+# coverage partial|not selected: earley-boyer, regexp, splay, pdfjs, mandreel, gbemu, code-load, box2d, zlib, typescript
+# A geometric mean over a subset is a real number about that subset and reads exactly
+# like the whole one. It may not be compared with a whole run or with another subset.
+# It is a number about this machine and this configuration. There is no baseline register
+# for it, no control and no repetition; no document may retain it (roadmap section 17).
+# report artifacts\fc\e11\octane-credit-r1.report

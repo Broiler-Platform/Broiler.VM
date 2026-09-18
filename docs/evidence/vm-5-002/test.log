@@ -1,0 +1,36 @@
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Contract.Tests -> D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+Test run for D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+Test run for D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Architecture.Tests.PackageRuleTests.A14_Every_Sample_Reaches_The_Component_Only_Through_Packages [355 ms]
+  Error Message:
+   Assert.Equal() Failure: Collections differ
+                                           â†“ (pos 0)
+Expected: OrderedIterator<string, string> ["Broiler.VM.Abstractions", "Broiler.VM.Binary", "Broiler.VM.Runtime"]
+Actual:   string[]                        []
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.PackageRuleTests.A14_Every_Sample_Reaches_The_Component_Only_Through_Packages() in D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\PackageRuleTests.cs:line 364
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.PackageRuleTests.A14_Every_Project_Outside_The_Solution_Is_A_Sample [1 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["artifacts/fc/e12/probe-src/Probe.csproj"]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.PackageRuleTests.A14_Every_Project_Outside_The_Solution_Is_A_Sample() in D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\PackageRuleTests.cs:line 319
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Passed!  - Failed:     0, Passed:   252, Skipped:     0, Total:   252, Duration: 1 s - Broiler.VM.Contract.Tests.dll (net10.0)
+
+Failed!  - Failed:     2, Passed:   236, Skipped:     0, Total:   238, Duration: 8 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:01.41]     Broiler.VM.Architecture.Tests.PackageRuleTests.A14_Every_Sample_Reaches_The_Component_Only_Through_Packages [FAIL]
+[xUnit.net 00:00:01.41]     Broiler.VM.Architecture.Tests.PackageRuleTests.A14_Every_Project_Outside_The_Solution_Is_A_Sample [FAIL]

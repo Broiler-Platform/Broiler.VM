@@ -1,0 +1,16 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[]
+# build=e7 hand rule
+# started=2026-09-17T07:26:36+02:00
+# command=python docs/evidence/vm-5-002/measurement/e7-rule.py <retained base bytecode report> <re-collection credit bytecode report> bytecode
+form bytecode
+base rows 94545  credit rows 94545
+rows identical 94545
+rows differing, admitted by the list 0
+rows differing, failing the rule 0
+credit WallClock rows outside the list 0
+E7 PASSES
+# exit=0

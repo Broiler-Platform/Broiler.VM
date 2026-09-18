@@ -1,0 +1,43 @@
+Read 2026-09-16T19:53:30 from the throwaway directory artifacts/fc, after this bundle was committed. These are
+file-system times, not transcript times: no transcript of these runs carries a time.
+
+How eng/run-test262.py writes them: it verifies the checkout, then creates the run's output
+directory ("created"); each shard's transcript is written once, when that shard's process exits,
+so "first written" is when the first shard FINISHED, not when the run began; merge.log is written
+by the merge that ends the run. No retained driver transcript of these runs reports removing files
+an earlier run left in its directory, so each creation time is when that run's driver reached that
+point, and no shard process of the run started before it.
+
+E8, the low-fuel series, in the order measurement/e8-run.sh ran it; that script names the binary
+directory of each build. The six off-series runs (README section 5.8, item 7) follow.
+
+low-base-bytecode-1000                        created 15:30:49  shard logs 56, first written 15:30:54, last written 15:35:46  merge.log written 15:35:47
+low-credit-bytecode-1000                      created 15:35:58  shard logs 56, first written 15:36:03, last written 15:40:56  merge.log written 15:40:56
+low-base-native-1000                          created 15:41:07  shard logs 56, first written 15:41:20, last written 15:46:21  merge.log written 15:46:21
+low-credit-native-1000                        created 15:46:32  shard logs 56, first written 15:46:45, last written 15:51:58  merge.log written 15:51:58
+low-base-bytecode-2500                        created 15:52:09  shard logs 56, first written 15:52:15, last written 15:57:23  merge.log written 15:57:24
+low-credit-bytecode-2500                      created 15:57:35  shard logs 56, first written 15:57:41, last written 16:02:36  merge.log written 16:02:36
+low-base-native-2500                          created 16:02:48  shard logs 56, first written 16:03:01, last written 16:08:13  merge.log written 16:08:13
+low-credit-native-2500                        created 16:08:25  shard logs 56, first written 16:08:37, last written 16:13:48  merge.log written 16:13:48
+low-base-bytecode-10000                       created 16:14:01  shard logs 56, first written 16:14:07, last written 16:19:21  merge.log written 16:19:21
+low-credit-bytecode-10000                     created 16:19:33  shard logs 56, first written 16:19:39, last written 16:24:55  merge.log written 16:24:56
+low-base-bytecode-30000                       created 16:25:55  shard logs 56, first written 16:26:01, last written 16:31:10  merge.log written 16:31:10
+low-credit-bytecode-30000                     created 16:31:22  shard logs 56, first written 16:31:28, last written 16:36:28  merge.log written 16:36:28
+low-base-bytecode-100000                      created 16:37:27  shard logs 56, first written 16:37:33, last written 16:42:27  merge.log written 16:42:28
+low-credit-bytecode-100000                    created 16:42:39  shard logs 56, first written 16:42:45, last written 16:47:42  merge.log written 16:47:42
+low-base-native-10000                         created 16:52:46  shard logs 56, first written 16:52:59, last written 16:58:01  merge.log written 16:58:01
+low-credit-native-10000                       created 16:58:13  shard logs 56, first written 16:58:25, last written 17:03:32  merge.log written 17:03:32
+low-base-native-30000                         created 17:03:43  shard logs 56, first written 17:03:56, last written 17:08:59  merge.log written 17:09:00
+low-credit-native-30000                       created 17:09:11  shard logs 56, first written 17:09:23, last written 17:14:31  merge.log written 17:14:31
+low-base-native-100000                        created 17:14:43  shard logs 56, first written 17:14:56, last written 17:19:58  merge.log written 17:19:59
+low-credit-native-100000                      created 17:20:10  shard logs 56, first written 17:20:22, last written 17:25:25  merge.log written 17:25:26
+
+low-base-native-10000-numeric-manifest        created 16:25:07  shard logs 56, first written 16:25:10, last written 16:25:19  merge.log written 16:25:19
+low-credit-native-10000-numeric-manifest      created 16:25:31  shard logs 56, first written 16:25:35, last written 16:25:44  merge.log written 16:25:44
+low-base-native-30000-numeric-manifest        created 16:36:40  shard logs 56, first written 16:36:42, last written 16:36:51  merge.log written 16:36:51
+low-credit-native-30000-numeric-manifest      created 16:37:03  shard logs 56, first written 16:37:06, last written 16:37:15  merge.log written 16:37:15
+low-base-native-100000-numeric-manifest       created 16:47:54  shard logs 56, first written 16:47:56, last written 16:48:05  merge.log written 16:48:05
+low-credit-native-100000-numeric-manifest     created 16:48:17  shard logs 56, first written 16:48:20, last written 16:48:28  merge.log written 16:48:29
+
+No digest or commit stamp of the binaries E8 ran can be taken now: the base build's directory was
+in the removed worktree D:/Broiler.VM-base, and the credit build's was rebuilt after the fallback.

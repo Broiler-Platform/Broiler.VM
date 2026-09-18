@@ -166,19 +166,28 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
     // Broiler-Human:        PENDING
     public JsNativeArchitecture Architecture => abi.Architecture;
 
-    /// <summary>One: the first version of a backend that has emitted anything.</summary>
+    /// <summary>Two: the version whose baseline form calls a handler at each block head.</summary>
     /// <remarks>
-    /// <b>The version travels in every artifact this backend writes, and an image refuses a payload
-    /// whose version it is not.</b> A backend that changed one template without changing this
-    /// number would let an image run bytes written against a contract it no longer honours, and the
-    /// failure would be a wrong answer rather than a refusal. So a change to any template here is a
-    /// change to this number - which also invalidates every retained artifact, and that is the
-    /// point.
+    /// <para>
+    /// <b>The version travels in every artifact this backend writes, and an image that carries this
+    /// backend refuses a payload whose version it is not.</b> A backend that changed one template
+    /// without changing this number would let an image run bytes written against a contract it no
+    /// longer honours, and the failure would be a wrong answer rather than a refusal. So a change to
+    /// any template here is a change to this number - which also invalidates every retained artifact,
+    /// and that is the point.
+    /// </para>
+    /// <para>
+    /// <b>A change to what the baseline emitter writes for the same image - the block partition or the
+    /// layout it encodes, as well as a template - is a change to this number too.</b> One was the
+    /// version whose baseline form called a handler for every instruction; the numeric templates did
+    /// not change with it, and one number covers both tables, so a numeric payload of version one is
+    /// refused by an image that re-emits with this backend for no change in its bytes.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=B49274
-    // Broiler-Falsified-If: a template in this file changes without this number changing
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=18E59B
+    // Broiler-Falsified-If: a template in this file, or the baseline block partition or layout the baseline emitter encodes, changes without this number changing
     // Broiler-Human:        PENDING
-    public uint SemanticVersion => 1;
+    public uint SemanticVersion => 2;
 
     /// <summary>Sixteen: the alignment every unit's entry point is written at.</summary>
     /// <remarks>

@@ -1,0 +1,13 @@
+applied W23 to src/Broiler.VM.Runtime/VmExecutionScope.cs
+diff --git a/src/Broiler.VM.Runtime/VmExecutionScope.cs b/src/Broiler.VM.Runtime/VmExecutionScope.cs
+index b069614..951faaf 100644
+--- a/src/Broiler.VM.Runtime/VmExecutionScope.cs
++++ b/src/Broiler.VM.Runtime/VmExecutionScope.cs
+@@ -112,7 +112,6 @@ internal sealed class VmExecutionScope
+             var context = System.Threading.ExecutionContext.Capture();
+ 
+             if (context is not null &&
+-                ReferenceEquals(resolvedScope, this) &&
+                 ReferenceEquals(resolvedContext, context))
+             {
+                 return resolvedMeter;

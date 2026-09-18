@@ -1,0 +1,10 @@
+base blocks (first collection e9/e9-bisect.log): 8; credit blocks (re-collection): 8
+IDENTICAL shapes/a_1000.js bytecode min_fuel=22035
+IDENTICAL shapes/a_1000.js native min_fuel=22035
+IDENTICAL shapes/a_2000.js bytecode min_fuel=44035
+IDENTICAL shapes/a_2000.js native min_fuel=44035
+IDENTICAL shapes/c_small.js+shapes/a_1000.js bytecode min_fuel=118072
+IDENTICAL shapes/c_small.js+shapes/a_1000.js native min_fuel=118072
+IDENTICAL shapes/d_small.js bytecode min_fuel=32562
+IDENTICAL shapes/d_small.js native min_fuel=32562
+identical blocks: 8 of 8

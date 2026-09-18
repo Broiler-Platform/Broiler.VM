@@ -281,9 +281,10 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
             //
             // THE MANIFEST PICKS WHICH NATIVE ARM, BECAUSE THE TWO NATIVE FORMS ARE RUN BY DIFFERENT
             // THINGS. A numeric artifact's code computes over slabs of doubles and is run by its own
-            // arm, which has no realm. A wide artifact's code is the baseline form - every instruction
-            // a call into the dispatch loop - and needs the engine, the realm and the guest stack, so
-            // it is instantiated by the same arm as bytecode and that arm enters the emitted code.
+            // arm, which has no realm. A wide artifact's code is the baseline form - every block of
+            // instructions a call into the dispatch loop - and needs the engine, the realm and the
+            // guest stack, so it is instantiated by the same arm as bytecode and that arm enters the
+            // emitted code.
             return JsNativeExecution.CarriesEmittedCode(wideProgram) &&
                 string.Equals(
                     wideProgram.ManifestId, JsNumericManifest.ManifestId, System.StringComparison.Ordinal)

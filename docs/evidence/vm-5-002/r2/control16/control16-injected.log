@@ -1,0 +1,76 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/broiler-arms/wit2
+# tree-head=16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# tree-changes=[M src/Broiler.VM.Runtime/VmRuntime.cs]
+# build=wit2 with control 16 injected (digests read before the test's own build)
+# started=2026-09-16T22:58:13+02:00
+# binary=D:/broiler-arms/wit2/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=e4052b70971d50eb76d6c670a1b9c7cf3fb90c80c48b74d96428413c22df4fda version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/wit2/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=0583d430d8be2f016504ce48cd79da3642b10e0e4ca36938f14dfcda6462ba92 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# binary=D:/broiler-arms/wit2/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll sha256=ae472ad1865b51a97191e4809426be4b0a8017718027eceb2ccca4eead3039c5 version=0.1.0-preview.1+16e3d6d5abf5b2822e09c601d7d0ad5a6c0b2513
+# command=dotnet test Broiler.VM.slnx -c Release
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> D:\broiler-arms\wit2\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\broiler-arms\wit2\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\broiler-arms\wit2\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> D:\broiler-arms\wit2\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Contract.Tests -> D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+  Broiler.VM.Architecture.Tests -> D:\broiler-arms\wit2\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+Test run for D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for D:\broiler-arms\wit2\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.97]     Broiler.VM.Contract.Tests.ReviewRegressionTests.A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context [FAIL]
+  Failed Broiler.VM.Contract.Tests.ReviewRegressionTests.A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context [260 ms]
+  Error Message:
+   five hundred disposed runtimes whose capability changed its context left per-thread state behind: an async-local write cost 72 bytes before them and 29520 bytes after
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.ReviewRegressionTests.A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Contract.Tests\ReviewRegressionTests.cs:line 641
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:   262, Skipped:     0, Total:   263, Duration: 1 s - Broiler.VM.Contract.Tests.dll (net10.0)
+[xUnit.net 00:00:04.28]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
+  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [3 s]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Runtime/VmRuntime.cs: Broiler.VM.Vm"···, "src/Broiler.VM.Runtime/VmRuntime.cs is recorded in"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Architecture.Tests\AssuranceRuleTests.cs:line 1953
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:07.00]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+  Failed Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [5 s]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Runtime/VmRuntime.cs(715) is not wh"···, "assurance.manifest.json(193) is not what the gener"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Architecture.Tests\AssuranceGeneratorTests.cs:line 49
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:07.12]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [8 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Runtime/VmRuntime.cs(715) is not wh"···, "assurance.manifest.json(193) is not what the gener"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Architecture.Tests\AssuranceRuleTests.cs:line 1331
+   at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:08.76]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces [FAIL]
+  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces [3 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Runtime/VmRuntime.cs(718): Broiler."···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces() in D:\broiler-arms\wit2\src\tests\Broiler.VM.Architecture.Tests\AssuranceRuleTests.cs:line 810
+   at System.RuntimeMethodHandle.InvokeMethod(ObjectHandleOnStack target, Void** arguments, ObjectHandleOnStack sig, BOOL isConstructor, ObjectHandleOnStack result)
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Failed!  - Failed:     4, Passed:   234, Skipped:     0, Total:   238, Duration: 8 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+# exit=1
+# finished=2026-09-16T22:58:29+02:00
+# after revert: git status --porcelain --untracked-files=no -> []

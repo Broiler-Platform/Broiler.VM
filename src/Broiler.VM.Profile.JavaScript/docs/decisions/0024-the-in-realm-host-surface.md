@@ -69,9 +69,13 @@ behind an opt-in declaration - would have corrupted invariants that live nowhere
 Each of these was verified by reading the runtime rather than inferred from the design:
 
 - **The execution scope is not nestable and has no restore.** `VmExecutionScope.Enter` assigns the
-  ambient meter and owning operation and `Leave` nulls both (`VmExecutionScope.cs:60-72`), so an
-  inner call that entered and left would return to an outer step whose `Current` is `null`. The
-  outer profile would then be charging through a meter that resolves to no operation.
+  ambient meter and owning operation and `VmExecutionScope.Leave` nulls both, so an inner call that
+  entered and left would return to an outer step whose `Current` is `null`. The outer profile would
+  then be charging through a meter that resolves to no operation. *(Corrected 2026-09-17: this bullet
+  and the third in this list cited the runtime by file and line, and the lines moved when the core
+  meter's fuel pre-admission - route MVP-9 in `docs/mvp.md` - and its owner-directed remedy changed
+  those files, so they name the members instead. No claim changed: each was read again against the
+  members as they now stand.)*
 - **The load mediator's per-operation counters would become a bound-evasion primitive.**
   `VmArtifactLoadMediator.EnterScope` zeroes `fanOut`, `bytes` and `verifierWork` whenever the
   operation id differs from the one it holds, and never restores the outer operation's values
@@ -79,11 +83,13 @@ Each of these was verified by reading the runtime rather than inferred from the 
   a nested operation satisfies the condition, so the resumed outer operation would continue with its
   guest-load bounds cleared.
 - **The nested interval would be billed twice.** A new operation gets a new `VmMeter`, which starts
-  its own `Stopwatch` at construction (`VmMeter.cs:95`) and commits `WallClock` and the other
-  aggregate-scoped dimensions to the same runtime level and the same aggregate parent
-  (`VmMeter.cs:226-254`). A second meter running over the same wall interval charges the shared
-  levels for it twice, which makes a host ceiling mean something different depending on how deeply
-  an embedder nested.
+  its own `Stopwatch` in its constructor and commits `WallClock` and the other aggregate-scoped
+  dimensions to the same runtime level and the same aggregate parent (`VmMeter.AccrueWallClock` for
+  `WallClock`; `VmMeter.TryChargeLocked`, the locked body of `VmMeter.TryCharge`, for the others; and
+  `VmMeter.CommitPreAdmittedFuelLocked` for fuel a meter with no aggregate parent held in a block).
+  A second meter running over the same wall interval charges the shared levels for it twice, which
+  makes a host ceiling mean something different depending on how deeply an embedder nested.
+  *(Corrected 2026-09-17: named by member rather than by line, as the first bullet says.)*
 - **Cancelling the outer would not reach the inner.** `VmOperation` holds a runtime, an instance, a
   profile, a meter and a `CancellationTokenSource` of its own, and no reference to a parent
   operation (`VmOperation.cs:40-54`). There is no walk from the outer operation to the inner one, so
@@ -167,10 +173,14 @@ core admitting the re-entry, because nothing here crosses the core, so the decla
 load-bearing for the mechanism. What it does is refuse to understate what registering permits.
 
 **Nothing refuses a re-entrant value capability, and that was established by running rather than by
-reading.** The capability invoker's `TryEnter` hands the descriptor's own mode to
-`VmRuntime.EnterCapability` (`VmCapabilityBinding.cs:232`), which raises the in-capability depth
-only for `NonReentrant` (`VmRuntime.cs:615-621`), and `TryBeginCall` refuses on that depth
-(`VmRuntime.cs:668-671`). ADR 0011's field F5 says the refusal applies "where the capability
+reading.** The capability invoker's `VmCapabilityInvoker.TryEnter` hands the descriptor's own mode
+to `VmRuntime.EnterCapability`, which raises the in-capability depth only for `NonReentrant`, and
+`VmRuntime.TryBeginCall` refuses on that depth. *(Corrected 2026-09-17: this sentence cited the three
+members by file and line, and the lines moved when the core meter's fuel pre-admission - route MVP-9
+in `docs/mvp.md` - and its owner-directed remedy changed those files, so it names the members instead.
+The claim is unchanged: the refusal is still keyed on the descriptor's mode, and the remedy's entry
+record, which `VmRuntime.EnterCapability` now returns, is taken only for `NonReentrant`.)* ADR 0011's
+field F5 says the refusal applies "where the capability
 declared `NonReentrant`". The only well-formedness rule that refuses the mode outright pairs it with
 `ArtifactProvider` (`VmHostCapabilityDescriptor.cs:190-199`), which a value capability is not.
 `ConcurrencyTests.A_Capability_Declaring_Reentrancy_May_Re_Enter_Its_Own_Runtime` proves a nested
@@ -182,7 +192,8 @@ was never reached.
 **The complementary limit is proved beside it, because the declaration reads like more than it is.**
 "May re-enter the invoking runtime" reads like permission to call back into the guest, and it is
 not: `VmInstanceImplementation.TryAdmit` refuses an `Executing` instance with `ReentrancyRefused`
-and never reads the declaration (`VmInstanceImplementation.cs:860-862`).
+and never reads the declaration. *(Corrected 2026-09-17: named by member rather than by line, for
+the reason the paragraph above gives.)*
 `A_Re_Entrant_Capability_Still_Cannot_Re_Enter_The_Executing_Instance` asserts that reason. The seam
 does not need the admission it does not get, because it never asks: a host method calling a guest
 function calls `JsEngine.Call`, not `VmInstance.Invoke`.
@@ -190,8 +201,9 @@ function calls `JsEngine.Call`, not `VmInstance.Invoke`.
 ## 7. Charged, bracketed, latched: the ways this could have been unsafe
 
 **It is charged, because the boundary charge does not apply to a boundary nobody crosses.** The
-capability invoker charges `HostCalls` a single unit in `TryEnter` (`VmCapabilityBinding.cs:225`),
-and a seam that never reaches the invoker gets none of that for free. So every crossing goes through
+capability invoker charges `HostCalls` a single unit in `VmCapabilityInvoker.TryEnter` *(corrected
+2026-09-17: named by member rather than by line, for the reason section 6 gives)*, and a seam that
+never reaches the invoker gets none of that for free. So every crossing goes through
 `JsHostRealm.Enter`, which calls `JsEngine.ChargeHostCrossing`: a single unit of `HostCalls`, then
 fuel proportional to what the crossing carries (`JsEngine.cs:697-705`). **Rule N21 holds that
 mechanically rather than leaving it to review**: it reads `JsHostRealm` member by member and reports

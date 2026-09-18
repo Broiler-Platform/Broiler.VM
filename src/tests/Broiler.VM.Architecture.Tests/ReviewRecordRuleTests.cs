@@ -1024,12 +1024,31 @@ public sealed class ReviewRecordRuleTests
         // where the activation it runs for is kept. The format's is the frame and its layout
         // constants, JsBaselineFrame.cs, in the assembly both the emitter and the handlers
         // reference. The lowering's is the emitter that writes every unit of a wide artifact as
-        // one call per instruction, JsX64BaselineEmitter.cs. The profile's three are the activation
-        // and the step that checks it, JsNativeActivation.cs; the table of entry points native code
-        // calls, JsBaselineHandlers.cs; and the engine's half that enters emitted code and maps its
-        // page, JsEngine.Baseline.cs. They are covered on the same terms as every other product
-        // file, and nothing in them has been read by a human.
-        Assert.Equal(170, AssuranceSources.Files.Count);
+        // a handler call at every block head, JsX64BaselineEmitter.cs. The profile's three are the
+        // activation and the step that checks it, JsNativeActivation.cs; the table of entry points
+        // native code calls, JsBaselineHandlers.cs; and the engine's half that enters emitted code
+        // and maps its page, JsEngine.Baseline.cs. They are covered on the same terms as every other
+        // product file, and nothing in them has been read by a human.
+        //
+        // THE HUNDRED-AND-SEVENTY-FIRST IS THE RUNTIME'S FUEL PRE-ADMISSION TABLE,
+        // VmFuelPreAdmissions.cs, and it is counted here for the reason a reader would ask about
+        // first: it is the one place that decides how much fuel a meter may admit without taking
+        // the runtime's lock, so a review that did not read it would be a review of a budget it
+        // never saw enforced. It is a file of its own rather than a region of the meter because its
+        // subject is the whole runtime - which meters hold fuel at once, and what each of them is
+        // holding - while the meter's subject is one operation's chain. It is covered on the same
+        // terms as every other product file, and nothing in it has been read by a human.
+        //
+        // THE HUNDRED-AND-SEVENTY-SECOND IS THE BASELINE FORM'S BLOCK PARTITION AND UNIT LAYOUT,
+        // JsBaselineBlocks.cs, and it is counted here because it is the one statement of which
+        // instructions run alone, where a block step stops, and what an emitted unit's body is,
+        // written for the emitter, the step and the scan to read rather than restate, so a review
+        // that did not read it would be a review of three parties agreeing about something it never
+        // saw. It is in the format assembly beside JsBaselineFrame.cs because the emitter
+        // and the engine both reference that assembly and neither may reference the other. It is
+        // covered on the same terms as every other product file, and nothing in it has been read by
+        // a human.
+        Assert.Equal(172, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

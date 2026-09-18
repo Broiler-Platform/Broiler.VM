@@ -1,0 +1,23 @@
+# E4: sha256 of the profile assemblies built deterministically (DebugType=none, DebugSymbols=false, IncludeSourceRevisionInInformationalVersion=false, PathMap to /_/) into D:/Broiler.VM-e4, base tree f127d92 and credit tree at c98011a, hashed at collection
+0465a99b63182d170bb0879dfdf16647d51a3641b4be787ab369db390b400f75 *./base/js/Broiler.VM.Abstractions.dll
+ba9d9129da1e4ab32479d5221851ed8a71c39f76a8687529ca80971cb8d72f4a *./base/js/Broiler.VM.Binary.dll
+39070d188b5ab14bde3807c600c6c3c36be7a4b6ea8f5d6b17b4824c0894573a *./base/js/Broiler.VM.Profile.JavaScript.Format.dll
+37ee2ef341dd3f348564bae3e24f269b38f30aa27134c8554f3f37973cee370a *./base/js/Broiler.VM.Profile.JavaScript.dll
+0465a99b63182d170bb0879dfdf16647d51a3641b4be787ab369db390b400f75 *./base/wasm/Broiler.VM.Abstractions.dll
+ba9d9129da1e4ab32479d5221851ed8a71c39f76a8687529ca80971cb8d72f4a *./base/wasm/Broiler.VM.Binary.dll
+4c5ee6c3601e81aac2dc4895428d0e25edd05455eed58165c3e9742bcbf82b72 *./base/wasm/Broiler.VM.Profile.WebAssembly.dll
+0465a99b63182d170bb0879dfdf16647d51a3641b4be787ab369db390b400f75 *./credit/js/Broiler.VM.Abstractions.dll
+ba9d9129da1e4ab32479d5221851ed8a71c39f76a8687529ca80971cb8d72f4a *./credit/js/Broiler.VM.Binary.dll
+39070d188b5ab14bde3807c600c6c3c36be7a4b6ea8f5d6b17b4824c0894573a *./credit/js/Broiler.VM.Profile.JavaScript.Format.dll
+37ee2ef341dd3f348564bae3e24f269b38f30aa27134c8554f3f37973cee370a *./credit/js/Broiler.VM.Profile.JavaScript.dll
+0465a99b63182d170bb0879dfdf16647d51a3641b4be787ab369db390b400f75 *./credit/wasm/Broiler.VM.Abstractions.dll
+ba9d9129da1e4ab32479d5221851ed8a71c39f76a8687529ca80971cb8d72f4a *./credit/wasm/Broiler.VM.Binary.dll
+4c5ee6c3601e81aac2dc4895428d0e25edd05455eed58165c3e9742bcbf82b72 *./credit/wasm/Broiler.VM.Profile.WebAssembly.dll
+# pairs
+js/Broiler.VM.Abstractions.dll base=0465a99b63182d17 credit=0465a99b63182d17 EQUAL
+js/Broiler.VM.Binary.dll base=ba9d9129da1e4ab3 credit=ba9d9129da1e4ab3 EQUAL
+js/Broiler.VM.Profile.JavaScript.Format.dll base=39070d188b5ab14b credit=39070d188b5ab14b EQUAL
+js/Broiler.VM.Profile.JavaScript.dll base=37ee2ef341dd3f34 credit=37ee2ef341dd3f34 EQUAL
+wasm/Broiler.VM.Abstractions.dll base=0465a99b63182d17 credit=0465a99b63182d17 EQUAL
+wasm/Broiler.VM.Binary.dll base=ba9d9129da1e4ab3 credit=ba9d9129da1e4ab3 EQUAL
+wasm/Broiler.VM.Profile.WebAssembly.dll base=4c5ee6c3601e81aa credit=4c5ee6c3601e81aa EQUAL

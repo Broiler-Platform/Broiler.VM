@@ -1,0 +1,26 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs b/src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs
+index 337c35a..9f84a27 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs
+@@ -894,7 +894,7 @@ public static class JavaScriptProfile
+         // *(JSC-139)*. This row did not move: a ceiling a host may be granted is a policy figure,
+         // and lowering it to fit a stack would be answering a question about the machine with a
+         // change to what a program is allowed to do.
+-        values[(int)VmBudgetDimension.CallDepth] = 8_192;
++        values[(int)VmBudgetDimension.CallDepth] = 1_000_000;
+         values[(int)VmBudgetDimension.VerifierWork] = 1_099_511_627_776;
+         values[(int)VmBudgetDimension.ArtifactBytes] = 536_870_912;
+         values[(int)VmBudgetDimension.SectionCount] = 1_024;
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+index f3201e8..4d1d7ae 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+@@ -587,7 +587,7 @@ internal sealed partial class JsEngine
+     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=321EE5
+     // Broiler-Falsified-If: a program recursing past this bound terminates the process rather than throwing a catchable RangeError
+     // Broiler-Human:        PENDING
+-    internal int MaximumCallDepth { get; set; } = 6000;
++    internal int MaximumCallDepth { get; set; } = 1_000_000;
+ 
+     /// <summary>Whether this engine is in the middle of reporting a call-depth refusal.</summary>
+     /// <remarks>

@@ -1,0 +1,22 @@
+# probe variant=c3 mode=trace bin=D:/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0
+# started=2026-09-16T17:42:04
+variant=net10.0 preAdmissionTable=True
+S1 tight=runtime seed=1 hash=99C195A5AE955D13 admitted=150000 Fuel/Runtime exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=runtime seed=2 hash=9624A6967469BFC0 admitted=150000 Fuel/Runtime exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=runtime seed=3 hash=BF397C8257BE962C admitted=150000 Fuel/Runtime exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=instance seed=1 hash=99C195A5AE955D13 admitted=150000 Fuel/Instance exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=instance seed=2 hash=9624A6967469BFC0 admitted=150000 Fuel/Instance exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=instance seed=3 hash=BF397C8257BE962C admitted=150000 Fuel/Instance exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=invocation seed=1 hash=99C195A5AE955D13 admitted=150000 Fuel/Invocation exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=invocation seed=2 hash=9624A6967469BFC0 admitted=150000 Fuel/Invocation exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=invocation seed=3 hash=BF397C8257BE962C admitted=150000 Fuel/Invocation exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=tie seed=1 hash=99C195A5AE955D13 admitted=150000 Fuel/Runtime exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=tie seed=2 hash=9624A6967469BFC0 admitted=150000 Fuel/Runtime exh=True pbe=True consumed r/i/v=150000/150000/150000
+S1 tight=tie seed=3 hash=BF397C8257BE962C admitted=150000 Fuel/Runtime exh=True pbe=True consumed r/i/v=150000/150000/150000
+S2 seed=1 hash=9C94484FD66BDD77 a=Fuel/Runtime exh=True pbe=False b=Fuel/Runtime exh=True pbe=False consumed r=150000 ia=78852 ib=71148 va=78852 vb=71148
+S3 seed=1 hash=3A050C3D2B167CB7 consumed r=120000 i=120000 v=25521,29997,27384,26077,11021,0,0,0,0,0,0,0 states=6645D805B19C0E14
+S2 seed=2 hash=03EB6F6F60262E0C a=Fuel/Runtime exh=True pbe=False b=Fuel/Runtime exh=True pbe=False consumed r=150000 ia=75083 ib=74917 va=75083 vb=74917
+S3 seed=2 hash=2B6FE53517C9BF4B consumed r=120000 i=120000 v=29984,27188,30000,29187,3641,0,0,0,0,0,0,0 states=E7337A70311EF594
+S2 seed=3 hash=4C3F60DF2D8CBBAC a=Fuel/Runtime exh=True pbe=False b=Fuel/Runtime exh=True pbe=False consumed r=150000 ia=73774 ib=76226 va=73774 vb=76226
+S3 seed=3 hash=13C8DA4181AA068D consumed r=120000 i=120000 v=29971,26246,26799,27994,8990,0,0,0,0,0,0,0 states=3F40F2568B97FB0A
+stress_failures=0

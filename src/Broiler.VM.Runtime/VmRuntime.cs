@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   34
-// Annotated:        34/34
-// Exempt:           23
-// Human-reviewed:   0/34
+// Relevant units:   35
+// Annotated:        35/35
+// Exempt:           26
+// Human-reviewed:   0/35
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         10/2
+// Criteria:         13/2
 // Resource impact:  8/10 max
-// Unverified:       34
+// Unverified:       35
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -493,12 +493,20 @@ public sealed partial class VmRuntime : System.IDisposable
     }
 
     /// <summary>Reads this runtime's consumption and remaining allowance.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FE90E6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3A96C7
+    // Broiler-Falsified-If: a read taken while an operation runs reports less than that operation has been admitted
     // Broiler-Human:        PENDING
     public VmBudgetSnapshot GetBudgetSnapshot()
     {
         lock (gate)
         {
+            // Every operation of this runtime first, because every one of them can be holding fuel
+            // it has already been admitted and not yet committed: a block is committed only when its
+            // holder renews it or something settles it, and a poll does neither. A host reading a
+            // running runtime is asking what has been spent, and a figure that stopped at what each
+            // operation had committed would answer a different question.
+            runtimeLevel.FuelPreAdmissions!.SettleAll();
+
             return runtimeLevel.Snapshot();
         }
     }
@@ -511,7 +519,7 @@ public sealed partial class VmRuntime : System.IDisposable
     /// the tighter of its declared abandon budget and the runtime's unwind budget, so a parked
     /// operation can never block disposal indefinitely.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DA7B60
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=5CA1AB
     // Broiler-Falsified-If: the configured drain budget is read nowhere here, so disposal never waits for an operation
     // Broiler-Human:        PENDING
     public VmControlResult Dispose()
@@ -556,6 +564,10 @@ public sealed partial class VmRuntime : System.IDisposable
 
         lock (gate)
         {
+            // Hygiene, not correctness: a thread a step left running can still be holding fuel, and
+            // the table would otherwise keep a reference to a meter of a runtime that is finished.
+            runtimeLevel.FuelPreAdmissions!.SettleAll();
+
             instances.Clear();
             profiles.Clear();
             state = VmRuntimeState.Disposed;
@@ -581,15 +593,16 @@ public sealed partial class VmRuntime : System.IDisposable
     /// outside the boundary left that declaration enforced nowhere, so a provider could re-enter
     /// the very runtime whose load it was answering.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=9EDB19
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D35C94
     // Broiler-Falsified-If: a provider is invoked on a path that never enters this boundary
     // Broiler-Human:        PENDING
-    internal void EnterProviderCall() => EnterCapability(VmCapabilityReentrancy.NonReentrant);
+    internal CapabilityEntry EnterProviderCall() => EnterCapability(VmCapabilityReentrancy.NonReentrant);
 
     /// <summary>Leaves the capability boundary for a provider call.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=FE5889
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=57DB75
     // Broiler-Human:        PENDING
-    internal void LeaveProviderCall() => LeaveCapability(VmCapabilityReentrancy.NonReentrant);
+    internal void LeaveProviderCall(in CapabilityEntry entry) =>
+        LeaveCapability(VmCapabilityReentrancy.NonReentrant, in entry);
 
     internal VmAggregateBudget? Parent => parent;
 
@@ -610,14 +623,58 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D6C22C
+    /// <summary>
+    /// What entering a non-reentrant capability changed, so that leaving it can undo exactly that.
+    /// </summary>
+    /// <remarks>
+    /// Two execution contexts: the one the thread ran under before the depth was raised, and the one
+    /// raising the depth installed. A default entry records neither, and means that leaving writes
+    /// the depth back.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=8B7BA7
     // Broiler-Human:        PENDING
-    internal void EnterCapability(VmCapabilityReentrancy reentrancy)
+    internal readonly struct CapabilityEntry
     {
-        if (reentrancy is VmCapabilityReentrancy.NonReentrant)
+        internal CapabilityEntry(System.Threading.ExecutionContext before, System.Threading.ExecutionContext inside)
         {
-            inCapabilityDepth.Value = CapabilityDepth + 1;
+            Before = before;
+            Inside = inside;
         }
+
+        /// <summary>The context the thread ran under before the depth was raised.</summary>
+        internal System.Threading.ExecutionContext? Before { get; }
+
+        /// <summary>The context raising the depth installed.</summary>
+        internal System.Threading.ExecutionContext? Inside { get; }
+    }
+
+    /// <summary>
+    /// Raises this runtime's capability depth on the current call stack, for a non-reentrant
+    /// capability, and records the contexts on either side of that write.
+    /// </summary>
+    /// <remarks>
+    /// The context before the write is captured before it, and the context the write installed is
+    /// captured straight after it, with nothing in between: those two are what let the return put the
+    /// thread back exactly where it was. A thread whose flow is suppressed captures no context, so
+    /// such an entry records nothing and its return writes the depth back as it always did.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=25797B
+    // Broiler-Falsified-If: the context a capability's return may put back is captured after the depth is raised
+    // Broiler-Human:        PENDING
+    internal CapabilityEntry EnterCapability(VmCapabilityReentrancy reentrancy)
+    {
+        if (reentrancy is not VmCapabilityReentrancy.NonReentrant)
+        {
+            return default;
+        }
+
+        var before = System.Threading.ExecutionContext.Capture();
+
+        inCapabilityDepth.Value = CapabilityDepth + 1;
+
+        return before is null
+            ? default
+            : new CapabilityEntry(before, System.Threading.ExecutionContext.Capture()!);
     }
 
     /// <summary>The current call stack's capability depth, where absent means zero.</summary>
@@ -626,12 +683,49 @@ public sealed partial class VmRuntime : System.IDisposable
     // Broiler-Human:        PENDING
     private int CapabilityDepth => inCapabilityDepth.Value is int depth ? depth : 0;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C6168B
+    /// <summary>
+    /// Lowers this runtime's capability depth on the current call stack when a non-reentrant
+    /// capability returns.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When the thread still runs under the very context raising the depth installed, the capability
+    /// changed nothing, and the thread is put back under the context it was entered from. An
+    /// execution context is immutable - setting any AsyncLocal builds a new context object and
+    /// installs it - so the two differ only in the depth, and putting back the entry context gives
+    /// every AsyncLocal exactly the value writing the depth back would give, the depth included. It
+    /// also leaves the thread under the context the step's environment meter last resolved under,
+    /// so the step's next charge can still use that answer instead of reading the AsyncLocal again.
+    /// </para>
+    /// <para>
+    /// Any other context means the capability changed something - wrote an AsyncLocal, suppressed
+    /// the flow, or installed another context - and then the depth is written back as it always was,
+    /// so that change survives. The return after putting the context back is load-bearing when calls
+    /// nest: without it an inner call's return would lower the depth a second time, while the outer
+    /// non-reentrant capability is still running.
+    /// </para>
+    /// <para>
+    /// An entry that recorded no context always writes the depth back. That is an entry made with
+    /// the flow suppressed, and a flow suppressed for the whole call captures no context at its
+    /// return either, so without asking what the entry recorded the absent context found at the
+    /// return would compare equal to the absent one recorded at entry. There is no context to put
+    /// back then, and asking to put back an absent one throws inside the call's own return.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=BF8933
+    // Broiler-Falsified-If: a capability's return puts back the context it was entered from while the capability left a different one installed, or puts a context back when its entry recorded none, or leaves in place the depth its entry raised, or lowers the depth further than its entry raised it
     // Broiler-Human:        PENDING
-    internal void LeaveCapability(VmCapabilityReentrancy reentrancy)
+    internal void LeaveCapability(VmCapabilityReentrancy reentrancy, in CapabilityEntry entry)
     {
         if (reentrancy is VmCapabilityReentrancy.NonReentrant)
         {
+            if (entry.Before is not null &&
+                ReferenceEquals(System.Threading.ExecutionContext.Capture(), entry.Inside))
+            {
+                System.Threading.ExecutionContext.Restore(entry.Before);
+                return;
+            }
+
             var depth = CapabilityDepth - 1;
 
             // Null, not zero. Storing zero would leave the entry on this thread forever; storing

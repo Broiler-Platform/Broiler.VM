@@ -1,0 +1,72 @@
+Timing evidence E10-E13 (design 8.3), collected 2026-09-16 17:33-18:28 on DESKTOP-UK9RCOH.
+Raw results only. The predeclared rule is in docs/evidence/vm-5-002/README.md section 5.1.
+
+Corrected after a review, on 2026-09-16, by a commit after the bundle's own; git holds the text as
+first retained. The overwritten probe run's figures are removed, because no log of that run survives.
+Three paths that named files outside this bundle now name where the files are. The CPU-time figures
+are recomputed from the two machine-state files and given as lower bounds.
+
+BUILDS
+  base    D:/Broiler.VM-base at f127d92
+  c2      D:/Broiler.VM-c2 at e117162 (pre-admission table, no resolution cache); worktree removed afterwards
+  credit/c3 before fallback   D:/Broiler.VM at dbc8d37 (shared-field resolution cache)
+  credit/c3 after fallback    D:/Broiler.VM at 34dbd7a (thread-static resolution); measured on the
+                              identical tree first committed as 66efe30, whose message was then
+                              amended to carry no figure
+
+MACHINE STATE (machine-state-before.txt, machine-state-after.txt)
+  AMD Ryzen 7 5800X, 8 cores / 16 threads, 32 GB, Windows 11 Enterprise 26200, power scheme
+  High performance, .NET SDK 10.0.401, Python 3.11.9. No build ran during any measurement.
+  Not idle: between the two snapshots (55 min) the four claude processes listed in both accumulated
+  at least 3,900 CPU-seconds - about 1.2 of 16 logical processors continuously - and explorer,
+  OOSU10PE, EADesktop and msedgewebview2 at least 280 CPU-seconds more. These are lower bounds: the
+  after snapshot lists a fifth claude process and TGitCache, which the before snapshot's eight
+  busiest do not, so what they accumulated in between is unknown, and so is anything in neither
+  list. TGitCache rescans the checkout after a commit; the first bench-host pair ran minutes after
+  the fallback commit.
+
+WHICH FILE MEASURED WHICH BUILD
+  e10/e10-shapes.{json,log}                 base vs credit dbc8d37, A/A = byte copy of credit
+  e10/e10-shapes-after-fallback.{json,log}  base vs credit 34dbd7a tree, A/A = byte copy of credit
+      Both: lanes carried the E9 measurement-only CLI patch (invoke_ms read from stderr), applied
+      to both trees, built, snapshotted into artifacts/fc/e10/lanes and reverted at once;
+      process_ms also kept. The lanes are not retained; e10/lanes.txt gives the digests and commit
+      stamps of those that survived, the second run's.
+      A/A spread = max(|credit median - aa median|, credit max-min, aa max-min), invoke_ms.
+  e11/octane-{base,credit}-r{0..4}.{log,report}   base vs credit 34dbd7a tree, bytecode only
+      (run-octane.py has no form flag), alternating base then credit. trial-richards-credit.* is a
+      sizing trial and not a repetition. Scores are not to be quoted.
+  e12/probe-{trace,stress,bench,concurrent-bench}-base.txt            base
+  e12/probe-{trace,stress,bench,concurrent-bench}-c3-before-fallback.txt  dbc8d37
+  e12/probe-{trace,stress,bench,concurrent-bench}-c3.txt              34dbd7a tree
+  e12/probe-concurrent-ambient-{base,c2,c3}-before-fallback.txt       FAILING run (rule 3b)
+  e12/probe-concurrent-ambient-{base,c2,c3}.txt                       after fallback
+  e12/trial-conc-base.txt   first complete concurrent-bench run on base, taken to size the
+                            workload; retained beside the canonical base run, not replacing it
+  gates/fallback-*.log      build, record regeneration, full test run and leak test for the fallback
+  e2/oracle-on-credit.log   E2 for the fallback
+  measurement/probe/        the probe as run, its project file carrying a .txt suffix (bindings:
+                            VmBudgetLevel.FuelPreAdmissions, VmFuelPreAdmissions.SettleAll; modes
+                            concurrent-bench, concurrent-ambient)
+  e13/bench-base.log, bench-credit.log            pair 1, base first, credit 34dbd7a tree
+  e13/bench-credit-run2.log, bench-base-run2.log  pair 2, credit first
+  e13/t6.json, t6-trx/                            T6 alone, five runs alternating, credit 34dbd7a tree
+
+FAILURES RECORDED, NOT RETRIED
+  rule 3b before fallback: c3 slower than c2 at threads 2, 4, 5, 8 at every ceiling
+  rule 4: meter-per-instruction credit above base plus A/A in both bench pairs
+  E11 credit r4: raytrace and navier-stokes exited 6, the host reporting their benchmark file
+      absent from the driver's scratch extraction under %TEMP%; 3 of 5 benchmarks scored; cause
+      not established
+
+E10 LANE IDENTITY (sha256 of Broiler.VM.Runtime.dll in each lane)
+  base                        43e52ac9b159aed0233f2dda9cc25b73203caade40ae62e546c7298f46051fc0
+  credit/aa, dbc8d37          1bc2ef7172b9326f512104301ae25e3060d057ddbb8418ee39dbf67c0d181f4b (lanes overwritten)
+  credit/aa, 34dbd7a tree     bd3194bd7d72346356cd0bc4fc98c5646f7664e61cbbaef6850df4d29a9aa491 (e10/lanes.txt)
+
+PROBE FIRST RUN, OVERWRITTEN
+  trace, stress and bench were first run on base and dbc8d37 with the workstation's decimal comma;
+  the probe was changed to write invariant numbers and the three modes re-run, overwriting those
+  files. No log of the overwritten run survives, so what it showed is not retained and no figure of
+  it is given here. As noted when it ran, its stress mode passed on both builds and its traces matched
+  apart from the binding line; that rests on this note alone.

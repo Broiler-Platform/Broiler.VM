@@ -157,7 +157,8 @@ internal static class NativeAbiChecks
             checks.AddRange(BaselineEntryPointsSurvive(abi, row));
         }
 
-        checks.Add(ASwappedHandlerIsADefect(abi));
+        checks.Add(ASwappedHandlerNeverRuns(abi));
+        checks.Add(AHandlerAtTheThrowersSuccessorContinuesTheStep(abi));
         checks.AddRange(FrequentCollections(abi));
 
         return checks;
@@ -520,7 +521,8 @@ internal static class NativeAbiChecks
         "a-misaligned-reservation-is-caught/" + JsNativeBackends.X64Windows,
         "a-misaligned-reservation-is-caught/" + JsNativeBackends.X64SystemV,
         "a-short-reservation-loses-a-saved-register/" + JsNativeBackends.X64Windows,
-        "a-swapped-handler-is-a-defect",
+        "a-swapped-handler-never-runs",
+        "a-handler-at-the-throwers-successor-continues-the-step",
         "frequent-collections",
     ];
 
@@ -540,10 +542,10 @@ internal static class NativeAbiChecks
     private const int BaselineRepetitions = 1_000;
 
     /// <summary>
-    /// The fourteen wide programs the baseline closure rows compile and scan, entered here.
+    /// The twenty wide programs the baseline closure rows compile and scan, entered here.
     /// </summary>
     /// <remarks>
-    /// <b>THESE ARE THE SAME FOURTEEN SOURCES AS <c>NativeTemplateScanChecks.WidePrograms</c>, COPIED
+    /// <b>THESE ARE THE SAME TWENTY SOURCES AS <c>NativeTemplateScanChecks.WidePrograms</c>, COPIED
     /// AND NOT SHARED</b>, because that list is private to the file that owns the template rows and this
     /// file does not own it. A program edited there and not here narrows nothing either file claims:
     /// the scan rows still scan theirs and these rows still run these, and each list names the landing
@@ -565,20 +567,54 @@ internal static class NativeAbiChecks
         ("destructuring parameters with defaults", "function f({ a = 1, b } = {}, [c, d = 4] = []) { return a + (b || 0) + (c || 0) + d; } f() + f({ b: 2 }, [3]);", null),
         ("a module with an import", "import { add, n } from 'lib'; export const r = add(n, 2);", "export function add(a, b) { return a + b; } export let n = 1;"),
         ("a switch, a labelled continue and with", "var t = 0; outer: for (var i = 0; i < 3; i++) { for (var j = 0; j < 3; j++) { if (j === 1) { continue outer; } switch (i) { case 0: t += 1; break; case 1: t += 10; break; default: t += 100; } } } var o = { x: 5 }; with (o) { t += x; } t;", null),
+        ("a long linear run with a call in its middle", "var a = 1, b = 2, c = 3; function id(x) { return x; } var t = 0; for (var i = 0; i < 50; i++) { t = t + a * b - c + id(i) + (a << 2) + (b | c); } t;", null),
+        ("a loop head inside a linear run", "var t = 0, i = 0; do { t += i; t *= 2; t -= 1; i++; } while (i < 5); t;", null),
+        ("getter and valueOf re-entry from the middle of a run", "var n = 0; var o = { get g() { n += 1; return n; }, valueOf() { return n * 2; } }; var t = 0; for (var i = 0; i < 5; i++) { t = t + o.g + (+o) + o.g; } t;", null),
+        ("Proxy traps from the middle of a run", "var log = 0; var p = new Proxy({ a: 1 }, { get(t, k) { log += 1; return t[k]; } }); var s = 0; for (var i = 0; i < 4; i++) { s = s + p.a * 2 + p.a; } s + log;", null),
+        ("a throw from the middle of a run caught in the same unit", "var r = 0; for (var i = 0; i < 3; i++) { try { r = r + 1; r += null.x; r = r + 100; } catch (e) { r = r + 10; } } r;", null),
+        ("a generator resumed into the middle of a run", "function* g() { var x = 1; x = x + (yield x); x = x * 2 + (yield x); return x + 3; } var it = g(); it.next(); it.next(5); it.next(7).value;", null),
     ];
 
-    /// <summary>The programs whose smallest completing allowance is bisected: no eval, no Function, no import.</summary>
-    private static readonly int[] Bisected = [0, 5, 8];
+    /// <summary>
+    /// The wide programs whose smallest completing allowance is bisected: every one that loads nothing - no
+    /// eval, no Function, no import and no library.
+    /// </summary>
+    /// <remarks>
+    /// <b>EVERY INDEX BUT TWELVE</b>, which is the module that imports its library. A program added to
+    /// <see cref="WidePrograms"/> that loads nothing is added here by its index too.
+    /// </remarks>
+    private static readonly int[] Bisected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19];
+
+    /// <summary>
+    /// The probes whose smallest completing allowance is bisected: every one that loads nothing, which is every
+    /// index but five, the eval.
+    /// </summary>
+    private static readonly int[] BisectedProbes = [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12];
 
     /// <summary>The probes each aimed at one way the native form's machine stack or unwinding could differ.</summary>
-    private static readonly (string Name, string Source, bool GuestLoads)[] Probes =
+    /// <remarks>
+    /// <b>A PROBE THAT RECURSES TO THE ENGINE'S BOUND SAYS SO</b>, and its row then also requires the
+    /// interpreter to have answered the <c>RangeError</c> it caught: a recursion that answered anything else
+    /// compared two runs that never reached what the probe is about. The recursions after the first nest
+    /// through a getter, <c>valueOf</c>, a Proxy trap, <c>yield*</c>, the rendering of a thrown object and an
+    /// indexed getter - each re-entering guest code from an instruction that may be inside a block, rather
+    /// than from a call instruction.
+    /// </remarks>
+    private static readonly (string Name, string Source, bool GuestLoads, bool RecursesToRangeError)[] Probes =
     [
-        ("recursion to RangeError at the engine's maximum call depth", "var depth = 0; function down() { depth = depth + 1; down(); } var caught = 'nothing'; try { down(); } catch (e) { caught = e.name + ' at depth ' + depth; } caught;", false),
-        ("a throw from depth 5000 caught at the top", "function sink(n) { if (n === 0) { throw new Error('from the bottom'); } return sink(n - 1) + 1; } var got = 'nothing'; try { sink(5000); } catch (e) { got = e.message; } got;", false),
-        ("a 100000-iteration throw and catch across a call", "function thrower(i) { throw i; } var caught = 0; for (var i = 0; i < 100000; i++) { try { thrower(i); } catch (e) { caught += 1; } } caught;", false),
-        ("a generator's return() through two finallys", "var log = ''; function* g() { try { try { yield 1; } finally { log += 'inner;'; } } finally { log += 'outer;'; } } var it = g(); it.next(); var r = it.return(42); log + r.value + ':' + r.done;", false),
-        ("an uncaught TypeError", "var nothing = null; nothing.property;", false),
-        ("an eval of a function that is called later", "eval('function later(x) { return x * 3; }'); var answer = later(14); answer;", true),
+        ("recursion to RangeError at the engine's maximum call depth", "var depth = 0; function down() { depth = depth + 1; down(); } var caught = 'nothing'; try { down(); } catch (e) { caught = e.name + ' at depth ' + depth; } caught;", false, true),
+        ("a throw from depth 5000 caught at the top", "function sink(n) { if (n === 0) { throw new Error('from the bottom'); } return sink(n - 1) + 1; } var got = 'nothing'; try { sink(5000); } catch (e) { got = e.message; } got;", false, false),
+        ("a 100000-iteration throw and catch across a call", "function thrower(i) { throw i; } var caught = 0; for (var i = 0; i < 100000; i++) { try { thrower(i); } catch (e) { caught += 1; } } caught;", false, false),
+        ("a generator's return() through two finallys", "var log = ''; function* g() { try { try { yield 1; } finally { log += 'inner;'; } } finally { log += 'outer;'; } } var it = g(); it.next(); var r = it.return(42); log + r.value + ':' + r.done;", false, false),
+        ("an uncaught TypeError", "var nothing = null; nothing.property;", false, false),
+        ("an eval of a function that is called later", "eval('function later(x) { return x * 3; }'); var answer = later(14); answer;", true, false),
+        ("recursion to RangeError through a getter", "var d = 0; var o = { get down() { d = d + 1; return this.down; } }; var caught = 'nothing'; try { o.down; } catch (e) { caught = e.name + ' at depth ' + d; } caught;", false, true),
+        ("recursion to RangeError through valueOf", "var d = 0; var o = { valueOf: function () { d = d + 1; return +o; } }; var caught = 'nothing'; try { +o; } catch (e) { caught = e.name + ' at depth ' + d; } caught;", false, true),
+        ("recursion to RangeError through a Proxy get trap", "var d = 0; var p = new Proxy({}, { get: function () { d = d + 1; return p.x; } }); var caught = 'nothing'; try { p.x; } catch (e) { caught = e.name + ' at depth ' + d; } caught;", false, true),
+        ("recursion to RangeError through yield*", "var d = 0; function* g() { d = d + 1; yield* g(); } var caught = 'nothing'; try { g().next(); } catch (e) { caught = e.name + ' at depth ' + d; } caught;", false, true),
+        ("a throw from a getter caught in the same run", "var o = { get bad() { throw new Error('g'); } }; var r = ''; for (var i = 0; i < 3; i++) { try { r = r + i + o.bad; } catch (e) { r = r + e.message; } } r;", false, false),
+        ("recursion to RangeError through a thrown object's rendered message", "var d = 0; var e = { get message() { d = d + 1; try { throw e; } catch (x) { if (x !== e) { throw x; } } return 'm'; } }; var caught = 'nothing'; try { try { throw e; } catch (x) { if (x !== e) { throw x; } } } catch (f) { caught = f.name + ' at depth ' + d; } caught;", false, true),
+        ("recursion to RangeError through an indexed getter", "var d = 0; var k = 'down'; var o = { get down() { d = d + 1; return this[k]; } }; var caught = 'nothing'; try { o[k]; } catch (e) { caught = e.name + ' at depth ' + d; } caught;", false, true),
     ];
 
     /// <summary>
@@ -593,6 +629,7 @@ internal static class NativeAbiChecks
         ("printing from catches of throws across a call", "function thrower(i) { throw { i: i }; } var c = 0; for (var i = 0; i < 2500; i++) { try { thrower(i); } catch (e) { print('c' + e.i); c += e.i; } } c;", false),
         ("printing from a function an eval defined", "eval('function later(x) { print(\"l\" + x); return [x, x * 2]; }'); var t = 0; for (var i = 0; i < 2500; i++) { t += later(i)[1]; } t;", true),
         ("printing while closures and strings accumulate", "var fs = []; for (var i = 0; i < 3000; i++) { (function (k) { fs.push(function () { return 'k' + k; }); })(i); print(i); } var s = 0; for (var j = 0; j < fs.length; j++) { s += fs[j]().length; } s;", false),
+        ("printing from a getter at every level of a 1500-deep getter recursion", "var n = 1500; var o = { get down() { var s = { n: n }; print('g' + n); if (n === 0) { return 0; } n = n - 1; return this.down + s.n; } }; o.down;", false),
     ];
 
     /// <summary>Every wide program and every probe, each run in both forms and compared.</summary>
@@ -619,31 +656,38 @@ internal static class NativeAbiChecks
             rows.Add(Agree(Prefix + name, abi, source, library, guestLoads: false));
         }
 
-        rows.Add(Agree(
-            Prefix + Probes[0].Name,
-            abi,
-            Probes[0].Source,
-            null,
-            guestLoads: false,
-            also: (interpreted, _, _) =>
-                interpreted.Completion.StartsWith("RangeError at depth ", StringComparison.Ordinal)
-                    ? null
-                    : "the interpreter did not answer a RangeError it caught, so the row compares nothing it is about"));
-
-        rows.Add(Agree(
-            Prefix + Probes[1].Name,
-            abi,
-            Probes[1].Source,
-            null,
-            guestLoads: false,
-            also: (_, _, native) =>
-                native.TotalMilliseconds < DeepThrowMilliseconds
-                    ? null
-                    : "the native form took " + (long)native.TotalMilliseconds + " ms, more than " + DeepThrowMilliseconds));
-
-        for (var index = 2; index < Probes.Length; index++)
+        for (var index = 0; index < Probes.Length; index++)
         {
-            rows.Add(Agree(Prefix + Probes[index].Name, abi, Probes[index].Source, null, Probes[index].GuestLoads));
+            var (name, source, guestLoads, recursesToRangeError) = Probes[index];
+
+            if (index == 1)
+            {
+                rows.Add(Agree(
+                    Prefix + name,
+                    abi,
+                    source,
+                    null,
+                    guestLoads,
+                    also: (_, _, native) =>
+                        native.TotalMilliseconds < DeepThrowMilliseconds
+                            ? null
+                            : "the native form took " + (long)native.TotalMilliseconds + " ms, more than " + DeepThrowMilliseconds));
+
+                continue;
+            }
+
+            rows.Add(recursesToRangeError
+                ? Agree(
+                    Prefix + name,
+                    abi,
+                    source,
+                    null,
+                    guestLoads,
+                    also: (interpreted, _, _) =>
+                        interpreted.Completion.StartsWith("RangeError at depth ", StringComparison.Ordinal)
+                            ? null
+                            : "the interpreter did not answer a RangeError it caught, so the row compares nothing it is about")
+                : Agree(Prefix + name, abi, source, null, guestLoads));
         }
 
         return rows;
@@ -656,16 +700,28 @@ internal static class NativeAbiChecks
     /// <b>THIS IS THE STRONGER HALF OF FUEL PARITY.</b> Equal consumption at completion says the two
     /// forms charged the same total; equal smallest ceilings say the allowance ran out on the same
     /// instruction when it was one short - which is what a guest can observe, and what a handler that
-    /// charged before a check the interpreter makes first would change. Only programs that load no
-    /// code are bisected, for the reason the two-forms rows give.
+    /// charged before a check the interpreter makes first would change. Every wide program and every
+    /// probe that loads no code is bisected, for the reason the two-forms rows give; a step that runs a
+    /// block charges each of its instructions where the interpreter does, so an allowance one short runs
+    /// out inside a block on the instruction it runs out on in the interpreter.
     /// </remarks>
     private static List<(string, bool, string)> TheSmallestCompletingAllowanceIsOneFigure(JsX64Abi abi)
     {
         var rows = new List<(string, bool, string)>();
+        var bisected = new List<(string Name, string Source, string? Library)>();
 
         foreach (var index in Bisected)
         {
-            var (name, source, library) = WidePrograms[index];
+            bisected.Add(WidePrograms[index]);
+        }
+
+        foreach (var index in BisectedProbes)
+        {
+            bisected.Add((Probes[index].Name, Probes[index].Source, null));
+        }
+
+        foreach (var (name, source, library) in bisected)
+        {
             var label = "native/baseline/the-smallest-completing-allowance-is-one-figure/" + name;
             var interpreted = SmallestCompletingAllowance(source, library, JsOutputForm.Bytecode, string.Empty);
             var emitted = SmallestCompletingAllowance(source, library, JsOutputForm.Native, abi.Name);
@@ -741,7 +797,7 @@ internal static class NativeAbiChecks
     /// <remarks>
     /// <para>
     /// <b>THE UNIT IS THE BACKEND'S AND THE HANDLER IS NOT.</b> Every slot of the probe table is the same
-    /// check-only stub, so the first instruction the unit dispatches calls it, it answers exit, and the
+    /// check-only stub, so the first head the unit dispatches calls it, it answers exit, and the
     /// unit leaves - which exercises the prologue, the dispatch compare, one handler call and the
     /// epilogue, and nothing of the interpreter. What the rows establish is what the numeric rows
     /// above establish for their frame: the stack pointer at the handler's entry is eight past a
@@ -1029,20 +1085,22 @@ internal static class NativeAbiChecks
     }
 
     /// <summary>
-    /// A payload whose first handler call was moved to another defined opcode's slot is verified by
-    /// the admitting door and answers the internal-defect contract violation when run.
+    /// A payload whose first handler call was moved to another defined opcode's slot is refused at
+    /// verification by the admitting door, so it never runs; the unswapped control through the same door
+    /// answers a value.
     /// </summary>
     /// <remarks>
-    /// <b>THE OTHER HALF OF THE SCAN ROW THAT SHOWS RE-EMISSION REFUSING THE SAME SWAP.</b> An
-    /// execution-only image cannot re-emit, so the scan admits the payload - the slot is eight times a
-    /// defined opcode - and the only thing between it and a wrong answer is the handler's own check
-    /// that the byte at the program counter it was handed is its opcode. The row requires that check
-    /// to fire, and requires the unswapped control through the same door to answer a value, so the
-    /// refusal is not a door that refuses everything.
+    /// <b>THE OTHER HALF OF THE SCAN ROW THAT SHOWS EVERY VERIFIER REFUSING THE SAME SWAP.</b> The admitting
+    /// door has no emitter, so nothing re-emits the payload; what refuses it is the template scan, whose
+    /// layout clauses name the head's own opcode where the call's slot is, and the run answers the verifier's
+    /// refusal with the scan's code. The unswapped control through the same door answers a value, so the
+    /// refusal is not a door that refuses everything. The handler's own check that the byte at the program
+    /// counter it was handed is its opcode is no longer reached by this payload: a build with the layout
+    /// clause's slot comparison removed is what observes it firing.
     /// </remarks>
-    private static (string, bool, string) ASwappedHandlerIsADefect(JsX64Abi abi)
+    private static (string, bool, string) ASwappedHandlerNeverRuns(JsX64Abi abi)
     {
-        const string Name = "native/baseline/a-swapped-handler-is-a-defect";
+        const string Name = "native/baseline/a-swapped-handler-never-runs";
         var compiled = NativeLifecycle.CompileWide(WidePrograms[0].Source, JsOutputForm.Native, abi.Name);
 
         if (compiled.Artifact is null ||
@@ -1082,8 +1140,9 @@ internal static class NativeAbiChecks
         var run = NativeLifecycle.RunWideArtifact(
             artifact, JsOutputForm.Native, abi.Name, WideFuel, reEmit: false, module: false);
 
-        // A contract violation the executor answers reaches the host as a profile fault with its reason.
-        var expected = "invocation " + VmOutcome.ProfileFault + "/" + VmReason.ProfileContractViolation;
+        // A verification refusal reaches the run as the verifier's outcome, reason and profile code.
+        var expected = "the verifier refused: " + VmOutcome.InvalidArtifact + "/" + VmReason.InconsistentStructure +
+            " code " + (int)JavaScriptDiagnosticCode.NativePayloadNotTemplateClosed;
 
         return (
             Name,
@@ -1092,6 +1151,180 @@ internal static class NativeAbiChecks
             "the call at " + swapped + " moved from slot " + (from / 8) + " to slot " + (to / 8) +
                 ": the unswapped control answered " + control.Render(withFuel: false) +
                 "; the swapped payload answered " + run.Render(withFuel: false));
+    }
+
+    /// <summary>
+    /// A catch region whose handler is the successor of the instruction that throws, written by hand, verifies
+    /// and answers the same in both forms, with the throw and the fall-through meeting inside one block.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE PATH A BLOCK STEP TAKES WHEN A THROW LANDS ON THE INSTRUCTION IT WOULD HAVE RUN NEXT ANYWAY.</b> A
+    /// step stops on a program counter that is not its next instruction, and a caught throw usually lands on
+    /// one; here the handler is the thrower's successor, so the landed program counter is the next
+    /// instruction, no stop rule holds, and the step goes on into the handler inside the block it was running.
+    /// Either outcome is the interpreter's, since a step that stopped there would be dispatched to the same
+    /// landing, so what the row can observe is that the two forms answer alike, fuel included, and not
+    /// whether the native run dispatched again. Nothing outside the engine counts steps.
+    /// </para>
+    /// <para>
+    /// <b>IT IS WRITTEN BY HAND BECAUSE THE LOWERING NEVER WRITES IT</b>: a lowered try body ends in a jump
+    /// past its handler, so its last instruction ends a block and no handler is the successor of a throwing
+    /// instruction. Unit 1 is <c>f(x)</c>: <c>16 LoadArgument 0; 19 GetProperty "a"; 22 TypeOf; 23
+    /// Return</c>, with a catch region over [16, 22) whose handler is 22 at the height the fall-through
+    /// reaches 22 with, so the thrown value and the property read are one operand the handler reads either
+    /// way. Unit 0, the program body, answers <c>f(null) + f({})</c>: the first call throws a TypeError and
+    /// lands, the second falls through, and the answer <c>objectundefined</c> says each took its own path.
+    /// </para>
+    /// <para>
+    /// <b>The plan is read too</b>: the handler is a landing, the thrower ends no block, and the block whose
+    /// run holds the thrower runs on to the handler or past it.
+    /// </para>
+    /// </remarks>
+    private static (string, bool, string) AHandlerAtTheThrowersSuccessorContinuesTheStep(JsX64Abi abi)
+    {
+        const string Name = "native/baseline/a-handler-at-the-throwers-successor-continues-the-step";
+        const int Callee = 16;
+        const int Thrower = Callee + 3;
+        const int Handler = Thrower + 3;
+        const string Expected = "objectundefined";
+
+        byte[] code =
+        [
+            (byte)JsOpcode.Closure, 1, 0,
+            (byte)JsOpcode.LoadUndefined,
+            (byte)JsOpcode.LoadNull,
+            (byte)JsOpcode.Call, 1,
+            (byte)JsOpcode.Closure, 1, 0,
+            (byte)JsOpcode.LoadUndefined,
+            (byte)JsOpcode.NewObject,
+            (byte)JsOpcode.Call, 1,
+            (byte)JsOpcode.Add,
+            (byte)JsOpcode.Return,
+            (byte)JsOpcode.LoadArgument, 0, 0,
+            (byte)JsOpcode.GetProperty, 0, 0,
+            (byte)JsOpcode.TypeOf,
+            (byte)JsOpcode.Return,
+        ];
+
+        JsFunctionRow[] functions =
+        [
+            new(0, 0, 1, 4, 0, Callee, (uint)JsFormat.FunctionFlags.ProgramBody),
+            new(0, 1, 1, 1, Callee, (uint)(code.Length - Callee), (uint)JsFormat.FunctionFlags.None),
+        ];
+
+        JsExceptionRegionRow[] regions =
+        [
+            new(1, Callee, Handler, Handler, 0, 0, JsFormat.HandlerKind.Catch),
+        ];
+
+        byte[][] constants = [JsArtifactWriter.InternedNameConstant("a")];
+
+        if (code[Thrower] != (byte)JsOpcode.GetProperty || code[Handler] != (byte)JsOpcode.TypeOf ||
+            JsBaselineBlocks.EndsBlock(JsOpcode.GetProperty))
+        {
+            return (Name, false, "the hand-assembled unit does not put a thrower that ends no block right before its handler");
+        }
+
+        var image = new JsNativeProgramImage(code, functions, [0], [false], 4)
+        {
+            Tier = JsNativeTier.Baseline,
+            Regions = regions,
+        };
+
+        var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+
+        if (!JsBaselineBlocks.TryPlan(image, 1, grouped.Of(1), out var plan, out var planRefusal))
+        {
+            return (Name, false, "the partition does not plan the thrower's unit: " + planRefusal);
+        }
+
+        var landed = plan.Landings.IndexOf(Handler) >= 0;
+        JsBaselineBlock? holding = null;
+
+        foreach (var block in plan.Blocks)
+        {
+            if (block.Head <= Thrower && block.Last >= Thrower)
+            {
+                holding = block;
+                break;
+            }
+        }
+
+        if (!landed || holding is not { } run || run.Last < Handler)
+        {
+            return (
+                Name,
+                false,
+                "the plan does not run the thrower and its handler in one block: the handler " +
+                    (landed ? "is" : "is not") + " a landing, and " +
+                    (holding is { } found
+                        ? "the block from " + found.Head + " ends at " + found.Last
+                        : "no block's run holds the thrower"));
+        }
+
+        var backend = new JsX64Backend(abi);
+
+        if (!backend.TryEmit(
+                new JsAssembledProgram(JsFormat.ManifestId, code, functions, regions, constants, 4, 1),
+                out var emission,
+                out var emitRefusal))
+        {
+            return (Name, false, "the backend refused the hand-assembled program: " + emitRefusal);
+        }
+
+        byte[] Artifact(bool native)
+        {
+            var sections = new List<JavaScriptArtifactWriter.Section>
+            {
+                new((JavaScriptFormat.SectionKind)JsFormat.SectionKind.Limits, JsArtifactWriter.Limits(4, 1, 2, 1)),
+                new((JavaScriptFormat.SectionKind)JsFormat.SectionKind.Constants, JsArtifactWriter.Constants(constants)),
+                new((JavaScriptFormat.SectionKind)JsFormat.SectionKind.Code, code),
+                new((JavaScriptFormat.SectionKind)JsFormat.SectionKind.Entries, JsArtifactWriter.Entries([("script0", 0u)])),
+                new((JavaScriptFormat.SectionKind)JsFormat.SectionKind.ExceptionRegions, JsArtifactWriter.ExceptionRegions(regions)),
+                new((JavaScriptFormat.SectionKind)JsFormat.SectionKind.Positions, JsArtifactWriter.Positions([(0, 1, 1)])),
+                new((JavaScriptFormat.SectionKind)JsFormat.SectionKind.Functions, JsArtifactWriter.Functions(functions)),
+            };
+
+            if (native)
+            {
+                sections.Add(new((JavaScriptFormat.SectionKind)JsFormat.SectionKind.Surfaces, JsArtifactWriter.Surfaces([JsSurfaces.Native])));
+                sections.Add(new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.NativeCode,
+                    JsArtifactWriter.NativeCode(
+                        (uint)emission.Architecture, emission.BackendSemanticVersion, emission.CodeAlignment, emission.Code)));
+                sections.Add(new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.NativeSymbols,
+                    JsArtifactWriter.NativeSymbols(emission.Symbols)));
+            }
+
+            return JsArtifactWriter.Write(JsFormat.ManifestId, sections.ToArray());
+        }
+
+        var interpreted = NativeLifecycle.RunWideArtifact(
+            Artifact(native: false), JsOutputForm.Bytecode, string.Empty, WideFuel, reEmit: false, module: false);
+
+        var emitted = NativeLifecycle.RunWideArtifact(
+            Artifact(native: true), JsOutputForm.Native, abi.Name, WideFuel, reEmit: true, module: false);
+
+        var left = interpreted.Render(withFuel: true);
+        var right = emitted.Render(withFuel: true);
+        var detail = "the block from " + run.Head + " runs through the thrower at " + Thrower + " to its last instruction at " +
+            run.Last + ", at or past the handler at " + Handler + ", which is a landing; bytecode answered " + left +
+            "; native answered " + right;
+
+        if (emitted.Outcome.StartsWith("the verifier refused", StringComparison.Ordinal) ||
+            interpreted.Outcome.StartsWith("the verifier refused", StringComparison.Ordinal))
+        {
+            return (Name, false, "the verifier refused the hand-assembled program: " + detail);
+        }
+
+        return (
+            Name,
+            interpreted.Completed &&
+                string.Equals(interpreted.Completion, Expected, StringComparison.Ordinal) &&
+                string.Equals(left, right, StringComparison.Ordinal),
+            detail);
     }
 
     /// <summary>

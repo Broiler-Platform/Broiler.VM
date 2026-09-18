@@ -24,15 +24,26 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
     private readonly FixtureVmProfileVariant variant;
     private readonly FixtureReadOrderRecorder? recorder;
     private readonly System.Action? onFirstPayloadRead;
+    private readonly ulong pollBound;
 
-    /// <summary>Creates a verifier for <paramref name="profileId"/>.</summary>
+    /// <summary>
+    /// Creates a verifier for <paramref name="profileId"/>.
+    /// </summary>
+    /// <remarks>
+    /// <paramref name="pollBound"/> is the uncharged-work bound the profile declares, and this
+    /// verifier holds itself to it. Work is charged before it is done, so reading a whole code
+    /// section in one charge would put the entire section between two polls - which is precisely
+    /// the promise the bound makes and the core refuses. It is passed in rather than read from the
+    /// verification context because the context carries ceilings and a meter, not the descriptor.
+    /// </remarks>
     public FixtureVmVerifier(
         VmProfileId profileId,
         int semanticVersion,
         bool chargesWork = true,
         FixtureVmProfileVariant variant = FixtureVmProfileVariant.Conforming,
         FixtureReadOrderRecorder? orderRecorder = null,
-        System.Action? onFirstPayloadRead = null)
+        System.Action? onFirstPayloadRead = null,
+        ulong pollBound = 1024)
     {
         ProfileId = profileId;
         VerifierSemanticVersion = semanticVersion;
@@ -40,6 +51,7 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
         this.variant = variant;
         recorder = orderRecorder;
         this.onFirstPayloadRead = onFirstPayloadRead;
+        this.pollBound = pollBound < 1 ? 1 : pollBound;
     }
 
     /// <inheritdoc/>
@@ -161,7 +173,7 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
                     break;
 
                 case FixtureFormat.SectionCode:
-                    if (!TryReadCode(ref reader, in bounds, adapter, out code, out var codeRefused))
+                    if (!TryReadCode(ref reader, in bounds, adapter, pollBound, out code, out var codeRefused))
                     {
                         return codeRefused
                             ? VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact)
@@ -189,9 +201,32 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
                 VmReason.InconsistentStructure, 1005, new VmSourcePosition(-1, reader.Position, 0, 0));
         }
 
-        if (chargesWork && !context.Meter.TryCharge(VmBudgetDimension.VerifierWork, (ulong)code.Length))
+        // Charged in pieces no larger than the declared bound, polling between them. The total is
+        // unchanged - one unit per byte of code - but no piece of it sits unpolled past the latency
+        // this profile promised. An artifact whose code fits one piece charges once and polls not
+        // at all, exactly as it did before, so nothing about a small artifact changes here.
+        if (chargesWork)
         {
-            return VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact);
+            var unchargedCode = (ulong)code.Length;
+
+            while (unchargedCode > 0)
+            {
+                var piece = unchargedCode < pollBound ? unchargedCode : pollBound;
+
+                if (!context.Meter.TryCharge(VmBudgetDimension.VerifierWork, piece))
+                {
+                    return VmVerifierOutcome.ResourceExhaustion(
+                        VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact);
+                }
+
+                unchargedCode -= piece;
+
+                if (unchargedCode > 0 && !context.Meter.Poll())
+                {
+                    return VmVerifierOutcome.ResourceExhaustion(
+                        VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact);
+                }
+            }
         }
 
         if (cancellationToken.IsCancellationRequested)
@@ -316,6 +351,7 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
         ref VmBoundedReader reader,
         in VmReadBounds bounds,
         IVmBoundedAllocationMeter meter,
+        ulong pollBound,
         out byte[]? code,
         out bool allocationRefused)
     {
@@ -333,12 +369,27 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
             return false;
         }
 
-        if (!reader.TryReadBytes(length, out var body))
+        // Read in pieces no larger than the declared bound. The reader charges the work for a read
+        // before performing it and polls afterwards, so taking a whole section at once would charge
+        // the entire section between two polls and break the bound this profile declared. A section
+        // that fits one piece takes exactly one read, as it always did.
+        var unread = (ulong)length;
+        var written = 0;
+
+        while (unread > 0)
         {
-            return false;
+            var piece = unread < pollBound ? unread : pollBound;
+
+            if (!reader.TryReadBytes(piece, out var body))
+            {
+                return false;
+            }
+
+            body.CopyTo(new System.Span<byte>(buffer, written, (int)piece));
+            written += (int)piece;
+            unread -= piece;
         }
 
-        body.CopyTo(buffer);
         code = buffer;
         return true;
     }

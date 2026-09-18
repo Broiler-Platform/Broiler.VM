@@ -1,0 +1,123 @@
+{
+  "schema": "broiler-js octane report",
+  "version": 1,
+  "produced-at": "2026-09-16T16:26:58Z",
+  "retained": false,
+  "not-a-baseline": "Produced by one run, with no predeclared rule, no control, no A/A lane and no repetitions. Roadmap section 17 and rule L1 govern any figure a document retains; no figure in this file may be written into one.",
+  "pin": {
+    "suite": "octane",
+    "upstream": "chromium/octane",
+    "revision": "570ad1ccfe86e3eecba0636c8f932ac08edec517",
+    "archive-sha256": "7bcf54bdaa32475eadb09bbed4283f46cb2e11ee69c10b3b79524d568db841c4",
+    "content-sha256": "aab618b86ebe2f18229c18f0147943e9a1bac69967582563e120d4cea273b4c4",
+    "files": 37
+  },
+  "host": {
+    "path": "src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+    "bytes": 162816,
+    "version": [
+      "broiler-js broiler.javascript manifest broiler.javascript.wide format 2",
+      "edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html"
+    ]
+  },
+  "allowances": {
+    "fuel": 1000000000000,
+    "wall-ms-requested": 3600000,
+    "live-bytes": 1000000000,
+    "max-depth": 512
+  },
+  "selection": {
+    "attempted": [
+      "richards",
+      "deltablue",
+      "crypto",
+      "raytrace",
+      "navier-stokes"
+    ],
+    "excluded": [],
+    "of": 15
+  },
+  "benchmarks": [
+    {
+      "benchmark": "richards",
+      "exit": 0,
+      "score": "103",
+      "results": [
+        {
+          "name": "Richards",
+          "score": "103"
+        }
+      ],
+      "components": [
+        1.0297131745260089
+      ],
+      "seconds": 3.391,
+      "detail": null
+    },
+    {
+      "benchmark": "deltablue",
+      "exit": 0,
+      "score": "114",
+      "results": [
+        {
+          "name": "DeltaBlue",
+          "score": "114"
+        }
+      ],
+      "components": [
+        1.1410584851390226
+      ],
+      "seconds": 3.422,
+      "detail": null
+    },
+    {
+      "benchmark": "crypto",
+      "exit": 0,
+      "score": "88.5",
+      "results": [
+        {
+          "name": "Crypto",
+          "score": "88.5"
+        }
+      ],
+      "components": [
+        0.8850768049062909
+      ],
+      "seconds": 48.687,
+      "detail": null
+    },
+    {
+      "benchmark": "raytrace",
+      "exit": 6,
+      "score": null,
+      "results": [],
+      "components": [],
+      "seconds": 0.938,
+      "detail": "broiler-js: no file or directory at `C:\\Users\\proof\\AppData\\Local\\Temp\\broiler-octane-6jtffmv0\\octane-570ad1ccfe86e3eecba0636c8f932ac08edec517\\raytrace.js`"
+    },
+    {
+      "benchmark": "navier-stokes",
+      "exit": 6,
+      "score": null,
+      "results": [],
+      "components": [],
+      "seconds": 0.328,
+      "detail": "broiler-js: no file or directory at `C:\\Users\\proof\\AppData\\Local\\Temp\\broiler-octane-6jtffmv0\\octane-570ad1ccfe86e3eecba0636c8f932ac08edec517\\navier-stokes.js`"
+    }
+  ],
+  "aggregate": {
+    "score": 101.3137,
+    "definition": "100 * exp(sum(ln(r)) / n) over every ratio BenchmarkSuite.scores collected, which is what BenchmarkSuite.RunSuites computes for a whole-suite run.",
+    "ratios": 3,
+    "coverage": "partial|not selected: earley-boyer, regexp, splay, pdfjs, mandreel, gbemu, code-load, box2d, zlib, typescript; did not exit zero: raytrace, navier-stokes",
+    "whole": false,
+    "is-octane-score": false
+  },
+  "seconds": 56.766,
+  "environment": {
+    "platform": "Windows-10-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "AMD64 Family 25 Model 33 Stepping 0, AuthenticAMD",
+    "python": "3.11.9"
+  }
+}

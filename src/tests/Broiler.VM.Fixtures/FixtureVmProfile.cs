@@ -57,6 +57,33 @@ public enum FixtureVmProfileVariant
 
     /// <summary>It accepts several feature manifests, declared out of order.</summary>
     MultiManifest = 15,
+
+    /// <summary>
+    /// Conforming, except that it polls on a window rather than after every charge.
+    /// </summary>
+    /// <remarks>
+    /// Every other executor in this repository - the fixture's conforming variant, the calculator,
+    /// the ledger and the slice executor - polls immediately after each charge, so almost no charge
+    /// ever falls between two polls. A profile that charges in a window between polls is the
+    /// ordinary case for a real engine, and nothing exercised it. This variant is the fixture
+    /// analogue of a bytecode engine's charge window: it declares a bound of sixty-four work units
+    /// and polls once the same number of per-instruction charges have accumulated.
+    /// </remarks>
+    WindowedPolling = 16,
+
+    /// <summary>
+    /// Declares guest-initiated loads, and polls on a window rather than after every charge.
+    /// </summary>
+    /// <remarks>
+    /// A load requested by a variant that polls after every charge is requested by a meter that has
+    /// just committed everything it charged, so the remainder handed to the nested verification is
+    /// the same whether or not the reader settles first, and nothing about that reader is
+    /// exercised. This variant is what puts charges between the last poll and the request. It keeps
+    /// the conforming bound rather than the window as its declared latency, so the work a nested
+    /// verification charges on the requesting meter still fits between two of the requester's own
+    /// polls: polling more often than declared is what a profile is allowed to do.
+    /// </remarks>
+    WindowedGuestLoads = 17,
 }
 
 /// <summary>
@@ -90,7 +117,7 @@ public static class FixtureVmProfile
 
     /// <summary>The descriptor for one deliberately shaped variant.</summary>
     public static VmProfileDescriptor DescriptorFor(FixtureVmProfileVariant variant) =>
-        DescriptorFor(variant, null);
+        DescriptorFor(variant, orderRecorder: null);
 
     /// <summary>The descriptor for one variant, with a read-order recorder attached to its verifier.</summary>
     public static VmProfileDescriptor DescriptorFor(
@@ -113,6 +140,34 @@ public static class FixtureVmProfile
         VmThreadAffinity affinity = VmThreadAffinity.Agile) =>
         FixtureDescriptorFactory.Create(
             Id, Manifest, "Fixture Alpha", "Broiler.VM.Fixtures", variant, 1, null, gate, affinity);
+
+    /// <summary>
+    /// The descriptor for one variant, handing a test the execution environment and the executor
+    /// the core built from it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The environment is the only way to a profile's own meter from outside a step, and a test
+    /// that wants to charge the way a capability handler does - or to prove that charging from the
+    /// wrong context is refused - needs the same object the executor was handed. It is handed over
+    /// at construction rather than exposed as a property, because an executor is built once per
+    /// profile per runtime and a property would have to be found before it could be read.
+    /// </para>
+    /// <para>
+    /// The executor comes with it for the same reason: its per-run read-outs, such as the ceiling a
+    /// guest-initiated load was verified under, belong to the executor instance the core created,
+    /// and nothing else in the composition hands it back.
+    /// </para>
+    /// </remarks>
+    public static VmProfileDescriptor DescriptorFor(
+        FixtureVmProfileVariant variant,
+        System.Action<IVmExecutionEnvironment>? environmentObserver,
+        System.Action<FixtureVmExecutor>? executorObserver = null,
+        FixtureExecutionGate? gate = null) =>
+        FixtureDescriptorFactory.Create(
+            Id, Manifest, "Fixture Alpha", "Broiler.VM.Fixtures", variant, 1, null, gate,
+            environmentObserver: environmentObserver,
+            executorObserver: executorObserver);
 
     /// <summary>The descriptor for one variant under a declared thread affinity.</summary>
     public static VmProfileDescriptor DescriptorFor(
@@ -192,13 +247,16 @@ public static class FixtureDescriptorFactory
         FixtureExecutionGate? gate = null,
         VmThreadAffinity affinity = VmThreadAffinity.Agile,
         VmLimitVector? profileHardMaxima = null,
-        System.Action? onFirstPayloadRead = null)
+        System.Action? onFirstPayloadRead = null,
+        System.Action<IVmExecutionEnvironment>? environmentObserver = null,
+        System.Action<FixtureVmExecutor>? executorObserver = null)
     {
         VmDiagnosticsIdentity.TryCreate(profileId, profileId + ".diagnostics", out var diagnostics);
 
         var declaresGuestLoads = variant
             is FixtureVmProfileVariant.DeclaresGuestLoads
-            or FixtureVmProfileVariant.MisconvertingNestedOutcome;
+            or FixtureVmProfileVariant.MisconvertingNestedOutcome
+            or FixtureVmProfileVariant.WindowedGuestLoads;
 
         var guestLoads = declaresGuestLoads
             ? VmGuestLoadDeclaration.Declared(
@@ -236,14 +294,23 @@ public static class FixtureDescriptorFactory
             acceptedFeatureManifests: manifests,
             verifier: new FixtureVmVerifier(
                 profileId, semanticVersion: 1, variant: variant, orderRecorder: orderRecorder,
-                onFirstPayloadRead: onFirstPayloadRead),
-            executorFactory: environment => new FixtureVmExecutor(
-                executorIdentity, environment, variant, chargingGranularity: 1, gate),
+                onFirstPayloadRead: onFirstPayloadRead, pollBound: PollBound(variant)),
+            executorFactory: environment =>
+            {
+                environmentObserver?.Invoke(environment);
+
+                var executor = new FixtureVmExecutor(
+                    executorIdentity, environment, variant, chargingGranularity: 1, gate);
+
+                executorObserver?.Invoke(executor);
+
+                return executor;
+            },
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
             artifactLifetimeKind: VmArtifactLifetimeKind.Managed,
             supportsConcurrentVerification: true,
             threadAffinity: affinity,
-            cancellationPollBound: variant is FixtureVmProfileVariant.PollBoundBreaker ? 32UL : 1024UL,
+            cancellationPollBound: PollBound(variant),
             abandonBudget: 1000,
             limitDefaults: Defaults(),
             profileHardMaxima: profileHardMaxima ?? Maxima(),
@@ -259,10 +326,25 @@ public static class FixtureDescriptorFactory
             diagnosticsIdentity: diagnostics,
             packageIdentity: new VmPackageIdentity(packageId, "0.1.0-preview.1", "broiler-vm-core-tests"),
             faultRecovery: VmFaultRecovery.InstanceRecoverable,
-            maxUnchargedWork: variant is FixtureVmProfileVariant.PollBoundBreaker ? 32u : 1024u,
+            maxUnchargedWork: (uint)PollBound(variant),
             chargingGranularity: 1,
             artifactSharing: VmArtifactSharing.Shareable);
     }
+
+    /// <summary>The work a variant promises it will not exceed between two polls.</summary>
+    /// <remarks>
+    /// The descriptor states the bound twice - once as the declared cancellation latency and once
+    /// as the uncharged-work ceiling the core meters against - and they are one number here. A
+    /// variant whose two rows disagreed would be exercising the disagreement rather than the bound.
+    /// <see cref="FixtureVmProfileVariant.WindowedPolling"/> polls exactly at its declared bound,
+    /// so its window and the core's counter are the same size and start in phase.
+    /// </remarks>
+    private static ulong PollBound(FixtureVmProfileVariant variant) => variant switch
+    {
+        FixtureVmProfileVariant.PollBoundBreaker => 32UL,
+        FixtureVmProfileVariant.WindowedPolling => FixtureVmExecutor.PollWindow,
+        _ => 1024UL,
+    };
 
     /// <summary>The profile's bounded defaults. No member encodes "unbounded" or "unset".</summary>
     public static VmLimitVector Defaults()

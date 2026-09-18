@@ -1,0 +1,14 @@
+applied W10 to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index 1f0287d..a916d74 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -384,7 +384,7 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+         System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+     public bool TryCharge(VmBudgetDimension dimension, ulong amount)
+     {
+-        if (dimension == VmBudgetDimension.Fuel && amount != 0)
++        if (amount != 0)
+         {
+             var left = System.Threading.Volatile.Read(ref preAdmittedFuel);
+ 

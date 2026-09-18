@@ -1,0 +1,24 @@
+# E2 order oracle, base half of the re-collection: the fuel-exactness test file and the three fixture files 4490eda changed, as they stand at the remedy head 16e3d6d, transplanted onto f127d92
+# worktree D:/broiler-arms/oracle2 at f127d92a03f92281de3a27438eae22903a70f316 (the base meter; src/Broiler.VM.Runtime untouched)
+# written 2026-09-16T22:47:20+02:00
+# git diff --stat f127d92 -- src (after the transplant):
+ .../FuelChargeExactnessTests.cs                    | 867 ++++++++++++++++++++-
+ .../Broiler.VM.Fixtures/FixtureHostCapabilities.cs |   3 +-
+ src/tests/Broiler.VM.Fixtures/FixtureVmExecutor.cs |   3 +-
+ src/tests/Broiler.VM.Fixtures/FixtureVmProfile.cs  |  17 +-
+ 4 files changed, 872 insertions(+), 18 deletions(-)
+# git status --porcelain --untracked-files=no:
+M  src/tests/Broiler.VM.Contract.Tests/FuelChargeExactnessTests.cs
+M  src/tests/Broiler.VM.Fixtures/FixtureHostCapabilities.cs
+M  src/tests/Broiler.VM.Fixtures/FixtureVmExecutor.cs
+M  src/tests/Broiler.VM.Fixtures/FixtureVmProfile.cs
+# sha256 of the transplanted files as stored in the working copy, and of their blobs at 16e3d6d:
+421d2d7f4c6aec099dfeec4ca195028010fd67526a6ebe9f6e1104d313eaf8d5  working copy  src/tests/Broiler.VM.Contract.Tests/FuelChargeExactnessTests.cs
+421d2d7f4c6aec099dfeec4ca195028010fd67526a6ebe9f6e1104d313eaf8d5  blob at 16e3d6d  src/tests/Broiler.VM.Contract.Tests/FuelChargeExactnessTests.cs
+d70d1fd934160209fa00b2cb49acfeec72eea63634ee7b6c675711de6c1237f1  working copy  src/tests/Broiler.VM.Fixtures/FixtureHostCapabilities.cs
+d70d1fd934160209fa00b2cb49acfeec72eea63634ee7b6c675711de6c1237f1  blob at 16e3d6d  src/tests/Broiler.VM.Fixtures/FixtureHostCapabilities.cs
+9562144c6bc23749df244fce2c6c3c53fb1bcd2f4eff13f619c21c339e121f66  working copy  src/tests/Broiler.VM.Fixtures/FixtureVmExecutor.cs
+9562144c6bc23749df244fce2c6c3c53fb1bcd2f4eff13f619c21c339e121f66  blob at 16e3d6d  src/tests/Broiler.VM.Fixtures/FixtureVmExecutor.cs
+ad4751c6e5b64a5fff82a29bfdf92b6e5af7473a358058f57f2894be3f1bb980  working copy  src/tests/Broiler.VM.Fixtures/FixtureVmProfile.cs
+ad4751c6e5b64a5fff82a29bfdf92b6e5af7473a358058f57f2894be3f1bb980  blob at 16e3d6d  src/tests/Broiler.VM.Fixtures/FixtureVmProfile.cs
+# git diff --exit-code f127d92 -- src/Broiler.VM.Runtime -> 0

@@ -348,7 +348,10 @@ internal static class WideCorpus
         // instruction boundary - and a slab displacement past the format's own ceiling is another,
         // because the A64 load's immediate is twelve unsigned bits scaled by eight and cannot
         // reach the ceiling at all. Both are pinned by `NativeTemplateScanChecks` in the
-        // slice-compiler root's `--checks` lane, which scans in process and arms nothing.
+        // slice-compiler root's `--checks` lane, which scans in process and arms nothing. The
+        // baseline form's clauses are the exception to that rule, because no arm64 table carries
+        // them: the undefined-slot row and the four layout rows below pin them under x86-64, each
+        // with the reason it is safe to retain there.
         Scan(
             "wide-a-native-payload-of-four-zero-bytes",
             [0x00, 0x00, 0x00, 0x00],
@@ -373,6 +376,38 @@ internal static class WideCorpus
             ],
             JsNativeArchitecture.X64Windows,
             offset: 23),
+
+        // ---- four rows about the baseline form's layout clauses, and x86-64 again ----------------
+        //
+        // THE LAYOUT CLAUSES RUN ONLY OVER x86-64 BASELINE PAYLOADS, so these rows declare the
+        // architecture this file otherwise keeps out, as the undefined-slot row above does. Each is a
+        // whole payload of a hand-built two-unit program with ONE FIELD changed: a dispatch that
+        // compares a head that is not a landing, a call that passes an instruction inside its block
+        // rather than the block's head, a call to a head's handler through another opcode's slot, and a
+        // fall-through tail that compares the wrong successor. Every instruction of each is a template
+        // with an admitted operand, every branch lands where the unmutated payload's did, and the frame
+        // is whole, so every clause before the layout accepts it and the offset each row pins is the
+        // instantiation the layout clauses name. The four codes the clauses answer are one code at
+        // verification, 1625, so the offset is again the column that tells the rows apart - and it
+        // cannot tell a misnamed clause at the same offset from the right one, which is why the
+        // slice compiler's frozen-payload row scans the same four payloads and requires each named
+        // outcome.
+        //
+        // THEY ARE SAFE TO RETAIN UNDER THE ARCHITECTURE THEY NAME FOR THE REASON THE ROW ABOVE IS AND
+        // A STRONGER ONE: a neighbour of these bytes the baseline scan admits is, instruction for
+        // instruction, the layout of its own program's partition, so arming it calls each head's own
+        // handler at that head and runs the interpreter's arms - the program here calls a function that
+        // throws and catches, and returns.
+        //
+        // THE PAYLOAD IS FROZEN, NOT EMITTED, for the reason the entries above are hand-built: a
+        // payload emitted while the corpus is written would be re-based silently by the next write
+        // after any change to the partition, the layout or the encoder. It was emitted once and is
+        // retained at backend version 0 like every native payload here; a change that makes it stop
+        // being its program's layout fails the frozen-payload row instead.
+        LayoutRow(0),
+        LayoutRow(1),
+        LayoutRow(2),
+        LayoutRow(3),
 
         // The prologue with its epilogue cut off: two words that are both templates, and a unit
         // that would run off its last instruction into whatever the allocator put after it.
@@ -551,6 +586,187 @@ internal static class WideCorpus
                 nativeCode: code,
                 nativeSymbolOffset: 0,
                 nativeArchitecture: architecture));
+
+    /// <summary>
+    /// The bytecode of the program the layout rows' payload was emitted from, written by hand.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>TWO UNITS, AND EVERY SHAPE THE FOUR ROWS NEED IS IN THE FIRST.</b> Unit 0, the program body,
+    /// is <c>0 LoadTrue; 1 JumpIfFalse 13; 6 Closure 1; 9 LoadUndefined; 10 Call 0; 12 Return; 13
+    /// LoadUndefined; 14 Return</c>. Its one landing is its entry, and its heads are 0, 6, 10, 12 and 13:
+    /// the block from 0 compares its target 13 and falls through to 6, the block from 6 runs two
+    /// instructions and falls through to the call, the call runs alone and falls through to 12, and the
+    /// blocks from 12 and 13 leave. Unit 1 is <c>15 LoadTrue; 16 Throw; 17 Return</c> with a catch region
+    /// over [15, 17) whose handler is 17, so its dispatch compares two landings.
+    /// </para>
+    /// <para>
+    /// <b>It verifies and it runs</b>: the body calls unit 1, which throws <c>true</c>, catches it and
+    /// returns it, and the body returns what the call answered.
+    /// </para>
+    /// </remarks>
+    internal static readonly byte[] BaselineLayoutCode =
+    [
+        (byte)JsOpcode.LoadTrue,
+        (byte)JsOpcode.JumpIfFalse, 13, 0, 0, 0,
+        (byte)JsOpcode.Closure, 1, 0,
+        (byte)JsOpcode.LoadUndefined,
+        (byte)JsOpcode.Call, 0,
+        (byte)JsOpcode.Return,
+        (byte)JsOpcode.LoadUndefined,
+        (byte)JsOpcode.Return,
+        (byte)JsOpcode.LoadTrue,
+        (byte)JsOpcode.Throw,
+        (byte)JsOpcode.Return,
+    ];
+
+    /// <summary>The function rows of the layout rows' program: the body over [0, 15) and a function over [15, 18).</summary>
+    internal static readonly JsFunctionRow[] BaselineLayoutFunctions =
+    [
+        new(0, 0, 1, 16, 0, 15, (uint)JsFormat.FunctionFlags.ProgramBody),
+        new(0, 0, 0, 16, 15, 3, (uint)JsFormat.FunctionFlags.None),
+    ];
+
+    /// <summary>The one exception region of the layout rows' program: a catch in unit 1 whose handler is its last instruction.</summary>
+    internal static readonly JsExceptionRegionRow[] BaselineLayoutRegions =
+    [
+        new(1, 15, 17, 17, 0, 0, JsFormat.HandlerKind.Catch),
+    ];
+
+    /// <summary>The emitted-code symbols of the layout rows' payload: unit 1 starts at the first sixteen-byte boundary past unit 0.</summary>
+    internal static readonly JsNativeSymbolRow[] BaselineLayoutSymbols =
+    [
+        new(0, 0),
+        new(1, 192),
+    ];
+
+    /// <summary>
+    /// The Windows x64 baseline payload of the layout rows' program, emitted once at backend version 2 and
+    /// frozen.
+    /// </summary>
+    /// <remarks>
+    /// <b>IT IS RETAINED AS HEXADECIMAL AND NEVER RE-EMITTED HERE.</b> The slice compiler's frozen-payload
+    /// row requires the template scan to accept it with <see cref="BaselineLayoutImage"/>, and prints this
+    /// build's emission of the same program when it does not, so a change to the partition or the layout
+    /// is re-based in a commit that says so rather than by the next corpus write.
+    /// </remarks>
+    internal const string BaselineLayoutPayload =
+        "5341564883EC284989CE498B1E89D085C00F88960000003D000000000F840F000000E900000000B8FDFFFFFFE97C0000" +
+        "004C89F1BA00000000FF93180000003D0D0000000F84500000003D060000000F85BAFFFFFF4C89F1BA06000000FF9380" +
+        "0100003D0A0000000F85A1FFFFFF4C89F1BA0A000000FF93880100003D0C0000000F8588FFFFFF4C89F1BA0C000000FF" +
+        "9398010000E975FFFFFF4C89F1BA0D000000FF9308000000E962FFFFFF4883C428415E5BC39090909090909090909090" +
+        "5341564883EC284989CE498B1E89D085C00F884B0000003D0F0000000F841A0000003D110000000F8422000000E90000" +
+        "0000B8FDFFFFFFE9260000004C89F1BA0F000000FF9318000000E9C0FFFFFF4C89F1BA11000000FF9398010000E9ADFF" +
+        "FFFF4883C428415E5BC3";
+
+    /// <summary>
+    /// The four mutations of <see cref="BaselineLayoutPayload"/>: each entry's name, the outcome the scan
+    /// answers, the instantiation it names, the byte of that instantiation the field starts at, and the
+    /// thirty-two-bit value written there.
+    /// </summary>
+    /// <remarks>
+    /// <b>EACH CHANGES ONE FIELD OF UNIT 0 TO A VALUE THE FIELD ADMITS.</b> The dispatch's compare at 23
+    /// names the head 6, which is not a landing; the call sequence of the head 6 passes 9 from its move at
+    /// 88, an instruction inside that head's block; the call of the head 10, a <c>Call</c>, goes through
+    /// <c>LoadUndefined</c>'s slot at 118; and the fall-through tail of the head 6 compares 12 at 99 where
+    /// its successor is 10.
+    /// </remarks>
+    internal static readonly (string Name, JsNativeScanOutcome Outcome, uint At, int Field, int Value)[] BaselineLayoutMutations =
+    [
+        ("wide-a-baseline-dispatch-that-compares-a-non-landing", JsNativeScanOutcome.DispatchNotTheLandings, 23, 1, 6),
+        ("wide-a-baseline-call-at-an-offset-inside-a-block", JsNativeScanOutcome.CallsNotTheBlockHeads, 88, 1, 9),
+        ("wide-a-baseline-call-through-another-opcodes-slot", JsNativeScanOutcome.HandlerSlotNotTheOpcode, 118, 2, (int)JsOpcode.LoadUndefined * 8),
+        ("wide-a-baseline-tail-that-falls-to-the-wrong-block", JsNativeScanOutcome.TailNotTheBlockEnd, 99, 1, 12),
+    ];
+
+    /// <summary>The layout rows' program as the image a baseline scan plans it from.</summary>
+    internal static JsNativeProgramImage BaselineLayoutImage() =>
+        new(BaselineLayoutCode, BaselineLayoutFunctions, [1], [true], 16)
+        {
+            Tier = JsNativeTier.Baseline,
+            Regions = BaselineLayoutRegions,
+        };
+
+    /// <summary>The frozen payload with one of <see cref="BaselineLayoutMutations"/> applied, or none for minus one.</summary>
+    internal static byte[] BaselineLayoutMutated(int mutation)
+    {
+        var payload = System.Convert.FromHexString(BaselineLayoutPayload);
+
+        if (mutation >= 0)
+        {
+            var (_, _, at, field, value) = BaselineLayoutMutations[mutation];
+            System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(
+                System.MemoryExtensions.AsSpan(payload, (int)at + field), value);
+        }
+
+        return payload;
+    }
+
+    /// <summary>
+    /// The layout rows' whole artifact: the hand-built program, the native surface, and a payload at
+    /// sixteen-byte alignment for its two units.
+    /// </summary>
+    /// <remarks>
+    /// <b>The alignment is the emitter's</b>, because the payload carries the padding the emitter wrote
+    /// between its units and a declared alignment of one would make that padding longer than the
+    /// alignment it serves.
+    /// </remarks>
+    internal static byte[] BaselineLayoutArtifact(byte[] payload) =>
+        JsArtifactWriter.Write(
+            JsFormat.ManifestId,
+            [
+                new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Limits,
+                    JsArtifactWriter.Limits(16, 16, 4, 4)),
+                new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Constants,
+                    JsArtifactWriter.Constants([JsArtifactWriter.NumberConstant(1)])),
+                new((JavaScriptFormat.SectionKind)JsFormat.SectionKind.Code, BaselineLayoutCode),
+                new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Entries,
+                    JsArtifactWriter.Entries([("main", 0u)])),
+                new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.ExceptionRegions,
+                    JsArtifactWriter.ExceptionRegions(BaselineLayoutRegions)),
+                new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Positions,
+                    JsArtifactWriter.Positions([(0, 1, 1)])),
+                new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Functions,
+                    JsArtifactWriter.Functions(BaselineLayoutFunctions)),
+                new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Surfaces,
+                    JsArtifactWriter.Surfaces([JsSurfaces.Native])),
+                new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.NativeCode,
+                    JsArtifactWriter.NativeCode(
+                        (uint)JsNativeArchitecture.X64Windows,
+                        backendSemanticVersion: 0,
+                        codeAlignment: 16,
+                        payload,
+                        declaredByteLength: null)),
+                new(
+                    (JavaScriptFormat.SectionKind)JsFormat.SectionKind.NativeSymbols,
+                    JsArtifactWriter.NativeSymbols(BaselineLayoutSymbols)),
+            ]);
+
+    /// <summary>One layout row: the frozen payload with one mutation, pinned by the instantiation the scan names.</summary>
+    private static CorpusEntry LayoutRow(int mutation)
+    {
+        var (name, _, at, _, _) = BaselineLayoutMutations[mutation];
+
+        return new(
+            name,
+            Mode,
+            "InvalidArtifact",
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.NativePayloadNotTemplateClosed,
+            "-",
+            "-1:" + at.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":0:0",
+            "-",
+            "-",
+            BaselineLayoutArtifact(BaselineLayoutMutated(mutation)));
+    }
 
     /// <summary>
     /// A version-2 artifact that is well formed except where a parameter says otherwise.

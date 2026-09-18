@@ -59,3 +59,32 @@ reference and as a value type that holds one, because "is, or contains" is two q
 `X3-an-unmanaged-entry-outside-the-handler-file.cs.witness` sits at a path outside the handler file
 and is a native callback that both carries `[UnmanagedCallersOnly]` and parks an activation in the
 thread slot, because an author who adds the entry adds the slot access in the same edit.
+
+**Five of rule X4's eight witnesses are edits rather than files**, and they are stored as the members
+the edit writes. The rule's test puts each one's members into the real file they belong to - the handler
+table or the activation - in place of the members of the same name, and adds the ones the real file
+lacks, because the files they edit are a hundred times the witness's size and a stored copy of either
+would go stale at its next edit, the reason rule X3's rejecting directions edit the real activation.
+`X4-a-call-routed-through-the-block-step.cs.witness` routes `Call` through the block step alone and
+gives `Nop` a step of its own, the uniform table a tidy-up produces. `X4-a-step-that-no-longer-checks-the-opcode.cs.witness`
+is `Step` without the comparison the template scan made unreachable from a verified payload, and
+`X4-a-step-whose-checks-are-joined-with-and.cs.witness` is `Step` with every comparison present and
+joined with `&&`, which is what a rule that found the comparisons by name would clear.
+`X4-a-wrapper-that-expects-another-opcode.cs.witness` has `Nop` and `Call` expect each other's opcode and
+`StepCall` answer `Construct`, and the test exchanges the two slots in the real table before it puts
+them in, so every check but the rule's own agrees with it. `X4-a-handler-table-that-shadows-the-activation.cs.witness`
+is a class named `JsNativeActivation` nested in the table, whose `Step` relays every mode to the block
+step: the edit adds that one member, and every wrapper's unchanged text then binds to the relay. The
+sixth,
+`X4-a-layout-read-outside-the-scan-and-the-lowering.cs.witness`, is a whole file, read at a path in the
+profile assembly where it is reported and at a path in the lowering assembly where it is not. The
+seventh, `X4-a-lay-call-outside-the-scan-and-the-layout.cs.witness`, is a whole file too: a public member
+of the format assembly that copies a unit's layout out through `JsBaselineBlocks.Lay`, the walk `Layout`
+is made by, without naming `Layout` or `Fixed`. It is read at a path in the format assembly and at one
+in the lowering assembly, where the clause reports the walk although it allows the other two names,
+and in place of the template scan, where it is not reported. The eighth,
+`X4-a-layout-named-through-an-escape.cs.witness`, is a whole file in the profile assembly that names the
+layout and the fixed bytes only through unicode escapes: the compiler reads the escapes before it binds
+the names, and the file's text, its comment included, contains neither name, so a clause that chose the
+files to parse by their text would never open it. The test asserts that the text holds neither name
+before it reads the two reports.

@@ -1,0 +1,1815 @@
+# Evidence bundle VM-5-002
+
+**Milestone:** VM-5 - baseline the core's own overhead
+**Collected:** 2026-09-16. The predeclared rule, the conformance parity rule and the two base test262
+wall-clock lists were committed first, by `dbc8d37`, before the changed build was measured. The
+evidence was retained by `c9afb0d`, after every run it describes, and later commits changed what
+section 5.9 lists.
+**Collected again:** 2026-09-16 and 2026-09-17, after the owner-directed remedy of section 5.10. How
+the re-collection is read was committed first, by `d5014f8`, before any run of it; the re-collection is
+retained under `r2/` by the commit that adds this line, after every run it describes.
+**Core contract version:** 1, unchanged. Fuel pre-admission adds no public member, mints no
+amendment and adds no member to the meter interface.
+**Status of the milestone after this collection:** In progress, unaccepted.
+
+This bundle records what was run and what happened. It does not accept a milestone: no reviewer has
+read this work, `HUMAN_REVIEW.md` is unsigned and `PENDING`, and ledger update rule 7 puts
+acceptance behind an owner and a reviewer confirming every objective exit condition.
+
+> **No language performance claim follows from any figure in this bundle.** Every measurement is of
+> the **core's own overhead** around a fixture profile whose executor is a toy stack machine, or of
+> one JavaScript shape on one workstation. A real language profile's cost is its own, and nothing
+> here predicts it.
+
+**What `dbc8d37` committed before the changed build was measured.** Sections 5.1, 5.2 and 5.3 stand
+exactly as that commit wrote them, so they still say what was fixed in advance. That commit's header
+said what it was, and its two paragraphs that no longer describe the bundle are kept here, as it
+wrote them, rather than left standing as the header; "this commit" in them means `dbc8d37`:
+
+> **Collected:** 2026-09-16, and incomplete. This commit retains the predeclared rule, the conformance
+> parity rule and the two base test262 wall-clock lists, and nothing else. Every other section below
+> says what it is waiting for.
+>
+> **Why this commit exists before the changed build was measured.** A rule written after the numbers
+> are in is not a rule, it is a description. The subject of this bundle is a change made for speed, so
+> the reading of its evidence is fixed here, in the repository, before the changed build is measured:
+> what must hold, cell by cell, for the change to be described as faster, and what is named as failing
+> when a cell does not hold. The two base test262 lists in section 5.3 are part of the same
+> predeclaration - they are the rows the parity rule will later admit a difference on, they were taken
+> from the unchanged build, and they are committed before the changed build runs the suite once.
+
+Every other section was written after every run it describes, and says which run that was; section
+5.9 lists what later commits changed.
+
+**What the first collection's evidence says, in one paragraph.** The predeclared rule of section 5.1 is
+**not met as a whole**. Item 1 fails on two witnesses: after the resolution fallback, the witness that
+stops the ambient lookup comparing contexts still fails the environment-meter test but no longer fails the
+two-thread invocation-allowance test the design named for it, and a witness added for the
+suppressed-flow arm fails no test at all. Item 4 fails in both bench-host pairs.
+Items 2 and 3 hold, item 3 only on its second run: its first run failed the ambient-concurrency part,
+that failure triggered the fallback commit `34dbd7a`, and both runs are retained. Section 7.3 gives
+the verdict per item and section 6 the figures.
+
+**What the re-collection's evidence says, in one paragraph.** The remedy is directed by the owner after
+seeing the result - the first collection's failures of rule items 1 and 4 - and its two parts were
+accepted by the owner on 2026-09-17, after they were implemented (section 5.10). Read against the unchanged rule as section 5.11
+fixed before any run of it, on the remedy head: **item 1 holds**, every witness failing every test and
+row it names, 29 of 29, including the three guards of the ambient lookup - against a witness table that
+was fixed during development with its results known and first committed after the runs, under which W8
+and W12 no longer name T7 and T18, the two-thread tests the first collection named for them, and both of
+those tests still pass under them (section 5.14, item 9); **item 2 is not met**, because
+in one of the eight shape-and-form cells the credit median is below base by less than the A/A spread;
+**item 3 holds** in all three parts; and **item 4 holds** in both bench pairs on both readings. The
+host-call row, item 5 of section 5.11, is reported without a verdict: in both pairs the credit row is at
+or below base plus the base A/A figure. The predeclared rule is therefore still **not met as a whole**. Section 7.4 gives the verdict per item
+and section 6.9 the figures. Every first-collection verdict stands beside it, and so does every
+first-collection file but `measurement/make-hashes.py`, which the re-collection's commit and a later
+correction changed in place (section 8).
+
+*Added 2026-09-17, the owner's rulings on items 1 and 2:* after the re-collection and the review of it,
+the owner accepted both verdicts as this bundle records them. **Item 1 stands `[MET]` with its stated
+qualification**, that the witness table was fixed during development, and **item 2 stays `[UNMET]` for
+the `c_call` shape in the native form**, with no remedy: nothing may describe the change as faster for
+that cell. The rulings move no mark, re-run nothing and accept no milestone or change, and the rule is
+still not met as a whole (section 7.4).
+
+*Added 2026-09-17, this bundle's expiry:* commit `ddf706f`, which adds the JavaScript profile's baseline
+block partition to that profile's format assembly, **expired this bundle** by the first recertification
+trigger of section 8, because it regenerated `CODE-ASSURANCE.md` and `assurance.manifest.json`, which
+`hashes.txt` names. The metering path is unchanged. The owner accepted the expiry on 2026-09-17, before that
+commit, and nothing here is re-collected or re-read (section 8).
+
+---
+
+## Field coverage
+
+The status ledger's section 3 fixes the fields a bundle must carry.
+
+| Field | Where | State at completion |
+|---|---|---|
+| Identity | Section 1 | Written |
+| Source | Section 2 | Written |
+| Dependencies and corpus | Section 3 | Written |
+| Environment | Section 4 | Written |
+| Procedure | Section 5 | 5.1 to 5.3 as `dbc8d37` committed them; 5.4 to 5.8 written at completion; 5.9 lists what later commits changed; 5.10 and 5.11 as `d5014f8` committed them, before the re-collection, with two dated notes in 5.10; 5.12 to 5.14 written after the re-collection; 5.15 lists what later commits changed in the re-collection's text |
+| Outputs | Section 6 | Written; 6.9 and 6.10 for the re-collection |
+| Decision | Section 7 | Written; 7.3 is the first collection's verdict and 7.4 the re-collection's, with the owner's dated rulings of 2026-09-17 on items 1 and 2 |
+| Validity | Section 8 | Written; with a dated note of 2026-09-17 naming the commit that expired this bundle, and a later dated note of 2026-09-17 recording the owner's ratification of leaving `hashes.txt` unregenerated |
+
+Section 9 carries the exclusions.
+
+---
+
+## 1. Identity
+
+| Field | Value |
+|---|---|
+| Evidence bundle ID | VM-5-002 |
+| Milestone | VM-5 |
+| Roadmap revision | `docs/roadmap.md` as committed, section 13's VM-5 gate |
+| Core contract version | 1, unchanged |
+| Reason-registry revision | 2, unchanged |
+| Owner | MaiRat, holding all six roles ADR 0012 records |
+| Reviewer | None. No area verdict in `HUMAN_REVIEW.md` section 8 is set. |
+
+**The commits this bundle is about**, on branch `claude/fuel-credit-block-steps`:
+
+| Commit | Subject | What it carries |
+|---|---|---|
+| `cd362ac` | Pin fuel charging to the unit before changing how charges are applied | The fixture profile's windowed-polling variant and its environment observer, the fixture executor's windowed poll and its guest-load fuel ceiling, five fixture artifact writers, and the sixteen fuel-exactness contract tests. The meter is unchanged at this commit, which is what makes those tests an oracle rather than a description |
+| `ba760d9` | Make the fuel-exactness tests fail on the claims they guard rather than on their timing | An amendment to the same tests, still on the unchanged meter |
+| `e117162` | Admit fuel without the meter's lock inside a block checked at every level | `VmFuelPreAdmissions`, the `VmMeter` fast path and its split from the locked charge, the pre-admissions property on `VmBudgetLevel`, and the settle points in `VmRuntime`, `VmInstanceImplementation` and `VmInstantiation` |
+| `a416c7a` | Resolve the ambient meter once per execution context | The resolution cache in `VmExecutionScope`, keyed by execution context, held in one field on the scope |
+| `4490eda` | Request a guest load from a profile that polls on a window, so the remainder it is verified under is read with fuel outstanding | No new test: an amendment to T9, which now requests its guest load from `WindowedGuestLoads`, a fixture profile variant this commit adds that polls on a window, with a remark saying why |
+| `738d9c7` | Answer a zero-unit fuel charge without a locked write, and make each settle say what it alone guarantees | A zero-unit fast path, and the remark on each settle point saying what that point alone guarantees |
+| `c98011a` | Hold five steps of one runtime open, and suppress a flow on a thread that is in no step | Two further tests: a full pre-admission table's eviction, and a lookup with the execution flow suppressed |
+| `dbc8d37` | Predeclare the rule the fuel pre-admission evidence is read against | Sections 5.1 to 5.3 of this README, before the changed build was measured |
+| `34dbd7a` | Hold the resolved meter on the thread rather than on the scope | The resolution fallback the predeclared rule names for a failure of its ambient-concurrency part: the resolved scope, context and meter move to three thread-static fields, and `Leave` clears the leaving thread's |
+| this commit | Retain the evidence for fuel admitted in blocks as bundle VM-5-002 | Everything else in this directory |
+
+`34dbd7a` was first committed as `66efe30` and then amended in its message alone: the two commits
+carry the same tree, and the binaries built after the fallback carry `66efe30` as their commit
+stamp - as the lanes of E10's second run, the only ones of those binaries that survived, show in
+`e10/lanes.txt`.
+
+The table above is as `c9afb0d` wrote it, so "this commit" in it is `c9afb0d`. **The commits of the
+owner-directed remedy and of its re-collection**, on the same branch, after the corrections section 5.9
+lists:
+
+| Commit | Subject | What it carries |
+|---|---|---|
+| `4279862` | Witness a context change on one thread, a suppressed lookup after another, nested and context-changing capabilities, and a poll after a refused poll | Tests and a leak-test variant, on the product of `fc00248` (section 5.10) |
+| `9e9377d` | Count a held block's work at a poll instead of settling and renewing it there | Part A of the remedy (section 5.10) |
+| `965e6ad` | Return a capability's caller to the context it entered from when the capability left it unchanged | Part B of the remedy (section 5.10) |
+| `542c715` | Witness a host call made with the flow suppressed, a lookup through another runtime's scope, a poll beside a second charging thread, and a capability return that puts its caller's context back | Tests, on the product of `965e6ad` |
+| `16e3d6d` | Say that any settle ends a held block, and that a capability's return puts no context back when its entry recorded none | Remarks and one falsifier clause, no code. **The remedy head** |
+| `d5014f8` | Predeclare how VM-5-002 reads the evidence of the owner-directed remedy | Sections 5.10 and 5.11 of this README, before any run of the re-collection |
+| the re-collection's commit | Retain the re-collection of VM-5-002 after the owner-directed remedy | `r2/`, the rest of this README's re-collection text, `hashes.txt` and `measurement/make-hashes.py` |
+
+**The base for every comparison is commit `f127d92`**, "Pin every clause of the rule the granularity
+harness applies, and refuse a shape with no twin" - the last commit on this branch before the meter
+changed. It already carries the fuel-exactness tests and their amendment, so those tests are present
+and passing in both builds, and it carries the per-block-steps harness commits, which touch no
+product assembly.
+
+The design this work follows names an earlier commit as the base, because it was written before
+those test and harness commits landed. That commit's tree differs from `f127d92` only by them, and
+`f127d92` is the commit that was actually built and run, so it is the base named here.
+
+**The credit build is the head of the branch**, and which head each run used is stated with the run
+in section 5.4: the runs before the fallback used the product at `c98011a` (`dbc8d37` changed this
+README and nothing else), and the runs after it used the tree of `34dbd7a`. **The re-collection's
+credit build is the remedy head `16e3d6d`**, built in the main checkout at `d5014f8`, whose tree
+differs from the remedy head in this README alone, or in worktrees at `16e3d6d` itself; section 5.12
+says which run used which, and the re-collection's transcripts name their build's tree and head and the
+digests of the binaries they load, except where section 5.14, item 5, says they do not.
+
+---
+
+## 2. Source
+
+**The working tree when the evidence was retained** was `34dbd7a` with nothing modified: the only
+entries `git status` showed were this bundle's own files and an untracked `.broiler-review/`
+directory dated 2026-09-08, which no project includes. The collector additionally rewrote
+`docs/evidence/vm-6/d1-outcome.txt` during its test step, and that change was reverted before this
+commit (section 5.7).
+
+**What the change touched in the product assemblies**, `f127d92` to `34dbd7a`, all in
+`Broiler.VM.Runtime`:
+
+| File | Change |
+|---|---|
+| `VmFuelPreAdmissions.cs` | New: the per-runtime table of at most four fuel blocks, the settle of one holder and of all, the pre-admission and its share of a contended level, single-victim eviction |
+| `VmMeter.cs` | The lock-free fast path for a fuel charge that fits the meter's block, the locked exact charge split out of it, and the settles in the charge, the poll, the uncharged-work reader, the remaining-allowance reader, both sections of a retention and the snapshot |
+| `VmBudgetLevel.cs` | The pre-admissions property a runtime level carries |
+| `VmRuntime.cs` | A settle of every holder in the budget snapshot and at disposal |
+| `VmInstanceImplementation.cs` | The step-end settle on the invocation and resume paths |
+| `VmInstantiation.cs` | The step-end settle after instantiation |
+| `VmExecutionScope.cs` | The resolution of the ambient meter: first a per-scope cache keyed by execution context, then the thread-static fallback |
+| `VmVerification.cs` | A comment only: why a caller-driven verification meter gets no step-end settle |
+
+**Outside them:** `FuelChargeExactnessTests` gained the two tests `c98011a` added, and `4490eda`
+amended T9's profile variant (the file comments number the tests T1 to T18); three fixture files
+changed with that amendment (`FixtureHostCapabilities`, `FixtureVmExecutor`, `FixtureVmProfile`),
+to add the variant; the architecture rule tests'
+covered-file count moved by the one new product file, and the generated `CODE-ASSURANCE.md`,
+`HUMAN_REVIEW.md` and `assurance.manifest.json` were regenerated with every new or changed unit
+`PENDING`. `docs/api/public-api.txt` is unchanged at every commit in the series (section 6.1, E1c).
+No profile assembly and no profile source changed.
+
+**The working tree when the re-collection was retained** was `d5014f8` with nothing modified: `git
+status` showed this bundle's new files and the same untracked `.broiler-review/` directory.
+
+**What the remedy touched**, `fc00248` to `16e3d6d`, all in `Broiler.VM.Runtime` for the product:
+
+| File | Change |
+|---|---|
+| `VmMeter.cs` | Part A: `VmMeter.Poll` counts the block's work without settling or renewing it; a gate-only record of what the block had admitted at the last reset; `VmMeter.CommitPreAdmittedFuelLocked` folds only what no poll counted and clears the record; remarks of `VmMeter.BlockCap` and `VmMeter.UnpolledWorkExceedsBound` |
+| `VmFuelPreAdmissions.cs` | The remark of `VmFuelPreAdmissions.MaxBlock` only |
+| `VmRuntime.cs` | Part B: `VmRuntime.CapabilityEntry`, `VmRuntime.EnterCapability` and `VmRuntime.LeaveCapability` restoring the entry context, the provider-call pair carrying the entry; the comment in `VmRuntime.GetBudgetSnapshot` |
+| `VmCapabilityBinding.cs` | Part B: `VmCapabilityInvoker.TryEnter`, `Leave`, `Invoke` and `InvokeBytes` carry the entry |
+| `VmArtifactLoadMediator.cs` | Part B: `VmArtifactLoadMediator.Answer` carries the entry from enter to leave |
+
+**Outside them:** `FuelChargeExactnessTests` gained T19 to T26, and remarks of earlier tests were corrected;
+`ReviewRegressionTests` gained the leak test's write-back variant and the restore-path test; the
+generated `CODE-ASSURANCE.md`, `HUMAN_REVIEW.md` and `assurance.manifest.json` were regenerated, every
+new or changed unit `PENDING`. No fixture file, no profile source and `docs/api/public-api.txt` changed
+(section 6.9, E1c).
+
+---
+
+## 3. Dependencies and corpus
+
+| Dependency | Pin | Used by |
+|---|---|---|
+| test262 | `tc39/test262` at `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, 56,560 files, content digest `46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93`, archived under `src/tests/conformance/pins/`; every shard of every run verified the checkout against the pin | E7, E8 |
+| ECMA-262 edition | ES2026, `tc39/ecma262` at `0248456c758431e4bb8e5d26333ff1865123c9cd`, as the conformance host prints it | E7, E8 |
+| Octane | `chromium/octane` at `570ad1ccfe86e3eecba0636c8f932ac08edec517`, 37 files, content digest `aab618b86ebe2f18229c18f0147943e9a1bac69967582563e120d4cea273b4c4`, archived under `src/tests/octane/pins/` | E11 |
+| JavaScript corpus | `src/tests/corpus/js-1`, replayed by the execution-only host's corpus rows | E6 |
+| Core corpus | `src/tests/corpus/vm-2`, replayed by the evidence collector in three publish modes | Collector step 7 |
+
+This work adds no corpus. The JavaScript shapes, the fuel-minimum programs, the probe and the
+measurement scripts it ran are retained under `measurement/`, and they are measurement inputs rather
+than a corpus: nothing replays them as a gate.
+
+---
+
+## 4. Environment
+
+| Field | Value |
+|---|---|
+| Machine | One Windows workstation, `DESKTOP-UK9RCOH` |
+| OS | Windows 11 Enterprise, build 26200 |
+| Architecture and RID | x86_64, `win-x64` |
+| Processor | AMD Ryzen 7 5800X, 8 cores, 16 logical processors |
+| Memory | 32 GB |
+| Power scheme | High performance |
+| SDK | .NET SDK 10.0.401, not pinned (EX-03) |
+| Python | 3.11.9 |
+| Configuration | Release throughout; the bench host on the JIT lane, and on Native AOT in the collector's run |
+| GC | Workstation, as the bench host reports it |
+| Lane | None. One machine, one RID, no CI (EX-45) |
+
+`machine-state-before.txt` and `machine-state-after.txt` bracket the timing runs E10 to E13, and
+`environment.txt` is the collector's record of the SDKs and runtimes this machine resolved.
+
+**The machine was not idle during the timing runs**, and the retained notes say so rather than this
+README guessing: between the two snapshots, 55 minutes apart, the agent processes that both
+snapshots list among the eight busiest accumulated **at least** 3,900 CPU-seconds - about 1.2 of the
+16 logical processors running continuously - and the desktop processes both list at least a few
+minutes more. Those are lower bounds: the second snapshot lists another agent process and a Git status cache
+that the first snapshot's eight busiest do not, so what those two accumulated in between is unknown,
+and so is anything neither list names.
+No build ran during any timing run. Every timing figure in this bundle is a property of this machine
+in that state (EX-45).
+
+**The re-collection ran on the same machine**, as its snapshots show: `r2/machine-state-before.txt` and
+`r2/machine-state-after.txt` name the same host, processor, memory, power scheme, SDK and Python, and
+`r2/environment.txt` resolves the same SDKs and runtimes as `environment.txt`. The machine restarted once
+during the re-collection, between E7's bytecode run and its native run (section 5.14, item 1), and every
+timing run of the re-collection ran after the restart. The two snapshots bracket E10, E12, E13 and the T6
+timing and list by id the processes with at least 60 CPU-seconds, so what they show of the load between
+them is a lower bound: section 5.14, item 7, gives it. No build ran during any timing run of the
+re-collection.
+
+---
+
+## 5. Procedure
+
+Sections 5.1 to 5.3 are what had to be written **before** the changed build was measured, and they
+stand here exactly as commit `dbc8d37` wrote them: the rule the timing evidence is read against, the
+rule the conformance parity is read against, and the two lists the parity rule admits a difference
+on. Sections 5.4 to 5.8 were written at completion: which build each run used, the order in which
+things happened, every command with the file that retains its transcript, how this directory was
+collected, and every place the collection departed from the design this work follows. Section 5.9
+lists what commits after the bundle's own changed in it, after a review.
+
+*Added 2026-09-17, after a review of the re-collection:* sections 5.10 and 5.11 were committed before the
+re-collection, sections 5.12 to 5.14 describe it, and section 5.15 lists what commits after the
+re-collection's changed in its text.
+
+Throughout this section members and types are named rather than source lines, per rule H3.
+
+### 5.1 The predeclared rule, committed 2026-09-16
+
+This is the rule. It is committed before any timing run of the changed build, and before the changed
+build has run the conformance suite at all.
+
+1. **Every correctness result holds.** The build is clean with warnings as errors; every test project
+   passes; the generated assurance and review records are regenerated and the public API file is
+   unchanged; the fuel-exactness tests pass unchanged on both builds; every injected-defect witness
+   fails the test it names and passes again when reverted; both profile assemblies are byte-identical
+   between the two builds under a deterministic build; the JavaScript checks, the corpus replay and
+   the host-lifetime checks pass in both builds with identical verdicts; the conformance parity of
+   section 5.2 holds; the low-fuel runs over the named subtrees agree row for row in both forms; and
+   the fuel minima measured through the command-line host are identical in both builds and both
+   forms.
+2. **Shapes.** For each shape and form, the credit build's median is at or below the base build's,
+   and the gap is larger than the A/A lane's spread.
+3. **Concurrency**, three parts, all of which must hold:
+   - in the probe's `concurrent-bench` mode, the credit build's nanoseconds per admitted charge is
+     at or below base in every cell with two or more threads - threads 2, 4, 5 and 8, at each
+     runtime ceiling measured;
+   - in the probe's `concurrent-ambient` mode, the build carrying the execution-context resolution
+     cache is at or below the build carrying only the pre-admission table, at every thread count of
+     two or more;
+   - the median duration over five runs of the concurrent exactness test alone, alternating builds,
+     is at or below base on the credit build.
+4. **The per-instruction meter row.** In the bench host, `meter-per-instruction` for credit is at or
+   below base plus the A/A spread. That row polls after every charge, so each admitted block covers
+   exactly one charge: it measures the settle and the re-admission that moved into the poll, not the
+   saving the change was made for. Passing it shows only that a profile polling after every
+   instruction does not regress.
+
+**What a failure does.** A cell that fails item 2, 3 or 4 is named as failing in this bundle, and
+nothing in this repository may describe the change as faster for that cell. A `concurrent-ambient`
+failure triggers the resolution cache's documented fallback. A `concurrent-bench` or concurrent-test
+failure triggers a change to the pre-admission table's capacity, its block cap or its share divisor.
+Either way the change is made, the measurement is taken again, and **both** runs are retained - the
+failing one is not dropped.
+
+**No registered baseline funds this change.** VM-5's gate funds optimisation only against one of its
+baselines, and the only baseline touching this path is the per-instruction meter row, which by item
+4 cannot show the saving. The shape measurements and the core-charge measurements are bundle-local.
+No new baseline is registered for this work and the figures in `docs/baselines.md` are not edited;
+that gap is recorded as an exclusion in section 9 rather than repaired.
+
+### 5.2 The conformance parity rule
+
+Four whole-suite runs of the pinned test262 checkout: the base build and the credit build, each in
+the bytecode form and in the emitted-machine-code form, every one under the wide manifest at the
+default fuel allowance and a 60,000 ms wall clock.
+
+**The rule, per form.** The sorted `result` rows of the base report and the credit report are
+identical, **except** on rows in that form's predeclared list in section 5.3, where the credit row
+may be `Passed` or an exhaustion of another allowance. Every other difference fails this rule and is
+recorded as failing - including a credit row exhausted on `WallClock` that is not in that form's
+list, and a listed row that became `Failed`.
+
+**The comparison script is retained, not the gate.** The form-comparison script is run and its
+output retained, but every row it names is checked against the list by hand. That script is written
+to hold a bytecode run against a machine-code run and admits no wall-clock difference at 60,000 ms
+or more, so a listed row that legitimately changed makes it exit non-zero; that exit is not itself a
+failure of this rule.
+
+**Within each build**, the bytecode-against-machine-code comparison names the same set of rows in
+the base build as in the credit build, apart from rows in either form's list.
+
+**Why the lists exist at all.** A wall-clock exhaustion is the one verdict in the report that is a
+property of the machine rather than of the engine: the same variant on the same build can spend the
+allowance on one run and finish on the next. Fixing the lists before the changed build runs is what
+stops that verdict from being read backwards later - as a row the change repaired, or as a
+regression the change caused.
+
+### 5.3 The two base wall-clock lists
+
+Both lists are read off the merged whole-run report of a base run. Both runs were taken from the
+build in `D:/Broiler.VM-base` at commit `f127d92`, against the checkout the retained suite pin
+admits - `tc39/test262` at revision `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, whose 56,560 files
+hash to the content digest that pin declares - under manifest `broiler.javascript.wide` with no
+surface declined, at an allowance of 100,000,000 fuel and 60,000 ms per variant, in 56 shards across
+14 processes. Each run's merged report states that it may be retained: pinned, whole, and its five
+verdicts account for its variants. Every shard transcript of both runs is retained outside this
+bundle until the bundle is completed.
+
+The two forms exhausted the wall clock on the same variants, and on no others.
+
+**Bytecode form.** Two rows.
+
+| Path | Variant |
+|---|---|
+| test/staging/sm/regress/regress-1507322-deep-weakmap.js | sloppy |
+| test/staging/sm/regress/regress-1507322-deep-weakmap.js | strict |
+
+**Emitted-machine-code form.** Two rows.
+
+| Path | Variant |
+|---|---|
+| test/staging/sm/regress/regress-1507322-deep-weakmap.js | sloppy |
+| test/staging/sm/regress/regress-1507322-deep-weakmap.js | strict |
+
+Nothing else in either run spent the wall clock. Every other exhaustion in both runs was on a
+deterministic allowance - fuel, the nested-load fan-out or the nested-load byte count - and those
+rows are held to exact equality by the rule in section 5.2 like any pass or failure, with no
+tolerance at all.
+
+### 5.4 The builds, and which run used which
+
+Every build is Release. A binary's commit stamp - the source revision the SDK writes into its
+informational version - is how a binary is tied to a commit below, where one survives.
+
+| Build | Tree | Where it was built | Runs |
+|---|---|---|---|
+| Base | `f127d92` | A worktree at `D:/Broiler.VM-base`, outside the repository | Every base side of E4 to E13 |
+| C2 | `e117162`: the pre-admission table without the resolution cache | A worktree at `D:/Broiler.VM-c2`, removed after E12 | The C2 column of E12's ambient-concurrency mode |
+| Credit before the fallback | The product at `c98011a` (the checkout later moved to `dbc8d37`, which changed this README alone) | The main checkout | E4, E5, E6, E9 (its binaries survived, and `e9/binaries.txt` gives their stamp, `c98011a`), E7, E8, E10's first run, and every E12 file named "before-fallback" |
+| Credit after the fallback | The tree of `34dbd7a`, built first before it was committed and then again after it was committed as `66efe30` | The main checkout | The gate runs in `gates/` named "fallback", E2's credit half, E10's second run (its lanes survived, and `e10/lanes.txt` gives their stamp, `66efe30`), E11, E12's files without "before-fallback", E13 and the T6 timing |
+| Witnesses | `34dbd7a` with one injected defect at a time | A worktree at `D:/broiler-arms/wit`, removed afterwards | E3 |
+| Oracle | `f127d92` with the head's fuel-exactness test and fixture files copied over it | A worktree at `D:/broiler-arms/oracle`, removed afterwards | E2's base half |
+| Profile assemblies, deterministic | Both trees, with debug information and the commit stamp off and a path map | Output directories under `D:/Broiler.VM-e4` | E4 |
+| Collector | `34dbd7a` | The main checkout | Every top-level log in this directory (section 5.7) |
+| Cold builds, after a review | `f127d92` and `c98011a`, each checked out fresh | Worktrees at `D:/broiler-arms/cold-base` and `D:/broiler-arms/cold-c98011a`, removed afterwards | E1's cold builds of the base and of the product before the fallback |
+
+No worktree was created inside the repository, so architecture rule A14's test failures inside a
+worktree do not arise; every run of the architecture tests was in the main checkout.
+
+**Where the tie between a run and its build is retained, and where it is not.** E3's transcripts
+name the commit of their worktree, and so do E2's base half and the cold builds of E1. The binaries of E9 and of E10's second
+run survived in the throwaway directory, and `e9/binaries.txt` and `e10/lanes.txt`, written after a
+review, give each file's digest and commit stamp. For every other run - E2's credit half, E4 to E8,
+E10's first run, E11, E12 and E13 - no retained file names the commit, or holds a digest of the
+binary, that the run used: their transcripts carry neither, the base and C2 worktrees were removed,
+and the main checkout's outputs were rebuilt after the fallback. Nor can their content tell the
+builds apart where it is identical: E7's base and credit reports are byte-identical in each form,
+E5's plain transcripts are byte-identical, and `e9/e9-bisect.log` tells base from credit only by the
+variant name its script printed, which the binaries in `e9/binaries.txt` now back. For those runs the
+table above rests on the procedure (EX-117).
+
+### 5.5 The order in which things happened
+
+Times are the workstation's, on 2026-09-16. Commit times are the reflog's. A run's time is its
+transcript's where the transcript carries one - E2's base half, E3, E10, the T6 results and the two
+machine-state files. Otherwise it is read from a file this list names: for E7 and E8, the creation
+time of each run's output directory and the write times of its shard transcripts, retained in
+`e7/run-times.txt` and `e8/run-times.txt`; for E12, the `started=` header of each probe file, which
+the probe script writes after the probe process returns, so that each is the time a mode
+**finished**, not when it began. No retained transcript of E4, E5, E6 or E9 carries a time, and
+`e5/transcript-times.txt` gives only the time their copies were written, together. Every file-system
+time here was read after a review, from the throwaway directory (EX-117).
+
+| Time | What |
+|---|---|
+| 09:29 | `f127d92`, the base, committed |
+| 09:49 to 10:51 | `e117162`, `a416c7a`, `4490eda`, `738d9c7` and `c98011a` committed |
+| 10:51 to 11:09 | E4's deterministic profile builds, E9's bisections, E5 and E6 in both builds: after `c98011a`, whose stamp E9's credit binaries carry, and before 11:09, when the copies of all four runs' transcripts were written |
+| 11:21 to 14:08 | The two base test262 runs, bytecode then emitted machine code, from the first run's output directory to the second run's merge |
+| 14:11:59 | `dbc8d37` committed: the predeclared rule and the two base wall-clock lists |
+| 14:14 to 15:29 | The two credit test262 runs. Both began after the rule was committed: the first credit run's output directory was created at 14:14:17, and none of its shard processes started before that |
+| 15:30 to 17:25 | E8, the low-fuel series, from the first run's output directory to the last run's merge |
+| 16:22:56 to 16:52:03 | **The main checkout was on branch `main`**, by the reflog, while E8 ran (section 5.8) |
+| 17:33 | Machine state recorded; E10's first run |
+| 17:42 to 17:47 | E12 before the fallback, by the times its modes finished; the ambient-concurrency part of rule item 3 fails |
+| 17:52:23 | The fallback committed as `66efe30` |
+| 17:54 to 18:28 | E12's ambient-concurrency mode again (finished by 17:54), E10's second run, E11, E13, the T6 timing, and E12's other modes again (finished from 18:27 to 18:28) |
+| 18:28 | Machine state recorded again; `66efe30` amended in its message to `34dbd7a` |
+| 18:41 to 18:45 | E3's witnesses, then E2's base half |
+| 18:45 to 18:49 | The evidence collector |
+| after 18:49 | This README and `hashes.txt` written, then E1b run over the finished bundle |
+
+### 5.6 Every command, and where its transcript is
+
+`<tree>` is `D:/Broiler.VM-base` for the base build and `D:/Broiler.VM` for the credit build. Every
+transcript is retained whatever it shows.
+
+| ID | What | Command | Retained |
+|---|---|---|---|
+| E1 | Build | `dotnet build Broiler.VM.slnx -c Release -warnaserror` in both trees, and the collector's own `--no-incremental` build; and, after a review, `dotnet build Broiler.VM.slnx -c Release --no-incremental -warnaserror` in a fresh worktree at `f127d92` and one at `c98011a` | `gates/build-*.log`, `gates/final-build-*.log`, `gates/rebuild-*.log`, `gates/fallback-build.log`, `build.log`, `gates/cold-build-base.log`, `gates/cold-build-c98011a.log` |
+| E1a | Regenerate the generated records | The test run with the assurance and API write switches set, after the fallback | `gates/fallback-test-write.log` |
+| E1b | Every test project | `dotnet test Broiler.VM.slnx -c Release` after the fallback; the collector's test step; and once more over the finished bundle | `gates/fallback-test-plain.log`, `test.log`, `gates/test-after-bundle.log` |
+| E1c | The public API file | `git diff --exit-code` of `docs/api/public-api.txt` from `f127d92` to every commit of the series | `gates/public-api-diff.log` |
+| E2 | The tests were the oracle | The fuel-exactness tests, filtered by class, on the credit build; and on the base meter with the head's test and fixture files transplanted onto `f127d92` | `e2/oracle-on-credit.log`, `e2/oracle-on-base.log`, `e2/oracle-transplant.txt`, `e2/test-file-diff-stat.txt` |
+| E3 | Injected-defect witnesses | `measurement/run-witnesses.sh`: for each witness, `measurement/witnesses.py` applies the edit, `dotnet test src/tests/Broiler.VM.Contract.Tests -c Release --filter FullyQualifiedName~FuelChargeExactnessTests --logger "console;verbosity=normal"` runs, and `git checkout -- src/Broiler.VM.Runtime` restores the tree; a clean run before the first witness and after the last | `e3/` - one `.apply.txt` with the applied diff and one `.log` per witness |
+| E4 | Profile assemblies unchanged | `dotnet build` of the JavaScript and WebAssembly profile projects in both trees with `-p:DebugType=none -p:DebugSymbols=false -p:IncludeSourceRevisionInInformationalVersion=false` and a path map, into `D:/Broiler.VM-e4/<build>/{js,wasm}/`, then `sha256sum` | `e4/` |
+| E5 | JavaScript checks | `dotnet run --project <tree>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler -c Release -- --checks`, plain and with `--verbose` (base twice, as an A/A pair) | `e5/` |
+| E6 | Corpus replay and host lifetime | `dotnet run --project <tree>/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly -c Release -- --corpus src/tests/corpus/js-1`, plain and with `--verbose` (verbose twice per build) | `e6/` |
+| E7 | test262, whole suite, both forms, both builds | `python eng/run-test262.py --suite <pinned checkout> --binary-directory <tree>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0 --form {bytecode,native} --wall 60000 --out artifacts/fc/t262-<build>-<form>`, base runs first; then `python eng/compare-test262-forms.py` within each build and across builds, and `measurement/e7-rule.py` applying section 5.2 per form | `e7/`: each run's driver transcript, merge transcript and gzip-compressed merged report; the four comparisons; the two rule transcripts |
+| E8 | Low fuel over four subtrees | `measurement/e8-run.sh`: fuel 1,000, 2,500, 10,000, 30,000 and 100,000, both forms, both builds, `--wall 600000` and `--dir` for `test/built-ins/Promise`, `test/language/statements/class`, `test/built-ins/Array` and `test/language/expressions/object`; then the form-comparison script per (form, fuel), a sorted-row comparison and a count of fuel exhaustions | `e8/`, and `e8/off-series/` for the six runs section 5.8 explains |
+| E9 | Fuel minima through the command-line host | `measurement/patch_measure2.diff` applied to the command-line host of both trees as a measurement-only change, built, copied out and reverted; `measurement/p_bisect.py` over `a_1000`, `a_2000`, `c_small` then `a_1000`, and `d_small`, both forms | `e9/` |
+| E10 | Long JavaScript shapes | `measurement/measure-shapes.py`: base, credit and a byte copy of credit as the A/A lane; interleaved shape, lane, form; 2 warm-ups and 7 repetitions; `--wall 600000 --fuel 1000000000000`, `--native x86-64-win64` for the native form; `invoke_ms` read from the E9 patch applied to both trees, `process_ms` from `time.perf_counter` | `e10/`, one run before and one after the fallback |
+| E11 | Octane | `python eng/run-octane.py --binary-directory <tree>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0 --only richards --only deltablue --only crypto --only raytrace --only navier-stokes --report <file>`, five repetitions alternating base then credit | `e11/` |
+| E12 | Core charge cost, traces, concurrency | `measurement/run-probe.py` over the probe in `measurement/probe/`, which binds `VmBudgetLevel.FuelPreAdmissions` and `VmFuelPreAdmissions.SettleAll` by reflection; modes `trace`, `stress`, `bench`, `concurrent-bench` (base and credit) and `concurrent-ambient` (base, C2 and credit); threads 1, 2, 4, 5 and 8; runtime ceilings unbounded, 2<sup>20</sup> and 4 x 2<sup>20</sup>; each thread's own meter with poll bound 65,536, polling every 16,384; minimum of 3 | `e12/` |
+| E13 | Fixture benchmark, and T6 alone | `dotnet run --project <tree>/src/tests/Broiler.VM.Bench.Host -c Release`, two pairs (base first, then credit first); `measurement/measure-t6.py --reps 5` for the two-thread shared-ceiling test alone, alternating builds, reading each run's own duration from its TRX result | `e13/` |
+
+### 5.7 How this directory was collected
+
+**The collector was tried first, and it ran.** `python eng/collect-evidence.py --bundle VM-5-002 --out
+docs/evidence/vm-5-002 --rebench --skip-controls`, from the main checkout at `34dbd7a`, wrote every
+top-level log here: `build.log`, `test.log`, `pack.log`, `nuspecs.txt`,
+`publish-jit-and-trimmed.log`, `publish-aot.log`, `corpus-replay.log`, `fuzz.log`, the two
+`composition-*.log` with their `catalog-*.txt` and `closure-*.txt`, `soak.log`, `bench.log`,
+`feed-consumer.log` and `environment.txt`. Its console output is `collector.log`. The negative
+controls were skipped, as the design asks.
+
+**The collector does not know E1 to E13**, so their transcripts were hand-retained from the
+throwaway directory they were written to, as bundle JSB-11-001 did: text normalised to LF, which is
+how the repository stores it, and each merged test262 report compressed with gzip at a zero timestamp
+and with no embedded name, so that the compressed bytes depend on the report alone. The scripts,
+shapes, patch and probe those runs used are under `measurement/`; the probe's project file carries a
+`.txt` suffix so that no build and no architecture rule takes it for a project of this component.
+Section 5.3 says the shard transcripts of the two base runs were kept outside this bundle until it
+was completed; they are not retained here, for any of the test262 runs, because each merged report
+carries every row its shards wrote and the driver and merge transcripts are retained beside it.
+
+**`hashes.txt` was then rewritten**, by `measurement/make-hashes.py`, replacing the one the collector
+wrote, which is not retained. It keeps the set the collector hashes, adds the files design section 8.4
+names with the drivers and pins the runs used, adds every file in this directory apart from this
+README and itself, and records the digest of each uncompressed test262 report. Every digest of a
+tracked file is of the blob the repository stores at the retained commit, and the script refuses a
+working copy that differs from it in anything but line endings. That refusal mattered once: the
+working copy of `VmExecutionScope.cs` carried CRLF line endings although the repository stores the
+file LF - `git status` compares after normalising and showed nothing - so the collector, which reads
+working-copy bytes, had hashed bytes the repository does not hold. `hashes.txt` names that file in
+its last section. As `c9afb0d` committed it, `hashes.txt` also named `docs/baselines.md`; section 8
+says why that row was later withdrawn.
+
+**One thing the collector did outside this directory**, and it was undone: its test step rewrote
+`docs/evidence/vm-6/d1-outcome.txt`, which was restored with `git checkout`. Nothing else outside
+this directory changed, and `docs/baselines.md` did not change.
+
+### 5.8 Where the collection departed from the design, and why
+
+1. **The base is `f127d92`, not the commit the design names**, for the reason section 1 gives.
+2. **The credit build is `34dbd7a`, not the design's C3.** The ambient-concurrency part of rule item 3
+   failed on `c98011a`'s product, and the rule names the resolution fallback as what that failure
+   triggers. Both runs are retained: every E12 file named "before-fallback" is the failing run, and
+   E10 is retained from both builds too.
+3. **E2 is not an empty diff.** The design asks that the test file be unchanged since the commit that
+   pinned it. It is not: `ba760d9` (before the base), and `4490eda` and `c98011a` (after it) changed
+   it, as `738d9c7`'s message corrects. So the oracle was established the way that message says it
+   must be stated: the head's test file and the three fixture files it depends on were copied onto
+   the base commit in a worktree, with the runtime untouched, and the tests ran on the base meter.
+   `e2/oracle-transplant.txt` records the copy and its digests.
+4. **E3 was run at collection time, on `34dbd7a`.** The witnesses were run before `e117162` and
+   `a416c7a` landed, but no transcript of those runs was kept. One of them was already a finding then:
+   the witness that deletes the settle in the remaining-allowance reader passed the test written for
+   it, and `4490eda` changed that test so that it fails. After the fallback, the design's own fallback
+   clause asks for the witnesses again. So all of them ran here, with a transcript each, against the
+   head as it is committed. Two changes to the design's table: the witness for the ambient lookup
+   was re-expressed for the thread-static resolution (it drops the context comparison, which is what
+   it dropped before), and two witnesses were added - W11 and W12 - for the two arms `c98011a` wrote
+   tests for and named as defects those tests catch. The design also asks for a passing transcript
+   after each witness is reverted; the script kept none per witness. It restored the tree after
+   each, checked that `git status` was empty, and ran the class once clean before the first witness
+   and once after the last (section 6.2).
+5. **E4 was not re-run after the fallback.** The fallback changed `VmExecutionScope` alone, in the
+   runtime assembly, which neither profile assembly references, and `git diff` from `c98011a` to
+   `34dbd7a` over both profiles, `Broiler.VM.Abstractions`, `Broiler.VM.Binary` and
+   `Directory.Build.props` is empty. The outputs built before the fallback were hashed at collection.
+6. **E5 to E9 ran on the product before the fallback and were not re-run after it** (EX-116). The
+   design's fallback clause asks for E1 to E4, E12 and the T6 timing again, and not for them.
+7. **E8's series was driven for half an hour from another branch's driver** (EX-115). From 16:22:56 to
+   16:52:03 the main checkout was on `main`, by the reflog, which records the checkout and not what
+   made it. `eng/run-test262.py` is read from the checkout when each run starts. Four bytecode
+   runs - fuel 30,000 and 100,000, base and credit - started in that window and were driven by
+   `main`'s driver, which takes a bytecode run under the wide manifest as this branch's does, and their
+   reports say so. Six native runs - fuel 10,000, 30,000 and 100,000, base and credit - started in the
+   same window and were taken under the numeric manifest, which `main`'s driver chooses for a native
+   run given none. They are not the series: they are retained in `e8/off-series/` with a name that
+   says so, and the native series at those three fuel values was run again under the wide manifest
+   after the branch was restored, from 16:52 to 17:25. `e8/e8-driver.log` is the series driver's own
+   transcript, so its exit codes for native fuel 10,000 and above are the off-series runs'. The credit
+   binaries the four bytecode runs used were built on this branch before the window; that rests on
+   file timestamps alone - no Release build output in the checkout carries a time inside the window -
+   and not on a stamp in the reports, which carry none.
+8. **E10 read `invoke_ms`**, from the measurement-only patch E9 uses, applied to both trees, built,
+   snapshotted and reverted at once. `process_ms` is retained beside it. The A/A spread each verdict
+   uses is the largest of the credit and A/A medians' difference and the two lanes' ranges.
+9. **E11 is bytecode only**, because `eng/run-octane.py` has no form flag. `e11/trial-richards-credit.*`
+   is a sizing run, not a repetition.
+10. **E12's first `trace`, `stress` and `bench` runs were overwritten.** They wrote numbers with this
+    workstation's decimal comma; the probe was changed to write invariant numbers and the three modes
+    were run again over the same files. No log of the overwritten run survives, so what it showed is
+    not retained: `collection-notes.txt` says only that its stress mode passed and its traces
+    matched, and no longer quotes the figures it first quoted (section 5.9). `e12/trial-conc-base.txt` is the first complete base run of `concurrent-bench`, taken to
+    size the workload, and is retained beside the base run that counts.
+11. **The collector's test step failed two architecture tests** for a reason outside the product: a
+    copy of the probe's project file sat under the git-ignored `artifacts/` directory, and group A
+    rule A14 holds every project file in the checkout outside the solution to be a sample. The copy
+    was renamed, and E1b was run once more over the finished bundle. Both transcripts are retained.
+12. **The collector's feed-consumer step could not publish the consumer as Native AOT**: the
+    toolchain discovery EX-42 records failed with MSB3073, because that step runs no `vcvars64`
+    shell. Every other step of it, and the collector's own Native AOT publishes, succeeded.
+
+### 5.9 What later commits changed, after a review
+
+A review of the committed bundle found places where it said more than its files show. Every change
+below was made by a commit after `c9afb0d`. None of them re-ran a measurement or replaced a retained
+transcript, and git holds the text each one replaced.
+
+1. **`docs/baselines.md` was withdrawn from `hashes.txt`**, after the records commit's note to the
+   register hit this bundle's first recertification trigger. Section 8 says why, and that the bundle
+   stood expired until the row was withdrawn.
+2. **What the throwaway directory still showed about times and builds was retained**:
+   `e5/transcript-times.txt`, `e7/run-times.txt`, `e8/run-times.txt`, `e9/binaries.txt` and
+   `e10/lanes.txt`, written by `measurement/list-run-identity.py` from file-system times and from
+   the binaries that survived. Section 5.5's times now name their source and E12's are named as
+   finish times, the stamps section 5.4 cited are now in those files, and what could not be recovered
+   is EX-117.
+3. **The build clause of rule item 1 gained cold builds of the base and of the product before the
+   fallback.** The transcripts section 6.1 read it from were incremental and record no command, so
+   they could not show a warning; `gates/cold-build-base.log` and `gates/cold-build-c98011a.log`
+   were run after the review, with the collector's `--no-incremental -warnaserror` command, in fresh
+   worktrees outside the repository.
+4. **Rule item 1's witness clause is read as failing on W12 as well as W8**, where the verdict table
+   and EX-114 had counted W8 alone while section 6.2 already marked W12 `[UNMET]`. The W5 row now says
+   that W5 passed its test before `4490eda` amended it, and the verdict no longer says each witness
+   passed again when reverted, since no witness has a passing run of its own.
+5. **Four statements were narrowed to what the files show.** `4490eda` is described as the amendment
+   to T9 it is, not as a further test. Section 6.5 no longer compares the single-threaded `bench`
+   figures across builds, since no rule item reads that row. EX-110 and section 7.2 say that W2 does
+   remove the resume-path pair, and that no test fails for it. EX-108 names which consumption figures
+   a run compares and which rest on argument.
+6. **`collection-notes.txt` was corrected**: the overwritten probe run's figures, which no log backs,
+   are removed; the paths it gave for the fallback's gate logs, the probe's source and the E10 lanes
+   now name where those files are, or say they are not retained; and its CPU-time figures, like
+   section 4's, are lower bounds, since the second machine-state snapshot lists two processes the
+   first does not.
+7. **The header says the bundle is collected.** `c9afb0d` kept `dbc8d37`'s header, whose collection
+   line called the bundle incomplete and said every other section was waiting; that line and the
+   paragraph on why `dbc8d37` came first are now quoted, as that commit wrote them, under the header.
+8. **Section 8's first trigger names the one kind of change that does not trip it**: a correction to
+   a file this directory retains, made by a commit that regenerates `hashes.txt` with it and is listed
+   here. Items 1, 2, 3 and 6 are such corrections. A change to any tracked file in the first three
+   sections of `hashes.txt` still trips it.
+
+### 5.10 The owner-directed remedy
+
+This section and section 5.11 were committed after the remedy's product and test commits and before
+any run of the evidence collected again for it. Nothing in sections 5.1 to 5.9 is changed by them.
+
+**The remedy is directed by the owner after seeing the result.** The result is this bundle's first
+collection, as section 7.3 reads it: rule item 1 failed on its witness clause, because witnesses W8
+and W12 passed tests they were meant to fail, and rule item 4 failed in both bench-host pairs. After
+seeing that, on 2026-09-16, the owner directed that both failures be fixed before any per-block
+commit, that only the evidence the fix expires be collected again, and that the failing first runs
+be kept beside the new ones. The rule of section 5.1 names no change for a failure of item 1 or of
+item 4, so the remedy is not a change that rule triggers: it is made under the owner's direction.
+
+**What the owner decided, and what the owner did not.** The owner directed that the two failures be
+fixed. The owner did not choose how. **The departure from the default "`Poll` re-admits", the change
+to the capability boundary, and item 5 are not decided by the owner.** The remedy's design asked for
+the owner's word on each of those three before its product commits were written, and the questions
+were not put to the owner: the product commits were written on the direction of an orchestrating
+agent, which is not the owner's decision. For that reason item 5 of section 5.11 is reported without
+a verdict.
+
+*Added 2026-09-17, by the commit that retains the re-collection.* After the remedy was implemented the
+questions were put to the owner. **The departure from the default "`Poll` re-admits" (part A) and the
+change to the capability boundary (part B) were accepted by the owner on 2026-09-17, after they were
+implemented.** The owner did not choose either beforehand, and the paragraph above, true when `d5014f8`
+committed it, stands as it was written. Item 5 was not put to the owner and stays as `d5014f8`
+committed it: reported without a verdict.
+
+**The commits of the remedy**, on branch `claude/fuel-credit-block-steps`, after `fc00248`:
+
+| Commit | Subject | What it carries |
+|---|---|---|
+| `4279862` | Witness a context change on one thread, a suppressed lookup after another, nested and context-changing capabilities, and a poll after a refused poll | Tests T19 to T23 in the fuel-exactness class; corrected remarks for T7, T12 and T18; and, in the review-regression class, a variant of the per-thread leak test whose capability returns under a different context object. The product is `fc00248`'s |
+| `9e9377d` | Count a held block's work at a poll instead of settling and renewing it there | Part A, below; the remarks of T2b, T4, T8, T9 and T14; regenerated assurance and review records |
+| `965e6ad` | Return a capability's caller to the context it entered from when the capability left it unchanged | Part B, below; regenerated assurance and review records |
+| `542c715` | Witness a host call made with the flow suppressed, a lookup through another runtime's scope, a poll beside a second charging thread, and a capability return that puts its caller's context back | Tests T24 to T26, a second row of T23, a value of its own for each invocation of T21, and a test in the review-regression class that a capability which changes nothing returns its caller to the very context object it was called under. The product is `965e6ad`'s |
+| `16e3d6d` | Say that any settle ends a held block, and that a capability's return puts no context back when its entry recorded none | Remarks of `VmMeter.BlockCap`, `VmMeter.Poll` and `VmRuntime.LeaveCapability`, and one falsifier clause moved from `VmRuntime.EnterCapability` to `VmRuntime.LeaveCapability`. No code |
+
+**Part A, the poll.** `VmMeter.Poll` no longer settles the polling meter's block and no longer takes a
+fresh one. It reads the block once, under the meter's gate, and decides the uncharged-work bound on
+the counter plus what the block has admitted since this meter last polled; where the count is reset
+it records what the block had admitted, in a new gate-only field of `VmMeter`. A refused poll writes
+nothing. `VmMeter.CommitPreAdmittedFuelLocked`, which every settle and every eviction of a block goes
+through, folds into the counter only what the block admitted since that record, and clears the record
+with the block. No fuel commit site is added or moved, and the settles
+of every reader of consumption or of what is left are unchanged. A block ends when it is settled or
+when a charge of its own does not fit what is left, and the next locked fuel charge begins a new
+one. The remarks of `VmMeter.BlockCap`, `VmMeter.UnpolledWorkExceedsBound`,
+`VmFuelPreAdmissions.MaxBlock` and the comment in `VmRuntime.GetBudgetSnapshot` say so. **This
+departs from the design default "`Poll` re-admits"**, which the owner's answers to that design left
+standing and which this bundle's first collection measured.
+
+**Part B, the capability boundary.** `VmRuntime.EnterCapability` captures the thread's execution
+context before it raises the capability depth, and the context the depth write installed, and
+returns both as a `VmRuntime.CapabilityEntry`. `VmRuntime.LeaveCapability` puts the entry context back
+and returns when the thread still runs under the context the depth write installed and the entry
+recorded one; in every other case it writes the depth back as before. `VmRuntime.EnterProviderCall`
+and `VmRuntime.LeaveProviderCall` carry the entry for a provider call, `VmCapabilityInvoker.TryEnter`,
+`Leave`, `Invoke` and `InvokeBytes` carry it for a capability call, and `VmArtifactLoadMediator.Answer`
+carries it from enter to leave. `VmExecutionScope` is unchanged.
+
+**What the remedy did to this bundle.** Its product commits changed files `hashes.txt` names and the
+metering path, so they hit the first two recertification triggers of section 8: **from `9e9377d`
+on, this bundle is expired**, and it stays expired until the commit that retains the re-collection
+regenerates `hashes.txt` against the remedy's head. The first collection's files, its verdicts and
+sections 5.1 to 5.3 stay exactly as they are; the re-collection is retained beside them, under
+`r2/`.
+
+*Added 2026-09-17, after a review of the re-collection:* one file of the first collection did not stay
+exactly as it was. `measurement/make-hashes.py` was changed in place by the re-collection's commit, to read
+tracked files at the remedy head, and again by a correction section 5.15 lists, each time regenerating
+`hashes.txt` with it (section 8). Every other first-collection file, its verdicts and sections 5.1 to 5.3
+stay as they were.
+
+### 5.11 How the re-collection is read, committed before any run of it
+
+The rule of section 5.1 is not changed. The re-collection is read against it item by item, as
+follows, and this reading is committed before any run of the re-collection. "The remedy head" is
+`16e3d6d`, the last product and test commit of the remedy; "the base" is `f127d92`, as in section 1.
+
+**What was known when this reading was fixed.** The readings of items 4 and 5 below were written after
+the first collection's result was seen, under the owner's direction; they are predeclared relative to
+the re-collection only. And every witness of the table below was driven on the remedy's commits
+before this section was written - once at `965e6ad` and once at `16e3d6d`, as development checks whose
+transcripts this bundle does not retain - so their results on the remedy head were known when the
+witness clause was fixed. The re-collection runs them again after this commit.
+
+1. **Item 1, every clause, on the remedy head.**
+   - *Build:* a cold `dotnet build Broiler.VM.slnx -c Release --no-incremental -warnaserror` of the
+     remedy head in a fresh worktree outside the repository.
+   - *Every test project passes:* `dotnet test Broiler.VM.slnx -c Release` at the remedy head.
+   - *Records regenerated and the public API file unchanged:* a test run of the architecture and
+     contract test projects with the assurance and API write switches set, then a plain run of both;
+     and `git diff --exit-code` of `docs/api/public-api.txt` from the base to every commit of the
+     series, the remedy's included.
+   - *The fuel-exactness tests pass on both builds:* the class at the remedy head, and the same test
+     file with the three fixture files `4490eda` changed, taken from the remedy head and copied onto the
+     base, on the base meter. The test file is not unchanged since the first collection - the remedy's
+     test commits changed it, and its diff from `fc00248` is retained - so this clause reads the file
+     as it stands at the remedy head on both meters.
+   - *Every injected-defect witness fails the test it names and passes again when reverted:* every
+     witness in the table below, each applied alone in a worktree outside the repository at the remedy
+     head, with the fuel-exactness class, both per-thread leak tests and the restore-path test run
+     under the defect; then the tree restored and the same tests run clean; then the named test run
+     alone, and its passing transcript retained. The same tests run clean once before the first
+     witness. A sampled witness (W4, W24) is read as the first collection read W4: its test alone is
+     run again, up to ten runs in all, until it fails, and every run is retained. **A witness that
+     passes its named test or row is a failure of this clause**, recorded as such and not rewritten.
+   - *Both profile assemblies byte-identical:* **satisfied by an empty source diff instead of a
+     rebuild.** `git diff --stat c98011a 16e3d6d` over every project in the reference closure of the
+     JavaScript and WebAssembly profile projects, and over `Directory.Build.props`,
+     `Directory.Packages.props`, `global.json` and the property files under `eng`, is retained, and
+     so is the diff from `c98011a` to `34dbd7a` that section 5.8 item 5 describes. `c98011a` is the
+     tree the assemblies of E4 were built from. If either diff is not empty, E4 is rebuilt. This
+     substitution is part of this reading and is committed with it.
+   - *The JavaScript checks, the corpus replay and host lifetime:* the credit transcripts of the
+     re-collection, plain and verbose, against the base transcripts the first collection retained, with
+     the same masked comparison.
+   - *Conformance parity:* section 5.2 applied to two credit whole-suite runs of the re-collection,
+     one per form, against the two base reports and the two lists of section 5.3 retained from the
+     first collection, with the hand rule and the four comparisons.
+   - *Low fuel:* the credit runs of the re-collection at fuel 1,000, 2,500, 10,000, 30,000 and 100,000
+     in both forms, driven by this branch's test262 driver, against the base reports the first
+     collection retained, pair by pair - including the two base bytecode reports section 5.8 item 7
+     says another branch's driver took. A pair not re-run is named as not re-collected, and the clause
+     is not met for it.
+   - *Fuel minima:* the minima the command-line host gives for the first collection's four programs on
+     the remedy head in both forms, against the base minima the first collection retained.
+2. **Item 2**, as section 5.1 states it, from a new run of all three lanes: the base with the
+   measurement patch of E9, the remedy head with the same patch, and a byte copy of the second as the
+   A/A lane.
+3. **Item 3**, as section 5.1 states it, from new runs, with these meanings:
+   - "the credit build" is the remedy head;
+   - "the build carrying only the pre-admission table" is **C2′**: the remedy head with
+     `src/Broiler.VM.Runtime/VmExecutionScope.cs` replaced by its blob at `e117162`, identified by that
+     blob's id and by the digest of the runtime assembly built from it. C2′ is not a commit;
+   - `concurrent-bench` and `concurrent-ambient` are read against a new base run, and T6's median over
+     five runs alternating builds against a new base run.
+4. **Item 4**, the per-instruction meter row, in two pairs of bench-host runs, the first base first and
+   the second credit first. Two readings, and **both must hold in both pairs**:
+   - *lane total:* the credit `candidate-ns` of `meter-per-instruction` is at or below the base
+     `candidate-ns` plus the base `aa-ns` of the same pair;
+   - *per instruction:* the credit `per-instruction-ns` is at or below the base `per-instruction-ns`
+     plus the base `aa-ns` of the same pair divided by 256, the instructions one invocation of the row
+     charges.
+5. **Item 5, the host-call row**, which the owner's direction names as one of the two failures seen
+   and which no item of section 5.1 reads. In each pair, the reading is whether the credit
+   `per-call-ns` of `host-call` is at or below the base `per-call-ns` plus the base `aa-ns` of that
+   pair. **It is reported without a verdict**, because the owner has not decided that it is an item
+   (section 5.10).
+
+**How a run is tied to its build.** Every transcript of the re-collection begins with lines its driver
+writes before the run: the branch and head of the main checkout, the tree the run used and that tree's
+head, which build it is, the start time, and the SHA-256 of `Broiler.VM.Runtime.dll` and of the host
+executable the run loads. The collector writes its own logs and no such lines, so a wrapper writes the
+same fields to a file of their own immediately before and after it runs.
+
+**What a failure does.** A cell that fails is named as failing, and nothing in this repository may
+describe the change as faster for it. No further change is made without the owner. Every run of the
+first collection stays where it is, beside the new one, and its verdict in section 7.3 stands as the
+first collection's.
+
+### 5.12 The builds and runs of the re-collection
+
+Sections 5.12 to 5.14 were written after every run of the re-collection. Every build is Release. The
+re-collection's transcripts are under `r2/`, laid out as the first collection's are. **The transcript of
+every run of a build this bundle measures - a test, a probe, a bench-host run, a JavaScript run or a
+test262 run - begins with identity lines its driver wrote before the run**, apart from the collector's
+logs (`r2/measurement/identity.py`):
+the branch and head of the main checkout, the tree the run used and that tree's head and working-copy
+changes, which build it is, the start time with its offset, and for each binary the run loads its path,
+SHA-256 and product version, whose suffix is the commit the build was stamped with. Most comparison
+transcripts carry the same lines, with the digest of the script they ran. **Not every transcript does:**
+some comparisons that carry a verdict, the merge and digest transcripts of E7 and E8, a build and a diff
+of E2, E3's driver log and E1a's status file carry no identity lines; the rule, diff, build and
+architecture transcripts carry them without a digest of what they ran; and one run's digests may not be
+of the binaries it loaded. Section 5.14, item 5, lists every one.
+
+| Build | Tree | Where it was built | Runs |
+|---|---|---|---|
+| Base | `f127d92`, with `measurement/patch_measure2.diff` applied to the command-line host | A worktree at `D:/Broiler.VM-base`, outside the repository, created for the re-collection and removed after it; `r2/gates/build-base.log` | E10's base lane, a byte copy of its command-line host's output directory; E12's base `bench`, `concurrent-bench` and `concurrent-ambient`; E13's base runs; the base runs of the T6 timing |
+| Credit | The main checkout at `d5014f8`, whose tree differs from the remedy head `16e3d6d` in this README alone; its binaries carry `d5014f8` as their stamp | `D:/Broiler.VM`; `r2/gates/build-credit.log` | E1a, E1b, E2's credit half, E5, E6, E7, E8, E12's credit runs, E13's credit runs, the credit runs of the T6 timing |
+| Credit-measure | `16e3d6d` with the same measurement patch | A worktree at `D:/broiler-arms/credit-measure`, removed afterwards; `r2/gates/build-credit-measure-cli.log` | E9; E10's credit lane, and the A/A lane, each a byte copy of its command-line host's output directory |
+| C2′ | `16e3d6d` with `src/Broiler.VM.Runtime/VmExecutionScope.cs` replaced by its blob at `e117162`, blob id `9264caa85d0179bde482880635b945829dd79a7c`, which no retained file shows the worktree held (EX-123) | A worktree at `D:/broiler-arms/c2r`, removed afterwards; `r2/gates/build-c2r-runtime.log`. The runtime assembly's digest is in the identity lines of each file it ran, and is the only identity of C2′ retained | E12's C2′ column of `concurrent-ambient` |
+| Cold | `16e3d6d`, checked out fresh | A worktree at `D:/broiler-arms/cold-remedy`, removed afterwards | E1's cold build |
+| Oracle | `f127d92` with the remedy head's fuel-exactness test file and the three fixture files `4490eda` changed | A worktree at `D:/broiler-arms/oracle2`, removed afterwards | E2's base half |
+| Witnesses | `16e3d6d` with one injected defect at a time | A worktree at `D:/broiler-arms/wit2`, removed afterwards | E3, and control 16 by hand |
+| Probe | The first collection's `measurement/probe/Program.cs` and its project file, unchanged | Outside the repository, in the collection's scratch directory; the digests of `Probe.exe` and `Probe.dll` are in every probe file's identity lines | E12 |
+
+No worktree was created inside the repository. **The base build's runtime assembly is byte-identical
+to the first collection's**: the digest every base run's identity lines give for
+`Broiler.VM.Runtime.dll` equals the one `e9/binaries.txt` and `e10/lanes.txt` give for the first
+collection's base binaries, stamp and all, because the build is deterministic and the worktree sat at
+the same path. The lanes of E10 were copied to `D:/broiler-arms/e10-lanes`, outside every repository,
+so the identity lines `measure-shapes.py` writes for a lane name no tree head; `r2/e10/lanes.txt` gives
+each lane's source tree, its head and working-copy changes, and the digest and stamp of every file the
+lane holds, and says whether each equals its source byte for byte.
+
+### 5.13 What the remedy expired, and what was reused
+
+"Reused" means that a file of the first collection is cited where it stands and was not run again. A
+reuse rests on the build it describes being unchanged - the base, `f127d92`, and for E4 the inputs of
+the two profile builds - and, for the base side of a comparison, on the same machine, which section 4
+records. The first collection's files but `measurement/make-hashes.py` (section 8), its verdicts and
+sections 5.1 to 5.9 are unchanged.
+
+| Item | After the remedy | Why |
+|---|---|---|
+| E1, build | **Re-run:** a cold `--no-incremental -warnaserror` build of the remedy head in a fresh worktree; the credit and base builds the runs used, and the measurement builds, each with a transcript. The first collection's cold base build is reused | The product source changed; the base did not |
+| E1a | **Re-run** in the main checkout: the architecture and contract test projects with the assurance and API write switches set, then `git status` | Annotated members changed |
+| E1b | **Re-run**: `dotnet test Broiler.VM.slnx -c Release` at the remedy head, and again over the finished bundle (section 6.10) | Product and tests changed |
+| E1c | **Re-run** from `f127d92` to every commit of the series, the remedy's and `d5014f8` included | New commits |
+| E2 | **Both halves re-run**: the base half with the remedy head's test file and the three fixture files transplanted onto `f127d92`, the credit half at the remedy head | The test file changed |
+| E3 | **Re-run**: W1 to W25 with W4b, W9b, W21b and W21c, each with a control run after its revert and a run of its named tests alone; and control 16 by hand | Part A moves witness figures, W13 to W25 are new, and W8 and W12 name new tests |
+| E3a, the per-thread leak tests | **Re-run** inside E3: both leak tests and the restore-path test are in every E3 run's filter | Part B changes how the capability depth is released |
+| E4 | **Valid, not rebuilt.** The source diff over every input of the two profile builds, from `c98011a` (the tree E4's credit assemblies were built from) to the remedy head, is empty and retained, with the diff from `c98011a` to `34dbd7a` and from `f127d92` to the remedy head (EX-119) | Neither profile assembly references `Broiler.VM.Runtime`, the only assembly the remedy changed |
+| E5, E6 | **Credit re-run** at the remedy head, plain and verbose twice; base transcripts reused; the same masked comparison | The checks and the corpus cross polls and capabilities. EX-116 is superseded for the remedy head |
+| E7 | **Credit re-run** in both forms under the wide manifest at 60,000 ms; base reports and the lists of section 5.3 reused | The metering path changed |
+| E8 | **Credit re-run**, all ten, driven by this branch's driver; base reports reused | As E7. EX-115 still binds the base side of fuel 30,000 and 100,000 in the bytecode form |
+| E9 | **Credit re-run** in both forms with the measurement patch; base minima reused | As E7 |
+| E10 | **Re-run, all three lanes** | Timing of a changed build: rule item 2 |
+| E11 | **Not re-run** (EX-118) | No rule item reads it; E7 and E8 carry the JavaScript correctness |
+| E12 `trace`, `stress` | **Credit re-run**; base files reused (EX-120) | `trace` polls at random, bursts past its bound, and exercises the changed poll directly |
+| E12 `bench` | **Re-run on base and credit** | No rule item reads it |
+| E12 `concurrent-bench` | **Re-run on base and credit** | Rule item 3 |
+| E12 `concurrent-ambient` | **Re-run on base, C2′ and credit** | Rule item 3, with C2′ as section 5.11 defines it |
+| E13 | **Re-run: two pairs**, base first then credit first | Rule items 4 and 5 |
+| T6 timing | **Re-run**: five runs per build, alternating | Rule item 3 |
+| E12 `poll-bench` | **Not run** (section 5.14) | A diagnostic the remedy's design proposed; no rule item reads it |
+| Collector | **Re-run** at the remedy head into `r2/`, with a wrapper writing the identity fields before and after it | The runtime assembly changed; the publish, trim and Native AOT steps now carry the capability boundary's context restore |
+| E1b over the bundle | **Re-run** over the finished bundle, and the architecture tests after this README | New files and text |
+
+**What stays exactly as retained:** sections 5.1 to 5.3; every file of the first collection but
+`measurement/make-hashes.py`, which the re-collection's commit changed in place (section 8), including
+the failing first runs of items 1, 3 and 4; and section 7.3, the first collection's verdict.
+
+### 5.14 How the re-collection ran, and where it departed from the design
+
+Times are the workstation's, with the offset the transcripts carry, and each is read from the identity
+line or finish line of the transcript named, or from the reflog for a commit.
+
+| Time | What |
+|---|---|
+| 2026-09-16 21:44 to 22:28 | The remedy's commits, `4279862` to `16e3d6d` |
+| 22:44:57 | The architecture tests over `d5014f8`'s README before it was committed (`r2/gates/r3a-architecture.log`) |
+| 22:45:14 | `d5014f8` committed: sections 5.10 and 5.11 |
+| 22:46:19 to 22:47:01 | E1's cold build of the remedy head, then the credit, base, credit-measure and C2′ builds |
+| 22:47:33 to 22:48:53 | E2's base half and both credit transcripts; E1a; E1b; E1c |
+| 22:50:04 to 22:57:53 | E3, with the E4 source diffs written at 22:50:23 |
+| 22:54:29 | A trial of the machine-state script, during E3 (`r2/machine-state-test.txt`); not a timing snapshot |
+| 22:58:07 to 22:58:44 | Control 16 by hand |
+| 22:58:47 to 23:01:49 | E5, E6, then E9 |
+| 23:02:07 to 23:59:40 | E7's bytecode run |
+| 23:59:41 | E7's native run began, and was killed by a machine restart (item 1) |
+| 2026-09-17 00:31:52 | The machine's last boot, by the operating system |
+| 06:46:30 to 07:26:12 | E7's native run, afresh |
+| 07:26:35 to 07:26:39 | E7's four comparisons and the rule of section 5.2 per form |
+| 07:26:48 to 08:10:19 | E8's ten runs, then its comparisons |
+| from 07:31:01 | This README being written, during E8 and the timing runs and after them: the identity lines of every run in the main checkout that began from then name it as a working-copy change (item 5), except the collector's, which ran with it restored to `d5014f8`'s text (item 2) |
+| 08:13:44 | Machine state recorded (`r2/machine-state-before.txt`); no build ran from here to 08:25:15 |
+| 08:13:47 to 08:25:12 | E10, E12, E13 pair 1 then pair 2, the T6 timing (`r2/timing-driver.log`) |
+| 08:25:13 | Machine state recorded again (`r2/machine-state-after.txt`) |
+| 08:26:17 to 08:29:30 | The collector |
+| 08:33:51 | E1b over the finished bundle, with this README written up to section 6.10 (`r2/gates/test-after-bundle.log`) |
+| 08:34:16 and 08:35:43 | The architecture tests over this README, first a draft and then as committed (`r2/gates/architecture-after-readme-draft.log`, `r2/gates/architecture-after-readme.log`) |
+| after 08:35:43 | `hashes.txt` regenerated, after all three (section 6.10) |
+
+**The drivers.** Every run was started by a driver under `r2/measurement/`: `run-logged.sh` for a single
+command, with `identity.py` for the identity lines; `run-witnesses.sh` and `witnesses.py` for E3, and
+`witness-table.py` for its table; `control16.sh`; `profile-closure.py` for E4's diffs; `run-e5-e6.sh`
+with `masked-compare.py`; `run-e9.sh` with `p_bisect.py`; `run-e7.sh`, `run-e8.sh` and `base-reports.py`,
+which checks every retained base report against its digest in `hashes.txt` before a comparison reads it;
+`run-timing.sh` for the timing runs, with `machine-state.py`, `make-lanes.py`, `measure-shapes.py`,
+`run-probe.py`, `run-bench.sh` and `measure-t6.py`, and `trace-compare.py`, `probe-readings.py` and
+`bench-readings.py` for the readings; `run-collector.sh` for the collector; and `retain.py`, which copied
+the transcripts here from the throwaway directory with CRLF normalised to LF, a compressed report byte for
+byte. The first collection's `measurement/e7-rule.py`, `shapes/`, `probe/` and `patch_measure2.diff` were
+used unchanged. `measurement/make-hashes.py` was changed in place, as section 8 says, and regenerated
+`hashes.txt` last, with the digests of the uncompressed reports behind every retained `.report.gz` - the
+first collection's each checked against its recorded digest first - passed to it as a JSON file.
+
+**Where the re-collection departed from the remedy's design, or from section 5.11, and why:**
+
+1. **E7's first native run was interrupted by a machine restart, and is not a result.** It began at
+   23:59:41 and the machine restarted before it finished: its directory holds 56 shard transcripts and no
+   merged report, and its driver transcript ends at the command line. The directory was moved aside
+   intact, outside this bundle, and the run was taken again from the start on the same binaries - the
+   digests the fresh run's identity lines give equal the interrupted run's. `r2/e7/off-series/` retains
+   the interrupted run's driver transcript and a note of the move. Nothing read from it enters any verdict.
+2. **The collector ran with this README restored to `d5014f8`'s text for its duration**, so that the
+   tree it collected was the commit's. It rewrote `docs/evidence/vm-6/d1-outcome.txt` during its test step, as it did in the first collection,
+   and that change was reverted; the `hashes.txt` it wrote into `r2/` was deleted. Its own build and
+   feed-consumer steps rebuilt the main checkout's binaries, after every measurement had run:
+   `r2/collector-identity.txt` gives the digests before and after.
+3. **E12's `poll-bench` mode was not run, and no pre-remedy build was made.** The remedy's design proposed
+   the mode as a diagnostic, with a third build at `fc00248`; no rule item reads it, and the probe was run
+   exactly as the first collection built it. **`concurrent-bench` was not alternated by thread count**:
+   the probe measures every thread count in one process, so the base process ran, then the credit process,
+   as in the first collection.
+4. **E2's first credit transcript names the wrong binaries.** Its driver resolved the relative binary
+   paths against the directory it was started from, which was the oracle worktree, so its identity lines
+   carry the oracle's digests while its test run loaded the main checkout's, as its own "Test run for"
+   line shows. It is retained as `oracle-on-credit-identity-read-from-oracle2.log`; the driver was
+   corrected and the run repeated as `oracle-on-credit.log`, whose identity lines are right.
+5. **Transcripts whose identity lines depart from section 5.12's form, or which carry none.** This list
+   was completed after a review of the re-collection (section 5.15).
+   - *One header line and no digests:* `r2/gates/r3a-architecture.log` and
+     `r2/gates/e1c-public-api-diff.log` carry one header line with the branch, head and time - neither
+     loads a binary this bundle measures.
+   - *No identity lines at all:* the comparisons that carry verdicts - `r2/e5/masked-compare.log`,
+     `r2/e6/masked-compare.log` and `r2/e9/e9-compare-with-base.log`; E7's merge transcripts
+     `r2/e7/t262-credit-bytecode-merge.log` and `r2/e7/t262-credit-native-merge.log`;
+     `base-reports-check.log` and `credit-report-digests.txt`, in both `r2/e7` and `r2/e8`;
+     `r2/e2/build-oracle.log`; `r2/e2/test-file-diff-stat.txt`, which does not say which commits it
+     compares; `r2/e3/driver.log`; and `r2/gates/e1a-status-after-write.txt`, which carries its time and
+     no branch or head. Each of those comparisons names the files it read, and the run transcripts it
+     read carry identity lines, but none of them gives a digest of the script that wrote it. The records
+     `r2/e2/oracle-transplant.txt`, `r2/e3/final-status.txt`, each witness's `.apply.txt`,
+     `r2/control16/control16.apply.txt` and `r2/e7/off-series/interrupted-run.txt` carry header lines of
+     their own rather than these.
+   - *Identity lines with no digest of what ran:* `r2/e7/e7-rule-bytecode.log` and
+     `r2/e7/e7-rule-native.log` carry none of `measurement/e7-rule.py`, and the three diffs in `r2/e4/`
+     none of `r2/measurement/profile-closure.py`; the build and restore transcripts - `r2/gates/build-base.log`,
+     `build-credit.log`, `build-credit-measure-cli.log`, `build-c2r-runtime.log` and
+     `cold-build-remedy.log` in `r2/gates`, `build-credit.log` in `r2/e5` and in `r2/e6`, and
+     `r2/control16/control16-build.log` and `control16-restore.log` - and the architecture transcripts
+     `r2/gates/architecture-after-readme.log` and `architecture-after-readme-draft.log` carry no digest of
+     a binary; and the two run consoles, `r2/e7/e7-runs-console.log` and `r2/e8/e8-runs-console.log`,
+     carry a branch and head line per run and no digest.
+   - *Digests that may not be of the binaries that ran:* control 16's were read before the test command
+     rebuilt the injected tree, so they are of the clean build; its transcripts show the recompile.
+     `r2/gates/test-after-bundle.log`'s were read before that test command's own build, after the
+     collector had rebuilt the main checkout's runtime assembly (item 2): the runtime digest it gives for
+     the runtime project's output is the collector's rebuild, with a different product version from the
+     copy beside the contract tests, and the test command then restored and built before it ran, so
+     neither digest is shown to be of an assembly the tests loaded.
+   - E3's identity lines are written after each build and before each test run, so they are of the
+     binaries that ran. The collector's logs carry none, and `r2/collector-identity.txt` stands in for
+     them, as section 5.11 says.
+   - The identity lines of the runs that began from 07:31 to 08:25 on 2026-09-17 name this README as a
+     working-copy change of the main checkout: it was being written while those runs ran, and no binary
+     depends on it.
+6. **The base worktree sat at `D:/Broiler.VM-base`**, where the design named `D:/broiler-arms/base`, so that
+   the base build would be byte-identical to the first collection's, which section 5.12 shows it is.
+7. **The machine was not idle during the timing runs, and the snapshots bound how busy it was from
+   below.** Each snapshot lists only the processes with at least 60 CPU-seconds. Between the two, 689
+   seconds apart, the seven processes both list by process id accumulated 164.5 CPU-seconds, so the
+   machine's other work in that time was **at least 164.5 CPU-seconds, a lower bound**, which is about a
+   quarter of one of the sixteen logical processors. Two more processes crossed 60 CPU-seconds in between
+   and appear in the second snapshot only, so what they used is not known, and no process below 60
+   CPU-seconds is visible in either snapshot. Both snapshots report the processor load at or below ten
+   percent. **During E7's native run, and not during any timing run**, MSBuild worker processes that this
+   collection did not start were seen running, and a check made after E8 and before the collector found
+   no build output changed on 2026-09-17 in any tree this collection used. **Neither the process listing
+   nor that check is retained**, so how many workers there were, when they started and what the check
+   read rest on this README alone. What is retained is `r2/timing-driver.log`, which records before each
+   timing step that no `dotnet`, MSBuild, compiler-server or test-host process was running.
+8. **E11 was not re-run** (EX-118), and **the base sides of E5 to E9 and the base `trace` and `stress`
+   files were reused** (EX-120), as section 5.13 says.
+9. **The witness table was not committed before the runs, and two of its witnesses name other tests than
+   section 6.2 does.** Section 5.11, as `d5014f8` committed it, reads "every witness in the table below"
+   twice, and `d5014f8` holds no table for the re-collection: the only witness table below that section
+   was section 6.2's, the first collection's. Which tests each witness must fail was first committed by
+   the re-collection's commit, in `r2/measurement/witnesses.py`, whose own description says it is the
+   table the development drives at `965e6ad` and `16e3d6d` used - so it was fixed during development,
+   with those drives' results known (EX-121). It departs from section 6.2 in two witnesses: **W8 names T12
+   and T19, where section 6.2 names T12 and T7, and W12 names T20, where section 6.2 names T18.** T7 and
+   T18 were in every E3 run's filter, and **both still pass under their witnesses on the remedy head**
+   (`r2/e3/W8.log`, `r2/e3/W12.log`): T19 and T20 carry the same claims on one thread, and the two-thread
+   cases T7 and T18 were written for have no failing witness (section 7.2). Read against section 6.2's
+   entries, the witness clause would fail on W8 and W12 on the remedy head as it did in section 7.3; the
+   verdict of section 7.4 is read against the table the re-collection used.
+
+### 5.15 What later commits changed in the re-collection's text, after a review
+
+A review of the re-collection found places where this README said more than its files show. Every change
+below was made by a commit after the re-collection's. None of them re-ran a measurement or replaced a
+retained transcript, and git holds the text each one replaced.
+
+1. **The witness table is named as fixed during development.** Section 5.14 gains item 9; section 6.9.1,
+   its W8 and W12 rows, section 7.4's item 1 and the paragraph above section 1 say that W8 no longer
+   names T7 and W12 no longer names T18, and that both tests still pass under them on the remedy head;
+   section 7.2 says that the fourth item of its list still stands across threads; and EX-114's closing
+   note and EX-121 say the same. No verdict mark changes.
+2. **Statements about identity lines, the machine's load, C2′, the timetable and section 6 were narrowed
+   to what the files show.** Section 5.12, section 1 and EX-117's closing
+   note no longer say that every transcript under `r2/` carries identity lines, and section 5.14, item 5,
+   now lists every transcript that carries none, carries them without a digest of what it ran, or gives
+   digests that may not be of the binaries that ran. Section 4 and section 5.14, item 7, say that the
+   machine-state snapshots list only processes with at least 60 CPU-seconds, so that the load they give is
+   a lower bound, and item 7 no longer gives a count or a time for the MSBuild workers seen during E7's
+   native run, since neither that listing nor the check of the build outputs is retained. EX-123 and
+   section 5.12 say that only C2′'s runtime digest is retained, not its blob id. Section 5.14's timetable
+   gives the end of the re-collection in the order its transcripts show. Section 6 says that sections 6.1
+   to 6.8 are the first collection's outputs.
+3. **The bench host's sources are hashed, and the one first-collection file the re-collection changed is
+   named.** `measurement/make-hashes.py` - a file this directory retains - now also names the three source
+   files of `src/tests/Broiler.VM.Bench.Host` in the second set, and `hashes.txt` was regenerated with it:
+   the only rows that changed are the three new ones, the second section's heading and the script's own
+   digest. Section 8 gains a trigger for the bench host, a dated correction of its paragraph that said the
+   script reads tracked files at `34dbd7a`, and a dated note that the re-collection's commit re-anchored the
+   first trigger; the trigger's exception now points here for corrections after the re-collection. The
+   paragraph above section 1, section 5.10 by a dated note, and section 5.13 no longer say that every
+   first-collection file stayed exactly as retained.
+4. **The owner's rulings of 2026-09-17 on items 1 and 2 are recorded.** This is not a finding of the
+   review: after it, the owner accepted both verdicts of section 7.4 as recorded, item 1 `[MET]` with its
+   stated qualification and item 2 `[UNMET]` for the `c_call` shape in the native form, with no remedy.
+   Section 7.4 gains the rulings as a dated paragraph, and the paragraph above section 1, section 6.9.2
+   and the field coverage table gain a dated note or a pointer to it. No verdict mark changes. `hashes.txt`
+   was regenerated with `measurement/make-hashes.py` and no row of it changed, because this README is the
+   only file of this directory the correction touches and `hashes.txt` does not hash it.
+5. **The commit that expired this bundle is named.** This is not a finding of the review either: on
+   2026-09-17, before the JavaScript profile's per-block baseline work was committed, the owner accepted
+   that its commits expire this bundle through files `hashes.txt` names, and asked for the expiry to be
+   noted here, naming the commit that expired it and stating that the metering path is unchanged. Section 8
+   gains that note as a dated paragraph naming `ddf706f`, and the paragraph above section 1 and the field
+   coverage table gain a dated note or a pointer to it. No verdict mark changes. **`hashes.txt` could not be
+   regenerated, and no row of it changed**: `measurement/make-hashes.py`, run from the repository root with
+   this correction in place, refused because `CODE-ASSURANCE.md` differs between `16e3d6d` and the working
+   copy, and wrote nothing (section 8). This README is the only file of this directory the correction
+   touches, and `hashes.txt` does not hash it.
+6. **The owner's ratification of leaving `hashes.txt` unregenerated is recorded.** *Added 2026-09-17.* This
+   is not a finding of the review of the re-collection: a later review, of item 5's commit `969118f` among
+   others, found that the owner had asked for that correction to regenerate `hashes.txt`, and that
+   `969118f` left it unregenerated without putting that to the owner first. The owner ratified leaving
+   `hashes.txt` unregenerated, on 2026-09-17, after the fact, and asked for three things to be recorded in a
+   later correction listed here. Section 8 gains a dated paragraph recording them: that ratification; that a
+   run of `measurement/make-hashes.py` with only its refusal lifted, reading tracked files at `16e3d6d` and
+   writing outside the repository, reproduces `hashes.txt` byte for byte; and that the id JSC-225 was
+   allocated at commit time, where the owner had asked for a JSC entry. The field coverage table's Validity
+   row points to it. No verdict mark changes. **`hashes.txt` is not regenerated and no row of it changes,
+   and `measurement/make-hashes.py` is not changed**: this README is the only file of this directory the
+   correction touches, and `hashes.txt` does not hash it.
+
+---
+
+## 6. Outputs
+
+*Added 2026-09-17, after a review of the re-collection:* **sections 6.1 to 6.8 are the first collection's
+outputs**, of the tree of `34dbd7a` and, where section 5.4 says so, of the product at `c98011a`, and every
+verdict in them is of that tree and not of the remedy head - 6.6's reading that item 4 fails in both pairs
+among them. Sections 6.9 and 6.10 are the re-collection's, of the remedy head.
+
+**What may be quoted here.** Core and fixture figures - the probe's (E12), the bench host's (E13) and
+the T6 timing - are quoted, each equal to its value in the retained file named beside it, because
+rule H5 holds a quoted figure to a log. The JavaScript shape measurements (E10), the Octane reports
+(E11), the fuel minima of the JavaScript programs (E9) and every test262 report (E7, E8) are retained
+and **not quoted**: the core's release gate 8 admits no language performance claimed or implied, and
+its gate 11 lets a record say that a form exists and not what it is worth, which is how bundle
+JSB-11-001 section 6 reads them too. For those items this section gives the verdict and the file, and
+no number.
+
+### 6.1 Correctness, E1 to E9
+
+| ID | Result | Where |
+|---|---|---|
+| E1 | **Clean with warnings as errors in both trees, shown by cold builds.** The collector's `--no-incremental -warnaserror` build of `34dbd7a`, and - run after a review, each in a fresh worktree outside the repository with the collector's command - the same cold build of `f127d92` and of `c98011a`, whose product the runs before the fallback used: every project of the solution built, with 0 warnings and 0 errors, in each of the three. The other build transcripts in `gates/` also read 0 warnings and 0 errors, but none records its command and several finished in about two seconds: they are incremental builds that may have compiled nothing, and a project that is not compiled emits no warning, so they are not the evidence for this item | `build.log`, `gates/cold-build-base.log`, `gates/cold-build-c98011a.log`; the incremental builds in `gates/*build*.log` |
+| E1a | The regeneration run rewrote the generated records; within that same run two review-record rules (H3 and H4) failed, because they compared the record as it stood before the rewrite. The plain run that followed passed both test assemblies. `HUMAN_REVIEW.md` still reads PENDING | `gates/fallback-test-write.log`, `gates/fallback-test-plain.log` |
+| E1b | After the fallback, both test assemblies passed. **The collector's test step failed two architecture tests** - both rule A14 rows, on the copy of the probe's project file under `artifacts/` (section 5.8, item 11) - and passed every other test. The run over the finished bundle is in `gates/test-after-bundle.log` and section 6.8 reads it | `gates/fallback-test-plain.log`, `test.log`, `gates/test-after-bundle.log` |
+| E1c | `docs/api/public-api.txt` is byte-identical between `f127d92` and each of the seven commits of the series; `git diff --exit-code` exits 0 for every one | `gates/public-api-diff.log` |
+| E2 | Both halves pass. On the base meter, with the head's test file and the three fixture files it depends on transplanted onto `f127d92`, every fuel-exactness test passes; on the credit build after the fallback, every one passes - in a transcript that carries neither a commit nor a time, and is tied to that build only by being one of the fallback's gate runs (EX-117). The test file is not unchanged since the commit that pinned it (section 5.8, item 3), and `e2/test-file-diff-stat.txt` names the commits that changed it after the base | `e2/` |
+| E3 | Section 6.2 | `e3/` |
+| E4 | All seven pairs equal: `Broiler.VM.Abstractions`, `Broiler.VM.Binary` and `Broiler.VM.Profile.JavaScript.Format` and `Broiler.VM.Profile.JavaScript` in the JavaScript output, and `Broiler.VM.Abstractions`, `Broiler.VM.Binary` and `Broiler.VM.Profile.WebAssembly` in the WebAssembly output | `e4/e4-hashes.txt` |
+| E5 | Every row passes in both builds, with the same two System V rows not run on this Windows x64 machine in both. The verbose transcripts of the two builds differ on 27 lines, and so do two verbose runs of the base build against each other; with elapsed times and addresses masked, both pairs are identical line for line, including every fuel row | `e5/`, and `e5/masked-compare.log` from `measurement/masked-compare.py` |
+| E6 | Every check passes in both builds, including the corpus replay and the host-lifetime rows for two siblings under one aggregate parent. The verbose transcripts differ only in the heap figures of the recycled-runtime plateau row; with those masked they are identical, across the builds and within each | `e6/`, and `e6/masked-compare.log` |
+| E7 | **The parity rule of section 5.2 holds in both forms.** In each form every sorted `result` row of the credit report equals the base row; no row differs, so none needed the predeclared list, and no credit row is exhausted on the wall clock outside it. The comparison script, run within each build and across the builds in each form, reports no differing variant in any of the four comparisons, so the within-build comparison names the same (empty) set of rows in both builds. All four merged reports state that they may be retained | `e7/` |
+| E8 | **Holds for every (form, fuel).** For all ten pairs the sorted `result` rows are identical and the comparison script exits 0 with no differing variant. At fuel 1,000 and 2,500 both reports of each pair carry fuel exhaustions, the same count on both sides, so the low runs exercised what they were meant to. Every series driver transcript says the run may not be retained as a whole-suite figure, because a named selection is partial coverage; that is the driver's statement about coverage and not a failure of this item. Section 5.8, item 7, and EX-115 bound what this shows | `e8/` |
+| E9 | **The minima are identical in both builds and both forms** for all four programs. One unit below each minimum the budget line reads `outcome=ResourceExhaustion reason=AllowanceExhausted dimension=Fuel scope=Runtime` with runtime fuel consumed one below the minimum, and the command-line host exits 5 naming `AllowanceExhausted on Fuel`, in every build and form | `e9/e9-bisect.log` |
+
+### 6.2 The injected-defect witnesses
+
+Each witness ran once, against `34dbd7a`, with the class's tests filtered in. A clean run before the
+first witness and after the last passes every test, and `git status` is empty after every revert.
+**No witness has a passing run of its own after its revert**: that each passes again when reverted
+rests on the restored tree being the one both clean runs passed on, not on a run per witness. W11 and
+W12 were added after the rule was committed; its witness clause reads "every injected-defect
+witness", so both are read against it like the rest.
+The T numbers are the ones the test file's own section comments use. (`e3/driver.log`'s one-line
+summaries are empty: they grep for a summary format the normal-verbosity logger does not print. The
+per-witness logs are the record.)
+
+| Witness | Injected defect | Must fail | What failed | Verdict |
+|---|---|---|---|---|
+| W1 | The settle of every holder in the runtime's budget snapshot deleted | T4 | T4, and nothing else; T5 passes | `[MET]` |
+| W2 | The settle in the uncharged-work reader and both step-end settles deleted together | T8, row 62 units | That row, and nothing else | `[MET]` |
+| W3 | The settle in `Poll` deleted, with the re-admission it guards | T8, row 10, 60, 60 | That row, and 23 more rows; the failing rows fall in fifteen tests, T8 among them | `[MET]` |
+| W4 | `LeavesRoomFor` answers true | T6 | T6, on the first run, so no further iteration was needed | `[MET]` |
+| W4b | The uncharged-work reader's settle, the invocation-path step-end settle and the settle-all branch of the locked charge deleted | T2b | T2b; and T8's 62-unit row and T6 as well | `[MET]` |
+| W5 | The settle in the remaining-allowance reader deleted | T9 | T9, and nothing else. **Not so at first**: run before `e117162` landed, with no transcript kept, this witness passed T9 as T9 then stood, and `4490eda` changed T9's profile variant so that it fails (section 5.8, item 4). This verdict is of T9 as amended, before the rule was committed | `[MET]` |
+| W6 | The aggregate-parent test in `PreAdmit` deleted | T11 | T11, and nothing else | `[MET]` |
+| W7 | The fast-path head returns false instead of calling the locked charge | T1 | Every test in the class, T1 among them | `[MET]` |
+| W8 | The ambient lookup returns the thread's resolved meter without comparing contexts | T12 and T7 | **T12 only. T7 passes with the defect in place** | `[UNMET]` |
+| W9 | The settle of every holder before a retention's admission check deleted | T14, both rows | Both rows, and nothing else | `[MET]` |
+| W9b | That settle narrowed to the charging meter | T14, the two-holder row | That row, and nothing else | `[MET]` |
+| W10 | The dimension test removed from the fast-path head | T16 | T16, and eight more rows in seven more tests | `[MET]` |
+| W11 | An eviction drops its victim's block instead of committing it (added, from `c98011a`) | T17 | T17, and nothing else | `[MET]` |
+| W12 | A lookup with the flow suppressed is resolved and held under the null context (added, from `c98011a`) | T18 | **Nothing. Every test passes with the defect in place** | `[UNMET]` |
+
+**Why W8 and W12 no longer fail what they were written against - argued here, not tested.** Both tests were written while the
+resolved meter was one field on the scope, which every thread charging through that scope shared. A
+lookup that skipped the context comparison could then return another thread's meter, and a lookup
+cached under the null context could hand one thread's meter to another thread with its flow
+suppressed; T7 and T18 each put a second thread in exactly that position. The fallback holds the
+resolved scope, context and meter per thread, so a second thread never sees the first thread's
+triple, with or without the defect. What the context comparison still guards is a change of context
+on one thread, and T12 witnesses that. What the rule against holding a null-context lookup still guards
+is confined to one thread, as the scope's own remarks describe, and no test in the class reaches it. Neither
+table row is rewritten here: both are failures of rule item 1's witness clause, and both are EX-114.
+
+### 6.3 The JavaScript shapes, E10
+
+Retained and not quoted. **In both runs, before and after the fallback, all eight cells hold rule
+item 2**: for each of the four shapes in each form, the credit median of `invoke_ms` is below the base
+median and the gap is larger than the A/A spread. The same holds for `process_ms`. Each run's log
+ends with one verdict line per cell and quantity, and the JSON carries every repetition.
+
+### 6.4 Octane, E11
+
+Retained and not quoted. Ten repetitions, bytecode form, alternating base and credit, all against the
+tree of `34dbd7a`. Nine exited zero for all five benchmarks. **The last credit repetition,
+`e11/octane-credit-r4`, did not**: raytrace and navier-stokes exited 6, the command-line host
+reporting each benchmark's file absent from the driver's scratch extraction of the pinned archive,
+while the benchmarks before them in the same repetition ran. The cause was not established. The
+report is retained as it was written, and the repetition is not replaced.
+
+### 6.5 The core probe, E12
+
+Every figure below is nanoseconds per admitted charge, the minimum of three repetitions, copied from
+the named file.
+
+**`trace`.** The traces of the base build and of both credit builds are identical line for line
+after the probe's own header lines: every seed's hash, admitted count, refusing dimension and scope,
+and consumption at every level. `e12/probe-trace-*.txt`.
+
+**`stress`.** Ten rounds pass out of ten in the base build and in both credit builds, with no failure
+reported by the per-meter, scope, exactness or observer checks. `e12/probe-stress-*.txt`.
+
+**`bench`**, one thread, one runtime:
+
+| File | Direct charge | Through the ambient meter |
+|---|---|---|
+| `e12/probe-bench-base.txt` | 14.36 | 27.04 |
+| `e12/probe-bench-c3-before-fallback.txt` | 3.12 | 5.76 |
+| `e12/probe-bench-c3.txt` | 3.37 | 8.24 |
+
+No rule item reads this row.
+
+**`concurrent-bench`**, each thread charging through its own meter on one runtime level
+(`e12/probe-concurrent-bench-base.txt`, `-c3-before-fallback.txt`, `-c3.txt`):
+
+| Threads | Runtime ceiling | Base | Credit before the fallback | Credit after the fallback |
+|---|---|---|---|---|
+| 1 | unbounded | 14.48 | 4.79 | 3.56 |
+| 1 | 2^20 | 14.47 | 3.45 | 3.41 |
+| 1 | 4x2^20 | 14.44 | 3.45 | 3.42 |
+| 2 | unbounded | 26.56 | 1.76 | 1.75 |
+| 2 | 2^20 | 24.36 | 1.76 | 1.71 |
+| 2 | 4x2^20 | 22.37 | 1.73 | 1.81 |
+| 4 | unbounded | 42.62 | 0.93 | 1.01 |
+| 4 | 2^20 | 41.41 | 0.89 | 0.89 |
+| 4 | 4x2^20 | 40.59 | 0.90 | 0.91 |
+| 5 | unbounded | 42.78 | 1.36 | 1.41 |
+| 5 | 2^20 | 43.21 | 1.53 | 1.45 |
+| 5 | 4x2^20 | 42.72 | 1.46 | 1.50 |
+| 8 | unbounded | 43.39 | 1.51 | 1.57 |
+| 8 | 2^20 | 42.61 | 1.55 | 1.66 |
+| 8 | 4x2^20 | 43.77 | 1.49 | 1.63 |
+
+Every cell reports its runtime consumption equal to what was admitted, and no fault. With two or more
+threads the charge counts are per thread against a shared level, so a figure below the one-thread
+figure is a throughput per admitted charge across all threads, not a cheaper single charge.
+
+**`concurrent-ambient`**, every thread charging through one ambient meter over one execution scope,
+each having entered the scope with its own meter. The first three figure columns are the first run
+(`-before-fallback.txt`); the last three are the run after the fallback commit:
+
+| Threads | Runtime ceiling | Base | C2 | Credit, shared field | Base, again | C2, again | Credit, thread-static |
+|---|---|---|---|---|---|---|---|
+| 1 | unbounded | 21.18 | 8.65 | 5.67 | 20.95 | 8.62 | 7.55 |
+| 1 | 2^20 | 21.30 | 8.59 | 5.61 | 20.93 | 8.54 | 7.44 |
+| 1 | 4x2^20 | 21.23 | 8.70 | 5.60 | 20.91 | 8.48 | 7.47 |
+| 2 | unbounded | 36.69 | 4.34 | 13.90 | 39.12 | 4.44 | 3.96 |
+| 2 | 2^20 | 37.80 | 4.38 | 17.01 | 31.95 | 4.40 | 3.87 |
+| 2 | 4x2^20 | 44.85 | 4.47 | 15.02 | 38.42 | 4.39 | 3.83 |
+| 4 | unbounded | 73.29 | 2.50 | 20.27 | 74.42 | 2.43 | 2.22 |
+| 4 | 2^20 | 73.61 | 2.27 | 22.37 | 72.95 | 2.26 | 1.96 |
+| 4 | 4x2^20 | 73.03 | 2.35 | 21.15 | 74.97 | 2.26 | 2.02 |
+| 5 | unbounded | 75.06 | 4.39 | 29.84 | 77.29 | 4.22 | 3.17 |
+| 5 | 2^20 | 78.16 | 4.26 | 31.02 | 78.13 | 3.87 | 3.54 |
+| 5 | 4x2^20 | 78.43 | 3.79 | 30.41 | 80.27 | 4.03 | 3.44 |
+| 8 | unbounded | 77.06 | 4.70 | 29.71 | 76.49 | 4.74 | 4.05 |
+| 8 | 2^20 | 78.14 | 4.62 | 31.11 | 76.90 | 4.67 | 4.06 |
+| 8 | 4x2^20 | 76.37 | 4.76 | 30.31 | 75.53 | 4.67 | 4.08 |
+
+In the first run the credit build with the shared field is above C2 in all twelve cells with two or
+more threads: the failure of rule item 3's second part that triggered the fallback. In the run after
+the fallback the credit build is below C2 in all twelve.
+
+### 6.6 The fixture bench host, E13, and the T6 timing
+
+The `meter-per-instruction` row of each run, copied from its `measurement` line. `candidate-ns` is
+one invocation with fuel charging, `per-instruction-ns` the charging cost per instruction the host
+derives, and `aa-ns` the host's A/A figure for the candidate. Every run reports all ten measurements
+valid, every A/A lane inside its effect.
+
+| Pair | File | `candidate-ns` | `per-instruction-ns` | `aa-ns` |
+|---|---|---|---|---|
+| 1, base first | `e13/bench-base.log` | 23862.9 | 26.9933 | 121.3 |
+| 1 | `e13/bench-credit.log` | 30457.1 | 49.7851 | 44.5 |
+| 2, credit first | `e13/bench-credit-run2.log` | 29780.2 | 46.9146 | 321.5 |
+| 2 | `e13/bench-base-run2.log` | 23495.9 | 27.3083 | 119.0 |
+
+**In both pairs the credit row is above base by far more than either lane's A/A figure**, so rule item
+4 fails in both. This is the row that polls after every charge: each block covers one charge, and the
+row measures the settle and the re-admission that moved into `Poll`. It shows that a profile polling
+after every instruction pays more on the credit build, which is exactly what item 4 was written to
+catch. The other nine rows of each run are retained; the rule reads none of them.
+
+**T6 alone**, five runs per build, alternating, the test's own duration from its TRX result
+(`e13/t6.json`, `e13/t6-trx/`): median 476.0 ms on base and 243.9 ms on credit, every run passing.
+
+### 6.7 The collector's run
+
+All from the collection at `34dbd7a`, in the files named.
+
+| Step | Result | File |
+|---|---|---|
+| Build | 0 warnings, 0 errors | `build.log` |
+| Test | Two architecture tests failed, both rule A14 rows, on the stray project file (section 5.8, item 11); every contract test and every other architecture test passed | `test.log` |
+| Pack | Completed | `pack.log`, `nuspecs.txt` |
+| Publish and run the fixtures host, JIT, trimmed and Native AOT | Every check passed in each mode | `publish-jit-and-trimmed.log`, `publish-aot.log` |
+| Corpus replay, three modes | The three tables are identical | `corpus-replay.log` |
+| Fuzz | 8 sessions, 2,000,000 iterations, no session reporting a finding | `fuzz.log` |
+| Compositions | Both publish and run in all three modes with every check passing, and each composition's catalog is identical across its modes | `composition-*.log`, `catalog-*.txt`, `closure-*.txt` |
+| Soak | 400,000 cycles completed, no fault, settled | `soak.log` |
+| Bench, JIT and Native AOT | All ten measurements valid on both lanes, every A/A lane inside its effect; `meter-per-instruction` reads `per-instruction-ns=44.8399` on JIT and `per-instruction-ns=41.1233` on Native AOT. This is the credit build alone, with no base run beside it, so no rule item reads it | `bench.log` |
+| Feed consumer | Both package versions packed, restored and ran, including the rollback; **the consumer's Native AOT publish failed** with MSB3073 (section 5.8, item 12; EX-42) | `feed-consumer.log` |
+| Environment | Recorded | `environment.txt` |
+
+### 6.8 E1b over the finished bundle
+
+`dotnet test Broiler.VM.slnx -c Release` in the main checkout at `34dbd7a`, with every retained file
+of this directory in place and this README written up to this paragraph, before `hashes.txt` was
+rewritten: **both test assemblies passed with no failure**, the review-record rules H1 to H5 among
+them, and the command exited 0. `gates/test-after-bundle.log` is the transcript.
+
+This paragraph was written after that run, so the architecture tests were run once more over the
+README as committed: `dotnet test src/tests/Broiler.VM.Architecture.Tests -c Release`, transcript
+`gates/architecture-after-readme.log`.
+
+### 6.9 Outputs of the re-collection
+
+Everything in this section is read from `r2/`. What may be quoted is what section 6's opening paragraph
+says: core and fixture figures are quoted, each equal to its value in the file named beside it; the
+JavaScript shapes, the fuel minima and the test262 reports are retained and not quoted.
+
+**Correctness, E1 to E9.**
+
+| ID | Result | Where |
+|---|---|---|
+| E1 | **Clean with warnings as errors, shown by a cold build of the remedy head**: `dotnet build Broiler.VM.slnx -c Release --no-incremental -warnaserror` in a fresh worktree at `16e3d6d` built every project of the solution with 0 warnings and 0 errors. The builds the runs used - the credit solution build, the base solution build, the credit-measure command-line host and the C2′ runtime - also read 0 warnings and 0 errors; they are incremental and are not the evidence for this clause | `r2/gates/cold-build-remedy.log`; `r2/gates/build-*.log` |
+| E1a | Both write runs passed, the architecture and the contract test assemblies with the assurance and API write switches set, and `git status` afterwards named no tracked file: no generated record changed at the remedy head. `HUMAN_REVIEW.md` reads PENDING | `r2/gates/e1a-write-architecture.log`, `r2/gates/e1a-write-contract.log`, `r2/gates/e1a-status-after-write.txt` |
+| E1b | `dotnet test Broiler.VM.slnx -c Release` at `d5014f8`: both test assemblies passed, exit 0. Section 6.10 reads the run over the finished bundle | `r2/gates/e1b-solution-tests.log` |
+| E1c | `docs/api/public-api.txt` is byte-identical between `f127d92` and each of the twenty-three commits from `e117162` to `d5014f8`; `git diff --exit-code` exits 0 for every one | `r2/gates/e1c-public-api-diff.log` |
+| E2 | **Both halves pass.** On the base meter, with the remedy head's test file and the three fixture files transplanted onto `f127d92`, the fuel-exactness class passed 52 of 52; on the credit build it passed 52 of 52. The test file's change since `fc00248` is retained. The first credit transcript's identity lines hashed the oracle worktree's binaries rather than the ones the run loaded (section 5.14, item 4); it is retained, and the run was repeated with the right identity lines | `r2/e2/` |
+| E3 | Section 6.9.1 | `r2/e3/`, `r2/control16/` |
+| E4 | **Not rebuilt; the source diffs are empty.** Over every project in the reference closure of the two profile projects and the build-wide files, the diff from `c98011a` to `16e3d6d`, from `c98011a` to `34dbd7a` and from `f127d92` to `16e3d6d` is empty in each case (EX-119) | `r2/e4/` |
+| E5 | Every row passes on the credit build, with the same two System V rows not run on this Windows x64 machine. With elapsed times and addresses masked, both credit verbose transcripts equal the first collection's base verbose transcript line for line, the plain transcripts are equal, and the two credit verbose runs equal each other | `r2/e5/`, `r2/e5/masked-compare.log` |
+| E6 | Every check passes on the credit build. With the plateau row's heap figures masked, both credit verbose transcripts equal the first collection's base verbose transcript, the plain transcripts are equal, and the two credit verbose runs equal each other | `r2/e6/`, `r2/e6/masked-compare.log` |
+| E7 | **The parity rule of section 5.2 holds in both forms.** In each form every sorted `result` row of the credit report equals the retained base row; none differs, so the predeclared list was not needed, and no credit row is exhausted on the wall clock outside it. Each credit report is byte-identical to the base report of its form, by digest. The four comparisons - base against credit in each form, and bytecode against native within each build - report no differing variant, so the within-build comparison names the same (empty) set in both builds. Both merged credit reports state that they may be retained. Each driver exits 1, which the driver documents as cases having failed, a result; the first collection's base drivers report the same totals | `r2/e7/` |
+| E8 | **Holds for every (form, fuel), all ten pairs re-collected.** For each pair the sorted `result` rows are identical, the comparison script exits 0 with no differing variant, and the count of fuel-exhaustion lines is the same on both sides; every credit report is byte-identical to its base report, by digest. At fuel 1,000 and 2,500 both sides carry fuel exhaustions, so the low runs exercised what they were meant to. Every driver transcript says the run may not be retained as a whole-suite figure, because a named selection is partial coverage. EX-115 still binds the base side of the bytecode pairs at fuel 30,000 and 100,000 | `r2/e8/`, `r2/e8/e8-compare-summary.log` |
+| E9 | **The minima are identical to the first collection's base minima**, for all four programs in both forms: all eight blocks - the minimum, the budget line at it, and the plain and budget output one unit below it - equal the base blocks of `e9/e9-bisect.log` | `r2/e9/e9-bisect.log`, `r2/e9/e9-compare-with-base.log` |
+
+#### 6.9.1 The injected-defect witnesses of the re-collection
+
+Every witness was applied alone in `D:/broiler-arms/wit2` at `16e3d6d`, and the fuel-exactness class,
+both per-thread leak tests and the restore-path test were run under it; then the tree was restored and
+the same tests run clean as a control; then the tests the witness names were run alone, clean. A clean
+run before the first witness passed 55 of 55, every control passed 55 of 55, every run of the named tests
+alone passed, and `git status` was empty after every revert and at the end. **Every witness failed every
+test and row it names: 29 of 29.** Those are the tests `r2/measurement/witnesses.py` names, a table fixed
+during development and first committed after the runs (section 5.14, item 9). **W8 no longer names T7 and
+W12 no longer names T18**, the tests section 6.2 named for them, and both tests still pass under them on
+the remedy head. The sampled witnesses W4 and W24 failed on their first run, so no further run was needed.
+The T numbers are the test file's own.
+
+| Witness | Injected defect | Must fail | What failed under the defect | Verdict |
+|---|---|---|---|---|
+| W1 | The settle of every holder in `VmRuntime.GetBudgetSnapshot` deleted | T4 | T4 only | `[MET]` |
+| W2 | The settle in `VmMeter.UnpolledWorkExceedsBound` and both step-end settles deleted together | T8, row 62 units | That row only | `[MET]` |
+| W3 | Restated for the remedy: in `VmMeter.Poll`, the read of the block and the write of the record deleted, and the bound tested on the counter alone | T8, row 10, 60, 60 | That row, and twenty-five more failing tests and rows | `[MET]` |
+| W4 | `LeavesRoomFor` answers true | T6 (sampled) | T6 only, on the first run | `[MET]` |
+| W4b | The uncharged-work reader's settle, the invocation-path step-end settle and the settle-all branch of the locked charge deleted | T2b | T2b, and T8's 62-unit row and T6 | `[MET]` |
+| W5 | The settle in `VmMeter.RemainingSnapshot` deleted | T9 | T9 only | `[MET]` |
+| W6 | The aggregate-parent test in `PreAdmit` deleted | T11 | T11 only | `[MET]` |
+| W7 | The fast-path head returns false instead of calling the locked charge | T1 | Every test run, T1 among them | `[MET]` |
+| W8 | `VmExecutionScope.Current` returns the thread's resolved meter without comparing contexts | T12 and T19; section 6.2 named T12 and T7 | T12 and T19 only; T7 passes | `[MET]` |
+| W9 | The settle of every holder before a retention's admission check deleted | T14, both rows | Both rows only | `[MET]` |
+| W9b | That settle narrowed to the charging meter | T14, the two-holder row | That row only | `[MET]` |
+| W10 | The dimension test removed from the fast-path head | T16 | T16, and seventeen more failing tests and rows | `[MET]` |
+| W11 | An eviction drops its victim's block instead of committing it | T17 | T17 only | `[MET]` |
+| W12 | A lookup with the flow suppressed is resolved and held under the null context | T20; section 6.2 named T18 | T20 only; T18 passes | `[MET]` |
+| W13 | `VmMeter.CommitPreAdmittedFuelLocked` folds everything the block admitted instead of what no poll counted | T8, row `Nops(10000)` | That row, and twenty-three more failing tests and rows | `[MET]` |
+| W14 | In `VmMeter.Poll`, the write of the record deleted | T8, row `Nops(10000)` | That row, and twenty-five more | `[MET]` |
+| W15 | In `VmMeter.CommitPreAdmittedFuelLocked`, the clearing of the record deleted | T8, row `Nops(10000)` | That row, and twenty-four more | `[MET]` |
+| W16 | In `VmRuntime.LeaveCapability`, the entry context put back whenever one was recorded, with no identity test | T21 | T21 only | `[MET]` |
+| W17 | In `VmRuntime.LeaveCapability`, the write-back after the restore branch deleted | T21 | T21, T24 and the leak test's write-back variant | `[MET]` |
+| W18 | In `VmRuntime.EnterCapability`, the entry context captured after the depth write | T21 | T21, and four more | `[MET]` |
+| W19 | In `VmRuntime.LeaveCapability`, the `return` after the restore deleted | T22 | T22 and the restore-path test | `[MET]` |
+| W20 | In `VmRuntime.LeaveCapability`, a depth of zero stored instead of released (control 16's injection) | The leak test's write-back variant | That test only; the first leak test passed, as the design expected | `[MET]` |
+| W21 | In `VmMeter.Poll`, a refused poll records what it counted | T23, row 27 units | That row only | `[MET]` |
+| W21b | In `VmMeter.Poll`, the reset moved above the bound test | T23, both rows, and T8 row 10, 60, 60 | Those three rows only | `[MET]` |
+| W21c | In `VmMeter.Poll`, a refused poll resets the counter | T23, row 28 units | That row only | `[MET]` |
+| W22 | In `VmRuntime.LeaveCapability`, the test of whether the entry recorded a context removed | T24 | T24 only | `[MET]` |
+| W23 | In `VmExecutionScope.Current`, the scope comparison removed | T25 | T25 only | `[MET]` |
+| W24 | In `VmMeter.Poll`, the block read before the gate is taken | T26 (sampled) | T26, on the first run, and four more | `[MET]` |
+| W25 | In `VmRuntime.EnterCapability`, every entry records nothing | The restore-path test | That test only | `[MET]` |
+
+`r2/e3/e3-table.txt` lists every failing test and row per witness, read from the transcripts by
+`r2/measurement/witness-table.py`.
+
+**Control 16 by hand**, in the same worktree after E3, as the collector runs it: the collector's build
+step first, then the injection, the whole solution tested, the tree restored and tested again. Injected,
+the contract tests failed only the leak test's write-back variant, and the architecture tests failed the
+three fingerprint rules J3, J5 and J7 and the generator test, which fail on any source edit; reverted,
+both test assemblies passed. `r2/control16/`.
+
+#### 6.9.2 The JavaScript shapes, E10
+
+Retained and not quoted. **Seven of the eight cells hold rule item 2, and one does not.** For every shape
+in both forms the credit median of `invoke_ms` is below the base median. In seven cells the gap is larger
+than the A/A spread, for `invoke_ms` and for `process_ms` alike. **In the `c_call` shape in the native
+form it is not**: the credit median is below base, and the gap is smaller than the A/A spread, for both
+quantities. That cell fails item 2 and is named here as failing. `r2/e10/e10-shapes.log` ends with one
+verdict line per cell and quantity, the JSON carries every repetition, and `r2/e10/lanes.txt` identifies
+the lanes.
+
+*Added 2026-09-17:* the owner ruled that this cell stays failing, with no remedy, and that nothing may
+describe the change as faster for it (section 7.4).
+
+#### 6.9.3 The core probe, E12
+
+Every figure below is nanoseconds per admitted charge, the minimum of three repetitions, copied from the
+named file under `r2/e12/`. Every cell of every file reports its runtime consumption equal to what was
+admitted, and no fault.
+
+**`trace`.** The credit build's trace equals the first collection's base trace line for line after the
+header lines: every seed's hash, admitted count, refusing dimension and scope, and consumption at every
+level. **`stress`.** Ten rounds pass out of ten, with no failure reported. `trace-compare.log`.
+
+**`bench`**, one thread, one runtime - no rule item reads it:
+
+| File | Direct charge | Through the ambient meter |
+|---|---|---|
+| `probe-bench-base.txt` | 13.83 | 20.40 |
+| `probe-bench-credit.txt` | 3.05 | 7.38 |
+
+**`concurrent-bench`** (`probe-concurrent-bench-base.txt`, `probe-concurrent-bench-credit.txt`) and
+**`concurrent-ambient`** (`probe-concurrent-ambient-base.txt`, `-c2r.txt`, `-credit.txt`), as
+`probe-readings.log` reads them:
+
+| Threads | Runtime ceiling | `concurrent-bench` base | `concurrent-bench` credit | `concurrent-ambient` base | `concurrent-ambient` C2′ | `concurrent-ambient` credit |
+|---|---|---|---|---|---|---|
+| 1 | unbounded | 13.68 | 4.59 | 21.12 | 8.80 | 8.84 |
+| 1 | 2^20 | 13.70 | 3.33 | 21.12 | 8.64 | 7.55 |
+| 1 | 4x2^20 | 13.66 | 3.32 | 20.89 | 8.72 | 7.53 |
+| 2 | unbounded | 24.69 | 1.72 | 39.04 | 4.80 | 3.83 |
+| 2 | 2^20 | 24.90 | 1.72 | 37.83 | 4.51 | 3.91 |
+| 2 | 4x2^20 | 25.46 | 1.72 | 38.29 | 4.48 | 3.93 |
+| 4 | unbounded | 46.73 | 0.87 | 63.55 | 2.35 | 2.04 |
+| 4 | 2^20 | 46.99 | 0.88 | 61.90 | 2.32 | 1.98 |
+| 4 | 4x2^20 | 46.89 | 1.09 | 63.95 | 2.45 | 2.00 |
+| 5 | unbounded | 49.10 | 1.47 | 76.28 | 3.58 | 3.22 |
+| 5 | 2^20 | 50.18 | 1.41 | 79.97 | 3.39 | 2.97 |
+| 5 | 4x2^20 | 47.19 | 1.49 | 80.96 | 3.56 | 2.98 |
+| 8 | unbounded | 45.10 | 1.44 | 78.10 | 3.55 | 3.10 |
+| 8 | 2^20 | 46.05 | 1.54 | 82.37 | 3.49 | 3.03 |
+| 8 | 4x2^20 | 46.24 | 1.46 | 80.77 | 3.46 | 3.04 |
+
+In `concurrent-bench` the credit build is below base in all twelve cells with two or more threads. In
+`concurrent-ambient` the credit build is below C2′ in all twelve. With two or more threads the charge
+counts are per thread against a shared level, so a figure below the one-thread figure is a throughput
+per admitted charge across all threads, not a cheaper single charge.
+
+#### 6.9.4 The fixture bench host, E13, and the T6 timing
+
+Each row copied from the `measurement` line of the file named, under `r2/e13/`; `bench-readings.log`
+applies section 5.11's readings. Every run reports all ten measurements valid and every A/A lane inside
+its effect.
+
+| Pair | File | `meter-per-instruction` `candidate-ns` | `per-instruction-ns` | `aa-ns` |
+|---|---|---|---|---|
+| 1, base first | `bench-base.log` | 23291.8 | 26.4637 | 255.8 |
+| 1 | `bench-credit.log` | 20184.2 | 13.5830 | 109.9 |
+| 2, credit first | `bench-credit-run2.log` | 20198.9 | 13.5844 | 95.8 |
+| 2 | `bench-base-run2.log` | 23136.5 | 27.2677 | 317.9 |
+
+**Item 4, both readings, holds in both pairs.** Lane total: in pair 1 the credit `candidate-ns`, 20184.2,
+is at or below base plus base `aa-ns`, 23547.6; in pair 2, 20198.9 against 23454.4. Per instruction: in
+pair 1 the credit `per-instruction-ns`, 13.5830, is at or below 27.4629; in pair 2, 13.5844 against
+28.5095.
+
+| Pair | File | `host-call` `candidate-ns` | `per-call-ns` | `aa-ns` |
+|---|---|---|---|---|
+| 1, base first | `bench-base.log` | 1202.6 | 140.4050 | 23.6 |
+| 1 | `bench-credit.log` | 1178.4 | 134.1550 | 1.1 |
+| 2, credit first | `bench-credit-run2.log` | 1200.5 | 123.8700 | 13.1 |
+| 2 | `bench-base-run2.log` | 1183.2 | 168.4000 | 19.5 |
+
+**Item 5, reported without a verdict** (section 5.10): in pair 1 the credit `per-call-ns`, 134.1550, is at
+or below base plus base `aa-ns`, 164.0050; in pair 2, 123.8700 against 187.9000.
+
+**T6 alone**, five runs per build, alternating, base first in each repetition, the test's own duration from
+its TRX result (`t6.json`, `t6.log`, `t6-trx/`): median 485.7 ms on base and 231.6 ms on credit, every
+run passing.
+
+#### 6.9.5 The collector's run
+
+The collector ran at the remedy head, with this README at `d5014f8`'s text, into `r2/`:
+`python eng/collect-evidence.py --bundle VM-5-002 --out docs/evidence/vm-5-002/r2 --rebench
+--skip-controls`. Its identity fields are in `r2/collector-identity.txt` and its console in
+`r2/collector.log`.
+
+| Step | Result | File under `r2/` |
+|---|---|---|
+| Build | 0 warnings, 0 errors, `--no-incremental -warnaserror` | `build.log` |
+| Test | Both test assemblies passed, with no failure | `test.log` |
+| Pack | Completed: three packages and three symbol packages | `pack.log`, `nuspecs.txt` |
+| Publish and run the fixtures host, JIT, trimmed and Native AOT | Every check passed in each mode | `publish-jit-and-trimmed.log`, `publish-aot.log` |
+| Corpus replay, three modes | The three tables are identical | `corpus-replay.log` |
+| Fuzz | 8 sessions, 2,000,000 iterations, no session reporting a finding | `fuzz.log` |
+| Compositions | Both publish and run in all three modes with every check passing, each composition's catalog identical across its modes; the catalogs and closures are byte-identical to the first collection's | `composition-*.log`, `catalog-*.txt`, `closure-*.txt` |
+| Soak | 400,000 cycles completed, no fault, settled | `soak.log` |
+| Bench, JIT and Native AOT | All ten measurements valid on both lanes, every A/A lane inside its effect. This is the credit build alone, with no base run beside it, so no rule item reads it | `bench.log` |
+| Feed consumer | Both package versions packed, restored and ran, including the rollback; **the consumer's Native AOT publish failed** with MSB3073, as in the first collection (EX-42) | `feed-consumer.log` |
+| Environment | Recorded; the SDKs and runtimes resolved are the ones the first collection's `environment.txt` lists | `environment.txt` |
+
+The Native AOT publishes and runs above are the re-collection's only evidence that the capability
+boundary's context restore behaves under trimming and Native AOT as it does on the JIT lane.
+
+### 6.10 E1b over the finished bundle
+
+`dotnet test Broiler.VM.slnx -c Release` in the main checkout at `d5014f8`, with every file of `r2/` in
+place and this README written up to this section, before `hashes.txt` was regenerated: **both test
+assemblies passed with no failure**, the review-record rules H1 to H5 among them, and the command exited
+0. `r2/gates/test-after-bundle.log` is the transcript.
+
+This section was written after that run, so the architecture tests were run once more over the README as
+committed: `dotnet test src/tests/Broiler.VM.Architecture.Tests -c Release`, transcript
+`r2/gates/architecture-after-readme.log`. An earlier run of the same command, over this README before its
+last wording corrections, passed as well and is retained as `r2/gates/architecture-after-readme-draft.log`.
+`hashes.txt` was regenerated after all three.
+
+---
+
+## 7. Decision
+
+The marks are evidence verdicts set by the author about what the retained evidence shows. No reviewer
+has set anything, and nothing here accepts a milestone, a rule item or a change.
+
+### 7.1 The VM-5 gate's funding clause
+
+| Verdict | Clause | What the evidence shows |
+|---|---|---|
+| `[UNMET]` | Optimization is funded only against one of these baselines | This change was made for speed, and **no registered baseline shows the saving**. The only registered row on this path is `meter-per-instruction`, and the fixture executor's `Run` loop polls after every charge, so each pre-admitted block covers one charge and is settled at the next poll: the row measures the settle and re-admission that moved into `Poll`, and cannot show a saving that comes from charging inside a block. In both of this bundle's pairs that row is higher on the credit build (section 6.6). The saving is shown by the JavaScript shapes (E10) and the core probe (E12), and both are measurements local to this bundle, not baselines in the register. The owner recorded this as an exclusion rather than registering a windowed-polling baseline: EX-112. Bundle VM-5-001 reads this clause as met on the ground that no optimisation was performed; that reading no longer describes the tree, and this bundle does not edit that one |
+
+*Added 2026-09-17, with the re-collection:* on the remedy head `meter-per-instruction` is at or below
+base in both bench pairs (section 6.9.4). The verdict above is unchanged: the row still polls after
+every charge, so it cannot show a saving made for a profile that polls on a window, and the saving is
+still shown only by bundle-local measurements (EX-112).
+
+This bundle re-reads no other VM-5 clause: bundle VM-5-001 carries them, and nothing retained here
+bears on them except as section 8 says.
+
+### 7.2 Why the change is exact, condensed
+
+This is argued here and tested by T1 to T18, and it is no more than that: the tests are evidence,
+several claims rest on sampled concurrent runs, and some parts rest on the argument alone, which the
+end of this section names.
+
+**The reference.** Call R the meter as it stands at the base: every admitted charge commits to every
+level, and to the count of work since the last poll, inside its own lock section. The claim is that
+any concurrent history of the pre-admitting meter, with any number of threads, meters, readers and
+hosts, has a linearization in which every charge, poll, retention, release, snapshot and reader
+returns what R returns in that order, and every latch - the failed dimension and scope, exhaustion,
+poll-bound and cancellation observations - is the one R writes. A fast-path charge linearizes at its
+successful compare-exchange; everything else at its lock section, with R's own sections where R has
+two.
+
+**The consumption identity.** At every instant and for every level, R's fuel consumption equals the
+committed consumption plus what every holder chaining that level has spent from its block and not
+yet committed.
+
+**A fast-path charge is admitted only when R admits it.** A block is sized under the runtime gate to
+at most what every level of its meter's chain has left once every other outstanding block against
+that level is subtracted whole, and the table keeps the sum of blocks against a level within what the
+level has left. So a charge that fits a block fits every level R would test. Nothing pre-admits under
+an aggregate parent, so R has no parent check to make. The fast path writes no latch, and R writes
+none on an admitted charge; the work count R adds at once is added at the settle, and every reader of
+it settles first.
+
+**A locked fuel charge decides as R does.** It settles its own block first. If the other holders'
+blocks still leave room at every level, R's remainder is at least what the body tests against, both
+admit, and both commit the same. If they do not, every holder is settled inside the section, every
+fast charge that landed first is committed and every later one waits for the gate, so the body runs on
+R's state and returns R's answer, including the dimension and the outermost scope it names.
+
+**Readers see what R's readers see.** The runtime's budget snapshot settles every holder; the
+remaining-allowance reader, the uncharged-work reader and `Poll` settle the meter whose own state they
+read, which is enough because an invocation level belongs to one meter; a fuel retention settles every
+holder in both of its sections, and R's retention was already two sections. Releasing fuel settles
+nothing, and needs nothing: a release of an allowance is a no-op at every level, and a meter that holds
+a block has no aggregate parent.
+
+**The rest.** A runtime under an aggregate parent never pre-admits, so it runs R's body plus one
+emptiness test. A step that parks returns through a step-end settle. Cancellation is checked before
+the lock, as in R. Wall clock still accrues and is checked only in `Poll`, so an exhaustion is found at
+the same poll crossing - only elapsed time differs, which is why no record may say every consumption
+figure is unchanged (EX-108). The ambient lookup returns what the thread's `AsyncLocal` holds: a
+context object determines every `AsyncLocal` value, and the fallback holds the answer per thread,
+together with the scope and the context it was the answer for.
+
+**What rests on the argument, or on sampled runs, alone:**
+
+- **The second settle of a retention** has no deterministic test: only a concurrent locked fuel charge
+  on another meter, landing between the retention's two lock sections, can pre-admit a block there
+  (EX-109).
+- **The step-end settle on the resume path, jointly with the uncharged-work reader's settle,** has no
+  failing witness. No witness removes that pair alone, and W2, which removes it together with the
+  invocation-path settle, fails only the invocation-path row of T8: T10, the park-and-resume test,
+  passes with the pair gone. It rests on the resume path having the invocation path's shape (EX-110).
+- **The concurrency claims** rest on sampled runs: T6 and T7, and the probe's `trace` and `stress`
+  modes (EX-107).
+- **After the fallback, the ambient lookup's context comparison across threads and its refusal to
+  hold a null-context lookup** have no failing witness (section 6.2, EX-114).
+
+The paragraphs above, and the list, describe the tree the first collection measured. **After the
+remedy** they stand, with these changes.
+
+**Part A.** Every settle point but one stays where it was; `VmMeter.Poll` no longer settles or takes a
+block. Under the meter's gate it reads the block once and decides the uncharged-work bound on the
+counter plus what the block has admitted since the meter last reset its count, and it records what the
+block had admitted where it resets. Call Q the counter plus what the block has admitted minus that
+record. Every event keeps Q equal to R's count of work since the last poll at its linearization point:
+a fast-path charge raises both by its amount; a locked charge settles its own block first, and any
+settle or eviction folds only what no poll counted and clears the record with the block, so Q does not
+move; a refused poll writes nothing, as R does not reset on refusal; a passing poll makes Q
+zero at its read, as R resets. A block's admitted count cannot rise while the gate is held, so the one
+read is a consistent cut of the meter's fast charges, and the poll's decision, latch and answer are R's.
+The consumption identity is unchanged, and so is every reader of consumption or of what is left, since
+each still settles first. A block now ends when it is settled or when a charge of its own does not fit
+what is left, and the next locked fuel charge begins a new one. **As to timing**, a poll now does the
+same work whatever is left - the first collection's poll re-admitted, and near a ceiling its share could
+be zero or it could evict - and a single holder's block is renewed at positions set by its own spending
+and by the settles readers and other holders make, so the remedy adds no bit a single holder can time;
+with two or more holders the signal EX-111 records is unchanged in kind.
+
+**Part B.** The context `VmRuntime.EnterCapability` installs by raising the capability depth differs
+from the one it captured before in that entry alone, and execution contexts are immutable and captured
+by identity - the fact the ambient resolution already rests on. So when the thread still runs under the
+installed context at leave, putting the captured one back gives every `AsyncLocal` reader the values the
+old write-back gave, the depth included, and fires no change handler; in every other case, and when the
+entry recorded no context because the flow was suppressed, the old write-back runs. Nested calls restore
+level by level, and the `return` after the restore keeps an inner leave from releasing the outer call's
+depth. At depth zero the restored context carries no depth entry, so the per-thread leak rule of VM-5-001
+still holds.
+
+**What rests on the argument, or on sampled runs, alone, after the remedy:** the first three items of the
+list above stand (EX-109, EX-110, EX-107), and so do these:
+
+- **The value-identity of part B's restore** on the path it takes has no failing witness, and that
+  `VmCapabilityInvoker.InvokeBytes`, the provider-call pair and `VmArtifactLoadMediator.Answer` pass
+  their entry through rests on reading (EX-122).
+- **That a poll reads the block as one cut under the gate** rests on a sampled two-thread test (EX-124).
+
+The list's fourth item still stands for the remedy head across threads, and no longer on one thread. On
+one thread, the context comparison, the scope comparison and the refusal to hold a suppressed lookup each
+have a witness that fails a test written for it in the re-collection: W8 fails T12 and T19, W23 fails
+T25, and W12 fails T20 (section 6.9, EX-114). Across threads, T7 and T18 - the tests the first collection
+named for W8 and W12 - still pass under those witnesses on the remedy head (section 5.14, item 9), so
+that a second thread is never answered from the first thread's lookup, with or without its flow
+suppressed, rests on the answer being held per thread, as section 6.2 argues, and has no failing witness.
+
+### 7.3 The evidence verdict per item of the predeclared rule
+
+This is the first collection's verdict, of the tree of `34dbd7a`, as it stood before the remedy; section
+7.4 gives the re-collection's.
+
+| Verdict | Item of section 5.1 | What the evidence shows |
+|---|---|---|
+| `[UNMET]` | 1. Every correctness result holds | **Fails on the witness clause, on two witnesses.** W8 fails T12 but not T7, the second test the design names for it; and W12 fails no test at all, not T18, which it was added against (section 6.2). W12 was added after the rule was committed, and the clause covers every injected-defect witness, so it counts as W8 does. Every other clause holds as section 6.1 reads it: the build is clean with warnings as errors, by cold builds of the base, the product before the fallback and the head, the first two run after a review; the generated records were regenerated and `HUMAN_REVIEW.md` reads PENDING; the public API file is unchanged; the fuel-exactness tests pass on both meters; every other witness fails the test it names - W5 only since `4490eda` amended T9, before the rule was committed (section 5.8, item 4) - and the tree was restored after each, with the class passing clean before the first witness and after the last, though no witness has a passing run of its own after its revert (section 6.2); the profile assemblies are byte-identical; the JavaScript checks, corpus replay and host lifetime give identical verdicts; the parity rule holds; the low-fuel runs agree row for row in both forms; and the fuel minima are identical. The test-project clause failed once, in the collector's run, for the stray project file, and held in the run over the finished bundle (section 6.8). E5 to E9 ran before the fallback (EX-116), and four E8 runs were driven from another branch's driver (EX-115). Which build most of these runs used rests on the procedure, not on a retained stamp or digest (EX-117) |
+| `[MET]` | 2. Shapes | In both runs, all eight shape-and-form cells: the credit median below base, by more than the A/A spread (section 6.3) |
+| `[MET]` | 3. Concurrency, three parts | **On the second run.** `concurrent-bench`: the credit build below base in all twelve cells with two or more threads, in both runs. `concurrent-ambient`: **the first run failed**, the credit build above C2 in all twelve cells, which triggered the fallback; after the fallback the credit build is below C2 in all twelve. T6 alone: median 243.9 ms on credit against 476.0 ms on base. Both runs of the ambient part are retained (sections 6.5 and 6.6) |
+| `[UNMET]` | 4. The per-instruction meter row | **Fails in both pairs**: the credit `meter-per-instruction` row is above base by far more than either lane's A/A figure (section 6.6). By the rule's own terms nothing in this repository may describe the change as faster for this row, and a profile that polls after every instruction pays more on the credit build |
+
+**What the failures trigger.** Item 3's first failure triggered the resolution fallback, as the rule
+says, and the measurement was taken again; both runs are retained. The rule names no change for a
+failure of item 1 or item 4, only that the cell is named as failing, which this section does.
+
+**Reviewer:** none.
+
+### 7.4 The evidence verdict per item of the predeclared rule, after the remedy
+
+Read from `r2/` against section 5.1, as section 5.11 fixed before any run of the re-collection. Section 7.3
+stays the first collection's verdict, of the tree of `34dbd7a`; this one is of the remedy head `16e3d6d`.
+
+| Verdict | Item | What the re-collection shows |
+|---|---|---|
+| `[MET]` | 1. Every correctness result holds | **Every clause holds, the witness clause against a table fixed during development.** The cold build of the remedy head is clean with warnings as errors; every test project passes, at the remedy head and in the collector's run; the generated records were regenerated with no change and `HUMAN_REVIEW.md` reads PENDING, and the public API file is unchanged from the base to every commit of the series; the fuel-exactness class passes on both meters; **every witness fails every test and row it names, 29 of 29**, W8 failing T12 and T19, W23 failing T25 and W12 failing T20, each passing again in a control run after its revert and in a run of its named tests alone. **The tests each witness names were fixed during development, with the development drives' results known, and first committed after the runs** (section 5.14, item 9; EX-121): W8 no longer names T7 and W12 no longer names T18, as section 6.2 did, and both tests still pass under them on the remedy head, so read against section 6.2's entries this clause would fail on W8 and W12 as it does in section 7.3; the profile-assembly clause is carried by the empty source diffs, as section 5.11 fixed (EX-119); the JavaScript checks, corpus replay and host lifetime give the base transcripts' verdicts line for line after masking; the parity rule holds in both forms; all ten low-fuel pairs agree row for row; and the fuel minima equal the base minima in both forms (section 6.9). EX-120 and EX-121 bound what this rests on |
+| `[UNMET]` | 2. Shapes | **Seven of eight cells hold; one fails.** In the `c_call` shape in the native form the credit median is below base, but the gap is not larger than the A/A spread, for `invoke_ms` and for `process_ms` alike. In the other seven cells the credit median is below base by more than the A/A spread (section 6.9.2). By the rule's own terms nothing in this repository may describe the change as faster for that cell |
+| `[MET]` | 3. Concurrency, three parts | `concurrent-bench`: credit below base in all twelve cells with two or more threads. `concurrent-ambient`: credit below C2′ in all twelve (EX-123). T6 alone: median 231.6 ms on credit against 485.7 ms on base (sections 6.9.3 and 6.9.4) |
+| `[MET]` | 4. The per-instruction meter row | **Both readings hold in both pairs**: the credit `candidate-ns` at or below base plus the base `aa-ns`, and the credit `per-instruction-ns` at or below base plus the base `aa-ns` divided by 256 (section 6.9.4). This row polls after every charge; that it holds shows that a profile polling after every instruction does not regress on the remedy head, and nothing more |
+| none | 5. The host-call row | **Reported without a verdict** (section 5.10): in both pairs the credit `per-call-ns` is at or below the base `per-call-ns` plus the base `aa-ns` (section 6.9.4) |
+
+**What the failure triggers.** Item 2's failure is named here and in section 6.9.2, and it triggers no
+change: section 5.11 says that no further change is made without the owner. The measurement was not taken
+again.
+
+**The owner's rulings of 2026-09-17.** *Added 2026-09-17, after the re-collection and after the review of
+it that section 5.15 lists.* The owner accepted both open verdicts of this table as recorded:
+
+- **Item 1 stands `[MET]` with its stated qualification**: the witness clause holds against a witness
+  table fixed during development, with the development drives' results known, and first committed after
+  the runs, as the row above says (section 5.14, item 9; EX-121).
+- **Item 2 stays `[UNMET]` for the `c_call` shape in the native form.** No remedy is made for that cell,
+  and nothing in this repository may describe the change as faster for it.
+
+The rulings were made after these verdicts were written and seen. They move no mark, re-run nothing, and
+accept no milestone and no change: the predeclared rule is still not met as a whole, and no reviewer has
+read this work.
+
+**Reviewer:** none.
+
+---
+
+## 8. Validity
+
+**Reproduction.** The collector's part: `python eng/collect-evidence.py --bundle VM-5-002 --out
+docs/evidence/vm-5-002 --rebench --skip-controls` from a checkout of the credit commit. Every other
+part: the commands in section 5.6, with the scripts, shapes, patch and probe in `measurement/`, a base
+worktree at `f127d92` outside the repository, and a C2 worktree at `e117162`. The scripts carry the
+absolute paths of the workstation they ran on, as they ran. **The re-collection**: the drivers in
+`r2/measurement/`, each named with its run in section 5.14, over the worktrees section 5.12 names; they
+read the first collection's shapes, probe and measurement patch from `measurement/`.
+
+**Expiry.** Everything here is true of the logs as retained. Rules H5 and L1 hold quoted figures to
+logs and cannot hold the logs to the checkout (EX-54). `hashes.txt` is what ties this bundle to the
+files it depends on.
+
+**The register was withdrawn from `hashes.txt` after this bundle was committed, and the bundle stood
+expired until it was.** As `c9afb0d` committed it, the third section of `hashes.txt` also named
+`docs/baselines.md`, as the register this bundle does not edit. That row tied the bundle to a file no
+run, figure or verdict here reads, and the design this work follows never named it. The records
+commit `ecf52bf` then added a dated note to the register, as that design's records section asks,
+which changed the file's bytes and none of its figures - and so hit the first trigger below. From
+that commit until the one that withdrew the row, this bundle was expired by its own rule. The row was
+withdrawn rather than the bundle re-collected, because what it was there to show - that the commit
+retaining this bundle left the register alone - is git's to show, and git shows it: `c9afb0d` changes
+nothing outside this directory. The register's figures are bound by rule L1 to the benchmark log of
+bundle VM-6-001, not to this bundle. `measurement/make-hashes.py` was changed with it, and now reads
+every tracked file at `34dbd7a` rather than at the checkout's head, so that running it again refuses
+a hashed file changed since that commit instead of hashing the change.
+
+*Corrected 2026-09-17, after a review of the re-collection:* the sentence above describes the script as
+it stood before the re-collection, and "now" in it is no longer true. Since the re-collection's commit the
+script reads every tracked file at the remedy head `16e3d6d`, as the last paragraph of this section says,
+and since a later correction its second set also names the bench host's sources (section 5.15).
+
+**Recertification triggers.** Any one of these invalidates this bundle:
+
+- a change to any file `hashes.txt` names, except a correction to a file this directory retains that is
+  made by a commit regenerating `hashes.txt` with it and listed in section 5.9 - without that exception
+  this bundle could not be corrected at all, and every such correction is listed where a reader looks
+  (*added 2026-09-17, after a review of the re-collection:* a correction made after the re-collection is
+  listed in section 5.15 instead);
+- a change to the metering path - the meter, the pre-admission table, the budget levels, the ambient
+  meter's resolution, the step-end settles, or the fixture executor's poll;
+- a change to the core contract version or the reason-registry revision;
+- **any change of machine** for a timing figure, E10 to E13 above all: they are absolute times on one
+  workstation that was not idle (EX-45);
+- an SDK change, since none is pinned (EX-03);
+- *added 2026-09-17, with the re-collection:* a change to the capability boundary's restore of the
+  context a capability was entered from - `VmRuntime.EnterCapability`, `VmRuntime.LeaveCapability` and
+  the members that carry their entry;
+- *added 2026-09-17, after a review of the re-collection:* a change to the bench host,
+  `src/tests/Broiler.VM.Bench.Host`, from whose `meter-per-instruction` and `host-call` rows rule item 4
+  and item 5 of section 5.11 are read. Its sources are now hashed in the second section of `hashes.txt`;
+  they are unchanged from the base `f127d92` to the remedy head, so both sides of every bench pair ran the
+  same host source.
+
+**The remedy expired this bundle, and the re-collection's commit is what ties it to the remedy head.**
+The remedy's product commits changed files `hashes.txt` named and the metering path, so from `9e9377d`
+until the commit that retains the re-collection this bundle was expired by the first two triggers above
+(section 5.10). That commit regenerated `hashes.txt` with `measurement/make-hashes.py` changed to read
+every tracked file at the remedy head `16e3d6d` instead of at `34dbd7a`; its second section now also names
+the files the remedy changed or rests on that it did not name before. So the triggers now read against
+the remedy head. The first collection's files stay hashed in its fourth section beside `r2/`, and the
+first collection's verdicts, in section 7.3, describe the tree of `34dbd7a` and not the remedy head.
+
+*Added 2026-09-17, after a review of the re-collection:* **that commit re-anchored the first trigger.**
+It changed `measurement/make-hashes.py`, a file of the first collection that `hashes.txt` named, in place,
+and section 5.9 does not list that change; it is not a correction under the trigger's exception but part of
+the recertification that regenerated `hashes.txt` against the remedy head, and the triggers read from that
+commit on. Corrections made after it are listed in section 5.15: the first of them to change a hashed file
+changed `measurement/make-hashes.py` again, to hash the bench host's sources, and regenerated `hashes.txt`
+with it.
+
+*Added 2026-09-17, after this bundle expired:* **commit `ddf706f` expired this bundle, by the first trigger
+above, through two generated files `hashes.txt` names.** That commit, of 2026-09-17, adds `JsBaselineBlocks`,
+the JavaScript profile's statement of its baseline block partition, to that profile's format assembly, with
+checks of it, and regenerates the component's generated review records `CODE-ASSURANCE.md`,
+`HUMAN_REVIEW.md` and `assurance.manifest.json`. The first section of `hashes.txt` names the first and the
+last of those. Every row of the first three sections of `hashes.txt`, which name tracked files, equals the
+digest of its file at `75ce956`, the parent of `ddf706f`. At `ddf706f` every one of those rows still does
+except the rows of `CODE-ASSURANCE.md` and `assurance.manifest.json`. No commit from the remedy head
+`16e3d6d` to `75ce956` changes a file those sections name. So `ddf706f` is the first commit since the remedy
+head to change a tracked file `hashes.txt` names, and this bundle is expired by the first trigger from that
+commit on.
+
+**The metering path is unchanged.** `git diff 16e3d6d ddf706f -- src/Broiler.VM.Runtime` prints nothing.
+So in source the meter, the pre-admission table, the budget levels, the ambient meter's resolution, the
+step-end settles and the capability boundary's restore are those of the remedy head, which the
+re-collection ran. The fixture executor's file and the bench host's sources are among the rows that still
+match at `ddf706f`. `git diff 16e3d6d ddf706f -- src/Broiler.VM.Abstractions src/Broiler.VM.Binary` prints
+nothing either, so the core contract version and the reason-registry revision are unchanged. No change that
+commit makes hits any other trigger in the list above.
+
+**The owner accepted this expiry on 2026-09-17, before `ddf706f` was committed.** The owner accepted it as
+a consequence of the JavaScript profile's per-block commits, which change files `hashes.txt` names, and
+asked for it to be noted in this bundle, with that profile's correction JSC-225 pointing here, and not in
+the core ledger, whose update rule 6 keeps profile work out of it. **Nothing is re-collected, and
+`hashes.txt` is not regenerated against a later head.** Its rows go on giving the digests of the files at
+the remedy head, and no figure, verdict or owner ruling of this bundle is re-read against `ddf706f` or any
+later commit. `measurement/make-hashes.py`, run from the repository root with this paragraph in place and
+the digests of the fifth section of `hashes.txt` as its argument, refuses with `REFUSED: CODE-ASSURANCE.md
+differs between 16e3d6d and the working copy` and writes nothing. That refusal is the script's guard against
+hashing a file changed since the retained commit, and it reports this expiry. So the correction that adds
+this paragraph leaves `hashes.txt` unchanged (section 5.15).
+
+*Added 2026-09-17, after a review of the note above:* **the owner ratified leaving `hashes.txt`
+unregenerated, on 2026-09-17, after the fact.** The owner's acceptance of this expiry had asked for the note
+to be made by a correction that regenerates `hashes.txt`. Commit `969118f`, which added the note, left
+`hashes.txt` unregenerated because `measurement/make-hashes.py` refused, and that was not put to the owner
+before the commit. A review named it, and the owner then ratified it.
+
+**A run with only the refusal lifted, reading tracked files at `16e3d6d` and writing outside the repository,
+reproduces `hashes.txt` byte for byte.** On 2026-09-17 a copy of `measurement/make-hashes.py` was made
+outside the repository, differing from the committed script in three places only: where the script refuses,
+the copy returns the file's bytes at `16e3d6d`, which are the bytes the script hashes in every case; its root
+names the repository, which the copy is not in; and it writes its output to a file outside the repository
+instead of to `hashes.txt`. The copy was run from the repository root, at `940b7d0` and again with this
+paragraph in place, with the digests of the fifth section of `hashes.txt` as its argument. Each run printed
+`hashes.txt: 197 tracked, 569 retained, 42 raw` and exited 0, and `cmp` of its output against `hashes.txt`
+printed nothing and exited 0. The committed script, run from the repository root in the same session,
+refused as the note above says and wrote nothing. Neither the committed script nor `hashes.txt` is
+changed.
+
+**The id JSC-225 was allocated at commit time.** The owner asked for a JSC entry pointing here, not for that
+id. The note above calls the entry "that profile's correction JSC-225" because `969118f` allocated the id
+when it committed the entry.
+
+---
+
+## 9. Exclusions
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-03 | Open | No SDK pin exists. `environment.txt` records what this machine resolved |
+| EX-42 | Open | The Native AOT publish on `win-x64` needs a `vcvars64` environment. The collector's fixtures-host, composition and bench-host publishes ran in one and succeeded; its feed-consumer publish runs in none and failed with MSB3073 |
+| EX-45 | Open | **One RID, one machine, one lane.** It binds hardest on E10 to E13: absolute times on one sixteen-processor workstation that was not idle |
+| EX-54 | Open | Rules H5 and L1 check document against log, not log against checkout |
+| EX-105 | Open | **Pre-admission is never exercised under an aggregate parent**, by design: a runtime with a parent never pre-admits. T11 shows it is refused there. Nothing shows a design that pre-admits under a parent. Closed by: a design that does, with its own evidence |
+| EX-106 | Open | **The table's capacity of four, the block limit, the block cap of twice the declared poll bound, the share divisor and single-victim eviction are choices made by argument.** The probe's `concurrent-bench` rows and the T6 timing are the only evidence about them, on one machine. *Narrowed 2026-09-17, after the remedy:* any settle ends a block, and so does a charge that does not fit what is left; the next locked fuel charge begins a new one. Twice the declared poll bound therefore sets how much fuel one holder holds back and, only for a meter charging in single units with nothing settling it, how often it takes the lock. The values are unchanged, and the re-collection's `concurrent-bench` rows and T6 timing are again the only evidence about them. Closed by: a measurement that varies each |
+| EX-107 | Open | **The concurrency and trace evidence drives internal types by reflection.** The probe binds `VmBudgetLevel.FuelPreAdmissions` and `VmFuelPreAdmissions.SettleAll` by name, because architecture rule A10 forbids exposing internals to another assembly; a rename breaks it silently into a base-shaped run. The in-tree evidence is the behavioural tests T4 to T7, T11 and T14, and the concurrent ones among them are sampled races. Closed by: nothing short of an internal test surface A10 would have to admit |
+| EX-108 | Open | **Wall-clock consumption figures are not held equal, and most other consumption figures are held by argument rather than by a run.** Less time is spent in the lock, so every wall-clock consumption moves, and no record may say "every figure". What the retained runs compare between the builds is narrower than every other dimension: fuel consumption, in E2's tests, E9's budget lines and E12's traces; runtime call-depth and live-byte consumption, in E9's budget lines for four programs; and verdicts, including which allowance a variant exhausted, in E7 and E8. That host-call, allocated-byte, verifier-work and nested-load consumption are unchanged is argued - a charge of any dimension but fuel never takes a block and runs the locked path as before - and no retained run compares those figures |
+| EX-109 | Open | **The second settle of a fuel retention has no deterministic test.** Only a concurrent locked fuel charge on another meter, landing between the retention's two lock sections, can pre-admit a block there. It rests on the invariant that every commit of fuel first checks room or settles every holder, and on the readers' argument in section 7.2 |
+| EX-110 | Open | **The step-end settle on the resume path, with the uncharged-work reader's settle, has no failing witness.** No witness removes the resume-path pair alone. W2 removes it together with the invocation-path step-end settle, and the only test that fails is the invocation-path row of T8: T10, the park-and-resume test, passes with the pair gone. The resume path is the same code shape as the invocation path, and that is what the pair rests on |
+| EX-111 | Open | **A remaining-correlated timing signal between concurrent operations of one runtime.** With two or more holders sharing a runtime or instance level, blocks shrink as that level nears its ceiling, so extra locked charges grow more frequent as the remainder falls, and a guest timing its own charges can learn roughly how much of the shared level remains. No remaining value becomes readable through the metering surface; a coarse one becomes timeable. ADR 0007's acceptance of timing as a channel covers runtimes under a shared aggregate parent, and says nothing about operations inside one runtime. The owner recorded this as an exclusion and declined the variant that refuses pre-admission near a shared ceiling, which would leak one threshold bit instead. *Added 2026-09-17, after the remedy:* with one holder the remedy adds no timeable bit - a poll now does the same work whatever is left, where the first collection's poll re-admitted and its cost depended on what was left, and a block is renewed by the next locked fuel charge at positions set by the meter's own spending and by the settles readers and other holders make. With two or more holders blocks still shrink with the shared remainder, at renewals rather than at polls, so the signal is unchanged in kind. Closed by: that variant, or a decision that accepts the signal |
+| EX-112 | Open | **No registered baseline shows the saving.** VM-5 funds optimisation only against a registered baseline, and the one registered row on this path, `meter-per-instruction`, polls after every charge and cannot show it; in this bundle that row is higher on the credit build. E10 and E12 show the saving and are bundle-local measurements. The owner recorded this as an exclusion: no windowed-polling baseline is registered, VM-6-001's benchmark log is not re-collected, and the figures in `docs/baselines.md` are not edited. *Added 2026-09-17:* after the remedy the row is at or below base in both pairs of the re-collection (section 6.9.4); it still polls after every charge and still cannot show the saving, and E10 and E12 remain bundle-local. Closed by: registering a windowed-polling measurement and collecting it before and after a change, or the performance owner recording the clause as unmet for this change |
+| EX-113 | Open | **The conformance parity is held except on predeclared base wall-clock rows**, which may become passes or other exhaustions in the credit build. In this collection no row differed, so the exception was not used; it stands because a wall-clock verdict belongs to the machine, and a later collection may need it |
+| EX-114 | Open for the first collection; closed 2026-09-17 for the remedy head | **After the thread-static fallback, two arms of the ambient lookup have no failing witness.** Dropping the context comparison fails T12 and no longer fails T7, and holding a lookup made with the flow suppressed fails no test: both tests put a second thread where a scope-wide field would have leaked across threads, and a per-thread answer cannot. Both are failures of rule item 1's witness clause. Closed by: a test that changes context on one thread in the way each arm guards, with a witness that fails it. *Closed for the remedy head 2026-09-17:* the lookup has three guards, not the two this row counted - the context comparison, the scope comparison, and the refusal to hold a lookup made with the flow suppressed - and the scope comparison, present since `34dbd7a`, had no witness in the first collection either. In the re-collection each fails a test written for it: W8, the context comparison dropped, fails T12 and T19; W23, the scope comparison dropped, fails T25; W12, the suppressed lookup held, fails T20 (section 6.9). Under each of those witnesses, the failing lookup reuses an answer held on its own thread. **W8 no longer names T7, and W12 no longer names T18: both tests still pass under them on the remedy head**, so the two-thread cases those tests were written for still have no failing witness, and rest on the resolved answer being held per thread (sections 5.14 item 9, 6.2 and 7.2). What closes this row for the remedy head is its own closing condition, a one-thread test per arm with a witness that fails it. This row stays true, unchanged, of the tree of `34dbd7a` |
+| EX-115 | Open | **Part of the low-fuel series was driven while the checkout was on another branch.** From 16:22:56 to 16:52:03 the main checkout was on `main`. Four bytecode runs at fuel 30,000 and 100,000, base and credit, were driven by `main`'s test262 driver, and the identity of the credit binaries they used rests on file timestamps, not on anything in the reports. Six native runs in that window were taken under the numeric manifest; they are retained apart as off-series and were not counted, and the native series at those fuel values was run again afterwards |
+| EX-116 | Open for the first collection; superseded 2026-09-17 for the remedy head | **The JavaScript and conformance evidence was taken before the resolution fallback.** E4 to E9 used the product at `c98011a`; the fallback changed `VmExecutionScope` alone, and the design's fallback clause asks for E1 to E4, E12 and the T6 timing again but not for E5 to E9. E4's inputs are unchanged across the fallback; E5 to E9 were not re-run on `34dbd7a`. Closed by: re-running E5 to E9 on the head. *Superseded for the remedy head 2026-09-17:* the re-collection ran the credit side of E5, E6, E7, E8 and E9 on the remedy head, and E4's inputs are unchanged to it (EX-119). This row stays true, unchanged, of the first collection's runs, which are retained |
+| EX-117 | Open for the first collection; closed 2026-09-17 for the re-collection | **Which build most runs used, and when several of them ran, rests on the procedure and on file-system times, not on a retained stamp.** E3's transcripts name their commit, and the binaries of E9 and of E10's second run survived for their stamps and digests to be retained after the fact. For E2's credit half, E4 to E8, E10's first run, E11, E12 and E13, no retained file names the commit or holds a digest of the binary the run used, and E7's base and credit reports and E5's plain transcripts are byte-identical, so their content cannot tell the builds apart. No transcript of E4 to E9 carries a time: the times of E7 and E8 - including that both credit test262 runs began after the predeclared rule was committed - are output-directory creation and write times read from the throwaway directory after a review, and E4 to E6 have no time of their own. Closed by: a driver that writes the binary's commit stamp, its digest and its start time into its own transcript. *Closed for the re-collection 2026-09-17:* every transcript under `r2/` begins with identity lines its driver wrote - the main checkout's branch and head, the tree and its head and changes, the build, the start time, and each binary's digest and stamp - with the exceptions section 5.14 names. *Narrowed 2026-09-17, after a review of the re-collection:* the sentence before this one says more than the files show, and closes the row only for which build each run used. The transcript of every run of a measured build under `r2/` apart from the collector's logs, for which `r2/collector-identity.txt` stands in, begins with those lines. Not every transcript under `r2/` does: the comparisons that carry the verdicts of E5, E6 and E9, the merge and report-digest transcripts of E7 and E8, and several others carry none, some carry them without a digest of the script or build they ran, and the digests of the run over the finished bundle were read before its own build. Section 5.14, item 5, lists every such transcript. This row stays true, unchanged, of the first collection's runs |
+| EX-118 | Open | **Octane (E11) was not re-collected after the remedy.** Its reports describe `34dbd7a`. No rule item reads it, and E7 and E8 carry the JavaScript correctness of the remedy head |
+| EX-119 | Open | **The profile assemblies (E4) were not rebuilt after the remedy.** Their equality rests on an empty source diff, retained, over every project in the reference closure of the two profile projects and the build-wide files, from `c98011a` - the tree E4's credit assemblies were built from - to the remedy head, and on the remedy changing only the runtime assembly, which neither profile assembly references |
+| EX-120 | Open | **The base sides of E5 to E9, the base `trace` and `stress` files, and the first collection's cold base build are reused.** The base build is unchanged, and the re-collection's base binaries are byte-identical to the first collection's where both are retained (section 5.12); the machine is the one section 4 records, restarted once during the re-collection. Where a reused base run's binaries are those whose identity EX-117 says is not retained - E5 to E8 - the reuse inherits that gap, and the base side of E8's bytecode runs at fuel 30,000 and 100,000 inherits EX-115 |
+| EX-121 | Open | **The readings of items 4 and 5 in section 5.11 were fixed after the first collection's result was seen**, under the owner's direction, so they are predeclared relative to the re-collection only. And every witness of E3 had been driven on the remedy's commits before `d5014f8` was committed, as development checks this bundle does not retain, so their results on the remedy head were known when the witness clause was fixed; E3 ran them again after that commit. *Extended 2026-09-17, after a review of the re-collection:* nor was the witness table itself committed before the runs. Section 5.11 refers to a table below it that `d5014f8` does not contain, and which tests each witness must fail was first committed by the re-collection's commit, as the table those development drives used; it names T19 for W8 and T20 for W12 where section 6.2 names T7 and T18, which still pass under them (section 5.14, item 9) |
+| EX-122 | Open | **The restore path of the capability boundary has no failing witness for its value-identity.** On the path it takes it gives every `AsyncLocal` reader what the write-back it replaces gave, so a test can fail only on a defect in its guards (W16, W18, and W22 for an entry that recorded no context), in the `return` that separates it from the write-back (W19), in the write-back it falls to (W17, W20), or in the path no longer being taken (W25). It rests on execution-context immutability, as the ambient resolution does. The restore-path test reaches the boundary through `VmCapabilityInvoker.Invoke`; that `VmCapabilityInvoker.InvokeBytes`, `VmRuntime.EnterProviderCall` and `VmArtifactLoadMediator.Answer` pass their entry through rests on reading |
+| EX-123 | Open | **C2′, the comparator of item 3's second part, is not a commit.** It is the remedy head with `VmExecutionScope.cs` taken from `e117162`, identified by that blob's id and by the digest of the runtime assembly built from it, which every `concurrent-ambient` file of C2′ carries in its identity lines. *Narrowed 2026-09-17, after a review of the re-collection:* **only the runtime assembly's digest is retained**, in the identity lines of `r2/e12/probe-concurrent-ambient-c2r.txt`. The blob id section 5.12 gives is `e117162`'s copy of that file, but it appears in no retained file: `r2/gates/build-c2r-runtime.log` and the C2′ probe file show only that the worktree's copy of `VmExecutionScope.cs` was modified, and the worktree was removed, so that the modification was that blob rests on the procedure |
+| EX-124 | Open | **That a poll reads the block as one cut under the gate rests on a sampled test.** The two-thread poll test runs a second thread charging the meter a step polls; W24, the read moved before the gate, fails it only when a renewal lands between the read and the lock. In E3 it failed on the first run |

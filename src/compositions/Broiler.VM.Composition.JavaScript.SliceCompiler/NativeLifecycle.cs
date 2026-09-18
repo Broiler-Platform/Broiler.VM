@@ -231,8 +231,8 @@ internal static class NativeLifecycle
     /// <summary>Runs an already-compiled wide artifact through the lifecycle <see cref="RunWide"/> describes.</summary>
     /// <remarks>
     /// <b>SEPARATE SO THAT A ROW CAN HAND IT BYTES NO COMPILATION WROTE</b> - a payload whose handler
-    /// call was moved to another slot, verified by the admitting door because re-emission would refuse
-    /// it before the run the row is about.
+    /// call was moved to another slot, handed to the admitting door so that what refuses it is the
+    /// template scan every image runs and not a re-emission only some images can make.
     /// </remarks>
     internal static WideAnswer RunWideArtifact(
         byte[] artifact,
@@ -478,6 +478,93 @@ internal static class NativeLifecycle
 
             return VmArtifactProviderAnswer.Provided(in descriptor, compiled.Artifact);
         }
+    }
+
+    /// <summary>
+    /// Reads the program a wide artifact's baseline form was emitted from back out of the artifact: its
+    /// code, its function rows and its exception regions, as a baseline image.
+    /// </summary>
+    /// <remarks>
+    /// <b>IT READS THE ARTIFACT FOR THE REASON <see cref="TryReadEmitted"/> DOES</b>: a row about the program
+    /// a payload was emitted from should hold what an artifact carries, not a projection the compiler never
+    /// wrote. The constant pool is not read, because the baseline form reads no constant, so the image's
+    /// constant arrays are empty; its operand-stack maximum is the deepest a function row declares.
+    /// </remarks>
+    internal static bool TryReadImage(byte[] artifact, out JsNativeProgramImage image, out string refusal)
+    {
+        image = null!;
+
+        var at = 4;
+        ReadVarUInt(artifact, ref at);
+        var manifest = ReadVarUInt(artifact, ref at);
+        at += (int)manifest;
+        var sections = ReadVarUInt(artifact, ref at);
+        byte[]? code = null;
+        JsFunctionRow[]? rows = null;
+        JsExceptionRegionRow[] regions = [];
+        var stack = 0u;
+
+        for (var index = 0u; index < sections; index++)
+        {
+            var kind = ReadVarUInt(artifact, ref at);
+            var length = (int)ReadVarUInt(artifact, ref at);
+            var cursor = at;
+            at += length;
+
+            if (kind == (uint)JsFormat.SectionKind.Code)
+            {
+                code = artifact[cursor..at];
+            }
+            else if (kind == (uint)JsFormat.SectionKind.Functions)
+            {
+                rows = new JsFunctionRow[ReadVarUInt(artifact, ref cursor)];
+
+                for (var row = 0; row < rows.Length; row++)
+                {
+                    rows[row] = new JsFunctionRow(
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor));
+
+                    stack = System.Math.Max(stack, rows[row].MaxOperandStack);
+                }
+            }
+            else if (kind == (uint)JsFormat.SectionKind.ExceptionRegions)
+            {
+                regions = new JsExceptionRegionRow[ReadVarUInt(artifact, ref cursor)];
+
+                for (var row = 0; row < regions.Length; row++)
+                {
+                    regions[row] = new JsExceptionRegionRow(
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor),
+                        ReadVarUInt(artifact, ref cursor),
+                        (JsFormat.HandlerKind)artifact[cursor++]);
+                }
+            }
+        }
+
+        if (code is null || rows is null || rows.Length == 0)
+        {
+            refusal = "the artifact carries no code section or no function table";
+            return false;
+        }
+
+        image = new JsNativeProgramImage(code, rows, [], [], stack)
+        {
+            Tier = JsNativeTier.Baseline,
+            Regions = regions,
+        };
+
+        refusal = string.Empty;
+        return true;
     }
 
     /// <summary>

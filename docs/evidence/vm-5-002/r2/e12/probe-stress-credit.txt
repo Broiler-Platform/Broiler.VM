@@ -1,0 +1,27 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[M docs/evidence/vm-5-002/README.md]
+# build=credit, probe stress
+# started=2026-09-17T08:20:39+02:00
+# binary=D:/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=14c4f4f5573fcdb7d574b53eb19430a027e11cbc316e4522d1af1ec5ea163568 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Abstractions.dll sha256=0bcb1254ff3a56700b3605b92d915b26db61e4cde122a744ea0a4bd6fbcd4db2 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=C:/Users/proof/AppData/Local/Temp/claude/D--Broiler-VM/cbafeab9-f73a-434e-9481-38837a0bebe7/scratchpad/impl/measure/probe2/bin/Release/net10.0/Probe.exe sha256=9c76003dfa6d83c2bf61e92019fb0c36478f416b75da0e65b4bbd2442925d0d0 version=1.0.0
+# binary=C:/Users/proof/AppData/Local/Temp/claude/D--Broiler-VM/cbafeab9-f73a-434e-9481-38837a0bebe7/scratchpad/impl/measure/probe2/bin/Release/net10.0/Probe.dll sha256=85b60d429a910da286c16f3e12bbfafe2e7691744623eab414c17591163c87fe version=1.0.0
+# probe variant=credit mode=stress bin=D:/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0
+# command=C:\Users\proof\AppData\Local\Temp\claude\D--Broiler-VM\cbafeab9-f73a-434e-9481-38837a0bebe7\scratchpad\impl\measure\probe2\bin\Release\net10.0\Probe.exe D:/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0 stress
+variant=net10.0 preAdmissionTable=True
+STRESS round=0 maxAmount=1 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=3009577 observerFailures=0
+STRESS round=0 maxAmount=3 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=1310216 observerFailures=0
+STRESS round=1 maxAmount=1 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=2107931 observerFailures=0
+STRESS round=1 maxAmount=3 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=1140170 observerFailures=0
+STRESS round=2 maxAmount=1 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=2458659 observerFailures=0
+STRESS round=2 maxAmount=3 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=1696539 observerFailures=0
+STRESS round=3 maxAmount=1 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=2514219 observerFailures=0
+STRESS round=3 maxAmount=3 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=889684 observerFailures=0
+STRESS round=4 maxAmount=1 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=1898178 observerFailures=0
+STRESS round=4 maxAmount=3 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=1185714 observerFailures=0
+stress_failures=0
+# exit=0
+# finished=2026-09-17T08:20:43

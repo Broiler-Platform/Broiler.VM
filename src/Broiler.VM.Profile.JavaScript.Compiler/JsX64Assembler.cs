@@ -916,12 +916,12 @@ public sealed class JsX64Assembler
     /// <c>jcc rel32</c> with its displacement left zero, answering the site the caller patches.
     /// </summary>
     /// <remarks>
-    /// <b>A BASELINE UNIT HAS A POTENTIAL TARGET AT EVERY INSTRUCTION, AND A LABEL EACH WOULD BE A
-    /// LIST EACH.</b> The label mechanism above holds a pending-site list per label, which is
-    /// right for a numeric unit with a handful of joins and wasteful for a form that binds every
-    /// bytecode offset of an artifact that can be megabytes long. So the baseline emitter keeps one
-    /// array of bound positions and one list of sites, and asks for the site here; what it owes in
-    /// return is that every site it was handed is patched before it takes the bytes, which it checks.
+    /// <b>A BASELINE UNIT HAS A POTENTIAL TARGET AT EVERY ENTRY OF ITS LAYOUT, AND A LABEL EACH WOULD
+    /// BE A LIST EACH.</b> The label mechanism above holds a pending-site list per label, which is
+    /// right for a numeric unit with a handful of joins and wasteful for a form whose layout can run
+    /// to millions of entries. So the baseline emitter keeps one array of bound positions and one
+    /// array of sites, each as long as the layout, and asks for the site here; what it owes in return
+    /// is that every site it was handed is patched before it takes the bytes, which it checks.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=D48702
     // Broiler-Falsified-If: this emits a short conditional form, or answers a site that is not the first byte of the four-byte displacement

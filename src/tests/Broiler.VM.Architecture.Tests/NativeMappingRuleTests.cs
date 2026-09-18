@@ -219,6 +219,7 @@ public sealed class NativeMappingRuleTests
             ("X1", () => NativeMappingRules.X1(Tree)),
             ("X2", () => NativeBaselineRuleTests.X2Report()),
             ("X3", () => NativeBaselineRuleTests.X3(Tree)),
+            ("X4", () => NativeBaselineRuleTests.X4(Tree)),
         ]);
 
         if (RuleReport.Destination is { } destination)

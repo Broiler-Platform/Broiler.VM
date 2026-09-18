@@ -1,0 +1,24 @@
+applied W12 to src/Broiler.VM.Runtime/VmExecutionScope.cs
+applied W12 to src/Broiler.VM.Runtime/VmExecutionScope.cs
+diff --git a/src/Broiler.VM.Runtime/VmExecutionScope.cs b/src/Broiler.VM.Runtime/VmExecutionScope.cs
+index b069614..f3198f8 100644
+--- a/src/Broiler.VM.Runtime/VmExecutionScope.cs
++++ b/src/Broiler.VM.Runtime/VmExecutionScope.cs
+@@ -111,8 +111,7 @@ internal sealed class VmExecutionScope
+         {
+             var context = System.Threading.ExecutionContext.Capture();
+ 
+-            if (context is not null &&
+-                ReferenceEquals(resolvedScope, this) &&
++            if (ReferenceEquals(resolvedScope, this) &&
+                 ReferenceEquals(resolvedContext, context))
+             {
+                 return resolvedMeter;
+@@ -120,7 +119,6 @@ internal sealed class VmExecutionScope
+ 
+             var meter = current.Value;
+ 
+-            if (context is not null)
+             {
+                 resolvedScope = this;
+                 resolvedContext = context;

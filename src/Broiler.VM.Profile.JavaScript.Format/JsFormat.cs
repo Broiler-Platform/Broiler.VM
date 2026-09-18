@@ -425,6 +425,11 @@ public static class JsFormat
     /// multiple of the bytecode it is given. The ceiling does not move for it: a program whose emitted
     /// code would pass this bound is refused whole at compile time, with a message naming the ceiling,
     /// and the bound stays what a payload may declare.)</i>
+    /// <i>(Corrected 2026-09-17. "A call sequence and a branch tail for every instruction" stopped being
+    /// true when the baseline emitter began calling a handler only at the block heads of
+    /// <see cref="JsBaselineBlocks"/>' partition. It writes a call sequence and a tail for every block
+    /// head, and a block head can be every instruction, so its output can still be a far larger multiple
+    /// of the bytecode it is given. The rest of the note above stands, the ceiling included.)</i>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9A9EA9
     // Broiler-Human:        PENDING

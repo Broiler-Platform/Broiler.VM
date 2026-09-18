@@ -1,0 +1,15 @@
+applied W16 to src/Broiler.VM.Runtime/VmRuntime.cs
+diff --git a/src/Broiler.VM.Runtime/VmRuntime.cs b/src/Broiler.VM.Runtime/VmRuntime.cs
+index 79f7485..b2437c3 100644
+--- a/src/Broiler.VM.Runtime/VmRuntime.cs
++++ b/src/Broiler.VM.Runtime/VmRuntime.cs
+@@ -719,8 +719,7 @@ public sealed partial class VmRuntime : System.IDisposable
+     {
+         if (reentrancy is VmCapabilityReentrancy.NonReentrant)
+         {
+-            if (entry.Before is not null &&
+-                ReferenceEquals(System.Threading.ExecutionContext.Capture(), entry.Inside))
++            if (entry.Before is not null)
+             {
+                 System.Threading.ExecutionContext.Restore(entry.Before);
+                 return;

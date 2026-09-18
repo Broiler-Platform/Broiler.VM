@@ -1,0 +1,20 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[M docs/evidence/vm-5-002/README.md]
+# build=e8 comparison
+# started=2026-09-17T08:10:20+02:00
+# binary=eng/compare-test262-forms.py sha256=536c6385709a893f79f9ed7795f413a5c49ba7fbf217f04e0c2e3ef778e9b00d version=(no version resource)
+# command=python eng/compare-test262-forms.py --same-form --suite artifacts/t262/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e <retained base report> <re-collection credit report>
+# reference D:/Broiler.VM/artifacts/fc/rc/base-reports/e8/low-base-native-1000.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-win64); fuel 1000; wall 600000 ms
+#   total|9295|18329|14924|1044|52|2256|53
+# candidate D:/Broiler.VM/artifacts/fc/rc/low-credit-native-1000/test262.report
+#   manifest broiler.javascript.wide; harness loaded; form native (x86-64-win64); fuel 1000; wall 600000 ms
+#   total|9295|18329|14924|1044|52|2256|53
+# same-form: two native runs, from two builds, read on either side - class (c') is admitted at any wall allowance, because two builds differ in speed by construction and were run at different times; classes (a) and (b) are read on either side; class (b) is not admitted without --exempt-guest-loads
+# 18329 variants in both reports, 0 differ; 0 variant(s) present in only one report were ignored
+
+# every difference is in an admitted class
+# exit=0

@@ -1,0 +1,13 @@
+applied W5 to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index 1f0287d..0a31b06 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -215,7 +215,6 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+         {
+             lock (gate)
+             {
+-                runtime.FuelPreAdmissions!.Settle(this);
+                 return invocation.AsRemainingVector();
+             }
+         }

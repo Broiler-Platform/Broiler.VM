@@ -1,0 +1,14 @@
+# probe variant=base mode=stress bin=D:/Broiler.VM-base/src/Broiler.VM.Runtime/bin/Release/net10.0
+# started=2026-09-16T17:42:19
+variant=net10.0 preAdmissionTable=False
+STRESS round=0 maxAmount=1 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=5321205 observerFailures=0
+STRESS round=0 maxAmount=3 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=4105533 observerFailures=0
+STRESS round=1 maxAmount=1 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=7589905 observerFailures=0
+STRESS round=1 maxAmount=3 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=3161100 observerFailures=0
+STRESS round=2 maxAmount=1 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=6607352 observerFailures=0
+STRESS round=2 maxAmount=3 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=3585473 observerFailures=0
+STRESS round=3 maxAmount=1 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=7160559 observerFailures=0
+STRESS round=3 maxAmount=3 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=3589556 observerFailures=0
+STRESS round=4 maxAmount=1 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=6481120 observerFailures=0
+STRESS round=4 maxAmount=3 PASS admitted=2000000 runtime=2000000 perMeter=True scopes=True exact=True observerReads=3309906 observerFailures=0
+stress_failures=0

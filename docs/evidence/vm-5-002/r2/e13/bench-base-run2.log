@@ -1,0 +1,128 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM-base
+# tree-head=f127d92a03f92281de3a27438eae22903a70f316
+# tree-changes=[M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs]
+# build=base, bench host pair 2
+# started=2026-09-17T08:24:31+02:00
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Bench.Host/bin/Release/net10.0/Broiler.VM.Bench.Host.exe sha256=6f385262f027a9955b6f03d8278c26f5fb2c02d3477bd75967c1b686150d4326 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Bench.Host/bin/Release/net10.0/Broiler.VM.Bench.Host.dll sha256=66fc5218bb40e8fc4b012f8b6874e73dbd7b9f2ff5d73b0f84b84f253e93def1 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Bench.Host/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=43e52ac9b159aed0233f2dda9cc25b73203caade40ae62e546c7298f46051fc0 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# command=dotnet run --project src/tests/Broiler.VM.Bench.Host -c Release --no-build
+# broiler-vm-bench core-contract-version=1 repetitions=7 warmup=3
+# gc server=False latency=Batch processors=16
+startup first-verification-ms=128.4
+image process-bytes=162816 deployment-bytes=1084286 core-bytes=165376 runtime-identifier=win-x64 aot=False
+  independence before runtimes-created=231 invoke-bytes=10104 asynclocal-bytes=72
+headroom guest-loads-per-runtime=64 stopped-by=ResourceExhaustion/AllowanceExhausted/NestedLoadFanOut/Instance loads-per-runtime-in-lane=1 lane-iterations=300
+# verify-throughput: verification of a large artifact against a raw pass over the same bytes
+measurement verify-throughput unit=byte candidate-ns=548639.0 control-ns=2018.5 difference-ns=546620.5 per-byte-ns=69.2889 aa-ns=7164.5 valid=yes candidate-alloc=33664 control-alloc=0 gen0=0 gen1=0 gen2=0 iterations=200 repetitions=7
+  rep verify-throughput 0 candidate-ns=562913.5 control-ns=2584.0 aa-ns=550804.0 candidate-alloc=33664 control-alloc=0
+  rep verify-throughput 1 candidate-ns=548639.0 control-ns=1996.5 aa-ns=543166.0 candidate-alloc=33664 control-alloc=0
+  rep verify-throughput 2 candidate-ns=558697.0 control-ns=2043.5 aa-ns=558877.5 candidate-alloc=33664 control-alloc=0
+  rep verify-throughput 3 candidate-ns=551297.0 control-ns=1996.5 aa-ns=541474.5 candidate-alloc=33664 control-alloc=0
+  rep verify-throughput 4 candidate-ns=542067.5 control-ns=1985.5 aa-ns=538200.5 candidate-alloc=33664 control-alloc=0
+  rep verify-throughput 5 candidate-ns=539228.5 control-ns=2018.5 aa-ns=539049.0 candidate-alloc=33664 control-alloc=0
+  rep verify-throughput 6 candidate-ns=535251.0 control-ns=2173.0 aa-ns=536053.5 candidate-alloc=33664 control-alloc=0
+# verify-per-declared-count: verifying a four-thousand-constant pool against a two-thousand-constant one
+measurement verify-per-declared-count unit=constant candidate-ns=541387.5 control-ns=264822.5 difference-ns=276565.0 per-constant-ns=138.2825 aa-ns=2193.0 valid=yes candidate-alloc=33664 control-alloc=17664 gen0=0 gen1=0 gen2=0 iterations=200 repetitions=7
+  rep verify-per-declared-count 0 candidate-ns=540736.5 control-ns=263632.5 aa-ns=537019.0 candidate-alloc=33664 control-alloc=17664
+  rep verify-per-declared-count 1 candidate-ns=542036.0 control-ns=264822.5 aa-ns=539194.5 candidate-alloc=33664 control-alloc=17664
+  rep verify-per-declared-count 2 candidate-ns=541387.5 control-ns=262185.0 aa-ns=536989.0 candidate-alloc=33664 control-alloc=17664
+  rep verify-per-declared-count 3 candidate-ns=535262.5 control-ns=268967.0 aa-ns=529063.5 candidate-alloc=33664 control-alloc=17664
+  rep verify-per-declared-count 4 candidate-ns=530034.0 control-ns=261474.5 aa-ns=542322.5 candidate-alloc=33664 control-alloc=17664
+  rep verify-per-declared-count 5 candidate-ns=551912.0 control-ns=269521.0 aa-ns=599781.0 candidate-alloc=33664 control-alloc=17664
+  rep verify-per-declared-count 6 candidate-ns=610748.0 control-ns=309808.0 aa-ns=593766.0 candidate-alloc=33664 control-alloc=17664
+# catalog-construction: building a two-profile catalog against building the same two descriptors into an array
+measurement catalog-construction unit=profile candidate-ns=2014.5 control-ns=51.5 difference-ns=1963.0 per-profile-ns=981.5000 aa-ns=47.0 valid=yes candidate-alloc=3040 control-alloc=112 gen0=0 gen1=0 gen2=0 iterations=2000 repetitions=7
+  rep catalog-construction 0 candidate-ns=2364.8 control-ns=66.1 aa-ns=2591.9 candidate-alloc=3040 control-alloc=112
+  rep catalog-construction 1 candidate-ns=2095.7 control-ns=40.3 aa-ns=1927.1 candidate-alloc=3040 control-alloc=112
+  rep catalog-construction 2 candidate-ns=2025.2 control-ns=56.5 aa-ns=2012.0 candidate-alloc=3040 control-alloc=112
+  rep catalog-construction 3 candidate-ns=1999.0 control-ns=46.8 aa-ns=1867.8 candidate-alloc=3040 control-alloc=112
+  rep catalog-construction 4 candidate-ns=1850.5 control-ns=51.5 aa-ns=1967.5 candidate-alloc=3040 control-alloc=112
+  rep catalog-construction 5 candidate-ns=2014.5 control-ns=46.2 aa-ns=1863.4 candidate-alloc=3040 control-alloc=112
+  rep catalog-construction 6 candidate-ns=1864.5 control-ns=53.7 aa-ns=2080.7 candidate-alloc=3040 control-alloc=112
+# catalog-lookup: resolving a profile by identity against comparing the same identity
+measurement catalog-lookup unit=lookup candidate-ns=14.5 control-ns=5.2 difference-ns=9.3 per-lookup-ns=9.3045 aa-ns=0.1 valid=yes candidate-alloc=0 control-alloc=0 gen0=0 gen1=0 gen2=0 iterations=200000 repetitions=7
+  rep catalog-lookup 0 candidate-ns=14.4 control-ns=6.1 aa-ns=14.2 candidate-alloc=0 control-alloc=0
+  rep catalog-lookup 1 candidate-ns=13.9 control-ns=5.1 aa-ns=14.7 candidate-alloc=0 control-alloc=0
+  rep catalog-lookup 2 candidate-ns=14.8 control-ns=5.2 aa-ns=14.5 candidate-alloc=0 control-alloc=0
+  rep catalog-lookup 3 candidate-ns=15.1 control-ns=5.3 aa-ns=14.9 candidate-alloc=0 control-alloc=0
+  rep catalog-lookup 4 candidate-ns=14.5 control-ns=5.1 aa-ns=14.2 candidate-alloc=0 control-alloc=0
+  rep catalog-lookup 5 candidate-ns=14.0 control-ns=5.2 aa-ns=13.8 candidate-alloc=0 control-alloc=0
+  rep catalog-lookup 6 candidate-ns=15.6 control-ns=5.7 aa-ns=15.0 candidate-alloc=0 control-alloc=0
+# runtime-create-dispose: creating and disposing a two-profile runtime against a one-profile runtime
+measurement runtime-create-dispose unit=profile candidate-ns=2160.8 control-ns=1445.0 difference-ns=715.9 per-profile-ns=715.8500 aa-ns=24.5 valid=yes candidate-alloc=6512 control-alloc=4696 gen0=0 gen1=0 gen2=0 iterations=2000 repetitions=7
+  rep runtime-create-dispose 0 candidate-ns=4253.2 control-ns=2026.8 aa-ns=2035.4 candidate-alloc=6512 control-alloc=4696
+  rep runtime-create-dispose 1 candidate-ns=2085.7 control-ns=1362.7 aa-ns=2037.9 candidate-alloc=6512 control-alloc=4696
+  rep runtime-create-dispose 2 candidate-ns=2106.9 control-ns=1702.2 aa-ns=2276.0 candidate-alloc=6512 control-alloc=4696
+  rep runtime-create-dispose 3 candidate-ns=2160.8 control-ns=1445.0 aa-ns=2251.2 candidate-alloc=6512 control-alloc=4696
+  rep runtime-create-dispose 4 candidate-ns=2102.0 control-ns=1449.6 aa-ns=2136.3 candidate-alloc=6512 control-alloc=4696
+  rep runtime-create-dispose 5 candidate-ns=2169.5 control-ns=1420.8 aa-ns=2210.0 candidate-alloc=6512 control-alloc=4696
+  rep runtime-create-dispose 6 candidate-ns=2173.6 control-ns=1372.8 aa-ns=2085.9 candidate-alloc=6512 control-alloc=4696
+# meter-per-instruction: one invocation with fuel charging against the same executor with charging off
+measurement meter-per-instruction unit=instruction candidate-ns=23136.5 control-ns=16156.0 difference-ns=6980.5 per-instruction-ns=27.2677 aa-ns=317.9 valid=yes candidate-alloc=1528 control-alloc=1528 gen0=1 gen1=0 gen2=0 iterations=20000 repetitions=7
+  rep meter-per-instruction 0 candidate-ns=23284.5 control-ns=16129.2 aa-ns=23671.2 candidate-alloc=1528 control-alloc=1528
+  rep meter-per-instruction 1 candidate-ns=23314.1 control-ns=16887.3 aa-ns=24518.2 candidate-alloc=1528 control-alloc=1528
+  rep meter-per-instruction 2 candidate-ns=23136.5 control-ns=16081.1 aa-ns=22785.4 candidate-alloc=1528 control-alloc=1528
+  rep meter-per-instruction 3 candidate-ns=22926.8 control-ns=16156.0 aa-ns=23454.3 candidate-alloc=1528 control-alloc=1528
+  rep meter-per-instruction 4 candidate-ns=23173.9 control-ns=16151.5 aa-ns=23097.1 candidate-alloc=1528 control-alloc=1528
+  rep meter-per-instruction 5 candidate-ns=22959.9 control-ns=16200.2 aa-ns=24083.0 candidate-alloc=1528 control-alloc=1528
+  rep meter-per-instruction 6 candidate-ns=22948.3 control-ns=16820.8 aa-ns=22815.0 candidate-alloc=1528 control-alloc=1528
+# host-call: an artifact that makes one host call against the same shape without one
+measurement host-call unit=call candidate-ns=1183.2 control-ns=1014.8 difference-ns=168.4 per-call-ns=168.4000 aa-ns=19.5 valid=yes candidate-alloc=1800 control-alloc=1528 gen0=2 gen1=0 gen2=0 iterations=20000 repetitions=7
+  rep host-call 0 candidate-ns=1143.1 control-ns=1000.5 aa-ns=1178.6 candidate-alloc=1800 control-alloc=1528
+  rep host-call 1 candidate-ns=1183.2 control-ns=996.5 aa-ns=1147.7 candidate-alloc=1800 control-alloc=1528
+  rep host-call 2 candidate-ns=1229.4 control-ns=1062.0 aa-ns=1167.9 candidate-alloc=1800 control-alloc=1528
+  rep host-call 3 candidate-ns=1228.1 control-ns=1028.7 aa-ns=1179.3 candidate-alloc=1800 control-alloc=1528
+  rep host-call 4 candidate-ns=1174.5 control-ns=1010.1 aa-ns=1163.6 candidate-alloc=1800 control-alloc=1528
+  rep host-call 5 candidate-ns=1310.9 control-ns=1015.0 aa-ns=1163.7 candidate-alloc=1800 control-alloc=1528
+  rep host-call 6 candidate-ns=1152.1 control-ns=1014.8 aa-ns=1160.6 candidate-alloc=1800 control-alloc=1528
+# diagnostics-capture: building a fully identified diagnostics record against its minimal form
+measurement diagnostics-capture unit=record candidate-ns=127.7 control-ns=28.0 difference-ns=99.7 per-record-ns=99.6830 aa-ns=0.6 valid=yes candidate-alloc=56 control-alloc=0 gen0=0 gen1=0 gen2=0 iterations=200000 repetitions=7
+  rep diagnostics-capture 0 candidate-ns=124.8 control-ns=28.2 aa-ns=125.5 candidate-alloc=56 control-alloc=0
+  rep diagnostics-capture 1 candidate-ns=127.7 control-ns=28.2 aa-ns=130.5 candidate-alloc=56 control-alloc=0
+  rep diagnostics-capture 2 candidate-ns=127.4 control-ns=27.8 aa-ns=127.4 candidate-alloc=56 control-alloc=0
+  rep diagnostics-capture 3 candidate-ns=128.5 control-ns=27.4 aa-ns=128.0 candidate-alloc=56 control-alloc=0
+  rep diagnostics-capture 4 candidate-ns=126.9 control-ns=28.0 aa-ns=128.3 candidate-alloc=56 control-alloc=0
+  rep diagnostics-capture 5 candidate-ns=128.6 control-ns=27.8 aa-ns=130.0 candidate-alloc=56 control-alloc=0
+  rep diagnostics-capture 6 candidate-ns=180.4 control-ns=30.6 aa-ns=137.9 candidate-alloc=56 control-alloc=0
+# guest-load-mediation: mediated guest-initiated loads against the same loads performed by the host itself
+measurement guest-load-mediation unit=load candidate-ns=7491.0 control-ns=6822.7 difference-ns=668.3 per-load-ns=668.3333 aa-ns=454.7 valid=yes candidate-alloc=12128 control-alloc=11776 gen0=0 gen1=0 gen2=0 iterations=300 repetitions=7
+  rep guest-load-mediation 0 candidate-ns=8214.3 control-ns=7792.3 aa-ns=7995.7 candidate-alloc=12128 control-alloc=11776
+  rep guest-load-mediation 1 candidate-ns=7900.0 control-ns=8058.0 aa-ns=8706.0 candidate-alloc=12128 control-alloc=11776
+  rep guest-load-mediation 2 candidate-ns=7744.3 control-ns=7044.7 aa-ns=7461.7 candidate-alloc=12128 control-alloc=11776
+  rep guest-load-mediation 3 candidate-ns=7432.3 control-ns=6735.0 aa-ns=8533.0 candidate-alloc=12128 control-alloc=11776
+  rep guest-load-mediation 4 candidate-ns=7409.3 control-ns=6629.0 aa-ns=7945.7 candidate-alloc=12128 control-alloc=11776
+  rep guest-load-mediation 5 candidate-ns=7375.7 control-ns=6638.3 aa-ns=7790.3 candidate-alloc=12128 control-alloc=11776
+  rep guest-load-mediation 6 candidate-ns=7491.0 control-ns=6822.7 aa-ns=7630.0 candidate-alloc=12128 control-alloc=11776
+# envelope-read: projecting a typed payload out of a result against reading its category alone
+measurement envelope-read unit=projection candidate-ns=16.9 control-ns=1.9 difference-ns=15.0 per-projection-ns=15.0390 aa-ns=0.2 valid=yes candidate-alloc=0 control-alloc=0 gen0=0 gen1=0 gen2=0 iterations=200000 repetitions=7
+  rep envelope-read 0 candidate-ns=16.6 control-ns=1.9 aa-ns=16.9 candidate-alloc=0 control-alloc=0
+  rep envelope-read 1 candidate-ns=16.7 control-ns=1.9 aa-ns=17.2 candidate-alloc=0 control-alloc=0
+  rep envelope-read 2 candidate-ns=16.9 control-ns=1.9 aa-ns=17.4 candidate-alloc=0 control-alloc=0
+  rep envelope-read 3 candidate-ns=17.1 control-ns=1.9 aa-ns=16.9 candidate-alloc=0 control-alloc=0
+  rep envelope-read 4 candidate-ns=17.1 control-ns=2.0 aa-ns=17.2 candidate-alloc=0 control-alloc=0
+  rep envelope-read 5 candidate-ns=17.0 control-ns=1.9 aa-ns=16.9 candidate-alloc=0 control-alloc=0
+  rep envelope-read 6 candidate-ns=16.9 control-ns=1.9 aa-ns=17.8 candidate-alloc=0 control-alloc=0
+  fan-out loads=0 mediated-ns=6186 mediated-bytes=10104 direct-ns=5503 direct-bytes=10104 mediation-ns=683 mediation-bytes=0
+  fan-out loads=1 mediated-ns=7826 mediated-bytes=12128 direct-ns=7004 direct-bytes=11776 mediation-ns=822 mediation-bytes=352
+  fan-out loads=2 mediated-ns=10117 mediated-bytes=14152 direct-ns=8684 direct-bytes=13448 mediation-ns=1433 mediation-bytes=704
+  fan-out loads=3 mediated-ns=13185 mediated-bytes=16184 direct-ns=10404 direct-bytes=15128 mediation-ns=2782 mediation-bytes=1056
+  fan-out loads=4 mediated-ns=15134 mediated-bytes=18208 direct-ns=11962 direct-bytes=16800 mediation-ns=3172 mediation-bytes=1408
+  fan-out loads=6 mediated-ns=19400 mediated-bytes=22256 direct-ns=15305 direct-bytes=20144 mediation-ns=4096 mediation-bytes=2112
+  fan-out loads=8 mediated-ns=24649 mediated-bytes=26312 direct-ns=30942 direct-bytes=23496 mediation-ns=-6293 mediation-bytes=2816
+fan-out series=0,1,2,3,4,6,8 iterations=200 note=mediation-cost-rises-with-loads-per-operation
+  independence after runtimes-created=72847 invoke-bytes=10104 asynclocal-bytes=72
+independence held=yes invoke-bytes=10104->10104 asynclocal-bytes=72->72 runtimes-created=72847
+  plateau round=0 cycles=4000 resident-bytes=48209920 managed-bytes=304200
+  plateau round=1 cycles=8000 resident-bytes=47980544 managed-bytes=304200
+  plateau round=2 cycles=12000 resident-bytes=47964160 managed-bytes=304200
+  plateau round=3 cycles=16000 resident-bytes=47964160 managed-bytes=304200
+  plateau round=4 cycles=20000 resident-bytes=47964160 managed-bytes=304200
+  plateau round=5 cycles=24000 resident-bytes=47964160 managed-bytes=304200
+plateau rounds=6 cycles-per-round=4000 settled-bytes=47980544 final-bytes=47964160 growth-bytes=-16384 held=yes
+# elapsed-ms=19732 measurements=10 invalid=0
+broiler-vm-bench: 10 measurements, every A/A lane inside its effect
+# exit=0
+# finished=2026-09-17T08:24:52+02:00

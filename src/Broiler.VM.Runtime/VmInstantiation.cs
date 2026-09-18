@@ -146,7 +146,7 @@ internal static class VmInstantiation
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=92E293
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=4962CD
     // Broiler-Falsified-If: the scope is entered with no owning operation, or the switch tests no host failure or poll bound
     // Broiler-Human:        PENDING
     private static VmInstantiationResult Instantiate(
@@ -226,6 +226,11 @@ internal static class VmInstantiation
         finally
         {
             profileState.Scope.Leave();
+
+            // Hygiene. Instantiation never reads the uncharged-work counter, so nothing observable
+            // rests on this - but the meter is finished with, and its fuel belongs at the levels
+            // rather than in a table slot another operation could have used.
+            meter.SettlePreAdmittedFuel();
         }
 
         if (meter.CancellationObserved)

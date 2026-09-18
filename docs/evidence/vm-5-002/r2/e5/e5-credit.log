@@ -1,0 +1,16 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[]
+# build=credit
+# started=2026-09-16T22:58:52+02:00
+# binary=D:/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.exe sha256=81190b87b07dbe319debfaea6aef59004d0443691a8008282b302fd2413cbd1f version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll sha256=52122bf546a208af65561f40ca39a7513a1d479565536f09aa95829380f1eccd version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=14c4f4f5573fcdb7d574b53eb19430a027e11cbc316e4522d1af1ec5ea163568 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# command=dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler -c Release --no-build -- --checks
+SKIP not-run/native/baseline/entry-points-survive/x86-64-sysv: this machine uses x86-64-win64, so a unit emitted for x86-64-sysv was not entered; its bytes are held by the baseline closure, golden and cross-convention rows on every machine
+SKIP not-run/native/baseline/a-misaligned-reservation-is-caught/x86-64-sysv: this machine uses x86-64-win64, so a unit emitted for x86-64-sysv was not entered; its bytes are held by the baseline closure, golden and cross-convention rows on every machine
+broiler-js-slice-compiler: 196 checks passed, 2 not run on this machine and claimed by nothing
+# exit=0
+# finished=2026-09-16T22:59:12+02:00

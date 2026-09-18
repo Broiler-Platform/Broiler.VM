@@ -1,0 +1,413 @@
+# THE NATIVE STACK ONE JAVASCRIPT CALL LEVEL COSTS, MEASURED ON linux-x64. A button, and nothing
+# else calls it.
+#
+# WHAT IT MEASURES. eng/measure-frame-cost.py bisects, one child process per trial, for the deepest
+# recursion that returns and the deepest that throws. It does that for one shape family (the route a
+# level nests through) in one output form. This workflow runs the script for every family the script
+# has, in both forms, on a hosted x86-64 Linux runner. There the native form is emitted for
+# `x86-64-sysv`, which a Windows workstation cannot enter. The stage bundle JSB-12-001 reads these
+# logs for the linux-x64 half of its depth clause; a workstation measures the win-x64 half.
+#
+# WHY THE BOUNDS ARE LIFTED. A released build refuses a recursion at `JsEngine.MaximumCallDepth`
+# and at the profile's declared call-depth maximum. Wherever one of those comes before the stack, a
+# log reports what the build promises and not what the stack holds. The capacity is measured on a
+# build with both bounds raised, and the patch that raises them is a file of the stage bundle:
+# `docs/evidence/jsb-12-001/lifted-bounds.patch` under the profile. The workstation runs, this
+# workflow and the bundle all apply that one committed file. A ref without it FAILS in the plan job
+# and says so. The workflow never writes its own patch, and it never measures an unpatched build
+# under the lifted name.
+#
+# `bounds: released` runs the same loop on the build as committed, with no patch. That is the half of
+# the depth clause that reads released-bounds logs, on this runtime identifier. `both` takes the two
+# in one run.
+#
+# WHY THE FAMILIES ARE READ FROM THE SCRIPT AND NOT LISTED HERE. The route table the stage predeclares
+# names only families the script has, and the script at the measured ref is the one that runs. A list
+# written here would be a second copy of `SHAPES` that could drift from the first. A family added to
+# the script is then measured without an edit to this file, and one this file forgot cannot go
+# unmeasured. The plan job prints the list it read.
+#
+# WHY ONE JOB PER BOUNDS, FAMILY AND FORM: IT IS WHAT MAKES THE TIME LIMIT AN ARGUMENT RATHER THAN A
+# GUESS. One job makes two bisections, returning and throwing. A bisection over 1..CEILING probes both
+# ends, then at most ceil(log2(CEILING - 1)) points between them. For the ceiling below, 100000, that
+# is 17, so a bisection runs at most 19 child processes. The script cuts each child at `--timeout`,
+# passed below as 300 seconds. So one job's measurement takes at most 2 x 19 x 300 s = 11,400 s, or
+# 190 minutes, however the build behaves. The measuring step's own limit is 195 minutes, which leaves
+# the script's work between children and the kill of a child that ran out. It is a step limit so the
+# upload after it still runs when it fires. The job's limit adds 30 minutes for checkout, the SDK, the
+# build and the upload. Those minutes are an allowance and not a derivation. The total stays under the
+# six hours a hosted job may run. One job over every family would have a bound many times that limit,
+# so no limit it could be given would be an argument.
+#
+# The matrix is the families times two forms times the bounds asked for, and a hosted run takes at
+# most 256 jobs. The plan job refuses a run that would exceed that, rather than letting GitHub reject
+# it with a message about matrices.
+#
+# EVERY JOB MEASURES THE SAME COMMIT. The plan job resolves the input ref once, and every other job
+# checks out that commit, so a branch that moves during the run cannot hand two families two builds.
+# Each job builds its own binary from its own tree. `--source-tree .` then prints the commit, whether
+# the tree was dirty (the patch makes it so) and `PerOpcodeSteps` from the tree the binary came from,
+# not from a copy.
+#
+# WHAT FAILS THIS WORKFLOW.
+#   - A ref without the patch when the lifted bounds are asked for, or a patch that does not apply.
+#   - A runner that is not x86-64.
+#   - A build warning.
+#   - A family whose script run exits anything but 0. The script exits 1 when a recursion killed the
+#     process, when the two depths disagree, or when one depth met a bound and the other met the
+#     stack. Each of those is a finding, and none is a smaller number.
+#   - A log the collect job expected and did not receive.
+# The logs are uploaded whatever happened, because a failing family's log is the one worth reading.
+#
+# WHAT IT DOES NOT DO. It collects no evidence bundle, and it judges no clause. A person downloads
+# the merged artifact and retains the logs in `jsb-12-001`. The bundle's README states what they
+# show. No figure belongs in this file.
+#
+# DISPATCHING IT. Each dispatch needs the repository owner's approval at the time, as a dispatch of
+# test262-javascript-profile.yml does. It spends runner time on one job per bounds, family and form,
+# and what it produces is evidence for one stage.
+
+name: frame cost javascript profile (linux-x64)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: >
+          The branch, tag or full commit id to measure. With the lifted bounds it must carry
+          src/Broiler.VM.Profile.JavaScript/docs/evidence/jsb-12-001/lifted-bounds.patch.
+        required: true
+        type: string
+      bounds:
+        description: >
+          `lifted` applies the stage's lifted-bounds patch before building; `released` builds the
+          ref as committed; `both` takes the two in one run.
+        required: true
+        default: lifted
+        type: choice
+        options:
+          - lifted
+          - released
+          - both
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+  LIFTED_BOUNDS_PATCH: src/Broiler.VM.Profile.JavaScript/docs/evidence/jsb-12-001/lifted-bounds.patch
+  MEASURE_SCRIPT: eng/measure-frame-cost.py
+
+  CLI_PROJECT: src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj
+  CLI_DIRECTORY: src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0
+
+  # THE TWO CONSTANTS THE MEASURING STEP'S TIME LIMIT IS DERIVED FROM, in the header above. Change
+  # either and that argument, and the limits it sets, change with it.
+  FRAME_COST_CEILING: 100000
+  FRAME_COST_TRIAL_SECONDS: 300
+
+jobs:
+  plan:
+    name: resolve the commit, the bounds and the families
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      commit: ${{ steps.resolve.outputs.commit }}
+      bounds: ${{ steps.resolve.outputs.bounds }}
+      shapes: ${{ steps.resolve.outputs.shapes }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref }}
+          submodules: false
+
+      # THE INPUTS REACH THE SCRIPT THROUGH THE ENVIRONMENT AND NOT THROUGH `${{ }}`, so a typed
+      # ref is shell data rather than shell source.
+      - name: Resolve the commit, check the patch, and read the families from the script
+        id: resolve
+        env:
+          REF: ${{ inputs.ref }}
+          BOUNDS: ${{ inputs.bounds }}
+        run: |
+          set -euo pipefail
+          commit=$(git rev-parse HEAD)
+
+          case "$BOUNDS" in
+            lifted)   bounds='["lifted"]' ;;
+            released) bounds='["released"]' ;;
+            both)     bounds='["lifted","released"]' ;;
+            *)
+              echo "::error::bounds must be lifted, released or both, and was '$BOUNDS'"
+              exit 1
+              ;;
+          esac
+
+          if [ "$BOUNDS" != released ]; then
+            if [ ! -f "$LIFTED_BOUNDS_PATCH" ]; then
+              echo "::error::the lifted bounds were asked for, and $REF ($commit) has no $LIFTED_BOUNDS_PATCH. The patch is committed with the stage's bounds before any lifted run; dispatch a ref that carries it, or choose bounds 'released'. This workflow does not write a patch of its own."
+              exit 1
+            fi
+
+            if ! git apply --check "$LIFTED_BOUNDS_PATCH"; then
+              echo "::error::$LIFTED_BOUNDS_PATCH does not apply to $REF ($commit): the lines it lifts are not as the patch expects, and this workflow does not measure around that"
+              exit 1
+            fi
+          fi
+
+          if [ ! -f "$MEASURE_SCRIPT" ]; then
+            echo "::error::$REF ($commit) has no $MEASURE_SCRIPT"
+            exit 1
+          fi
+
+          # The script's own `SHAPES`, read by loading the module. Its `main` runs only as a program,
+          # so loading it measures nothing. The list goes to a file rather than through a command
+          # substitution, so the refusals below reach the log as annotations.
+          BOUNDS_JSON="$bounds" SHAPES_FILE="$RUNNER_TEMP/shapes.json" python3 - <<'PY'
+          import importlib.util, json, os, sys
+
+          spec = importlib.util.spec_from_file_location("measure_frame_cost", os.environ["MEASURE_SCRIPT"])
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+
+          shapes = list(module.SHAPES)
+          jobs = len(shapes) * 2 * len(json.loads(os.environ["BOUNDS_JSON"]))
+
+          if not shapes:
+              print("::error::the script names no shape family")
+              sys.exit(1)
+
+          if jobs > 256:
+              print(
+                  f"::error::{len(shapes)} families in two forms under these bounds is {jobs} jobs, and a "
+                  "run takes at most 256; dispatch the bounds one at a time")
+              sys.exit(1)
+
+          with open(os.environ["SHAPES_FILE"], "w", encoding="utf-8") as listing:
+              listing.write(json.dumps(shapes))
+          PY
+
+          shapes=$(cat "$RUNNER_TEMP/shapes.json")
+
+          {
+            echo "commit=$commit"
+            echo "bounds=$bounds"
+            echo "shapes=$shapes"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "ref $REF -> commit $commit"
+          echo "bounds $bounds"
+          echo "families $shapes"
+
+          {
+            echo "## frame cost, linux-x64"
+            echo ""
+            echo "- ref \`$REF\`, commit \`$commit\`"
+            echo "- bounds \`$bounds\`"
+            echo "- families, read from \`$MEASURE_SCRIPT\` at that commit: \`$shapes\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  measure:
+    name: measure (${{ matrix.bounds }}, ${{ matrix.shape }}, ${{ matrix.form }})
+    needs: plan
+    runs-on: ubuntu-latest
+    # 195 for the measuring step and 30 for everything else; the argument is in the header.
+    timeout-minutes: 225
+    strategy:
+      fail-fast: false
+      matrix:
+        bounds: ${{ fromJSON(needs.plan.outputs.bounds) }}
+        shape: ${{ fromJSON(needs.plan.outputs.shapes) }}
+        form: [bytecode, native]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.plan.outputs.commit }}
+          submodules: false
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      # The script picks the native backend from the host's architecture, so a runner image that
+      # moved to another one would measure another convention or refuse to measure at all.
+      - name: Hold the runner to x86-64, and name it
+        env:
+          BOUNDS: ${{ matrix.bounds }}
+          SHAPE: ${{ matrix.shape }}
+          FORM: ${{ matrix.form }}
+        run: |
+          set -euo pipefail
+          machine=$(uname -m)
+
+          if [ "$machine" != x86_64 ]; then
+            echo "::error::this workflow measures linux-x64, and the runner is $machine"
+            exit 1
+          fi
+
+          mkdir -p artifacts/frame-cost
+          runner="artifacts/frame-cost/runner-linux-x64-$BOUNDS-$SHAPE-$FORM.txt"
+          {
+            echo "image ${ImageOS:-unknown} ${ImageVersion:-unknown}"
+            echo "kernel $(uname -srm)"
+            echo "processors $(nproc)"
+            echo "sdk $(dotnet --version)"
+            dotnet --list-runtimes | grep '^Microsoft.NETCore.App ' | sed 's/^/runtime /' || true
+            echo "python $(python3 --version 2>&1)"
+          } > "$runner"
+          cat "$runner"
+
+      - name: Apply the lifted-bounds patch
+        if: matrix.bounds == 'lifted'
+        run: |
+          set -euo pipefail
+
+          if [ ! -f "$LIFTED_BOUNDS_PATCH" ]; then
+            echo "::error::the commit under measurement has no $LIFTED_BOUNDS_PATCH, so there are no lifted bounds to measure"
+            exit 1
+          fi
+
+          if ! git apply --check "$LIFTED_BOUNDS_PATCH"; then
+            echo "::error::$LIFTED_BOUNDS_PATCH does not apply to the commit under measurement"
+            exit 1
+          fi
+
+          git apply "$LIFTED_BOUNDS_PATCH"
+          git diff --stat
+
+      - name: Build the host
+        run: dotnet build "$CLI_PROJECT" -c Release -warnaserror
+
+      - name: Measure the family
+        timeout-minutes: 195
+        env:
+          BOUNDS: ${{ matrix.bounds }}
+          SHAPE: ${{ matrix.shape }}
+          FORM: ${{ matrix.form }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/frame-cost
+          log="artifacts/frame-cost/frame-cost-linux-x64-$BOUNDS-$SHAPE-$FORM.log"
+
+          # Under `artifacts/`, which git ignores, so writing the log does not make the tree the
+          # script names dirty. The exit line is appended the way the stage's workstation loop
+          # appends it, and a log without one is a run that did not finish.
+          set +e
+          python3 -u "$MEASURE_SCRIPT" \
+            --binary-directory "$CLI_DIRECTORY" \
+            --source-tree . \
+            --form "$FORM" --shape "$SHAPE" \
+            --ceiling "$FRAME_COST_CEILING" --timeout "$FRAME_COST_TRIAL_SECONDS" \
+            > "$log" 2>&1
+          code=$?
+          set -e
+
+          echo "exit $code" >> "$log"
+          cat "$log"
+
+          if [ "$code" != 0 ]; then
+            echo "::error::$SHAPE in $FORM form under the $BOUNDS bounds exited $code; its log, printed above and uploaded below, says why"
+            exit 1
+          fi
+
+      - name: Retain this family's log
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: frame-cost-linux-x64-${{ matrix.bounds }}-${{ matrix.shape }}-${{ matrix.form }}
+          path: artifacts/frame-cost
+          if-no-files-found: ignore
+          retention-days: 14
+
+  collect:
+    name: collect the logs
+    needs: [plan, measure]
+    # It runs when a family failed, because the merged artifact and the list of what is missing are
+    # what a failed run is read from. The last step still fails the workflow for it.
+    if: ${{ always() && needs.plan.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download every family's log
+        uses: actions/download-artifact@v7
+        with:
+          pattern: frame-cost-linux-x64-*
+          path: artifacts/frame-cost
+          merge-multiple: true
+
+      - name: Retain the logs as one artifact
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: frame-cost-linux-x64
+          path: artifacts/frame-cost
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Hold the run to a finished log for every family, form and bounds
+        if: always()
+        env:
+          COMMIT: ${{ needs.plan.outputs.commit }}
+          BOUNDS: ${{ needs.plan.outputs.bounds }}
+          SHAPES: ${{ needs.plan.outputs.shapes }}
+          MEASURE_RESULT: ${{ needs.measure.result }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/frame-cost
+
+          python3 - <<'PY'
+          import json, os, pathlib, sys
+
+          out = pathlib.Path("artifacts/frame-cost")
+          bounds = json.loads(os.environ["BOUNDS"])
+          shapes = json.loads(os.environ["SHAPES"])
+          forms = ("bytecode", "native")
+
+          expected = [
+              f"frame-cost-linux-x64-{b}-{s}-{f}.log" for b in bounds for s in shapes for f in forms
+          ]
+          problems = []
+          finished = 0
+
+          for name in expected:
+              path = out / name
+
+              if not path.is_file():
+                  problems.append(f"{name} is missing: its job wrote or uploaded no log")
+                  continue
+
+              lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+              last = lines[-1] if lines else ""
+
+              if not last.startswith("exit "):
+                  problems.append(f"{name} has no exit line, so the measurement did not finish")
+              elif last != "exit 0":
+                  problems.append(f"{name} ends '{last}'")
+              else:
+                  finished += 1
+
+          unexpected = sorted(
+              path.name for path in out.glob("frame-cost-*.log") if path.name not in set(expected))
+          problems.extend(f"{name} was not asked for by this run" for name in unexpected)
+
+          if os.environ["MEASURE_RESULT"] != "success":
+              problems.append(f"the measuring jobs concluded {os.environ['MEASURE_RESULT']}")
+
+          lines = [
+              "## frame cost, linux-x64: the logs",
+              "",
+              f"- commit `{os.environ['COMMIT']}`",
+              f"- {len(expected)} logs expected, {finished} finished with `exit 0`",
+          ]
+          lines.extend(f"- {problem}" for problem in problems)
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("\n".join(lines) + "\n")
+
+          for problem in problems:
+              print(f"::error::{problem}")
+
+          sys.exit(1 if problems else 0)
+          PY

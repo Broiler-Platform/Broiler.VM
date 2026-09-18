@@ -1,0 +1,14 @@
+applied W9b to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index 1f0287d..ea3ad3a 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -638,7 +638,7 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+             // has spent and not yet committed is fuel this admission must already see.
+             if (dimension is VmBudgetDimension.Fuel)
+             {
+-                runtime.FuelPreAdmissions!.SettleAll();
++                runtime.FuelPreAdmissions!.Settle(this);
+             }
+ 
+             if (!runtime.Admits(dimension, amount))

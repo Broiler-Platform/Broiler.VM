@@ -116,7 +116,8 @@ public static class FixtureHostCapabilities
     {
         var declaresGuestLoads = variant
             is FixtureVmProfileVariant.DeclaresGuestLoads
-            or FixtureVmProfileVariant.MisconvertingNestedOutcome;
+            or FixtureVmProfileVariant.MisconvertingNestedOutcome
+            or FixtureVmProfileVariant.WindowedGuestLoads;
 
         var builder = System.Collections.Immutable.ImmutableArray.CreateBuilder<VmCapabilityImport>();
 

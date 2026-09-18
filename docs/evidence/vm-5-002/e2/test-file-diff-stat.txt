@@ -1,0 +1,4 @@
+ .../FuelChargeExactnessTests.cs                    | 169 ++++++++++++++++++++-
+ 1 file changed, 168 insertions(+), 1 deletion(-)
+c98011a 2026-09-16 10:51:24 +0200 Hold five steps of one runtime open, and suppress a flow on a thread that is in no step
+4490eda 2026-09-16 10:12:44 +0200 Request a guest load from a profile that polls on a window, so the remainder it is verified under is read with fuel outstanding

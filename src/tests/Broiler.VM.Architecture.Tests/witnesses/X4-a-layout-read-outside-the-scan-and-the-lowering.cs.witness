@@ -1,0 +1,37 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no
+// compilation includes it, and rule X4's test adds it to the swept tree at a path in the JavaScript
+// profile's own assembly, so that clause (c) can be watched rejecting a product use of the layout and
+// of a template's fixed bytes outside the scan and the lowering. The test then reads the same file at
+// a path in the lowering assembly, where the clause allows it.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES. The format assembly holds, publicly, everything needed
+// to produce a baseline unit's bytes: the plan, the layout, and each template's fixed bytes beside its
+// mask and fields. A payload the scan refuses for padding or for an alignment it did not expect is
+// exactly the layout's templates with other bytes between them, so the obvious repair in an image that
+// executes precompiled artifacts is to lay the unit out again and copy each template's fixed bytes. It
+// needs nothing the profile does not already reference. What it costs is the argument that an
+// execution-only image of the baseline form holds no code generator - decision JSD-0025 section 10 -
+// because this is one: it writes machine code from the layout in an image with no lowering.
+//
+// Both reads are written here, because an author who re-lays a unit copies the bytes in the same
+// method, and a rule that knew only one of the two members would clear the other.
+
+using System.Collections.Generic;
+using Broiler.VM.Profile.JavaScript.Format;
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal static class JsBaselineReEmitter
+{
+    internal static byte[] Repair(JsBaselineUnitPlan plan, IReadOnlyList<JsNativeTemplate> templates)
+    {
+        var bytes = new List<byte>();
+
+        foreach (var entry in JsBaselineBlocks.Layout(plan))
+        {
+            bytes.AddRange(templates[(int)entry.Template].Fixed);
+        }
+
+        return [.. bytes];
+    }
+}

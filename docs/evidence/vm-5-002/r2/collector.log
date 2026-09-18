@@ -1,0 +1,14 @@
+collecting VM-5-002 into docs/evidence/vm-5-002/r2
+  1 build
+  2 test
+  3 pack
+  4-5 jit and trimmed
+  6 native aot
+  7 corpus replay in three modes
+  8 fuzz sessions
+  8b compositions: publish, run and report the closure of each
+  8c soak: a long lifecycle run, sampled
+  8d bench: the baselines, on JIT and on Native AOT
+  8e feed consumer: pack, restore without a project reference, run, roll back
+  10 environment, hashes
+done. Read the logs before writing the bundle - this script does not judge them.

@@ -1,0 +1,112 @@
+=== FEED CONSUMER: restore from a feed, run, and roll back ===
+
+--- pack 0.1.0-preview.1 to the feed ---
+Determining projects to restore...
+  Restored D:\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj (in 73 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj (in 138 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 88 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj (in 88 ms).
+  Restored D:\Broiler.VM\src\tests\Com.Example.Ledger\Com.Example.Ledger.csproj (in 242 ms).
+  Restored D:\Broiler.VM\src\tests\Com.Example.Calculator\Com.Example.Calculator.csproj (in 242 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Bench.Host\Broiler.VM.Bench.Host.csproj (in 178 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Calculator\Broiler.VM.Composition.Calculator.csproj (in 242 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Workbench\Broiler.VM.Composition.Workbench.csproj (in 243 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Soak.Host\Broiler.VM.Soak.Host.csproj (in 242 ms).
+  15 of 25 projects are up-to-date for restore.
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Binary.0.1.0-preview.1.nupkg'.
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Binary.0.1.0-preview.1.snupkg'.
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Abstractions.0.1.0-preview.1.nupkg'.
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Abstractions.0.1.0-preview.1.snupkg'.
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Runtime.0.1.0-preview.1.nupkg'.
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Runtime.0.1.0-preview.1.snupkg'.
+exit code: 0
+
+--- pack 0.1.0-preview.2 to the feed ---
+Determining projects to restore...
+  Restored D:\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj (in 128 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj (in 128 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj (in 145 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Fuzz.Host\Broiler.VM.Fuzz.Host.csproj (in 145 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 145 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj (in 145 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj (in 128 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj (in 145 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj (in 4 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.WebAssembly.Harness\Broiler.VM.Composition.WebAssembly.Harness.csproj (in 131 ms).
+  Restored D:\Broiler.VM\src\tests\Com.Example.Calculator\Com.Example.Calculator.csproj (in 287 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Fixtures.Host\Broiler.VM.Fixtures.Host.csproj (in 131 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Calculator\Broiler.VM.Composition.Calculator.csproj (in 288 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 289 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 116 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\Broiler.VM.Contract.Tests.csproj (in 89 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Soak.Host\Broiler.VM.Soak.Host.csproj (in 288 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.Conformance\Broiler.VM.Composition.JavaScript.Conformance.csproj (in 76 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.WebAssembly.Execution\Broiler.VM.Composition.WebAssembly.Execution.csproj (in 111 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Workbench\Broiler.VM.Composition.Workbench.csproj (in 289 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\Broiler.VM.Architecture.Tests.csproj (in 121 ms).
+  Restored D:\Broiler.VM\src\tests\Broiler.VM.Bench.Host\Broiler.VM.Bench.Host.csproj (in 119 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.Cli\Broiler.VM.Composition.JavaScript.Cli.csproj (in 290 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.PolyglotCli\Broiler.VM.Composition.PolyglotCli.csproj (in 290 ms).
+  Restored D:\Broiler.VM\src\tests\Com.Example.Ledger\Com.Example.Ledger.csproj (in 287 ms).
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Binary.0.1.0-preview.2.nupkg'.
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Binary.0.1.0-preview.2.snupkg'.
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Abstractions.0.1.0-preview.2.nupkg'.
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Abstractions.0.1.0-preview.2.snupkg'.
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Runtime.0.1.0-preview.2.nupkg'.
+  Successfully created package 'D:\Broiler.VM\artifacts\feed\Broiler.VM.Runtime.0.1.0-preview.2.snupkg'.
+exit code: 0
+
+--- feed contents ---
+Broiler.VM.Abstractions.0.1.0-preview.1.nupkg
+Broiler.VM.Abstractions.0.1.0-preview.1.snupkg
+Broiler.VM.Abstractions.0.1.0-preview.2.nupkg
+Broiler.VM.Abstractions.0.1.0-preview.2.snupkg
+Broiler.VM.Binary.0.1.0-preview.1.nupkg
+Broiler.VM.Binary.0.1.0-preview.1.snupkg
+Broiler.VM.Binary.0.1.0-preview.2.nupkg
+Broiler.VM.Binary.0.1.0-preview.2.snupkg
+Broiler.VM.Runtime.0.1.0-preview.1.nupkg
+Broiler.VM.Runtime.0.1.0-preview.1.snupkg
+Broiler.VM.Runtime.0.1.0-preview.2.nupkg
+Broiler.VM.Runtime.0.1.0-preview.2.snupkg
+
+--- restore and run against 0.1.0-preview.2 ---
+# broiler-vm-sample core-contract-version=1
+package Broiler.VM.Abstractions 0.1.0-preview.2+34dbd7ab688094c2457adad6230b6cc4bb700850
+package Broiler.VM.Binary 0.1.0-preview.2+34dbd7ab688094c2457adad6230b6cc4bb700850
+package Broiler.VM.Runtime 0.1.0-preview.2+34dbd7ab688094c2457adad6230b6cc4bb700850
+check counts ok 40 plus 2 steps = 42
+check refuses-another-format ok InvalidArtifact/MalformedEncoding
+check refuses-unknown-version ok InvalidArtifact/UnsupportedProfileFormatVersion, twice
+check bounds-the-work ok ResourceExhaustion/AllowanceExhausted (Fuel/Runtime)
+broiler-vm-sample: 4 checks, all from packages on a feed
+exit code: 0
+
+--- ROLL BACK and run against 0.1.0-preview.1 ---
+# broiler-vm-sample core-contract-version=1
+package Broiler.VM.Abstractions 0.1.0-preview.1+fd690e60ccc2977d8420f0587e46a53d78fbd641
+package Broiler.VM.Binary 0.1.0-preview.1+fd690e60ccc2977d8420f0587e46a53d78fbd641
+package Broiler.VM.Runtime 0.1.0-preview.1+fd690e60ccc2977d8420f0587e46a53d78fbd641
+check counts ok 40 plus 2 steps = 42
+check refuses-another-format ok InvalidArtifact/MalformedEncoding
+check refuses-unknown-version ok InvalidArtifact/UnsupportedProfileFormatVersion, twice
+check bounds-the-work ok ResourceExhaustion/AllowanceExhausted (Fuel/Runtime)
+broiler-vm-sample: 4 checks, all from packages on a feed
+exit code: 0
+
+--- publish the consumer as Native AOT and run it ---
+Determining projects to restore...
+  Restored D:\Broiler.VM\samples\Broiler.VM.Sample.FeedConsumer\Broiler.VM.Sample.FeedConsumer.csproj (in 205 ms).
+  Broiler.VM.Sample.FeedConsumer -> D:\Broiler.VM\samples\Broiler.VM.Sample.FeedConsumer\bin\Release\net10.0\win-x64\Broiler.VM.Sample.FeedConsumer.dll
+  Der Befehl "vswhere.exe" ist entweder falsch geschrieben oder
+  konnte nicht gefunden werden.
+  Generating native code
+  Die Syntax fÃ¼r den Dateinamen, Verzeichnisnamen oder die DatentrÃ¤gerbezeichnung ist falsch.
+C:\Users\proof\.nuget\packages\microsoft.dotnet.ilcompiler\10.0.12\build\Microsoft.NETCore.Native.targets(396,5): error MSB3073: The command ""Der Befehl "vswhere.exe" ist entweder falsch geschrieben oder;konnte nicht gefunden werden.;C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\link.exe" @"obj\Release\net10.0\win-x64\native\link.rsp"" exited with code 123. [D:\Broiler.VM\samples\Broiler.VM.Sample.FeedConsumer\Broiler.VM.Sample.FeedConsumer.csproj]
+no native binary to run

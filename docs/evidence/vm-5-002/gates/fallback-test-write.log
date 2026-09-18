@@ -1,0 +1,34 @@
+  Wiederherzustellende Projekte werden ermittelt...
+  Alle Projekte sind für die Wiederherstellung auf dem neuesten Stand.
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> D:\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+Testlauf für "D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll" (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+Testlauf für "D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll" (.NETCoreApp,Version=v10.0)
+Insgesamt 1 Testdateien stimmten mit dem angegebenen Muster überein.
+Insgesamt 1 Testdateien stimmten mit dem angegebenen Muster überein.
+[xUnit.net 00:00:03.01]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H4_The_Record_States_No_Decision_The_Annotations_Do_Not_Hold [FAIL]
+  Fehler Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H4_The_Record_States_No_Decision_The_Annotations_Do_Not_Hold [2 s]
+  Fehlermeldung:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["HUMAN_REVIEW.md states 3976 relevant units; the tr"···]
+  Stapelverfolgung:
+     at Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H4_The_Record_States_No_Decision_The_Annotations_Do_Not_Hold() in D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\ReviewRecordRuleTests.cs:line 1326
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:03.28]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H3_No_Review_Document_Points_At_A_Line_And_The_Record_Covers_The_Tree [FAIL]
+
+Bestanden!   : Fehler:     0, erfolgreich:   252, übersprungen:     0, gesamt:   252, Dauer: 2 s - Broiler.VM.Contract.Tests.dll (net10.0)
+  Fehler Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H3_No_Review_Document_Points_At_A_Line_And_The_Record_Covers_The_Tree [39 ms]
+  Fehlermeldung:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["HUMAN_REVIEW.md section 6 gives src/Broiler.VM.Run"···, "HUMAN_REVIEW.md section 6 gives src/Broiler.VM.Run"···]
+  Stapelverfolgung:
+     at Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H3_No_Review_Document_Points_At_A_Line_And_The_Record_Covers_The_Tree() in D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\ReviewRecordRuleTests.cs:line 936
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Fehler!      : Fehler:     2, erfolgreich:   236, übersprungen:     0, gesamt:   238, Dauer: 8 s - Broiler.VM.Architecture.Tests.dll (net10.0)

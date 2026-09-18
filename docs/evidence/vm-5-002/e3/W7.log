@@ -1,0 +1,674 @@
+# worktree 34dbd7ab688094c2457adad6230b6cc4bb700850
+# started 2026-09-16T18:43:38+02:00
+# dotnet test src/tests/Broiler.VM.Contract.Tests -c Release --filter FullyQualifiedName~FuelChargeExactnessTests --logger console;verbosity=normal
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> D:\broiler-arms\wit\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\broiler-arms\wit\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> D:\broiler-arms\wit\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> D:\broiler-arms\wit\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+Test run for D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.17]   Discovering: Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.24]   Discovered:  Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.25]   Starting:    Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.35]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000100, expected: ResourceExhaustion, expectedFuel: 101) [FAIL]
+[xUnit.net 00:00:00.35]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.35]       Stack Trace:
+[xUnit.net 00:00:00.35]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.35]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(285,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.35]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.35]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.35]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000101, expected: ResourceExhaustion, expectedFuel: 2000101) [FAIL]
+[xUnit.net 00:00:00.35]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.35]       Stack Trace:
+[xUnit.net 00:00:00.35]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.35]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(285,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.35]            at InvokeStub_FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(Object, Span`1)
+[xUnit.net 00:00:00.35]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.36]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000103, expected: ProfileFault, expectedFuel: 2000103) [FAIL]
+[xUnit.net 00:00:00.36]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(285,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.36]            at InvokeStub_FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(Object, Span`1)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.36]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 2) [FAIL]
+[xUnit.net 00:00:00.36]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.36]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 129) [FAIL]
+[xUnit.net 00:00:00.36]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.36]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.36]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 50000) [FAIL]
+[xUnit.net 00:00:00.36]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.36]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.36]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 4096) [FAIL]
+[xUnit.net 00:00:00.36]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.36]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.36]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1) [FAIL]
+[xUnit.net 00:00:00.36]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.36]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.36]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 64) [FAIL]
+[xUnit.net 00:00:00.36]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.36]       Stack Trace:
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.36]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.36]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.36]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000100, expected: ResourceExhaustion, expectedFuel: 101) [43 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 285
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000101, expected: ResourceExhaustion, expectedFuel: 2000101) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 285
+   at InvokeStub_FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000103, expected: ProfileFault, expectedFuel: 2000103) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 285
+   at InvokeStub_FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 2) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 129) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 50000) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 4096) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 64) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 63) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1000) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 127) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 65) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 128) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(151,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 62, after: 0, expected: ProfileFault, expectedFuel: 65) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(582,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000, before: 0, units: 0, after: 0, expected: Normal, expectedFuel: 10002) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(582,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 61, after: 0, expected: Normal, expectedFuel: 64) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(582,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 10, units: 60, after: 60, expected: ProfileFault, expectedFuel: 124) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(582,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 63) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1000) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 127) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 65) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 128) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(UInt64 ceiling) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 151
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 62, after: 0, expected: ProfileFault, expectedFuel: 65) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 582
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000, before: 0, units: 0, after: 0, expected: Normal, expectedFuel: 10002) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 582
+   at InvokeStub_FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 61, after: 0, expected: Normal, expectedFuel: 64) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 582
+   at InvokeStub_FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 10, units: 60, after: 60, expected: ProfileFault, expectedFuel: 124) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Int32 nopCount, Int32 before, Int64 units, Int32 after, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 582
+   at InvokeStub_FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 0, invocationFuel: 5000, expected: Invocation) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(221,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 0, expected: Instance) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(221,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 0, expected: Runtime) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(221,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 5000, expected: Instance) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(221,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 5000, invocationFuel: 0, expected: Runtime) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(221,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 5000, expected: Runtime) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(221,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60002, expected: Normal, expectedFuel: 60002) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(179,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.39]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60001, expected: ResourceExhaustion, expectedFuel: 60001) [FAIL]
+[xUnit.net 00:00:00.39]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.39]       Stack Trace:
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.39]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(179,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel)
+[xUnit.net 00:00:00.39]            at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(Object, Span`1)
+[xUnit.net 00:00:00.39]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(1029,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 0, invocationFuel: 5000, expected: Invocation) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 221
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 0, expected: Instance) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 221
+   at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 0, expected: Runtime) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 221
+   at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 5000, expected: Instance) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 221
+   at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 5000, invocationFuel: 0, expected: Runtime) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 221
+   at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 5000, expected: Runtime) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(UInt64 runtimeFuel, UInt64 instanceFuel, UInt64 invocationFuel, VmBudgetScope expected) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 221
+   at InvokeStub_FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60002, expected: Normal, expectedFuel: 60002) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 179
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60001, expected: ResourceExhaustion, expectedFuel: 60001) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(UInt64 ceiling, VmOutcome expected, UInt64 expectedFuel) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 179
+   at InvokeStub_FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 1029
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(522,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(631,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(248,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(782,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(465,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: Conforming) [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(673,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(FixtureVmProfileVariant variant)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: WindowedPolling) [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(673,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(FixtureVmProfileVariant variant)
+[xUnit.net 00:00:00.40]            at InvokeStub_FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(Object, Span`1)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Suppressed_Flow_Is_Answered_But_Never_Cached [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(1191,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Suppressed_Flow_Is_Answered_But_Never_Cached()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 1) [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(911,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.OneHolderRetention()
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(887,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(Int32 holders)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance [1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 522
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel [2 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 631
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 248
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 782
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 465
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: Conforming) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(FixtureVmProfileVariant variant) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 673
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: WindowedPolling) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(FixtureVmProfileVariant variant) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 673
+   at InvokeStub_FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Suppressed_Flow_Is_Answered_But_Never_Cached [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Suppressed_Flow_Is_Answered_But_Never_Cached() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 1191
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 1) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.OneHolderRetention() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 911
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(Int32 holders) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 887
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2) [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(952,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.TwoHolderRetention()
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(891,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(Int32 holders)
+[xUnit.net 00:00:00.40]            at InvokeStub_FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(Object, Span`1)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Thread_Started_Inside_A_Step_Still_Charges_Its_Operation_After_The_Step_Ends [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(839,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Thread_Started_Inside_A_Step_Still_Charges_Its_Operation_After_The_Step_Ends()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(390,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(1000,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(326,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(1080,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]     Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Aggregate_Parent_Sees_Every_Charge_Of_A_Held_Step [FAIL]
+[xUnit.net 00:00:00.40]       verification failed: ResourceExhaustion/AllowanceExhausted
+[xUnit.net 00:00:00.40]       Stack Trace:
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs(193,0): at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor)
+[xUnit.net 00:00:00.40]         D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs(713,0): at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Aggregate_Parent_Sees_Every_Charge_Of_A_Held_Step()
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.40]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.40]   Finished:    Broiler.VM.Contract.Tests
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2) [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.TwoHolderRetention() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 952
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(Int32 holders) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 891
+   at InvokeStub_FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Thread_Started_Inside_A_Step_Still_Charges_Its_Operation_After_The_Step_Ends [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Thread_Started_Inside_A_Step_Still_Charges_Its_Operation_After_The_Step_Ends() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 839
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact [5 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 390
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level [< 1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 1000
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge [1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 326
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts [2 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 1080
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Aggregate_Parent_Sees_Every_Charge_Of_A_Held_Step [1 ms]
+  Error Message:
+   verification failed: ResourceExhaustion/AllowanceExhausted
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.FixtureComposition.Verify(VmRuntime runtime, Byte[] payload, Nullable`1 descriptor) in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FixtureComposition.cs:line 193
+   at Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Aggregate_Parent_Sees_Every_Charge_Of_A_Held_Step() in D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\FuelChargeExactnessTests.cs:line 713
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Test Run Failed.
+Total tests: 43
+     Failed: 43
+ Total time: 0,9101 Seconds
+# exit 1
+# finished 2026-09-16T18:43:42+02:00
+# after revert: git status --porcelain -> []

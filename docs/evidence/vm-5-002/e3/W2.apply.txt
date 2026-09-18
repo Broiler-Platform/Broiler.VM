@@ -1,0 +1,38 @@
+applied W2 to src/Broiler.VM.Runtime/VmMeter.cs
+applied W2 to src/Broiler.VM.Runtime/VmInstanceImplementation.cs
+applied W2 to src/Broiler.VM.Runtime/VmInstanceImplementation.cs
+diff --git a/src/Broiler.VM.Runtime/VmInstanceImplementation.cs b/src/Broiler.VM.Runtime/VmInstanceImplementation.cs
+index 54ab424..531465e 100644
+--- a/src/Broiler.VM.Runtime/VmInstanceImplementation.cs
++++ b/src/Broiler.VM.Runtime/VmInstanceImplementation.cs
+@@ -438,7 +438,6 @@ internal sealed class VmInstanceImplementation : VmInstance
+             // one alone covers every unit this thread charged. The reader's is the one that must
+             // stay, because it also covers a thread the step left running that charges between here
+             // and the read.
+-            operation.Meter.SettlePreAdmittedFuel();
+         }
+ 
+         return Finish(operation, MapResume(operation, step));
+@@ -538,10 +537,6 @@ internal sealed class VmInstanceImplementation : VmInstance
+         {
+             scope.Leave();
+ 
+-            // As on the resume path: what the step spent from a block is committed before the
+-            // outcome is mapped. The uncharged-work counter the mapping reads is exact jointly with
+-            // the settle that reader takes itself, and the reader's is the one that must stay.
+-            operation.Meter.SettlePreAdmittedFuel();
+         }
+ 
+         return Finish(operation, MapInvocation(operation, step));
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index 1f0287d..e94d07a 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -168,7 +168,6 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+         {
+             lock (gate)
+             {
+-                runtime.FuelPreAdmissions!.Settle(this);
+                 return pollBound > 0 && sinceLastPoll > pollBound;
+             }
+         }

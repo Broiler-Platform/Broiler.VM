@@ -1,0 +1,19 @@
+# probe variant=c3 mode=concurrent-bench bin=D:/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0
+# started=2026-09-16T18:27:52
+variant=net10.0 preAdmissionTable=True
+CONC mode=concurrent-bench threads=1 ceiling=unbounded ns_per_admitted_charge_min_of_3=3.56 admitted_per_rep=12000000 rounds=3 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=1 ceiling=2^20 ns_per_admitted_charge_min_of_3=3.41 admitted_per_rep=12582912 rounds=12 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=1 ceiling=4x2^20 ns_per_admitted_charge_min_of_3=3.42 admitted_per_rep=16777216 rounds=4 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=2 ceiling=unbounded ns_per_admitted_charge_min_of_3=1.75 admitted_per_rep=24000000 rounds=3 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=2 ceiling=2^20 ns_per_admitted_charge_min_of_3=1.71 admitted_per_rep=12582912 rounds=12 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=2 ceiling=4x2^20 ns_per_admitted_charge_min_of_3=1.81 admitted_per_rep=16777216 rounds=4 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=4 ceiling=unbounded ns_per_admitted_charge_min_of_3=1.01 admitted_per_rep=48000000 rounds=3 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=4 ceiling=2^20 ns_per_admitted_charge_min_of_3=0.89 admitted_per_rep=12582912 rounds=12 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=4 ceiling=4x2^20 ns_per_admitted_charge_min_of_3=0.91 admitted_per_rep=16777216 rounds=4 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=5 ceiling=unbounded ns_per_admitted_charge_min_of_3=1.41 admitted_per_rep=60000000 rounds=3 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=5 ceiling=2^20 ns_per_admitted_charge_min_of_3=1.45 admitted_per_rep=12582912 rounds=12 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=5 ceiling=4x2^20 ns_per_admitted_charge_min_of_3=1.50 admitted_per_rep=16777216 rounds=4 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=8 ceiling=unbounded ns_per_admitted_charge_min_of_3=1.57 admitted_per_rep=96000000 rounds=3 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=8 ceiling=2^20 ns_per_admitted_charge_min_of_3=1.66 admitted_per_rep=12582912 rounds=12 exact=True runtime_consumed_matches=True faults=0
+CONC mode=concurrent-bench threads=8 ceiling=4x2^20 ns_per_admitted_charge_min_of_3=1.63 admitted_per_rep=16777216 rounds=4 exact=True runtime_consumed_matches=True faults=0
+stress_failures=0

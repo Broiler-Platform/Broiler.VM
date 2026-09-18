@@ -1,0 +1,13 @@
+applied W21 to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index c5ea60a..d8cd6b5 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -580,6 +580,7 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+             if (pollBound > 0 && sinceLastPoll + (used - usedAtLastPoll) > pollBound)
+             {
+                 PollBoundExceeded = true;
++                usedAtLastPoll = used;
+                 return false;
+             }
+ 

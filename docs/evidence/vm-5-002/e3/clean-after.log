@@ -1,0 +1,68 @@
+# worktree 34dbd7ab688094c2457adad6230b6cc4bb700850
+# started 2026-09-16T18:44:15+02:00
+# dotnet test src/tests/Broiler.VM.Contract.Tests -c Release --filter FullyQualifiedName~FuelChargeExactnessTests --logger console;verbosity=normal
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> D:\broiler-arms\wit\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> D:\broiler-arms\wit\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> D:\broiler-arms\wit\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> D:\broiler-arms\wit\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+Test run for D:\broiler-arms\wit\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.14]   Discovering: Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.21]   Discovered:  Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.22]   Starting:    Broiler.VM.Contract.Tests
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000100, expected: ResourceExhaustion, expectedFuel: 101) [66 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000101, expected: ResourceExhaustion, expectedFuel: 2000101) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Charge_Larger_Than_Any_Block_Is_Decided_On_The_Exact_Remainder(ceiling: 2000103, expected: ProfileFault, expectedFuel: 2000103) [2 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 2) [1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 129) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 50000) [2 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 4096) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 64) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 63) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 1000) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 127) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 65) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_Is_Spent_To_The_Unit_Under_Windowed_Polling(ceiling: 128) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 62, after: 0, expected: ProfileFault, expectedFuel: 65) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 10000, before: 0, units: 0, after: 0, expected: Normal, expectedFuel: 10002) [1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 0, units: 61, after: 0, expected: Normal, expectedFuel: 64) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Poll_Bound_Detection_Counts_Fuel_Charged_Between_Polls(nopCount: 0, before: 10, units: 60, after: 60, expected: ProfileFault, expectedFuel: 124) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 0, invocationFuel: 5000, expected: Invocation) [1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 0, expected: Instance) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 0, expected: Runtime) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 0, instanceFuel: 5000, invocationFuel: 5000, expected: Instance) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 5000, invocationFuel: 0, expected: Runtime) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.The_Outermost_Tightest_Level_Names_The_Exhausted_Scope(runtimeFuel: 5000, instanceFuel: 0, invocationFuel: 5000, expected: Runtime) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60002, expected: Normal, expectedFuel: 60002) [3 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Runtime_Fuel_Ceiling_At_The_Last_Instruction_Is_Exact(ceiling: 60001, expected: ResourceExhaustion, expectedFuel: 60001) [3 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Non_Fuel_Charge_Never_Spends_A_Fuel_Block [1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Are_Each_Stopped_By_Their_Own_Invocation_Allowance [241 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Guest_Load_Is_Verified_Under_The_Exact_Remaining_Invocation_Fuel [7 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Instance_Allowance_Spans_Invocations_To_The_Unit [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Fuel_Charged_Through_The_Environment_Meter_Follows_The_Execution_Context [8 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit [196 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: Conforming) [4 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Parked_Operation_Has_Committed_Its_Fuel_And_Resumes_Against_The_Same_Allowance(variant: WindowedPolling) [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Suppressed_Flow_Is_Answered_But_Never_Cached [1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 1) [< 1 ms]
+[xUnit.net 00:00:01.13]   Finished:    Broiler.VM.Contract.Tests
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Fuel_Retention_Is_Admitted_Against_Every_Holders_Charges(holders: 2) [1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Thread_Started_Inside_A_Step_Still_Charges_Its_Operation_After_The_Step_Ends [1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Budget_Snapshots_Of_A_Running_Runtime_Never_Decrease_And_End_Exact [280 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.Releasing_Fuel_Refunds_Nothing_At_Any_Level [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Budget_Snapshot_Of_A_Held_Step_Counts_Every_Admitted_Charge [8 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.A_Full_Table_Commits_The_Block_It_Evicts [2 ms]
+  Passed Broiler.VM.Contract.Tests.FuelChargeExactnessTests.An_Aggregate_Parent_Sees_Every_Charge_Of_A_Held_Step [2 ms]
+
+Test Run Successful.
+Total tests: 43
+     Passed: 43
+ Total time: 1,6327 Seconds
+# exit 0
+# finished 2026-09-16T18:44:20+02:00
+# git status --porcelain -> []

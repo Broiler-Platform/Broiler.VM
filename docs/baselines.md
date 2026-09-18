@@ -123,6 +123,54 @@ the cost of executing bytecode in this core, by an order of magnitude over any p
 figure here. A profile whose instructions do real work will amortise it; a profile of cheap
 instructions will not.
 
+**The metering path behind `meter-per-instruction` changed on 2026-09-16, and the row has not been
+re-measured.** A fuel charge that fits a block the meter has already checked at every budget level
+no longer takes the meter's lock: it is admitted with one compare-exchange and written to the
+counters before anything reads them. And the ambient meter is no longer found through an
+`AsyncLocal` read on every charge. `Poll` is one of the places that write a block back, so a
+profile that polls after every charge - as the fixture executor behind this row does - now pays for
+that write and a fresh block inside each poll, where it used to pay for a lock inside each charge.
+**The figures in that row therefore describe a metering path that no longer exists, and no claim
+about what the change did to them, in either direction, may be made from this register** until it
+is re-measured.
+
+*Corrected 2026-09-17, after the owner-directed remedy.* The sentence "`Poll` is one of the places that
+write a block back, so a profile that polls after every charge - as the fixture executor behind this row
+does - now pays for that write and a fresh block inside each poll, where it used to pay for a lock inside
+each charge" has not been true since `9e9377d`. `Poll` no longer writes a block back or takes a fresh
+one: under the meter's lock it counts the work the polling meter's block has admitted toward the poll
+bound, without committing it. A block ends when it is settled or when a charge of its own does not fit
+what is left, and the next locked fuel charge begins a new one. The paragraph's conclusion stands: the
+row describes a metering path that no longer exists, and it is not re-measured in this register. Bundle
+VM-5-002 reads the row again on the remedy head, in its sections 5.11 and 7.4.
+
+**The verifier rows are reached too, more lightly.** The description of `verify-throughput` above -
+two interface calls per byte, each of which takes a lock and walks four budget scopes - is still
+true: a `VerifierWork` or `AllocatedBytes` charge is never admitted in a block and still takes the
+lock. But that path is not untouched. Every charge now tests whether it is a fuel charge before it
+takes the locked path, and every poll reads, under the lock, the polling meter's own block fields,
+which for a verifier's meter hold no block. So `verify-throughput` and `verify-per-declared-count` are
+stale for this reason as well as for the 2026-08-31 one, and the same re-run closes both.
+*(Corrected 2026-09-17: this paragraph read "every poll looks under the lock for a block the polling
+meter holds, which a verifier's meter never does", which the owner-directed remedy made untrue; the
+conclusion is unchanged.)*
+
+**Where the runs are, and why the table stays as it is.** Bundle
+[VM-5-002](evidence/vm-5-002/README.md) retains runs of this benchmark host on both sides of the
+change and gives its verdict on the `meter-per-instruction` row there. It is not this register's
+bundle, and none of its figures is copied here: rule L1 binds every figure in the table to the
+benchmark log of `docs/evidence/vm-6`, and this note changes neither. No measurement is registered
+for the change either. The one that could show what it was made for - a profile that polls on a
+window rather than after every charge - is not in this register, and bundle VM-5-002 records that
+gap as its exclusion EX-112 instead of adding one.
+
+*Added 2026-09-17: the `host-call` and `guest-load-mediation` rows are reached too.* After the
+owner-directed remedy (`965e6ad`) both measure a capability boundary whose return puts back the
+execution context the capability was entered from when the capability left it unchanged, so neither
+describes the code it was measured on, and neither is re-measured in this register. Bundle VM-5-002's
+re-collection retains runs of this benchmark host on both sides of the remedy; none of its figures is
+copied here.
+
 ---
 
 ## 3. Recorded figures
@@ -215,6 +263,15 @@ The whole benchmark took **528 seconds**; it now takes **43**. Zero is represent
 of a value now, and the bench host carries an `independence` check - the same work sampled at the
 start of a run and again at the end - which fails the run if per-operation cost grows with the
 number of runtimes created. Witness: `A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind`.
+
+*Corrected 2026-09-17, after the owner-directed remedy.* Since `965e6ad` that test no longer witnesses
+this fix. Its capability leaves the execution context unchanged, so `VmRuntime.LeaveCapability` now puts
+back the context the capability was entered from and returns, and never reaches the depth write-back a
+regression of this fix would change: with a depth of zero stored instead of released, the test passes.
+The witness is now `A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context`,
+whose capability returns under a different context and so takes the write-back. Bundle VM-5-002's
+re-collection shows it as the one test that fails under that defect, as its witness W20 and as control 16
+run by hand. The fix is unchanged, and so is every figure in this section.
 
 Neither defect is a performance finding that VM-5 chose to act on. Both are correctness findings:
 a bound that does not bound what it says, and a resource that is never released.

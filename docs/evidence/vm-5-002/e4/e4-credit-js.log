@@ -1,0 +1,15 @@
+﻿  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.VM\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" wiederhergestellt (in 91 ms.).
+  "D:\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" wiederhergestellt (in 90 ms.).
+  "D:\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 90 ms.).
+  "D:\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 90 ms.).
+  Broiler.VM.Binary -> D:\Broiler.VM-e4\credit\js\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM-e4\credit\js\Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\Broiler.VM-e4\credit\js\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Profile.JavaScript -> D:\Broiler.VM-e4\credit\js\Broiler.VM.Profile.JavaScript.dll
+
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:02.44

@@ -1,0 +1,14 @@
+applied W6 to src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
+diff --git a/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs b/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
+index d7c7b48..5f85709 100644
+--- a/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
++++ b/src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs
+@@ -167,7 +167,7 @@ internal sealed class VmFuelPreAdmissions
+     // Broiler-Human:        PENDING
+     internal void PreAdmit(VmMeter meter, int contenders)
+     {
+-        if (!meter.MayPreAdmit || meter.PreAdmissionSizeLocked != 0)
++        if (meter.PreAdmissionSizeLocked != 0)
+         {
+             return;
+         }

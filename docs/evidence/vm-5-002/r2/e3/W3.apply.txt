@@ -1,0 +1,30 @@
+applied W3 to src/Broiler.VM.Runtime/VmMeter.cs
+applied W3 to src/Broiler.VM.Runtime/VmMeter.cs
+applied W3 to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index c5ea60a..6facd81 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -570,21 +570,16 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+ 
+         lock (gate)
+         {
+-            // What the fast path has admitted from this meter's block, read once. With no block held,
+-            // size and remainder are both zero.
+-            var used = preAdmissionSize - (ulong)System.Threading.Volatile.Read(ref preAdmittedFuel);
+-
+             // The bound is on work performed between two polls. Exceeding it is how a profile
+             // silently makes cancellation latency unbounded, so it is detected rather than trusted.
+             // The block's part of that work is what it has admitted since this meter last polled.
+-            if (pollBound > 0 && sinceLastPoll + (used - usedAtLastPoll) > pollBound)
++            if (pollBound > 0 && sinceLastPoll > pollBound)
+             {
+                 PollBoundExceeded = true;
+                 return false;
+             }
+ 
+             sinceLastPoll = 0;
+-            usedAtLastPoll = used;
+ 
+             // Wall clock accrues on its own rather than being charged by the profile, so its
+             // exhaustion has to be looked for here: charging zero would never find it. Outermost

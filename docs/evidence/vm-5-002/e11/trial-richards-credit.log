@@ -1,0 +1,20 @@
+# octane chromium/octane at 570ad1ccfe86e3eecba0636c8f932ac08edec517
+# 37 files, content aab618b86ebe2f18229c18f0147943e9a1bac69967582563e120d4cea273b4c4
+# judging src\compositions\Broiler.VM.Composition.JavaScript.Cli\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.Cli.exe
+--- richards (exit 0, 4s)
+    start Richards
+    result Richards 98.3
+    score 98.3
+    component 0.983006350757206
+# 1 of 1 benchmarks reported a score and exited zero
+# 4s over 1 benchmarks, under a REQUESTED wall of 3600s each
+#
+# benchmark         score  ratios  seconds
+# richards           98.3       1      3.6
+# PARTIAL AGGREGATE 98.3 over 1 of 15 benchmarks, 1 ratios - THIS IS NOT OCTANE'S SCORE.
+# coverage partial|not selected: deltablue, crypto, raytrace, earley-boyer, regexp, splay, navier-stokes, pdfjs, mandreel, gbemu, code-load, box2d, zlib, typescript
+# A geometric mean over a subset is a real number about that subset and reads exactly
+# like the whole one. It may not be compared with a whole run or with another subset.
+# It is a number about this machine and this configuration. There is no baseline register
+# for it, no control and no repetition; no document may retain it (roadmap section 17).
+# report artifacts\fc\e11\trial-richards-credit.report

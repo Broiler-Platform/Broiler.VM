@@ -1,0 +1,17 @@
+  Determining projects to restore...
+  Restored D:\broiler-arms\oracle2\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj (in 70 ms).
+  Restored D:\broiler-arms\oracle2\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj (in 70 ms).
+  Restored D:\broiler-arms\oracle2\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 72 ms).
+  Restored D:\broiler-arms\oracle2\src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj (in 72 ms).
+  Restored D:\broiler-arms\oracle2\src\tests\Broiler.VM.Contract.Tests\Broiler.VM.Contract.Tests.csproj (in 210 ms).
+  Broiler.VM.Binary -> D:\broiler-arms\oracle2\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\broiler-arms\oracle2\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\broiler-arms\oracle2\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> D:\broiler-arms\oracle2\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Contract.Tests -> D:\broiler-arms\oracle2\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.10

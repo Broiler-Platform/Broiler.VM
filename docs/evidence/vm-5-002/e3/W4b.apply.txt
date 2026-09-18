@@ -1,0 +1,41 @@
+applied W4b to src/Broiler.VM.Runtime/VmMeter.cs
+applied W4b to src/Broiler.VM.Runtime/VmInstanceImplementation.cs
+applied W4b to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmInstanceImplementation.cs b/src/Broiler.VM.Runtime/VmInstanceImplementation.cs
+index 54ab424..137d7b5 100644
+--- a/src/Broiler.VM.Runtime/VmInstanceImplementation.cs
++++ b/src/Broiler.VM.Runtime/VmInstanceImplementation.cs
+@@ -538,10 +538,6 @@ internal sealed class VmInstanceImplementation : VmInstance
+         {
+             scope.Leave();
+ 
+-            // As on the resume path: what the step spent from a block is committed before the
+-            // outcome is mapped. The uncharged-work counter the mapping reads is exact jointly with
+-            // the settle that reader takes itself, and the reader's is the one that must stay.
+-            operation.Meter.SettlePreAdmittedFuel();
+         }
+ 
+         return Finish(operation, MapInvocation(operation, step));
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index 1f0287d..03284d1 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -168,7 +168,6 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+         {
+             lock (gate)
+             {
+-                runtime.FuelPreAdmissions!.Settle(this);
+                 return pollBound > 0 && sinceLastPoll > pollBound;
+             }
+         }
+@@ -458,10 +457,6 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+             {
+                 preAdmissions.Settle(this);
+ 
+-                if (!preAdmissions.IsEmpty && !preAdmissions.LeavesRoomFor(this, amount))
+-                {
+-                    contenders = preAdmissions.SettleAll();
+-                }
+             }
+ 
+             // Outermost first, and deliberately without committing: a level that would refuse must

@@ -222,6 +222,20 @@ this milestone's own corrections: a mediator that stops resetting its per-operat
 runtime that stores a capability depth of zero instead of releasing it, and a baseline register
 that quotes a figure the retained log contradicts.
 
+*Added 2026-09-17, after the owner-directed remedy recorded in bundle VM-5-002.* Control 16 - a runtime
+that stores a capability depth of zero instead of releasing it - still injects at the same point, the
+depth write-back in `VmRuntime.LeaveCapability`. But since `965e6ad` the test `negative-control.log` shows
+failing under it, `A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind`, no longer reaches that
+write-back: its capability leaves the execution context unchanged, so the return puts back the context
+the capability was entered from instead. The test that fails under the injection now is its variant
+`A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind_When_Its_Capability_Changes_Its_Context`, whose
+capability returns under a different context: bundle VM-5-002 retains the contract tests' transcript of
+control 16 run by hand on the remedy head, in its `r2/control16/control16-injected.log`, and that
+variant is the one contract test it shows failing. The collector's verdict for control 16 does not show
+this on its own, because the fingerprint rules and the generator test fail on any source edit. This
+bundle is not re-collected for it, and its `negative-control.log` stays true of the tree it was collected
+on.
+
 ---
 
 ## 7. Decision

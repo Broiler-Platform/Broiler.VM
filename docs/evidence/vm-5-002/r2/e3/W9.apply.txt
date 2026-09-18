@@ -1,0 +1,20 @@
+applied W9 to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index c5ea60a..d135cda 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -660,14 +660,6 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+ 
+         lock (gate)
+         {
+-            // Every holder, not just this meter: a retention is admitted against the runtime and
+-            // instance levels, which every operation of this runtime shares, so fuel any of them
+-            // has spent and not yet committed is fuel this admission must already see.
+-            if (dimension is VmBudgetDimension.Fuel)
+-            {
+-                runtime.FuelPreAdmissions!.SettleAll();
+-            }
+-
+             if (!runtime.Admits(dimension, amount))
+             {
+                 refusedLocally = VmBudgetScope.Runtime;

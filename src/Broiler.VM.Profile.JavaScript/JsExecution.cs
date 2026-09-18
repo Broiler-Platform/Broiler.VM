@@ -758,6 +758,26 @@ internal static class JsExecution
     /// <i>(JSC-192)</i>.
     /// </para>
     /// <para>
+    /// <b>AND IT MOVED AGAIN ON 2026-09-17, because a WIDER ROUTE TABLE found the ordering failing
+    /// on routes nothing had ever measured.</b> Every figure above was taken on one shape - a plain
+    /// recursive call - and the depth clause of stage JSB-12 is judged instead over every way one
+    /// guest level can nest inside another: an accessor, a coercion hook, a Proxy trap, a
+    /// <c>super</c> reference, a bound or callback invocation, and the rest of a route table with
+    /// thirty-six shape families in it. A level of such a route holds the dispatch arm's own
+    /// helpers open across the recursion, so it costs several times a plain call's frame, and on
+    /// ninety-six megabytes the ordering this figure exists to keep - a stack holding at least
+    /// twice the grantable <c>CallDepth</c> maximum, counted in the units that maximum counts - did
+    /// not hold for every family, in either form. The stack is raised to <b>two hundred and
+    /// eight</b> megabytes. That is step 2 of the ladder the stage's own predeclared bounds
+    /// prescribe when the clause fails, and <b>step 1 - moving the opcodes that reach those routes
+    /// onto baseline steps of their own - was SKIPPED by the repository owner's ruling of the same
+    /// day</b>, because the form that already runs them one at a time fails the same routes, so
+    /// step 1 could not make the clause pass. What each size holds is the stage bundle's
+    /// measurement and is not restated here. <c>eng/measure-frame-cost.py</c>'s own
+    /// <c>DEFAULT_STACK_BYTES</c> is stated rather than read, so it moved with this constant
+    /// <i>(JSC-226)</i>.
+    /// </para>
+    /// <para>
     /// The room this leaves is what it always left: the built-ins that recurse in C# without going
     /// through a call - a comparison function driving a sort, a cycle-free walk of a deep object in
     /// JSON - along with the stack a host has already used before it reached this profile.
@@ -776,9 +796,9 @@ internal static class JsExecution
     /// previous one did.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=525EF4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A68FD7
     // Broiler-Human:        PENDING
-    private const int GuestStackBytes = 96 * 1024 * 1024;
+    private const int GuestStackBytes = 208 * 1024 * 1024;
 
     /// <summary>Runs one piece of host-supplied work on a stack this profile declared.</summary>
     /// <remarks>

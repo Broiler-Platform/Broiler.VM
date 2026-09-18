@@ -1,0 +1,112 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM-base
+# tree-head=f127d92a03f92281de3a27438eae22903a70f316
+# tree-changes=[M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs]
+# build=base, T6 alone, repetition 0
+# started=2026-09-17T08:24:53+02:00
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=43e52ac9b159aed0233f2dda9cc25b73203caade40ae62e546c7298f46051fc0 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=65f1067cb5c2e1756dae06b06aaeef25bb0f2bec80034662804b0e394a40df39 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# command=dotnet test D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter FullyQualifiedName~Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit --logger trx;LogFileName=base-r0.trx --results-directory D:\Broiler.VM\artifacts\fc\rc\e13\t6-trx
+{"rep": 0, "build": "base", "outcome": "Passed", "test_ms": 493.6, "process_ms": 1900.0, "exit": 0}
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[M docs/evidence/vm-5-002/README.md]
+# build=credit, T6 alone, repetition 0
+# started=2026-09-17T08:24:55+02:00
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=14c4f4f5573fcdb7d574b53eb19430a027e11cbc316e4522d1af1ec5ea163568 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=291af53e6157badd5f34478c61a43cc1402cea15876c0d30efd02459560cdde5 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# command=dotnet test D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter FullyQualifiedName~Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit --logger trx;LogFileName=credit-r0.trx --results-directory D:\Broiler.VM\artifacts\fc\rc\e13\t6-trx
+{"rep": 0, "build": "credit", "outcome": "Passed", "test_ms": 231.1, "process_ms": 1621.7, "exit": 0}
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM-base
+# tree-head=f127d92a03f92281de3a27438eae22903a70f316
+# tree-changes=[M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs]
+# build=base, T6 alone, repetition 1
+# started=2026-09-17T08:24:57+02:00
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=43e52ac9b159aed0233f2dda9cc25b73203caade40ae62e546c7298f46051fc0 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=65f1067cb5c2e1756dae06b06aaeef25bb0f2bec80034662804b0e394a40df39 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# command=dotnet test D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter FullyQualifiedName~Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit --logger trx;LogFileName=base-r1.trx --results-directory D:\Broiler.VM\artifacts\fc\rc\e13\t6-trx
+{"rep": 1, "build": "base", "outcome": "Passed", "test_ms": 488.5, "process_ms": 1845.0, "exit": 0}
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[M docs/evidence/vm-5-002/README.md]
+# build=credit, T6 alone, repetition 1
+# started=2026-09-17T08:24:59+02:00
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=14c4f4f5573fcdb7d574b53eb19430a027e11cbc316e4522d1af1ec5ea163568 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=291af53e6157badd5f34478c61a43cc1402cea15876c0d30efd02459560cdde5 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# command=dotnet test D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter FullyQualifiedName~Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit --logger trx;LogFileName=credit-r1.trx --results-directory D:\Broiler.VM\artifacts\fc\rc\e13\t6-trx
+{"rep": 1, "build": "credit", "outcome": "Passed", "test_ms": 233.2, "process_ms": 1585.6, "exit": 0}
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM-base
+# tree-head=f127d92a03f92281de3a27438eae22903a70f316
+# tree-changes=[M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs]
+# build=base, T6 alone, repetition 2
+# started=2026-09-17T08:25:01+02:00
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=43e52ac9b159aed0233f2dda9cc25b73203caade40ae62e546c7298f46051fc0 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=65f1067cb5c2e1756dae06b06aaeef25bb0f2bec80034662804b0e394a40df39 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# command=dotnet test D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter FullyQualifiedName~Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit --logger trx;LogFileName=base-r2.trx --results-directory D:\Broiler.VM\artifacts\fc\rc\e13\t6-trx
+{"rep": 2, "build": "base", "outcome": "Passed", "test_ms": 478.3, "process_ms": 1853.8, "exit": 0}
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[M docs/evidence/vm-5-002/README.md]
+# build=credit, T6 alone, repetition 2
+# started=2026-09-17T08:25:03+02:00
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=14c4f4f5573fcdb7d574b53eb19430a027e11cbc316e4522d1af1ec5ea163568 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=291af53e6157badd5f34478c61a43cc1402cea15876c0d30efd02459560cdde5 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# command=dotnet test D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter FullyQualifiedName~Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit --logger trx;LogFileName=credit-r2.trx --results-directory D:\Broiler.VM\artifacts\fc\rc\e13\t6-trx
+{"rep": 2, "build": "credit", "outcome": "Passed", "test_ms": 231.6, "process_ms": 1573.5, "exit": 0}
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM-base
+# tree-head=f127d92a03f92281de3a27438eae22903a70f316
+# tree-changes=[M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs]
+# build=base, T6 alone, repetition 3
+# started=2026-09-17T08:25:04+02:00
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=43e52ac9b159aed0233f2dda9cc25b73203caade40ae62e546c7298f46051fc0 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=65f1067cb5c2e1756dae06b06aaeef25bb0f2bec80034662804b0e394a40df39 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# command=dotnet test D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter FullyQualifiedName~Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit --logger trx;LogFileName=base-r3.trx --results-directory D:\Broiler.VM\artifacts\fc\rc\e13\t6-trx
+{"rep": 3, "build": "base", "outcome": "Passed", "test_ms": 483.2, "process_ms": 1843.9, "exit": 0}
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[M docs/evidence/vm-5-002/README.md]
+# build=credit, T6 alone, repetition 3
+# started=2026-09-17T08:25:06+02:00
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=14c4f4f5573fcdb7d574b53eb19430a027e11cbc316e4522d1af1ec5ea163568 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=291af53e6157badd5f34478c61a43cc1402cea15876c0d30efd02459560cdde5 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# command=dotnet test D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter FullyQualifiedName~Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit --logger trx;LogFileName=credit-r3.trx --results-directory D:\Broiler.VM\artifacts\fc\rc\e13\t6-trx
+{"rep": 3, "build": "credit", "outcome": "Passed", "test_ms": 230.9, "process_ms": 1643.2, "exit": 0}
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM-base
+# tree-head=f127d92a03f92281de3a27438eae22903a70f316
+# tree-changes=[M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs]
+# build=base, T6 alone, repetition 4
+# started=2026-09-17T08:25:08+02:00
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=43e52ac9b159aed0233f2dda9cc25b73203caade40ae62e546c7298f46051fc0 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# binary=D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=65f1067cb5c2e1756dae06b06aaeef25bb0f2bec80034662804b0e394a40df39 version=0.1.0-preview.1+f127d92a03f92281de3a27438eae22903a70f316
+# command=dotnet test D:/Broiler.VM-base/src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter FullyQualifiedName~Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit --logger trx;LogFileName=base-r4.trx --results-directory D:\Broiler.VM\artifacts\fc\rc\e13\t6-trx
+{"rep": 4, "build": "base", "outcome": "Passed", "test_ms": 485.7, "process_ms": 1829.8, "exit": 0}
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[M docs/evidence/vm-5-002/README.md]
+# build=credit, T6 alone, repetition 4
+# started=2026-09-17T08:25:10+02:00
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Runtime.dll sha256=14c4f4f5573fcdb7d574b53eb19430a027e11cbc316e4522d1af1ec5ea163568 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# binary=D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll sha256=291af53e6157badd5f34478c61a43cc1402cea15876c0d30efd02459560cdde5 version=0.1.0-preview.1+d5014f8d551d5da4fb22b62ef53e7407891884ab
+# command=dotnet test D:/Broiler.VM/src/tests/Broiler.VM.Contract.Tests -c Release --no-build --filter FullyQualifiedName~Two_Instances_On_Two_Threads_Spend_A_Shared_Runtime_Ceiling_To_The_Unit --logger trx;LogFileName=credit-r4.trx --results-directory D:\Broiler.VM\artifacts\fc\rc\e13\t6-trx
+{"rep": 4, "build": "credit", "outcome": "Passed", "test_ms": 234.8, "process_ms": 1634.3, "exit": 0}
+SUMMARY {"base": {"median_ms": 485.7, "min_ms": 478.3, "max_ms": 493.6, "n": 5}, "credit": {"median_ms": 231.6, "min_ms": 230.9, "max_ms": 234.8, "n": 5}}
+VERDICT {"base_median_ms": 485.7, "credit_median_ms": 231.6, "credit_at_or_below_base": true, "outcomes": ["Passed"]}

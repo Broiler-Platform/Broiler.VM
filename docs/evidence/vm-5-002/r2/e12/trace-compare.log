@@ -1,0 +1,13 @@
+# branch=claude/fuel-credit-block-steps
+# head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree=D:/Broiler.VM
+# tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+# tree-changes=[M docs/evidence/vm-5-002/README.md]
+# build=e12 trace comparison
+# started=2026-09-17T08:25:30+02:00
+# binary=docs/evidence/vm-5-002/r2/measurement/trace-compare.py sha256=65665e33be3c34e5424ceb5eefbce650c8fae80b4db1e1576b637b4516e984d5 version=(no version resource)
+# command=python r2/measurement/trace-compare.py <first collection e12 dir> <re-collection e12 dir>
+trace: retained base docs/evidence/vm-5-002/e12/probe-trace-base.txt, 19 lines after the header; credit artifacts/fc/rc/e12/probe-trace-credit.txt, 19 lines after the header
+trace lines differing: 0
+stress: 10 rounds, 10 PASS, 0 FAIL; stress_failures=0
+# exit=0

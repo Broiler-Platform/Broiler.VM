@@ -1,0 +1,110 @@
+# test262 tc39/test262 at ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+# 56560 files, content 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93 - the checkout answers to test262.pin
+# 56560 file digests written to artifacts\fc\t262-digest.cache; every shard still verifies the checkout, and every file whose length or timestamp moved is re-read
+# manifest broiler.javascript.numeric; form native; declined (none)
+# 56 shards across 14 processes, 100000 fuel and 600000 ms per variant
+# retaining every shard's transcript under artifacts\fc\low-base-native-100000
+--- shard 13 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0013.log
+--- shard 6 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0006.log
+--- shard 3 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0003.log
+--- shard 5 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0005.log
+--- shard 12 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0012.log
+--- shard 10 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0010.log
+--- shard 0 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0000.log
+--- shard 8 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0008.log
+--- shard 1 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0001.log
+--- shard 2 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0002.log
+--- shard 9 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0009.log
+--- shard 4 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0004.log
+--- shard 7 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0007.log
+--- shard 11 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0011.log
+--- shard 18 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0018.log
+--- shard 23 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0023.log
+--- shard 17 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0017.log
+--- shard 14 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0014.log
+--- shard 15 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0015.log
+--- shard 20 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0020.log
+--- shard 26 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0026.log
+--- shard 21 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0021.log
+--- shard 16 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0016.log
+--- shard 27 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0027.log
+--- shard 19 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0019.log
+--- shard 25 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0025.log
+--- shard 22 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0022.log
+--- shard 24 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0024.log
+--- shard 34 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0034.log
+--- shard 35 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0035.log
+--- shard 33 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0033.log
+--- shard 30 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0030.log
+--- shard 28 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0028.log
+--- shard 31 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0031.log
+--- shard 36 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0036.log
+--- shard 32 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0032.log
+--- shard 37 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0037.log
+--- shard 39 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0039.log
+--- shard 29 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0029.log
+--- shard 38 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0038.log
+--- shard 40 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0040.log
+--- shard 41 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0041.log
+--- shard 51 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0051.log
+--- shard 47 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0047.log
+--- shard 42 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0042.log
+--- shard 43 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0043.log
+--- shard 44 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0044.log
+--- shard 50 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0050.log
+--- shard 48 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0048.log
+--- shard 45 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0045.log
+--- shard 52 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0052.log
+--- shard 46 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0046.log
+--- shard 49 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0049.log
+--- shard 54 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0054.log
+--- shard 53 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0053.log
+--- shard 55 of 56 exited 0; artifacts\fc\low-base-native-100000\logs\shard-0055.log
+json D:\Broiler.VM\artifacts\fc\low-base-native-100000\test262.json
+broiler-js-conformance: merged 56 test262 shard report(s)
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.numeric at format version 2; harness not loaded; admitted surfaces broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.modules, broiler.javascript.native; declined (none); form native (x86-64-win64)
+partition FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard; merged from 56 shards
+selection candidates=9295 selected=9295 merged=9295
+# unsupported families: 32 distinct, 17200 variants
+#      4613  a class declaration  e.g. test/built-ins/Array/prototype/concat/Array.prototype.concat_non-array.js [sloppy]
+#      3070  an object literal  e.g. test/built-ins/Array/Symbol.species/return-value.js [sloppy]
+#      2834  a call to anything but a function this program declares  e.g. test/built-ins/Array/S15.4.1_A1.1_T3.js [sloppy]
+#      1701  a Boolean literal  e.g. test/built-ins/Array/fromAsync/mapfn-async-throws-close-async-iterator.js [sloppy]
+#      1298  an Array literal  e.g. test/built-ins/Array/15.4.5-1.js [sloppy]
+#       539  a `new` expression  e.g. test/built-ins/Array/S15.4.2.1_A1.2_T1.js [sloppy]
+#       512  a binding with no initialiser  e.g. test/built-ins/Array/from/Array.from_forwards-length-for-array-likes.js [sloppy]
+#       374  an assignment to anything but a binding  e.g. test/built-ins/Array/S15.4.1_A1.1_T1.js [sloppy]
+#       292  a function body that can fall off its end  e.g. test/built-ins/Array/of/return-a-custom-instance.js [sloppy]
+#       280  a String literal  e.g. test/built-ins/Array/from/from-string.js [sloppy]
+#       273  a generator function  e.g. test/built-ins/Array/fromAsync/mapfn-async-iterable-async.js [sloppy]
+#       209  a function expression  e.g. test/built-ins/Array/from/iter-cstm-ctor-err.js [sloppy]
+#       178  a `throw` statement  e.g. test/built-ins/Array/of/return-abrupt-from-contructor.js [sloppy]
+#       166  a `try` statement  e.g. test/built-ins/Array/length/S15.4.2.2_A2.2_T1.js [sloppy]
+#       153  a property access  e.g. test/built-ins/Array/from/proto-from-ctor-realm.js [sloppy]
+#       145  the `&&` operator  e.g. test/built-ins/Array/prototype/every/15.4.4.16-7-b-12.js [sloppy]
+#       112  a class expression  e.g. test/language/statements/class/cpn-class-decl-fields-computed-property-name-from-additive-expression-add.js [sloppy]
+#        92  the `instanceof` operator  e.g. test/built-ins/Array/prototype/every/15.4.4.16-1-11.js [sloppy]
+#        70  a `for`-`of` statement  e.g. test/built-ins/Array/prototype/every/resizable-buffer.js [sloppy]
+#        68  the `delete` operator  e.g. test/built-ins/Array/prototype/every/15.4.4.16-7-3.js [sloppy]
+#        60  the `null` literal  e.g. test/built-ins/Promise/all/ctx-ctor.js [sloppy]
+#        42  `this`  e.g. test/built-ins/Array/prototype/every/15.4.4.16-5-1.js [sloppy]
+#        34  a BigInt literal  e.g. test/built-ins/Array/fromAsync/asyncitems-arraylike-length-accessor-throws.js [sloppy]
+#        24  the `typeof` operator  e.g. test/built-ins/Array/prototype/map/15.4.4.19-8-c-i-17.js [sloppy]
+#        22  a nested function declaration  e.g. test/built-ins/Promise/all/call-resolve-element-items.js [sloppy]
+#        16  the `void` operator  e.g. test/language/expressions/object/prop-dup-data-data.js [sloppy]
+#         8  an arrow function  e.g. test/built-ins/Array/prototype/copyWithin/resizable-buffer.js [sloppy]
+#         7  a module graph  e.g. test/language/expressions/object/cpn-obj-lit-computed-property-name-from-await-expression.js [module]
+#         2  a conditional expression  e.g. test/built-ins/Array/prototype/filter/15.4.4.20-9-b-13.js [sloppy]
+#         2  a parameter with a default  e.g. test/built-ins/Array/fromAsync/this-constructor-operations.js [sloppy]
+#         2  a regular-expression literal  e.g. test/built-ins/Array/prototype/concat/Array.prototype.concat_spreadable-reg-exp.js [sloppy]
+#         2  an async function  e.g. test/language/statements/class/subclass/superclass-async-function.js [sloppy]
+# no variant spent an allowance
+# no variant failed, so there is nothing to classify
+# test262 9295 files, 18329 variants: pass 1076, fail 0, unsupported 17200, exhausted 0, skipped 53
+coverage partial a named selection rather than the whole test tree: test/built-ins/Promise test/language/statements/class test/built-ins/Array test/language/expressions/object
+# the whole-run report is artifacts\fc\low-base-native-100000\test262.report
+# the machine-readable report is artifacts\fc\low-base-native-100000\test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/built-ins/Promise test/language/statements/class test/built-ins/Array test/language/expressions/object

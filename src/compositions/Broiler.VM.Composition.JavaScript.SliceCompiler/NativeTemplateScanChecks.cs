@@ -96,12 +96,930 @@ internal static class NativeTemplateScanChecks
         return rows;
     }
 
+    // ---- the baseline block partition's drift guards -------------------------------------------------
+
+    /// <summary>
+    /// The table <see cref="JsBaselineBlocks.StopsAfter"/> reads is the predicates it is built from, at
+    /// every byte value, observed through the method because the table is private.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A DEFINED BYTE IS JUDGED THREE WAYS.</b> As the instruction just run, with the next instruction
+    /// a <c>Nop</c> inside the unit, the step stops exactly when <see cref="JsBaselineBlocks.EndsBlock"/>
+    /// holds; with the program counter one short of or one past the instruction's width it always stops,
+    /// which is what shows the width bits; and as the next instruction after a <c>Nop</c> it stops exactly
+    /// when <see cref="JsBaselineBlocks.RunsAlone"/> holds.
+    /// </para>
+    /// <para>
+    /// <b>AN UNDEFINED BYTE STOPS THE STEP ON EITHER SIDE OF THE BOUNDARY, and that is all of its entry a
+    /// caller can observe.</b> Its width is zero in the table, and the ends bit decides before the width
+    /// is read, so no program counter can show it and the row does not claim to.
+    /// </para>
+    /// <para>
+    /// <b>The unit's end is tested before the next byte is read</b>, and the last clause shows it: a
+    /// one-byte code with the program counter at its end answers rather than reading past the array.
+    /// </para>
+    /// </remarks>
+    private static (string, bool, string) TheBaselinePartitionTableIsThePredicates()
+    {
+        const string Name = "the baseline partition table is the predicates";
+        var failures = new System.Collections.Generic.List<string>();
+        var defined = 0;
+        var undefined = 0;
+
+        for (var value = 0; value < 256; value++)
+        {
+            var current = new byte[16];
+            current[0] = (byte)value;
+            var next = new byte[16];
+            next[1] = (byte)value;
+
+            if (!JsOpcodes.IsDefined((byte)value))
+            {
+                undefined++;
+
+                for (var pc = 0; pc < current.Length; pc++)
+                {
+                    if (!JsBaselineBlocks.StopsAfter(current, 0, pc, current.Length))
+                    {
+                        failures.Add("the undefined byte " + value + " did not stop a step after it at pc " + pc);
+                        break;
+                    }
+                }
+
+                if (!JsBaselineBlocks.StopsAfter(next, 0, 1, next.Length))
+                {
+                    failures.Add("the undefined byte " + value + " did not stop a step before it");
+                }
+
+                continue;
+            }
+
+            defined++;
+            var opcode = (JsOpcode)value;
+            var width = JsOpcodes.InstructionWidth(opcode);
+
+            if (JsBaselineBlocks.StopsAfter(current, 0, width, current.Length) != JsBaselineBlocks.EndsBlock(opcode))
+            {
+                failures.Add("`" + opcode + "` stops a step after it where EndsBlock answers " + JsBaselineBlocks.EndsBlock(opcode));
+            }
+
+            if (!JsBaselineBlocks.StopsAfter(current, 0, width - 1, current.Length) ||
+                !JsBaselineBlocks.StopsAfter(current, 0, width + 1, current.Length))
+            {
+                failures.Add("`" + opcode + "` does not stop a step at a pc other than its width " + width);
+            }
+
+            if (JsBaselineBlocks.StopsAfter(next, 0, 1, next.Length) != JsBaselineBlocks.RunsAlone(opcode))
+            {
+                failures.Add("`" + opcode + "` stops a step before it where RunsAlone answers " + JsBaselineBlocks.RunsAlone(opcode));
+            }
+        }
+
+        if (defined != JsOpcodes.All.Length)
+        {
+            failures.Add(defined + " bytes are defined and the opcode table lists " + JsOpcodes.All.Length);
+        }
+
+        try
+        {
+            if (!JsBaselineBlocks.StopsAfter([(byte)JsOpcode.Nop], 0, 1, 1))
+            {
+                failures.Add("a step at its unit's end did not stop");
+            }
+        }
+        catch (System.IndexOutOfRangeException)
+        {
+            failures.Add("a step at its unit's end read the byte past it");
+        }
+
+        return (
+            Name,
+            failures.Count == 0,
+            failures.Count == 0
+                ? defined + " defined bytes agree with the width, EndsBlock and RunsAlone on both sides of a boundary; " +
+                  undefined + " undefined bytes stop a step on both sides; the unit's end is tested before the byte past it"
+                : string.Join("; ", failures));
+    }
+
+    /// <summary>
+    /// The class of every opcode in the baseline partition, as the audit of each opcode's arm read it,
+    /// by arm and for any operand the verifier admits.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>T</b> is a transfer: terminal, or carrying a code target. <b>C</b> is the call class. <b>E</b> is an
+    /// arm, or a helper it calls unconditionally, that reaches <c>JsEngine.Call</c> behind no test but the
+    /// iterator record's done flag, a nullish <c>return</c> method, a missing <c>Symbol.iterator</c> (which
+    /// throws) or a class with no static elements. <b>R</b> reaches guest or embedder code only behind the
+    /// object test of <c>ToPrimitive</c> or <c>Render</c>, the getter or setter test of <c>Lookup</c>,
+    /// <c>GetSymbol</c>, <c>SetProperty</c>, <c>SetSymbol</c>, <c>SetWithReceiver</c>, <c>SetSuper</c>,
+    /// <c>ReadPrivate</c> or <c>WritePrivate</c>, the dispatch to <c>JsProxy</c> or <c>JsHostObject</c>, or
+    /// <c>InstanceOf</c>'s test for a <c>Symbol.hasInstance</c> method - so <c>Add</c> over an object whose
+    /// <c>valueOf</c> is a plain method is R, behind the first. <b>P</b> reaches none. An opcode can be in T
+    /// and in one of the others.
+    /// </para>
+    /// <para>
+    /// <b>The row asserts T, C and E against the predicates and holds R and P to nothing but being
+    /// named.</b> Whether an arm is R or P decides no block; it is here so that a new opcode cannot join
+    /// the partition without someone reading its arm and writing its class.
+    /// </para>
+    /// </remarks>
+    private static readonly (JsOpcode Opcode, string Class)[] BaselineClasses =
+    [
+        (JsOpcode.Nop, "P"),
+        (JsOpcode.LoadUndefined, "P"),
+        (JsOpcode.LoadNull, "P"),
+        (JsOpcode.LoadTrue, "P"),
+        (JsOpcode.LoadFalse, "P"),
+        (JsOpcode.LoadConstant, "P"),
+        (JsOpcode.LoadThis, "P"),
+        (JsOpcode.NewArguments, "P"),
+        (JsOpcode.LoadNewTarget, "P"),
+        (JsOpcode.LoadArgument, "P"),
+        (JsOpcode.RestArguments, "P"),
+        (JsOpcode.LoadScoped, "P"),
+        (JsOpcode.StoreScoped, "P"),
+        (JsOpcode.InitialiseScoped, "P"),
+        (JsOpcode.LoadGlobal, "R"),
+        (JsOpcode.StoreGlobal, "R"),
+        (JsOpcode.LoadGlobalOrUndefined, "R"),
+        (JsOpcode.PushScope, "P"),
+        (JsOpcode.PopScope, "P"),
+        (JsOpcode.CopyScope, "P"),
+        (JsOpcode.DeclareGlobal, "P"),
+        (JsOpcode.PushObjectScope, "P"),
+        (JsOpcode.ResolveName, "R"),
+        (JsOpcode.NewObject, "P"),
+        (JsOpcode.NewArray, "P"),
+        (JsOpcode.GetProperty, "R"),
+        (JsOpcode.SetProperty, "R"),
+        (JsOpcode.GetIndex, "R"),
+        (JsOpcode.SetIndex, "R"),
+        (JsOpcode.DefineField, "R"),
+        (JsOpcode.DefineIndexed, "R"),
+        (JsOpcode.DeleteProperty, "R"),
+        (JsOpcode.DeleteIndex, "R"),
+        (JsOpcode.DefineGetter, "R"),
+        (JsOpcode.DefineSetter, "R"),
+        (JsOpcode.DefineMethod, "R"),
+        (JsOpcode.LoadSuperProperty, "R"),
+        (JsOpcode.StoreSuperProperty, "R"),
+        (JsOpcode.ArrayAppend, "P"),
+        (JsOpcode.Closure, "P"),
+        (JsOpcode.Call, "C"),
+        (JsOpcode.Construct, "C"),
+        (JsOpcode.Return, "T P"),
+        (JsOpcode.ReturnUndefined, "T P"),
+        (JsOpcode.CallEval, "C"),
+        (JsOpcode.SuperCall, "C"),
+        (JsOpcode.SuperCallForwarded, "C"),
+        (JsOpcode.NewClass, "R"),
+        (JsOpcode.ArrayHoles, "P"),
+        (JsOpcode.SpreadArray, "E"),
+        (JsOpcode.SpreadObject, "R"),
+        (JsOpcode.CallSpread, "C"),
+        (JsOpcode.ConstructSpread, "C"),
+        (JsOpcode.SuperCallSpread, "C"),
+        (JsOpcode.SetPrototypeLiteral, "R"),
+        (JsOpcode.Add, "R"),
+        (JsOpcode.Subtract, "R"),
+        (JsOpcode.Multiply, "R"),
+        (JsOpcode.Divide, "R"),
+        (JsOpcode.Remainder, "R"),
+        (JsOpcode.Exponent, "R"),
+        (JsOpcode.Negate, "R"),
+        (JsOpcode.ToNumber, "R"),
+        (JsOpcode.Not, "P"),
+        (JsOpcode.BitwiseNot, "R"),
+        (JsOpcode.LessThan, "R"),
+        (JsOpcode.LessThanOrEqual, "R"),
+        (JsOpcode.GreaterThan, "R"),
+        (JsOpcode.GreaterThanOrEqual, "R"),
+        (JsOpcode.StrictEquals, "P"),
+        (JsOpcode.StrictNotEquals, "P"),
+        (JsOpcode.LooseEquals, "R"),
+        (JsOpcode.LooseNotEquals, "R"),
+        (JsOpcode.BitwiseOr, "R"),
+        (JsOpcode.BitwiseAnd, "R"),
+        (JsOpcode.BitwiseXor, "R"),
+        (JsOpcode.ShiftLeft, "R"),
+        (JsOpcode.ShiftRight, "R"),
+        (JsOpcode.ShiftRightUnsigned, "R"),
+        (JsOpcode.TypeOf, "P"),
+        (JsOpcode.InstanceOf, "R"),
+        (JsOpcode.In, "R"),
+        (JsOpcode.Void, "P"),
+        (JsOpcode.RequireCoercible, "P"),
+        (JsOpcode.Jump, "T P"),
+        (JsOpcode.JumpIfFalse, "T P"),
+        (JsOpcode.JumpIfTrue, "T P"),
+        (JsOpcode.Throw, "T R"),
+        (JsOpcode.ForInStart, "R"),
+        (JsOpcode.ForInNext, "T P"),
+        (JsOpcode.IterateStart, "E"),
+        (JsOpcode.IterateNext, "T E"),
+        (JsOpcode.IterateRest, "E"),
+        (JsOpcode.IterateClose, "E"),
+        (JsOpcode.Yield, "P"),
+        (JsOpcode.YieldDelegate, "E"),
+        (JsOpcode.Await, "P"),
+        (JsOpcode.LoadImport, "P"),
+        (JsOpcode.ThrowImmutable, "P"),
+        (JsOpcode.IterateStartAsync, "E"),
+        (JsOpcode.IterateNextAsync, "E"),
+        (JsOpcode.IterateAwaitStep, "T R"),
+        (JsOpcode.IterateCloseAsync, "T E"),
+        (JsOpcode.IterateCloseCheck, "P"),
+        (JsOpcode.DefineClassElement, "P"),
+        (JsOpcode.NewPrivateName, "P"),
+        (JsOpcode.LoadPrivate, "R"),
+        (JsOpcode.StorePrivate, "R"),
+        (JsOpcode.HasPrivate, "P"),
+        (JsOpcode.RunStaticElements, "E"),
+        (JsOpcode.Pop, "P"),
+        (JsOpcode.Duplicate, "P"),
+        (JsOpcode.DuplicateTwo, "P"),
+        (JsOpcode.Swap, "P"),
+        (JsOpcode.Pick, "P"),
+        (JsOpcode.DeclareGlobalLet, "P"),
+        (JsOpcode.DeclareGlobalConst, "P"),
+        (JsOpcode.InitialiseGlobalLexical, "P"),
+        (JsOpcode.DeleteGlobalBinding, "P"),
+        (JsOpcode.EnterBody, "P"),
+        (JsOpcode.ImportCall, "C"),
+        (JsOpcode.ImportMeta, "P"),
+    ];
+
+    /// <summary>
+    /// Every opcode the format defines has a class in the baseline partition, and the partition's
+    /// predicates are exactly what those classes say.
+    /// </summary>
+    /// <remarks>
+    /// <b>A NEW OPCODE WITHOUT A CLASS FAILS THIS ROW</b>, and so does a class list that names an opcode
+    /// twice or one the format does not define. <see cref="JsBaselineBlocks.RunsAlone"/> must hold exactly
+    /// for C and E, and <see cref="JsBaselineBlocks.EndsBlock"/> exactly for T, C and E - so moving an
+    /// opcode into or out of the run-alone set is an edit to both the method and this list.
+    /// </remarks>
+    private static (string, bool, string) EveryOpcodeIsClassifiedForTheBaselinePartition()
+    {
+        const string Name = "every opcode is classified for the baseline partition";
+        var failures = new System.Collections.Generic.List<string>();
+        var named = new System.Collections.Generic.HashSet<JsOpcode>();
+        var alone = new System.Collections.Generic.List<string>();
+
+        foreach (var (opcode, kind) in BaselineClasses)
+        {
+            var classes = kind.Split(' ');
+
+            if (!named.Add(opcode))
+            {
+                failures.Add("`" + opcode + "` is classified twice");
+            }
+
+            if (!JsOpcodes.IsDefined((byte)opcode))
+            {
+                failures.Add("`" + opcode + "` is classified and the format does not define it");
+                continue;
+            }
+
+            foreach (var single in classes)
+            {
+                if (single is not ("T" or "C" or "E" or "R" or "P"))
+                {
+                    failures.Add("`" + opcode + "` has the class `" + single + "`, which the partition does not have");
+                }
+            }
+
+            var transfer = System.Array.IndexOf(classes, "T") >= 0;
+            var runsAlone = System.Array.IndexOf(classes, "C") >= 0 || System.Array.IndexOf(classes, "E") >= 0;
+
+            if (transfer != (JsOpcodes.IsTerminal(opcode) || JsOpcodes.HasCodeTarget(opcode)))
+            {
+                failures.Add("`" + opcode + "` is classified " + (transfer ? "" : "not ") + "a transfer and the opcode table says otherwise");
+            }
+
+            if (runsAlone != JsBaselineBlocks.RunsAlone(opcode))
+            {
+                failures.Add("`" + opcode + "` is classified " + kind + " and RunsAlone answers " + JsBaselineBlocks.RunsAlone(opcode));
+            }
+
+            if ((transfer || runsAlone) != JsBaselineBlocks.EndsBlock(opcode))
+            {
+                failures.Add("`" + opcode + "` is classified " + kind + " and EndsBlock answers " + JsBaselineBlocks.EndsBlock(opcode));
+            }
+
+            if (runsAlone)
+            {
+                alone.Add(opcode.ToString());
+            }
+        }
+
+        foreach (var opcode in JsOpcodes.All)
+        {
+            if (!named.Contains(opcode))
+            {
+                failures.Add("`" + opcode + "` has no class in the baseline partition");
+            }
+        }
+
+        return (
+            Name,
+            failures.Count == 0,
+            failures.Count == 0
+                ? named.Count + " opcodes classified; " + alone.Count + " run alone (" + string.Join(", ", alone) + ")"
+                : string.Join("; ", failures));
+    }
+
+    /// <summary>
+    /// For every unit of every wide program, <see cref="JsBaselineBlocks.TryPlan"/> answers what a naive walk
+    /// over the same predicates gives, and <see cref="JsBaselineBlocks.Layout"/> is exactly
+    /// <see cref="JsBaselineBlocks.LayoutLength"/> entries long, resolves every branch to the instruction it
+    /// names and dispatches every landing to its own head.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>WHAT IT CATCHES IS BOOKKEEPING, AND NOTHING ELSE.</b> The walk here groups each program's handler
+    /// offsets by reading every region for every unit, and recomputes the landings, the heads, and each
+    /// head's last instruction, target, successor and tail one head at a time from the same predicates and
+    /// the same four landing sources the plan uses. A grouping that gave a unit another unit's offsets, a
+    /// plan that lost a head in its third walk, gave a block its neighbour's tail or filled its landings
+    /// out of order fails it. A wrong stop rule, or a landing source both of them lack, passes it: that the
+    /// landing sources are complete and that the stop rule is the right one are shown only by programs
+    /// that run.
+    /// </para>
+    /// <para>
+    /// <b>The layout half is its own books too.</b> Its length is the one <see cref="JsBaselineBlocks.LayoutLength"/>
+    /// counted from the plan; every branch resolves to an index; a branch taken on an equal compare lands on
+    /// the call of the head whose program counter it compared; a tail's other exits go to the dispatch; the
+    /// dispatch compares exactly the landings; the calls pass exactly the heads, in order, each through
+    /// eight times its opcode; and after each call stand exactly the entries its block's target and tail
+    /// dictate, comparing that block's own target and successor, with a fall-through tail followed by the
+    /// call that passes the successor. A layout that compared a block's target where its successor belongs,
+    /// or a neighbour's successor, fails it.
+    /// </para>
+    /// <para>
+    /// <b>THE DISPATCH IS RUN, NOT READ.</b> Each entry's compare and branch is followed for a negative
+    /// answer, for every offset from one before the unit to its end, and for the largest answer there is:
+    /// a negative answer must leave, a landing must reach the call that passes it, and every other answer
+    /// must reach the defect. An above-branch that named the wrong subtree fails it, whatever the tree's
+    /// shape. Whether the dispatch is the tree the emitter writes, and whether those templates are the bytes
+    /// the emitter writes, is not asked here.
+    /// </para>
+    /// </remarks>
+    private static (string, bool, string) ThePlanKeepsItsOwnBooks()
+    {
+        const string Name = "the plan keeps its own books";
+        var units = 0;
+        var heads = 0;
+        var entries = 0;
+        var answers = 0;
+
+        foreach (var program in WidePrograms)
+        {
+            var compiled = CompileWide(program, JsNativeBackends.X64Windows);
+
+            if (!compiled.Succeeded || compiled.Artifact is null)
+            {
+                return (Name, false, program.Name + ": " + Refusal(compiled));
+            }
+
+            if (!NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out var refusal))
+            {
+                return (Name, false, program.Name + ": " + refusal);
+            }
+
+            var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+            var why = GroupingBooks(image, grouped);
+
+            if (why is not null)
+            {
+                return (Name, false, program.Name + ": " + why);
+            }
+
+            for (var unit = 0; unit < image.Functions.Length; unit++)
+            {
+                if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out refusal))
+                {
+                    return (Name, false, program.Name + ", unit " + unit + ": the plan refused - " + refusal);
+                }
+
+                why = PlanBooks(image, unit, plan);
+                var laid = 0;
+                var run = 0;
+
+                if (why is null)
+                {
+                    why = LayoutBooks(plan, out laid);
+                }
+
+                if (why is null)
+                {
+                    why = DispatchBooks(plan, JsBaselineBlocks.Layout(plan), out run);
+                }
+
+                if (why is not null)
+                {
+                    return (Name, false, program.Name + ", unit " + unit + ": " + why);
+                }
+
+                units++;
+                heads += plan.Blocks.Length;
+                entries += laid;
+                answers += run;
+            }
+        }
+
+        return (
+            Name,
+            true,
+            units + " units of " + WidePrograms.Length + " programs planned from handler offsets grouped once per program: " +
+                heads + " heads, " + entries + " layout entries, each agreeing with a walk, as long as its grammar counts, " +
+                "resolving every branch and laying out its own block's tail; " + answers +
+                " answers run through the dispatches, each landing reaching its own head and every other answer the defect or the epilogue");
+    }
+
+    /// <summary>Why a program's grouped handler offsets differ from a walk over every region for every unit, or <see langword="null"/>.</summary>
+    private static string? GroupingBooks(JsNativeProgramImage image, JsBaselineHandlerOffsets grouped)
+    {
+        if (grouped.Units != image.Functions.Length)
+        {
+            return "the handler offsets are grouped for " + grouped.Units + " units and the image has " + image.Functions.Length;
+        }
+
+        for (var unit = 0; unit < image.Functions.Length; unit++)
+        {
+            var walked = new System.Collections.Generic.List<uint>();
+
+            foreach (var region in image.Regions)
+            {
+                if (region.FunctionIndex == (uint)unit)
+                {
+                    walked.Add(region.HandlerOffset);
+                }
+            }
+
+            if (!System.MemoryExtensions.SequenceEqual(grouped.Of(unit), new System.ReadOnlySpan<uint>(walked.ToArray())))
+            {
+                return "unit " + unit + "'s grouped handler offsets are " + string.Join(",", grouped.Of(unit).ToArray()) +
+                    " where the regions give " + string.Join(",", walked);
+            }
+        }
+
+        if (!grouped.Of(-1).IsEmpty || !grouped.Of(image.Functions.Length).IsEmpty)
+        {
+            return "the grouping answers handler offsets for a unit the image does not have";
+        }
+
+        return null;
+    }
+
+    /// <summary>Why a unit's plan differs from a naive walk over the same predicates, or <see langword="null"/>.</summary>
+    private static string? PlanBooks(JsNativeProgramImage image, int unit, JsBaselineUnitPlan plan)
+    {
+        var code = image.Code;
+        var row = image.Functions[unit];
+        var first = (int)row.CodeOffset;
+        var end = first + (int)row.CodeLength;
+
+        if (plan.UnitIndex != unit || plan.First != first || plan.End != end)
+        {
+            return "the plan is of [" + plan.First + ", " + plan.End + ") unit " + plan.UnitIndex;
+        }
+
+        var starts = new System.Collections.Generic.List<int>();
+        var landings = new System.Collections.Generic.SortedSet<int> { first };
+
+        for (var at = first; at < end; at += JsOpcodes.InstructionWidth((JsOpcode)code[at]))
+        {
+            starts.Add(at);
+
+            switch ((JsOpcode)code[at])
+            {
+                case JsOpcode.Yield or JsOpcode.Await or JsOpcode.EnterBody:
+                    landings.Add(at + JsOpcodes.InstructionWidth((JsOpcode)code[at]));
+                    break;
+
+                case JsOpcode.YieldDelegate:
+                    landings.Add(at);
+                    break;
+            }
+        }
+
+        foreach (var region in image.Regions)
+        {
+            if (region.FunctionIndex == (uint)unit)
+            {
+                landings.Add((int)region.HandlerOffset);
+            }
+        }
+
+        if (!System.Linq.Enumerable.SequenceEqual(landings, plan.Landings.ToArray()))
+        {
+            return "the plan's landings are " + string.Join(",", plan.Landings.ToArray()) + " where a walk gives " + string.Join(",", landings);
+        }
+
+        var headSet = new System.Collections.Generic.SortedSet<int>(landings);
+
+        foreach (var at in starts)
+        {
+            var opcode = (JsOpcode)code[at];
+            var following = at + JsOpcodes.InstructionWidth(opcode);
+
+            if (JsOpcodes.HasCodeTarget(opcode))
+            {
+                headSet.Add((int)System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(System.MemoryExtensions.AsSpan(code, at + 1)));
+            }
+
+            if (JsBaselineBlocks.RunsAlone(opcode))
+            {
+                headSet.Add(at);
+            }
+
+            if (JsBaselineBlocks.EndsBlock(opcode) && following < end)
+            {
+                headSet.Add(following);
+            }
+        }
+
+        var ordered = System.Linq.Enumerable.ToList(headSet);
+
+        if (ordered.Count != plan.Blocks.Length)
+        {
+            return "the plan has " + plan.Blocks.Length + " heads where a walk finds " + ordered.Count;
+        }
+
+        for (var index = 0; index < ordered.Count; index++)
+        {
+            var head = ordered[index];
+            var last = head;
+
+            while (true)
+            {
+                var following = last + JsOpcodes.InstructionWidth((JsOpcode)code[last]);
+
+                if (JsBaselineBlocks.EndsBlock((JsOpcode)code[last]) ||
+                    following >= end ||
+                    JsBaselineBlocks.RunsAlone((JsOpcode)code[following]))
+                {
+                    break;
+                }
+
+                last = following;
+            }
+
+            var ending = (JsOpcode)code[last];
+            var successor = last + JsOpcodes.InstructionWidth(ending);
+            var hasTarget = JsOpcodes.HasCodeTarget(ending);
+            var next = index + 1 < ordered.Count ? ordered[index + 1] : end;
+
+            var tail = JsOpcodes.IsTerminal(ending) || successor == end
+                ? JsBaselineTail.Leave
+                : successor == next ? JsBaselineTail.FallThrough : JsBaselineTail.Branch;
+
+            var walked = new JsBaselineBlock(
+                head,
+                (JsOpcode)code[head],
+                last,
+                hasTarget,
+                hasTarget ? (int)System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(System.MemoryExtensions.AsSpan(code, last + 1)) : JsBaselineBlock.NoTarget,
+                successor,
+                tail);
+
+            if (plan.Blocks[index] != walked)
+            {
+                return "the plan's block " + index + " is " + plan.Blocks[index] + " where a walk gives " + walked;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>Why a unit's layout does not resolve as its plan says, or <see langword="null"/>.</summary>
+    private static string? LayoutBooks(JsBaselineUnitPlan plan, out int laid)
+    {
+        var layout = JsBaselineBlocks.Layout(plan);
+        laid = layout.Length;
+
+        if (JsBaselineBlocks.LayoutLength(plan) != layout.Length)
+        {
+            return "the layout has " + layout.Length + " entries where LayoutLength counts " + JsBaselineBlocks.LayoutLength(plan);
+        }
+
+        if (layout.Length < 4 ||
+            layout[0].Template != JsBaselineTemplate.TestEax ||
+            layout[1].Template != JsBaselineTemplate.JsLeave ||
+            layout[1].Target != JsBaselineInstruction.Leave)
+        {
+            return "the layout does not open with the dispatch's sign test";
+        }
+
+        var compared = new System.Collections.Generic.List<int>();
+        var calls = new System.Collections.Generic.List<(int Pc, int Slot)>();
+
+        for (var index = 0; index < layout.Length; index++)
+        {
+            var entry = layout[index];
+            var branches = entry.Template is JsBaselineTemplate.JsLeave or JsBaselineTemplate.Je or
+                JsBaselineTemplate.Jne or JsBaselineTemplate.Ja or JsBaselineTemplate.Jmp;
+
+            if (!branches)
+            {
+                if (entry.Target != JsBaselineInstruction.None)
+                {
+                    return "entry " + index + " (" + entry.Template + ") names a target and does not branch";
+                }
+
+                if (entry.Template == JsBaselineTemplate.CmpEaxPc && entry.Role == JsBaselineRole.Dispatch)
+                {
+                    compared.Add(entry.Operand);
+                }
+
+                if (entry.Template == JsBaselineTemplate.CallSlot)
+                {
+                    if (index < 2 || layout[index - 1].Template != JsBaselineTemplate.MovArg1Pc ||
+                        layout[index - 2].Template != JsBaselineTemplate.MovArg0R14)
+                    {
+                        return "the call at entry " + index + " is not preceded by the two moves";
+                    }
+
+                    calls.Add((layout[index - 1].Operand, entry.Operand));
+                }
+
+                continue;
+            }
+
+            if (entry.Target != JsBaselineInstruction.Leave && (entry.Target < 0 || entry.Target >= layout.Length))
+            {
+                return "entry " + index + " (" + entry.Template + ") resolves to " + entry.Target;
+            }
+
+            if (entry.Template == JsBaselineTemplate.Je)
+            {
+                var target = entry.Target;
+
+                if (index == 0 || layout[index - 1].Template != JsBaselineTemplate.CmpEaxPc ||
+                    target < 0 || target + 1 >= layout.Length ||
+                    layout[target].Template != JsBaselineTemplate.MovArg0R14 ||
+                    layout[target + 1].Operand != layout[index - 1].Operand)
+                {
+                    return "the equal branch at entry " + index + " does not land on the call of the head it compared";
+                }
+            }
+
+            if ((entry.Template == JsBaselineTemplate.Jne ||
+                    (entry.Template == JsBaselineTemplate.Jmp && entry.Role == JsBaselineRole.Tail)) &&
+                entry.Target != 0)
+            {
+                return "the tail exit at entry " + index + " goes to " + entry.Target + " and not to the dispatch";
+            }
+
+            if (entry.Template == JsBaselineTemplate.Jmp && entry.Role == JsBaselineRole.Dispatch &&
+                entry.Target != JsBaselineInstruction.Leave &&
+                layout[entry.Target].Template != JsBaselineTemplate.MovStatus)
+            {
+                return "the dispatch's jump at entry " + index + " goes neither to the defect nor out of the unit";
+            }
+        }
+
+        compared.Sort();
+
+        if (!System.Linq.Enumerable.SequenceEqual(compared, plan.Landings.ToArray()))
+        {
+            return "the dispatch compares " + string.Join(",", compared) + " and the landings are " + string.Join(",", plan.Landings.ToArray());
+        }
+
+        if (calls.Count != plan.Blocks.Length)
+        {
+            return "the layout calls " + calls.Count + " times for " + plan.Blocks.Length + " heads";
+        }
+
+        for (var index = 0; index < calls.Count; index++)
+        {
+            if (calls[index] != (plan.Blocks[index].Head, (int)plan.Blocks[index].HeadOpcode * 8))
+            {
+                return "call " + index + " passes " + calls[index] + " for the head " + plan.Blocks[index].Head;
+            }
+        }
+
+        // THE TAILS, BLOCK BY BLOCK: between a head's call and the next head's first move stand exactly
+        // the entries its block's target and tail dictate, each comparing the block's own target or
+        // successor, and a fall-through tail is followed by the call that passes the successor it compared.
+        var callAt = new System.Collections.Generic.List<int>();
+
+        for (var index = 0; index < layout.Length; index++)
+        {
+            if (layout[index].Template == JsBaselineTemplate.CallSlot)
+            {
+                callAt.Add(index);
+            }
+        }
+
+        for (var index = 0; index < plan.Blocks.Length; index++)
+        {
+            var block = plan.Blocks[index];
+            var dictated = new System.Collections.Generic.List<(JsBaselineTemplate Template, int Pc)>();
+
+            if (block.HasTarget)
+            {
+                dictated.Add((JsBaselineTemplate.CmpEaxPc, block.Target));
+                dictated.Add((JsBaselineTemplate.Je, block.Target));
+            }
+
+            switch (block.Tail)
+            {
+                case JsBaselineTail.Leave:
+                    dictated.Add((JsBaselineTemplate.Jmp, -1));
+                    break;
+
+                case JsBaselineTail.FallThrough:
+                    dictated.Add((JsBaselineTemplate.CmpEaxPc, block.Following));
+                    dictated.Add((JsBaselineTemplate.Jne, -1));
+                    break;
+
+                default:
+                    dictated.Add((JsBaselineTemplate.CmpEaxPc, block.Following));
+                    dictated.Add((JsBaselineTemplate.Je, block.Following));
+                    dictated.Add((JsBaselineTemplate.Jmp, -1));
+                    break;
+            }
+
+            var from = callAt[index] + 1;
+            var to = index + 1 < callAt.Count ? callAt[index + 1] - 2 : layout.Length;
+
+            if (to - from != dictated.Count)
+            {
+                return "the tail of the head " + block.Head + " has " + (to - from) + " entries where its block dictates " + dictated.Count;
+            }
+
+            for (var step = 0; step < dictated.Count; step++)
+            {
+                var entry = layout[from + step];
+                var (template, pc) = dictated[step];
+
+                if (entry.Template != template || entry.Role != JsBaselineRole.Tail || entry.Head != block.Head)
+                {
+                    return "entry " + (from + step) + " of the head " + block.Head + "'s tail is " + entry.Template + " (" + entry.Role + ") where its block dictates " + template;
+                }
+
+                var answered = template switch
+                {
+                    JsBaselineTemplate.CmpEaxPc => entry.Operand,
+                    JsBaselineTemplate.Je => layout[entry.Target + 1].Operand,
+                    _ => entry.Target == 0 ? -1 : int.MinValue,
+                };
+
+                if (answered != pc)
+                {
+                    return "entry " + (from + step) + " of the head " + block.Head + "'s tail names " + answered + " where its block dictates " + pc + " (-1 is the dispatch)";
+                }
+            }
+
+            if (block.Tail == JsBaselineTail.FallThrough &&
+                (index + 1 >= callAt.Count || layout[callAt[index + 1] - 1].Operand != block.Following))
+            {
+                return "the head " + block.Head + " falls through into a call that does not pass its successor " + block.Following;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>What running a layout's dispatch answered: it left the unit.</summary>
+    private const int DispatchLeft = -1;
+
+    /// <summary>What running a layout's dispatch answered: it reached the defect block.</summary>
+    private const int DispatchDefect = -2;
+
+    /// <summary>What running a layout's dispatch answered: it reached no entry a dispatch may end at.</summary>
+    private const int DispatchLost = int.MinValue;
+
+    /// <summary>Why a unit's dispatch, run, does not send each answer where the landings say, or <see langword="null"/>.</summary>
+    private static string? DispatchBooks(JsBaselineUnitPlan plan, JsBaselineInstruction[] layout, out int run)
+    {
+        run = 0;
+        var landings = new System.Collections.Generic.HashSet<int>(plan.Landings.ToArray());
+
+        foreach (var answer in new[] { int.MinValue, -1 })
+        {
+            run++;
+            var reached = RunDispatch(layout, answer);
+
+            if (reached != DispatchLeft)
+            {
+                return "the answer " + answer + " reaches " + Reached(reached) + " where a negative answer leaves the unit";
+            }
+        }
+
+        for (var answer = System.Math.Max(0, plan.First - 1); answer <= plan.End; answer++)
+        {
+            run++;
+            var reached = RunDispatch(layout, answer);
+            var expected = landings.Contains(answer) ? answer : DispatchDefect;
+
+            if (reached != expected)
+            {
+                return "the answer " + answer + " reaches " + Reached(reached) + " where the landings send it to " + Reached(expected);
+            }
+        }
+
+        run++;
+        var largest = RunDispatch(layout, int.MaxValue);
+
+        if (largest != DispatchDefect)
+        {
+            return "the answer " + int.MaxValue + " reaches " + Reached(largest) + " where the landings send it to the defect";
+        }
+
+        return null;
+    }
+
+    /// <summary>Follows a layout's dispatch for one answer, from its first entry, compare by compare.</summary>
+    private static int RunDispatch(JsBaselineInstruction[] layout, int answer)
+    {
+        var at = 0;
+        var sign = false;
+        var equal = false;
+        var above = false;
+
+        for (var steps = 0; steps <= layout.Length; steps++)
+        {
+            if (at == JsBaselineInstruction.Leave)
+            {
+                return DispatchLeft;
+            }
+
+            if (at < 0 || at >= layout.Length)
+            {
+                return DispatchLost;
+            }
+
+            var entry = layout[at];
+
+            switch (entry.Template)
+            {
+                case JsBaselineTemplate.TestEax:
+                    sign = answer < 0;
+                    at++;
+                    break;
+
+                case JsBaselineTemplate.JsLeave:
+                    at = sign ? entry.Target : at + 1;
+                    break;
+
+                case JsBaselineTemplate.CmpEaxPc:
+                    equal = answer == entry.Operand;
+                    above = (uint)answer > (uint)entry.Operand;
+                    at++;
+                    break;
+
+                case JsBaselineTemplate.Je:
+                    at = equal ? entry.Target : at + 1;
+                    break;
+
+                case JsBaselineTemplate.Jne:
+                    at = equal ? at + 1 : entry.Target;
+                    break;
+
+                case JsBaselineTemplate.Ja:
+                    at = above ? entry.Target : at + 1;
+                    break;
+
+                case JsBaselineTemplate.Jmp:
+                    at = entry.Target;
+                    break;
+
+                case JsBaselineTemplate.MovStatus when entry.Operand == (int)JsBaselineStatus.Defect:
+                    return DispatchDefect;
+
+                case JsBaselineTemplate.MovArg0R14 when at + 1 < layout.Length &&
+                    layout[at + 1].Template == JsBaselineTemplate.MovArg1Pc:
+                    return layout[at + 1].Operand;
+
+                default:
+                    return DispatchLost;
+            }
+        }
+
+        return DispatchLost;
+    }
+
+    /// <summary>Names what running a dispatch reached.</summary>
+    private static string Reached(int reached) => reached switch
+    {
+        DispatchLeft => "the epilogue",
+        DispatchDefect => "the defect",
+        DispatchLost => "no entry a dispatch may end at",
+        _ => "the call passing " + reached,
+    };
+
     // ---- the baseline form over the wide manifest ----------------------------------------------
 
     /// <summary>
     /// The wide programs the baseline rows compile, one family of instruction and landing each.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>EACH ONE REACHES A KIND OF LANDING OR TAIL THE OTHERS DO NOT.</b> Objects, strings and
     /// closures reach the plain fall-through tail; the class reaches <c>super</c> and private
     /// names; try, catch and finally reach region handler landings and a break through a finally;
@@ -109,9 +1027,18 @@ internal static class NativeTemplateScanChecks
     /// holds, so an unsigned split is emitted - and resumes by <c>return()</c> and <c>throw()</c>;
     /// <c>yield*</c> reaches the delegating landing; the async programs reach <c>await</c> landings
     /// and the asynchronous iteration instructions that carry code targets; the parameter program
-    /// reaches <c>EnterBody</c>; the module reaches an import; and the last reaches a switch, a
+    /// reaches <c>EnterBody</c>; the module reaches an import; and the fourteenth reaches a switch, a
     /// labelled continue and <c>with</c>. A program with <c>Library</c> set compiles as a two-module
     /// graph whose main module imports <c>lib</c>.
+    /// </para>
+    /// <para>
+    /// <b>THE LAST SIX REACH WHAT A BLOCK DOES THAT AN INSTRUCTION ALONE DID NOT</b>: a long linear run
+    /// with a call that runs alone in its middle, so one run is split by a block of one; a loop head
+    /// reached linearly from inside a run, so a block branches to it; a getter, a <c>valueOf</c> and a
+    /// Proxy trap entering guest code from an instruction in the middle of a run; a throw from the middle
+    /// of a run caught in the same unit, so the step stops on a landing it did not fall to; and a
+    /// generator resumed at a landing in the middle of a run.
+    /// </para>
     /// </remarks>
     private static readonly (string Name, string Source, string? Library)[] WidePrograms =
     [
@@ -129,13 +1056,32 @@ internal static class NativeTemplateScanChecks
         ("destructuring parameters with defaults", "function f({ a = 1, b } = {}, [c, d = 4] = []) { return a + (b || 0) + (c || 0) + d; } f() + f({ b: 2 }, [3]);", null),
         ("a module with an import", "import { add, n } from 'lib'; export const r = add(n, 2);", "export function add(a, b) { return a + b; } export let n = 1;"),
         ("a switch, a labelled continue and with", "var t = 0; outer: for (var i = 0; i < 3; i++) { for (var j = 0; j < 3; j++) { if (j === 1) { continue outer; } switch (i) { case 0: t += 1; break; case 1: t += 10; break; default: t += 100; } } } var o = { x: 5 }; with (o) { t += x; } t;", null),
+        ("a long linear run with a call in its middle", "var a = 1, b = 2, c = 3; function id(x) { return x; } var t = 0; for (var i = 0; i < 50; i++) { t = t + a * b - c + id(i) + (a << 2) + (b | c); } t;", null),
+        ("a loop head inside a linear run", "var t = 0, i = 0; do { t += i; t *= 2; t -= 1; i++; } while (i < 5); t;", null),
+        ("getter and valueOf re-entry from the middle of a run", "var n = 0; var o = { get g() { n += 1; return n; }, valueOf() { return n * 2; } }; var t = 0; for (var i = 0; i < 5; i++) { t = t + o.g + (+o) + o.g; } t;", null),
+        ("Proxy traps from the middle of a run", "var log = 0; var p = new Proxy({ a: 1 }, { get(t, k) { log += 1; return t[k]; } }); var s = 0; for (var i = 0; i < 4; i++) { s = s + p.a * 2 + p.a; } s + log;", null),
+        ("a throw from the middle of a run caught in the same unit", "var r = 0; for (var i = 0; i < 3; i++) { try { r = r + 1; r += null.x; r = r + 100; } catch (e) { r = r + 10; } } r;", null),
+        ("a generator resumed into the middle of a run", "function* g() { var x = 1; x = x + (yield x); x = x * 2 + (yield x); return x + 3; } var it = g(); it.next(); it.next(5); it.next(7).value;", null),
     ];
 
     /// <summary>
-    /// The program the golden rows retain the bytes of: two units, a property read, a branch and a
-    /// throw.
+    /// The program the golden rows retain the bytes of: a loop head inside a run, a conditional branch, a
+    /// call, a return, a throw, and a generator with more landings than a leaf of the tree compares.
     /// </summary>
-    private const string GoldenSource = "let o={a:1}; function f(x){ if (x) { return o.a; } throw 1; } f(1);";
+    /// <remarks>
+    /// <b>IT IS WIDE ENOUGH THAT THE RETAINED BYTES AND THEIR DECODE COVER EVERY SHAPE A UNIT'S BODY
+    /// TAKES.</b> The loop's head is reached linearly from the code before it, so the block from the
+    /// function's entry branches to the head after the loop rather than falling into it; the call runs
+    /// alone, so the block before it falls through to it; the return and the throw leave; the loop and the
+    /// conditional compare a target before their tails; and the generator's entry and the four places its
+    /// <c>yield</c>s resume at are five landings, so its dispatch splits on an above-branch.
+    /// <c>TheGoldenProgramReachesEveryTailKind</c> holds the program to all of that, so a later edit
+    /// cannot narrow it silently.
+    /// </remarks>
+    private const string GoldenSource =
+        "let o={a:1}; function g(y){ return y; } " +
+        "function f(x){ let t=0; do { t = t + 1; } while (t < x); if (x) { return o.a + g(t); } throw 1; } " +
+        "function* h(){ yield 1; yield 2; yield 3; yield 4; } f(1);";
 
     /// <summary>Every row about the baseline form's templates, its scan clauses and its emitter.</summary>
     /// <remarks>
@@ -143,10 +1089,10 @@ internal static class NativeTemplateScanChecks
     /// <b>NOTHING HERE RUNS EMITTED CODE, AND BOTH CONVENTIONS ARE CHECKED ON EVERY HOST.</b> The
     /// emitter is a pure function of the image, so a System V emission is as available on Windows as
     /// a Windows one is; what these rows establish is that every emission scans clean against its own
-    /// table, that the table is exactly what the emitter writes, that the frame-shape clauses refuse
-    /// what they are written against, and that the verifier re-emits the same bytes. Whether the
-    /// handlers those bytes call answer what the interpreter answers is the business of the rows that
-    /// execute, beside the engine.
+    /// table and its own program's layout, that the table is exactly what the emitter writes, that the
+    /// frame-shape and layout clauses refuse what they are written against, and that the verifier
+    /// re-emits the same bytes. Whether the handlers those bytes call answer what the interpreter
+    /// answers is the business of the rows that execute, beside the engine.
     /// </para>
     /// <para>
     /// <b>The numeric rows above are not moved by any of this, and the last rows here say so
@@ -166,15 +1112,25 @@ internal static class NativeTemplateScanChecks
             BaselineCoverage(JsX64Abi.SystemV, systemV),
             TheBaselineTablesWriteNothingAndCallOnlyTheHandlerTable(),
             TheBaselineConstantsAreTheConventionTables(),
+            TheGoldenProgramReachesEveryTailKind(),
             BaselineGolden(JsX64Abi.Windows, GoldenWindows),
             BaselineGolden(JsX64Abi.SystemV, GoldenSystemV),
+            TheGoldenHandDecodeIsTheGoldenBytes(),
+            TheGoldenHandDecodeListingIsTheWidthWalk(),
+            TheGoldenHandDecodePlanIsThePlan(),
             TheTwoConventionsEmitOneTemplateSequence(),
             BaselineReEmission(JsX64Abi.Windows),
             BaselineReEmission(JsX64Abi.SystemV),
-            AReEmittingVerifierRefusesAHandlerSwappedInThePayload(),
+            EveryVerifierRefusesAHandlerSwappedInThePayload(),
             TheArm64BackendRefusesTheWideManifest(),
+            TheBaselinePartitionTableIsThePredicates(),
+            EveryOpcodeIsClassifiedForTheBaselinePartition(),
+            ThePlanKeepsItsOwnBooks(),
+            ABaselineLayoutIsBoundedByTheCodeItLaysOut(),
+            TheFrozenLayoutPayloadsStillTestWhatTheyName(),
         };
 
+        rows.AddRange(BaselineLayoutRefusals());
         rows.AddRange(BaselineRefusals());
         rows.AddRange(UnchangedAnswers());
         return rows;
@@ -212,7 +1168,7 @@ internal static class NativeTemplateScanChecks
 
     /// <summary>
     /// Every wide program emits under the named convention and its image scans clean against the
-    /// baseline table.
+    /// baseline table, with the program read back out of the artifact for the layout clauses.
     /// </summary>
     /// <remarks>
     /// <b>A REFUSED PROGRAM FAILS THIS ROW, which is the difference from the numeric closure
@@ -237,13 +1193,14 @@ internal static class NativeTemplateScanChecks
             }
 
             if (!NativeLifecycle.TryReadEmitted(
-                compiled.Artifact, out var code, out var symbols, out var refusal))
+                    compiled.Artifact, out var code, out var symbols, out var refusal) ||
+                !NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out refusal))
             {
                 return (name, false, program.Name + ": " + refusal);
             }
 
             var result = JsNativeScan.Scan(
-                abi.Architecture, JsNativeTier.Baseline, code, symbols, 16, instantiated);
+                abi.Architecture, JsNativeTier.Baseline, code, symbols, 16, image, instantiated);
 
             if (!result.Accepted)
             {
@@ -674,53 +1631,365 @@ internal static class NativeTemplateScanChecks
 
     /// <summary>The Windows x64 bytes the golden program is retained as.</summary>
     private const string GoldenWindows =
-        "5341564883EC284989CE498B1E89D085C00F88BD0100003D000000000F840F000000E900000000B8FDFFFFFFE9A30100" +
-        "004C89F1BA00000000FF93080000003D010000000F85C5FFFFFF4C89F1BA01000000FF93900000003D050000000F85AC" +
-        "FFFFFF4C89F1BA05000000FF93C80000003D080000000F8593FFFFFF4C89F1BA08000000FF93800100003D0B0000000F" +
-        "857AFFFFFF4C89F1BA0B000000FF93A00000003D0E0000000F8561FFFFFF4C89F1BA0E000000FF93F80300003D110000" +
-        "000F8548FFFFFF4C89F1BA11000000FF93000100003D120000000F852FFFFFFF4C89F1BA12000000FF93280000003D15" +
-        "0000000F8516FFFFFF4C89F1BA15000000FF93300100003D180000000F85FDFEFFFF4C89F1BA18000000FF9308040000" +
-        "3D1B0000000F85E4FEFFFF4C89F1BA1B000000FF93980000003D1E0000000F85CBFEFFFF4C89F1BA1E000000FF930800" +
-        "00003D1F0000000F85B2FEFFFF4C89F1BA1F000000FF93280000003D220000000F8599FEFFFF4C89F1BA22000000FF93" +
-        "880100003D240000000F8580FEFFFF4C89F1BA24000000FF93900000003D280000000F8567FEFFFF4C89F1BA28000000" +
-        "FF93800000003D2C0000000F854EFEFFFF4C89F1BA2C000000FF9398010000E93BFEFFFF4883C428415E5BC390909090" +
-        "5341564883EC284989CE498B1E89D085C00F88DB0000003D2D0000000F840F000000E900000000B8FDFFFFFFE9C10000" +
-        "004C89F1BA2D000000FF93800000003D310000000F85C5FFFFFF4C89F1BA31000000FF93080300003D3D0000000F8450" +
-        "0000003D360000000F85A1FFFFFF4C89F1BA36000000FF93980000003D390000000F8588FFFFFF4C89F1BA39000000FF" +
-        "93100100003D3C0000000F856FFFFFFF4C89F1BA3C000000FF9398010000E95CFFFFFF4C89F1BA3D000000FF93280000" +
-        "003D400000000F8543FFFFFF4C89F1BA40000000FF9318030000E930FFFFFF4C89F1BA41000000FF93A0010000E91DFF" +
-        "FFFF4883C428415E5BC3";
+        "5341564883EC284989CE498B1E89D085C00F885F0000003D000000000F840F000000E900000000B8FDFFFFFFE9450000" +
+        "004C89F1BA00000000FF93080000003D340000000F85C5FFFFFF4C89F1BA34000000FF93880100003D360000000F85AC" +
+        "FFFFFF4C89F1BA36000000FF9390000000E999FFFFFF4883C428415E5BC390905341564883EC284989CE498B1E89D085" +
+        "C00F88400000003D3F0000000F840F000000E900000000B8FDFFFFFFE9260000004C89F1BA3F000000FF9380000000E9" +
+        "CBFFFFFF4C89F1BA44000000FF93A0010000E9B8FFFFFF4883C428415E5BC3905341564883EC284989CE498B1E89D085" +
+        "C00F88F60000003D450000000F840F000000E900000000B8FDFFFFFFE9DC0000004C89F1BA45000000FF93280000003D" +
+        "4C0000000F84100000003D680000000F8429000000E9B5FFFFFF4C89F1BA4C000000FF93800000003D4C0000000F84E7" +
+        "FFFFFF3D680000000F8591FFFFFF4C89F1BA68000000FF93800000003D830000000F84500000003D710000000F856DFF" +
+        "FFFF4C89F1BA71000000FF93980000003D7F0000000F8554FFFFFF4C89F1BA7F000000FF93880100003D810000000F85" +
+        "3BFFFFFF4C89F1BA81000000FF9300020000E928FFFFFF4C89F1BA83000000FF9328000000E915FFFFFF4C89F1BA8700" +
+        "0000FF93A0010000E902FFFFFF4883C428415E5BC390909090909090909090905341564883EC284989CE498B1E89D085" +
+        "C00F88B00000003D910000000F846C0000000F871B0000003D880000000F84350000003D8C0000000F843D000000E91B" +
+        "0000003D960000000F84530000003D9B0000000F845B000000E900000000B8FDFFFFFFE95F0000004C89F1BA88000000" +
+        "FF9328000000E994FFFFFF4C89F1BA8C000000FF9380030000E981FFFFFF4C89F1BA91000000FF9380030000E96EFFFF" +
+        "FF4C89F1BA96000000FF9380030000E95BFFFFFF4C89F1BA9B000000FF9380030000E948FFFFFF4883C428415E5BC3";
 
     /// <summary>The System V bytes the golden program is retained as.</summary>
     private const string GoldenSystemV =
-        "5341564883EC084989FE498B1E89F085C00F88BD0100003D000000000F840F000000E900000000B8FDFFFFFFE9A30100" +
-        "004C89F7BE00000000FF93080000003D010000000F85C5FFFFFF4C89F7BE01000000FF93900000003D050000000F85AC" +
-        "FFFFFF4C89F7BE05000000FF93C80000003D080000000F8593FFFFFF4C89F7BE08000000FF93800100003D0B0000000F" +
-        "857AFFFFFF4C89F7BE0B000000FF93A00000003D0E0000000F8561FFFFFF4C89F7BE0E000000FF93F80300003D110000" +
-        "000F8548FFFFFF4C89F7BE11000000FF93000100003D120000000F852FFFFFFF4C89F7BE12000000FF93280000003D15" +
-        "0000000F8516FFFFFF4C89F7BE15000000FF93300100003D180000000F85FDFEFFFF4C89F7BE18000000FF9308040000" +
-        "3D1B0000000F85E4FEFFFF4C89F7BE1B000000FF93980000003D1E0000000F85CBFEFFFF4C89F7BE1E000000FF930800" +
-        "00003D1F0000000F85B2FEFFFF4C89F7BE1F000000FF93280000003D220000000F8599FEFFFF4C89F7BE22000000FF93" +
-        "880100003D240000000F8580FEFFFF4C89F7BE24000000FF93900000003D280000000F8567FEFFFF4C89F7BE28000000" +
-        "FF93800000003D2C0000000F854EFEFFFF4C89F7BE2C000000FF9398010000E93BFEFFFF4883C408415E5BC390909090" +
-        "5341564883EC084989FE498B1E89F085C00F88DB0000003D2D0000000F840F000000E900000000B8FDFFFFFFE9C10000" +
-        "004C89F7BE2D000000FF93800000003D310000000F85C5FFFFFF4C89F7BE31000000FF93080300003D3D0000000F8450" +
-        "0000003D360000000F85A1FFFFFF4C89F7BE36000000FF93980000003D390000000F8588FFFFFF4C89F7BE39000000FF" +
-        "93100100003D3C0000000F856FFFFFFF4C89F7BE3C000000FF9398010000E95CFFFFFF4C89F7BE3D000000FF93280000" +
-        "003D400000000F8543FFFFFF4C89F7BE40000000FF9318030000E930FFFFFF4C89F7BE41000000FF93A0010000E91DFF" +
-        "FFFF4883C408415E5BC3";
+        "5341564883EC084989FE498B1E89F085C00F885F0000003D000000000F840F000000E900000000B8FDFFFFFFE9450000" +
+        "004C89F7BE00000000FF93080000003D340000000F85C5FFFFFF4C89F7BE34000000FF93880100003D360000000F85AC" +
+        "FFFFFF4C89F7BE36000000FF9390000000E999FFFFFF4883C408415E5BC390905341564883EC084989FE498B1E89F085" +
+        "C00F88400000003D3F0000000F840F000000E900000000B8FDFFFFFFE9260000004C89F7BE3F000000FF9380000000E9" +
+        "CBFFFFFF4C89F7BE44000000FF93A0010000E9B8FFFFFF4883C408415E5BC3905341564883EC084989FE498B1E89F085" +
+        "C00F88F60000003D450000000F840F000000E900000000B8FDFFFFFFE9DC0000004C89F7BE45000000FF93280000003D" +
+        "4C0000000F84100000003D680000000F8429000000E9B5FFFFFF4C89F7BE4C000000FF93800000003D4C0000000F84E7" +
+        "FFFFFF3D680000000F8591FFFFFF4C89F7BE68000000FF93800000003D830000000F84500000003D710000000F856DFF" +
+        "FFFF4C89F7BE71000000FF93980000003D7F0000000F8554FFFFFF4C89F7BE7F000000FF93880100003D810000000F85" +
+        "3BFFFFFF4C89F7BE81000000FF9300020000E928FFFFFF4C89F7BE83000000FF9328000000E915FFFFFF4C89F7BE8700" +
+        "0000FF93A0010000E902FFFFFF4883C408415E5BC390909090909090909090905341564883EC084989FE498B1E89F085" +
+        "C00F88B00000003D910000000F846C0000000F871B0000003D880000000F84350000003D8C0000000F843D000000E91B" +
+        "0000003D960000000F84530000003D9B0000000F845B000000E900000000B8FDFFFFFFE95F0000004C89F7BE88000000" +
+        "FF9328000000E994FFFFFF4C89F7BE8C000000FF9380030000E981FFFFFF4C89F7BE91000000FF9380030000E96EFFFF" +
+        "FF4C89F7BE96000000FF9380030000E95BFFFFFF4C89F7BE9B000000FF9380030000E948FFFFFF4883C408415E5BC3";
+
+    /// <summary>
+    /// The golden program's listing, the plan derived from it without the plan code, and both conventions'
+    /// bytes decoded one instantiation a line against the written template list.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE LISTING IS THE GOLDEN ROWS' WIDTH WALK, AND THE PLAN WAS DERIVED FROM IT BY THE DEFINITIONS, NOT
+    /// BY <see cref="JsBaselineBlocks.TryPlan"/>.</b> The landings are the unit's entry, its handler offsets,
+    /// the instruction after each <c>Yield</c>, <c>Await</c> and <c>EnterBody</c> and each <c>YieldDelegate</c>;
+    /// the heads add every code target, every instruction that runs alone and every successor of an
+    /// instruction that ends a block; a head's last instruction is the first on its linear walk that ends a
+    /// block, is the unit's last, or is followed by one that runs alone; and its tail leaves, falls through
+    /// to the next head or branches. The decode names each branch's target by the label bound there, and
+    /// every call's program counter and slot were checked against that plan.
+    /// </para>
+    /// <para>
+    /// <b>THE BYTE COLUMNS ARE THE RETAINED BYTES, AND A ROW SAYS SO.</b>
+    /// <c>TheGoldenHandDecodeIsTheGoldenBytes</c> concatenates each convention's column and requires the
+    /// two constants above, so a later re-base that moved the bytes without the decode fails a row rather
+    /// than leaving a stale decode beside new bytes.
+    /// </para>
+    /// <para>
+    /// <b>THE LISTING AND THE PLAN ARE THE GOLDEN PROGRAM'S, AND TWO MORE ROWS SAY SO.</b> A lowering change
+    /// can move an operand no native byte carries - a constant, a scoped slot or a name index - and leave
+    /// every byte where it was. <c>TheGoldenHandDecodeListingIsTheWidthWalk</c> requires the listing to be
+    /// the width walk of the program the golden rows compile, line for line, and
+    /// <c>TheGoldenHandDecodePlanIsThePlan</c> requires the plan to be what
+    /// <see cref="JsBaselineBlocks.TryPlan"/> answers for it. The second is a consistency check and not
+    /// where the plan came from: the plan was derived by hand, before either row existed, and a difference
+    /// means the hand derivation or the partition has moved, which a reader then decides between.
+    /// </para>
+    /// </remarks>
+    private const string GoldenHandDecode = @"THE LISTING: the golden rows' walk of the code section by instruction width, one instruction a line
+unit 0 [0, 63), no regions
+      0  LoadUndefined
+      1  InitialiseScoped 0 0
+      5  DeclareGlobal 0
+      8  DeclareGlobal 1
+     11  DeclareGlobal 2
+     14  Closure 1
+     17  StoreGlobal 0
+     20  Closure 2
+     23  StoreGlobal 1
+     26  Closure 3
+     29  StoreGlobal 2
+     32  DeclareGlobalLet 5
+     35  NewObject
+     36  LoadConstant 4
+     39  DefineField 6
+     42  InitialiseGlobalLexical 5
+     45  LoadGlobal 1
+     48  LoadUndefined
+     49  LoadConstant 4
+     52  Call 1
+     54  InitialiseScoped 0 0
+     58  LoadScoped 0 0
+     62  Return
+unit 1 [63, 69), no regions
+     63  LoadScoped 0 0
+     67  Return
+     68  ReturnUndefined
+unit 2 [69, 136), no regions
+     69  LoadConstant 3
+     72  InitialiseScoped 0 1
+     76  LoadScoped 0 1
+     80  LoadConstant 4
+     83  Add
+     84  Duplicate
+     85  StoreScoped 0 1
+     89  Pop
+     90  LoadScoped 0 1
+     94  LoadScoped 0 0
+     98  LessThan
+     99  JumpIfTrue 76
+    104  LoadScoped 0 0
+    108  JumpIfFalse 131
+    113  LoadGlobal 5
+    116  GetProperty 6
+    119  LoadGlobal 0
+    122  LoadUndefined
+    123  LoadScoped 0 1
+    127  Call 1
+    129  Add
+    130  Return
+    131  LoadConstant 4
+    134  Throw
+    135  ReturnUndefined
+unit 3 [136, 157), no regions
+    136  LoadConstant 4
+    139  Yield
+    140  Pop
+    141  LoadConstant 7
+    144  Yield
+    145  Pop
+    146  LoadConstant 8
+    149  Yield
+    150  Pop
+    151  LoadConstant 9
+    154  Yield
+    155  Pop
+    156  ReturnUndefined
+
+THE PLAN, DERIVED BY HAND FROM THE LISTING: landings, then each head's last instruction and tail
+unit 0: landings 0
+  head 0 LoadUndefined (landing): last 49 LoadConstant, falls through to 52
+  head 52 Call (runs alone): last 52 Call, falls through to 54
+  head 54 InitialiseScoped: last 62 Return, leaves
+unit 1: landings 63
+  head 63 LoadScoped (landing): last 67 Return, leaves
+  head 68 ReturnUndefined: last 68 ReturnUndefined, leaves
+unit 2: landings 69
+  head 69 LoadConstant (landing): last 99 JumpIfTrue, compares its target 76, branches to 104
+  head 76 LoadScoped: last 99 JumpIfTrue, compares its target 76, falls through to 104
+  head 104 LoadScoped: last 108 JumpIfFalse, compares its target 131, falls through to 113
+  head 113 LoadGlobal: last 123 LoadScoped, falls through to 127
+  head 127 Call (runs alone): last 127 Call, falls through to 129
+  head 129 Add: last 130 Return, leaves
+  head 131 LoadConstant: last 134 Throw, leaves
+  head 135 ReturnUndefined: last 135 ReturnUndefined, leaves
+unit 3: landings 136, 140, 145, 150, 155
+  head 136 LoadConstant (landing): last 156 ReturnUndefined, leaves
+  head 140 Pop (landing): last 156 ReturnUndefined, leaves
+  head 145 Pop (landing): last 156 ReturnUndefined, leaves
+  head 150 Pop (landing): last 156 ReturnUndefined, leaves
+  head 155 Pop (landing): last 156 ReturnUndefined, leaves
+
+THE DECODE, AGAINST THE WRITTEN TEMPLATE LIST: offset, Windows bytes, System V bytes (= where the same), instruction, label bound here
+unit 0 at 0
+000000  53             =              push rbx
+000001  4156           =              push r14
+000003  4883EC28       4883EC08       sub rsp, frame
+000007  4989CE         4989FE         mov r14, arg0
+00000A  498B1E         =              mov rbx, [r14]
+00000D  89D0           89F0           mov eax, arg1d
+00000F  85C0           =              test eax, eax                      dispatch
+000011  0F885F000000   =              js -> leave
+000017  3D00000000     =              cmp eax, 0
+00001C  0F840F000000   =              je -> head 0
+000022  E900000000     =              jmp -> defect
+000027  B8FDFFFFFF     =              mov eax, -3 (Defect)               defect
+00002C  E945000000     =              jmp -> leave
+000031  4C89F1         4C89F7         mov arg0, r14                      head 0
+000034  BA00000000     BE00000000     mov arg1d, 0
+000039  FF9308000000   =              call [rbx+8] (LoadUndefined)
+00003F  3D34000000     =              cmp eax, 52
+000044  0F85C5FFFFFF   =              jne -> dispatch
+00004A  4C89F1         4C89F7         mov arg0, r14                      head 52
+00004D  BA34000000     BE34000000     mov arg1d, 52
+000052  FF9388010000   =              call [rbx+392] (Call)
+000058  3D36000000     =              cmp eax, 54
+00005D  0F85ACFFFFFF   =              jne -> dispatch
+000063  4C89F1         4C89F7         mov arg0, r14                      head 54
+000066  BA36000000     BE36000000     mov arg1d, 54
+00006B  FF9390000000   =              call [rbx+144] (InitialiseScoped)
+000071  E999FFFFFF     =              jmp -> dispatch
+000076  4883C428       4883C408       add rsp, frame                     leave
+00007A  415E           =              pop r14
+00007C  5B             =              pop rbx
+00007D  C3             =              ret
+00007E  90             =              padding
+00007F  90             =              padding
+unit 1 at 128
+000080  53             =              push rbx
+000081  4156           =              push r14
+000083  4883EC28       4883EC08       sub rsp, frame
+000087  4989CE         4989FE         mov r14, arg0
+00008A  498B1E         =              mov rbx, [r14]
+00008D  89D0           89F0           mov eax, arg1d
+00008F  85C0           =              test eax, eax                      dispatch
+000091  0F8840000000   =              js -> leave
+000097  3D3F000000     =              cmp eax, 63
+00009C  0F840F000000   =              je -> head 63
+0000A2  E900000000     =              jmp -> defect
+0000A7  B8FDFFFFFF     =              mov eax, -3 (Defect)               defect
+0000AC  E926000000     =              jmp -> leave
+0000B1  4C89F1         4C89F7         mov arg0, r14                      head 63
+0000B4  BA3F000000     BE3F000000     mov arg1d, 63
+0000B9  FF9380000000   =              call [rbx+128] (LoadScoped)
+0000BF  E9CBFFFFFF     =              jmp -> dispatch
+0000C4  4C89F1         4C89F7         mov arg0, r14                      head 68
+0000C7  BA44000000     BE44000000     mov arg1d, 68
+0000CC  FF93A0010000   =              call [rbx+416] (ReturnUndefined)
+0000D2  E9B8FFFFFF     =              jmp -> dispatch
+0000D7  4883C428       4883C408       add rsp, frame                     leave
+0000DB  415E           =              pop r14
+0000DD  5B             =              pop rbx
+0000DE  C3             =              ret
+0000DF  90             =              padding
+unit 2 at 224
+0000E0  53             =              push rbx
+0000E1  4156           =              push r14
+0000E3  4883EC28       4883EC08       sub rsp, frame
+0000E7  4989CE         4989FE         mov r14, arg0
+0000EA  498B1E         =              mov rbx, [r14]
+0000ED  89D0           89F0           mov eax, arg1d
+0000EF  85C0           =              test eax, eax                      dispatch
+0000F1  0F88F6000000   =              js -> leave
+0000F7  3D45000000     =              cmp eax, 69
+0000FC  0F840F000000   =              je -> head 69
+000102  E900000000     =              jmp -> defect
+000107  B8FDFFFFFF     =              mov eax, -3 (Defect)               defect
+00010C  E9DC000000     =              jmp -> leave
+000111  4C89F1         4C89F7         mov arg0, r14                      head 69
+000114  BA45000000     BE45000000     mov arg1d, 69
+000119  FF9328000000   =              call [rbx+40] (LoadConstant)
+00011F  3D4C000000     =              cmp eax, 76
+000124  0F8410000000   =              je -> head 76
+00012A  3D68000000     =              cmp eax, 104
+00012F  0F8429000000   =              je -> head 104
+000135  E9B5FFFFFF     =              jmp -> dispatch
+00013A  4C89F1         4C89F7         mov arg0, r14                      head 76
+00013D  BA4C000000     BE4C000000     mov arg1d, 76
+000142  FF9380000000   =              call [rbx+128] (LoadScoped)
+000148  3D4C000000     =              cmp eax, 76
+00014D  0F84E7FFFFFF   =              je -> head 76
+000153  3D68000000     =              cmp eax, 104
+000158  0F8591FFFFFF   =              jne -> dispatch
+00015E  4C89F1         4C89F7         mov arg0, r14                      head 104
+000161  BA68000000     BE68000000     mov arg1d, 104
+000166  FF9380000000   =              call [rbx+128] (LoadScoped)
+00016C  3D83000000     =              cmp eax, 131
+000171  0F8450000000   =              je -> head 131
+000177  3D71000000     =              cmp eax, 113
+00017C  0F856DFFFFFF   =              jne -> dispatch
+000182  4C89F1         4C89F7         mov arg0, r14                      head 113
+000185  BA71000000     BE71000000     mov arg1d, 113
+00018A  FF9398000000   =              call [rbx+152] (LoadGlobal)
+000190  3D7F000000     =              cmp eax, 127
+000195  0F8554FFFFFF   =              jne -> dispatch
+00019B  4C89F1         4C89F7         mov arg0, r14                      head 127
+00019E  BA7F000000     BE7F000000     mov arg1d, 127
+0001A3  FF9388010000   =              call [rbx+392] (Call)
+0001A9  3D81000000     =              cmp eax, 129
+0001AE  0F853BFFFFFF   =              jne -> dispatch
+0001B4  4C89F1         4C89F7         mov arg0, r14                      head 129
+0001B7  BA81000000     BE81000000     mov arg1d, 129
+0001BC  FF9300020000   =              call [rbx+512] (Add)
+0001C2  E928FFFFFF     =              jmp -> dispatch
+0001C7  4C89F1         4C89F7         mov arg0, r14                      head 131
+0001CA  BA83000000     BE83000000     mov arg1d, 131
+0001CF  FF9328000000   =              call [rbx+40] (LoadConstant)
+0001D5  E915FFFFFF     =              jmp -> dispatch
+0001DA  4C89F1         4C89F7         mov arg0, r14                      head 135
+0001DD  BA87000000     BE87000000     mov arg1d, 135
+0001E2  FF93A0010000   =              call [rbx+416] (ReturnUndefined)
+0001E8  E902FFFFFF     =              jmp -> dispatch
+0001ED  4883C428       4883C408       add rsp, frame                     leave
+0001F1  415E           =              pop r14
+0001F3  5B             =              pop rbx
+0001F4  C3             =              ret
+0001F5  90             =              padding
+0001F6  90             =              padding
+0001F7  90             =              padding
+0001F8  90             =              padding
+0001F9  90             =              padding
+0001FA  90             =              padding
+0001FB  90             =              padding
+0001FC  90             =              padding
+0001FD  90             =              padding
+0001FE  90             =              padding
+0001FF  90             =              padding
+unit 3 at 512
+000200  53             =              push rbx
+000201  4156           =              push r14
+000203  4883EC28       4883EC08       sub rsp, frame
+000207  4989CE         4989FE         mov r14, arg0
+00020A  498B1E         =              mov rbx, [r14]
+00020D  89D0           89F0           mov eax, arg1d
+00020F  85C0           =              test eax, eax                      dispatch
+000211  0F88B0000000   =              js -> leave
+000217  3D91000000     =              cmp eax, 145
+00021C  0F846C000000   =              je -> head 145
+000222  0F871B000000   =              ja -> subtree 1
+000228  3D88000000     =              cmp eax, 136
+00022D  0F8435000000   =              je -> head 136
+000233  3D8C000000     =              cmp eax, 140
+000238  0F843D000000   =              je -> head 140
+00023E  E91B000000     =              jmp -> defect
+000243  3D96000000     =              cmp eax, 150                       subtree 1
+000248  0F8453000000   =              je -> head 150
+00024E  3D9B000000     =              cmp eax, 155
+000253  0F845B000000   =              je -> head 155
+000259  E900000000     =              jmp -> defect
+00025E  B8FDFFFFFF     =              mov eax, -3 (Defect)               defect
+000263  E95F000000     =              jmp -> leave
+000268  4C89F1         4C89F7         mov arg0, r14                      head 136
+00026B  BA88000000     BE88000000     mov arg1d, 136
+000270  FF9328000000   =              call [rbx+40] (LoadConstant)
+000276  E994FFFFFF     =              jmp -> dispatch
+00027B  4C89F1         4C89F7         mov arg0, r14                      head 140
+00027E  BA8C000000     BE8C000000     mov arg1d, 140
+000283  FF9380030000   =              call [rbx+896] (Pop)
+000289  E981FFFFFF     =              jmp -> dispatch
+00028E  4C89F1         4C89F7         mov arg0, r14                      head 145
+000291  BA91000000     BE91000000     mov arg1d, 145
+000296  FF9380030000   =              call [rbx+896] (Pop)
+00029C  E96EFFFFFF     =              jmp -> dispatch
+0002A1  4C89F1         4C89F7         mov arg0, r14                      head 150
+0002A4  BA96000000     BE96000000     mov arg1d, 150
+0002A9  FF9380030000   =              call [rbx+896] (Pop)
+0002AF  E95BFFFFFF     =              jmp -> dispatch
+0002B4  4C89F1         4C89F7         mov arg0, r14                      head 155
+0002B7  BA9B000000     BE9B000000     mov arg1d, 155
+0002BC  FF9380030000   =              call [rbx+896] (Pop)
+0002C2  E948FFFFFF     =              jmp -> dispatch
+0002C7  4883C428       4883C408       add rsp, frame                     leave
+0002CB  415E           =              pop r14
+0002CD  5B             =              pop rbx
+0002CE  C3             =              ret
+";
 
     /// <summary>One program's baseline emission, compared with the bytes retained for it.</summary>
     /// <remarks>
-    /// <b>THE RETAINED BYTES WERE DECODED BY HAND AGAINST THE TEMPLATE LIST THE FORM WAS SPECIFIED
-    /// WITH, NOT AGAINST THE TABLE.</b> The closure rows prove the emitter and the table agree with
-    /// each other; this row pins both to the written specification - the prologue, the dispatch, the
-    /// one-landing leaf, the defect block, each instruction's call and tail, and the epilogue - so
-    /// that an encoder and a table that drifted together still move a row.
+    /// <b>THE RETAINED BYTES ARE DECODED IN <see cref="GoldenHandDecode"/> AGAINST THE TEMPLATE LIST THE FORM
+    /// WAS SPECIFIED WITH, NOT AGAINST THE TABLE, AND THEIR HEADS AGAINST A PLAN DERIVED FROM THE BYTECODE
+    /// LISTING, NOT FROM THE PLAN CODE.</b> The closure rows prove the emitter and the table agree with each
+    /// other; this row pins both to the written specification - the prologue, the dispatch with a leaf and
+    /// a split tree, the defect block, each block head's call and tail of every kind, and the epilogue - so
+    /// that an encoder and a table that drifted together still move a row, and
+    /// <c>TheGoldenHandDecodeIsTheGoldenBytes</c> keeps the decode the retained bytes'. Its detail carries
+    /// the listing the decode's plan was derived from, walked by instruction width.
     /// </remarks>
     private static (string, bool, string) BaselineGolden(JsX64Abi abi, string expected)
     {
-        var name = "`" + abi.Name + "` emits the retained baseline bytes for a property read, a branch and a throw";
+        var name = "`" + abi.Name + "` emits the retained baseline bytes for a loop, a branch, a call, a throw and a generator";
         var compiled = CompileWide(("golden", GoldenSource, null), abi.Name);
 
         if (!compiled.Succeeded || compiled.Artifact is null)
@@ -733,11 +2002,475 @@ internal static class NativeTemplateScanChecks
             return (name, false, refusal);
         }
 
+        if (!NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out refusal))
+        {
+            return (name, false, refusal);
+        }
+
         var written = System.Convert.ToHexString(code);
+        var listing = "; the bytecode, walked by width: " + WidthWalk(image);
 
         return string.Equals(written, expected, System.StringComparison.Ordinal)
-            ? (name, true, code.Length + " bytes, " + symbols.Length + " symbols")
-            : (name, false, "the emitted bytes are not the retained ones; the emission reads " + written);
+            ? (name, true, code.Length + " bytes, " + symbols.Length + " symbols" + listing)
+            : (name, false, "the emitted bytes are not the retained ones; the emission reads " + written + listing);
+    }
+
+    /// <summary>
+    /// A program's code section as a plain listing: each unit's instructions, offset, opcode and operand,
+    /// found by stepping from the unit's first byte by each instruction's width, then its regions.
+    /// </summary>
+    /// <remarks>
+    /// <b>IT ASKS THE OPCODE TABLE FOR WIDTHS AND SHAPES AND NOTHING ELSE, AND NEVER THE PARTITION.</b> It
+    /// is the input the retained decode derives its landings, heads, last instructions and tails from by
+    /// hand, so it must not be computed by the plan those are meant to check. It reads the code, function
+    /// and region sections through the reader the plan row reads them through. This is its one-line form,
+    /// for a row's detail; <see cref="WidthWalkListing"/> is the same walk in the decode's form.
+    /// </remarks>
+    private static string WidthWalk(JsNativeProgramImage image)
+    {
+        var text = new System.Text.StringBuilder();
+
+        for (var unit = 0; unit < image.Functions.Length; unit++)
+        {
+            var row = image.Functions[unit];
+            var end = (long)row.CodeOffset + row.CodeLength;
+
+            text.Append(unit == 0 ? string.Empty : " | ")
+                .Append("unit ").Append(unit).Append(" [").Append(row.CodeOffset).Append(", ").Append(end).Append("):");
+
+            foreach (var (at, instruction) in WalkByWidth(image, unit))
+            {
+                text.Append(' ').Append(at).Append(' ').Append(instruction).Append(';');
+            }
+
+            text.Append(" regions:");
+            var any = false;
+
+            foreach (var region in image.Regions)
+            {
+                if (region.FunctionIndex == (uint)unit)
+                {
+                    text.Append(" try [").Append(region.TryStart).Append(", ").Append(region.TryEnd)
+                        .Append(") handler ").Append(region.HandlerOffset).Append(';');
+                    any = true;
+                }
+            }
+
+            if (!any)
+            {
+                text.Append(" none;");
+            }
+        }
+
+        return text.ToString();
+    }
+
+    /// <summary>
+    /// The same width walk as <see cref="WidthWalk"/>, one line per unit heading and per instruction, in
+    /// the form the listing of <see cref="GoldenHandDecode"/> was written in.
+    /// </summary>
+    /// <remarks>
+    /// A unit's heading is its index, its code range and its regions, or <c>no regions</c>; an instruction's
+    /// line is its offset right-aligned in five columns after two spaces, two more spaces, then its opcode
+    /// and operands.
+    /// </remarks>
+    private static System.Collections.Generic.List<string> WidthWalkListing(JsNativeProgramImage image)
+    {
+        var lines = new System.Collections.Generic.List<string>();
+
+        for (var unit = 0; unit < image.Functions.Length; unit++)
+        {
+            var row = image.Functions[unit];
+            var heading = new System.Text.StringBuilder()
+                .Append("unit ").Append(unit).Append(" [").Append(row.CodeOffset).Append(", ")
+                .Append((long)row.CodeOffset + row.CodeLength).Append("), ");
+            var any = false;
+
+            foreach (var region in image.Regions)
+            {
+                if (region.FunctionIndex == (uint)unit)
+                {
+                    heading.Append(any ? "; " : "regions ").Append("try [").Append(region.TryStart).Append(", ")
+                        .Append(region.TryEnd).Append(") handler ").Append(region.HandlerOffset);
+                    any = true;
+                }
+            }
+
+            lines.Add(any ? heading.ToString() : heading.Append("no regions").ToString());
+
+            foreach (var (at, instruction) in WalkByWidth(image, unit))
+            {
+                lines.Add("  " + at.ToString(System.Globalization.CultureInfo.InvariantCulture).PadLeft(5) + "  " + instruction);
+            }
+        }
+
+        return lines;
+    }
+
+    /// <summary>
+    /// One unit's instructions, found by stepping from its first byte by each instruction's width: each
+    /// one's offset, and its opcode and operands as text, ending at an undefined byte if the walk meets one.
+    /// </summary>
+    private static System.Collections.Generic.List<(long At, string Instruction)> WalkByWidth(
+        JsNativeProgramImage image,
+        int unit)
+    {
+        var walked = new System.Collections.Generic.List<(long, string)>();
+        var row = image.Functions[unit];
+        var end = (long)row.CodeOffset + row.CodeLength;
+
+        for (var at = (long)row.CodeOffset; at < end;)
+        {
+            var value = image.Code[at];
+
+            if (!JsOpcodes.IsDefined(value))
+            {
+                walked.Add((at, "undefined byte " + value));
+                break;
+            }
+
+            var opcode = (JsOpcode)value;
+            var text = new System.Text.StringBuilder().Append(opcode);
+
+            switch (JsOpcodes.Shape(opcode))
+            {
+                case JsOperandShape.U8:
+                    text.Append(' ').Append(image.Code[at + 1]);
+                    break;
+
+                case JsOperandShape.U16:
+                    text.Append(' ').Append(System.BitConverter.ToUInt16(image.Code, (int)at + 1));
+                    break;
+
+                case JsOperandShape.U32:
+                    text.Append(' ').Append(System.BitConverter.ToUInt32(image.Code, (int)at + 1));
+                    break;
+
+                case JsOperandShape.U8U16:
+                    text.Append(' ').Append(image.Code[at + 1]).Append(' ')
+                        .Append(System.BitConverter.ToUInt16(image.Code, (int)at + 2));
+                    break;
+            }
+
+            walked.Add((at, text.ToString()));
+            at += JsOpcodes.InstructionWidth(opcode);
+        }
+
+        return walked;
+    }
+
+    /// <summary>
+    /// The golden program's plan has a block of every tail kind, a head that runs alone, a tail that
+    /// compares a code target, and a unit with more landings than a leaf of the tree compares.
+    /// </summary>
+    /// <remarks>
+    /// <b>THE RETAINED BYTES ARE ONLY AS WIDE AS THE PROGRAM THEY WERE EMITTED FROM.</b> The golden rows
+    /// and the decode pin every shape a unit's body can take only while the program reaches all of them,
+    /// and this row is what says it does: a leave, a fall-through and a branch tail, a call through the
+    /// slot of an opcode that runs alone, a target compare, and an above-branch in a dispatch. It reads
+    /// the plan, which the plan row and the decode hold elsewhere; here it only decides whether the
+    /// program is wide enough.
+    /// </remarks>
+    private static (string, bool, string) TheGoldenProgramReachesEveryTailKind()
+    {
+        const string Name = "the golden program reaches every tail kind, a head that runs alone and a split landing tree";
+        var compiled = CompileWide(("golden", GoldenSource, null), JsNativeBackends.X64Windows);
+
+        if (!compiled.Succeeded || compiled.Artifact is null)
+        {
+            return (Name, false, Refusal(compiled));
+        }
+
+        if (!NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out var refusal))
+        {
+            return (Name, false, refusal);
+        }
+
+        var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+        var tails = new int[3];
+        var alone = 0;
+        var targets = 0;
+        var widest = 0;
+
+        for (var unit = 0; unit < image.Functions.Length; unit++)
+        {
+            if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out refusal))
+            {
+                return (Name, false, "unit " + unit + ": the plan refused - " + refusal);
+            }
+
+            widest = System.Math.Max(widest, plan.Landings.Length);
+
+            foreach (var block in plan.Blocks)
+            {
+                tails[(int)block.Tail]++;
+                alone += JsBaselineBlocks.RunsAlone(block.HeadOpcode) ? 1 : 0;
+                targets += block.HasTarget ? 1 : 0;
+            }
+        }
+
+        return (
+            Name,
+            tails[(int)JsBaselineTail.Leave] > 0 && tails[(int)JsBaselineTail.FallThrough] > 0 &&
+                tails[(int)JsBaselineTail.Branch] > 0 && alone > 0 && targets > 0 &&
+                widest > JsBaselineBlocks.LeafLandings,
+            image.Functions.Length + " units: " + tails[(int)JsBaselineTail.Leave] + " leave, " +
+                tails[(int)JsBaselineTail.FallThrough] + " fall-through and " + tails[(int)JsBaselineTail.Branch] +
+                " branch tails, " + alone + " heads that run alone, " + targets + " target compares, and at most " +
+                widest + " landings in a unit, where a leaf compares " + JsBaselineBlocks.LeafLandings);
+    }
+
+    /// <summary>The retained decode's byte columns, concatenated per convention, are the retained bytes.</summary>
+    /// <remarks>
+    /// <b>EVERY LINE AFTER THE DECODE'S HEADING IS A UNIT'S HEADING OR ONE INSTANTIATION, AND EACH
+    /// INSTANTIATION STARTS WHERE THE ONE BEFORE ENDED.</b> A line's first column is its offset, its second
+    /// the Windows bytes, and its third the System V bytes, or <c>=</c> where they are the Windows bytes;
+    /// the two conventions' instantiations are the same length. A decode that dropped, doubled or
+    /// misplaced an instantiation, or that was left behind by a re-base of either constant, fails here.
+    /// What the row cannot check is the decode's words - the instruction, the operand and the label - which
+    /// are the hand check itself.
+    /// </remarks>
+    private static (string, bool, string) TheGoldenHandDecodeIsTheGoldenBytes()
+    {
+        const string Name = "the golden hand decode is the golden bytes";
+        var windows = new System.Text.StringBuilder();
+        var systemV = new System.Text.StringBuilder();
+        var instantiations = 0;
+        var decoding = false;
+
+        foreach (var line in GoldenHandDecode.Split('\n'))
+        {
+            if (line.StartsWith("THE DECODE", System.StringComparison.Ordinal))
+            {
+                decoding = true;
+                continue;
+            }
+
+            if (!decoding || line.Length == 0 || line.StartsWith("unit ", System.StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var columns = line.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
+
+            if (columns.Length < 4 || columns[0].Length != 6 ||
+                !int.TryParse(
+                    columns[0],
+                    System.Globalization.NumberStyles.AllowHexSpecifier,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out var offset))
+            {
+                return (Name, false, "a line of the decode is neither a unit's heading nor an instantiation: " + line);
+            }
+
+            var systemVBytes = columns[2] == "=" ? columns[1] : columns[2];
+
+            if (offset != windows.Length / 2 || !IsHexBytes(columns[1]) || !IsHexBytes(systemVBytes) ||
+                systemVBytes.Length != columns[1].Length)
+            {
+                return (
+                    Name,
+                    false,
+                    "the instantiation at " + columns[0] + " does not follow the " + (windows.Length / 2) +
+                        " bytes before it with one length under both conventions: " + line);
+            }
+
+            windows.Append(columns[1]);
+            systemV.Append(systemVBytes);
+            instantiations++;
+        }
+
+        var windowsMatch = string.Equals(windows.ToString(), GoldenWindows, System.StringComparison.Ordinal);
+        var systemVMatch = string.Equals(systemV.ToString(), GoldenSystemV, System.StringComparison.Ordinal);
+
+        return (
+            Name,
+            decoding && instantiations > 0 && windowsMatch && systemVMatch,
+            instantiations + " instantiations decoded, " + (windows.Length / 2) + " bytes: the Windows column " +
+                (windowsMatch ? "is" : "IS NOT") + " the retained Windows bytes and the System V column " +
+                (systemVMatch ? "is" : "IS NOT") + " the retained System V bytes");
+    }
+
+    /// <summary>The retained decode's listing is the golden program's code section, walked by width.</summary>
+    /// <remarks>
+    /// <b>THE LISTING IS WHAT THE PLAN WAS DERIVED FROM, SO A LISTING LEFT BEHIND IS A DERIVATION FROM A
+    /// PROGRAM NO ROW COMPILES.</b> The byte columns pin every offset and opcode a call or a compare carries,
+    /// but not an operand no native byte carries: a lowering change that renumbered a constant, a scoped
+    /// slot or a name would leave every golden row green beside a stale listing. This row compiles the
+    /// golden program as the golden rows do, walks it with <see cref="WidthWalkListing"/>, which never asks
+    /// the partition, and requires the listing's lines to be those, in order.
+    /// </remarks>
+    private static (string, bool, string) TheGoldenHandDecodeListingIsTheWidthWalk()
+    {
+        const string Name = "the golden hand decode's listing is the golden program's width walk";
+
+        if (!TryReadGoldenImage(out var image, out var refusal))
+        {
+            return (Name, false, refusal);
+        }
+
+        var retained = GoldenHandDecodeSection("THE LISTING");
+        var walked = WidthWalkListing(image);
+        var difference = FirstDifference(retained, walked);
+
+        return (
+            Name,
+            retained.Count > 0 && difference.Length == 0,
+            difference.Length == 0
+                ? image.Functions.Length + " units, " + walked.Count + " lines: the retained listing is the walk"
+                : difference);
+    }
+
+    /// <summary>The retained decode's plan is the plan the partition answers for the golden program.</summary>
+    /// <remarks>
+    /// <b>IT IS A CONSISTENCY CHECK AND NOT WHERE THE PLAN CAME FROM.</b> The retained plan was derived by
+    /// hand from the listing, by the definitions, before this row existed. This row renders what
+    /// <see cref="JsBaselineBlocks.TryPlan"/> answers for each unit, given the unit's grouped handler
+    /// offsets, in the plan's own words - the landings, then each head with <c>landing</c> and
+    /// <c>runs alone</c> where they hold, its last instruction, the target it compares, and whether its
+    /// tail leaves, falls through or branches to the instruction after its last - and requires the two to
+    /// be the same lines, in order. A difference means that the hand derivation or the partition has moved;
+    /// which of the two is right is a reader's to decide, and this row does not decide it.
+    /// </remarks>
+    private static (string, bool, string) TheGoldenHandDecodePlanIsThePlan()
+    {
+        const string Name = "the golden hand decode's plan is the plan the partition answers";
+
+        if (!TryReadGoldenImage(out var image, out var refusal))
+        {
+            return (Name, false, refusal);
+        }
+
+        var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+        var planned = new System.Collections.Generic.List<string>();
+
+        for (var unit = 0; unit < image.Functions.Length; unit++)
+        {
+            if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out refusal))
+            {
+                return (Name, false, "unit " + unit + ": the plan refused - " + refusal);
+            }
+
+            planned.Add("unit " + unit + ": landings " + string.Join(", ", plan.Landings.ToArray()));
+
+            foreach (var block in plan.Blocks)
+            {
+                var landing = System.MemoryExtensions.Contains(plan.Landings, block.Head);
+                var alone = JsBaselineBlocks.RunsAlone(block.HeadOpcode);
+                var line = new System.Text.StringBuilder()
+                    .Append("  head ").Append(block.Head).Append(' ').Append(block.HeadOpcode)
+                    .Append(landing && alone ? " (landing, runs alone)" : landing ? " (landing)" : alone ? " (runs alone)" : string.Empty)
+                    .Append(": last ").Append(block.Last).Append(' ').Append((JsOpcode)image.Code[block.Last]);
+
+                if (block.HasTarget)
+                {
+                    line.Append(", compares its target ").Append(block.Target);
+                }
+
+                line.Append(
+                    block.Tail switch
+                    {
+                        JsBaselineTail.Leave => ", leaves",
+                        JsBaselineTail.FallThrough => ", falls through to " + block.Following,
+                        _ => ", branches to " + block.Following,
+                    });
+
+                planned.Add(line.ToString());
+            }
+        }
+
+        var retained = GoldenHandDecodeSection("THE PLAN");
+        var difference = FirstDifference(retained, planned);
+
+        return (
+            Name,
+            retained.Count > 0 && difference.Length == 0,
+            difference.Length == 0
+                ? image.Functions.Length + " units, " + planned.Count + " lines: the retained plan is the partition's"
+                : difference);
+    }
+
+    /// <summary>The golden program compiled for the Windows convention, read back as an image.</summary>
+    private static bool TryReadGoldenImage(out JsNativeProgramImage image, out string refusal)
+    {
+        image = null!;
+        var compiled = CompileWide(("golden", GoldenSource, null), JsNativeBackends.X64Windows);
+
+        if (!compiled.Succeeded || compiled.Artifact is null)
+        {
+            refusal = Refusal(compiled);
+            return false;
+        }
+
+        return NativeLifecycle.TryReadImage(compiled.Artifact, out image, out refusal);
+    }
+
+    /// <summary>
+    /// The lines of one section of <see cref="GoldenHandDecode"/>: every line after the one that starts with
+    /// the heading, up to the first empty line.
+    /// </summary>
+    private static System.Collections.Generic.List<string> GoldenHandDecodeSection(string heading)
+    {
+        var lines = new System.Collections.Generic.List<string>();
+        var inside = false;
+
+        foreach (var raw in GoldenHandDecode.Split('\n'))
+        {
+            var line = raw.TrimEnd('\r');
+
+            if (!inside)
+            {
+                inside = line.StartsWith(heading, System.StringComparison.Ordinal);
+                continue;
+            }
+
+            if (line.Length == 0)
+            {
+                break;
+            }
+
+            lines.Add(line);
+        }
+
+        return lines;
+    }
+
+    /// <summary>Where two lists of lines first differ, in words, or empty when they are the same lines.</summary>
+    private static string FirstDifference(
+        System.Collections.Generic.List<string> retained,
+        System.Collections.Generic.List<string> computed)
+    {
+        for (var index = 0; index < System.Math.Min(retained.Count, computed.Count); index++)
+        {
+            if (!string.Equals(retained[index], computed[index], System.StringComparison.Ordinal))
+            {
+                return "line " + (index + 1) + " is retained as \"" + retained[index] + "\" and computed as \"" +
+                    computed[index] + "\"";
+            }
+        }
+
+        return retained.Count == computed.Count
+            ? string.Empty
+            : retained.Count + " lines are retained and " + computed.Count + " computed";
+    }
+
+    /// <summary>Whether a column of the decode is whole bytes of upper-case hexadecimal.</summary>
+    private static bool IsHexBytes(string column)
+    {
+        if (column.Length == 0 || column.Length % 2 != 0)
+        {
+            return false;
+        }
+
+        foreach (var character in column)
+        {
+            if (character is not ((>= '0' and <= '9') or (>= 'A' and <= 'F')))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -907,18 +2640,21 @@ internal static class NativeTemplateScanChecks
     }
 
     /// <summary>
-    /// A payload whose one handler call was moved to another defined opcode's slot passes the scan
-    /// and fails re-emission.
+    /// A payload whose first handler call was moved to another defined opcode's slot is refused by the
+    /// scan at verification, with and without an emitter in the image.
     /// </summary>
     /// <remarks>
-    /// <b>THIS IS THE GAP THE SCAN CANNOT CLOSE, SHOWN TO BE CLOSED BY THE LAYER THAT CAN.</b> The
-    /// slot is admitted - it is eight times a defined opcode - so an execution-only image accepts the
-    /// payload and relies on the handler's own opcode check at run time; an image with the backend
-    /// re-emits and refuses it at verification.
+    /// <b>THE SCAN NOW PROVES WHICH HANDLER BELONGS AT WHICH HEAD, SO NEITHER IMAGE ADMITS THE SWAP.</b> The
+    /// slot is admitted by its field - it is eight times a defined opcode - but the layout of the program's
+    /// partition names the head's own opcode there, and the layout clauses run before re-emission in every
+    /// image. So the admitting door refuses with the scan's code, and the re-emitting door refuses with the
+    /// same code before it reaches the byte comparison. Until the layout clauses existed this row was about
+    /// re-emission closing a gap the scan left open; the handler's own opcode check that stood in the gap
+    /// in an execution-only image is now reached only by a build that removes the clause.
     /// </remarks>
-    private static (string, bool, string) AReEmittingVerifierRefusesAHandlerSwappedInThePayload()
+    private static (string, bool, string) EveryVerifierRefusesAHandlerSwappedInThePayload()
     {
-        const string Name = "a re-emitting verifier refuses a baseline payload whose handler call was swapped";
+        const string Name = "every verifier refuses a baseline payload whose handler call was swapped";
         var compiled = CompileWide(WidePrograms[0], JsNativeBackends.X64Windows);
 
         if (compiled.Artifact is null ||
@@ -959,13 +2695,658 @@ internal static class NativeTemplateScanChecks
             JavaScriptProfile.DescriptorReEmittingWith(new JsX64Backend(JsX64Abi.Windows), EverySurface()),
             [("re-emitting", artifact)])[0];
 
+        var scanCode = " code " + (int)JavaScriptDiagnosticCode.NativePayloadNotTemplateClosed;
+
         return (
             Name,
-            admitting.Accepted && !reEmitting.Accepted &&
-                reEmitting.Detail.EndsWith(" code " + (int)JavaScriptDiagnosticCode.MalformedNativeSection, System.StringComparison.Ordinal),
+            !admitting.Accepted && admitting.Detail.EndsWith(scanCode, System.StringComparison.Ordinal) &&
+                !reEmitting.Accepted && reEmitting.Detail.EndsWith(scanCode, System.StringComparison.Ordinal),
             "the call at " + swapped + " swapped: without an emitter " +
-                (admitting.Accepted ? "verified" : "refused (" + admitting.Detail + ")") +
+                (admitting.Accepted ? "VERIFIED" : "refused, " + admitting.Detail) +
                 "; with one " + (reEmitting.Accepted ? "VERIFIED" : "refused, " + reEmitting.Detail));
+    }
+
+    // ---- the layout clauses: S5, S6 and S7 -------------------------------------------------------
+
+    /// <summary>One field of a real emission to change, and what the layout clauses must answer for it.</summary>
+    /// <param name="Program">The wide program the emission is of.</param>
+    /// <param name="Artifact">The program's artifact, unmutated.</param>
+    /// <param name="Code">The emitted payload, unmutated.</param>
+    /// <param name="Symbols">The payload's symbols.</param>
+    /// <param name="Image">The program, read back out of the artifact.</param>
+    /// <param name="Unit">The code unit the field is in.</param>
+    /// <param name="At">The instantiation the field belongs to, from the payload's first byte.</param>
+    /// <param name="Field">The byte of that instantiation the field starts at.</param>
+    /// <param name="Value">The thirty-two-bit value written there.</param>
+    /// <param name="What">What the change is, in words.</param>
+    private sealed record LayoutSite(
+        string Program,
+        byte[] Artifact,
+        byte[] Code,
+        JsNativeSymbolRow[] Symbols,
+        JsNativeProgramImage Image,
+        int Unit,
+        uint At,
+        int Field,
+        int Value,
+        string What);
+
+    /// <summary>
+    /// Real wide emissions with one field changed, each refused at verification with the scan's code and by a
+    /// direct scan with the clause the field belongs to at the instantiation it is in; and the scan refusing,
+    /// by name, a clean emission handed with no program or with a program that is not its units'.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>EACH CHANGE IS ONE FIELD TO A VALUE THE FIELD ADMITS</b>, so every clause before the layout accepts
+    /// the payload and the answer is the layout clauses': a dispatch compare naming a head that is not a
+    /// landing (S5), a call sequence passing the instruction after its head inside the head's block (S6), a
+    /// head's call through another defined opcode's slot (S6), and a fall-through tail comparing another head
+    /// than its successor (S7). The site of each is found through the unit's plan and layout, and the
+    /// instantiation there is decoded from the payload and required to be the template the layout names, so
+    /// a site the search picked wrongly fails the row rather than testing something else.
+    /// </para>
+    /// <para>
+    /// <b>THE VERIFIER IS THE ADMITTING DOOR, WHICH HAS NO EMITTER</b>, so what refuses is the scan and
+    /// nothing else. The retained corpus pins the same four clauses on a frozen payload, and
+    /// <c>TheFrozenLayoutPayloadsStillTestWhatTheyName</c> holds those.
+    /// </para>
+    /// </remarks>
+    private static System.Collections.Generic.List<(string, bool, string)> BaselineLayoutRefusals()
+    {
+        var rows = new System.Collections.Generic.List<(string, bool, string)>();
+        LayoutSite? dispatch = null;
+        LayoutSite? call = null;
+        LayoutSite? slot = null;
+        LayoutSite? tail = null;
+        (string Program, byte[] Code, JsNativeSymbolRow[] Symbols, JsNativeProgramImage Image)? clean = null;
+
+        foreach (var program in WidePrograms)
+        {
+            var compiled = CompileWide(program, JsNativeBackends.X64Windows);
+
+            if (compiled.Artifact is null ||
+                !NativeLifecycle.TryReadEmitted(compiled.Artifact, out var code, out var symbols, out var refusal) ||
+                !NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out refusal) ||
+                !TryDecodeUnits(JsNativeArchitecture.X64Windows, code, symbols, out var units, out refusal))
+            {
+                rows.Add(("the layout clauses refuse a changed field of a real emission", false, program.Name + ": " + Refusal(compiled)));
+                return rows;
+            }
+
+            if (clean is null && symbols.Length > 1)
+            {
+                clean = (program.Name, code, symbols, image);
+            }
+
+            var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+
+            for (var unit = 0; unit < image.Functions.Length; unit++)
+            {
+                if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out refusal))
+                {
+                    rows.Add(("the layout clauses refuse a changed field of a real emission", false, program.Name + ", unit " + unit + ": " + refusal));
+                    return rows;
+                }
+
+                var layout = JsBaselineBlocks.Layout(plan);
+                var blocks = plan.Blocks.ToArray();
+                var landings = new System.Collections.Generic.HashSet<int>(plan.Landings.ToArray());
+
+                LayoutSite Site(int entry, int value, string what)
+                {
+                    var template = JsNativeTemplates.For(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline)
+                        [TemplateIndex(layout[entry].Template)];
+                    var (at, text) = units[unit][BodyAfterPrologue + entry];
+
+                    return new LayoutSite(
+                        program.Name,
+                        compiled.Artifact,
+                        code,
+                        symbols,
+                        image,
+                        unit,
+                        text == template.Text ? at : uint.MaxValue,
+                        template.Fields[0].BitOffset / 8,
+                        value,
+                        what + " (the `" + text + "` at " + at + ", unit " + unit + " of " + program.Name + ")");
+                }
+
+                var notLanding = System.Array.FindIndex(blocks, block => !landings.Contains(block.Head));
+
+                if (dispatch is null && notLanding >= 0)
+                {
+                    var head = blocks[notLanding].Head;
+                    var entry = System.Array.FindIndex(layout, e => e.Role == JsBaselineRole.Dispatch && e.Template == JsBaselineTemplate.CmpEaxPc);
+                    dispatch = Site(entry, head, "a dispatch compare naming the head " + head + ", which is not a landing");
+                }
+
+                foreach (var block in blocks)
+                {
+                    if (call is null && block.Last > block.Head)
+                    {
+                        var following = block.Head + JsOpcodes.InstructionWidth(block.HeadOpcode);
+                        var entry = System.Array.FindIndex(layout, e => e.Template == JsBaselineTemplate.MovArg1Pc && e.Head == block.Head);
+                        call = Site(entry, following, "a call sequence passing " + following + ", inside the block of the head " + block.Head);
+                    }
+
+                    if (slot is null)
+                    {
+                        var other = block.HeadOpcode == JsOpcode.LoadNull ? JsOpcode.LoadTrue : JsOpcode.LoadNull;
+                        var entry = System.Array.FindIndex(layout, e => e.Template == JsBaselineTemplate.CallSlot && e.Head == block.Head);
+                        slot = Site(entry, (int)other * 8, "the call of the head " + block.Head + ", a `" + block.HeadOpcode + "`, through `" + other + "`'s slot");
+                    }
+
+                    var wrong = System.Array.FindIndex(blocks, other => other.Head != block.Following && other.Head != block.Target);
+
+                    if (tail is null && block.Tail == JsBaselineTail.FallThrough && wrong >= 0)
+                    {
+                        var head = blocks[wrong].Head;
+                        var entry = System.Array.FindLastIndex(layout, e => e.Role == JsBaselineRole.Tail && e.Template == JsBaselineTemplate.CmpEaxPc && e.Head == block.Head);
+                        tail = Site(entry, head, "the fall-through tail of the head " + block.Head + " comparing " + head + " where its successor is " + block.Following);
+                    }
+                }
+            }
+        }
+
+        foreach (var (site, expected) in new[]
+        {
+            (dispatch, JsNativeScanOutcome.DispatchNotTheLandings),
+            (call, JsNativeScanOutcome.CallsNotTheBlockHeads),
+            (slot, JsNativeScanOutcome.HandlerSlotNotTheOpcode),
+            (tail, JsNativeScanOutcome.TailNotTheBlockEnd),
+        })
+        {
+            rows.Add(LayoutRefused(site, expected));
+        }
+
+        if (clean is not { } program2)
+        {
+            rows.Add(("the layout clauses refuse a program that is not the payload's", false, "no wide program emits more than one unit"));
+            return rows;
+        }
+
+        var (name, cleanCode, cleanSymbols, cleanImage) = program2;
+        var reordered = (JsNativeSymbolRow[])cleanSymbols.Clone();
+        reordered[1] = reordered[1] with { FunctionIndex = 0 };
+
+        foreach (var (label, symbols, image, offset) in new (string, JsNativeSymbolRow[], JsNativeProgramImage?, uint)[]
+        {
+            ("with no program", cleanSymbols, null, 0),
+            ("with a program of one unit fewer", cleanSymbols, cleanImage with { Functions = cleanImage.Functions[..^1] }, 0),
+            ("with a program of one unit more, which no symbol names", cleanSymbols, cleanImage with { Functions = [.. cleanImage.Functions, cleanImage.Functions[^1]] }, 0),
+            ("whose second symbol names the first function", reordered, cleanImage, cleanSymbols[1].Offset),
+        })
+        {
+            var control = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, cleanCode, cleanSymbols, 16, cleanImage);
+            var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, cleanCode, symbols, 16, image);
+
+            rows.Add((
+                "the layout clauses refuse a clean emission scanned " + label,
+                control.Accepted && result.Outcome == JsNativeScanOutcome.BaselineWithoutProgram && result.Offset == offset,
+                name + ": with its own program and symbols " + (control.Accepted ? "accepted" : control.Outcome + " at " + control.Offset) +
+                    "; " + label + " " + result.Outcome + " at " + result.Offset + ": " + result.Reason));
+        }
+
+        return rows;
+    }
+
+    /// <summary>How many instantiations open a baseline unit before its body.</summary>
+    private const int BodyAfterPrologue = 6;
+
+    /// <summary>The index in a baseline table of the template a layout entry names, found by the template's name.</summary>
+    private static int TemplateIndex(JsBaselineTemplate template)
+    {
+        var name = template switch
+        {
+            JsBaselineTemplate.TestEax => "test eax, eax",
+            JsBaselineTemplate.JsLeave => "js rel32",
+            JsBaselineTemplate.CmpEaxPc => "cmp eax, pc",
+            JsBaselineTemplate.Je => "je rel32",
+            JsBaselineTemplate.Jne => "jne rel32",
+            JsBaselineTemplate.Ja => "ja rel32",
+            JsBaselineTemplate.Jmp => "jmp rel32",
+            JsBaselineTemplate.MovStatus => "mov eax, status",
+            JsBaselineTemplate.MovArg0R14 => "mov arg0, r14",
+            JsBaselineTemplate.MovArg1Pc => "mov arg1d, pc",
+            _ => "call [rbx+slot]",
+        };
+
+        return System.Array.FindIndex(
+            JsNativeTemplates.For(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline),
+            candidate => string.Equals(candidate.Text, name, System.StringComparison.Ordinal));
+    }
+
+    /// <summary>Changes one site's field, then requires the direct scan's clause and offset and the verifier's code.</summary>
+    private static (string, bool, string) LayoutRefused(LayoutSite? site, JsNativeScanOutcome expected)
+    {
+        var name = "the layout clauses refuse a real emission with one field changed, as " + expected;
+
+        if (site is null)
+        {
+            return (name, false, "no wide program has a site for this change");
+        }
+
+        if (site.At == uint.MaxValue)
+        {
+            return (name, false, site.What + ": the payload's instantiation there is not the template the layout names");
+        }
+
+        var code = (byte[])site.Code.Clone();
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(System.MemoryExtensions.AsSpan(code, (int)site.At + site.Field), site.Value);
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, code, site.Symbols, 16, site.Image);
+
+        var artifact = (byte[])site.Artifact.Clone();
+        var blob = System.MemoryExtensions.IndexOf(
+            System.MemoryExtensions.AsSpan(artifact),
+            System.MemoryExtensions.AsSpan(site.Code, 0, System.Math.Min(64, site.Code.Length)));
+
+        if (blob < 0)
+        {
+            return (name, false, site.What + ": the payload was not found in its artifact");
+        }
+
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(System.MemoryExtensions.AsSpan(artifact, blob + (int)site.At + site.Field), site.Value);
+        var verified = VerifyAll(JavaScriptProfile.Descriptor, [(site.Program, artifact)])[0];
+        var scanCode = " code " + (int)JavaScriptDiagnosticCode.NativePayloadNotTemplateClosed;
+
+        return (
+            name,
+            result.Outcome == expected && result.Offset == site.At &&
+                !verified.Accepted && verified.Detail.EndsWith(scanCode, System.StringComparison.Ordinal),
+            site.What + ": the scan answered " + result.Outcome + " at " + result.Offset + " - " + result.Reason +
+                "; the admitting verifier " + (verified.Accepted ? "VERIFIED it" : "refused, " + verified.Detail));
+    }
+
+    /// <summary>Decodes a baseline payload unit by unit into where each instantiation starts and which template it is.</summary>
+    private static bool TryDecodeUnits(
+        JsNativeArchitecture architecture,
+        byte[] code,
+        JsNativeSymbolRow[] symbols,
+        out System.Collections.Generic.List<(uint At, string Text)>[] units,
+        out string detail)
+    {
+        var table = JsNativeTemplates.For(architecture, JsNativeTier.Baseline);
+        units = new System.Collections.Generic.List<(uint At, string Text)>[symbols.Length];
+
+        for (var unit = 0; unit < symbols.Length; unit++)
+        {
+            units[unit] = [];
+            var at = (int)symbols[unit].Offset;
+            var limit = unit + 1 < symbols.Length ? (int)symbols[unit + 1].Offset : code.Length;
+            var afterReturn = false;
+
+            while (at < limit)
+            {
+                if (afterReturn && code[at] == JsNativeTemplates.X64PaddingByte)
+                {
+                    at++;
+                    continue;
+                }
+
+                JsNativeTemplate? found = null;
+
+                foreach (var template in table)
+                {
+                    var matches = at + template.Length <= limit;
+
+                    for (var index = 0; index < template.Length && matches; index++)
+                    {
+                        matches = (code[at + index] & template.Mask[index]) == template.Fixed[index];
+                    }
+
+                    if (matches)
+                    {
+                        found = template;
+                        break;
+                    }
+                }
+
+                if (found is null)
+                {
+                    detail = architecture + ": no baseline template matches at " + at;
+                    return false;
+                }
+
+                units[unit].Add(((uint)at, found.Text));
+                afterReturn = found.IsReturn;
+                at += found.Length;
+            }
+        }
+
+        detail = string.Empty;
+        return true;
+    }
+
+    /// <summary>
+    /// Every baseline layout is at most eight entries per head, three per landing and four, which is at most
+    /// eleven per instruction and four, and every plan at most a fixed number of bytes per byte of its unit's
+    /// code; and a scan of a unit whose layout would be large allocates no more than that unit's plan and a
+    /// constant, whether its payload differs at the first entry or after a long matching prefix.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE FIRST BOUND IS THE LAYOUT'S GRAMMAR, NOT A MEASUREMENT.</b> The dispatch is four entries and
+    /// at most three per landing, and a block at most eight: three for its call, two for a target compare
+    /// and three for a branching tail. Neither landings nor heads outnumber the unit's instructions, and no
+    /// instruction is shorter than a byte. It is asked of every unit of every wide program, of the golden
+    /// program, of the frozen corpus program, and of a unit of a hundred thousand jumps, each to the next
+    /// instruction, where every instruction is a head.
+    /// </para>
+    /// <para>
+    /// <b>THE PLAN'S BOUND IS ITS ARRAYS, COUNTED.</b> A plan holds one mark per byte of the unit's code, one
+    /// integer per landing and one block per head, and the layout's walk one integer per head besides; neither
+    /// landings nor heads outnumber the code's bytes, so that is at most thirty-seven bytes per byte of code
+    /// with this build's block, and the work that fills them is a fixed number of walks over the code. The
+    /// format's code ceiling, which the plan refuses beyond, bounds the whole. Every plan of the programs above
+    /// is asked to be within it.
+    /// </para>
+    /// <para>
+    /// <b>THE SCAN'S BOUND IS STATED IN THE PAYLOAD'S INSTRUCTIONS AND THE PLAN.</b> The layout clauses compare
+    /// a unit body with its layout entry by entry as the partition's walk makes the entries, and stop at the
+    /// first that differs or past the body's last instruction, so they make no more of a layout than the
+    /// body's instructions and one; what the scan holds besides is the unit's plan, which is sized by the
+    /// bytecode the artifact carries, and the payload's own decoded instructions. So the jump chain is scanned
+    /// twice: against a payload whose body is a single jump, refused at the body's first instruction, and
+    /// against the emitted body of a chain of 256 jumps and a return, whose layout is the long chain's entry
+    /// for entry until the call of that return, refused there with the slot outcome at the offset the decoded
+    /// body puts it. Each time the bytes allocated on this thread while the scan runs must be fewer than the
+    /// chain's plan and a constant under a twentieth of the chain's layout array, so a scan that built the
+    /// layout, or a twentieth of it, before or after the entries that match, fails. The count is read from the
+    /// runtime's own per-thread allocation counter around one scan, after a first scan of the same payload.
+    /// </para>
+    /// <para>
+    /// <b>WHAT NO ROW HERE OBSERVES IS A WALK THAT GOES ON WITHOUT HANDING OUT ENTRIES.</b> A walk that went on
+    /// handing entries to the scan after its first difference would move the offset or the outcome the frozen
+    /// corpus rows and the layout refusal rows pin; one that went on making entries and handed none to anyone
+    /// changes no answer and allocates nothing, and costs work bounded by the layout's length, which the first
+    /// bound states. That the walk stops is read in its code. The sink and the walk are internal to the format
+    /// assembly, which no product project may open to this one, so no counting sink is run here.
+    /// </para>
+    /// <para>
+    /// <b>NONE OF THESE BOUNDS IS CHARGED WORK, AND NONE IS POLLED.</b> This work is the verifier's: it is not
+    /// counted by the recorder the core's proportionality row reads, and the verifier's native link, which runs
+    /// the scan, polls no cancellation while it runs, where the bytecode walk polls once per unit. That is why
+    /// the bounds are stated here.
+    /// </para>
+    /// </remarks>
+    private static (string, bool, string) ABaselineLayoutIsBoundedByTheCodeItLaysOut()
+    {
+        const string Name = "a baseline layout is bounded by the code it lays out, and the scan's by the payload's instructions";
+        const int Jumps = 100_000;
+        var images = new System.Collections.Generic.List<(string Label, JsNativeProgramImage Image)>();
+
+        foreach (var program in WidePrograms)
+        {
+            var compiled = CompileWide(program, JsNativeBackends.X64Windows);
+
+            if (compiled.Artifact is null || !NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out var refusal))
+            {
+                return (Name, false, program.Name + ": " + Refusal(compiled));
+            }
+
+            images.Add((program.Name, image));
+        }
+
+        if (!TryReadGoldenImage(out var golden, out var goldenRefusal))
+        {
+            return (Name, false, "the golden program: " + goldenRefusal);
+        }
+
+        var chain = JumpChain(Jumps);
+        images.Add(("the golden program", golden));
+        images.Add(("the frozen corpus program", WideCorpus.BaselineLayoutImage()));
+        images.Add(("a chain of " + Jumps + " jumps", chain));
+
+        var units = 0;
+
+        foreach (var (label, image) in images)
+        {
+            var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+
+            for (var unit = 0; unit < image.Functions.Length; unit++)
+            {
+                if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out var refusal))
+                {
+                    return (Name, false, label + ", unit " + unit + ": the plan refused - " + refusal);
+                }
+
+                var instructions = 0L;
+
+                for (var at = plan.First; at < plan.End; at += JsOpcodes.InstructionWidth((JsOpcode)image.Code[at]))
+                {
+                    instructions++;
+                }
+
+                var length = (long)JsBaselineBlocks.LayoutLength(plan);
+                var grammar = (8L * plan.Blocks.Length) + (3L * plan.Landings.Length) + 4;
+                var bytes = (long)(plan.End - plan.First);
+
+                if (length > grammar || grammar > (11 * instructions) + 4 || instructions > bytes ||
+                    PlanBytes(plan) > PlanBytesPerCodeByte * bytes)
+                {
+                    return (
+                        Name,
+                        false,
+                        label + ", unit " + unit + ": " + length + " entries for " + plan.Blocks.Length + " heads, " +
+                            plan.Landings.Length + " landings, " + instructions + " instructions and " + bytes + " bytes, " +
+                            "and a plan of " + PlanBytes(plan) + " bytes");
+                }
+
+                units++;
+            }
+        }
+
+        if (!JsBaselineBlocks.TryPlan(chain, 0, default, out var chainPlan, out var chainRefusal))
+        {
+            return (Name, false, "the jump chain: the plan refused - " + chainRefusal);
+        }
+
+        var layoutBytes = (long)JsBaselineBlocks.LayoutLength(chainPlan) *
+            System.Runtime.CompilerServices.Unsafe.SizeOf<JsBaselineInstruction>();
+
+        var allowed = PlanBytes(chainPlan) + ScanBesideThePlan;
+
+        // ---- the scan, against a body of one jump ------------------------------------------------
+        byte[] prologue = [0x53, 0x41, 0x56, 0x48, 0x83, 0xEC, 0x28, 0x49, 0x89, 0xCE, 0x49, 0x8B, 0x1E, 0x89, 0xD0];
+        byte[] epilogue = [0x48, 0x83, 0xC4, 0x28, 0x41, 0x5E, 0x5B, 0xC3];
+        byte[] payload = [.. prologue, 0xE9, 0x00, 0x00, 0x00, 0x00, .. epilogue];
+        JsNativeSymbolRow[] symbols = [new JsNativeSymbolRow(0, 0)];
+
+        var (result, allocated) = ScannedWithAllocation(payload, symbols, chain);
+
+        // ---- the scan, against the emitted body of a shorter chain -------------------------------
+        // The layouts of the two chains are the same entry for entry up to the call of the shorter chain's
+        // last head, which returns where the longer chain jumps: a long matching prefix, refused at a slot.
+        if (!new JsX64Backend(JsX64Abi.Windows).TryEmit(JumpChain(PrefixJumps), out var prefix, out var prefixSymbols, out var why))
+        {
+            return (Name, false, "the chain of " + PrefixJumps + " jumps did not emit: " + why);
+        }
+
+        if (!TryDecodeUnits(JsNativeArchitecture.X64Windows, prefix, prefixSymbols, out var decoded, out var undecoded))
+        {
+            return (Name, false, "the chain of " + PrefixJumps + " jumps did not decode: " + undecoded);
+        }
+
+        // The body starts at the dispatch's sign test, the layout's first entry, and the slot is where the
+        // layout of the longer chain puts the call of the shorter chain's return.
+        var body = decoded[0].FindIndex(static instruction =>
+            string.Equals(instruction.Text, "test eax, eax", System.StringComparison.Ordinal));
+
+        var slot = System.Array.FindIndex(
+            JsBaselineBlocks.Layout(chainPlan),
+            static entry => entry.Role == JsBaselineRole.Slot && entry.Head == PrefixJumps * 5);
+
+        var differing = body < 0 || slot < 0 || body + slot >= decoded[0].Count
+            ? uint.MaxValue
+            : decoded[0][body + slot].At;
+
+        var (prefixResult, prefixAllocated) = ScannedWithAllocation(prefix, prefixSymbols, chain);
+
+        return (
+            Name,
+            result.Outcome == JsNativeScanOutcome.DispatchNotTheLandings && result.Offset == prologue.Length &&
+                allocated < allowed &&
+                prefixResult.Outcome == JsNativeScanOutcome.HandlerSlotNotTheOpcode && prefixResult.Offset == differing &&
+                prefixAllocated < allowed,
+            units + " units of " + images.Count + " programs within eight entries per head, three per landing and four, " +
+                "eleven per instruction and four, and a plan of " + PlanBytesPerCodeByte + " bytes per byte of code; the chain of " +
+                Jumps + " jumps, whose plan takes " + PlanBytes(chainPlan) + " bytes and whose layout would take " + layoutBytes +
+                ", scanned against a body of one jump answered " + result.Outcome + " at " + result.Offset + ", allocating " +
+                allocated + " bytes, and against the body of " + PrefixJumps + " jumps and a return answered " +
+                prefixResult.Outcome + " at " + prefixResult.Offset + " where the slot of head " + (PrefixJumps * 5) + " is at " +
+                differing + ", allocating " + prefixAllocated + " bytes; each within the plan and " + ScanBesideThePlan);
+    }
+
+    /// <summary>How many jumps the shorter chain of <see cref="ABaselineLayoutIsBoundedByTheCodeItLaysOut"/> has.</summary>
+    private const int PrefixJumps = 256;
+
+    /// <summary>
+    /// What a baseline scan may allocate besides its unit's plan: the payload's decoded instructions, the handler
+    /// offsets, the template indices and the refusal, for a payload of at most a couple of thousand instructions.
+    /// </summary>
+    /// <remarks>
+    /// Less than a twentieth of the jump chain's layout array, so a scan that made a twentieth of that layout as
+    /// an array fails the row.
+    /// </remarks>
+    private const long ScanBesideThePlan = 1L << 19;
+
+    /// <summary>
+    /// The bytes a unit's plan holds for each byte of its code at most: one mark per byte, and one integer per
+    /// landing and a block and an integer per head, since neither landings nor heads outnumber the bytes.
+    /// </summary>
+    private static readonly long PlanBytesPerCodeByte =
+        1 + sizeof(int) + System.Runtime.CompilerServices.Unsafe.SizeOf<JsBaselineBlock>() + sizeof(int);
+
+    /// <summary>
+    /// The bytes a plan's arrays take, and the one array of the layout's walk: the marks over the unit's code,
+    /// the landings, the blocks, and the walk's index of each block's call.
+    /// </summary>
+    private static long PlanBytes(JsBaselineUnitPlan plan) =>
+        (long)(plan.End - plan.First) +
+        ((long)sizeof(int) * plan.Landings.Length) +
+        ((long)System.Runtime.CompilerServices.Unsafe.SizeOf<JsBaselineBlock>() + sizeof(int)) * plan.Blocks.Length;
+
+    /// <summary>
+    /// One baseline scan of a payload with its program, and the bytes this thread allocated while it ran, read
+    /// after a first scan of the same payload.
+    /// </summary>
+    private static (JsNativeScanResult Result, long Allocated) ScannedWithAllocation(
+        byte[] payload, JsNativeSymbolRow[] symbols, JsNativeProgramImage image)
+    {
+        _ = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, payload, symbols, 16, image);
+        var before = System.GC.GetAllocatedBytesForCurrentThread();
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, payload, symbols, 16, image);
+
+        return (result, System.GC.GetAllocatedBytesForCurrentThread() - before);
+    }
+
+    /// <summary>
+    /// A one-unit program of jumps, each to the next instruction, ending in a return: every instruction is a
+    /// head, and the unit's layout is as long as its bytecode lets a layout be.
+    /// </summary>
+    private static JsNativeProgramImage JumpChain(int jumps)
+    {
+        var code = new byte[(jumps * 5) + 1];
+
+        for (var index = 0; index < jumps; index++)
+        {
+            var at = index * 5;
+            code[at] = (byte)JsOpcode.Jump;
+            System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(System.MemoryExtensions.AsSpan(code, at + 1), at + 5);
+        }
+
+        code[^1] = (byte)JsOpcode.ReturnUndefined;
+
+        return new JsNativeProgramImage(
+            code,
+            [new JsFunctionRow(0, 0, 0, 16, 0, (uint)code.Length, (uint)JsFormat.FunctionFlags.ProgramBody)],
+            [],
+            [],
+            16)
+        {
+            Tier = JsNativeTier.Baseline,
+            Regions = [],
+        };
+    }
+
+    /// <summary>
+    /// The frozen payload the retained corpus's layout rows carry scans clean with its program, and each of its
+    /// four mutations answers the outcome and the offset its corpus entry is named for.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE CORPUS ROWS PIN AN OFFSET AND A CODE, AND THE CODE IS ONE FOR ALL FOUR CLAUSES</b>, so a row
+    /// whose clause was misnamed at the same offset would still replay to its recorded answer. This row scans
+    /// the same four payloads directly and requires each named outcome. It reads the program, the payload, the
+    /// mutations and the artifact builder from <c>WideCorpus</c> itself, so it cannot hold a restatement of
+    /// them while the corpus moves on.
+    /// </para>
+    /// <para>
+    /// <b>A CHANGE TO THE PARTITION OR THE LAYOUT FAILS IT LOUDLY</b>: the unmutated payload stops being its
+    /// program's layout, and the row prints what this build emits for the program so that the re-base is a
+    /// commit that says so. The unmutated artifact must also verify under the admitting door, so the four
+    /// refusals are about the payload and not about a program the verifier would refuse anyway.
+    /// </para>
+    /// </remarks>
+    private static (string, bool, string) TheFrozenLayoutPayloadsStillTestWhatTheyName()
+    {
+        const string Name = "the frozen layout payloads still test what they name";
+        var image = WideCorpus.BaselineLayoutImage();
+        var symbols = WideCorpus.BaselineLayoutSymbols;
+        var failures = new System.Collections.Generic.List<string>();
+        var scanCode = " code " + (int)JavaScriptDiagnosticCode.NativePayloadNotTemplateClosed;
+
+        var unmutated = WideCorpus.BaselineLayoutMutated(-1);
+        var clean = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, unmutated, symbols, 16, image);
+
+        if (!clean.Accepted)
+        {
+            var emission = new JsX64Backend(JsX64Abi.Windows).TryEmit(image, out var emitted, out _, out var why)
+                ? System.Convert.ToHexString(emitted)
+                : "nothing, refused: " + why;
+
+            failures.Add(
+                "the unmutated payload is refused, " + clean.Outcome + " at " + clean.Offset + ": " + clean.Reason +
+                "; this build emits " + emission);
+        }
+
+        var verified = VerifyAll(JavaScriptProfile.Descriptor, [("unmutated", WideCorpus.BaselineLayoutArtifact(unmutated))])[0];
+
+        if (!verified.Accepted)
+        {
+            failures.Add("the unmutated artifact is refused at verification: " + verified.Detail);
+        }
+
+        for (var mutation = 0; mutation < WideCorpus.BaselineLayoutMutations.Length; mutation++)
+        {
+            var (entry, outcome, at, _, _) = WideCorpus.BaselineLayoutMutations[mutation];
+            var mutated = WideCorpus.BaselineLayoutMutated(mutation);
+            var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, mutated, symbols, 16, image);
+
+            if (result.Outcome != outcome || result.Offset != at)
+            {
+                failures.Add(
+                    entry + ": named for " + outcome + " at " + at + " and the scan answered " + result.Outcome + " at " +
+                    result.Offset + " - " + result.Reason);
+            }
+
+            var refused = VerifyAll(JavaScriptProfile.Descriptor, [(entry, WideCorpus.BaselineLayoutArtifact(mutated))])[0];
+
+            if (refused.Accepted || !refused.Detail.EndsWith(scanCode, System.StringComparison.Ordinal))
+            {
+                failures.Add(entry + ": at verification " + (refused.Accepted ? "VERIFIED" : refused.Detail));
+            }
+        }
+
+        return (
+            Name,
+            failures.Count == 0,
+            failures.Count == 0
+                ? "the unmutated payload scans clean with its program and its artifact verifies; each of " +
+                    WideCorpus.BaselineLayoutMutations.Length + " mutations answers the outcome and the offset its entry " +
+                    "is named for, and its artifact is refused with" + scanCode
+                : string.Join("; ", failures));
     }
 
     /// <summary>The arm64 backend refuses the wide manifest by name rather than emitting anything.</summary>
@@ -1071,8 +3452,11 @@ internal static class NativeTemplateScanChecks
     /// <b>THE FRAME-SHAPE ROWS ARE WHOLE UNITS WITH ONE THING WRONG</b>: a prologue and an epilogue
     /// that are both correct, and the one instruction or branch between or around them that breaks a
     /// clause. The control beside them branches to the epilogue's first instruction - the landing
-    /// every real exit uses - and is accepted, so the refusals are not satisfied by a scan that
-    /// refuses every branch toward the epilogue.
+    /// every real exit uses - and passes every frame and branch clause, so the refusals are not
+    /// satisfied by a scan that refuses every branch toward the epilogue. It is not accepted: with no
+    /// program handed with it the layout clauses answer that they have none, and a body of one jump
+    /// is no program's layout in any case. None of these rows passes a program, because each is
+    /// refused before the layout clauses would read one.
     /// </remarks>
     private static System.Collections.Generic.List<(string, bool, string)> BaselineRefusals()
     {
@@ -1116,14 +3500,19 @@ internal static class NativeTemplateScanChecks
             RefusedBaseline("a `jmp` back into the prologue", JsNativeTier.Baseline, Unit(0xE9, 0xEF, 0xFF, 0xFF, 0xFF), JsNativeScanOutcome.BranchIntoFrameSequence),
         };
 
-        // THE CONTROL: the same jump, to the epilogue's first instruction.
+        // THE CONTROL: the same jump, to the epilogue's first instruction. No program is handed with it,
+        // and the answer that says so comes only after every frame and branch clause has accepted the
+        // whole payload - so it is the control's pass, where an acceptance was before the layout clauses
+        // existed: a unit whose whole body is one jump is not the layout of any program.
         var control = JsNativeScan.Scan(
-            JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, Unit(0xE9, 0x00, 0x00, 0x00, 0x00), [new JsNativeSymbolRow(0, 0)], 16);
+            JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, Unit(0xE9, 0x00, 0x00, 0x00, 0x00), [new JsNativeSymbolRow(0, 0)], 16, image: null);
 
         rows.Add((
-            "the baseline scan accepts a `jmp` to the epilogue's first instruction",
-            control.Accepted,
-            control.Accepted ? "accepted" : control.Outcome + " at " + control.Offset + ": " + control.Reason));
+            "the baseline scan's frame clauses accept a `jmp` to the epilogue's first instruction",
+            control.Outcome == JsNativeScanOutcome.BaselineWithoutProgram,
+            control.Outcome == JsNativeScanOutcome.BaselineWithoutProgram
+                ? "every frame and branch clause accepted it, and the scan then asked for the program: " + control.Reason
+                : "expected BaselineWithoutProgram and the scan answered " + control.Outcome + " at " + control.Offset + ": " + control.Reason));
 
         // A NUMERIC UNIT UNDER WIDE, AND A BASELINE UNIT UNDER NUMERIC: each table refuses the
         // other's emission at its first instruction the two do not share.
@@ -1152,7 +3541,7 @@ internal static class NativeTemplateScanChecks
         string name, JsNativeTier tier, byte[] code, JsNativeScanOutcome expected)
     {
         var label = "the " + tier + " scan refuses " + name;
-        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, tier, code, [new JsNativeSymbolRow(0, 0)], 16);
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, tier, code, [new JsNativeSymbolRow(0, 0)], 16, image: null);
 
         return (
             label,
@@ -1167,7 +3556,7 @@ internal static class NativeTemplateScanChecks
         string name, byte[] code, JsNativeSymbolRow[] symbols, JsNativeTier tier)
     {
         var label = "the template scan refuses " + name;
-        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, tier, code, symbols, 16);
+        var result = JsNativeScan.Scan(JsNativeArchitecture.X64Windows, tier, code, symbols, 16, image: null);
 
         return (
             label,
@@ -1187,13 +3576,13 @@ internal static class NativeTemplateScanChecks
     private static System.Collections.Generic.List<(string, bool, string)> UnchangedAnswers()
     {
         var zeros = JsNativeScan.Scan(
-            JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, [0x00, 0x00, 0x00, 0x00], [new JsNativeSymbolRow(0, 0)], 16);
+            JsNativeArchitecture.X64Windows, JsNativeTier.Baseline, [0x00, 0x00, 0x00, 0x00], [new JsNativeSymbolRow(0, 0)], 16, image: null);
 
         var armZeros = JsNativeScan.Scan(
-            JsNativeArchitecture.Arm64, JsNativeTier.Baseline, [0x00, 0x00, 0x00, 0x00], [new JsNativeSymbolRow(0, 0)], 4);
+            JsNativeArchitecture.Arm64, JsNativeTier.Baseline, [0x00, 0x00, 0x00, 0x00], [new JsNativeSymbolRow(0, 0)], 4, image: null);
 
         var armReturn = JsNativeScan.Scan(
-            JsNativeArchitecture.Arm64, JsNativeTier.Baseline, [0xC0, 0x03, 0x5F, 0xD6], [new JsNativeSymbolRow(0, 0)], 4);
+            JsNativeArchitecture.Arm64, JsNativeTier.Baseline, [0xC0, 0x03, 0x5F, 0xD6], [new JsNativeSymbolRow(0, 0)], 4, image: null);
 
         return
         [

@@ -1,0 +1,45 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no
+// compilation includes it, and rule X4's test adds it to the swept tree at a path in the format
+// assembly, so that clause (c) can be watched rejecting a walk of the layout through
+// JsBaselineBlocks.Lay outside the template scan and outside JsBaselineBlocks.Layout. The test then
+// reads the same file at a path in the lowering assembly, where the clause allows Layout and Fixed and
+// still reports the walk, and in place of the scan, where the clause allows it.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES. Lay is the one walk the layout is made by: Layout fills
+// an array through it, and the scan compares a payload through it entry by entry without allocating
+// one. An author who wants a unit's layout without that allocation - to fill a caller's buffer, or to
+// hand the profile a layout it can reuse - reaches for the walk, and the walk is internal, so the
+// natural edit is a public member beside it under a name of its own. Nothing here names Layout or
+// Fixed, so a clause confining those two alone clears it, and every caller of CopyTo then reads the
+// whole layout under a name no clause knows. What it costs is the argument that an execution-only
+// image of the baseline form holds no code generator - decision JSD-0025 section 10 - because the
+// layout is exactly what such a generator needs, and this hands it out in an image with no lowering.
+
+namespace Broiler.VM.Profile.JavaScript.Format;
+
+public static class JsBaselineLayoutCopy
+{
+    public static int CopyTo(JsBaselineUnitPlan plan, JsBaselineInstruction[] destination)
+    {
+        var copying = new Copying(destination);
+        JsBaselineBlocks.Lay(plan, ref copying);
+        return copying.Count;
+    }
+
+    private struct Copying(JsBaselineInstruction[] destination) : IJsBaselineLayoutSink
+    {
+        public int Count { get; private set; }
+
+        public bool Take(int index, JsBaselineInstruction entry)
+        {
+            if (index >= destination.Length)
+            {
+                return false;
+            }
+
+            destination[index] = entry;
+            Count = index + 1;
+            return true;
+        }
+    }
+}

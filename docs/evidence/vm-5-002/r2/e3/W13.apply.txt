@@ -1,0 +1,14 @@
+applied W13 to src/Broiler.VM.Runtime/VmMeter.cs
+diff --git a/src/Broiler.VM.Runtime/VmMeter.cs b/src/Broiler.VM.Runtime/VmMeter.cs
+index c5ea60a..1546d68 100644
+--- a/src/Broiler.VM.Runtime/VmMeter.cs
++++ b/src/Broiler.VM.Runtime/VmMeter.cs
+@@ -348,7 +348,7 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
+ 
+         // Fuel is work, so it counts toward the bound exactly as a per-charge commit would have, less
+         // the part a poll in this block has already counted and reset away.
+-        sinceLastPoll += uncounted;
++        sinceLastPoll += used;
+     }
+ 
+     /// <summary>

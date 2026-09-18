@@ -1,0 +1,14 @@
+applied W20 to src/Broiler.VM.Runtime/VmRuntime.cs
+diff --git a/src/Broiler.VM.Runtime/VmRuntime.cs b/src/Broiler.VM.Runtime/VmRuntime.cs
+index 79f7485..50f2c1e 100644
+--- a/src/Broiler.VM.Runtime/VmRuntime.cs
++++ b/src/Broiler.VM.Runtime/VmRuntime.cs
+@@ -730,7 +730,7 @@ public sealed partial class VmRuntime : System.IDisposable
+ 
+             // Null, not zero. Storing zero would leave the entry on this thread forever; storing
+             // nothing is what actually releases it, and releasing it is the whole point.
+-            inCapabilityDepth.Value = depth > 0 ? depth : null;
++            inCapabilityDepth.Value = depth;
+         }
+     }
+ 

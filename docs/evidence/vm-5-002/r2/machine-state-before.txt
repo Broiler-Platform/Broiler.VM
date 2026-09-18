@@ -1,0 +1,24 @@
+branch=claude/fuel-credit-block-steps
+head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+tree=D:/Broiler.VM
+tree-head=d5014f8d551d5da4fb22b62ef53e7407891884ab
+tree-changes=[M docs/evidence/vm-5-002/README.md]
+build=machine state before
+started=2026-09-17T08:13:44+02:00
+host=DESKTOP-UK9RCOH
+os=Microsoft Windows 11 Enterprise build 26200
+cpu=AMD Ryzen 7 5800X 8-Core Processor
+cores_physical=8 logical=16 maxclock_mhz=3801
+current_clock_mhz=3801 load_pct=8
+memory_total_kb=33473012 free_kb=17130344
+power_scheme=GUID des Energieschemas: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (HÃ¶chstleistung)
+dotnet=10.0.401
+python=3.11.9
+processes_with_at_least_60_cpu_s_before (id, name, cpu_s, working set MB, start time):
+  id=13908 claude cpu_s=195.2 ws_mb=482.2 started=/Date(1789620065010)/
+  id=26192 OOSU10PE cpu_s=148.3 ws_mb=252.1 started=/Date(1789620434355)/
+  id=14500 claude cpu_s=146.5 ws_mb=521.4 started=/Date(1789620026663)/
+  id=14084 claude cpu_s=125.0 ws_mb=133.2 started=/Date(1789620024490)/
+  id=14368 claude cpu_s=100.5 ws_mb=420.6 started=/Date(1789620036052)/
+  id=17300 EADesktop cpu_s=90.0 ws_mb=184.2 started=/Date(1789620246542)/
+  id=28144 ChatGPT cpu_s=70.2 ws_mb=365.6 started=/Date(1789622389830)/

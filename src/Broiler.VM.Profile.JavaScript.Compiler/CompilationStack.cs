@@ -57,6 +57,20 @@ internal static class CompilationStack
     /// to re-derive whenever either walk grew a frame, and the two walks are comparable - one
     /// activation per tree node against one per guest call. <c>MaximumTreeDepth</c> is derived
     /// against this figure and cites it.
+    /// <para>
+    /// <b>They are NOT the same figure any more, and this note is here so nobody reads the
+    /// sentence above as current.</b> The guest stack has moved three times since - to sixty-four
+    /// megabytes, to ninety-six <i>(JSC-139)</i>, and on 2026-09-17 to two hundred and eight
+    /// <i>(JSC-226)</i> - each time because the executor's own frame grew or because a wider set
+    /// of nesting routes was measured against the call-depth ceiling. None of those reasons is
+    /// this walk's: a compile recurses once per tree node, has no call-depth ceiling to keep an
+    /// ordering against, and is bounded by <see cref="SliceParseOptions.MaximumTreeDepth"/>, which
+    /// is derived against THIS figure and is what makes the answer a refusal rather than a process
+    /// death. So this constant stays where it is, and the paragraph above records the intention it
+    /// was chosen with rather than a fact about the two sizes. Whether the compile walk's own
+    /// per-frame cost still leaves <c>MaximumTreeDepth</c> the margin it was derived with has not
+    /// been re-measured here.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7F3B2D
     // Broiler-Human:        PENDING
