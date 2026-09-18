@@ -137,9 +137,8 @@ internal sealed class JsParser
 
     /// <summary>How deep a left spine the iterative builders have grown, in nodes.</summary>
     /// <remarks>
-    /// Never decremented, deliberately: this is not a bracketed resource the way parser recursion
-    /// is. What it answers is how deep a tree a walk can be handed, and a walk over a unit with
-    /// many long chains descends each of them.
+    /// Scoped to the expression being parsed: it charges what an AST walk over a single expression tree
+    /// descends along an iterative spine, restoring the previous depth when the expression finishes.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D491DB
     // Broiler-Human:        PENDING
@@ -4243,46 +4242,54 @@ internal sealed class JsParser
     private const int Relational = 8;
 
     /// <summary>Extends an already-parsed left operand with every operator that may follow it.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5650F7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=89DEA2
     // Broiler-Human:        PENDING
     private JsExpression Continue(JsExpression left, SliceSourceSpan span, int minimum, bool noIn)
     {
-        while (true)
+        var savedDepth = treeDepth;
+        try
         {
-            var kind = Current.Kind;
-
-            if (kind == SliceTokenKind.In && noIn)
+            while (true)
             {
-                return left;
+                var kind = Current.Kind;
+
+                if (kind == SliceTokenKind.In && noIn)
+                {
+                    return left;
+                }
+
+                var precedence = Precedence(kind);
+
+                if (precedence < minimum)
+                {
+                    return left;
+                }
+
+                Advance();
+
+                // `**` is the one right-associative operator, so its right operand is parsed at the
+                // SAME precedence rather than one above it.
+                var next = kind == SliceTokenKind.StarStar ? precedence : precedence + 1;
+                var right = ParseBinary(next, noIn);
+
+                left = kind is SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
+                    SliceTokenKind.QuestionQuestion
+                    ? new JsLogicalExpression(span, kind, left, right)
+                    : new JsBinaryExpression(span, kind, left, right);
+
+                // EACH TURN OF THIS LOOP MAKES THE TREE ONE DEEPER, and the loop is why the nesting
+                // counter never saw it: precedence climbing is ITERATIVE for a left-associative
+                // operator, so `1+1+1+...` costs one parser activation and builds a left spine as long
+                // as the source. Nothing walks a parser activation; everything walks the tree.
+                if (!Deepen(span, out var deep))
+                {
+                    return deep;
+                }
             }
-
-            var precedence = Precedence(kind);
-
-            if (precedence < minimum)
-            {
-                return left;
-            }
-
-            Advance();
-
-            // `**` is the one right-associative operator, so its right operand is parsed at the
-            // SAME precedence rather than one above it.
-            var next = kind == SliceTokenKind.StarStar ? precedence : precedence + 1;
-            var right = ParseBinary(next, noIn);
-
-            left = kind is SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
-                SliceTokenKind.QuestionQuestion
-                ? new JsLogicalExpression(span, kind, left, right)
-                : new JsBinaryExpression(span, kind, left, right);
-
-            // EACH TURN OF THIS LOOP MAKES THE TREE ONE DEEPER, and the loop is why the nesting
-            // counter never saw it: precedence climbing is ITERATIVE for a left-associative
-            // operator, so `1+1+1+...` costs one parser activation and builds a left spine as long
-            // as the source. Nothing walks a parser activation; everything walks the tree.
-            if (!Deepen(span, out var deep))
-            {
-                return deep;
-            }
+        }
+        finally
+        {
+            treeDepth = savedDepth;
         }
     }
 
@@ -4530,7 +4537,7 @@ internal sealed class JsParser
     }
 
     /// <summary>The call-chain parse itself, inside the bound its caller entered.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=85D6F9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F5C52A
     // Broiler-Human:        PENDING
     private JsExpression ParseCallChainCore()
     {
@@ -4580,98 +4587,106 @@ internal sealed class JsParser
             current = ParsePrimary();
         }
 
-        while (true)
+        var savedDepth = treeDepth;
+        try
         {
-            switch (Current.Kind)
+            while (true)
             {
-                case SliceTokenKind.Dot:
-                    Advance();
-                    current = AfterDot(span, current, optional: false);
-                    break;
-
-                case SliceTokenKind.QuestionDot:
+                switch (Current.Kind)
                 {
-                    optional = true;
-                    Advance();
+                    case SliceTokenKind.Dot:
+                        Advance();
+                        current = AfterDot(span, current, optional: false);
+                        break;
 
-                    if (Current.Kind == SliceTokenKind.OpenParen)
+                    case SliceTokenKind.QuestionDot:
                     {
-                        current = new JsCallExpression(
-                            span, current, ParseArguments(), Optional: true);
+                        optional = true;
+                        Advance();
 
+                        if (Current.Kind == SliceTokenKind.OpenParen)
+                        {
+                            current = new JsCallExpression(
+                                span, current, ParseArguments(), Optional: true);
+
+                            break;
+                        }
+
+                        if (Current.Kind == SliceTokenKind.OpenBracket)
+                        {
+                            Advance();
+                            var optionalKey = ParseExpression();
+                            Expect(SliceTokenKind.CloseBracket, "]");
+
+                            current = new JsMemberExpression(
+                                span, current, string.Empty, optionalKey, Optional: true);
+
+                            break;
+                        }
+
+                        if (Current.Kind == SliceTokenKind.TemplateLiteral)
+                        {
+                            Refuse(
+                                Span(),
+                                SliceSourceDiagnosticCode.UnexpectedToken,
+                                "a tagged template has no reading inside an optional chain");
+
+                            return new JsChainExpression(span, current);
+                        }
+
+                        current = AfterDot(span, current, optional: true);
                         break;
                     }
 
-                    if (Current.Kind == SliceTokenKind.OpenBracket)
+                    case SliceTokenKind.OpenBracket:
                     {
                         Advance();
-                        var optionalKey = ParseExpression();
+                        var key = ParseExpression();
                         Expect(SliceTokenKind.CloseBracket, "]");
-
-                        current = new JsMemberExpression(
-                            span, current, string.Empty, optionalKey, Optional: true);
-
+                        current = new JsMemberExpression(span, current, string.Empty, key);
                         break;
                     }
 
-                    if (Current.Kind == SliceTokenKind.TemplateLiteral)
-                    {
-                        Refuse(
-                            Span(),
-                            SliceSourceDiagnosticCode.UnexpectedToken,
-                            "a tagged template has no reading inside an optional chain");
+                    case SliceTokenKind.OpenParen:
+                        current = new JsCallExpression(span, current, ParseArguments());
+                        break;
 
-                        return new JsChainExpression(span, current);
+                    case SliceTokenKind.TemplateLiteral:
+                    {
+                        // THE SAME PROHIBITION FROM THE OTHER SIDE. `a?.b`c`` is refused wherever the
+                        // template sits in the chain, because a tag receives a reference and an
+                        // optional chain is the one expression that may have declined to produce one.
+                        if (optional)
+                        {
+                            Refuse(
+                                Span(),
+                                SliceSourceDiagnosticCode.UnexpectedToken,
+                                "a tagged template has no reading inside an optional chain");
+
+                            return new JsChainExpression(span, current);
+                        }
+
+                        current = new JsTaggedTemplate(span, current, ParseTemplate());
+                        break;
                     }
 
-                    current = AfterDot(span, current, optional: true);
-                    break;
+                    default:
+                        return optional ? new JsChainExpression(span, current) : current;
                 }
 
-                case SliceTokenKind.OpenBracket:
+                // The second iterative builder, and the same reasoning: `o.a.a.a`,
+                // `o['a']['a']` and `f()()()` each add a node per turn and no parser
+                // activation. Charged after the switch, which only the arm that ENDS the
+                // chain escapes by returning.
+                if (!Deepen(span, out var deepChain))
                 {
-                    Advance();
-                    var key = ParseExpression();
-                    Expect(SliceTokenKind.CloseBracket, "]");
-                    current = new JsMemberExpression(span, current, string.Empty, key);
-                    break;
+                    return deepChain;
                 }
-
-                case SliceTokenKind.OpenParen:
-                    current = new JsCallExpression(span, current, ParseArguments());
-                    break;
-
-                case SliceTokenKind.TemplateLiteral:
-                {
-                    // THE SAME PROHIBITION FROM THE OTHER SIDE. `a?.b`c`` is refused wherever the
-                    // template sits in the chain, because a tag receives a reference and an
-                    // optional chain is the one expression that may have declined to produce one.
-                    if (optional)
-                    {
-                        Refuse(
-                            Span(),
-                            SliceSourceDiagnosticCode.UnexpectedToken,
-                            "a tagged template has no reading inside an optional chain");
-
-                        return new JsChainExpression(span, current);
-                    }
-
-                    current = new JsTaggedTemplate(span, current, ParseTemplate());
-                    break;
-                }
-
-                default:
-                    return optional ? new JsChainExpression(span, current) : current;
             }
-
-            // The second iterative builder, and the same reasoning: `o.a.a.a`,
-            // `o['a']['a']` and `f()()()` each add a node per turn and no parser
-            // activation. Charged after the switch, which only the arm that ENDS the
-            // chain escapes by returning.
-            if (!Deepen(span, out var deepChain))
-            {
-                return deepChain;
-            }
+        }
+        finally
+        {
+            treeDepth = savedDepth;
         }
     }
 

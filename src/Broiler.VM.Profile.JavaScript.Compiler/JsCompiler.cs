@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   188
-// Annotated:        188/188
+// Relevant units:   190
+// Annotated:        190/190
 // Exempt:           91
-// Human-reviewed:   0/188
+// Human-reviewed:   0/190
 // IP risk:          None
 // Security risk:    High
 // Criteria:         12/11
 // Resource impact:  3/10 max
-// Unverified:       188
+// Unverified:       190
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -4997,7 +4997,7 @@ public sealed class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=46C2AC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=55FD02
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -5086,9 +5086,7 @@ public sealed class JsCompiler
                 break;
 
             case JsBinaryExpression binary:
-                CompileExpression(binary.Left);
-                CompileExpression(binary.Right);
-                Emit(BinaryOpcode(binary.Operator));
+                CompileBinary(binary);
                 break;
 
             case JsLogicalExpression logical:
@@ -5114,18 +5112,7 @@ public sealed class JsCompiler
                 break;
 
             case JsMemberExpression member:
-                CompileExpression(member.Target);
-
-                if (member.Computed is null)
-                {
-                    Emit(JsOpcode.GetProperty, InternedName(member.Name));
-                }
-                else
-                {
-                    CompileExpression(member.Computed);
-                    Emit(JsOpcode.GetIndex);
-                }
-
+                CompileMember(member);
                 break;
 
             // A PRIVATE READ IS NOT A PROPERTY READ AND THE ABSENT CASE IS WHY. `o.x` answers
@@ -6432,35 +6419,96 @@ public sealed class JsCompiler
         EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, temporary);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E27AE6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7D028D
+    // Broiler-Human:        PENDING
+    private void CompileBinary(JsBinaryExpression binary)
+    {
+        var chain = new System.Collections.Generic.List<JsBinaryExpression>();
+        JsExpression current = binary;
+        while (current is JsBinaryExpression b)
+        {
+            chain.Add(b);
+            current = b.Left;
+        }
+
+        CompileExpression(current);
+        for (var i = chain.Count - 1; i >= 0; i--)
+        {
+            var node = chain[i];
+            CompileExpression(node.Right);
+            Emit(BinaryOpcode(node.Operator));
+        }
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BF0425
+    // Broiler-Human:        PENDING
+    private void CompileMember(JsMemberExpression member)
+    {
+        var chain = new System.Collections.Generic.List<JsMemberExpression>();
+        JsExpression current = member;
+        while (current is JsMemberExpression m && !m.Optional)
+        {
+            chain.Add(m);
+            current = m.Target;
+        }
+
+        CompileExpression(current);
+        for (var i = chain.Count - 1; i >= 0; i--)
+        {
+            var m = chain[i];
+            if (m.Computed is null)
+            {
+                Emit(JsOpcode.GetProperty, InternedName(m.Name));
+            }
+            else
+            {
+                CompileExpression(m.Computed);
+                Emit(JsOpcode.GetIndex);
+            }
+        }
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EBAD9F
     // Broiler-Human:        PENDING
     private void CompileLogical(JsLogicalExpression logical)
     {
-        CompileExpression(logical.Left);
-        var end = NewLabel();
-        Emit(JsOpcode.Duplicate);
-
-        switch (logical.Operator)
+        var chain = new System.Collections.Generic.List<JsLogicalExpression>();
+        JsExpression current = logical;
+        while (current is JsLogicalExpression l)
         {
-            case SliceTokenKind.AmpersandAmpersand:
-                Branch(JsOpcode.JumpIfFalse, end);
-                break;
-
-            case SliceTokenKind.BarBar:
-                Branch(JsOpcode.JumpIfTrue, end);
-                break;
-
-            default:
-                Emit(JsOpcode.LoadNull);
-                Emit(JsOpcode.LooseEquals);
-                Emit(JsOpcode.Not);
-                Branch(JsOpcode.JumpIfTrue, end);
-                break;
+            chain.Add(l);
+            current = l.Left;
         }
 
-        Emit(JsOpcode.Pop);
-        CompileExpression(logical.Right);
-        Mark(end);
+        CompileExpression(current);
+        for (var i = chain.Count - 1; i >= 0; i--)
+        {
+            var node = chain[i];
+            var end = NewLabel();
+            Emit(JsOpcode.Duplicate);
+
+            switch (node.Operator)
+            {
+                case SliceTokenKind.AmpersandAmpersand:
+                    Branch(JsOpcode.JumpIfFalse, end);
+                    break;
+
+                case SliceTokenKind.BarBar:
+                    Branch(JsOpcode.JumpIfTrue, end);
+                    break;
+
+                default:
+                    Emit(JsOpcode.LoadNull);
+                    Emit(JsOpcode.LooseEquals);
+                    Emit(JsOpcode.Not);
+                    Branch(JsOpcode.JumpIfTrue, end);
+                    break;
+            }
+
+            Emit(JsOpcode.Pop);
+            CompileExpression(node.Right);
+            Mark(end);
+        }
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3504BE
@@ -8588,51 +8636,55 @@ public sealed class JsCompiler
     // Broiler-Human:        PENDING
     private static class Walk
     {
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=83CCA1
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6BF03A
         // Broiler-Human:        PENDING
-        internal static bool Mentions(JsNode node, string name)
+        internal static bool Mentions(JsNode root, string name)
         {
-            switch (node)
+            var stack = new System.Collections.Generic.Stack<JsNode>();
+            stack.Push(root);
+
+            while (stack.Count > 0)
             {
-                case JsIdentifier identifier:
-                    return string.Equals(identifier.Name, name, System.StringComparison.Ordinal);
-
-                // AN ARROW FUNCTION IS NOT A BOUNDARY FOR THIS SEARCH, AND AN ORDINARY FUNCTION IS.
-                // The question this walk answers is whether the enclosing function has to
-                // materialise an `arguments` object, and an arrow has no `arguments` of its own -
-                // a mention inside one reaches the enclosing function's. Stopping at arrows the way
-                // this stopped at every function-like node left `function f() { return () =>
-                // arguments[0]; }` with no `arguments` slot at all, so the inner reference fell
-                // through to a global read and threw a `ReferenceError` at run time
-                // *(corrected: JSC-83)*.
-                case JsFunctionExpression expression:
-                    if (!expression.Function.IsArrow)
-                    {
-                        return false;
-                    }
-
-                    foreach (var statement in expression.Function.Body)
-                    {
-                        if (Mentions(statement, name))
+                var node = stack.Pop();
+                switch (node)
+                {
+                    case JsIdentifier identifier:
+                        if (string.Equals(identifier.Name, name, System.StringComparison.Ordinal))
                         {
                             return true;
                         }
-                    }
+                        break;
 
-                    return false;
+                    // AN ARROW FUNCTION IS NOT A BOUNDARY FOR THIS SEARCH, AND AN ORDINARY FUNCTION IS.
+                    // The question this walk answers is whether the enclosing function has to
+                    // materialise an `arguments` object, and an arrow has no `arguments` of its own -
+                    // a mention inside one reaches the enclosing function's. Stopping at arrows the way
+                    // this stopped at every function-like node left `function f() { return () =>
+                    // arguments[0]; }` with no `arguments` slot at all, so the inner reference fell
+                    // through to a global read and threw a `ReferenceError` at run time
+                    // *(corrected: JSC-83)*.
+                    case JsFunctionExpression expression:
+                        if (expression.Function.IsArrow)
+                        {
+                            foreach (var statement in expression.Function.Body)
+                            {
+                                stack.Push(statement);
+                            }
+                        }
+                        break;
 
-                case JsFunctionDeclaration:
-                    return false;
+                    case JsFunctionDeclaration:
+                        break;
 
-                default:
-                    break;
-            }
-
-            foreach (var child in Children(node))
-            {
-                if (child is not null && Mentions(child, name))
-                {
-                    return true;
+                    default:
+                        foreach (var child in Children(node))
+                        {
+                            if (child is not null)
+                            {
+                                stack.Push(child);
+                            }
+                        }
+                        break;
                 }
             }
 

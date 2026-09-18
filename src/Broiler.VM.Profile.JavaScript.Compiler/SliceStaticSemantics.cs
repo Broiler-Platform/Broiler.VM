@@ -631,7 +631,7 @@ public sealed class SliceStaticSemantics
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=6C11BD
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=07464B
     // Broiler-Falsified-If: a subexpression is not visited, so an early error inside it goes unreported
     // Broiler-Human:        PENDING
     private void VisitExpression(SliceExpression expression)
@@ -658,14 +658,40 @@ public sealed class SliceStaticSemantics
                 break;
 
             case SliceBinaryExpression binary:
-                VisitExpression(binary.Left);
-                VisitExpression(binary.Right);
+            {
+                var chain = new System.Collections.Generic.List<SliceBinaryExpression>();
+                SliceExpression current = binary;
+                while (current is SliceBinaryExpression b)
+                {
+                    chain.Add(b);
+                    current = b.Left;
+                }
+
+                VisitExpression(current);
+                for (var i = chain.Count - 1; i >= 0; i--)
+                {
+                    VisitExpression(chain[i].Right);
+                }
                 break;
+            }
 
             case SliceLogicalExpression logical:
-                VisitExpression(logical.Left);
-                VisitExpression(logical.Right);
+            {
+                var chain = new System.Collections.Generic.List<SliceLogicalExpression>();
+                SliceExpression current = logical;
+                while (current is SliceLogicalExpression l)
+                {
+                    chain.Add(l);
+                    current = l.Left;
+                }
+
+                VisitExpression(current);
+                for (var i = chain.Count - 1; i >= 0; i--)
+                {
+                    VisitExpression(chain[i].Right);
+                }
                 break;
+            }
 
             case SliceConditionalExpression conditional:
                 VisitExpression(conditional.Test);

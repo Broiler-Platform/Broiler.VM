@@ -386,7 +386,7 @@ internal sealed class JsNumericAdmission
     /// <b>The default arm refuses, for the reason the statement walk's does.</b> An expression kind
     /// nobody decided on is not admitted by a manifest that has not decided on it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=3DC8F3
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=44F93A
     // Broiler-Falsified-If: an expression kind this pass does not recognise reaches the lowering
     // Broiler-Human:        PENDING
     private void Expression(JsExpression expression)
@@ -419,15 +419,22 @@ internal sealed class JsNumericAdmission
                 return;
 
             case JsBinaryExpression binary:
-                if (!AdmitsBinary(binary.Operator))
+            {
+                JsExpression current = binary;
+                while (current is JsBinaryExpression b)
                 {
-                    Refuse(binary.Span, "the `" + Spelling(binary.Operator) + "` operator");
-                    return;
+                    if (!AdmitsBinary(b.Operator))
+                    {
+                        Refuse(b.Span, "the `" + Spelling(b.Operator) + "` operator");
+                    }
+
+                    Expression(b.Right);
+                    current = b.Left;
                 }
 
-                Expression(binary.Left);
-                Expression(binary.Right);
+                Expression(current);
                 return;
+            }
 
             case JsAssignmentExpression assignment:
                 if (assignment.Target is not JsIdentifier)

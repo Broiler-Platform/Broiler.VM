@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   26
+// Annotated:        26/26
 // Exempt:           9
-// Human-reviewed:   0/25
+// Human-reviewed:   0/26
 // IP risk:          None
 // Security risk:    High
-// Criteria:         18/18
+// Criteria:         19/19
 // Resource impact:  2/10 max
-// Unverified:       25
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -663,7 +663,7 @@ public sealed class SliceSourceCompiler
     }
 
     /// <summary>Lowers an expression, leaving exactly one value on the stack.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=2E1CD6
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=441EF6
     // Broiler-Falsified-If: any expression lowering leaves other than exactly one value on the stack
     // Broiler-Human:        PENDING
     private void LowerExpression(SliceExpression expression)
@@ -700,10 +700,7 @@ public sealed class SliceSourceCompiler
                 break;
 
             case SliceBinaryExpression binary:
-                LowerExpression(binary.Left);
-                LowerExpression(binary.Right);
-                builder.Emit(OpcodeFor(binary.Operator, binary.Span));
-                Pop(1);
+                LowerBinary(binary);
                 break;
 
             case SliceLogicalExpression logical:
@@ -730,6 +727,29 @@ public sealed class SliceSourceCompiler
         }
     }
 
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=D9C53B
+    // Broiler-Falsified-If: operands are evaluated out of order, or an unhandled binary operator is emitted
+    // Broiler-Human:        PENDING
+    private void LowerBinary(SliceBinaryExpression binary)
+    {
+        var chain = new System.Collections.Generic.List<SliceBinaryExpression>();
+        SliceExpression current = binary;
+        while (current is SliceBinaryExpression b)
+        {
+            chain.Add(b);
+            current = b.Left;
+        }
+
+        LowerExpression(current);
+        for (var i = chain.Count - 1; i >= 0; i--)
+        {
+            var node = chain[i];
+            LowerExpression(node.Right);
+            builder.Emit(OpcodeFor(node.Operator, node.Span));
+            Pop(1);
+        }
+    }
+
     /// <summary>
     /// Lowers <c>&amp;&amp;</c> or <c>||</c>, evaluating the right operand only when it is reached.
     /// </summary>
@@ -738,31 +758,43 @@ public sealed class SliceSourceCompiler
     /// left value is duplicated for the test and kept when the branch is taken. An implementation
     /// that emitted a comparison here would answer <c>0 || 5</c> with <c>true</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=CBC769
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=FEA3D4
     // Broiler-Falsified-If: the value of either operator is coerced to Boolean, or the right operand is evaluated when the left short-circuits
     // Broiler-Human:        PENDING
     private void LowerLogical(SliceLogicalExpression logical)
     {
-        var done = builder.DefineLabel();
+        var chain = new System.Collections.Generic.List<SliceLogicalExpression>();
+        SliceExpression current = logical;
+        while (current is SliceLogicalExpression l)
+        {
+            chain.Add(l);
+            current = l.Left;
+        }
 
-        LowerExpression(logical.Left);
-        builder.Emit(JavaScriptOpcode.Duplicate);
-        Push(1);
+        LowerExpression(current);
+        for (var i = chain.Count - 1; i >= 0; i--)
+        {
+            var node = chain[i];
+            var done = builder.DefineLabel();
 
-        builder.Branch(
-            logical.Operator == SliceTokenKind.AmpersandAmpersand
-                ? JavaScriptOpcode.JumpIfFalse
-                : JavaScriptOpcode.JumpIfTrue,
-            done);
+            builder.Emit(JavaScriptOpcode.Duplicate);
+            Push(1);
 
-        Pop(1);
+            builder.Branch(
+                node.Operator == SliceTokenKind.AmpersandAmpersand
+                    ? JavaScriptOpcode.JumpIfFalse
+                    : JavaScriptOpcode.JumpIfTrue,
+                done);
 
-        // The kept copy is discarded on the path that evaluates the right operand, so both paths
-        // reach the label with exactly one value.
-        builder.Emit(JavaScriptOpcode.Pop);
-        Pop(1);
-        LowerExpression(logical.Right);
-        builder.MarkLabel(done);
+            Pop(1);
+
+            // The kept copy is discarded on the path that evaluates the right operand, so both paths
+            // reach the label with exactly one value.
+            builder.Emit(JavaScriptOpcode.Pop);
+            Pop(1);
+            LowerExpression(node.Right);
+            builder.MarkLabel(done);
+        }
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=6BD8B0

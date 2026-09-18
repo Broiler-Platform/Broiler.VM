@@ -65,8 +65,8 @@ public sealed class SliceParser
 
     /// <summary>How deep a left spine the iterative builders have grown, in nodes.</summary>
     /// <remarks>
-    /// Never decremented, for the reason the wide parser's counterpart is not: it charges what a
-    /// walk over the whole unit descends, not the maximum of one chain.
+    /// Scoped to the expression being parsed: it charges what an AST walk over a single expression tree
+    /// descends along an iterative spine, restoring the previous depth when the expression finishes.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D491DB
     // Broiler-Human:        PENDING
@@ -1005,7 +1005,7 @@ public sealed class SliceParser
     }
 
     /// <summary>Precedence climbing over the binary, logical and relational operators.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B46ED5
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=70C6A7
     // Broiler-Falsified-If: the tree this builds groups an operator differently from the language's precedence and associativity
     // Broiler-Human:        PENDING
     private SliceExpression ParseBinary(int minimumPrecedence, bool noIn)
@@ -1015,6 +1015,7 @@ public sealed class SliceParser
             return new SliceNumericLiteral(Here(), 0, false);
         }
 
+        var savedTreeDepth = treeDepth;
         try
         {
             var left = ParseUnary();
@@ -1058,6 +1059,7 @@ public sealed class SliceParser
         }
         finally
         {
+            treeDepth = savedTreeDepth;
             Leave();
         }
     }
@@ -1219,7 +1221,7 @@ public sealed class SliceParser
     }
 
     /// <summary>Member access, calls and <c>new</c>, left to right.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=42B016
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=267636
     // Broiler-Falsified-If: a link of a chain drops its target, so a walk under it counts nothing
     // Broiler-Human:        PENDING
     private SliceExpression ParseCallChain()
@@ -1229,6 +1231,7 @@ public sealed class SliceParser
             return new SliceNumericLiteral(Here(), 0, false);
         }
 
+        var savedTreeDepth = treeDepth;
         try
         {
             var span = Here();
@@ -1323,6 +1326,7 @@ public sealed class SliceParser
         }
         finally
         {
+            treeDepth = savedTreeDepth;
             Leave();
         }
     }

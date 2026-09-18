@@ -152,7 +152,7 @@ public static class SliceConstructCensus
     /// one program's admissibility; a census wants every occurrence in a file that parsed, which
     /// is a different question over the same nodes.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=3DAB0E
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=3B0990
     // Broiler-Falsified-If: a node reachable in the tree is not visited
     // Broiler-Human:        PENDING
     private static void Walk(
@@ -263,14 +263,30 @@ public static class SliceConstructCensus
                 break;
 
             case SliceBinaryExpression binary:
-                Walk(binary.Left, occurrences, here);
-                Walk(binary.Right, occurrences, here);
+            {
+                SliceExpression current = binary;
+                while (current is SliceBinaryExpression b)
+                {
+                    Walk(b.Right, occurrences, here);
+                    current = b.Left;
+                }
+
+                Walk(current, occurrences, here);
                 break;
+            }
 
             case SliceLogicalExpression logical:
-                Walk(logical.Left, occurrences, here);
-                Walk(logical.Right, occurrences, here);
+            {
+                SliceExpression current = logical;
+                while (current is SliceLogicalExpression l)
+                {
+                    Walk(l.Right, occurrences, here);
+                    current = l.Left;
+                }
+
+                Walk(current, occurrences, here);
                 break;
+            }
 
             case SliceConditionalExpression conditional:
                 Walk(conditional.Test, occurrences, here);
