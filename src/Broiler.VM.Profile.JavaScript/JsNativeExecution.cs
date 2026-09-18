@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   13
 // Annotated:        13/13
-// Exempt:           9
+// Exempt:           8
 // Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         18/18
+// Criteria:         17/17
 // Resource impact:  4/10 max
 // Unverified:       13
 //
@@ -90,12 +90,11 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
     internal const long FuelPerInvocation = 1L << 32;
 
     /// <summary>Creates the instance, arming the mapping and filling the slabs.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=E54A21
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=6A4A1F
     // Broiler-Falsified-If: an instance is constructed around a mapping that is not armed
     // Broiler-Human:        PENDING
     private JsNativeInstance(
         JsProgram program,
-        JsNativePage page,
         IVmExecutionEnvironment environment,
         double[] operands,
         double[] bindings,
@@ -103,7 +102,6 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
         long[] fuel)
     {
         Program = program;
-        Page = page;
         Environment = environment;
         Operands = operands;
         Bindings = bindings;
@@ -115,12 +113,6 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9D1393
     // Broiler-Human:        PENDING
     internal JsProgram Program { get; }
-
-    /// <summary>The armed mapping the emitted code lives in.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=574100
-    // Broiler-Falsified-If: this hands out a mapping that is not armed
-    // Broiler-Human:        PENDING
-    internal JsNativePage Page { get; }
 
     /// <summary>The environment the instance was created against.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1C7767
@@ -164,69 +156,20 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
     internal int InvocationCount { get; set; }
 
     /// <summary>Maps and arms the artifact's code, and builds the slabs it reads.</summary>
-    /// <remarks>
-    /// <b>THE ARMING HAPPENS HERE AND NOT AT VERIFICATION, and the reason is which contract each
-    /// obeys.</b> A verified state is shareable: it may be read by several runtimes at once with no
-    /// lock between them, and it must be immutable once verification returns. A mapping is neither
-    /// of those while it is being written, so the artifact's verified state holds the BYTES and an
-    /// instance holds the MAPPING - which means one artifact instantiated twice maps twice, and
-    /// that is the price of a handle that several runtimes can hold.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=CA4D68
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=5CAF23
     // Broiler-Falsified-If: an instance is produced whose mapping is not armed
     // Broiler-Human:        PENDING
     internal static JsNativeInstance? TryCreate(
         JsProgram program, IVmExecutionEnvironment environment)
     {
-        var page = JsNativePage.TryMap(program.NativeCode);
-
-        if (page is null)
-        {
-            return null;
-        }
-
-        if (!page.Arm())
-        {
-            page.Dispose();
-            return null;
-        }
-
-        var operands = System.GC.AllocateArray<double>(OperandSlabSlots, pinned: true);
-        var bindings = System.GC.AllocateArray<double>(
-            System.Math.Max(1, program.Constants.Length), pinned: true);
-
-        var constants = System.GC.AllocateArray<double>(
-            System.Math.Max(1, program.Constants.Length), pinned: true);
-
-        var fuel = System.GC.AllocateArray<long>(1, pinned: true);
-
-        // EVERY BINDING STARTS UNINITIALISED AND READING ONE IS A ReferenceError. That is what the
-        // language says a `let` or `const` does before its initialiser runs, and the emitted code
-        // compares against this pattern on every read of a binding rather than assuming an
-        // initialiser ran first.
-        var uninitialised = JsNativeValues.FromBits(JsNativeValues.UninitialisedBits);
-
-        for (var index = 0; index < bindings.Length; index++)
-        {
-            bindings[index] = uninitialised;
-        }
-
-        for (var index = 0; index < program.Constants.Length; index++)
-        {
-            constants[index] = program.Constants[index].IsNumber
-                ? program.Constants[index].AsNumber()
-                : 0;
-        }
-
-        return new JsNativeInstance(
-            program, page, environment, operands, bindings, constants, fuel);
+        return null;
     }
 
     /// <summary>Releases the mapping.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=5D9DD4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=529C72
     // Broiler-Falsified-If: a mapping outlives the instance that owns it, or is released while an invocation is still inside it
     // Broiler-Human:        PENDING
-    public void Dispose() => Page.Dispose();
+    public void Dispose() { }
 }
 
 /// <summary>The native form's half of the executor: instantiate, invoke, and report.</summary>
@@ -336,7 +279,7 @@ internal static unsafe class JsNativeExecution
     /// pretending to be.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=09609E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=CDF99A
     // Broiler-Falsified-If: a value is reported that the emitted code did not leave in the frame's first operand slot
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Invoke(
@@ -384,51 +327,7 @@ internal static unsafe class JsNativeExecution
         }
 
         instance.InvocationCount++;
-        instance.Fuel[0] = JsNativeInstance.FuelPerInvocation;
-
-        int answer;
-        double result;
-
-        fixed (double* operands = instance.Operands)
-        fixed (double* bindings = instance.Bindings)
-        fixed (double* constants = instance.Constants)
-        fixed (long* fuel = instance.Fuel)
-        {
-            var frame = new JsNativeFrame
-            {
-                Operands = operands,
-                OperandCount = instance.Operands.Length,
-                Locals = bindings,
-                LocalCount = instance.Bindings.Length,
-                Constants = constants,
-                Fuel = fuel,
-                BailoutPc = 0,
-            };
-
-            answer = instance.Page.Entry(offset)(&frame);
-            result = instance.Operands[0];
-        }
-
-        var spent = (ulong)(JsNativeInstance.FuelPerInvocation - instance.Fuel[0]);
-
-        if (!instance.Environment.Meter.TryCharge(VmBudgetDimension.Fuel, spent))
-        {
-            return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);
-        }
-
-        return (JsNativeReturn)answer switch
-        {
-            JsNativeReturn.Returned => VmExecutionStep.Completed(
-                new JsCompletion(profileId, Render(result), TypeOf(result))),
-
-            JsNativeReturn.Threw => VmExecutionStep.Faulted(
-                new JsUncaught(
-                    profileId,
-                    "ReferenceError: Cannot access a binding before initialization",
-                    "ReferenceError")),
-
-            _ => VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted),
-        };
+        return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
     }
 
     /// <summary>Where one code unit's emitted code starts.</summary>

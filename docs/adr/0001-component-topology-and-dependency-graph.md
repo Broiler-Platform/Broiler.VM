@@ -1704,3 +1704,14 @@ section 1 of the composition register advertises nothing and this root is not th
 exception.
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-09-18 - MachineCode profile, moving native execution out of language profile
+
+**What changes.** `Broiler.VM.Profile.MachineCode` is added under `src/`. It provides
+native W^X memory page mapping, verification, and execution for `broiler.machinecode` artifacts.
+
+**What is now true.** The graph goes from 26 projects and 85 edges to 27 and 87.
+The packable set is unchanged and still holds exactly three.
+
+**What is not edited.** Every revision above stands as written.
+

@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   16
 // Annotated:        16/16
-// Exempt:           35
+// Exempt:           34
 // Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         1/1
+// Criteria:         0/0
 // Resource impact:  2/10 max
 // Unverified:       16
 //
@@ -312,25 +312,6 @@ internal sealed class JsProgram : IVmVerifiedState
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6FC5E6
     // Broiler-Human:        PENDING
     internal Format.JsNativeSymbolRow[] NativeSymbols { get; }
-
-    /// <summary>The armed mapping of <see cref="NativeCode"/>, once an engine of the baseline form mapped it.</summary>
-    /// <remarks>
-    /// <para>
-    /// <b>THE ONE FIELD OF A VERIFIED PROGRAM THAT IS WRITTEN AFTER VERIFICATION, AND IT IS WRITTEN
-    /// ONCE.</b> It is published by an atomic compare-and-exchange from nothing to an armed page, so a
-    /// concurrent reader sees either nothing or the one page every other reader sees, and no reader
-    /// ever sees a mapping that is still writable. Everything else about the program stays immutable.
-    /// </para>
-    /// <para>
-    /// <b>The program owns the page so the page lives as long as anything can enter it.</b> The
-    /// mapping is released when the program is collected, or eagerly if the page is disposed; a
-    /// program of the numeric manifest never sets this, because its instance owns its own mapping.
-    /// </para>
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=F05E06
-    // Broiler-Falsified-If: this is written more than once for one program, or holds a mapping that is not armed
-    // Broiler-Human:        PENDING
-    internal JsNativePage? NativePage;
 
     /// <summary>The module records, empty when the artifact carries none.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=68CF90

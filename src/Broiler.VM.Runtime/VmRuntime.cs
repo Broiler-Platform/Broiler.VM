@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   35
-// Annotated:        35/35
+// Relevant units:   36
+// Annotated:        36/36
 // Exempt:           26
-// Human-reviewed:   0/35
+// Human-reviewed:   0/36
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         13/2
 // Resource impact:  8/10 max
-// Unverified:       35
+// Unverified:       36
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1054,4 +1054,40 @@ public sealed partial class VmRuntime : System.IDisposable
             System.Math.Min(left.NestedLoadFanOut, right.NestedLoadFanOut),
             System.Math.Min(left.NestedLoadBytes, right.NestedLoadBytes),
             System.Math.Min(left.VerifierWork, right.VerifierWork));
+
+    /// <summary>
+    /// Compiles a verified bytecode artifact into a machine code artifact using the supplied native compiler.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=553232
+    // Broiler-Human:        PENDING
+    public VmNativeCompilationResult CompileToMachineCode(
+        IVmNativeCompiler compiler,
+        in VmArtifactDescriptor inputDescriptor,
+        System.ReadOnlyMemory<byte> inputBytecode,
+        string targetArchitecture)
+    {
+        if (compiler is null)
+        {
+            throw new System.ArgumentNullException(nameof(compiler));
+        }
+
+        if (!compiler.CanCompile(inputDescriptor.FeatureManifestId))
+        {
+            return VmNativeCompilationResult.Failure(
+                $"The native compiler cannot compile manifest '{inputDescriptor.FeatureManifestId}'.");
+        }
+
+        if (!compiler.TryCompile(
+            in inputDescriptor,
+            inputBytecode,
+            targetArchitecture,
+            out var outputDescriptor,
+            out var outputMachineCode,
+            out var refusal))
+        {
+            return VmNativeCompilationResult.Failure(refusal);
+        }
+
+        return VmNativeCompilationResult.Success(in outputDescriptor, outputMachineCode);
+    }
 }

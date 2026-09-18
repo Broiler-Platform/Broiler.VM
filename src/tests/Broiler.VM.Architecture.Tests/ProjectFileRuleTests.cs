@@ -371,7 +371,7 @@ public sealed class ProjectFileRuleTests
         // identifies one by prefix - A8 fired on it, correctly, when it was tried. A12 and the
         // composition register hold the roots instead.
         Assert.Equal(
-            4,
+            5,
             ComponentGraph.Projects.Count(project =>
                 ArchitectureRules.ProfileFamily(project.AssemblyName) is not null));
 

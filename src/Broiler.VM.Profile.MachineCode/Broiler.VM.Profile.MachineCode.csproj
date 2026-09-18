@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Profile.MachineCode</RootNamespace>
+    <AssemblyName>Broiler.VM.Profile.MachineCode</AssemblyName>
+    <Description>The Broiler.VM MachineCode output profile: native memory page arming, native execution frames, and machine-code profile executor.</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- ADR 0001: exactly these two edges, and no others. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -520,7 +520,7 @@ public sealed class AssuranceScannerTests
         // literal is the point of this assertion - an eighth product project appearing in the tree
         // fails here until someone decides whether it is covered, and that decision is what the
         // number records having been made.
-        Assert.Equal(7, onDisk.Length);
+        Assert.Equal(8, onDisk.Length);
 
         // The covered list is exactly those projects...
         Assert.Equal(

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   39
-// Annotated:        39/39
-// Exempt:           33
-// Human-reviewed:   0/39
+// Relevant units:   42
+// Annotated:        42/42
+// Exempt:           34
+// Human-reviewed:   0/42
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         9/8
 // Resource impact:  0/10 max
-// Unverified:       39
+// Unverified:       42
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -533,3 +533,29 @@ public interface IVmProfileExecutor
 // Broiler-Falsified-If: an executor is created on a path that does not instantiate, or its type is rooted by reflection
 // Broiler-Human:        PENDING
 public delegate IVmProfileExecutor VmExecutorFactory(IVmExecutionEnvironment environment);
+
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=940D06
+// Broiler-Human:        PENDING
+public interface IVmNativeCompiler
+{
+    /// <summary>The input profile this compiler lowers from.</summary>
+    VmProfileId InputProfileId { get; }
+
+    /// <summary>Whether this compiler can lower the given feature manifest.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=9B4EB4
+    // Broiler-Human:        PENDING
+    bool CanCompile(VmFeatureManifestId manifestId);
+
+    /// <summary>
+    /// Compiles input bytecode into a machine code artifact.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=93BED7
+    // Broiler-Human:        PENDING
+    bool TryCompile(
+        in VmArtifactDescriptor inputDescriptor,
+        System.ReadOnlyMemory<byte> inputBytecode,
+        string targetArchitecture,
+        out VmArtifactDescriptor outputDescriptor,
+        out byte[] outputMachineCode,
+        out string refusal);
+}

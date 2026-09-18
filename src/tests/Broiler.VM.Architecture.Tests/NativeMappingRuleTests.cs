@@ -154,8 +154,8 @@ public sealed class NativeMappingRuleTests
     {
         var armed = Witness(
             "X1-a-page-armed-read-write-and-execute.cs.witness",
-            "src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs",
-            "Broiler.VM.Profile.JavaScript");
+            "src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs",
+            "Broiler.VM.Profile.MachineCode");
 
         var violations = NativeMappingRules.X1([armed]).ToArray();
 
@@ -189,7 +189,7 @@ public sealed class NativeMappingRuleTests
             NativeMappingRules.X1([new NativeMappingRules.SourceUnit(
                 NativeMappingRules.ArmingPath[0],
                 NativeMappingRules.ArmingAssembly,
-                "namespace Broiler.VM.Profile.JavaScript; internal sealed class JsNativePage { }")]),
+                "namespace Broiler.VM.Profile.MachineCode; internal sealed class VmNativePage { }")]),
             message => message.Contains(
                 "the arming path names no mapping or protection API", StringComparison.Ordinal));
     }

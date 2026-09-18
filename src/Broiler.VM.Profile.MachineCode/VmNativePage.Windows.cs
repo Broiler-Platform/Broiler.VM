@@ -15,22 +15,12 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM.Profile.JavaScript;
+namespace Broiler.VM.Profile.MachineCode;
 
-/// <content>
-/// The Windows half of the one place that makes memory executable.
-/// </content>
-/// <remarks>
-/// <b>IT IS A SEPARATE FILE AND NOT A PREPROCESSOR BRANCH, because rule J6 forbids a preprocessor
-/// directive in any covered source file of this product.</b> Both halves are compiled into every
-/// image and the choice between them is a run-time test; the alternative - selecting a file by an
-/// MSBuild condition - would make the published closure differ per target and would multiply the
-/// closure reports a composition rule compares against an exact allowed set.
-/// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=1954A2
+// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=2F92BE
 // Broiler-Falsified-If: this half is reached on a system it was not written for
 // Broiler-Human:        PENDING
-internal sealed unsafe partial class JsNativePage
+internal sealed unsafe partial class VmNativePage
 {
     /// <summary>Reserve and commit, in one call.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=724619
@@ -53,12 +43,6 @@ internal sealed unsafe partial class JsNativePage
     /// <summary>
     /// Readable and executable, and NOT writable: what a mapping becomes and stays.
     /// </summary>
-    /// <remarks>
-    /// <b>THESE TWO ARE THE WHOLE CLOSED SET, and the value that means readable, writable AND
-    /// executable is not among them and is not written anywhere in this repository.</b> A protection
-    /// argument that came from a variable, a parameter or a table would be an argument some later
-    /// edit could widen; there are two named constants, each used once, and no third.
-    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=056695
     // Broiler-Falsified-If: a protection value naming both write and execute permission appears in any source file this component compiles, or outside the stored witness inputs rule X1's negative controls are made of
     // Broiler-Human:        PENDING
@@ -84,9 +68,6 @@ internal sealed unsafe partial class JsNativePage
             return false;
         }
 
-        // The platform's documented way to publish freshly written code. On x86-64 the instruction
-        // cache is coherent with stores in hardware and this is not architecturally required; it is
-        // called because it is the supported sequence and it costs one call per artifact.
         FlushInstructionCache(GetCurrentProcess(), at, bytes);
         return true;
     }

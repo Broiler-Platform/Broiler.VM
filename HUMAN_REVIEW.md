@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 3819 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 3869 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 172 |
-| Code units | 6790 |
-| Relevant | 3819 |
-| Exempt | 2971 |
-| Assessed | 3819 of 3819 (100%) |
-| Human reviewed | 0 of 3819 (0%) |
-| Unverified | 3819 |
+| Files scanned | 183 |
+| Code units | 6897 |
+| Relevant | 3869 |
+| Exempt | 3028 |
+| Assessed | 3869 of 3869 (100%) |
+| Human reviewed | 0 of 3869 (0%) |
+| Unverified | 3869 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 3819 |
+| HUMAN_PENDING | 3869 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2971 |
+| EXEMPT | 3028 |
 
 ## 5. Aliases In The Tree
 
@@ -128,7 +128,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Abstractions/VmLimitPolicy.cs` | 34 | 18 | 16 | 18 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Abstractions/VmLimitVector.cs` | 51 | 27 | 24 | 27 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Abstractions/VmOutcome.cs` | 25 | 7 | 18 | 7 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Abstractions/VmProfileContracts.cs` | 72 | 39 | 33 | 39 | Low | High | 9/8 |
+| `src/Broiler.VM.Abstractions/VmProfileContracts.cs` | 76 | 42 | 34 | 42 | Low | High | 9/8 |
 | `src/Broiler.VM.Abstractions/VmProfileDescriptor.cs` | 35 | 3 | 32 | 3 | None | Medium | 0/0 |
 | `src/Broiler.VM.Abstractions/VmProfileId.cs` | 30 | 23 | 7 | 23 | Low | High | 9/7 |
 | `src/Broiler.VM.Abstractions/VmReason.cs` | 95 | 8 | 87 | 8 | Low | Low | 0/0 |
@@ -148,6 +148,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` | 31 | 18 | 13 | 18 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 279 | 188 | 91 | 188 | None | High | 12/11 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeBackend.cs` | 19 | 12 | 7 | 12 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeCompiler.cs` | 9 | 7 | 2 | 7 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` | 14 | 12 | 2 | 12 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 169 | 149 | 20 | 149 | None | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 94 | 81 | 13 | 81 | None | Medium | 0/0 |
@@ -197,7 +198,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` | 166 | 165 | 1 | 165 | None | Critical | 166/166 |
 | `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 51 | 31 | 20 | 31 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 87 | 51 | 36 | 51 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` | 4 | 4 | 0 | 4 | None | Critical | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` | 4 | 3 | 1 | 3 | None | Critical | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 157 | 136 | 21 | 136 | Low | High | 37/37 |
 | `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 43 | 25 | 18 | 25 | Low | High | 12/12 |
 | `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 57 | 27 | 30 | 27 | Low | High | 1/1 |
@@ -208,13 +209,10 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 40 | 13 | 27 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` | 4 | 4 | 0 | 4 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` | 26 | 4 | 22 | 4 | None | Critical | 14/14 |
-| `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` | 22 | 13 | 9 | 13 | Low | Critical | 18/18 |
-| `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` | 11 | 10 | 1 | 10 | Low | Critical | 11/11 |
-| `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` | 13 | 13 | 0 | 13 | Low | Critical | 13/13 |
-| `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` | 22 | 12 | 10 | 12 | Low | Critical | 18/18 |
+| `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` | 21 | 13 | 8 | 13 | Low | Critical | 17/17 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 59 | 31 | 28 | 31 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 51 | 16 | 35 | 16 | Low | Medium | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 50 | 16 | 34 | 16 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsProxy.cs` | 44 | 37 | 7 | 37 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 30 | 30 | 0 | 30 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs` | 19 | 14 | 5 | 14 | Low | High | 1/1 |
@@ -244,6 +242,18 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsThrow.cs` | 10 | 5 | 5 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsValue.cs` | 49 | 29 | 20 | 29 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` | 86 | 48 | 38 | 48 | Low | High | 7/7 |
+| `src/Broiler.VM.Profile.MachineCode/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
+| `src/Broiler.VM.Profile.MachineCode/MachineCodeArtifactWriter.cs` | 2 | 2 | 0 | 2 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.MachineCode/MachineCodeExecutor.cs` | 19 | 9 | 10 | 9 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.MachineCode/MachineCodeFormat.cs` | 13 | 6 | 7 | 6 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.MachineCode/MachineCodeProfile.cs` | 9 | 5 | 4 | 5 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.MachineCode/MachineCodeProgram.cs` | 10 | 3 | 7 | 3 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.MachineCode/MachineCodeReadAdapter.cs` | 8 | 5 | 3 | 5 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.MachineCode/MachineCodeVerifier.cs` | 8 | 3 | 5 | 3 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.MachineCode/VmNativeFrame.cs` | 17 | 3 | 14 | 3 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` | 11 | 10 | 1 | 10 | Low | Critical | 11/11 |
+| `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` | 13 | 13 | 0 | 13 | Low | Critical | 13/13 |
+| `src/Broiler.VM.Profile.MachineCode/VmNativePage.cs` | 22 | 12 | 10 | 12 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.WebAssembly/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` | 63 | 39 | 24 | 39 | Low | Critical | 24/24 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` | 8 | 8 | 0 | 8 | Low | High | 5/5 |
@@ -280,9 +290,10 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Runtime/VmInstantiation.cs` | 15 | 9 | 6 | 9 | Low | Medium | 2/0 |
 | `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` | 3 | 3 | 0 | 3 | Low | High | 1/1 |
 | `src/Broiler.VM.Runtime/VmMeter.cs` | 52 | 31 | 21 | 31 | Low | Medium | 20/0 |
+| `src/Broiler.VM.Runtime/VmNativePipeline.cs` | 8 | 3 | 5 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmOperation.cs` | 54 | 25 | 29 | 25 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Runtime/VmProfileRuntimeState.cs` | 15 | 6 | 9 | 6 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Runtime/VmRuntime.cs` | 61 | 35 | 26 | 35 | Low | High | 13/2 |
+| `src/Broiler.VM.Runtime/VmRuntime.cs` | 62 | 36 | 26 | 36 | Low | High | 13/2 |
 | `src/Broiler.VM.Runtime/VmRuntimeCreationOptions.cs` | 55 | 22 | 33 | 22 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmRuntimeState.cs` | 18 | 8 | 10 | 8 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmVerification.cs` | 12 | 8 | 4 | 8 | Low | High | 3/3 |
@@ -1280,11 +1291,9 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a cleanup callback registered here is ever invoked, or any guest code runs from a CLR finalizer
 - `Broiler.VM.Profile.JavaScript.JsEngine` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `7BBE7E`, PENDING
   - Falsified if: emitted code is entered from anywhere but this file
-- `Broiler.VM.Profile.JavaScript.JsEngine.RunNative(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `8C7329`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.RunNative(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `262CBB`, PENDING
   - Falsified if: emitted code runs while its activation or its page is unreachable from a managed root, or this answers a value for a status other than exit
-- `Broiler.VM.Profile.JavaScript.JsEngine.NativePageOf(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `D236B5`, PENDING
-  - Falsified if: a page this returns is not armed, or a program's published page is replaced or released while the program is reachable
-- `Broiler.VM.Profile.JavaScript.JsEngine.RequireInstanceForm(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `08A11D`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.RequireInstanceForm(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `EC8414`, PENDING
   - Falsified if: a guest-loaded program of the other form, of another architecture, or of the numeric manifest runs in a baseline instance
 - `Broiler.VM.Profile.JavaScript.JsEngine.nativeForm` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `05B362`, PENDING
   - Falsified if: an engine built for one form runs a program of the other form
@@ -1440,9 +1449,9 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a field here reports something the trampoline did not record
 - `Broiler.VM.Profile.JavaScript.JsNativeAbi` in `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` - Security=Critical, Spec=none cited, `2AA164`, PENDING
   - Falsified if: any product execution path calls this, or a mapping it makes is writable and executable at once
-- `Broiler.VM.Profile.JavaScript.JsNativeAbi.Run(System.ReadOnlySpan<byte>, uint, uint, int, int, double[], long, int)` in `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` - Security=Critical, Spec=none cited, `AAE7EE`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeAbi.Run(System.ReadOnlySpan<byte>, uint, uint, int, int, double[], long, int)` in `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` - Security=Critical, Spec=none cited, `A18B5E`, PENDING
   - Falsified if: this reports a stack pointer the trampoline did not record, or it returns without releasing the mapping
-- `Broiler.VM.Profile.JavaScript.JsNativeAbi.RunBaseline(System.ReadOnlySpan<byte>, uint, uint, uint, System.Span<long>)` in `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` - Security=Critical, Spec=none cited, `1F95D2`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeAbi.RunBaseline(System.ReadOnlySpan<byte>, uint, uint, uint, System.Span<long>)` in `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` - Security=Critical, Spec=none cited, `D6447A`, PENDING
   - Falsified if: this records a handler stack pointer the stub did not write, sends a slot anywhere but the stub, or returns without releasing the mapping
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, Spec=none cited, `7BCAA8`, PENDING
   - Falsified if: a handler reaches an activation other than the one whose emitted frame is innermost on its thread, or an object a handler touches is reachable only from an emitted frame
@@ -1478,19 +1487,17 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an emitted unit can be entered when fewer slots remain than its region needs
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.FuelPerInvocation` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `5FA9CD`, PENDING
   - Falsified if: an invocation runs past this many charged events without the meter being consulted
-- `Broiler.VM.Profile.JavaScript.JsNativeInstance.JsNativeInstance(JsProgram, JsNativePage, IVmExecutionEnvironment, double[], double[], double[], long[])` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `E54A21`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeInstance.JsNativeInstance(JsProgram, IVmExecutionEnvironment, double[], double[], double[], long[])` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `6A4A1F`, PENDING
   - Falsified if: an instance is constructed around a mapping that is not armed
-- `Broiler.VM.Profile.JavaScript.JsNativeInstance.Page` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `574100`, PENDING
-  - Falsified if: this hands out a mapping that is not armed
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.Operands` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `489648`, PENDING
   - Falsified if: this slab is not pinned, so the collector can move it while emitted code holds its address
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.Bindings` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `75149F`, PENDING
   - Falsified if: this slab is not pinned, or a slot of it is readable by emitted code before an initialiser stored to it
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.Fuel` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `5C814B`, PENDING
   - Falsified if: this slab is not pinned, so the collector can move it while emitted code is decrementing it
-- `Broiler.VM.Profile.JavaScript.JsNativeInstance.TryCreate(JsProgram, IVmExecutionEnvironment)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `CA4D68`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeInstance.TryCreate(JsProgram, IVmExecutionEnvironment)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `5CAF23`, PENDING
   - Falsified if: an instance is produced whose mapping is not armed
-- `Broiler.VM.Profile.JavaScript.JsNativeInstance.Dispose()` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `5D9DD4`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeInstance.Dispose()` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `529C72`, PENDING
   - Falsified if: a mapping outlives the instance that owns it, or is released while an invocation is still inside it
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `65CC7E`, PENDING
   - Falsified if: the form an invocation runs under differs from the form its handle carried when it was minted
@@ -1500,7 +1507,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this names a convention other than the one this process actually uses
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.Instantiate(JsProgram, IVmExecutionEnvironment)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `DC113E`, PENDING
   - Falsified if: an artifact emitted for another architecture is instantiated
-- `Broiler.VM.Profile.JavaScript.JsNativeExecution.Invoke(VmProfileId, JsNativeInstance, in VmInvocationRequest)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `09609E`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeExecution.Invoke(VmProfileId, JsNativeInstance, in VmInvocationRequest)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `CDF99A`, PENDING
   - Falsified if: a value is reported that the emitted code did not leave in the frame's first operand slot
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.TryFindSymbol(JsProgram, uint, out uint)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `B97A49`, PENDING
   - Falsified if: an offset is returned for a unit the symbol table does not name
@@ -1508,92 +1515,6 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a completion of undefined is reported as a Number, or a Number as undefined
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.TypeOf(double)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `0FC6E8`, PENDING
   - Falsified if: this disagrees with what the interpreter's typeof answers for the same value
-- `Broiler.VM.Profile.JavaScript.JsNativePage` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `1954A2`, PENDING
-  - Falsified if: this half is reached on a system it was not written for
-- `Broiler.VM.Profile.JavaScript.JsNativePage.ProtReadWrite` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `A3E0E6`, PENDING
-  - Falsified if: this value admits an execute
-- `Broiler.VM.Profile.JavaScript.JsNativePage.ProtReadExecute` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `4E4A17`, PENDING
-  - Falsified if: a protection value naming both write and execute permission appears in any source file this component compiles, or outside the stored witness inputs rule X1's negative controls are made of
-- `Broiler.VM.Profile.JavaScript.JsNativePage.MapPrivateAnonymous` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `913A18`, PENDING
-  - Falsified if: this names a shared or a file-backed mapping
-- `Broiler.VM.Profile.JavaScript.JsNativePage.MapFailed` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `BAFAB4`, PENDING
-  - Falsified if: this differs from the value the platform answers a failed mapping with, so a failure is read as an address
-- `Broiler.VM.Profile.JavaScript.JsNativePage.MapUnix(nuint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `31576D`, PENDING
-  - Falsified if: this passes any protection other than the readable-and-writable one
-- `Broiler.VM.Profile.JavaScript.JsNativePage.ArmUnix(byte*, nuint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `7C06EF`, PENDING
-  - Falsified if: this passes any protection that admits a write
-- `Broiler.VM.Profile.JavaScript.JsNativePage.ReleaseUnix(byte*, nuint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `2252AF`, PENDING
-  - Falsified if: this unmaps an address or a length the mapping does not own
-- `Broiler.VM.Profile.JavaScript.JsNativePage.Map(void*, nuint, int, int, int, nint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `491B84`, PENDING
-  - Falsified if: this signature differs from the one the platform exports
-- `Broiler.VM.Profile.JavaScript.JsNativePage.Protect(void*, nuint, int)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `70F3E8`, PENDING
-  - Falsified if: this signature differs from the one the platform exports
-- `Broiler.VM.Profile.JavaScript.JsNativePage.Unmap(void*, nuint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs` - Security=Critical, Spec=none cited, `5B2FE6`, PENDING
-  - Falsified if: this signature differs from the one the platform exports
-- `Broiler.VM.Profile.JavaScript.JsNativePage` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `1954A2`, PENDING
-  - Falsified if: this half is reached on a system it was not written for
-- `Broiler.VM.Profile.JavaScript.JsNativePage.MemCommitAndReserve` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `724619`, PENDING
-  - Falsified if: this names anything but reserving and committing, or it carries a protection bit
-- `Broiler.VM.Profile.JavaScript.JsNativePage.MemRelease` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `95117F`, PENDING
-  - Falsified if: this names a free that leaves the reservation standing
-- `Broiler.VM.Profile.JavaScript.JsNativePage.PageReadWrite` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `9DE8C2`, PENDING
-  - Falsified if: this value admits an execute
-- `Broiler.VM.Profile.JavaScript.JsNativePage.PageExecuteRead` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `056695`, PENDING
-  - Falsified if: a protection value naming both write and execute permission appears in any source file this component compiles, or outside the stored witness inputs rule X1's negative controls are made of
-- `Broiler.VM.Profile.JavaScript.JsNativePage.MapWindows(nuint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `5C64B1`, PENDING
-  - Falsified if: this passes any protection other than the readable-and-writable one
-- `Broiler.VM.Profile.JavaScript.JsNativePage.ArmWindows(byte*, nuint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `10433E`, PENDING
-  - Falsified if: this passes any protection that admits a write
-- `Broiler.VM.Profile.JavaScript.JsNativePage.ReleaseWindows(byte*)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `7E36F0`, PENDING
-  - Falsified if: this releases an address the mapping does not own, or releases one twice
-- `Broiler.VM.Profile.JavaScript.JsNativePage.VirtualAlloc(void*, nuint, uint, uint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `634738`, PENDING
-  - Falsified if: this signature differs from the one the platform exports
-- `Broiler.VM.Profile.JavaScript.JsNativePage.VirtualProtect(void*, nuint, uint, uint*)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `3BA5CB`, PENDING
-  - Falsified if: this signature differs from the one the platform exports
-- `Broiler.VM.Profile.JavaScript.JsNativePage.VirtualFree(void*, nuint, uint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `65CC8A`, PENDING
-  - Falsified if: this signature differs from the one the platform exports
-- `Broiler.VM.Profile.JavaScript.JsNativePage.FlushInstructionCache(void*, void*, nuint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `030701`, PENDING
-  - Falsified if: this signature differs from the one the platform exports
-- `Broiler.VM.Profile.JavaScript.JsNativePage.GetCurrentProcess()` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs` - Security=Critical, Spec=none cited, `FCD535`, PENDING
-  - Falsified if: this signature differs from the one the platform exports
-- `Broiler.VM.Profile.JavaScript.JsNativePageState` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `89CCAB`, PENDING
-  - Falsified if: a mapping this type produced is both writable and executable at any instant
-- `Broiler.VM.Profile.JavaScript.JsNativePage` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `7457A9`, PENDING
-  - Falsified if: any mapping this type creates is executable while it is writable, or an entry pointer is handed out for a mapping that is not armed
-- `Broiler.VM.Profile.JavaScript.JsNativePage.address` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `82E226`, PENDING
-  - Falsified if: this holds an address this type did not map, or it is read after the mapping was released
-- `Broiler.VM.Profile.JavaScript.JsNativePage.length` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `8F7E00`, PENDING
-  - Falsified if: this differs from the number of bytes the mapping was actually made with
-- `Broiler.VM.Profile.JavaScript.JsNativePage.state` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `EF3CDD`, PENDING
-  - Falsified if: this says Armed for a mapping the operating system still admits a write to, or Writable for one it admits an execute from
-- `Broiler.VM.Profile.JavaScript.JsNativePage.mapping` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `6AE526`, PENDING
-  - Falsified if: the mapping this handle owns is released while this page is reachable and not disposed, or is never released after this page becomes unreachable
-- `Broiler.VM.Profile.JavaScript.JsNativePage.JsNativePage(JsNativeMapping, byte*, nuint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `F190B6`, PENDING
-  - Falsified if: a mapping is created with any execute permission
-- `Broiler.VM.Profile.JavaScript.JsNativePage.JsNativeMapping` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `3EE098`, PENDING
-  - Falsified if: a mapping is released twice, released while its page can still be entered, or its memory pressure is not removed when it is released
-- `Broiler.VM.Profile.JavaScript.JsNativePage.JsNativeMapping.bytes` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `65543D`, PENDING
-  - Falsified if: this differs from the number of bytes the mapping was made with
-- `Broiler.VM.Profile.JavaScript.JsNativePage.JsNativeMapping.JsNativeMapping(byte*, nuint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `1A6726`, PENDING
-  - Falsified if: this owns an address this type did not map
-- `Broiler.VM.Profile.JavaScript.JsNativePage.JsNativeMapping.IsInvalid` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=High, Spec=none cited, `7887B9`, PENDING
-  - Falsified if: this answers false for a handle that owns no mapping
-- `Broiler.VM.Profile.JavaScript.JsNativePage.JsNativeMapping.ReleaseHandle()` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `975095`, PENDING
-  - Falsified if: this releases an address or a length the mapping does not own
-- `Broiler.VM.Profile.JavaScript.JsNativePage.State` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `77BB7D`, PENDING
-  - Falsified if: this reports a state the mapping is not actually in
-- `Broiler.VM.Profile.JavaScript.JsNativePage.TryMap(System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `DD0825`, PENDING
-  - Falsified if: a caller can write to a mapping this method returned after Arm has run
-- `Broiler.VM.Profile.JavaScript.JsNativePage.Arm()` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `AE60F1`, PENDING
-  - Falsified if: this leaves the mapping writable, or it succeeds without removing write permission
-- `Broiler.VM.Profile.JavaScript.JsNativePage.Entry(uint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `41FDB2`, PENDING
-  - Falsified if: an entry pointer is produced for a mapping that is not armed
-- `Broiler.VM.Profile.JavaScript.JsNativePage.At(uint)` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `FEC06D`, PENDING
-  - Falsified if: an address is produced for a mapping that is not armed
-- `Broiler.VM.Profile.JavaScript.JsNativePage.Dispose()` in `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` - Security=Critical, Spec=none cited, `9B819A`, PENDING
-  - Falsified if: a second call releases a mapping a second time
-- `Broiler.VM.Profile.JavaScript.JsProgram.NativePage` in `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` - Security=Critical, Spec=none cited, `F05E06`, PENDING
-  - Falsified if: this is written more than once for one program, or holds a mapping that is not armed
 - `Broiler.VM.Profile.JavaScript.JsRealm.GetAsyncIterator(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs` - Security=High, Spec=none cited, `EFF362`, PENDING
   - Falsified if: a `for await` over an object carrying `Symbol.asyncIterator` reaches the synchronous wrapper, or one over an Array of promises answers the promises rather than their values
 - `Broiler.VM.Profile.JavaScript.JsRealm` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, Spec=none cited, `60DD8D`, PENDING
@@ -1624,6 +1545,54 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an artifact whose emitted bytes differ from this image's own emission of its bytecode is admitted while an emitter is present
 - `Broiler.VM.Profile.JavaScript.JsVerifier.LinkModules(Sections, JsCodeUnit[], IVmVerificationContext, JavaScriptReadAdapter, out JsModuleRecord[], out JsBinding[])` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `8255D8`, PENDING
   - Falsified if: linking recurses to a depth the payload chooses, or a cyclic export resolution is answered by spending an allowance
+- `Broiler.VM.Profile.MachineCode.VmNativePage` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `2F92BE`, PENDING
+  - Falsified if: this half is reached on a system it was not written for
+- `Broiler.VM.Profile.MachineCode.VmNativePage.ProtReadWrite` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `A3E0E6`, PENDING
+  - Falsified if: this value admits an execute
+- `Broiler.VM.Profile.MachineCode.VmNativePage.ProtReadExecute` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `4E4A17`, PENDING
+  - Falsified if: a protection value naming both write and execute permission appears in any source file this component compiles, or outside the stored witness inputs rule X1's negative controls are made of
+- `Broiler.VM.Profile.MachineCode.VmNativePage.MapPrivateAnonymous` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `913A18`, PENDING
+  - Falsified if: this names a shared or a file-backed mapping
+- `Broiler.VM.Profile.MachineCode.VmNativePage.MapFailed` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `BAFAB4`, PENDING
+  - Falsified if: this differs from the value the platform answers a failed mapping with, so a failure is read as an address
+- `Broiler.VM.Profile.MachineCode.VmNativePage.MapUnix(nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `31576D`, PENDING
+  - Falsified if: this passes any protection other than the readable-and-writable one
+- `Broiler.VM.Profile.MachineCode.VmNativePage.ArmUnix(byte*, nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `7C06EF`, PENDING
+  - Falsified if: this passes any protection that admits a write
+- `Broiler.VM.Profile.MachineCode.VmNativePage.ReleaseUnix(byte*, nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `2252AF`, PENDING
+  - Falsified if: this unmaps an address or a length the mapping does not own
+- `Broiler.VM.Profile.MachineCode.VmNativePage.Map(void*, nuint, int, int, int, nint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `491B84`, PENDING
+  - Falsified if: this signature differs from the one the platform exports
+- `Broiler.VM.Profile.MachineCode.VmNativePage.Protect(void*, nuint, int)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `70F3E8`, PENDING
+  - Falsified if: this signature differs from the one the platform exports
+- `Broiler.VM.Profile.MachineCode.VmNativePage.Unmap(void*, nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `5B2FE6`, PENDING
+  - Falsified if: this signature differs from the one the platform exports
+- `Broiler.VM.Profile.MachineCode.VmNativePage` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `2F92BE`, PENDING
+  - Falsified if: this half is reached on a system it was not written for
+- `Broiler.VM.Profile.MachineCode.VmNativePage.MemCommitAndReserve` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `724619`, PENDING
+  - Falsified if: this names anything but reserving and committing, or it carries a protection bit
+- `Broiler.VM.Profile.MachineCode.VmNativePage.MemRelease` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `95117F`, PENDING
+  - Falsified if: this names a free that leaves the reservation standing
+- `Broiler.VM.Profile.MachineCode.VmNativePage.PageReadWrite` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `9DE8C2`, PENDING
+  - Falsified if: this value admits an execute
+- `Broiler.VM.Profile.MachineCode.VmNativePage.PageExecuteRead` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `056695`, PENDING
+  - Falsified if: a protection value naming both write and execute permission appears in any source file this component compiles, or outside the stored witness inputs rule X1's negative controls are made of
+- `Broiler.VM.Profile.MachineCode.VmNativePage.MapWindows(nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `5C64B1`, PENDING
+  - Falsified if: this passes any protection other than the readable-and-writable one
+- `Broiler.VM.Profile.MachineCode.VmNativePage.ArmWindows(byte*, nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `10433E`, PENDING
+  - Falsified if: this passes any protection that admits a write
+- `Broiler.VM.Profile.MachineCode.VmNativePage.ReleaseWindows(byte*)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `7E36F0`, PENDING
+  - Falsified if: this releases an address the mapping does not own, or releases one twice
+- `Broiler.VM.Profile.MachineCode.VmNativePage.VirtualAlloc(void*, nuint, uint, uint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `634738`, PENDING
+  - Falsified if: this signature differs from the one the platform exports
+- `Broiler.VM.Profile.MachineCode.VmNativePage.VirtualProtect(void*, nuint, uint, uint*)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `3BA5CB`, PENDING
+  - Falsified if: this signature differs from the one the platform exports
+- `Broiler.VM.Profile.MachineCode.VmNativePage.VirtualFree(void*, nuint, uint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `65CC8A`, PENDING
+  - Falsified if: this signature differs from the one the platform exports
+- `Broiler.VM.Profile.MachineCode.VmNativePage.FlushInstructionCache(void*, void*, nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `030701`, PENDING
+  - Falsified if: this signature differs from the one the platform exports
+- `Broiler.VM.Profile.MachineCode.VmNativePage.GetCurrentProcess()` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` - Security=Critical, Spec=none cited, `FCD535`, PENDING
+  - Falsified if: this signature differs from the one the platform exports
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=Critical, Spec=none cited, `399155`, PENDING
   - Falsified if: a buffer is sized from a count that has not cleared its ceiling, or a ceiling breach is reported as a malformed artifact
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.WasmDecoder(System.ReadOnlySpan<byte>, in VmReadBounds, WasmReadAdapter, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `7A55F8`, PENDING
@@ -1994,7 +1963,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 3705 of the 3819 assessed units declare
+That is not a figure of speech. 3755 of the 3869 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

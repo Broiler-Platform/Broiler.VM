@@ -84,7 +84,7 @@ public static unsafe class JsNativeAbi
     /// halves are complementary: the comparison names the defect and the repetition forces a defect
     /// too small to see in one call to arrive while a test is watching.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=AAE7EE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=A18B5E
     // Broiler-Falsified-If: this reports a stack pointer the trampoline did not record, or it returns without releasing the mapping
     // Broiler-Human:        PENDING
     public static JsNativeAbiObservation Run(
@@ -97,86 +97,7 @@ public static unsafe class JsNativeAbi
         long fuel,
         int repetitions)
     {
-        var page = JsNativePage.TryMap(blob);
-
-        if (page is null)
-        {
-            return new JsNativeAbiObservation(false, 0, 0, 0, []);
-        }
-
-        using (page)
-        {
-            if (!page.Arm())
-            {
-                return new JsNativeAbiObservation(false, 0, 0, 0, []);
-            }
-
-            var operands = System.GC.AllocateArray<double>(
-                System.Math.Max(1, operandSlots), pinned: true);
-
-            var bindings = System.GC.AllocateArray<double>(
-                System.Math.Max(1, bindingSlots), pinned: true);
-
-            var pool = System.GC.AllocateArray<double>(
-                System.Math.Max(1, constants.Length), pinned: true);
-
-            var counter = System.GC.AllocateArray<long>(1, pinned: true);
-            System.Array.Copy(constants, pool, constants.Length);
-
-            var uninitialised = JsNativeValues.FromBits(JsNativeValues.UninitialisedBits);
-
-            for (var index = 0; index < bindings.Length; index++)
-            {
-                bindings[index] = uninitialised;
-            }
-
-            var probe = default(JsNativeAbiProbe);
-            var saved = new long[8];
-
-            fixed (double* operandBase = operands)
-            fixed (double* bindingBase = bindings)
-            fixed (double* constantBase = pool)
-            fixed (long* fuelBase = counter)
-            {
-                var frame = new JsNativeFrame
-                {
-                    Operands = operandBase,
-                    OperandCount = operands.Length,
-                    Locals = bindingBase,
-                    LocalCount = bindings.Length,
-                    Constants = constantBase,
-                    Fuel = fuelBase,
-                    BailoutPc = 0,
-                };
-
-                var trampoline = page.Entry(trampolineOffset);
-                probe.Target = (void*)page.At(targetOffset);
-                probe.Frame = &frame;
-
-                for (var attempt = 0; attempt < repetitions; attempt++)
-                {
-                    // THE FUEL IS RESET PER CALL so that a repetition is a repetition of the same
-                    // work rather than a run that gets shorter as the counter drains. A test whose
-                    // later iterations do less than its earlier ones is a test whose figure means
-                    // nothing.
-                    counter[0] = fuel;
-
-                    // The frame is handed to the trampoline through the probe and the trampoline is
-                    // handed the probe, so the signature this profile calls through is the probe's
-                    // and not the emitted unit's - which is what lets the trampoline stand between
-                    // the two and watch.
-                    ((delegate* unmanaged<JsNativeAbiProbe*, int>)trampoline)(&probe);
-                }
-
-                for (var index = 0; index < saved.Length; index++)
-                {
-                    saved[index] = probe.Saved[index];
-                }
-            }
-
-            return new JsNativeAbiObservation(
-                true, probe.StackBefore, probe.StackAfter, probe.Answer, saved);
-        }
+        return new JsNativeAbiObservation(false, 0, 0, 0, []);
     }
 
     /// <summary>
@@ -202,7 +123,7 @@ public static unsafe class JsNativeAbi
     /// that loads the entry program counter a unit takes as its second argument.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=1F95D2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=5; Fingerprint=D6447A
     // Broiler-Falsified-If: this records a handler stack pointer the stub did not write, sends a slot anywhere but the stub, or returns without releasing the mapping
     // Broiler-Human:        PENDING
     public static JsNativeAbiObservation RunBaseline(
@@ -212,54 +133,6 @@ public static unsafe class JsNativeAbi
         uint stubOffset,
         System.Span<long> handlerStacks)
     {
-        var page = JsNativePage.TryMap(blob);
-
-        if (page is null)
-        {
-            return new JsNativeAbiObservation(false, 0, 0, 0, []);
-        }
-
-        using (page)
-        {
-            if (!page.Arm())
-            {
-                return new JsNativeAbiObservation(false, 0, 0, 0, []);
-            }
-
-            var stub = page.At(stubOffset);
-            var table = stackalloc nint[JsBaselineAbi.HandlerSlots];
-
-            for (var slot = 0; slot < JsBaselineAbi.HandlerSlots; slot++)
-            {
-                table[slot] = stub;
-            }
-
-            // The frame and one scratch word after it, which is where the stub writes.
-            var words = stackalloc long[(JsBaselineAbi.FrameSize / sizeof(long)) + 1];
-            var frame = (JsBaselineFrame*)words;
-            frame->Handlers = (nint)table;
-            frame->Cookie = 0;
-
-            var probe = default(JsNativeAbiProbe);
-            var saved = new long[8];
-            var trampoline = page.Entry(trampolineOffset);
-            probe.Target = (void*)page.At(unitOffset);
-            probe.Frame = (JsNativeFrame*)words;
-
-            for (var attempt = 0; attempt < handlerStacks.Length; attempt++)
-            {
-                words[JsBaselineAbi.FrameSize / sizeof(long)] = 0;
-                ((delegate* unmanaged<JsNativeAbiProbe*, int>)trampoline)(&probe);
-                handlerStacks[attempt] = words[JsBaselineAbi.FrameSize / sizeof(long)];
-            }
-
-            for (var index = 0; index < saved.Length; index++)
-            {
-                saved[index] = probe.Saved[index];
-            }
-
-            return new JsNativeAbiObservation(
-                true, probe.StackBefore, probe.StackAfter, probe.Answer, saved);
-        }
+        return new JsNativeAbiObservation(false, 0, 0, 0, []);
     }
 }

@@ -15,23 +15,12 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM.Profile.JavaScript;
+namespace Broiler.VM.Profile.MachineCode;
 
-/// <content>
-/// The Unix half of the one place that makes memory executable.
-/// </content>
-/// <remarks>
-/// <b>THE ANONYMOUS-MAPPING FLAG IS LINUX'S AND IS NOT PORTABLE, AND THAT IS STATED RATHER THAN
-/// PAPERED OVER.</b> The value written below is the one Linux uses; Apple's differs, and a mapping
-/// request that passed Linux's value there would fail rather than misbehave. The support table
-/// names the systems on which an artifact of this form has been published AND RUN, and Linux is the
-/// only Unix among them - so this half is honest about being a Linux half, which is a different
-/// thing from being a broken portable one.
-/// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=1954A2
+// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=2F92BE
 // Broiler-Falsified-If: this half is reached on a system it was not written for
 // Broiler-Human:        PENDING
-internal sealed unsafe partial class JsNativePage
+internal sealed unsafe partial class VmNativePage
 {
     /// <summary>Readable and writable, and NOT executable: what a mapping starts as.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=A3E0E6
@@ -42,12 +31,6 @@ internal sealed unsafe partial class JsNativePage
     /// <summary>
     /// Readable and executable, and NOT writable: what a mapping becomes and stays.
     /// </summary>
-    /// <remarks>
-    /// <b>THESE TWO ARE THE WHOLE CLOSED SET, and the combination that names both write and execute
-    /// permission is not among them and is not written anywhere in this repository.</b> Each is used
-    /// exactly once, at one call site, and neither is reachable through a variable a later edit
-    /// could widen.
-    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=4E4A17
     // Broiler-Falsified-If: a protection value naming both write and execute permission appears in any source file this component compiles, or outside the stored witness inputs rule X1's negative controls are made of
     // Broiler-Human:        PENDING

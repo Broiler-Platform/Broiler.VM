@@ -6,6 +6,7 @@
     <Project Path="src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj" />
     <Project Path="src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj" />
     <Project Path="src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj" />
+    <Project Path="src/Broiler.VM.Profile.MachineCode/Broiler.VM.Profile.MachineCode.csproj" />
     <Project Path="src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj" />
   </Folder>
   <Folder Name="/compositions/">

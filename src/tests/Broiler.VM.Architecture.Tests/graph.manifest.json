@@ -21,7 +21,8 @@
     "JS-3b adds ONE composition root and it is the first here to claim a deployment label: the end-user host, which ADR 0001 revision of 2026-09-03 authorises. It takes the graph from 21 projects and 64 edges to 22 and 69, and adds ZERO packable assemblies. Its reference set is the conformance root's and the slice-compiler root's - the profile plus the lowering - so it introduces no new edge SHAPE; what it introduces is a composition that is handed SOURCE FROM OUTSIDE THE IMAGE, which is the one thing `narrow-runtime-compiler` means that a root lowering a programmatic builder cannot demonstrate. It is the only JavaScript root carrying no test tooling at all, which is what makes its closure readable against the label rather than needing the paragraph of exceptions every sibling needs.",
     "WA-0 adds the three projects the WebAssembly profile's boundary milestone needs - the profile assembly, an execution-only composition root and a never-advertised harness root - taking the graph from 22 projects and 69 edges to 25 and 79. It adds ZERO packable assemblies: the profile declares IsPackable false and no PackageId, and neither root is advertised, so the packable set is still exactly the three core packages. The profile assembly references Abstractions and Binary and NOTHING ELSE: unlike the JavaScript profile it has no format sibling, because its payload is a bare WebAssembly module produced by an external toolchain and there is no lowering for a pivot to hold apart. The two roots have identical reference sets and differ only in the register: one is the execution-only demonstration, the other is where a binary corpus encoder must live because rule A11 forbids a test project to name a profile assembly. ADR 0001's revision of 2026-09-07 authorises the growth.",
     "",
-    "VM-7 adds ONE composition root and it is the first image in this repository that composes two PRODUCT profiles - the end-user command-line host, taking the graph from 25 projects and 79 edges to 26 and 85. It adds ZERO packable assemblies: it is a demonstration, it declares IsPackable false, and docs/compositions.md section 1 still advertises nothing. Its reference set is the JavaScript CLI root's plus Broiler.VM.Profile.WebAssembly, so the SHAPE of the growth is one new edge kind and not one new project kind: rule N2 forbids a project in one profile family to reference a project in another and excepts a composition root, which rule A12 bounds instead, so the two families still cannot see each other and one composition can see both. Roadmap section 14 has asked since VM-3 for a catalog test over two profiles and section 16 records that a composition hosting two of them closes no gate until one exists; the only two-profile composition before this one composed two fixtures this repository wrote in order to be composed. ADR 0001's revision of 2026-09-07 authorises the growth."
+    "VM-7 adds ONE composition root and it is the first image in this repository that composes two PRODUCT profiles - the end-user command-line host, taking the graph from 25 projects and 79 edges to 26 and 85. It adds ZERO packable assemblies: it is a demonstration, it declares IsPackable false, and docs/compositions.md section 1 still advertises nothing. Its reference set is the JavaScript CLI root's plus Broiler.VM.Profile.WebAssembly, so the SHAPE of the growth is one new edge kind and not one new project kind: rule N2 forbids a project in one profile family to reference a project in another and excepts a composition root, which rule A12 bounds instead, so the two families still cannot see each other and one composition can see both. Roadmap section 14 has asked since VM-3 for a catalog test over two profiles and section 16 records that a composition hosting two of them closes no gate until one exists; the only two-profile composition before this one composed two fixtures this repository wrote in order to be composed. ADR 0001's revision of 2026-09-07 authorises the growth.",
+    "VM-8 adds Broiler.VM.Profile.MachineCode, taking the graph from 26 projects and 85 edges to 27 and 87. It adds ZERO packable assemblies. It references Abstractions and Binary, providing native execution for the VM."
   ],
   "milestone": "JS-1",
   "coreContractVersion": 1,
@@ -89,6 +90,18 @@
       "isPackable": false,
       "isTestProject": false,
       "projectReferences": []
+    },
+    {
+      "path": "src/Broiler.VM.Profile.MachineCode/Broiler.VM.Profile.MachineCode.csproj",
+      "assemblyName": "Broiler.VM.Profile.MachineCode",
+      "rootNamespace": "Broiler.VM.Profile.MachineCode",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary"
+      ]
     },
     {
       "path": "src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj",

@@ -33,6 +33,10 @@ type Broiler.VM.Abstractions Broiler.VM.IVmMeter : interface
   Broiler.VM.Abstractions Broiler.VM.IVmMeter.ReportReleased(Broiler.VM.VmBudgetDimension dimension, System.UInt64 amount) : abstract System.Void
   Broiler.VM.Abstractions Broiler.VM.IVmMeter.ReportRetained(Broiler.VM.VmBudgetDimension dimension, System.UInt64 amount) : abstract System.Void
   Broiler.VM.Abstractions Broiler.VM.IVmMeter.TryCharge(Broiler.VM.VmBudgetDimension dimension, System.UInt64 amount) : abstract System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.IVmNativeCompiler : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmNativeCompiler.CanCompile(Broiler.VM.VmFeatureManifestId manifestId) : abstract System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.IVmNativeCompiler.InputProfileId : abstract Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmNativeCompiler.TryCompile(in Broiler.VM.VmArtifactDescriptor inputDescriptor, System.ReadOnlyMemory<System.Byte> inputBytecode, System.String targetArchitecture, out Broiler.VM.VmArtifactDescriptor outputDescriptor, out System.Byte[] outputMachineCode, out System.String refusal) : abstract System.Boolean
 type Broiler.VM.Abstractions Broiler.VM.IVmOperationResult : interface
   Broiler.VM.Abstractions Broiler.VM.IVmOperationResult.Diagnostics : abstract Broiler.VM.VmDiagnostics { get; }
   Broiler.VM.Abstractions Broiler.VM.IVmOperationResult.IsSuccess : abstract System.Boolean { get; }
@@ -1192,6 +1196,13 @@ type Broiler.VM.Runtime Broiler.VM.VmHostCapabilityHandler : sealed class System
   Broiler.VM.Runtime Broiler.VM.VmHostCapabilityHandler.BeginInvoke(System.ReadOnlySpan<System.Int64> arguments, out System.Int64 result, System.AsyncCallback callback, System.Object object) : virtual System.IAsyncResult
   Broiler.VM.Runtime Broiler.VM.VmHostCapabilityHandler.EndInvoke(out System.Int64 result, System.IAsyncResult __result) : virtual Broiler.VM.VmHostCallOutcome
   Broiler.VM.Runtime Broiler.VM.VmHostCapabilityHandler.Invoke(System.ReadOnlySpan<System.Int64> arguments, out System.Int64 result) : virtual Broiler.VM.VmHostCallOutcome
+type Broiler.VM.Runtime Broiler.VM.VmNativeCompilationResult : sealed class
+  Broiler.VM.Runtime Broiler.VM.VmNativeCompilationResult.Descriptor : Broiler.VM.VmArtifactDescriptor { get; }
+  Broiler.VM.Runtime Broiler.VM.VmNativeCompilationResult.Failure(System.String refusal) : static Broiler.VM.VmNativeCompilationResult
+  Broiler.VM.Runtime Broiler.VM.VmNativeCompilationResult.MachineCodeArtifact : System.Byte[] { get; }
+  Broiler.VM.Runtime Broiler.VM.VmNativeCompilationResult.Refusal : System.String { get; }
+  Broiler.VM.Runtime Broiler.VM.VmNativeCompilationResult.Succeeded : System.Boolean { get; }
+  Broiler.VM.Runtime Broiler.VM.VmNativeCompilationResult.Success(in Broiler.VM.VmArtifactDescriptor descriptor, System.Byte[] machineCodeArtifact) : static Broiler.VM.VmNativeCompilationResult
 type Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry : struct
   Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.AcceptedFeatureManifests : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmFeatureManifestId> { get; }
   Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.AsynchronousInstantiation : Broiler.VM.VmDeclaration { get; }
@@ -1212,6 +1223,7 @@ type Broiler.VM.Runtime Broiler.VM.VmProfileCatalogListing : struct
   Broiler.VM.Runtime Broiler.VM.VmProfileCatalogListing.Item[System.Int32 index] : Broiler.VM.VmProfileCatalogEntry { get; }
 type Broiler.VM.Runtime Broiler.VM.VmRuntime : sealed class System.IDisposable
   Broiler.VM.Runtime Broiler.VM.VmRuntime.Catalog : Broiler.VM.VmCatalog { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.CompileToMachineCode(Broiler.VM.IVmNativeCompiler compiler, in Broiler.VM.VmArtifactDescriptor inputDescriptor, System.ReadOnlyMemory<System.Byte> inputBytecode, System.String targetArchitecture) : Broiler.VM.VmNativeCompilationResult
   Broiler.VM.Runtime Broiler.VM.VmRuntime.Create(Broiler.VM.VmCatalog catalog, Broiler.VM.VmRuntimeCreationOptions options) : static Broiler.VM.VmRuntimeCreationResult
   Broiler.VM.Runtime Broiler.VM.VmRuntime.Dispose() : Broiler.VM.VmControlResult
   Broiler.VM.Runtime Broiler.VM.VmRuntime.ExternalSuspension : Broiler.VM.VmExternalSuspensionMode { get; }

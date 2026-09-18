@@ -1048,7 +1048,12 @@ public sealed class ReviewRecordRuleTests
         // and the engine both reference that assembly and neither may reference the other. It is
         // covered on the same terms as every other product file, and nothing in it has been read by
         // a human.
-        Assert.Equal(172, AssuranceSources.Files.Count);
+        //
+        // ELEVEN MORE JOINED THEM WITH THE BROILER.VM.PROFILE.MACHINECODE PROFILE AND COMPILER PIPELINE,
+        // which decouples native machine code execution from the JavaScript profile into a first-class
+        // VM profile (broiler.machinecode) and native compiler lowering pipeline. They are covered on
+        // the same terms as every other product file, and nothing in them has been read by a human.
+        Assert.Equal(183, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

@@ -639,7 +639,7 @@ public sealed class DiagnosticRegistryRuleTests
         // the layout, with the unit's plan and layout beside them - and every one of those is a table
         // an author would reach for a static to reuse between units. It holds them in locals of one
         // emission and nothing longer.
-        Assert.Equal(28, lowering.Length);
+        Assert.Equal(29, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

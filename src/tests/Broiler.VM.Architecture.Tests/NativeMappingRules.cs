@@ -45,7 +45,7 @@ internal static class NativeMappingRules
     /// that took "whichever assembly happens to have one" as its allowed set would be satisfied by
     /// every tree, including the one this rule exists to reject.
     /// </remarks>
-    internal const string ArmingAssembly = "Broiler.VM.Profile.JavaScript";
+    internal const string ArmingAssembly = "Broiler.VM.Profile.MachineCode";
 
     /// <summary>
     /// The files that make up the arming path: one type in three parts.
@@ -59,9 +59,9 @@ internal static class NativeMappingRules
     /// </remarks>
     internal static readonly string[] ArmingPath =
     [
-        "src/Broiler.VM.Profile.JavaScript/JsNativePage.cs",
-        "src/Broiler.VM.Profile.JavaScript/JsNativePage.Unix.cs",
-        "src/Broiler.VM.Profile.JavaScript/JsNativePage.Windows.cs",
+        "src/Broiler.VM.Profile.MachineCode/VmNativePage.cs",
+        "src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs",
+        "src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs",
     ];
 
     /// <summary>

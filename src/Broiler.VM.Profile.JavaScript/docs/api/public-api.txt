@@ -454,6 +454,11 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeBackends.TryFind(System.String name, out Broiler.VM.Profile.JavaScript.Compiler.IJsNativeBackend backend) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeBackends.X64SystemV : const System.String = "x86-64-sysv"
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeBackends.X64Windows : const System.String = "x86-64-win64"
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeCompiler..ctor() : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeCompiler.CanCompile(Broiler.VM.VmFeatureManifestId manifestId) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeCompiler.InputProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeCompiler.OutputProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeCompiler.TryCompile(in Broiler.VM.VmArtifactDescriptor inputDescriptor, System.ReadOnlyMemory<System.Byte> inputBytecode, System.String targetArchitecture, out Broiler.VM.VmArtifactDescriptor outputDescriptor, out System.Byte[] outputMachineCode, out System.String refusal) : System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission..ctor(Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture Architecture, System.UInt32 BackendSemanticVersion, System.UInt32 CodeAlignment, System.Byte[] Code, Broiler.VM.Profile.JavaScript.Format.JsNativeSymbolRow[] Symbols) : void
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission.<Clone>$() : Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission.Architecture : Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture { get; set; }
@@ -2079,6 +2084,7 @@ type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compil
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsFeatureManifest : enum
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsModuleUnit : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.JsModuleUnit>
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeBackends : static class
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeCompiler : sealed class Broiler.VM.IVmNativeCompiler
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission>
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsOutputForm : enum
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsResolvedRequest : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.JsResolvedRequest>
