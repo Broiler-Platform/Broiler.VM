@@ -119,7 +119,7 @@ jobs:
       bounds: ${{ steps.resolve.outputs.bounds }}
       shapes: ${{ steps.resolve.outputs.shapes }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.ref }}
           submodules: false
@@ -222,12 +222,12 @@ jobs:
         shape: ${{ fromJSON(needs.plan.outputs.shapes) }}
         form: [bytecode, native]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.plan.outputs.commit }}
           submodules: false
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
@@ -314,7 +314,7 @@ jobs:
 
       - name: Retain this family's log
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: frame-cost-linux-x64-${{ matrix.bounds }}-${{ matrix.shape }}-${{ matrix.form }}
           path: artifacts/frame-cost
@@ -331,7 +331,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Download every family's log
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: frame-cost-linux-x64-*
           path: artifacts/frame-cost
@@ -339,7 +339,7 @@ jobs:
 
       - name: Retain the logs as one artifact
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: frame-cost-linux-x64
           path: artifacts/frame-cost

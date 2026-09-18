@@ -140,11 +140,11 @@ jobs:
       matrix:
         runner: ${{ fromJSON(needs.plan.outputs.runners) }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           submodules: false
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
@@ -220,7 +220,7 @@ jobs:
 
       - name: Retain this runner's reports and transcripts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: test262-${{ inputs.profile }}-runner-${{ matrix.runner }}
           path: |
@@ -237,11 +237,11 @@ jobs:
     if: ${{ always() && needs.plan.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           submodules: false
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
@@ -249,7 +249,7 @@ jobs:
         run: dotnet build "$CONFORMANCE_PROJECT" -c Release -warnaserror
 
       - name: Collect every runner's retained output
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: test262-${{ inputs.profile }}-runner-*
           path: artifacts/test262
@@ -352,7 +352,7 @@ jobs:
 
       - name: Retain the merged report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: test262-${{ inputs.profile }}-merged
           path: |

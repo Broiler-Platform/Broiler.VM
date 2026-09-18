@@ -14,3 +14,6 @@ __pycache__/
 # Test result output from `dotnet test --logger trx`, which is a record of one run rather than
 # anything this repository retains: an evidence bundle is where a retained run lives.
 TestResults/
+
+# Review tooling state and temporary records
+.broiler-review/
