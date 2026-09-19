@@ -5,7 +5,7 @@
     <AssemblyName>Broiler.VM.Profile.MachineCode</AssemblyName>
     <Description>The Broiler.VM MachineCode output profile: native memory page arming, native execution frames, and machine-code profile executor.</Description>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <!-- ADR 0001: exactly these two edges, and no others. -->

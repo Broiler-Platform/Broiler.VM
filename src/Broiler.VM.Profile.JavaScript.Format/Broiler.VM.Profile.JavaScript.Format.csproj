@@ -8,7 +8,7 @@
     <!-- JS-0 declares no package. The JavaScript profile's packaging decision is JS-10's and
          the status ledger records that nothing here is packable, so ADR 0001's packable set
          stays at exactly the three core packages and rule A6 keeps counting three. -->
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
 
     <!-- JsNativeFrame is the structure emitted machine code and managed code share, and its
          fields are pointers to unmanaged storage. The property is here rather than nowhere so

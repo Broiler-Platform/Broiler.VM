@@ -6,7 +6,7 @@
     <Description>The Broiler.VM WebAssembly language profile. It carries an identity, a descriptor, a decoder for the binary format, a validator, and an interpreter over the four numeric types, locals, globals, one linear memory, structured control flow, direct and indirect calls. It has no linker and admits no import, no manifest has been scored against the specification's own conformance suite, and the status ledger under docs/ is the authority for what exists.</Description>
 
     <!-- WA-0 declares no package. Packaging is WA-10's decision and rule N4 holds the claim. -->
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <!--
