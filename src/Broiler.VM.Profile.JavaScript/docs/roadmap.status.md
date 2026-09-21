@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-09-08
+**Last updated:** 2026-09-20 (JSP-1 tooling note; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -385,6 +385,14 @@ paragraph reports on nothing there.
 ---
 
 ## 1. Reading this ledger
+
+**JSP-1 tooling observation, 2026-09-20.** JSeal slice J01 extends the existing differential runner
+with explicit script/module commands, engine-scoped declarations, timeout/exit/UTF-8 checks and
+engine/input metadata. The [local validation record](../../../docs/evidence/jsp-1-j01/README.md)
+retains Windows checks against current Broiler.JS and Node. The Windows/Linux CI job is configured
+but its Linux result has not been observed; local WSL disks are unavailable. This is unreviewed
+implementation/validation material, not accepted milestone evidence. JSP-1's broader N17 audit
+remains open and no milestone row advances.
 
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:

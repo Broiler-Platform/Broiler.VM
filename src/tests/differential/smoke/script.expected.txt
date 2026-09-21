@@ -1,0 +1,4 @@
+# Authored smoke expectations, not generated from either engine.
+1 42
+2 Grüße
+3 true

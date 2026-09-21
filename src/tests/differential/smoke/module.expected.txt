@@ -1,0 +1,6 @@
+# Authored smoke expectations: import, live binding and module top-level this.
+#diverges broiler-js 1 Broiler.JS source 73f071d1 copies the imported primitive binding: increment updates the exporter but the importer still reads 41. The expected live binding reads 42.
+#diverges broiler-js 3 Broiler.JS source 73f071d1 exposes a non-undefined top-level this under --module-host; the module goal requires undefined.
+1 42
+2 Grüße
+3 true

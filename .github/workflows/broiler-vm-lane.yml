@@ -107,6 +107,38 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
 jobs:
+  # Tooling portability is separate from language conformance. This runs actual script/module
+  # fixtures against Node; Broiler.JS source comparison remains an explicitly supplied checkout.
+  differential-tooling:
+    name: differential runner (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Exercise runner success and failure paths
+        run: python -m unittest discover -s eng/tests -p test_differential.py -v
+      - name: Build the JavaScript host
+        run: dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release --nologo
+      - name: Compare script and module smoke fixtures
+        run: python eng/run-differential.py --probe-directory src/tests/differential/smoke --against node --report artifacts/differential/smoke.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: differential-${{ matrix.os }}
+          path: artifacts/differential/smoke.json
+
   # Everything that is a property of the source rather than of the machine. It runs once, because
   # running it per platform would multiply the cost without multiplying the evidence: a rule about
   # the project graph has the same answer everywhere.

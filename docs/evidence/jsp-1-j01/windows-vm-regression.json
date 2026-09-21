@@ -1,0 +1,1103 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-09-20T07:56:43.797400+00:00",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9",
+  "driver": {
+    "path": "D:\\Broiler.VM\\eng\\run-differential.py",
+    "sha256": "69a422a84335a4e4f9c1eb9573242a2f48fe615c626921e2a233e8e9017dfa4c"
+  },
+  "environment": {
+    "TZ": "UTC",
+    "PYTHONIOENCODING": "utf-8",
+    "DOTNET_CLI_UI_LANGUAGE": "en-US"
+  },
+  "engines": [
+    {
+      "name": "broiler-vm",
+      "executable": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "scriptArgs": [
+        "--quiet",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--quiet",
+        "--module",
+        "{probe}"
+      ],
+      "sourceRoot": "D:\\Broiler.VM",
+      "resolvedExecutable": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "binaries": [
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Abstractions.dll",
+          "sha256": "47cbce5c5f94c6bd64e4d3c03d0dd01dc267429623ec5330e505bf4c35ce413c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Binary.dll",
+          "sha256": "be1277f15572552d54a9c9d976ca1110b9f7b6635ba3969753630a91f8a8ee70"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.dll",
+          "sha256": "da7a0343ad93d133e42b81b7dfc0005aec7b930b2fa9c569cb135403b3ecf2bc"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+          "sha256": "1d948b280e1189e5ee73db88e675084cdba9ddfc8498b22e3faabf5fd5c455ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Compiler.dll",
+          "sha256": "fc67d9864756adf96fccb0920833e2aa04dd2bf4b0e9232618581fa8282e61cc"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.dll",
+          "sha256": "0f5c730cf3a6511cd30e379752bb24b2d9ab5f4d37c10d8bb8fe6c86757bb9a3"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Format.dll",
+          "sha256": "a8ec9e8ec6f8e46527c492c68293dcb1d40a548cb8ed5924bebaeedcd3522967"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Runtime.dll",
+          "sha256": "fae2b93294c0c1462f6fb2a4d2042de73572de23ee310b136c2df0fb863e0244"
+        }
+      ],
+      "source": {
+        "revision": "405fe2d234bbae69b1ea70dac603bbfe24978760",
+        "workingTree": "M .github/workflows/broiler-vm-lane.yml\n M eng/run-differential.py\n M src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md\n M src/Broiler.VM.Profile.JavaScript/docs/roadmap.parity.md\n M src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md\n M src/tests/differential/README.md\n M src/tests/differential/the-general-surface.expected.txt\n M src/tests/differential/the-json-date-and-regexp-surface.expected.txt\n M src/tests/differential/the-later-library-methods.expected.txt\n M src/tests/differential/the-module-goal.expected.txt\n M src/tests/differential/the-settling-of-promises.expected.txt\n M src/tests/differential/the-statement-and-object-surface.expected.txt\n?? docs/evidence/jsp-1-j01/\n?? eng/tests/\n?? src/tests/differential/smoke/"
+      }
+    }
+  ],
+  "probes": [
+    {
+      "name": "the-async-family.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-async-family.js",
+        "sha256": "5ba940a32cfd79e5104c0bc07f398704821e0aea847e313971b0e2628bb99a08"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-async-family.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 before,body,call-returned\r\n2 true [object Promise] function\r\n3 TypeError true 0 f\r\n4 false [object AsyncFunction] true AsyncFunction\r\n5 function function [object AsyncFunction]\r\n38 5\r\n58 1 2 g1\r\n66 false true true\r\n81 2 f 1 2 m\r\n82 TypeError\r\n89 true\r\n99 true true AsyncFunction\r\n100 true 0\r\n10 5\r\n11 true TypeError boom\r\n21 owner\r\n25 B:D\r\n27 iife\r\n55 5\r\n59 m plain2\r\n60 plain-async static-async\r\n64 string a string\r\n84 caught:TypeError\r\n92 blocked\r\n108 ReferenceError\r\n132 literal\r\n12 RangeError later\r\n13 caught:rejected\r\n14 try,finally-in,finally-out -> returned\r\n15 b\r\n22 o\r\n29 fast\r\n33 function\r\n34 sync,resolved:v,t\r\n36 got:late\r\n39a 1/2/\r\n39b 1/2/3-4\r\n40 1:9\r\n41 2:x:y\r\n42 through\r\n46 3\r\n49 5\r\n50 v\r\n51 undefined\r\n52 inner-finally,outer-finally -> deep\r\n56 8\r\n57 none\r\n61 lazy\r\n68 from-gen\r\n70 getter\r\n71 number\r\n79 proto\r\n85 re:x\r\n90 still-running|1\r\n91 hoisted\r\n94 undefined true\r\n95 done,settled\r\n97 D\r\n103 7\r\n104 cleanup|r\r\n105 f-in,f-out|t\r\n106 try\r\n109 object\r\n110 undefined\r\n111 frozen\r\n112 symbol-keyed\r\n113 mapped\r\n116 0,1,2,3,4\r\n117 a,b:2\r\n118 123\r\n119 continued,later\r\n121 6\r\n122 class-expression\r\n123 A true\r\n128 true undefined\r\n131 2\r\n138 async-in-generator\r\n6 a1,t1,a2,t2\r\n19 0,f0,c:skip1,f1,2,f2\r\n24 B-D-btag\r\n30 fulfilled:y,rejected:n\r\n37 o+i\r\n48 x1y2\r\n54 1,4,9\r\n65 undefined/null\r\n67 one:shared,two:shared\r\n69 3\r\n72 caught:thenable-rejected\r\n73 first\r\n78 0,1,2\r\n80 T12,T34,T56\r\n83 via-thenable\r\n93 s:1\r\n96 all-bad\r\n98 computed,class-computed\r\n101 2\r\n102 1,2,3 3\r\n115 helper\r\n124 c1,f1,f1b,c2:second,f2\r\n125 5\r\n126 returned-rejection\r\n133 outer/inner\r\n136 one+two\r\n7 a,1,2,3\r\n17 0-1-2\r\n18 2-4-6\r\n28 1,2,3\r\n31 ok\r\n32 3/3\r\n43 1-2-3\r\n44 {\"a\":1,\"b\":[2,3]}\r\n45 tfallbackand\r\n47 -1numbertrue\r\n53 ok0,bad:e1,ok2\r\n62 a1,b1,c1,a2,b2,a3\r\n74 two\r\n75 3\r\n77 00,10,20\r\n114 NaN/Infinity/true\r\n130 6\r\n134 chained\r\n135 1:2:2\r\n137 from-a-reaction\r\n8 then-called,1,got:42,2,3,4\r\n20 6\r\n23 42\r\n26 done\r\n35 1,2,f:inner,3,4\r\n63 o1,i1,sync,i2,o2:iv\r\n88 3\r\n107 b,c,a -> a,b,c\r\n127 finally:v\r\n129 6:1\r\n9 then-entered,1,then-resumed,2,got:7,3,4,5\r\n16 10\r\n76 012\r\n139 done\r\n87 210\r\n86 50\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.343
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-async-family.expected.txt",
+        "sha256": "6cbadd785051365c4b06755f5e7f76d5e5327496795c695857e6bef8a09c837f"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    },
+    {
+      "name": "the-asynchronous-iteration-family.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-asynchronous-iteration-family.js",
+        "sha256": "d0a5bbfdb3fed1effe0fe6256bc19a76d8dffaaa08dfc7d5e390fb5409f89d05"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-asynchronous-iteration-family.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 before,called,body,stepped\r\n2 object [object AsyncGenerator] function\r\n3 true [object Promise] function\r\n4 TypeError object 0 g\r\n5 [object AsyncGeneratorFunction] [object AsyncGenerator]\r\n6 true [object AsyncGenerator] true\r\n7 function true false\r\n8 true undefined\r\n9 constructor,next,return,throw AsyncGenerator\r\n10 true AsyncGeneratorFunction true true\r\n11 false true false false\r\n12 AsyncGeneratorFunction 1 true\r\n37 TypeError\r\n31 TypeError\r\n46 TypeError\r\n14 resolved:false\r\n15 false true\r\n23 early false undefined:true\r\n24 R:true \r\n35 async\r\n38 Error:bad\r\n42 closed,caught:mine\r\n43 1,2\r\n21 caught:r:false\r\n41 closed,after\r\n44 1,2\r\n47 closed,early\r\n22 undefined:true\r\n28 late:true\r\n29 Error:no\r\n45 3\r\n50 b:closed,a:closed\r\n17 1:false 2:false 3:true undefined:true\r\n18 1:false 2:false undefined:true\r\n25 R:true fin\r\n30 1:false 2:false R:true undefined:true\r\n32 1,2\r\n54 inner:E ok:false\r\n56 closed TypeError\r\n61 5,2 0\r\n62 held,3\r\n20 Error:boom undefined:true\r\n27 W:true awaited,fin\r\n36 a-b\r\n55 inner:R R:true\r\n57 R:true\r\n63 1,2,caught,fin\r\n26 from-finally:false R:true\r\n16 second/third:true\r\n19 a:false b:false\r\n33 1,2,3\r\n34 t1,t2\r\n39 1,2,3\r\n58 next1,awaited1,next2,awaited2,next3 1,2\r\n60 om sym\r\n13 1:false 2:false 3:true undefined:true\r\n53 p,q\r\n51 1,2,after:inner\r\n52 1,2,after:sync\r\n59 m s p\r\n49 1,2,3\r\n64 done\r\n40 1,2,3,4/5,6\r\n48 2,4 3+4 5-6\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.313
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-asynchronous-iteration-family.expected.txt",
+        "sha256": "a07776d5e3c7d2317fc00db9e4a75c0eb21f61d28f0957a26da569f681c2a19c"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    },
+    {
+      "name": "the-general-surface.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-general-surface.js",
+        "sha256": "b9696e9fef09f09b912e50e6f44836b7940882692710ba87e01debd2a1abdca3"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-general-surface.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 \"[object Object]\"\r\n2 \"[object Object]\"\r\n3 true\r\n4 true\r\n5 false\r\n6 true\r\n7 0.30000000000000004\r\n8 \"0\"\r\n9 -Infinity\r\n10 \"0\"\r\n11 false\r\n12 true\r\n13 \"1e+21\"\r\n14 \"ff\"\r\n15 \"0.1\"\r\n16 16\r\n17 36\r\n18 5\r\n19 0\r\n20 12\r\n21 5\r\n22 Infinity\r\n23 NaN\r\n24 2\r\n25 -2\r\n26 -2147483648\r\n27 4294967295\r\n28 -2147483648\r\n29 \"baNaNa\"\r\n30 \"object\"\r\n31 \"undefined\"\r\n32 undefined\r\n33 \"c\"\r\n34 \"xyabc\"\r\n35 \"abc  \"\r\n36 \"a|b\"\r\n37 3\r\n38 0\r\n39 \"bc\"\r\n40 \"ab\"\r\n41 \"b\"\r\n42 \"aaaa\"\r\n43 \"bbb\"\r\n44 3\r\n45 3\r\n46 97\r\n47 \"AB\"\r\n48 TypeError\r\n49 \"abc\"\r\n50 \"x\"\r\n51 \"x |\"\r\n52 -1\r\n53 \"aaa\"\r\n54 true\r\n55 true\r\n56 \"b\"\r\n57 \"\"\r\n58 NaN\r\n59 2\r\n60 1\r\n61 \"x1null\"\r\n62 \"5\"\r\n63 1\r\n64 \"12\"\r\n65 \"a[1]b[2]\"\r\n66 3\r\n67 \"1,2,3\"\r\n68 \"10,9\"\r\n69 \"3,2,1\"\r\n70 \"1,2,3\"\r\n71 \"1,1,2,2\"\r\n72 2\r\n73 -1\r\n74 2\r\n75 \"[null,1]\"\r\n76 true\r\n77 \"2,3,3\"\r\n78 \"0,0,0\"\r\n79 \"2\"\r\n80 \"1,9,2,3\"\r\n81 -1\r\n82 -1\r\n83 true\r\n84 1\r\n85 \"a,b\"\r\n86 \"2,4\"\r\n87 true\r\n88 6\r\n89 TypeError\r\n90 5\r\n91 \"321\"\r\n92 \"1\"\r\n93 4294967295\r\n94 0\r\n95 5\r\n96 \"2,3\"\r\n97 \"1,2,3\"\r\n98 \"1,2,3\"\r\n99 \"--1\"\r\n100 \"1,2,3\"\r\n101 \"1,2,3\"\r\n102 \"a,b,c\"\r\n103 \"[\\\"1\\\",\\\"2\\\",\\\"b\\\",\\\"a\\\"]\"\r\n104 \"{\\\"a\\\":1,\\\"b\\\":2}\"\r\n105 \"[[\\\"a\\\",1]]\"\r\n106 true\r\n107 undefined\r\n108 1\r\n109 TypeError\r\n110 true\r\n111 7\r\n112 \"true\"\r\n113 \"[\\\"0\\\",\\\"1\\\",\\\"length\\\"]\"\r\n114 false\r\n115 false\r\n116 \"T\"\r\n117 10\r\n118 \"ab\"\r\n119 \"qp\"\r\n120 true\r\n121 false\r\n122 \"{\\\"c\\\":1}\"\r\n123 \"{\\n  \\\"a\\\": 1\\n}\"\r\n124 \"[1]\"\r\n125 2\r\n126 1000\r\n127 \"SyntaxError\"\r\n128 \"\\\"1970-01-01T00:00:00.000Z\\\"\"\r\n129 \"42\"\r\n130 2\r\n131 3\r\n132 1\r\n133 1\r\n134 true\r\n135 null\r\n136 7\r\n137 3\r\n138 3\r\n139 \"bound f\"\r\n140 true\r\n141 \"function\"\r\n142 \"function\"\r\n143 \"undefined\"\r\n144 \"2,2\"\r\n145 \"x\"\r\n146 \"Error: x\"\r\n147 true\r\n148 \"TypeError\"\r\n149 \"TypeError\"\r\n150 \"ReferenceError\"\r\n151 \"TypeError\"\r\n152 \"TypeError\"\r\n153 \"TypeError\"\r\n154 \"SyntaxError\"\r\n155 \"URIError\"\r\n156 \"RangeError\"\r\n157 \"RangeError\"\r\n158 -Infinity\r\n159 Infinity\r\n160 0\r\n161 1\r\n162 3\r\n163 0\r\n164 -1\r\n165 5\r\n166 3\r\n167 31\r\n168 12\r\n169 5.5\r\n170 3\r\n171 0\r\n172 0.7853981633974483\r\n173 9007199254740991\r\n174 true\r\n175 true\r\n176 false\r\n177 \"1234.57\"\r\n178 \"0.0000010\"\r\n179 \"123.5\"\r\n180 \"1e+21\"\r\n181 \"1.00\"\r\n182 \"-2\"\r\n183 \"1.235e+8\"\r\n184 \"1970-01-01T00:00:00.000Z\"\r\n185 1577836800000\r\n186 2020\r\n187 \"Invalid Date\"\r\n188 NaN\r\n189 2020\r\n190 \"number\"\r\n191 4\r\n192 \"g\"\r\n193 3\r\n194 \"undefined\"\r\n195 \"aaa\"\r\n196 \"xxy\"\r\n197 false\r\n198 true\r\n199 1\r\n200 \"a|,|b\"\r\n201 \"a\"\r\n202 \"a[b]c\"\r\n203 false\r\n204 true\r\n205 true\r\n206 \"a+\"\r\n207 \"/a/\"\r\n208 \"symbol\"\r\n209 \"d\"\r\n210 true\r\n211 \"k\"\r\n212 \"Symbol(s)\"\r\n213 1\r\n214 2\r\n215 2\r\n216 1\r\n217 \"[object WeakSet]\"\r\n218 \"function\"\r\n219 \"[object Promise]\"\r\n220 \"1,2,3\"\r\n221 \"2,undefined\"\r\n222 -56\r\n223 255\r\n224 1.5\r\n225 0\r\n226 16777216\r\n227 4\r\n228 \"[object Uint8Array]\"\r\n229 \"2,3\"\r\n230 \"1,2\"\r\n231 8472 1 1\r\n232 8494 1 1\r\n233 12443 1 1\r\n234 12444 1 1\r\n235 6277 1 1\r\n236 6278 1 1\r\n237 183 0 1\r\n238 903 0 1\r\n239 4969 0 1\r\n240 4976 0 1\r\n241 4977 0 1\r\n242 6618 0 1\r\n243 8204 0 1\r\n244 8205 0 1\r\n245 8544 1 1\r\n246 8545 1 1\r\n247 12295 1 1\r\n248 5870 1 1\r\n249 768 0 1\r\n250 769 0 1\r\n251 1456 0 1\r\n252 2364 0 1\r\n253 2307 0 1\r\n254 2363 0 1\r\n255 2434 0 1\r\n256 8255 0 1\r\n257 8256 0 1\r\n258 65075 0 1\r\n259 65343 0 1\r\n260 1632 0 1\r\n261 1776 0 1\r\n262 2406 0 1\r\n263 65296 0 1\r\n264 170 1 1\r\n265 181 1 1\r\n266 186 1 1\r\n267 688 1 1\r\n268 913 1 1\r\n269 1488 1 1\r\n270 19968 1 1\r\n271 160 0 1\r\n272 8232 0 1\r\n273 8233 0 1\r\n274 8192 0 1\r\n275 169 0 0\r\n276 11776 0 0\r\n277 65533 0 0\r\n278 178 0 0\r\n279 188 0 0\r\n280 8304 0 0\r\n281 8364 0 0\r\n282 11823 0 0\r\n283 65024 0 1\r\n284 \"f\"\r\n285 \"g\"\r\n286 \"C\"\r\n287 \"h\"\r\n288 \"m\"\r\n289 \"m\"\r\n290 \"m\"\r\n291 \"get x\"\r\n292 \"x\"\r\n293 \"y\"\r\n294 \"a\"\r\n295 \"\"\r\n296 \"named\"\r\n297 \"\"\r\n298 \"f\"\r\n299 \"f,g2\"\r\n300 \"b\"\r\n301 \"\"\r\n302 \"f\"\r\n303 \"g\"\r\n304 \"quoted\"\r\n305 \"5\"\r\n306 \"f\"\r\n307 \"f\"\r\n308 \"number\"\r\n309 \"function\"\r\n310 \"true,false,false\"\r\n311 \"2,f\"\r\n312 \"f\"\r\n313 \"function foo() { [native code] }\"\r\n314 \"m,Error\"\r\n315 \"TypeError: t\"\r\n316 \"[object Error]\"\r\n317 42\r\n318 \"false\"\r\n319 \"function\"\r\n320 \"2\"\r\n321 \"false\"\r\n322 \",Error\"\r\n323 \"true,false\"\r\n324 \"truetrue\"\r\n325 \"TypeError\"\r\n326 \"ReferenceError\"\r\n327 \"TypeError\"\r\n328 \"RangeError\"\r\n329 \"1,1\"\r\n330 \"a%20b%26c%3Dd%2Fe%3F\"\r\n331 \"http://a.b/c%20d?e=f&g#h\"\r\n332 \" &\"\r\n333 \"URIError\"\r\n334 \"%C3%A9,%F0%9F%98%80\"\r\n335 \"truetruetrue\"\r\n336 \"trueobject\"\r\n337 \"functionfunction\"\r\n338 \"function,function,function,function\"\r\n339 \"false\"\r\n340 \"false\"\r\n341 \"Infinity,-Infinity\"\r\n342 \"[[\\\"a\\\",1],[\\\"b\\\",2]]\"\r\n343 \"{\\\"a\\\":1}\"\r\n344 \"{\\\"a\\\":1,\\\"b\\\":2}\"\r\n345 \"[1,2]\"\r\n346 \"truefalse\"\r\n347 \"{\\\"a\\\":1}true\"\r\n348 \"true\"\r\n349 \"function\"\r\n350 \"{\\\"a\\\":{\\\"value\\\":1,\\\"writable\\\":true,\\\"enumerable\\\":true,\\\"configurable\\\":true}}\"\r\n351 \"0,1\"\r\n352 \"2\"\r\n353 \"TypeError\"\r\n354 \"{\\\"a\\\":1}\"\r\n355 \"0,1\"\r\n356 \"6,6\"\r\n357 \"3,1,bound f\"\r\n358 \"true\"\r\n359 1\r\n360 3\r\n361 \"callee\"\r\n362 \"TypeError\"\r\n363 \"121\"\r\n364 \"true,false\"\r\n365 \"true\"\r\n366 \"undefined\"\r\n367 \"skip\"\r\n368 \"array-ctor\"\r\n369 \"3,false,1--3\"\r\n370 \"0,2\"\r\n371 \"[1,null,3]\"\r\n372 \"1,2,3,10,9\"\r\n373 \"3,2,1\"\r\n374 \"1,2,3,4\"\r\n375 \"1,2,2,4\"\r\n376 \"0,2,4\"\r\n377 \"7,3\"\r\n378 \"2,3,3\"\r\n379 \"3,2\"\r\n380 \"3,2,1|1,2,3|9,2,3\"\r\n381 \"1,3\"\r\n382 \"falsetrue\"\r\n383 \"6,5\"\r\n384 \"TypeError\"\r\n385 \"1\"\r\n386 4294967295\r\n387 \"truefalse\"\r\n388 \"1,2,-1,true\"\r\n389 \"a,b,1,10,2\"\r\n390 \"2,3,2\"\r\n391 \"1,9,2,3\"\r\n392 \"a,b,c,a,b,c\"\r\n393 5\r\n394 \"1,1,0,0\"\r\n395 \"{\\\"odd\\\":[1,3],\\\"even\\\":[2,4]}\"\r\n396 \"null,1\"\r\n397 \"2,1,3\"\r\n398 \"1\"\r\n399 \"{\\\"a\\\":1}\"\r\n400 \"{\\\"a\\\":1,\\\"b\\\":2}\"\r\n401 \"true,1\"\r\n402 \"TypeError\"\r\n403 \"1,2,2\"\r\n404 \"function,1,2,m\"\r\n405 \"1,AggregateError,true\"\r\n406 \"true,2\"\r\n407 \"false\"\r\n408 \"TypeError\"\r\n409 \"true\"\r\n410 \"function\"\r\n411 \"true\"\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.375
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-general-surface.expected.txt",
+        "sha256": "e1224712922284405a0134154f5b7e565a7769f6e5dcc1c72dc082ac44be0740"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    },
+    {
+      "name": "the-json-date-and-regexp-surface.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-json-date-and-regexp-surface.js",
+        "sha256": "bd73a9011294bdb011379c0df58941a10e996417d9a9f2a77c44cf3bc5d57966"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-json-date-and-regexp-surface.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 \"{\\\"a\\\":[1,{\\\"b\\\":2}]}\"\r\n2 \"{\\\"a\\\":1}\"\r\n3 \"{\\\"b\\\":2}\"\r\n4 \"[\\n\\t1,\\n\\t2\\n]\"\r\n5 \"{\\n \\\"a\\\": {\\n  \\\"b\\\": 1\\n }\\n}\"\r\n6 \"\\\"a b\\\"\"\r\n7 \"\\\"\\\"\"\r\n8 \"null\"\r\n9 \"undefined\"\r\n10 \"[null,null]\"\r\n11 \"TypeError\"\r\n12 1\r\n13 \"A\"\r\n14 \"2,4\"\r\n15 \"{\\\"a\\\":null}\"\r\n16 \"SyntaxError\"\r\n17 \"SyntaxError\"\r\n18 20\r\n19 \"5\"\r\n20 \"\\\"s\\\"\"\r\n21 \"{\\\"x\\\":false}\"\r\n22 1\r\n23 1583020800000\r\n24 \"2020-02-29T00:00:00.000Z\"\r\n25 0\r\n26 \"2000-01-01T00:00:00.000Z\"\r\n27 \"1971-02-01T00:00:00.000Z\"\r\n28 \"Thu, 01 Jan 1970 00:00:00 GMT\"\r\n29 \"Thu Jan 01 1970\"\r\n30 \"Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)\"\r\n31 0\r\n32 0\r\n33 0\r\n34 \"Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)\"\r\n35 1577836800000\r\n36 0\r\n37 \"2286-11-20T17:46:40.000Z\"\r\n38 \"1969-12-31T23:59:59.999Z\"\r\n39 0\r\n40 \"number\"\r\n41 4\r\n42 3\r\n43 \"a1b3c\"\r\n44 true\r\n45 false\r\n46 \"aXc\"\r\n47 \"b\"\r\n48 \"null\"\r\n49 3\r\n50 \"123\"\r\n51 1\r\n52 \"x123\"\r\n53 \"1$\"\r\n54 \"abbc\"\r\n55 \"$&$&$&\"\r\n56 true\r\n57 \"/a/g\"\r\n58 true\r\n59 true\r\n60 \"abab\"\r\n61 \"undefined,b\"\r\n62 \"xx\"\r\n63 true\r\n64 1\r\n65 3\r\n66 2\r\n67 1\r\n68 6765\r\n69 2\r\n70 7\r\n71 2\r\n72 6\r\n73 \"1,3\"\r\n74 \"number\"\r\n75 \"1-2\"\r\n76 0\r\n77 \"5\"\r\n78 1\r\n79 true\r\n80 \"aXc\"\r\n81 \"bbb\"\r\n82 \"aXc\"\r\n83 \"a<1>b<2>\"\r\n84 \"02/01/2020\"\r\n85 \"a[b][a][c][b]c\"\r\n86 \"2020/01\"\r\n87 \"2020!-01\"\r\n88 \"trueggimsu\"\r\n89 1\r\n90 \"false\"\r\n91 \"a|b|c\"\r\n92 \"a|1|b|2|c\"\r\n93 \"a-b-c\"\r\n94 \"a1,b2\"\r\n95 \"1-1\"\r\n96 \"lookbehind\"\r\n97 \"neg-lookbehind\"\r\n98 SyntaxError\r\n99 \"aaa\"\r\n100 \"undef\"\r\n101 \"a\"\r\n102 \"true\"\r\n103 \"xxx\"\r\n104 \"b\"\r\n105 \"true\"\r\n106 \"x0x\"\r\n107 \"(?:),(?:)\"\r\n108 \"aaa\"\r\n109 \"true\"\r\n110 \"has-normalize\"\r\n111 \"ca\"\r\n112 \"005|5**\"\r\n113 \"x  |  x|\"\r\n114 \"97,ab\"\r\n115 \"ababab,true,true\"\r\n116 \"a|b\"\r\n117 \"-1,1\"\r\n118 \"2,1\"\r\n119 \"abbcb\"\r\n120 \"true\"\r\n121 \"ab1null\"\r\n122 \"abcABC\"\r\n123 \"absent\"\r\n124 \"2020-01-02T03:04:05.000Z\"\r\n125 \"1577934245000\"\r\n126 \"Invalid Date\"\r\n127 \"2020,0,4\"\r\n128 \"1577923200000\"\r\n129 \"1970-01-01T00:00:00.000Z\"\r\n130 \"2020-01-31T00:00:00.000Z\"\r\n131 \"Invalid Date\"\r\n132 \"number,true\"\r\n133 \"1577923200000\"\r\n134 \"12345.68,0.0000010,1e+21\"\r\n135 \"ff,11111111,-73\"\r\n136 \"123.5,0\"\r\n137 \"16,3,15,0\"\r\n138 \"16,12,150\"\r\n139 \"9007199254740991,2.220446049250313e-16\"\r\n140 \"truefalse1.5\"\r\n141 \"0,1,3\"\r\n142 \"-Infinity,Infinity,5,-1\"\r\n143 \"-4,5.5,31,12\"\r\n144 \"string\"\r\n145 \"a1,b2\"\r\n146 \"0,2\"\r\n147 \"TypeError\"\r\n148 3\r\n149 3\r\n150 0\r\n151 4\r\n152 \"0,5\"\r\n153 \"2020\"\r\n154 \"function,[object RegExp String Iterator]\"\r\n155 \"{\\\"done\\\":true}\"\r\n156 1\r\n157 \"truefalse\"\r\n158 \"\\\"a�b\\\",3\"\r\n159 \"true,\\\"😀\\\"\"\r\n160 \"false,false\"\r\n161 \"0,0\"\r\n162 \"3,d800\"\r\n163 \"\\\"\\\\ud800\\\"\"\r\n164 \"d800\"\r\n165 \"d800\"\r\n166 \"b\"\r\n167 \"a,a,a\"\r\n168 2\r\n169 \"aXc\"\r\n170 \"a|b\"\r\n171 \"1,2\"\r\n172 \"custom:abc\"\r\n173 42\r\n174 \"abc|R\"\r\n175 \"abc,3\"\r\n176 \"iter:abc\"\r\n177 \"TypeError\"\r\n178 \"b\"\r\n179 \"null\"\r\n180 \"X\"\r\n181 \"functionfunctionfunctionfunctionfunction\"\r\n182 \"[Symbol.match],2\"\r\n183 \"TypeError\"\r\n184 \"b\"\r\n185 \"aZc\"\r\n186 \"a|b\"\r\n187 2\r\n188 \"symbol\"\r\n189 \"Rget\"\r\n190 \"a1b3c\"\r\n191 \"aBc\"\r\n192 \"1,d800\"\r\n193 \"2,true\"\r\n194 \"2,10000\"\r\n195 \"RangeError\"\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.406
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-json-date-and-regexp-surface.expected.txt",
+        "sha256": "8c7d8a1202b1f60039ef298383567a9f8a43eb3f606953df932cdc36c4262285"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    },
+    {
+      "name": "the-later-library-methods.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-later-library-methods.js",
+        "sha256": "5791a9cbb7f3df928041b60251cd52637a57ea34d780857e237b8301384b2736"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-later-library-methods.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 1\r\n2 \"1,2\"\r\n3 1\r\n4 \"a0,b1,c2\"\r\n5 \"a,b\"\r\n6 2\r\n7 3\r\n8 \"undefined\"\r\n9 2\r\n10 \"1,2,3,4\"\r\n11 \"1,2\"\r\n12 2\r\n13 \"1,2,2,4\"\r\n14 \"1,2\"\r\n15 2\r\n16 -1\r\n17 undefined\r\n18 \"4,5,3,4,5\"\r\n19 \"1,4,3,4,5\"\r\n20 \"1,2,3,3,4\"\r\n21 \"2,2,3\"\r\n22 \"1,2,3\"\r\n23 \"3,1,2\"\r\n24 \"1,2,3\"\r\n25 \"2:undefined\"\r\n26 \"3,2,1\"\r\n27 \"1,9,3\"\r\n28 \"1,2,9\"\r\n29 \"RangeError\"\r\n30 \"1,3\"\r\n31 \"1,a,b,2,3\"\r\n32 \"1,2\"\r\n33 \"1,\"\r\n34 3\r\n35 -2\r\n36 1.259921049894873\r\n37 0\r\n38 10000000000\r\n39 \"abc\"\r\n40 \"abc\"\r\n41 \"RangeError\"\r\n42 2\r\n43 \"RangeError\"\r\n44 \"a1b\"\r\n45 \"x1y\"\r\n46 \"function\"\r\n47 1\r\n48 \"1,0,1\"\r\n49 \"2,2,1\"\r\n50 false\r\n51 \"TypeError\"\r\n52 1\r\n53 \"1:undefined\"\r\n54 9\r\n55 \"{\\\"value\\\":1,\\\"writable\\\":false,\\\"enumerable\\\":false,\\\"configurable\\\":false}\"\r\n56 \"{\\\"value\\\":3,\\\"writable\\\":true,\\\"enumerable\\\":false,\\\"configurable\\\":false}\"\r\n57 \"0\"\r\n58 \"TypeError\"\r\n59 \"1\"\r\n60 \"1\"\r\n61 3\r\n62 0\r\n63 \"TypeError\"\r\n64 9\r\n65 \"2\"\r\n66 \"3,2,1\"\r\n67 \"1,2,3\"\r\n68 \"1,0,0\"\r\n69 \"2,3,3\"\r\n70 \"3:2\"\r\n71 \"1:2,3\"\r\n72 \"3:0,1,2\"\r\n73 \"b\"\r\n74 2\r\n75 2\r\n76 2\r\n77 3\r\n78 2\r\n79 2\r\n80 \"TypeError\"\r\n81 \"TypeError\"\r\n82 true\r\n83 \"1,2,3\"\r\n84 3\r\n85 \"4,5\"\r\n86 \"0:7\"\r\n87 \"0\"\r\n88 true\r\n89 2\r\n90 0\r\n91 \"[object Array Iterator]\"\r\n92 \"8,9\"\r\n93 \"1=2\"\r\n94 \"2,a\"\r\n95 1\r\n96 \"z\"\r\n97 \"1:1:true\"\r\n98 \"2\"\r\n99 \"3,1,2,3\"\r\n100 \"1-1,2-2\"\r\n101 \"undefined,false\"\r\n102 0\r\n103 \"[object Map]Map\"\r\n104 \"true\"\r\n105 \"true\"\r\n106 \"1,false\"\r\n107 \"TypeError\"\r\n108 \"true\"\r\n109 \"1,2,3\"\r\n110 \"b,c\"\r\n111 \"0,0,2\"\r\n112 \"TypeError\"\r\n113 \"1,1\"\r\n114 \"function\"\r\n115 \"true\"\r\n116 \"1,2\"\r\n117 \"true\"\r\n118 \"functionfunctionfunction\"\r\n119 \"[object Promise]\"\r\n120 \"3,-2\"\r\n121 44\r\n122 \"255,0\"\r\n123 1.5\r\n124 \"1,2,3\"\r\n125 \"2,3\"\r\n126 123456\r\n127 256\r\n128 \"8,2\"\r\n129 \"[object Int8Array]\"\r\n130 \"1,2,3\"\r\n131 \"2,4,6\"\r\n132 \"1,2,3\"\r\n133 \"7,7,7\"\r\n134 \"2,3|1,2,3,4\"\r\n135 6\r\n136 \"1,false\"\r\n137 \"1,2,3\"\r\n138 \"4,3\"\r\n139 \"{\\\"a\\\":[1,{\\\"b\\\":2}],\\\"c\\\":\\\"x\\\"}\"\r\n140 \"{\\n  \\\"a\\\": 1\\n}\"\r\n141 \"[null,null,null]\"\r\n142 \"{}\"\r\n143 \"{\\\"d\\\":\\\"1970-01-01T00:00:00.000Z\\\"}\"\r\n144 \"{\\\"a\\\":1}\"\r\n145 \"{\\\"a\\\":2}\"\r\n146 2\r\n147 \"é\"\r\n148 \"SyntaxError\"\r\n149 \"a|\"\r\n150 \"TypeError\"\r\n151 \"\\\"a b\\\"\"\r\n152 \"42\"\r\n153 \"null,null\"\r\n154 \"undefined\"\r\n155 \"[\\n\\t1,\\n\\t2\\n]\"\r\n156 \"{\\\"a\\\":{}}\"\r\n157 \"at,buffer,byteLength,byteOffset,constructor,copyWithin,entries,every,fill,filter,find,findIndex,findLast,findLastIndex,forEach,includes,indexOf,join,keys,lastIndexOf,length,map,reduce,reduceRight,reverse,set,slice,some,sort,subarray,toLocaleString,toReversed,toSorted,toString,values,with\"\r\n158 \"BYTES_PER_ELEMENT,length,name,prototype\"\r\n159 \"true\"\r\n160 \"1,2,3\"\r\n161 \"1,2,3\"\r\n162 \"3,6\"\r\n163 \"1,2,3,2\"\r\n164 \"5,6\"\r\n165 \"1,2,3|3,1,2\"\r\n166 \"3,2,1|1,2,3\"\r\n167 \"1,9,3|1,2,3\"\r\n168 \"1,2,9\"\r\n169 \"RangeError\"\r\n170 \"2\"\r\n171 \"-1\"\r\n172 \"1,2\"\r\n173 \"true\"\r\n174 \"undefined\"\r\n175 \"1,0\"\r\n176 \"TypeError\"\r\n177 \"1,2,3\"\r\n178 \"2,3\"\r\n179 \"1,3\"\r\n180 \"1,3\"\r\n181 \"truefalse\"\r\n182 \"truefalse\"\r\n183 \"truefalse\"\r\n184 \"1,2,3\"\r\n185 \"TypeError\"\r\n186 \"TypeError\"\r\n187 \"RangeError\"\r\n188 \"Infinity\"\r\n189 \"3\"\r\n190 \"1,2,4\"\r\n191 \"1,1\"\r\n192 \"true\"\r\n193 \"2,3\"\r\n194 \"a\"\r\n195 \"size,has,keys\"\r\n196 \"\"\r\n197 1\r\n198 \"1,2|2\"\r\n199 \"3|3\"\r\n200 \"next,done,value,next,done\"\r\n201 \"1,1,1\"\r\n202 \"5,5,1\"\r\n203 \"Infinity\"\r\n204 \"Array:function,Map:function,Set:function,RegExp:function,Promise:function,ArrayBuffer:function\"\r\n205 \"trueundefined\"\r\n206 \"true\"\r\n207 \"true,get [Symbol.species]\"\r\n208 \"truefalse\"\r\n209 \"false\"\r\n210 \"true\"\r\n211 \"truetrue\"\r\n212 \"2,hasOwn\"\r\n213 \"TypeError\"\r\n214 \"truetrue\"\r\n215 7\r\n216 3\r\n217 \"true,true,function,undefined\"\r\n218 2\r\n219 \"function,function\"\r\n220 \"function\"\r\n221 \"function\"\r\n222 \"undefined\"\r\n223 \"functionundefined\"\r\n224 \"TypeError\"\r\n225 \"function,function\"\r\n226 \"2,1\"\r\n227 \"1\"\r\n228 \"RangeError\"\r\n229 \"RangeError\"\r\n230 \"RangeError\"\r\n231 2\r\n232 \"TypeError\"\r\n233 \"false,false,false\"\r\n234 \"true,false,false,0\"\r\n235 \"1,1\"\r\n236 \"RangeError\"\r\n237 \"RangeError\"\r\n238 4294967295\r\n239 \"0,1\"\r\n240 \"1,9,3\"\r\n241 \"6,1,2,3,,,9\"\r\n242 \"TypeError\"\r\n243 \"no-throw,3\"\r\n244 \"2,1,2\"\r\n245 \"2,1,2\"\r\n246 \"TypeError\"\r\n247 \"TypeError\"\r\n248 \"TypeError\"\r\n249 \"TypeError\"\r\n250 \"TypeError\"\r\n251 \"TypeError\"\r\n252 \"function,true,true,false\"\r\n253 \"true\"\r\n254 \"1.3369140625,0,NaN\"\r\n255 \"65504,Infinity\"\r\n256 \"function,1\"\r\n257 \"0.30000000000000004\"\r\n258 \"0,-Infinity\"\r\n259 \"-Infinity,Infinity\"\r\n260 \"1e+308\"\r\n261 \"NaN,NaN\"\r\n262 \"TypeError\"\r\n263 \"10000000000000002\"\r\n264 \"[object Math]Math\"\r\n265 \"9.565271205476347e+307\"\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.344
+        }
+      ],
+      "failures": [
+        "host output differs from retained answers"
+      ],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-later-library-methods.expected.txt",
+        "sha256": "c6ba3bb436168c701b56d32cb3ffd365f255456281886e26c3ead55a699cccce"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ],
+      "retainedAnswers": [
+        "1 1",
+        "2 \"1,2\"",
+        "3 1",
+        "4 \"a0,b1,c2\"",
+        "5 \"a,b\"",
+        "6 2",
+        "7 3",
+        "8 \"undefined\"",
+        "9 2",
+        "10 \"1,2,3,4\"",
+        "11 \"1,2\"",
+        "12 2",
+        "13 \"1,2,2,4\"",
+        "14 \"1,2\"",
+        "15 2",
+        "16 -1",
+        "17 undefined",
+        "18 \"4,5,3,4,5\"",
+        "19 \"1,4,3,4,5\"",
+        "20 \"1,2,3,3,4\"",
+        "21 \"2,2,3\"",
+        "22 \"1,2,3\"",
+        "23 \"3,1,2\"",
+        "24 \"1,2,3\"",
+        "25 \"2:undefined\"",
+        "26 \"3,2,1\"",
+        "27 \"1,9,3\"",
+        "28 \"1,2,9\"",
+        "29 \"RangeError\"",
+        "30 \"1,3\"",
+        "31 \"1,a,b,2,3\"",
+        "32 \"1,2\"",
+        "33 \"1,\"",
+        "34 3",
+        "35 -2",
+        "36 1.2599210498948734",
+        "37 0",
+        "38 10000000000",
+        "39 \"abc\"",
+        "40 \"abc\"",
+        "41 \"RangeError\"",
+        "42 2",
+        "43 \"RangeError\"",
+        "44 \"a1b\"",
+        "45 \"x1y\"",
+        "46 \"function\"",
+        "47 1",
+        "48 \"1,0,1\"",
+        "49 \"2,2,1\"",
+        "50 false",
+        "51 \"TypeError\"",
+        "52 1",
+        "53 \"1:undefined\"",
+        "54 9",
+        "55 \"{\\\"value\\\":1,\\\"writable\\\":false,\\\"enumerable\\\":false,\\\"configurable\\\":false}\"",
+        "56 \"{\\\"value\\\":3,\\\"writable\\\":true,\\\"enumerable\\\":false,\\\"configurable\\\":false}\"",
+        "57 \"0\"",
+        "58 \"TypeError\"",
+        "59 \"1\"",
+        "60 \"1\"",
+        "61 3",
+        "62 0",
+        "63 \"TypeError\"",
+        "64 9",
+        "65 \"2\"",
+        "66 \"3,2,1\"",
+        "67 \"1,2,3\"",
+        "68 \"1,0,0\"",
+        "69 \"2,3,3\"",
+        "70 \"3:2\"",
+        "71 \"1:2,3\"",
+        "72 \"3:0,1,2\"",
+        "73 \"b\"",
+        "74 2",
+        "75 2",
+        "76 2",
+        "77 3",
+        "78 2",
+        "79 2",
+        "80 \"TypeError\"",
+        "81 \"TypeError\"",
+        "82 true",
+        "83 \"1,2,3\"",
+        "84 3",
+        "85 \"4,5\"",
+        "86 \"0:7\"",
+        "87 \"0\"",
+        "88 true",
+        "89 2",
+        "90 0",
+        "91 \"[object Array Iterator]\"",
+        "92 \"8,9\"",
+        "93 \"1=2\"",
+        "94 \"2,a\"",
+        "95 1",
+        "96 \"z\"",
+        "97 \"1:1:true\"",
+        "98 \"2\"",
+        "99 \"3,1,2,3\"",
+        "100 \"1-1,2-2\"",
+        "101 \"undefined,false\"",
+        "102 0",
+        "103 \"[object Map]Map\"",
+        "104 \"true\"",
+        "105 \"true\"",
+        "106 \"1,false\"",
+        "107 \"TypeError\"",
+        "108 \"true\"",
+        "109 \"1,2,3\"",
+        "110 \"b,c\"",
+        "111 \"0,0,2\"",
+        "112 \"TypeError\"",
+        "113 \"1,1\"",
+        "114 \"function\"",
+        "115 \"true\"",
+        "116 \"1,2\"",
+        "117 \"true\"",
+        "118 \"functionfunctionfunction\"",
+        "119 \"[object Promise]\"",
+        "120 \"3,-2\"",
+        "121 44",
+        "122 \"255,0\"",
+        "123 1.5",
+        "124 \"1,2,3\"",
+        "125 \"2,3\"",
+        "126 123456",
+        "127 256",
+        "128 \"8,2\"",
+        "129 \"[object Int8Array]\"",
+        "130 \"1,2,3\"",
+        "131 \"2,4,6\"",
+        "132 \"1,2,3\"",
+        "133 \"7,7,7\"",
+        "134 \"2,3|1,2,3,4\"",
+        "135 6",
+        "136 \"1,false\"",
+        "137 \"1,2,3\"",
+        "138 \"4,3\"",
+        "139 \"{\\\"a\\\":[1,{\\\"b\\\":2}],\\\"c\\\":\\\"x\\\"}\"",
+        "140 \"{\\n  \\\"a\\\": 1\\n}\"",
+        "141 \"[null,null,null]\"",
+        "142 \"{}\"",
+        "143 \"{\\\"d\\\":\\\"1970-01-01T00:00:00.000Z\\\"}\"",
+        "144 \"{\\\"a\\\":1}\"",
+        "145 \"{\\\"a\\\":2}\"",
+        "146 2",
+        "147 \"é\"",
+        "148 \"SyntaxError\"",
+        "149 \"a|\"",
+        "150 \"TypeError\"",
+        "151 \"\\\"a b\\\"\"",
+        "152 \"42\"",
+        "153 \"null,null\"",
+        "154 \"undefined\"",
+        "155 \"[\\n\\t1,\\n\\t2\\n]\"",
+        "156 \"{\\\"a\\\":{}}\"",
+        "157 \"at,buffer,byteLength,byteOffset,constructor,copyWithin,entries,every,fill,filter,find,findIndex,findLast,findLastIndex,forEach,includes,indexOf,join,keys,lastIndexOf,length,map,reduce,reduceRight,reverse,set,slice,some,sort,subarray,toLocaleString,toReversed,toSorted,toString,values,with\"",
+        "158 \"BYTES_PER_ELEMENT,length,name,prototype\"",
+        "159 \"true\"",
+        "160 \"1,2,3\"",
+        "161 \"1,2,3\"",
+        "162 \"3,6\"",
+        "163 \"1,2,3,2\"",
+        "164 \"5,6\"",
+        "165 \"1,2,3|3,1,2\"",
+        "166 \"3,2,1|1,2,3\"",
+        "167 \"1,9,3|1,2,3\"",
+        "168 \"1,2,9\"",
+        "169 \"RangeError\"",
+        "170 \"2\"",
+        "171 \"-1\"",
+        "172 \"1,2\"",
+        "173 \"true\"",
+        "174 \"undefined\"",
+        "175 \"1,0\"",
+        "176 \"TypeError\"",
+        "177 \"1,2,3\"",
+        "178 \"2,3\"",
+        "179 \"1,3\"",
+        "180 \"1,3\"",
+        "181 \"truefalse\"",
+        "182 \"truefalse\"",
+        "183 \"truefalse\"",
+        "184 \"1,2,3\"",
+        "185 \"TypeError\"",
+        "186 \"TypeError\"",
+        "187 \"RangeError\"",
+        "188 \"Infinity\"",
+        "189 \"3\"",
+        "190 \"1,2,4\"",
+        "191 \"1,1\"",
+        "192 \"true\"",
+        "193 \"2,3\"",
+        "194 \"a\"",
+        "195 \"size,has,keys\"",
+        "196 \"\"",
+        "197 1",
+        "198 \"1,2|2\"",
+        "199 \"3|3\"",
+        "200 \"next,done,value,next,done\"",
+        "201 \"1,1,1\"",
+        "202 \"5,5,1\"",
+        "203 \"Infinity\"",
+        "204 \"Array:function,Map:function,Set:function,RegExp:function,Promise:function,ArrayBuffer:function\"",
+        "205 \"trueundefined\"",
+        "206 \"true\"",
+        "207 \"true,get [Symbol.species]\"",
+        "208 \"truefalse\"",
+        "209 \"false\"",
+        "210 \"true\"",
+        "211 \"truetrue\"",
+        "212 \"2,hasOwn\"",
+        "213 \"TypeError\"",
+        "214 \"truetrue\"",
+        "215 7",
+        "216 3",
+        "217 \"true,true,function,undefined\"",
+        "218 2",
+        "219 \"function,function\"",
+        "220 \"function\"",
+        "221 \"function\"",
+        "222 \"undefined\"",
+        "223 \"functionundefined\"",
+        "224 \"TypeError\"",
+        "225 \"function,function\"",
+        "226 \"2,1\"",
+        "227 \"1\"",
+        "228 \"RangeError\"",
+        "229 \"RangeError\"",
+        "230 \"RangeError\"",
+        "231 2",
+        "232 \"TypeError\"",
+        "233 \"false,false,false\"",
+        "234 \"true,false,false,0\"",
+        "235 \"1,1\"",
+        "236 \"RangeError\"",
+        "237 \"RangeError\"",
+        "238 4294967295",
+        "239 \"0,1\"",
+        "240 \"1,9,3\"",
+        "241 \"6,1,2,3,,,9\"",
+        "242 \"TypeError\"",
+        "243 \"no-throw,3\"",
+        "244 \"2,1,2\"",
+        "245 \"2,1,2\"",
+        "246 \"TypeError\"",
+        "247 \"TypeError\"",
+        "248 \"TypeError\"",
+        "249 \"TypeError\"",
+        "250 \"TypeError\"",
+        "251 \"TypeError\"",
+        "252 \"function,true,true,false\"",
+        "253 \"true\"",
+        "254 \"1.3369140625,0,NaN\"",
+        "255 \"65504,Infinity\"",
+        "256 \"function,1\"",
+        "257 \"0.30000000000000004\"",
+        "258 \"0,-Infinity\"",
+        "259 \"-Infinity,Infinity\"",
+        "260 \"1e+308\"",
+        "261 \"NaN,NaN\"",
+        "262 \"TypeError\"",
+        "263 \"10000000000000002\"",
+        "264 \"[object Math]Math\"",
+        "265 \"9.565271205476347e+307\""
+      ]
+    },
+    {
+      "name": "the-module-goal.mjs",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-module-goal.mjs",
+        "sha256": "295e0f65d6cf1901a6fbdf3a25aef6bd9c8dc685589506879f438cdce123a320"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "module",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "--module",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-module-goal.mjs"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 40\r\n2 \"held\"\r\n3 \"function\"\r\n4 \"object\"\r\n5 \"held\"\r\n6 40\r\n7 0\r\n8 1\r\n9 1\r\n10 \"2/2\"\r\n11 TypeError\r\n12 2\r\n13 TypeError\r\n14 null\r\n15 false\r\n16 \"Module\"\r\n17 \"[object Module]\"\r\n18 \"a name with spaces,bump,counter,default,frozen\"\r\n19 \"a name with spaces,bump,counter,default,frozen\"\r\n20 true\r\n21 false\r\n22 true\r\n23 undefined\r\n24 \"true/true/false\"\r\n25 false\r\n26 false\r\n27 false\r\n28 false\r\n29 true\r\n30 true\r\n31 true\r\n32 false\r\n33 \"string-name\"\r\n34 true\r\n35 true\r\n36 40\r\n37 \"held\"\r\n38 true\r\n39 \"a name with spaces,bump,counter,forty,frozen,tally\"\r\n40 \"first-then-second/second-ready\"\r\n41 \"ReferenceError\"\r\n42 \"first/first-then-second\"\r\n43 \"after\"\r\n44 42\r\n45 \"job-ran\"\r\n46 \"object\"\r\n47 null\r\n48 true\r\n49 true\r\n50 \"mine\"\r\n51 true\r\n52 0\r\n53 true\r\n54 false\r\n55 \"held\"\r\n56 40\r\n57 true\r\n58 \"[object Module]\"\r\n59 true\r\n60 true\r\n61 true\r\n62 true\r\n63 \"rejected\"\r\n64 \"not-yet\"\r\n65 \"RangeError\"\r\n66 true\r\n67 true\r\n68 \"rejected\"\r\n69 \"TypeError\"\r\n70 \"TypeError\"\r\n71 \"TypeError\"\r\n72 \"SyntaxError\"\r\n73 \"SyntaxError\"\r\n74 \"ready\"\r\n75 \"default,false\"\r\n76 \"named,false\"\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.296
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-module-goal.expected.txt",
+        "sha256": "45185c12fb50d9afdbb8e5c42335cfe4097efc8aa52da353ca2d455e809b3c97"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    },
+    {
+      "name": "the-proxy-and-its-invariants.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-proxy-and-its-invariants.js",
+        "sha256": "5b1e64dbc3e42d0599fab40e788f4f2c9c175ad3c6e0e18cbdcc65ae079cece5"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-proxy-and-its-invariants.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 \"function\"\r\n2 2\r\n3 \"Proxy\"\r\n4 undefined\r\n5 false\r\n6 TypeError\r\n7 TypeError\r\n8 TypeError\r\n9 TypeError\r\n10 true\r\n11 \"function\"\r\n12 2\r\n13 \"proxy,revoke\"\r\n14 1\r\n15 2\r\n16 true\r\n17 true\r\n18 false\r\n19 \"a,b\"\r\n20 true\r\n21 true\r\n22 \"{\\\"a\\\":1}\"\r\n23 \"ab\"\r\n24 \"x!\"\r\n25 \"x=1\"\r\n26 true\r\n27 false\r\n28 \"a,b\"\r\n29 true\r\n30 false\r\n31 true\r\n32 false\r\n33 \"{\\\"value\\\":7,\\\"writable\\\":false,\\\"enumerable\\\":false,\\\"configurable\\\":true}\"\r\n34 false\r\n35 2\r\n36 3\r\n37 \"object,z,true\"\r\n38 \"value\"\r\n39 4\r\n40 \"1,2|me\"\r\n41 \"3|true\"\r\n42 TypeError\r\n43 5\r\n44 5\r\n45 TypeError\r\n46 1\r\n47 TypeError\r\n48 TypeError\r\n49 TypeError\r\n50 TypeError\r\n51 TypeError\r\n52 TypeError\r\n53 TypeError\r\n54 TypeError\r\n55 TypeError\r\n56 TypeError\r\n57 TypeError\r\n58 TypeError\r\n59 TypeError\r\n60 TypeError\r\n61 \"a\"\r\n62 TypeError\r\n63 TypeError\r\n64 TypeError\r\n65 true\r\n66 TypeError\r\n67 TypeError\r\n68 TypeError\r\n69 TypeError\r\n70 TypeError\r\n71 1\r\n72 TypeError\r\n73 \"twice is fine\"\r\n74 \"object\"\r\n75 \"function\"\r\n76 TypeError\r\n77 TypeError\r\n78 TypeError\r\n79 TypeError\r\n80 TypeError\r\n81 \"\"\r\n82 0\r\n83 \"undefined\"\r\n84 \"function\"\r\n85 \"object\"\r\n86 \"function\"\r\n87 3\r\n88 3\r\n89 3\r\n90 1\r\n91 true\r\n92 true\r\n93 3\r\n94 TypeError\r\n95 TypeError\r\n96 true\r\n97 true\r\n98 true\r\n99 true\r\n100 false\r\n101 \"[object Array]\"\r\n102 \"[1,2]\"\r\n103 \"{\\\"a\\\":{\\\"b\\\":1}}\"\r\n104 \"{\\\"a\\\":1}\"\r\n105 2\r\n106 \"1,2\"\r\n107 \"a:1\"\r\n108 1\r\n109 1\r\n110 \"symbol\"\r\n111 \"a\"\r\n112 1\r\n113 true\r\n114 9\r\n115 true\r\n116 false\r\n117 \"w=4|false\"\r\n118 true\r\n119 true\r\n120 1\r\n121 \"truefalse2\"\r\n122 \"truefalse\"\r\n123 false\r\n124 false\r\n125 false\r\n126 false\r\n127 false\r\n128 false\r\n129 \"{\\\"value\\\":0,\\\"writable\\\":false,\\\"enumerable\\\":false,\\\"configurable\\\":false}\"\r\n130 TypeError\r\n131 \"x\"\r\n132 TypeError\r\n133 false\r\n134 TypeError\r\n135 true\r\n136 \"{\\\"value\\\":1,\\\"writable\\\":false,\\\"enumerable\\\":true,\\\"configurable\\\":false}\"\r\n137 2\r\n138 2\r\n139 1\r\n140 7\r\n141 8\r\n142 \"true,true,false\"\r\n143 \"a\"\r\n144 \"{}\"\r\n145 5\r\n146 TypeError\r\n147 \"[object Object]\"\r\n148 \"[object Object]\"\r\n149 \"[object Object]\"\r\n150 \"[object Object]\"\r\n151 \"[object Function]\"\r\n152 \"[object Array]\"\r\n153 TypeError\r\n154 \"[object Mine]\"\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.313
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-proxy-and-its-invariants.expected.txt",
+        "sha256": "d1b9d6d437a8b48830f43cc91cf03fa66a96041d806da7142399d500206ffa06"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    },
+    {
+      "name": "the-seam-between-generators-and-the-rest.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-seam-between-generators-and-the-rest.js",
+        "sha256": "3f8788d7de6d915115e276b8e2e8e300e4e734616395de2e0fd3d1e7f5d21cc9"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-seam-between-generators-and-the-rest.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 1,2,3\r\n2 6\r\n3 123\r\n4 0\r\n5 a\r\n6 1,2,3\r\n7 1,2,3\r\n8 10,20,30\r\n9 0,1,2,3,4\r\n10 6\r\n11 3\r\n12 3:123\r\n13 0\r\n14 1,2\r\n15 1|2,3\r\n16 2\r\n17 1,2,3,default\r\n18 1234\r\n19 1/2/1\r\n20 1:23:finally\r\n21 1:finally\r\n22 literal\r\n23 function\r\n24 m\r\n25 1,2\r\n26 5,10\r\n27 true\r\n28 1,2,3\r\n29 a,b,c\r\n30 [[\"k\",1],[\"j\",2]]\r\n31 k,j\r\n32 3,1,2\r\n33 i,j,returned\r\n34 11,22,33,tail=end\r\n35 5,6\r\n36 TypeError\r\n37 TypeError\r\n38 1,got=undefined\r\n39 0,1,2\r\n40 ask/heard answer\r\n41 10|TE|undefined&|template 10 0|\r\n42 1|TE|4|6|2&3|template 1 2|3+4\r\n43 2,x\r\n44 [[\"a\",2],[\"b\",4]]\r\n45 deep,fallback\r\n46 one,two\r\n47 derived,Base,true\r\n48 1,2,3\r\n49 6\r\n50 6\r\n51 TypeError\r\n52 false\r\n53 body\r\n54 from the finaliser/false\r\n55 forced/true\r\n56 inner>outer\r\n57 finalised\r\n58 {\"value\":\"gone\",\"done\":true}\r\n59 {\"value\":\"early\",\"done\":true}:0\r\n60 caught BANG\r\n61 after\r\n62 Error\r\n63 {\"done\":true}\r\n64 inner caught through\r\n65 outer got inner done\r\n66 TypeError\r\n67 {\"value\":\"outer wins\",\"done\":true}\r\n68 finally:1\r\n69 finally\r\n70 1:finally\r\n71 finally\r\n72 finally\r\n73 [object Generator]\r\n74 [object GeneratorFunction]\r\n75 true\r\n76 true\r\n77 constructor,next,return,throw\r\n78 object\r\n79 GeneratorFunction\r\n80 function\r\n81 true\r\n82 true\r\n83 true\r\n84 function\r\n85 Generator\r\n86 function\r\n87 true\r\n88 true\r\n89 true\r\n90 true\r\n91 true\r\n92 function\r\n93 true\r\n94 true\r\n95 true\r\n96 TypeError\r\n97 TypeError\r\n98 {\"done\":true}\r\n99 1,2,3:{\"done\":true}\r\n100 {\"value\":1,\"done\":false}\r\n101 TypeError\r\n102 TypeError\r\n103 0,0,small\r\n104 2,3\r\n105 3\r\n106 4\r\n107 1,2,3\r\n108 1,22,333\r\n109 spread 123 done\r\n110 x|y#1\r\n111 function,object\r\n112 true\r\n113 true\r\n114 TypeError\r\n115 no-throw:7\r\n116 dmb\r\n117 RangeError\r\n118 2,3\r\n119 1,3,true\r\n120 RangeError\r\n121 TypeError\r\n122 no-throw:object\r\n123 m,1\r\n124 10,6,end,true\r\n125 TypeError\r\n126 TypeError\r\n127 TypeError\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.312
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-seam-between-generators-and-the-rest.expected.txt",
+        "sha256": "8e0965b1cff8abdaad1484943c84d69400255cb5aa4474d4b434d76a8cb4afc7"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    },
+    {
+      "name": "the-settling-of-promises.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-settling-of-promises.js",
+        "sha256": "af43aae3fd0cac18fd59776837f99c501297c16f9a96fdd6ce51b28ff6a887f5"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-settling-of-promises.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 function\r\n2 function\r\n3 [object Promise]\r\n4 Promise\r\n5 function\r\n6 true\r\n7 TypeError\r\n8 TypeError\r\n9 true\r\n10 function,function,true\r\n11 1,2\r\n12 rejected1fulfilled2\r\n13 r\r\n14 a\r\n15 AggregateError:1:true\r\n16 AggregateError:0\r\n17 5\r\n18 boom\r\n19 3\r\n20 t:1\r\n21 false\r\n22 x\r\n23 1\r\n24 function\r\n25 closed\r\n26 1,2,f,3\r\n27 stop\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.266
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-settling-of-promises.expected.txt",
+        "sha256": "4ec2ad7b1c887ff94a31bd7c6b0555cb15e1ed94436e17f7d3a22b0648e18c7d"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    },
+    {
+      "name": "the-statement-and-object-surface.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-statement-and-object-surface.js",
+        "sha256": "ab4b6bd985d4d75969c86e79005eab4d19d517cfa35bf325446c25828fb49682"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-statement-and-object-surface.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 \"0123\"\r\n2 \"33\"\r\n3 \"02\"\r\n4 \"undefined\"\r\n5 \"ReferenceError\"\r\n6 \"ReferenceError\"\r\n7 2\r\n8 2\r\n9 \"object\"\r\n10 120\r\n11 2\r\n12 \"ReferenceError\"\r\n13 5\r\n14 \"001020\"\r\n15 \"000102\"\r\n16 \"bc\"\r\n17 \"strict\"\r\n18 3\r\n19 \"ab\"\r\n20 \"0:1:\"\r\n21 \"01\"\r\n22 \"|\"\r\n23 3\r\n24 3\r\n25 6\r\n26 \"1,0:1\"\r\n27 2\r\n28 undefined\r\n29 \"d\"\r\n30 \"d\"\r\n31 0\r\n32 \"number\"\r\n33 \"outer1\"\r\n34 \"f\"\r\n35 \"f\"\r\n36 \"tcf\"\r\n37 \"f\"\r\n38 true\r\n39 true\r\n40 \"X\"\r\n41 1\r\n42 \"ab\"\r\n43 \"ok\"\r\n44 0\r\n45 \"1\"\r\n46 \"TypeError\"\r\n47 \"1,2\"\r\n48 \"7,false\"\r\n49 \"RangeError\"\r\n50 \"1,2,a,b\"\r\n51 \"1\"\r\n52 \"0\"\r\n53 \"1e+21\"\r\n54 \"{\\\"value\\\":1,\\\"writable\\\":true,\\\"enumerable\\\":true,\\\"configurable\\\":true}\"\r\n55 true\r\n56 \"2:false\"\r\n57 false\r\n58 \"TypeError\"\r\n59 null\r\n60 true\r\n61 1\r\n62 \"length,name,prototype\"\r\n63 true\r\n64 true\r\n65 1\r\n66 true\r\n67 \"object\"\r\n68 true\r\n69 true\r\n70 undefined\r\n71 \"undefined\"\r\n72 \"object\"\r\n73 \"number\"\r\n74 \"x\"\r\n75 9\r\n76 2\r\n77 \"object\"\r\n78 \"undefined\"\r\n79 true\r\n80 true\r\n81 \"Number\"\r\n82 \"String\"\r\n83 \",,\"\r\n84 \"[1,null,3]\"\r\n85 \"[1,null,3]\"\r\n86 3\r\n87 2\r\n88 \"1,,1\"\r\n89 false\r\n90 \"01foo\"\r\n91 \"0.3333333333333333\"\r\n92 \"100000000000000000000\"\r\n93 \"1e-7\"\r\n94 \"-1e-7\"\r\n95 \"5e-324\"\r\n96 \"1.7976931348623157e+308\"\r\n97 \"0.0022002200220022002200220022002201\"\r\n98 \"0.000001\"\r\n99 \"1.2345678901234568e+29\"\r\n100 \"1e-10\"\r\n101 \"1e-7\"\r\n102 \"5e-324\"\r\n103 \"function\"\r\n104 \"undefined\"\r\n105 \"ReferenceError\"\r\n106 1\r\n107 5\r\n108 6\r\n109 7\r\n110 8\r\n111 9\r\n112 10\r\n113 11\r\n114 \"TypeError\"\r\n115 \"TypeError\"\r\n116 \"object\"\r\n117 \"[object Reflect]\"\r\n118 1\r\n119 \"undefined\"\r\n120 7\r\n121 \"receiver\"\r\n122 \"true,1\"\r\n123 \"false\"\r\n124 \"truefalse\"\r\n125 \"true\"\r\n126 \"true\"\r\n127 \"true,undefined\"\r\n128 \"false\"\r\n129 \"1,2,b,a\"\r\n130 2\r\n131 \"true\"\r\n132 \"null\"\r\n133 \"true\"\r\n134 \"truetruefalse\"\r\n135 5\r\n136 \"false\"\r\n137 \"1,true,true,true\"\r\n138 \"undefined\"\r\n139 5\r\n140 9\r\n141 4\r\n142 3\r\n143 \"true\"\r\n144 \"TypeError\"\r\n145 \"TypeError\"\r\n146 \"TypeError\"\r\n147 \"TypeError\"\r\n148 \"2,3,2,3,2\"\r\n149 \"1,3,1\"\r\n150 \"1\"\r\n151 \"3\"\r\n152 \"undefined\"\r\n153 \"1\"\r\n154 \"8\"\r\n155 \"0,1,length\"\r\n156 \"true\"\r\n157 0\r\n158 true\r\n159 2\r\n160 1\r\n161 \"[object Custom]\"\r\n162 \"[object Math]\"\r\n163 \"[object JSON]\"\r\n164 \"[object Array][object Null][object Undefined]\"\r\n165 \"[object Generator]\"\r\n166 \"[object Object]\"\r\n167 \"[object Map][object Set]\"\r\n168 \"[object Symbol]\"\r\n169 \"[object Date]\"\r\n170 \"true\"\r\n171 \"true\"\r\n172 \"true\"\r\n173 \"null\"\r\n174 \"true\"\r\n175 \"null\"\r\n176 \"null\"\r\n177 0\r\n178 \"true\"\r\n179 \"true0\"\r\n180 \"true\"\r\n181 \"true,true\"\r\n182 \"true,5\"\r\n183 \"1,true\"\r\n184 \"true,true\"\r\n185 \"true\"\r\n186 \"a,b,true\"\r\n187 \"{}\"\r\n188 \"undefined\"\r\n189 \"hi\"\r\n190 \"undefined\"\r\n191 \"true\"\r\n192 \"true\"\r\n193 \"1,true\"\r\n194 \"true\"\r\n195 \"null,1\"\r\n196 \"k:a k:b i:a\"\r\n197 \"undefined,x\"\r\n198 \"truetruetrue\"\r\n199 \"true\"\r\n200 2\r\n201 \"1,2\"\r\n202 \"C\"\r\n203 2\r\n204 \"ReferenceError\"\r\n205 \"undefined,1,true\"\r\n206 \"1,1\"\r\n207 \"{\\\"x\\\":1}\"\r\n208 \"1,2,0|a b\"\r\n209 \"f b:true g\"\r\n210 1\r\n211 2\r\n212 2\r\n213 \"length,name,prototype\"\r\n214 1\r\n215 \"visible,1,1,0\"\r\n216 \"{\\\"visible\\\":2}\"\r\n217 0\r\n218 \"true,false\"\r\n219 \"TypeError\"\r\n220 \"TypeError\"\r\n221 \"true,false\"\r\n222 3\r\n223 5\r\n224 7\r\n225 \"TypeError\"\r\n226 6\r\n227 \"1,TypeError\"\r\n228 5\r\n229 6\r\n230 \"true,false\"\r\n231 9\r\n232 \"2,1\"\r\n233 \"1,true\"\r\n234 \"SyntaxError\"\r\n235 \"SyntaxError\"\r\n236 \"SyntaxError\"\r\n237 \"SyntaxError\"\r\n238 \"SyntaxError\"\r\n239 \"SyntaxError\"\r\n240 \"SyntaxError\"\r\n241 \"SyntaxError\"\r\n242 \"SyntaxError\"\r\n243 \"SyntaxError\"\r\n244 \"SyntaxError\"\r\n245 1\r\n246 \"10,2\"\r\n247 \"1,2\"\r\n248 \"TypeError\"\r\n249 \"1234\"\r\n250 1\r\n251 5\r\n252 1\r\n253 5\r\n254 0\r\n255 5\r\n256 0\r\n257 \"77\"\r\n258 \"9,9\"\r\n259 \"2,2\"\r\n260 1\r\n261 3\r\n262 4\r\n263 1\r\n264 \"8,8\"\r\n265 \"8,8\"\r\n266 1\r\n267 \"get\"\r\n268 \"get,set:2\"\r\n269 \"TypeError\"\r\n270 \"no-throw\"\r\n271 \"5,1\"\r\n272 3\r\n273 0\r\n274 \"1\"\r\n275 \"1000000,16,3,15\"\r\n276 105500000000\r\n277 \"SyntaxError\"\r\n278 \"SyntaxError\"\r\n279 \"SyntaxError\"\r\n280 \"SyntaxError\"\r\n281 \"SyntaxError\"\r\n282 \"SyntaxError\"\r\n283 \"SyntaxError\"\r\n284 \"true\"\r\n285 \"object\"\r\n286 \"undefined\"\r\n287 \"undefined\"\r\n288 \"undefined\"\r\n289 4\r\n290 \"ReferenceError\"\r\n291 \"ReferenceError\"\r\n292 \"ReferenceError\"\r\n293 \"TypeError\"\r\n294 \"TypeError\"\r\n295 1\r\n296 \"undefined\"\r\n297 2\r\n298 \"number\"\r\n299 \"undefined\"\r\n300 \"true\"\r\n301 7\r\n302 9\r\n303 3\r\n304 \"function\"\r\n305 \"TypeError\"\r\n306 1\r\n307 \"7,true\"\r\n308 \"4,0\"\r\n309 \"1,6\"\r\n310 \"8,1\"\r\n311 \"false,number\"\r\n312 \"true,undefined\"\r\n313 \"true\"\r\n314 \"false\"\r\n315 \"TypeError\"\r\n316 \"TypeError\"\r\n317 \"threw:0\"\r\n318 \"0,1\"\r\n319 \"0,1\"\r\n320 \"0,1\"\r\n321 \"1,1\"\r\n322 \"true,0\"\r\n323 \"TypeError,1\"\r\n324 \"1,1\"\r\n325 \"1,1\"\r\n326 0\r\n327 \"12,0\"\r\n328 \"RangeError,1\"\r\n329 \"TypeError,1\"\r\n330 \"9,true,0,1,1\"\r\n331 \"RangeError,1\"\r\n332 \"TypeError,1\"\r\n333 \"42,1\"\r\n334 \"1,1,1\"\r\n335 \"SyntaxError\"\r\n336 \"SyntaxError\"\r\n337 \"SyntaxError\"\r\n338 \"ok\"\r\n339 \"ok\"\r\n340 \"SyntaxError\"\r\n341 \"SyntaxError\"\r\n342 \"SyntaxError\"\r\n343 \"SyntaxError\"\r\n344 \"ok\"\r\n345 \"SyntaxError\"\r\n346 \"SyntaxError\"\r\n347 \"SyntaxError\"\r\n348 \"ok\"\r\n349 \"SyntaxError\"\r\n350 \"ok\"\r\n351 \"SyntaxError\"\r\n352 \"SyntaxError\"\r\n353 \"ok\"\r\n354 \"SyntaxError\"\r\n355 \"SyntaxError\"\r\n356 \"SyntaxError\"\r\n357 \"SyntaxError\"\r\n358 \"ok\"\r\n359 \"SyntaxError\"\r\n360 \"ok\"\r\n361 \"SyntaxError\"\r\n362 \"SyntaxError\"\r\n363 \"SyntaxError\"\r\n364 \"SyntaxError\"\r\n365 \"ok\"\r\n366 \"SyntaxError\"\r\n367 \"ok\"\r\n368 \"SyntaxError\"\r\n369 \"ok\"\r\n370 \"SyntaxError\"\r\n371 \"SyntaxError\"\r\n372 \"ok\"\r\n373 \"SyntaxError\"\r\n374 \"SyntaxError\"\r\n375 \"SyntaxError\"\r\n376 \"SyntaxError\"\r\n377 \"ok\"\r\n378 \"SyntaxError\"\r\n379 \"ok\"\r\n380 \"ok\"\r\n381 \"SyntaxError\"\r\n382 \"SyntaxError\"\r\n383 \"SyntaxError\"\r\n384 \"SyntaxError\"\r\n385 \"SyntaxError\"\r\n386 \"SyntaxError\"\r\n387 \"SyntaxError\"\r\n388 \"SyntaxError\"\r\n389 \"ok\"\r\n390 \"ok\"\r\n391 \"SyntaxError\"\r\n392 \"SyntaxError\"\r\n393 \"1\"\r\n394 \"SyntaxError\"\r\n395 \"ok\"\r\n396 \"SyntaxError\"\r\n397 \"ok\"\r\n398 \"SyntaxError\"\r\n399 \"SyntaxError\"\r\n400 \"SyntaxError\"\r\n401 \"ok\"\r\n402 \"SyntaxError\"\r\n403 \"SyntaxError\"\r\n404 \"SyntaxError\"\r\n405 \"SyntaxError\"\r\n406 \"SyntaxError\"\r\n407 \"ok\"\r\n408 \"SyntaxError\"\r\n409 \"ok\"\r\n410 \"ok\"\r\n411 \"SyntaxError\"\r\n412 \"ok\"\r\n413 \"SyntaxError\"\r\n414 \"ok\"\r\n415 \"kg:1\"\r\n416 \"AaBb\"\r\n417 \"kg\"\r\n418 \"b:TypeError\"\r\n419 \"PTg:1\"\r\n420 \"7,1\"\r\n421 \"7,1\"\r\n422 \"1,{\\\"b\\\":2},1\"\r\n423 \"g:1\"\r\n424 \"g:1\"\r\n425 \"true,1\"\r\n426 1\r\n427 5\r\n428 \"12\"\r\n429 \"12\"\r\n430 7\r\n431 9\r\n432 3\r\n433 \"ab\"\r\n434 \"undefined,function\"\r\n435 \"undefined\"\r\n436 \"i\"\r\n437 \"1\"\r\n438 \"s\"\r\n439 \"undefined\"\r\n440 \"undefined\"\r\n441 \"undefined\"\r\n442 \"undefined\"\r\n443 \"function\"\r\n444 \"undefined\"\r\n445 \"undefined\"\r\n446 \"undefined\"\r\n447 \"undefined\"\r\n448 \"inner,inner\"\r\n449 undefined\r\n450 3\r\n451 undefined\r\n452 undefined\r\n453 undefined\r\n454 undefined\r\n455 3\r\n456 undefined\r\n457 3\r\n458 undefined\r\n459 undefined\r\n460 undefined\r\n461 undefined\r\n462 1\r\n463 1\r\n464 undefined\r\n465 2\r\n466 undefined\r\n467 undefined\r\n468 undefined\r\n469 3\r\n470 undefined\r\n471 \"SyntaxError\"\r\n472 \"SyntaxError\"\r\n473 \"ReferenceError\"\r\n474 \"SyntaxError\"\r\n475 \"SyntaxError\"\r\n476 \"ok\"\r\n477 \"SyntaxError\"\r\n478 \"SyntaxError\"\r\n479 \"SyntaxError\"\r\n480 \"SyntaxError\"\r\n481 \"SyntaxError\"\r\n482 \"ok\"\r\n483 \"7,true\"\r\n484 \"ok\"\r\n485 4\r\n486 \"SyntaxError\"\r\n487 \"SyntaxError\"\r\n488 \"SyntaxError\"\r\n489 \"SyntaxError\"\r\n490 \"SyntaxError\"\r\n491 \"SyntaxError\"\r\n492 \"SyntaxError\"\r\n493 \"SyntaxError\"\r\n494 \"ok\"\r\n495 \"ok\"\r\n496 \"ok\"\r\n497 \"ok\"\r\n498 \"SyntaxError\"\r\n499 \"SyntaxError\"\r\n500 \"SyntaxError\"\r\n501 \"SyntaxError\"\r\n502 \"SyntaxError\"\r\n503 \"SyntaxError\"\r\n504 \"ok\"\r\n505 \"base\"\r\n506 \"base\"\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.406
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-statement-and-object-surface.expected.txt",
+        "sha256": "43d7b62ed833633e63d0a8db62994026181259e7bd802548f6a2212745383945"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    },
+    {
+      "name": "the-with-statement.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-with-statement.js",
+        "sha256": "87696c744adf341e8324805ca58552c3266254122a12657a5549ac2afe644573"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\the-with-statement.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential",
+          "timeoutSeconds": 10.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 1\r\n2 \"outer\"\r\n3 1\r\n4 \"undefined\"\r\n5 \"undefined\"\r\n6 ReferenceError\r\n7 7\r\n8 \"proto\"\r\n9 7\r\n10 \"outer\"\r\n11 \"function\"\r\n12 \"function\"\r\n13 2\r\n14 2\r\n15 2\r\n16 1\r\n17 2\r\n18 1\r\n19 2\r\n20 3\r\n21 \"9/outer\"\r\n22 \"false/9\"\r\n23 2\r\n24 2\r\n25 2\r\n26 \"1/2\"\r\n27 \"2/2\"\r\n28 4\r\n29 \"3/1/true\"\r\n30 11\r\n31 4\r\n32 2\r\n33 \"true/false\"\r\n34 \"true/1\"\r\n35 \"false\"\r\n36 \"undefined\"\r\n37 \"outer\"\r\n38 3\r\n39 2\r\n40 1\r\n41 \"undefined\"\r\n42 \"done\"\r\n43 \"5/false\"\r\n44 \"3:b\"\r\n45 3\r\n46 \"5.00\"\r\n47 true\r\n48 \"42.0\"\r\n49 \"true\"\r\n50 3\r\n51 \"1-2-3\"\r\n52 3\r\n53 \"TypeError\"\r\n54 \"TypeError\"\r\n55 1\r\n56 \"function\"\r\n57 3\r\n58 \"{\\\"a\\\":1}\"\r\n59 \"outer\"\r\n60 1\r\n61 1\r\n62 1\r\n63 1\r\n64 \"undefined\"\r\n65 \"1/written\"\r\n66 2\r\n67 \"outer\"\r\n68 \"string\"\r\n69 \"outer\"\r\n70 \"function\"\r\n71 RangeError\r\n72 RangeError\r\n73 \"RangeError\"\r\n74 2\r\n75 \"RangeError\"\r\n76 \"012\"\r\n77 \"013\"\r\n78 \"01\"\r\n79 \"001020\"\r\n80 \"01\"\r\n81 \"012\"\r\n82 \"left\"\r\n83 \"xy\"\r\n84 \"12\"\r\n85 \"1\"\r\n86 3\r\n87 5\r\n88 5\r\n89 5\r\n90 1\r\n91 \"af\"\r\n92 \"RangeError\"\r\n93 \"object\"\r\n94 \"1cf\"\r\n95 \"undefined\"\r\n96 \"RangeError\"\r\n97 \"io\"\r\n98 3\r\n99 \"3/undefined\"\r\n100 8\r\n101 \"function\"\r\n102 3\r\n103 0\r\n104 2\r\n105 \"outer\"\r\n106 \"outer\"\r\n107 \"undefined\"\r\n108 5\r\n109 3\r\n110 \"number\"\r\n111 \"string\"\r\n112 \"string\"\r\n113 \"undefined\"\r\n114 \"undefined\"\r\n115 \"outer,inner,outer\"\r\n116 \"undefined,number\"\r\n117 \"first/second\"\r\n118 \"outer/inner\"\r\n119 true\r\n120 false\r\n121 false\r\n122 true\r\n123 2\r\n124 \"refused\"\r\n125 \"refused\"\r\n126 \"refused\"\r\n127 \"refused\"\r\n128 1\r\n129 true\r\n130 \"object\"\r\n131 3\r\n132 1\r\n133 \"gg\"\r\n134 \"yes\"\r\n135 \"one\"\r\n136 1\r\n137 \"1-1\"\r\n138 1\r\n139 \"1!\"\r\n140 \"pos\"\r\n141 1\r\n142 3\r\n143 \"shadowed\"\r\n144 \"number\"\r\n145 1\r\n146 \"1,2,true\"\r\n147 \"1,9\"\r\n148 \"5\"\r\n149 1\r\n150 1\r\n151 2\r\n152 1\r\n153 2\r\n154 7\r\n155 \"shadow\"\r\n156 \"1-2\"\r\n157 \"12\"\r\n158 1\r\n159 \"1\"\r\n160 \"r\"\r\n161 \"undefined\"\r\n162 \"outer\"\r\n163 \"inner\"\r\n164 \"g\"\r\n165 \"g\"\r\n166 \"left\"\r\n167 \"done\"\r\n168 \"a\"\r\n169 \"TypeError\"\r\n170 \"caught1\"\r\n171 6\r\n172 2\r\n173 \"function\"\r\n174 \"T\"\r\n175 4\r\n176 1\r\n177 \"took\"\r\n178 \"12\"\r\n179 \"12/2\"\r\n180 \"x/x\"\r\n181 \"012\"\r\n182 \"012/3\"\r\n183 \"02\"\r\n184 1\r\n185 1\r\n186 1\r\n187 \"1\"\r\n188 \"number\"\r\n189 \"d\"\r\n190 1\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.297
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\the-with-statement.expected.txt",
+        "sha256": "de9da63d6f052187424ad409a6b937446584475dc0ffda2fdb081ffa45f2de45"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "ok": false
+}

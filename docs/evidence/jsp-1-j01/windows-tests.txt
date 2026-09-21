@@ -1,0 +1,24 @@
+test_absent_declared_case_fails (test_differential.DriverTests.test_absent_declared_case_fails) ... ok
+test_comparison_nonzero_exit_is_not_ignored (test_differential.DriverTests.test_comparison_nonzero_exit_is_not_ignored) ... ok
+test_existing_async_subcase_ids_are_compared (test_differential.DriverTests.test_existing_async_subcase_ids_are_compared) ... ok
+test_host_nonzero_exit_is_not_ignored (test_differential.DriverTests.test_host_nonzero_exit_is_not_ignored) ... ok
+test_hung_engine_and_descendant_are_bounded (test_differential.DriverTests.test_hung_engine_and_descendant_are_bounded) ... ok
+test_invalid_utf8_is_a_failure (test_differential.DriverTests.test_invalid_utf8_is_a_failure) ... ok
+test_legacy_and_duplicate_declarations_fail (test_differential.DriverTests.test_legacy_and_duplicate_declarations_fail) ... ok
+test_meaningful_whitespace_and_case_order_are_preserved (test_differential.DriverTests.test_meaningful_whitespace_and_case_order_are_preserved) ... ok
+test_missing_engine_is_visible_in_report (test_differential.DriverTests.test_missing_engine_is_visible_in_report) ... ok
+test_missing_extra_duplicate_and_unframed_output_fail (test_differential.DriverTests.test_missing_extra_duplicate_and_unframed_output_fail) ... ok
+test_named_declaration_accepts_difference_and_retains_both_values (test_differential.DriverTests.test_named_declaration_accepts_difference_and_retains_both_values) ... ok
+test_node_declaration_does_not_exempt_broiler_js (test_differential.DriverTests.test_node_declaration_does_not_exempt_broiler_js) ... ok
+test_retained_answers_remain_an_independent_check (test_differential.DriverTests.test_retained_answers_remain_an_independent_check) ... ok
+test_script_module_unicode_paths_and_engine_identity (test_differential.DriverTests.test_script_module_unicode_paths_and_engine_identity) ... ok
+test_stale_declaration_fails (test_differential.DriverTests.test_stale_declaration_fails) ... ok
+test_stderr_is_not_merged_into_cases (test_differential.DriverTests.test_stderr_is_not_merged_into_cases) ... ok
+test_typo_in_config_fails (test_differential.DriverTests.test_typo_in_config_fails) ... ok
+test_unicode_line_separator_is_not_a_transport_newline (test_differential.DriverTests.test_unicode_line_separator_is_not_a_transport_newline) ... ok
+test_write_preserves_all_authored_declarations (test_differential.DriverTests.test_write_preserves_all_authored_declarations) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 7.535s
+
+OK

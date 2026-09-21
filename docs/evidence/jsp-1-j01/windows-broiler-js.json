@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-09-20T07:56:41.447773+00:00",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9",
+  "driver": {
+    "path": "D:\\Broiler.VM\\eng\\run-differential.py",
+    "sha256": "69a422a84335a4e4f9c1eb9573242a2f48fe615c626921e2a233e8e9017dfa4c"
+  },
+  "environment": {
+    "TZ": "UTC",
+    "PYTHONIOENCODING": "utf-8",
+    "DOTNET_CLI_UI_LANGUAGE": "en-US"
+  },
+  "engines": [
+    {
+      "name": "broiler-vm",
+      "executable": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "scriptArgs": [
+        "--quiet",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--quiet",
+        "--module",
+        "{probe}"
+      ],
+      "sourceRoot": "D:\\Broiler.VM",
+      "resolvedExecutable": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "binaries": [
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Abstractions.dll",
+          "sha256": "47cbce5c5f94c6bd64e4d3c03d0dd01dc267429623ec5330e505bf4c35ce413c"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Binary.dll",
+          "sha256": "be1277f15572552d54a9c9d976ca1110b9f7b6635ba3969753630a91f8a8ee70"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.dll",
+          "sha256": "da7a0343ad93d133e42b81b7dfc0005aec7b930b2fa9c569cb135403b3ecf2bc"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+          "sha256": "1d948b280e1189e5ee73db88e675084cdba9ddfc8498b22e3faabf5fd5c455ff"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Compiler.dll",
+          "sha256": "fc67d9864756adf96fccb0920833e2aa04dd2bf4b0e9232618581fa8282e61cc"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.dll",
+          "sha256": "0f5c730cf3a6511cd30e379752bb24b2d9ab5f4d37c10d8bb8fe6c86757bb9a3"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Format.dll",
+          "sha256": "a8ec9e8ec6f8e46527c492c68293dcb1d40a548cb8ed5924bebaeedcd3522967"
+        },
+        {
+          "path": "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Runtime.dll",
+          "sha256": "fae2b93294c0c1462f6fb2a4d2042de73572de23ee310b136c2df0fb863e0244"
+        }
+      ],
+      "source": {
+        "revision": "405fe2d234bbae69b1ea70dac603bbfe24978760",
+        "workingTree": "M .github/workflows/broiler-vm-lane.yml\n M eng/run-differential.py\n M src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md\n M src/Broiler.VM.Profile.JavaScript/docs/roadmap.parity.md\n M src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md\n M src/tests/differential/README.md\n M src/tests/differential/the-general-surface.expected.txt\n M src/tests/differential/the-json-date-and-regexp-surface.expected.txt\n M src/tests/differential/the-later-library-methods.expected.txt\n M src/tests/differential/the-module-goal.expected.txt\n M src/tests/differential/the-settling-of-promises.expected.txt\n M src/tests/differential/the-statement-and-object-surface.expected.txt\n?? docs/evidence/jsp-1-j01/\n?? eng/tests/\n?? src/tests/differential/smoke/"
+      }
+    },
+    {
+      "name": "broiler-js",
+      "executable": "D:/Broiler.JS/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.exe",
+      "scriptArgs": [
+        "--script-host",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--module-host",
+        "{probe}"
+      ],
+      "sourceRoot": "D:\\Broiler.JS",
+      "resolvedExecutable": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\BroilerJS.exe",
+      "binaries": [
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Ast.dll",
+          "sha256": "77e4ad299a5839eef220441be7f28ae434641638ebae12edb62d9c199751ac8b"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.BuiltIns.dll",
+          "sha256": "9bd7590a0a286438c75da0febbbca0155355ccc1eb37745a210469373b28b0cb"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Clr.dll",
+          "sha256": "63b43bbcc9e297b0bb9f7cc31be5cf87157ac8a4a6c298b546f521553964521b"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Compiler.dll",
+          "sha256": "6cb8cf62bb7624a7dc809a4786c2400d699cb759eed24fbcd86661d4403cc4fb"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Engine.dll",
+          "sha256": "8f82ea71595dd3d383bbf579982820f98676b0bcff106d4f134f92f2ed08bf38"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.ExpressionCompiler.dll",
+          "sha256": "7157b440eecc53319b9f92fda6235fd2534a0cf43fa9b4c3be278795514b5cbe"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Expressions.dll",
+          "sha256": "99fbbe63026446aed1642d1864eb9eedb8975ca812f4f079809085138e7ad322"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Extensions.dll",
+          "sha256": "0f0059bd3ce1e37db2b7c8aef3c7e894cf019855530e949a3366fbd32ac8f41a"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Globals.dll",
+          "sha256": "a863fbe37ebb9a5a6b734bfc45a5cd5bba3ccfdee115a6aec7f0aeb265c83b47"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.LinqExpressions.dll",
+          "sha256": "45bbd392f5deb6189303119d05debda2cef89f089d62599885b5f5f47402c7e6"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Modules.dll",
+          "sha256": "be28074279f80d294e0acdfbd2998d8a14c6d7a1137c071ba891891866c6482b"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Parser.dll",
+          "sha256": "982be6da6480708702c9731c864b5c0eaf696a2fec1585ca6c44f65aa36b681e"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Runtime.dll",
+          "sha256": "3fd1fd0850117fe841326515d2e9eb0902054ecaddad059a47ae95da23ca39f5"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.JavaScript.Storage.dll",
+          "sha256": "0c3522e2dc303f58eff617b1c5ae5f15388bc33cf29f67a03e64db4275a60e01"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.Regex.dll",
+          "sha256": "ad748904bce28725e9c1dd145dc99c162b1a2a66d2acff3a77179bce8fe740ad"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\Broiler.Unicode.Properties.dll",
+          "sha256": "45d8126a39abb7da9188fe120577ca792e8acf3dda21f28c7c4e3aec91b163fd"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\BroilerJS.dll",
+          "sha256": "1d6f4c15d54644e431eeb22a623a5d4a24195d4ceb0b4d2ffcc2a211c6b8936a"
+        },
+        {
+          "path": "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\BroilerJS.exe",
+          "sha256": "56802b56790a40e497ffddefb658f32d64d5c02762ef1429939f46f154939562"
+        }
+      ],
+      "source": {
+        "revision": "73f071d1f1e1d5404018bc5337d6dafc74011676",
+        "workingTree": ""
+      }
+    }
+  ],
+  "probes": [
+    {
+      "name": "module.mjs",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\smoke\\module.mjs",
+        "sha256": "c001c31c941b7280f7db786ef1f37618f7821aefcc7c608918fe6826517c5a7b"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "module",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "--module",
+            "D:\\Broiler.VM\\src\\tests\\differential\\smoke\\module.mjs"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential\\smoke",
+          "timeoutSeconds": 30,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 42\r\n2 Grüße\r\n3 true\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.25
+        },
+        {
+          "engine": "broiler-js",
+          "goal": "module",
+          "argv": [
+            "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\BroilerJS.exe",
+            "--module-host",
+            "D:\\Broiler.VM\\src\\tests\\differential\\smoke\\module.mjs"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential\\smoke",
+          "timeoutSeconds": 30,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 41\r\n2 Grüße\r\n3 false\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.422
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [
+        {
+          "case": "1",
+          "reason": "Broiler.JS source 73f071d1 copies the imported primitive binding: increment updates the exporter but the importer still reads 41. The expected live binding reads 42.",
+          "host": "42",
+          "comparison": "41"
+        },
+        {
+          "case": "3",
+          "reason": "Broiler.JS source 73f071d1 exposes a non-undefined top-level this under --module-host; the module goal requires undefined.",
+          "host": "true",
+          "comparison": "false"
+        }
+      ],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\smoke\\module.expected.txt",
+        "sha256": "daec40d69d3c63a2f675455d9983e4c1883b529e3822da7a3486b24c8ba06517"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\smoke\\modules\\value.mjs",
+          "sha256": "1b20a6c0ac91dfbb345caec536634fad217385cf05cd5db4dc18521c6fa28d3e"
+        }
+      ]
+    },
+    {
+      "name": "script.js",
+      "input": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\smoke\\script.js",
+        "sha256": "f27313e6b1547539b72ea9f7b0fa17ee85a0e56a7aab8441afc4c2891f7850ed"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.VM\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\Broiler.VM\\src\\tests\\differential\\smoke\\script.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential\\smoke",
+          "timeoutSeconds": 30,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 42\r\n2 Grüße\r\n3 true\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.234
+        },
+        {
+          "engine": "broiler-js",
+          "goal": "script",
+          "argv": [
+            "D:\\Broiler.JS\\Broiler.JS\\Broiler.JavaScript\\bin\\Release\\net10.0\\BroilerJS.exe",
+            "--script-host",
+            "D:\\Broiler.VM\\src\\tests\\differential\\smoke\\script.js"
+          ],
+          "cwd": "D:\\Broiler.VM\\src\\tests\\differential\\smoke",
+          "timeoutSeconds": 30,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 42\r\n2 Grüße\r\n3 true\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.328
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\Broiler.VM\\src\\tests\\differential\\smoke\\script.expected.txt",
+        "sha256": "638354fa6372c71593ef3234e319186d7e4d861e737a0219411b71f0c2d654ca"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\Broiler.VM\\src\\tests\\differential\\smoke\\modules\\value.mjs",
+          "sha256": "1b20a6c0ac91dfbb345caec536634fad217385cf05cd5db4dc18521c6fa28d3e"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "ok": true
+}

@@ -77,6 +77,11 @@ Baselines are `JS-10`'s.
 
 ## 2. How the comparison was made, and the two ways it had been made wrongly
 
+The instrument audit below describes the 2026-09-06 runner. Its invocation and declaration
+limitations were addressed by the 2026-09-20 J01 implementation noted under
+[JSP-1](#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable);
+platform acceptance and the broader stage gate remain pending as recorded there.
+
 **Both engines were run over the same file, and neither was read to decide what it does.** The
 profile's end-user host and the comparison engine's both take a path and both publish a `print`
 global, so one probe is portable:
@@ -538,6 +543,13 @@ a milestone with a ledger row.
 
 ### JSP-1 — The instrument: name the engine, and make the comparison runnable
 
+- **2026-09-20 implementation note:** JSeal slice J01 implements the runner portion: named
+  divergences, explicit goal argument templates, portable executable/temp handling, bounded child
+  execution, UTF-8 checks and recorded engine/input identities. Existing exemptions now name Node
+  without changing their reasons or retained values. See the
+  [validation record](../../../docs/evidence/jsp-1-j01/README.md). Windows checks ran; Linux CI is
+  wired but unobserved. The N17 document audit and accepted platform evidence remain outside this
+  slice, so this note does not complete JSP-1 or move any milestone to Accepted.
 - **Objective.** A reader can tell which engine any recorded divergence was taken against, and the
   comparison can be re-run on a declared platform against either.
 - **Waits on.** Nothing.

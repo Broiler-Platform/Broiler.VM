@@ -7977,6 +7977,11 @@ retained bundle and advance nothing. 2026-09-06.
 
 ### JSC-190
 
+**Implementation follow-up, 2026-09-20.** JSeal slice J01 now names the historical declarations
+`node`; it preserves their reasons and expected answers and does not invent the missing calibration
+version. Broiler.JS exemptions are separate. [Validation](../../../docs/evidence/jsp-1-j01/README.md)
+does not accept the whole JSP-1 stage or change the historical account below.
+
 **Where:** the workload roadmap's
 [section 2](roadmap.workloads.md#2-what-the-comparison-engine-admits-and-what-that-comparison-is-worth),
 and the authored `#diverges` reasons retained beside every differential probe.
@@ -8007,6 +8012,13 @@ taken by running `eng/run-differential.py --against` at each engine in turn. The
 outside any retained bundle and advance nothing. 2026-09-06.
 
 ### JSC-191
+
+**Implementation follow-up, 2026-09-20.** JSeal slice J01 repairs the runner's goal selection,
+Windows executable suffix, temporary directories and process bounds. Engine failures and invalid
+UTF-8 now fail visibly; output is not rewritten to conceal platform differences. Windows script
+and module checks ran; Linux execution is pending. See the
+[validation record](../../../docs/evidence/jsp-1-j01/README.md); the historical findings below
+describe the earlier runner.
 
 **Where:** [the differential probes' README](../../tests/differential/README.md), its *running them*
 section, and the driver `eng/run-differential.py`.
