@@ -405,10 +405,23 @@ limits/a-delegation-chain-with-no-bottom.js|1|uncaught RangeError: Maximum call 
 --runtime --check runs/a-product.js|0|tiered-pgo-config=|err
 --runtime --check runs/a-product.js|0|dynamic-code=|err
 
+# AND THE ONE FIELD ON THAT LINE WHOSE VALUE IS NOT THE MACHINE'S, so this row reads the VALUE
+# where every row above reads only the key. Whether this image filled the profile's page-mapping
+# hook is a property of what was composed into it: the same answer on every platform, under every
+# publish mode, on a machine that arms nothing of its own. THIS ROW IS WHAT HOLDS THE REGISTER'S
+# NATIVE-EXECUTION CELL FOR THIS ROOT. Between 2026-09-18 and 2026-09-23 the cell read `none` and
+# was true, because a refactor moved the arming path into an assembly this root stopped linking;
+# every `--native` run this host was asked for in that interval verified its artifact and then
+# refused to instantiate it, and nothing in this suite said so, because no row here has ever named
+# `--native`. Reverting either half of the wiring - the project reference, or the four lines that
+# fill the hook - puts this row's answer back to `none` and fails it.
+--runtime --check runs/a-product.js|0|native-arming=installed|err
+
 # `--runtime` is not a mode: the file still runs and still answers its value, on standard output,
 # with the configuration line nowhere in it.
 --runtime runs/a-product.js|0|42|out
 --runtime runs/a-product.js|0|!runtime-identifier=|out
+--runtime runs/a-product.js|0|!native-arming=|out
 
 # THE TWO DEFECTS THE OCTANE WORKLOADS FOUND, pinned as programs this repository holds rather than
 # as a benchmark it does not. Neither fixture needs a third-party file, and each row is the ANSWER

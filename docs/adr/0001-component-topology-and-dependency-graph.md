@@ -1715,3 +1715,55 @@ The packable set is unchanged and still holds exactly three.
 
 **What is not edited.** Every revision above stands as written.
 
+### 2026-09-23 - the arming path restored to the conformance harness and the end-user host
+
+**What this revision is.** A correction, not a growth. No project is added and
+no project kind is new: two composition roots that had an edge to
+`Broiler.VM.Profile.MachineCode` before 2026-09-18 get it back.
+
+**What happened.** The revision above moved the arming path out of
+`Broiler.VM.Profile.JavaScript` into an assembly of its own, which is a good
+shape and is not what this revision corrects. What it did not do is give that
+assembly back to the roots that had been able to arm a page through the profile.
+**Six rows of the composition register declared `x86-64` the day before that
+revision**, and they are exactly the six naming the JavaScript profile: the
+arming type lived in the profile assembly, so linking the profile was arming.
+The revision restored the reference for
+`Broiler.VM.Composition.JavaScript.SliceCompiler` alone, and the other five
+cells went to `none` - accurately, because the images really could arm nothing.
+From that day `Broiler.VM.Composition.JavaScript.Conformance` and
+`Broiler.VM.Composition.JavaScript.Cli` linked the encoders and not the page:
+both still offered a native form, both still verified the artifact it produced,
+and both then refused to instantiate it,
+`ProfileFault/UnsatisfiedHostAssumption`, by name. That refusal was observed on
+`win-x64` under the JIT and nowhere else; it follows in every publish mode and
+on every platform because an unfilled static hook is unfilled in all of them,
+and this record states that as the inference it is rather than as a reading
+taken. Nothing in this record authorised withdrawing that capability from those
+two roots and no revision states it, which is why this one says it happened
+rather than describing it as a decision.
+
+**What changes.** Each of the two roots names
+`..\..\Broiler.VM.Profile.MachineCode\Broiler.VM.Profile.MachineCode.csproj` in
+its own project file and installs the mapper hook in its own `Program.cs`. Two
+edges, no project.
+
+**What is now true.** The graph goes from 27 projects and 88 edges to 27 and 90.
+The packable set is unchanged and still holds exactly three: neither root is
+packable, neither carries a package identity, and section 1 of the composition
+register still advertises nothing.
+
+**What is deliberately not authorised here.**
+`Broiler.VM.Composition.JavaScript.ExecutionOnly`,
+`Broiler.VM.Composition.JavaScript.Android` and
+`Broiler.VM.Composition.PolyglotCli` are not given the edge, and **the reason is
+not that they are a different case.** All three could arm a page before
+2026-09-18 on exactly the same footing as the two restored here - through the
+profile assembly - and all three lost it the same way. Each of them is as much a
+restoration case as these two. The reason they are left is that the owner named
+two roots and nobody asked for the other three, and a register row moved on
+nobody's request is the quiet edit this column exists to prevent. **A later
+reader deciding whether to give them the edge should read it as restoring what
+they had, not as granting something new.**
+
+**What is not edited.** Every revision above stands as written.

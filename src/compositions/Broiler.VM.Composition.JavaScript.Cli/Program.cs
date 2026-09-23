@@ -42,8 +42,64 @@ namespace Broiler.VM.Composition.JavaScript.Cli;
 /// </remarks>
 internal static class Program
 {
+    /// <summary>
+    /// Installs the native page mapper before anything in this process can ask for a native run.
+    /// </summary>
+    /// <remarks>
+    /// A static constructor rather than a line in <see cref="Main"/>, because the type initializer
+    /// runs before any member of this type does - including an entry point a future host, a test
+    /// harness or a trimmed shim reaches by some other route. An install that lived in
+    /// <c>Main</c> alone would be an install that a second entry point silently does without, and
+    /// the failure it produces is a refusal by name rather than a crash, which is exactly the
+    /// shape that survives a gate.
+    /// </remarks>
+    static Program()
+    {
+        InitializeNativeMapping();
+    }
+
+    /// <summary>
+    /// Fills <see cref="JsNativePage.Mapper"/> with the arming path this image links.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the whole of what makes <c>--native</c> a run rather than a refusal in this
+    /// process.</b> The profile assembly declares no platform invoke and maps nothing; it asks the
+    /// composition for a page through this hook, and <c>JsExecution</c> refuses to instantiate a
+    /// native artifact when the hook answers null - deliberately, at instantiation, so a process
+    /// that may not make memory executable says so by name instead of faulting its first call.
+    /// With the hook unfilled, <c>--native x86-64-win64</c> on a Windows x64 process answered
+    /// <c>ProfileFault/UnsatisfiedHostAssumption</c>, which is the same sentence this host prints
+    /// for an artifact emitted for somewhere else - so the refusal a caller was meant to read as
+    /// "you asked for a backend this machine does not arm" was also what it got for the one
+    /// backend this machine does arm.
+    /// </para>
+    /// <para>
+    /// <b>Copied from the slice-compiler root rather than shared.</b> Four lines of delegate
+    /// plumbing in each root that links the arming path is the cost of the rule that keeps
+    /// <c>Broiler.VM.Profile.MachineCode</c> out of the profile assembly's own reference set; a
+    /// shared helper would have to live somewhere both roots can see, and the only such place is
+    /// a product assembly, which is the edge this arrangement exists to avoid.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal static unsafe void InitializeNativeMapping()
+    {
+        JsNativePage.Mapper = static code =>
+        {
+            var page = Broiler.VM.Profile.MachineCode.VmNativePage.TryMap(code);
+            return page is null ? null : new JsNativePage(
+                page,
+                () => page.Arm(),
+                offset => page.At(offset),
+                offset => (nint)page.Entry(offset));
+        };
+    }
+
     private static int Main(string[] args)
     {
+        InitializeNativeMapping();
         WriteUtf8();
 
         try
@@ -711,6 +767,19 @@ internal static class Program
     /// The pattern is <c>src/tests/Broiler.VM.Bench.Host/Program.cs</c>, which prints the same GC
     /// and runtime-identifier facts at the head of a bench transcript for the same reason.
     /// </para>
+    /// <para>
+    /// <b><c>native-arming</c> is the one field here whose value is not the machine's.</b>
+    /// <i>(Added 2026-09-23.)</i> Every other field reports something the process was started with
+    /// and differs between machines, so the acceptance suite reads only their keys. This one
+    /// reports whether <see cref="JsNativePage.Mapper"/> was filled, which is a property of what
+    /// was composed into this image: <c>installed</c> on every platform and in every publish mode
+    /// where <see cref="InitializeNativeMapping"/> ran, and <c>none</c> in an image that links no
+    /// arming path or never reaches the one it links. It is here because between 2026-09-18 and
+    /// 2026-09-23 this host printed nothing that distinguished those two states, and the way the
+    /// difference showed was that every <c>--native</c> run verified its artifact and then refused
+    /// to instantiate it. It reports what this process holds and claims nothing about speed, about
+    /// which conventions are armed, or about whether any particular artifact will run.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
     // Broiler-Falsified-If: the line reports a setting other than the one the running process has
@@ -725,7 +794,8 @@ internal static class Program
             $"tiered-compilation-config={Configured("System.Runtime.TieredCompilation")} " +
             $"tiered-pgo-env={Asked("TieredPGO")} " +
             $"tiered-pgo-config={Configured("System.Runtime.TieredPGO")} " +
-            $"dynamic-code={System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeCompiled}");
+            $"dynamic-code={System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeCompiled} " +
+            $"native-arming={(JsNativePage.Mapper is null ? "none" : "installed")}");
 
     /// <summary>What the environment asks of the runtime for one knob, or <c>unset</c>.</summary>
     /// <remarks>
@@ -899,7 +969,14 @@ internal static class Program
         Console.WriteLine("              runtime takes it from both and neither shows the other's");
         Console.WriteLine("              setting; NEITHER IS THE TIER STATE ITSELF, which no runtime");
         Console.WriteLine("              API reports, so what is printed is what was asked of the");
-        Console.WriteLine("              runtime rather than what it did.");
+        Console.WriteLine("              runtime rather than what it did. The line ends with");
+        Console.WriteLine("              native-arming, which is the one field on it whose value is");
+        Console.WriteLine("              not this machine's: `installed` if this image filled the");
+        Console.WriteLine("              profile's page-mapping hook and `none` if it did not, which");
+        Console.WriteLine("              is the difference between --native running a program and");
+        Console.WriteLine("              refusing every one of them. (Added 2026-09-23, because this");
+        Console.WriteLine("              host spent five days printing nothing that told the two");
+        Console.WriteLine("              apart.) It says nothing about which conventions are armed.");
         Console.WriteLine("  --closure   print this composition's closure claim and exit");
         Console.WriteLine("  --version   print the profile and manifest identity");
         Console.WriteLine();

@@ -15,6 +15,14 @@
          would be the untruthful support claim the core roadmap makes a stop condition. -->
     <IsPackable>false</IsPackable>
 
+    <!-- POINTER TYPES, BECAUSE THE MAPPER INSTALL NAMES ONE. The hook this root fills is
+         `JsNativePage.Mapper`, and the page it hands back carries a function pointer to the
+         entry of the mapped region. Converting that pointer to an `nint` is a pointer
+         conversion, so the file holding the install needs unsafe blocks admitted. The
+         slice-compiler root says the same thing about the same install; this root needs it for
+         no other reason, and no other file here takes an address. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
     <InvariantGlobalization>true</InvariantGlobalization>
@@ -52,6 +60,22 @@
     <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" />
+
+    <!-- THE ARMING PATH, RESTORED TO THIS ROOT ON 2026-09-23. The native-backend option is one
+         this host's own help text describes at length, and it promises that a program compiled
+         under this process's calling convention "is armed and executed here". The arming path
+         left the profile assembly on 2026-09-18 and was rearmed for the slice-compiler root
+         alone, so from that day the option refused every artifact it was given -
+         ProfileFault/UnsatisfiedHostAssumption - while the help text went on promising a run.
+         Naming the assembly here is what puts it back in this image's closure; the install that
+         fills `JsNativePage.Mapper` is in Program.cs, and docs/compositions.md's
+         native-execution cell for this row moves with both.
+
+         This is the one sibling this root links that is not part of "read a file, compile it,
+         verify it, run it, report". It is part of RUN: the option that names a backend has to
+         reach an image that can arm one, and a host that carries the encoders and not the page
+         is a host whose only honest answer to that option is a refusal. -->
+    <ProjectReference Include="..\..\Broiler.VM.Profile.MachineCode\Broiler.VM.Profile.MachineCode.csproj" />
   </ItemGroup>
 
 </Project>
