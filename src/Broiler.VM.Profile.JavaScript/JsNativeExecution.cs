@@ -72,6 +72,22 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
     // Broiler-Human:        PENDING
     internal const int OperandSlabSlots = 1 << 16;
 
+    /// <summary>How many slots the slab carries past <see cref="OperandSlabSlots"/>, which emitted code is never told about.</summary>
+    /// <remarks>
+    /// <b>A CALL WRITES ITS ARGUMENTS INTO THE CALLEE'S REGION BEFORE THE CALLEE'S PROLOGUE HAS
+    /// CHECKED THAT THE REGION FITS.</b> The caller's prologue checked its own region only, so a call
+    /// made with fewer slots left than it passes arguments stored them past the end of the array -
+    /// into the header of whatever the pinned heap held next - and only then did the callee refuse.
+    /// A recursion whose region divides the slab exactly reached that state on its last level, and
+    /// the invocation answered a contract violation where the interpreter answers a RangeError. The
+    /// headroom is the format's ceiling on arguments, so every such store lands in slots this
+    /// instance owns, and the callee's prologue still refuses exactly where it did.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=TBF
+    // Broiler-Falsified-If: a call's argument store reaches past the end of the operand slab's array
+    // Broiler-Human:        PENDING
+    internal const int OutgoingArgumentHeadroom = (int)JsFormat.CeilingCallArguments;
+
     /// <summary>
     /// The fuel one invocation of an emitted artifact is given before it must stop.
     /// </summary>
@@ -180,7 +196,8 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
             return null;
         }
 
-        var operands = System.GC.AllocateArray<double>(OperandSlabSlots, pinned: true);
+        var operands = System.GC.AllocateArray<double>(
+            OperandSlabSlots + OutgoingArgumentHeadroom, pinned: true);
         var bindings = System.GC.AllocateArray<double>(
             System.Math.Max(1, program.Constants.Length), pinned: true);
 
@@ -385,7 +402,7 @@ internal static unsafe class JsNativeExecution
             var frame = new JsNativeFrame
             {
                 Operands = operands,
-                OperandCount = instance.Operands.Length,
+                OperandCount = JsNativeInstance.OperandSlabSlots,
                 Locals = bindings,
                 LocalCount = instance.Bindings.Length,
                 Constants = constants,
