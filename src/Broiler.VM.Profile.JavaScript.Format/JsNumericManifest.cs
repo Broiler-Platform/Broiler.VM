@@ -207,19 +207,21 @@ public static class JsNumericManifest
 
     /// <summary>Whether a code unit carrying <paramref name="flags"/> is one this manifest admits.</summary>
     /// <remarks>
-    /// <b>The five refused bits are the five that send an invocation somewhere other than straight
+    /// <b>The six refused bits are the six that send an invocation somewhere other than straight
     /// into the unit's own code.</b> A generator or an async body is entered by a driver holding a
     /// heap frame; a class constructor and a derived constructor are entered with a <c>this</c> a
     /// construction supplied; a unit that binds its own parameters runs a prologue this manifest
-    /// admits no syntax for. Nothing this manifest admits produces any of them, so a unit carrying
-    /// one did not come from this front end.
+    /// admits no syntax for; and an eval-code unit is entered with its caller's eval view, by a
+    /// direct <c>eval</c> this manifest refuses by name (JSeal V14). Nothing this manifest admits
+    /// produces any of them, so a unit carrying one did not come from this front end.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=BBD2D4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=AB1D72
     // Broiler-Human:        PENDING
     public static bool AdmitsFlags(JsFormat.FunctionFlags flags) =>
         (flags & (JsFormat.FunctionFlags.Generator |
             JsFormat.FunctionFlags.Async |
             JsFormat.FunctionFlags.ClassConstructor |
             JsFormat.FunctionFlags.DerivedConstructor |
-            JsFormat.FunctionFlags.BindsParameters)) == 0;
+            JsFormat.FunctionFlags.BindsParameters |
+            JsFormat.FunctionFlags.EvalCode)) == 0;
 }

@@ -214,6 +214,7 @@ internal static class NativeTemplateScanChecks
     /// throws) or a class with no static elements. <b>R</b> reaches guest or embedder code only behind the
     /// object test of <c>ToPrimitive</c> or <c>Render</c>, the getter or setter test of <c>Lookup</c>,
     /// <c>GetSymbol</c>, <c>SetProperty</c>, <c>SetSymbol</c>, <c>SetWithReceiver</c>, <c>SetSuper</c>,
+    /// <c>GetSymbolWithReceiver</c>, <c>SetSymbolWithReceiver</c>,
     /// <c>ReadPrivate</c> or <c>WritePrivate</c>, the dispatch to <c>JsProxy</c> or <c>JsHostObject</c>, or
     /// <c>InstanceOf</c>'s test for a <c>Symbol.hasInstance</c> method - so <c>Add</c> over an object whose
     /// <c>valueOf</c> is a plain method is R, behind the first. <b>P</b> reaches none. An opcode can be in T
@@ -311,6 +312,8 @@ internal static class NativeTemplateScanChecks
         (JsOpcode.In, "R"),
         (JsOpcode.Void, "P"),
         (JsOpcode.RequireCoercible, "P"),
+        (JsOpcode.ToPropertyKey, "R"),
+        (JsOpcode.GetTemplateObject, "P"),
         (JsOpcode.Jump, "T P"),
         (JsOpcode.JumpIfFalse, "T P"),
         (JsOpcode.JumpIfTrue, "T P"),
@@ -349,6 +352,22 @@ internal static class NativeTemplateScanChecks
         (JsOpcode.EnterBody, "P"),
         (JsOpcode.ImportCall, "C"),
         (JsOpcode.ImportMeta, "P"),
+        (JsOpcode.CallEvalSpread, "C"),
+        (JsOpcode.LoadEvalName, "E"),
+        (JsOpcode.LoadEvalNameOrUndefined, "E"),
+        (JsOpcode.StoreEvalName, "E"),
+        (JsOpcode.LoadEvalNameWithBase, "E"),
+        (JsOpcode.DeleteEvalName, "E"),
+        (JsOpcode.WithBaseObject, "P"),
+        (JsOpcode.StoreEvalVariable, "E"),
+        (JsOpcode.DisposeScope, "P"),
+        (JsOpcode.DisposeAdd, "R"),
+        (JsOpcode.DisposeFold, "P"),
+        (JsOpcode.DisposeStep, "T E"),
+        (JsOpcode.DisposeEnd, "E"),
+        (JsOpcode.ToNumeric, "R"),
+        (JsOpcode.Increment, "R"),
+        (JsOpcode.Decrement, "R"),
     ];
 
     /// <summary>

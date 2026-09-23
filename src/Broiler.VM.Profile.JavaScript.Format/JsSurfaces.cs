@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
+// Relevant units:   12
+// Annotated:        12/12
 // Exempt:           0
-// Human-reviewed:   0/10
+// Human-reviewed:   0/12
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       10
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -143,31 +143,76 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public const string Native = "broiler.javascript.native";
 
+    /// <summary>
+    /// The BigInt surface: BigInt values, their literals, and the <c>BigInt</c> global.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It was a gate and is now an advertised surface</b> (decision JSD-0033, section 7; JSeal
+    /// card B05). Until B05 the realm had an internal BigInt value kind that no public compilation
+    /// could produce, and this name was known and deliberately absent from <see cref="All"/>. B05
+    /// completed the language's BigInt surface - conversion, comparison, the global and its
+    /// prototype, wrappers and JSON - and admitted it here, so the descriptor admitting every
+    /// surface admits it and a composition may still decline it by name.
+    /// </para>
+    /// <para>
+    /// <b>It is declared by a CONSTANT and by a GLOBAL.</b> The lowering declares it where it writes
+    /// a <see cref="JsFormat.ConstantTag.BigInt"/> constant, and a program reading the
+    /// <c>BigInt</c> global declares it the way a program reading <c>Uint8Array</c> declares the
+    /// binary surface (<see cref="BigIntGlobals"/>). A composition that declines it refuses both at
+    /// verification and builds no <c>BigInt</c> global, so no BigInt value can arise in its realms.
+    /// An update expression declares nothing: it converts with <c>ToNumeric</c> whatever the
+    /// program holds, and a Number takes the path it always took.
+    /// </para>
+    /// <para>
+    /// <i>(Amended 2026-09-21, B05. As the gate this paragraph read "No shipped composition admits
+    /// it, and it is deliberately not in All"; that stopped being true when the surface was
+    /// admitted, and is quoted rather than deleted.)</i>
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=415303
+    // Broiler-Human:        PENDING
+    public const string BigInt = "broiler.javascript.bigint";
+
     /// <summary>Every optional surface this build knows, in ascending ordinal order.</summary>
     /// <remarks>
     /// An artifact declaring a name that is not here is refused as naming a surface this build does
     /// not implement, which is a different failure from naming one the composition declined and
     /// carries a different diagnostic.
+    /// <i>(Amended 2026-09-21. <see cref="BigInt"/> was for a while known and not here, so that the
+    /// descriptor admitting every surface declined it; card B05 admitted it, and it is here.)</i>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B30ACF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=622B1E
     // Broiler-Human:        PENDING
-    public static readonly string[] All = [Binary, Dynamic, Modules, Native];
+    public static readonly string[] All = [BigInt, Binary, Dynamic, Modules, Native];
 
     /// <summary>
     /// The global names the binary surface owns, in ascending ordinal order.
     /// </summary>
     /// <remarks>
-    /// The nine typed array constructors are the ones a realm with no BigInt can have.
-    /// <c>BigInt64Array</c> and <c>BigUint64Array</c> are absent for that reason rather than by
-    /// policy, and they are not on this list because a program naming one is naming a global this
-    /// surface does not have — which is an absent global and not a declined surface.
+    /// <para>
+    /// The twelve typed array constructors. <c>BigInt64Array</c> and <c>BigUint64Array</c> joined
+    /// on 2026-09-22 (JSeal B07) and are on <see cref="BigIntGlobals"/> as well, because their
+    /// elements are BigInt values: a program naming one declares BOTH surfaces, so a composition
+    /// declining either refuses it at verification rather than running it into an absent global.
+    /// <see cref="TryOwner"/> answers this surface for them, and the lowering adds the BigInt
+    /// surface beside it.
+    /// </para>
+    /// <para>
+    /// <i>(Amended 2026-09-22. The list held the ten Number kinds only, with the note that the two
+    /// BigInt constructors were card B07's and "not on this list because a program naming one is
+    /// naming a global this surface does not have"; that stopped being true with B07.)</i>
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E81922
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=C3506E
     // Broiler-Human:        PENDING
     public static readonly string[] BinaryGlobals =
     [
         "ArrayBuffer",
+        "BigInt64Array",
+        "BigUint64Array",
         "DataView",
+        "Float16Array",
         "Float32Array",
         "Float64Array",
         "Int16Array",
@@ -201,11 +246,34 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public static readonly string[] DynamicGlobals = ["eval"];
 
+    /// <summary>The global names the BigInt surface owns.</summary>
+    /// <remarks>
+    /// <para>
+    /// A program that reads <c>BigInt</c> wants BigInt values - it can make one from a Number or a
+    /// String without writing a literal - so the name is a declaration, as <c>eval</c> is one for
+    /// the dynamic surface. A <c>typeof BigInt</c> stays a question, as every <c>typeof</c> does.
+    /// </para>
+    /// <para>
+    /// <c>BigInt64Array</c> and <c>BigUint64Array</c> are here too (since 2026-09-22, JSeal B07):
+    /// reading one of their elements makes a BigInt value, so naming either constructor declares
+    /// this surface as well as the binary one, on which they are also listed.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=807DA6
+    // Broiler-Human:        PENDING
+    public static readonly string[] BigIntGlobals = ["BigInt", "BigInt64Array", "BigUint64Array"];
+
     /// <summary>
     /// The surface that owns <paramref name="globalName"/>, or <see langword="false"/> when the
     /// name belongs to no optional surface.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=BBFA52
+    /// <remarks>
+    /// Two names belong to two surfaces - <c>BigInt64Array</c> and <c>BigUint64Array</c>, on both
+    /// <see cref="BinaryGlobals"/> and <see cref="BigIntGlobals"/> - and this answers the binary
+    /// surface for them, the first list it searches; a caller that records declarations reads
+    /// <see cref="BigIntGlobals"/> as well. (Added 2026-09-22, JSeal B07.)
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=338E4D
     // Broiler-Human:        PENDING
     public static bool TryOwner(string globalName, out string manifestId)
     {
@@ -223,6 +291,15 @@ public static class JsSurfaces
             if (string.Equals(name, globalName, System.StringComparison.Ordinal))
             {
                 manifestId = Dynamic;
+                return true;
+            }
+        }
+
+        foreach (var name in BigIntGlobals)
+        {
+            if (string.Equals(name, globalName, System.StringComparison.Ordinal))
+            {
+                manifestId = BigInt;
                 return true;
             }
         }

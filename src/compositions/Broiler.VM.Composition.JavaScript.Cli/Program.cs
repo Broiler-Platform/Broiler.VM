@@ -44,6 +44,8 @@ internal static class Program
 {
     private static int Main(string[] args)
     {
+        WriteUtf8();
+
         try
         {
             return Dispatch(args);
@@ -54,6 +56,46 @@ internal static class Program
             // type and message go to standard error and the code says this component is at fault.
             Console.Error.WriteLine($"broiler-js: unhandled {failure.GetType().Name}: {failure.Message}");
             return ExitCodes.HostDefect;
+        }
+    }
+
+    /// <summary>
+    /// Makes each standard stream that is redirected to a pipe or a file write UTF-8 without a
+    /// byte-order mark, whatever code page this process inherited; a stream that is a console
+    /// window keeps the runtime's console writer.
+    /// </summary>
+    /// <remarks>
+    /// THE BYTES THIS HOST WRITES ARE PART OF WHAT IT PROMISES, the same way the bytes it reads
+    /// are (JSD-0017 section 3). The runtime's default writer encodes with the console's output
+    /// code page, so on a machine whose console uses code page 850 a guest's <c>"é"</c> left as a
+    /// different byte and <c>"∛"</c> left as <c>?</c> - a different answer on a different machine,
+    /// which no retained answer can be compared against. The writers are replaced rather than
+    /// <see cref="Console.OutputEncoding"/> being set, because setting it changes the code page of
+    /// the console window itself, which outlives this process and is not this host's to change.
+    /// Both writers flush on every write so the two streams interleave as they did before.
+    /// <para>
+    /// <b>A console window is left alone, because it is read by a person rather than compared.</b>
+    /// The raw stream under a console writes bytes that the window decodes with its own code page,
+    /// so UTF-8 there showed <c>"é"</c> as <c>"├®"</c> on a code page 850 console where the default
+    /// writer had shown it correctly. The rule is therefore per stream: redirected streams carry
+    /// deterministic UTF-8, and an interactive console keeps the runtime's writer and whatever that
+    /// console can display (JSD-0017 section 3).
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+    // Broiler-Falsified-If: a guest's non-ASCII text reaches a redirected stream as bytes other than its UTF-8 encoding
+    // Broiler-Human:        PENDING
+    private static void WriteUtf8()
+    {
+        var utf8 = new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        if (Console.IsOutputRedirected)
+        {
+            Console.SetOut(new StreamWriter(Console.OpenStandardOutput(), utf8) { AutoFlush = true });
+        }
+
+        if (Console.IsErrorRedirected)
+        {
+            Console.SetError(new StreamWriter(Console.OpenStandardError(), utf8) { AutoFlush = true });
         }
     }
 
@@ -924,13 +966,25 @@ internal static class Program
         Console.WriteLine("understates what it does is the same defect as one that overstates it, so");
         Console.WriteLine("the superseded reading is quoted rather than deleted.)");
         Console.WriteLine();
-        Console.WriteLine("BIGINT IS ABSENT IN THREE PLACES AND ALL THREE ANSWER IF YOU ASK THEM.");
-        Console.WriteLine("The `BigInt` global is not bound, so `typeof BigInt` answers `undefined`,");
-        Console.WriteLine("and `BigInt64Array` and `BigUint64Array` are absent beside it. AND A");
-        Console.WriteLine("BIGINT LITERAL IS REFUSED BY NAME AT COMPILE TIME: `1n` answers");
-        Console.WriteLine("2104:ConstructOutsideManifest, `a BigInt literal is not admitted by the");
-        Console.WriteLine("declared feature manifest`, under every manifest this host selects. Point");
-        Console.WriteLine("this host at it and read the code rather than taking it from here.");
+        Console.WriteLine("BIGINT IS ADMITTED BY THE DEFAULT MANIFEST, THROUGH ITS OWN SURFACE.");
+        Console.WriteLine("`1n` is an exact integer, the `BigInt` global and `BigInt.prototype` are");
+        Console.WriteLine("bound, and the operators, conversions and comparisons are the language's");
+        Console.WriteLine("(JSeal B01-B05, decision JSD-0033). A program holding a BigInt literal or");
+        Console.WriteLine("naming `BigInt` declares broiler.javascript.bigint, which a composition");
+        Console.WriteLine("may decline. `BigInt64Array`, `BigUint64Array` and the DataView BigInt");
+        Console.WriteLine("accessors exist wherever that surface is admitted (JSeal B07-B08); naming");
+        Console.WriteLine("either constructor declares it beside broiler.javascript.binary. --numeric");
+        Console.WriteLine("still refuses a BigInt literal by name, 2104:ConstructOutsideManifest.");
+        Console.WriteLine();
+        Console.WriteLine("(Corrected 2026-09-22. This paragraph said the BigInt typed arrays and the");
+        Console.WriteLine("DataView BigInt accessors were \"STILL ABSENT (cards B07-B08)\"; they were");
+        Console.WriteLine("added by those cards.)");
+        Console.WriteLine();
+        Console.WriteLine("(Corrected 2026-09-21. This paragraph read \"BIGINT IS ABSENT IN THREE");
+        Console.WriteLine("PLACES AND ALL THREE ANSWER IF YOU ASK THEM\": the global unbound and a");
+        Console.WriteLine("literal refused by name under every manifest this host selects. Both");
+        Console.WriteLine("stopped being true when card B05 admitted the surface; the typed arrays");
+        Console.WriteLine("are the one place of the three that still answers `undefined`.)");
         Console.WriteLine();
         Console.WriteLine("(Recorded 2026-09-08, and this note exists because the sentence it");
         Console.WriteLine("replaces became true by accident hours after it was written. Earlier the");

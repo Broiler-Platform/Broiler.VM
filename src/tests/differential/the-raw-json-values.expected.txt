@@ -1,0 +1,70 @@
+# Retained host answers; not a conformance oracle.
+1 "function 1 rawJSON"
+2 "function 1 isRawJSON"
+3 "true,false,true true,false,true"
+4 TypeError
+5 TypeError
+6 true
+7 "true false"
+8 "rawJSON"
+9 "false,true,false"
+10 "string 12"
+11 TypeError
+12 TypeError
+13 "1"
+14 "[object Object]"
+15 "-1500"
+16 "null false"
+17 "\"a\\u0062\""
+18 "7"
+19 "1e400"
+20 SyntaxError
+21 SyntaxError
+22 SyntaxError
+23 SyntaxError
+24 SyntaxError
+25 SyntaxError
+26 SyntaxError
+27 SyntaxError
+28 SyntaxError
+29 TypeError
+30 SyntaxError
+31 SyntaxError
+32 TypeError
+33 SyntaxError
+34 SyntaxError
+35 SyntaxError
+36 SyntaxError
+37 SyntaxError
+38 SyntaxError
+39 SyntaxError
+40 SyntaxError
+41 SyntaxError
+42 RangeError
+43 true
+44 false
+45 false
+46 false
+47 false
+48 "false,false,false,false"
+49 "{\"rawJSON\":\"1\"}"
+50 "{}"
+51 "{\"rawJSON\":\"1\"}"
+52 "1e1000"
+53 "-0"
+54 "\"\\u0041\""
+55 "12345678901234567890"
+56 "{\"a\":1,\"b\":[null,{\"c\":true}]}"
+57 "[\n  1,\n  \"x\"\n]"
+58 "{\n--\"a\": 1,\n--\"b\": 2\n}"
+59 "{\"a\":99,\"b\":2}"
+60 "{\"b\":2}"
+61 "{\"a\":\"seen 1\"}"
+62 "{\"a\":42}"
+63 "{\"a\":5} replacer::false toJSON:a replacer:a:true"
+64 "[1,1,{\"r\":1}]"
+65 "1"
+66 "{}"
+67 "{\"a\":[1,\"b\",null,true]}"
+68 "{\"a\":3,\"b\":\"s\",\"c\":false}"
+69 "number false"

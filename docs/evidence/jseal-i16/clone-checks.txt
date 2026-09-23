@@ -1,0 +1,12 @@
+before: FAIL clone/i16/a-transferred-buffer-moves-its-bytes-and-every-source-view-observes-detachment: the program answered '8,8,8,1,2,no-throw,4,[object ArrayBuffer],8,1+2+99+4+5+6+7+8,true,true,true,true,true,true,99,4/2,cloned' and '0,0,0,undefined,0,true,0,[object ArrayBuffer],8,1+2+99+4+5+6+7+8,true,true,true,true,true,true,99,4/2,refused' was expected
+before: FAIL clone/i16/a-refused-transfer-list-or-graph-detaches-nothing: the program answered 'cloned,cloned,cloned,cloned,cloned,true,cloned,refused,refused,cloned,true,true,8,8,0,true,8' and 'refused,refused,refused,refused,refused,false,refused,refused,refused,refused,true,true,8,8,0,true,0' was expected
+before: ok   clone/i16/resizable-buffers-are-refused-until-f04-f06-integrate: the program answered refused-or-absent
+before: FAIL clone/i16/moved-bytes-count-against-the-bound-before-anything-is-detached: answered refused,true,true,cloned,8 (refused,true,true,cloned,0 expected): a 200-byte transfer under a 100-byte bound is refused with both listed buffers intact, and an 8-byte one moves
+before: FAIL clone/i16/a-carrier-holding-moved-bytes-is-adopted-once-after-its-source-is-disposed: the source realm answered 6,2 (0,0 expected)
+before: broiler-js-slice-compiler: 4 of 287 checks FAILED, 2 not run on this machine and claimed by nothing
+after:  ok   clone/i16/a-transferred-buffer-moves-its-bytes-and-every-source-view-observes-detachment: the program answered 0,0,0,undefined,0,true,0,[object ArrayBuffer],8,1+2+99+4+5+6+7+8,true,true,true,true,true,true,99,4/2,refused
+after:  ok   clone/i16/a-refused-transfer-list-or-graph-detaches-nothing: the program answered refused,refused,refused,refused,refused,false,refused,refused,refused,refused,true,true,8,8,0,true,0
+after:  ok   clone/i16/resizable-buffers-are-refused-until-f04-f06-integrate: the program answered refused-or-absent
+after:  ok   clone/i16/moved-bytes-count-against-the-bound-before-anything-is-detached: answered refused,true,true,cloned,0 (refused,true,true,cloned,0 expected): a 200-byte transfer under a 100-byte bound is refused with both listed buffers intact, and an 8-byte one moves
+after:  ok   clone/i16/a-carrier-holding-moved-bytes-is-adopted-once-after-its-source-is-disposed: the source saw its buffer and view detached (0,0); the destination answered 6,1+2+3+4+5+6,true,true,2/2,true,refused (6,1+2+3+4+5+6,true,true,2/2,true,refused expected): the bytes arrived once and a second adoption is refused
+after:  broiler-js-slice-compiler: 287 checks passed, 2 not run on this machine and claimed by nothing

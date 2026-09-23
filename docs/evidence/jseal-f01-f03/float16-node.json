@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-09-21T17:55:29.165088+00:00",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9",
+  "driver": {
+    "path": "D:\\wt\\vm-f01-f03\\eng\\run-differential.py",
+    "sha256": "69a422a84335a4e4f9c1eb9573242a2f48fe615c626921e2a233e8e9017dfa4c"
+  },
+  "environment": {
+    "TZ": "UTC",
+    "PYTHONIOENCODING": "utf-8",
+    "DOTNET_CLI_UI_LANGUAGE": "en-US"
+  },
+  "engines": [
+    {
+      "name": "broiler-vm",
+      "executable": "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "scriptArgs": [
+        "--quiet",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--quiet",
+        "--module",
+        "{probe}"
+      ],
+      "sourceRoot": "D:\\wt\\vm-f01-f03",
+      "resolvedExecutable": "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "binaries": [
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Abstractions.dll",
+          "sha256": "259ff2e9d945de944535b1c1bcba952225ae8a71724c03f546e8f122db446d1d"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Binary.dll",
+          "sha256": "f3e01d88cf0b7be8bef856add716bde44773e1c5a5a729ab03395427db1ec9bc"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.dll",
+          "sha256": "6980a6739e35b2baf24cdabb4a23eab09dee2bae9899ca2739de1f822db5d11e"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+          "sha256": "55a32f3fd9d1622b9c8b3f44e37e917eb8bd21edc8fb7d7e6fa3cae09f979611"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Compiler.dll",
+          "sha256": "5bca7fae9c96ea08e1ff770cf2e06e5104461a06f621844649c604e08777ce20"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.dll",
+          "sha256": "a5a4bce4caea4f55263833a7883a83398bb168607da7f2251ec61aaa00df8a99"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Format.dll",
+          "sha256": "811d45dab355f222437479996dc610fe88a082c2689138a0a22c3924ccb6b52a"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Runtime.dll",
+          "sha256": "7766a12b347aa8ee09363ea36374b11406d91bb731079a3b7e63d6c435fa007f"
+        }
+      ],
+      "source": {
+        "revision": "484f389f0dda0e0a15da5b111a64389d0ec14a59",
+        "workingTree": "MM CODE-ASSURANCE.md\nMM HUMAN_REVIEW.md\nMM assurance.manifest.json\nA  docs/evidence/jseal-f01-f03/README.md\nA  docs/evidence/jseal-f01-f03/float16-node.json\nA  docs/evidence/jseal-f01-f03/half-rounding-check.cs.txt\nA  docs/evidence/jseal-f01-f03/probe-before.txt\nA  docs/evidence/jseal-f01-f03/test262-comparison.txt\nA  docs/evidence/jseal-v01/README.md\nA  docs/evidence/jseal-v01/test262-comparison.txt\nA  docs/evidence/jseal-v01/windows-node.json\nA  docs/evidence/jseal-v04/README.md\nA  docs/evidence/jseal-v04/probe-before.txt\nA  docs/evidence/jseal-v10-v12/README.md\nA  docs/evidence/jseal-v10-v12/binary-species-node.json\nA  docs/evidence/jseal-v10-v12/test262-comparison.txt\nA  docs/evidence/jseal-v13/README.md\nM  src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs\nM  src/Broiler.VM.Profile.JavaScript/JsBinary.cs\nM  src/Broiler.VM.Profile.JavaScript/JsEngine.cs\nMM src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs\nM  src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs\nM  src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs\nM  src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0026-the-direct-eval-environment-boundary.md\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0027-intl-scope-and-data-strategy.md\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0028-shared-memory-and-atomics.md\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0029-finalization-registry-cleanup-model.md\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0030-shadowrealm-support-boundary.md\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0031-unicode-data-source-and-build-boundary.md\nM  src/Broiler.VM.Profile.JavaScript/docs/decisions/README.md\nM  src/Broiler.VM.Profile.JavaScript/docs/realm/globals.txt\nMM src/compositions/Broiler.VM.Composition.JavaScript.Cli/HostSurfaceChecks.cs\nA  src/tests/differential/the-binary-species.expected.txt\nA  src/tests/differential/the-binary-species.js\nAM src/tests/differential/the-float16-surface.expected.txt\nAM src/tests/differential/the-float16-surface.js\n M src/tests/differential/the-later-library-methods.expected.txt\nA  src/tests/differential/the-numeric-operand-order.expected.txt\nA  src/tests/differential/the-numeric-operand-order.js\nA  src/tests/differential/the-regexp-guards-in-string-search.expected.txt\nA  src/tests/differential/the-regexp-guards-in-string-search.js"
+      }
+    },
+    {
+      "name": "node",
+      "executable": "node",
+      "scriptArgs": [
+        "--require",
+        "{shim}",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--require",
+        "{shim}",
+        "{probe}"
+      ],
+      "resolvedExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "binaries": [
+        {
+          "path": "C:\\Program Files\\nodejs\\node.exe",
+          "sha256": "c6335d08331c23d68b9f2b18adb102002d76ef150b47248e954c507e0d033664"
+        }
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "name": "the-float16-surface.js",
+      "input": {
+        "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\the-float16-surface.js",
+        "sha256": "de038af0e6aa4eacc7c98cc9daa6ed7d5a812513ed11e0a942088f1686702875"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\wt\\vm-f01-f03\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\the-float16-surface.js"
+          ],
+          "cwd": "D:\\wt\\vm-f01-f03\\src\\tests\\differential",
+          "timeoutSeconds": 60.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 \"wrong 0 nan 2046 not-round-tripped 0\"\r\n2 \"wrong 0 length 65536 bytes 131072\"\r\n3 \"wrong 0 boundaries 31743\"\r\n4 \"wrong 0 boundaries 539\"\r\n5 \"true,true,true,true,true\"\r\n6 \"true,true,true,true,true\"\r\n7 \"true,true,true,true,true\"\r\n8 \"true,true,true,true\"\r\n9 \"1.5,NaN,1,5.960464477539063e-8,65504\"\r\n10 \"function,1,getFloat16,function,2,setFloat16\"\r\n11 \"62,0,0,192,1.5,-2,0.000011444091796875\"\r\n12 \"Infinity,-Infinity,65504,5.960464477539063e-8,0,0.00006103515625,0.333251953125 true\"\r\n13 \"true true\"\r\n14 \"3.140625 0,0,0,0,66,72,0,0\"\r\n15 \"RangeError,RangeError,RangeError,RangeError,0\"\r\n16 \"TypeError,TypeError,TypeError,TypeError\"\r\n17 \"TypeError,TypeError,RangeError,RangeError\"\r\n18 \"offset value 2\"\r\n19 Boom\r\n20 TypeError\r\n21 Boom\r\n22 \"function,Float16Array,3,2,2\"\r\n23 \"true,true,true,[object Float16Array]\"\r\n24 TypeError\r\n25 \"false,false,false,constructor|BYTES_PER_ELEMENT\"\r\n26 \"3 6 0,0,0\"\r\n27 \"1.099609375,Infinity,0,NaN,0,65504,2.5 true\"\r\n28 \"2 2 0,0,0,56,0,0,0,0\"\r\n29 \"RangeError,RangeError,RangeError,RangeError\"\r\n30 \"1.0009765625,Infinity,0 1,255,44\"\r\n31 \"1.5,2,0.0999755859375\"\r\n32 \"0.0999755859375,0.199951171875,3\"\r\n33 \"1,2,Infinity\"\r\n34 \"4,5\"\r\n35 \"7\"\r\n36 TypeError\r\n37 \"1 1,2\"\r\n38 Boom\r\n39 Boom\r\n40 \"1:44:-1 1:44:255 1:255:0 1:300:-1 1:300:65535 1:300:-1 1:300:4294967295 1:300:-1.5 1:300:-1.5\"\r\n41 \"1,2 1\"\r\n42 \"10,11,12\"\r\n43 \"0.333251953125 -Infinity undefined 2 13653,64512\"\r\n44 \"0,2.5,0,0 2 true true\"\r\n45 \"1,2,3 9,3 true\"\r\n46 \"-1,0,0,0.0999755859375,3,65504,NaN true\"\r\n47 \"4,3,2,1 0.25,0.5\"\r\n48 \"0.333251953125,0.66650390625 2 Float16Array\"\r\n49 \"true,-1,-1,0,2,0.333251953125,2,NaN,0.0999755859375\"\r\n50 \"0.0999755859375,0.0999755859375,0.0999755859375 0.2999267578125\"\r\n51 \"3.30078125,1.099609375,2.19921875,3.30078125\"\r\n52 \"true,true,2.5,1,2.5,-1\"\r\n53 \"1.5|0.0999755859375 1.5,0.0999755859375 0.0999755859375,1.5 0,1 [[0,0.0999755859375],[1,1.5]]\"\r\n54 \"0.0999755859375,0.199951171875 0.0999755859375,0.199951171875 true\"\r\n55 \"0.333251953125,0.66650390625 0.0999755859375,Infinity 0.300048828125\"\r\n56 \"true 2.19921875,4\"\r\n57 \"Float64Array 1.099609375,2\"\r\n58 \"1.099609375,Infinity 1.099609375,Infinity 1.099609375,Infinity\"\r\n59 \"0,0,0,,TypeError,TypeError\"\r\n60 \"0 undefined\"\r\n61 \"RangeError RangeError 0 1.5,2 0.0999755859375,NaN\"\r\n62 \"1,7,3\"\r\n63 \"9,2 1,2,3\"\r\n64 \"1,2 g1 v0 v1\"\r\n65 \"10,11 42\"\r\n66 \"5,6 1 1.5,2.5\"\r\n67 Boom\r\n",
+          "stderr": "",
+          "elapsedSeconds": 1.812
+        },
+        {
+          "engine": "node",
+          "goal": "script",
+          "argv": [
+            "C:\\Program Files\\nodejs\\node.exe",
+            "--require",
+            "C:\\Users\\proof\\AppData\\Local\\Temp\\broiler-differential-p5e5x0rd\\print.cjs",
+            "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\the-float16-surface.js"
+          ],
+          "cwd": "D:\\wt\\vm-f01-f03\\src\\tests\\differential",
+          "timeoutSeconds": 60.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 \"wrong 0 nan 2046 not-round-tripped 0\"\n2 \"wrong 0 length 65536 bytes 131072\"\n3 \"wrong 0 boundaries 31743\"\n4 \"wrong 0 boundaries 539\"\n5 \"true,true,true,true,true\"\n6 \"true,true,true,true,true\"\n7 \"true,true,true,true,true\"\n8 \"true,true,true,true\"\n9 \"1.5,NaN,1,5.960464477539063e-8,65504\"\n10 \"function,1,getFloat16,function,2,setFloat16\"\n11 \"62,0,0,192,1.5,-2,0.000011444091796875\"\n12 \"Infinity,-Infinity,65504,5.960464477539063e-8,0,0.00006103515625,0.333251953125 true\"\n13 \"true true\"\n14 \"3.140625 0,0,0,0,66,72,0,0\"\n15 \"RangeError,RangeError,RangeError,RangeError,0\"\n16 \"TypeError,TypeError,TypeError,TypeError\"\n17 \"TypeError,TypeError,RangeError,RangeError\"\n18 \"offset value 2\"\n19 Boom\n20 TypeError\n21 Boom\n22 \"function,Float16Array,3,2,2\"\n23 \"true,true,true,[object Float16Array]\"\n24 TypeError\n25 \"false,false,false,constructor|BYTES_PER_ELEMENT\"\n26 \"3 6 0,0,0\"\n27 \"1.099609375,Infinity,0,NaN,0,65504,2.5 true\"\n28 \"2 2 0,0,0,56,0,0,0,0\"\n29 \"RangeError,RangeError,RangeError,RangeError\"\n30 \"1.0009765625,Infinity,0 1,255,44\"\n31 \"1.5,2,0.0999755859375\"\n32 \"0.0999755859375,0.199951171875,3\"\n33 \"1,2,Infinity\"\n34 \"4,5\"\n35 \"7\"\n36 TypeError\n37 \"1 1,2\"\n38 Boom\n39 Boom\n40 \"1:44:-1 1:44:255 1:255:0 1:300:-1 1:300:65535 1:300:-1 1:300:4294967295 1:300:-1.5 1:300:-1.5\"\n41 \"1,2 1\"\n42 \"10,11,12\"\n43 \"0.333251953125 -Infinity undefined 2 13653,64512\"\n44 \"0,2.5,0,0 2 true true\"\n45 \"1,2,3 9,3 true\"\n46 \"-1,0,0,0.0999755859375,3,65504,NaN true\"\n47 \"4,3,2,1 0.25,0.5\"\n48 \"0.333251953125,0.66650390625 2 Float16Array\"\n49 \"true,-1,-1,0,2,0.333251953125,2,NaN,0.0999755859375\"\n50 \"0.0999755859375,0.0999755859375,0.0999755859375 0.2999267578125\"\n51 \"3.30078125,1.099609375,2.19921875,3.30078125\"\n52 \"true,true,2.5,1,2.5,-1\"\n53 \"1.5|0.0999755859375 1.5,0.0999755859375 0.0999755859375,1.5 0,1 [[0,0.0999755859375],[1,1.5]]\"\n54 \"0.0999755859375,0.199951171875 0.0999755859375,0.199951171875 true\"\n55 \"0.333251953125,0.66650390625 0.0999755859375,Infinity 0.300048828125\"\n56 \"true 2.19921875,4\"\n57 \"Float64Array 1.099609375,2\"\n58 \"1.099609375,Infinity 1.099609375,Infinity 1.099609375,Infinity\"\n59 \"0,0,0,,TypeError,TypeError\"\n60 \"0 undefined\"\n61 \"RangeError RangeError 0 1.5,2 0.0999755859375,NaN\"\n62 \"1,7,3\"\n63 \"9,2 1,2,3\"\n64 \"1,2 g1 v0 v1\"\n65 \"10,11 42\"\n66 \"5,6 1 1.5,2.5\"\n67 Boom\n",
+          "stderr": "",
+          "elapsedSeconds": 0.094
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\the-float16-surface.expected.txt",
+        "sha256": "1b5a58219539882b124812881413bac8e03f89b3a0476ed4e0bc1e936d55c401"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\wt\\vm-f01-f03\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "ok": true
+}

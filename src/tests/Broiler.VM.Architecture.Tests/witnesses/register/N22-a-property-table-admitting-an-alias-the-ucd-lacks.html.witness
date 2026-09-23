@@ -1,0 +1,30 @@
+<!-- A WITNESS FOR RULE N22: an ECMAScript binary-property table in the archived tables' shape,
+     with one row the Unicode Character Database does not support. `Whitespace` is not a name
+     PropertyAliases.txt gives White_Space (it gives WSpace, White_Space and space), so the
+     generator's cross-check has to report exactly that row and nothing about the two rows that
+     agree. It is never read as specification text. -->
+<emu-table id="table-binary-unicode-properties">
+  <emu-caption>Binary Unicode property aliases and their canonical <emu-not-ref>property names</emu-not-ref></emu-caption>
+  <table class="real-table unicode-property-table">
+    <thead>
+      <tr>
+        <th><emu-not-ref>Property name and aliases</emu-not-ref></th>
+        <th><emu-not-ref>Canonical property name</emu-not-ref></th>
+      </tr>
+    </thead>
+    <tr>
+      <td>`Alphabetic`</td>
+      <td rowspan="2"><a href="https://unicode.org/reports/tr44/#Alphabetic">`Alphabetic`</a></td>
+    </tr>
+    <tr>
+      <td>`Alpha`</td>
+    </tr>
+    <tr>
+      <td>`White_Space`</td>
+      <td rowspan="2"><a href="https://unicode.org/reports/tr44/#White_Space">`White_Space`</a></td>
+    </tr>
+    <tr>
+      <td>`Whitespace`</td>
+    </tr>
+  </table>
+</emu-table>

@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-09-20 (JSP-1 tooling note; milestone rows unchanged)
+**Last updated:** 2026-09-22 (JSeal implementation observation; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -385,6 +385,28 @@ paragraph reports on nothing there.
 ---
 
 ## 1. Reading this ledger
+
+**JSeal implementation observation, 2026-09-21.** JSeal slices V01-V15, F01-F22, B01-B08 (B06 its VM
+half), I01, I03, I05, I07, the VM halves of I11-I12, I14-I17, the J17 upstream half, a script-goal
+host route and follow-up fixes VM-FIX-A to VM-FIX-J were implemented in this working tree, each with
+a validation record under `docs/evidence/jseal-*`, and decision records JSD-0026 to JSD-0034 were
+proposed. Whole pinned Test262 runs of the tree held the retained floor after the second wave (pass
+73553, fail 10596), the third (pass 76763, fail 8363, 2265 variants newly passing and 16 newly
+failing, the latter mostly explicit-resource-management tests that are now scored rather than
+skipped), the fourth (pass 77215, fail 7911, 452 newly passing and none newly failing) and the fifth
+(pass 78035, fail 9061, unsupported 0, none newly failing). In the fifth, 157 previously failing
+variants pass, and the 1970 variants the wide manifest had refused as `BigInt` are scored since B05
+admitted it: 663 pass and 1307 fail, most of them BigInt typed arrays and DataView accessors
+(B07-B08, 809), Atomics and SharedArrayBuffer (JSD-0028, 162), Intl (JSD-0027, 318) and 18
+elsewhere. The floor's `unsupported` row was re-based by hand with its reason recorded in the floor
+file. After the sixth (pass 80044, fail 7052) 2009 variants newly pass, mostly the BigInt typed
+arrays and DataView accessors B07-B08 built, and none newly fail. After the ninth (pass 80982, fail
+6114) 938 more pass - 890 of them RegExp, the Unicode property escapes F09 built on the Unicode
+17.0.0 data archived for F07 - and none newly fail. After the tenth (pass 81292, fail 5804) 310 more
+pass - the Unicode identifier, white-space and regex work JSD-0031 listed as later items, and the
+VM-FIX-J built-in fixes - and none newly fail. This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances and no decision record is
+signed.
 
 **JSP-1 tooling observation, 2026-09-20.** JSeal slice J01 extends the existing differential runner
 with explicit script/module commands, engine-scoped declarations, timeout/exit/UTF-8 checks and
@@ -957,20 +979,18 @@ fails when the two disagree in either direction. **The block is the claim; the f
 
 ```absent-globals
 Atomics
-BigInt
-BigInt64Array
-BigUint64Array
 Intl
 SharedArrayBuffer
 Temporal
 ```
 
-**Two of the seven are absent DELIBERATELY rather than for want of work.** `SharedArrayBuffer` and
+**Two of the four are absent DELIBERATELY rather than for want of work.** `SharedArrayBuffer` and
 `Atomics` are the multi-agent surface; they need the agent model of roadmap
 [section 13](roadmap.md#13-realms-agents-and-the-host-boundary), and folding them into the binary
 identity would let a composition that wanted an ordinary byte buffer admit cross-agent shared memory
-by accident. `BigInt64Array` and `BigUint64Array` are absent *because* `BigInt` is: a typed array of
-a value kind the realm does not have would be a constructor that cannot answer.
+by accident. `BigInt64Array` and `BigUint64Array` left the block on 2026-09-22 (JSeal B07-B08,
+JSD-0033 section 8, proposed), a day after `BigInt` itself was admitted (JSeal B05, JSD-0033
+section 7, proposed); they are built wherever the BigInt and binary identities are both admitted.
 
 **What the wide manifest does not admit is a list, and nothing on it is admitted partially.** It is
 the same list the end-user host's own correction carries as the reason that host is still not
@@ -980,8 +1000,8 @@ generator, `yield`, `async` function, `await`, module, destructuring — pattern
 parameter alike — a rest parameter, a parameter default, spread, `for … of` and `with`. Absent
 **from the realm** rather than from the grammar: Proxy, Reflect and BigInt. *(That is the list as
 the manifest was minted. What has since left it is the subject of the workload programme, and the
-block above rather than this sentence is what a rule checks — of the three named here, `Reflect` and
-`Proxy` have both left it and `BigInt` alone remains.)* **And `BigInt`'s placement on the second list
+block above rather than this sentence is what a rule checks — all three named here have left it,
+`Reflect` and `Proxy` first and `BigInt` on 2026-09-21 with JSeal B05.)* **And `BigInt`'s placement on the second list
 rather than the first was right about the binding and wrong about the literal until 2026-09-08**
 *(corrected 2026-09-08)*: the grammar admitted `1n` and the value model evaluated it as a Number, so
 the construct was absent from neither list while producing a wrong answer. From that date the
@@ -1034,6 +1054,11 @@ own `String.Normalize` returns its input unchanged and reports that it is alread
 wiring the method to it would have produced the third state this profile keeps meeting: not a
 refusal and not an answer, but a wrong answer that looks like a right one. That is the same reading
 that replaced the translated regular-expression engine.
+
+*(Implementation note, 2026-09-22: in the working tree, JSeal F07-F08 replaced the refusal with a
+normalizer over Unicode 17.0.0 tables generated from archived, hashed UCD files (proposed JSD-0031),
+held by all 20,034 `NormalizationTest.txt` vectors; the platform normalizer is still not used, rule
+N23. Local validation only; nothing here is accepted evidence.)*
 
 **The memory ceiling is settable from the command line from 2026-09-04, and the reason is an outcome
 worse than a refusal.** Three of the four ceilings a person meets were already settable; the live-

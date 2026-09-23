@@ -26,6 +26,30 @@
 #
 # A reader who wants to move `passed` back up should widen the manifest to
 # implement BigInt, not narrow the refusal.
+#
+# RE-BASED BY HAND AGAIN ON 2026-09-21, ONE ROW, AND FOR THE REASON THE
+# PARAGRAPH ABOVE ASKED FOR. JSeal card B05 implemented BigInt and admitted it
+# (decision JSD-0033 section 7): the wide manifest lowers a BigInt literal and
+# the descriptor the harness registers admits broiler.javascript.bigint. The
+# only unsupported family the wide run had - "a BigInt literal", 1,970 variants
+# on the base build of this slice (1,990 over the 94,545 variants the row was
+# set from) - is gone: on the whole run of 2026-09-21 663 of those variants
+# pass and 1,307 fail, almost all of them for the absences that are still
+# absences by name (BigInt64Array and BigUint64Array, card B07; the DataView
+# BigInt accessors, card B08; SharedArrayBuffer and Atomics, JSD-0028; Intl and
+# Temporal). So `atMost unsupported` falls from 1990 to 0, which is the ratchet
+# holding the gain: a later build that refuses a construct by name again has
+# to say so here. The other rows were NOT crossed (that run: files 53469,
+# variants 95009, passed 77971, failed 9125, skipped 7869) and are left exactly
+# as they were; re-setting them from one run on one loaded machine would be a
+# different decision than this one. docs/evidence/jseal-b05/README.md carries
+# both runs.
+#
+# NOTED 2026-09-22, NO ROW CHANGED. Two of the absences named above are gone:
+# JSeal B07-B08 built BigInt64Array, BigUint64Array and the DataView BigInt
+# accessors (JSD-0033 section 8). The whole run of that day held this floor
+# (passed 80044, failed 7052, unsupported 0, skipped 7869) with no variant
+# that passed before failing; the rows stay as set.
 suite test262
 revision 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
 manifest broiler.javascript.wide
@@ -33,6 +57,7 @@ atLeast files 53469
 atLeast variants 94545
 atLeast passed 70834
 atMost failed 13315
-atMost unsupported 1990
+atMost unsupported 0
 atMost skipped 8346
 retired 2026-09-08 atLeast passed 71153, atMost failed 14986, atMost unsupported 0 - set from the whole run of 2026-09-07 taken before the BigInt literal refusal was restored in JsParser.cs; the engine moved rather than the suite, so --admit refused to re-base and this file was edited deliberately. JSC-207.
+retired 2026-09-21 atMost unsupported 1990 - set on 2026-09-08 when the BigInt literal refusal was restored, and counting exactly the variants that refusal named; JSeal B05 implemented and admitted BigInt (JSD-0033 section 7), the whole run of 2026-09-21 names no unsupported family, and the row is re-set to 0 by hand because --admit re-bases only on a suite or manifest move.

@@ -1,0 +1,24 @@
+# Retained host answers; not a conformance oracle.
+1 "[object Object]"
+2 "[object Object]"
+3 "[object Object]"
+4 "[object Map]"
+5 "[object Object]"
+6 "[object Tagged]"
+7 "[object Array]"
+8 "joined:0"
+9 "1,2,3"
+10 "[object String]"
+11 TypeError
+12 TypeError
+13 true
+14 true
+15 "1,2,3"
+16 "[object Uint8Array]"
+17 "true,false,true"
+18 "[object WeakMap],[object WeakSet],[object ArrayBuffer],[object DataView],[object Int16Array]"
+19 "[object Object]"
+20 "[object Object]"
+21 ",,Float64Array,get [Symbol.toStringTag],0"
+22 "[object Array]"
+23 "[object Function],[object Function],[object Object],[object Arguments]"

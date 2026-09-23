@@ -511,7 +511,7 @@ internal sealed class JsProxy : JsObject
     }
 
     /// <summary><c>[[PreventExtensions]]</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=951C47
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=308316
     // Broiler-Human:        PENDING
     internal bool ProxyPreventExtensions()
     {
@@ -525,6 +525,12 @@ internal sealed class JsProxy : JsObject
             if (target is JsProxy inner)
             {
                 return inner.ProxyPreventExtensions();
+            }
+
+            // A typed array over a resizable buffer answers false for the same reason (JSeal F05).
+            if (target is JsTypedArray view)
+            {
+                return view.PreventExtensions();
             }
 
             target.Extensible = false;

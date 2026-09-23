@@ -1,0 +1,71 @@
+# Retained host answers; not a conformance oracle.
+1 "true 2,4,6"
+2 "Float64Array 1.5,2.5"
+3 true
+4 TypeError
+5 true
+6 TypeError
+7 TypeError
+8 TypeError
+9 "2,3,0,0,0"
+10 Boom
+11 Boom
+12 "ctor(2) cb1 cb2"
+13 "3,4.25"
+14 "Uint8ClampedArray 255,0"
+15 "44"
+16 "1,NaN,NaN"
+17 "TypeError"
+18 TypeError
+19 TypeError
+20 "1 number 3"
+21 "cb1 cb2 cb3 get"
+22 "2 Int16Array 2,4"
+23 "true 1.5,3.5"
+24 TypeError
+25 TypeError
+26 "1,NaN,NaN"
+27 "255,5"
+28 "1 2"
+29 "true 2,3"
+30 "Uint8Array 255,2"
+31 "1,-2"
+32 "-56,5"
+33 "Uint8ClampedArray 1,2"
+34 "1,2,3 9,3 false"
+35 "20,20,20,60"
+36 TypeError
+37 "1,2,0,0"
+38 TypeError
+39 0
+40 TypeError
+41 "start end get"
+42 TypeError
+43 "3 true 4 3"
+44 "1,9,8,4 9,8 true"
+45 "true 2,3"
+46 "4 2"
+47 TypeError
+48 1
+49 RangeError
+50 "Uint16Array 1 2"
+51 TypeError
+52 "begin end get"
+53 "104,105,33"
+54 "true 3"
+55 TypeError
+56 TypeError
+57 TypeError
+58 TypeError
+59 TypeError
+60 TypeError
+61 TypeError
+62 "4 2,3,0,0"
+63 TypeError
+64 TypeError
+65 "1,2,3 9,2,3"
+66 "1 5 5"
+67 "start end get"
+68 Boom
+69 "TypeError 7,0"
+70 3

@@ -1,0 +1,2 @@
+broiler-js: src/tests/differential/the-array-from-async.js: uncaught TypeError: Cannot read properties of undefined (reading 'length')
+exit=1

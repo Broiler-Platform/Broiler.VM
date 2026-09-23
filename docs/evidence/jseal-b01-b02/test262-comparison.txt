@@ -1,0 +1,28 @@
+# Test262 pinned ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e, bytecode form, broiler.javascript.wide, 2026-09-21
+# selection: test/language/literals test/language/expressions/typeof test/language/expressions/object test/built-ins/BigInt
+# columns: total|files|variants|passed|failed|unsupported|exhausted|skipped
+before total|1797|3475|3168|151|148|8|0
+after  total|1797|3475|3190|149|128|8|0
+# every variant whose answer moved (no other variant moved):
+test/language/expressions/object/literal-property-name-bigint.js [sloppy] Failed -> Passed
+test/language/expressions/object/literal-property-name-bigint.js [strict] Failed -> Passed
+test/language/literals/bigint/exponent-part.js [sloppy] Unsupported -> Passed
+test/language/literals/bigint/exponent-part.js [strict] Unsupported -> Passed
+test/language/literals/bigint/legacy-octal-like-invalid-00n.js [sloppy] Unsupported -> Passed
+test/language/literals/bigint/legacy-octal-like-invalid-00n.js [strict] Unsupported -> Passed
+test/language/literals/bigint/legacy-octal-like-invalid-01n.js [sloppy] Unsupported -> Passed
+test/language/literals/bigint/legacy-octal-like-invalid-01n.js [strict] Unsupported -> Passed
+test/language/literals/bigint/legacy-octal-like-invalid-07n.js [sloppy] Unsupported -> Passed
+test/language/literals/bigint/legacy-octal-like-invalid-07n.js [strict] Unsupported -> Passed
+test/language/literals/bigint/mv-is-not-integer-dil-dot-dds.js [sloppy] Unsupported -> Passed
+test/language/literals/bigint/mv-is-not-integer-dil-dot-dds.js [strict] Unsupported -> Passed
+test/language/literals/bigint/mv-is-not-integer-dot-dds.js [sloppy] Unsupported -> Passed
+test/language/literals/bigint/mv-is-not-integer-dot-dds.js [strict] Unsupported -> Passed
+test/language/literals/bigint/non-octal-like-invalid-0008n.js [sloppy] Unsupported -> Passed
+test/language/literals/bigint/non-octal-like-invalid-0008n.js [strict] Unsupported -> Passed
+test/language/literals/bigint/non-octal-like-invalid-012348n.js [sloppy] Unsupported -> Passed
+test/language/literals/bigint/non-octal-like-invalid-012348n.js [strict] Unsupported -> Passed
+test/language/literals/bigint/non-octal-like-invalid-08n.js [sloppy] Unsupported -> Passed
+test/language/literals/bigint/non-octal-like-invalid-08n.js [strict] Unsupported -> Passed
+test/language/literals/bigint/non-octal-like-invalid-09n.js [sloppy] Unsupported -> Passed
+test/language/literals/bigint/non-octal-like-invalid-09n.js [strict] Unsupported -> Passed

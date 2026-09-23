@@ -1,0 +1,107 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 100 Iterator.concat is ES2026 (the pinned edition, Test262 feature iterator-sequencing, a standard feature in the pinned features.txt) and the comparison engine predates it: it answers TypeError because the method is absent, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
+#diverges node 102 Iterator.concat is ES2026 (the pinned edition, Test262 feature iterator-sequencing, a standard feature in the pinned features.txt) and the comparison engine predates it: it answers TypeError because the method is absent, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
+#diverges node 103 Iterator.concat is ES2026 (the pinned edition, Test262 feature iterator-sequencing, a standard feature in the pinned features.txt) and the comparison engine predates it: it answers TypeError because the method is absent, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
+1 "function true"
+2 true
+3 "true,true,true,true,true,true"
+4 "false,false,false,false,true,false"
+5 ",,1"
+6 true
+7 "[object Array Iterator],[object String Iterator],[object Map Iterator],[object Set Iterator],[object RegExp String Iterator]"
+8 TypeError
+9 TypeError
+10 "true"
+11 "{\"done\":true}"
+12 TypeError
+13 TypeError
+14 "true true"
+15 "function,function,false,true,function,true,Iterator"
+16 "true 5 [object Mine] true"
+17 TypeError
+18 "false,false,false,0,Iterator"
+19 true
+20 "a,b"
+21 "true 7 true"
+22 1
+23 TypeError
+24 "1 9 {\"done\":true}"
+25 "0 [object Iterator Helper]"
+26 "0:0,1:1,2:2,3:3"
+27 "0,2,4"
+28 "0,1,2,3,4"
+29 "0,1,4,9"
+30 "next,return"
+31 "return {\"done\":true} {\"done\":true}"
+32 "next,return,RangeError {\"done\":true}"
+33 TypeError
+34 TypeError
+35 "return,TypeError"
+36 TypeError
+37 1
+38 "0,1,true,true"
+39 "true,true,Iterator Helper,true"
+40 TypeError
+41 "1 false value|done"
+42 EvalError
+43 URIError
+44 "{\"done\":true}"
+45 "0,1"
+46 0
+47 "0,1,2"
+48 "0"
+49 RangeError
+50 RangeError
+51 0
+52 "next,return"
+53 "return,RangeError"
+54 "limit,get next"
+55 "2,3,4"
+56 "0,1,2,3,4"
+57 0
+58 4
+59 "99998,99999"
+60 "3,4,5"
+61 "0,0,1,10,2,20"
+62 0
+63 TypeError
+64 "a,b,a,b"
+65 "0,0,1"
+66 0
+67 TypeError
+68 "true,true"
+69 "next,inner,return"
+70 "next,inner,return,EvalError"
+71 "next,return,RangeError true"
+72 "next,return,TypeError"
+73 "0,0,1,-1,2"
+74 "{\"done\":true}{\"done\":true}"
+75 "0,1,2,3"
+76 "true 0"
+77 "0@0,1@1,2@2 undefined"
+78 10
+79 110
+80 TypeError
+81 "init"
+82 "1,2,3"
+83 "0,1,2"
+84 "true next,next,return"
+85 false
+86 "false next,next,return"
+87 true
+88 "2 next,next,next,return"
+89 "undefined"
+90 "next,next,return,RangeError"
+91 "return,TypeError"
+92 "return,TypeError"
+93 EvalError
+94 TypeError
+95 0
+96 TypeError
+97 199990000
+98 "map/1,filter/1,take/1,drop/1,flatMap/1,reduce/1,toArray/0,forEach/1,some/1,every/1,find/1"
+99 "true,false,true,TypeError"
+100 "1,2,3,x,y"
+101 TypeError
+102 true
+103 "made,open,next,return"

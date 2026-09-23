@@ -166,7 +166,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Defines <c>print</c>, <c>$262</c> and <c>console</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DCC649
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=723164
     // Broiler-Human:        PENDING
     private void SetupGlobalHostFunctions(JsObject host)
     {
@@ -229,17 +229,27 @@ internal sealed partial class JsRealm
         harness.DefineBuiltIn("agent", JsValue.Object(agent));
 
         GlobalRefuse(harness, "createRealm", 0, "$262.createRealm: this profile creates no nested realm");
+        // THE LANGUAGE MAKES DETACHMENT A HOST'S ACT, and a realm whose host installed none has no
+        // way to perform it for a guest; `ArrayBuffer.prototype.transfer` is the language's own
+        // door and needs no help from here. A composition that means to offer it replaces this
+        // member through `JsHostRealm.DetachArrayBuffer`, which is what the conformance harness
+        // does. (Corrected 2026-09-21, JSeal follow-up VM-FIX-A: the message read "this profile
+        // has no ArrayBuffer to detach", which stopped being true when `ArrayBuffer` landed.)
         GlobalRefuse(
             harness,
             "detachArrayBuffer",
             1,
-            "$262.detachArrayBuffer: this profile has no ArrayBuffer to detach");
+            "$262.detachArrayBuffer: the host of this realm installed no detach operation");
 
+        // RUNNING A SCRIPT IS THE HOST'S ACT TOO, and the same shape: a composition that means to
+        // offer it replaces this member through `JsHostRealm.EvaluateScript`, which is what the
+        // conformance harness does (JSeal V15-host). (Corrected 2026-09-21: the message read "the
+        // wide manifest admits no guest-initiated load", which the manifest never decided.)
         GlobalRefuse(
             harness,
             "evalScript",
             1,
-            "$262.evalScript: the wide manifest admits no guest-initiated load");
+            "$262.evalScript: the host of this realm installed no script evaluation");
 
         // INTERPRETING.md is explicit that `gc` throws when the host exposes no collection hook,
         // and this one does not: the collector is the CLR's and nothing here can ask it to run.

@@ -1,0 +1,28 @@
+A PRODUCT SOURCE THAT REACHES THE HOST PLATFORM'S UNICODE NORMALIZER, so rule N23's rejecting
+direction is decided by an input rather than by a comment. It is written the way the regression
+would arrive: `normalize` refuses non-ASCII input until slice U3 lands, and the nearest tool that
+makes the refusal go away is one call on the string.
+
+It uses all three identifiers the rule knows - the call, the query and the form enumeration - and
+it also NAMES `string.Normalize()` in a comment and in a string literal, which the rule must not
+report: it reads identifier tokens, so prose that explains the prohibition is not a violation of
+it.
+
+```csharp
+using System.Text;
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal sealed partial class JsRealm
+{
+    // Not string.Normalize(NormalizationForm.FormC): that is what the rule is about.
+    private const string Explanation = "string.Normalize() and IsNormalized() are forbidden";
+
+    private static string ToNfc(string text) =>
+        text.IsNormalized() ? text : text.Normalize(NormalizationForm.FormC);
+}
+```
+
+This file is a witness and is never compiled. It lives here rather than in a product project for
+the reason every rejecting witness does: a file that would make the rule fail cannot live where the
+rule looks.

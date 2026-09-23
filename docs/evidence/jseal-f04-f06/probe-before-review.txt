@@ -1,0 +1,12 @@
+# Review regressions (cases 80-91), run on the pre-review worktree build before the fixes:
+# python eng/run-differential.py --only the-resizable-array-buffer --against node --timeout 20
+--- the-resizable-array-buffer.js
+    FAIL: host output differs from retained answers
+    FAIL: undeclared divergence node/80: host='6', comparison='RangeError'
+    FAIL: undeclared divergence node/81: host='RangeError', comparison='TypeError'
+    FAIL: undeclared divergence node/83: host='"true true true"', comparison='"false false true"'
+    FAIL: undeclared divergence node/84: host='undefined', comparison='"TypeError true"'
+    FAIL: undeclared divergence node/85: host='undefined', comparison='"TypeError false true 5"'
+    FAIL: undeclared divergence node/86: host='undefined', comparison='"TypeError false"'
+    FAIL: undeclared divergence node/87: host='true', comparison='false'
+    FAIL: undeclared divergence node/88: host='true', comparison='false'

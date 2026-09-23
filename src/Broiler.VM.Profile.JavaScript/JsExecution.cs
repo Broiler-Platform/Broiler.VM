@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   26
+// Annotated:        26/26
 // Exempt:           18
-// Human-reviewed:   0/25
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         12/12
 // Resource impact:  6/10 max
-// Unverified:       25
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -389,12 +389,17 @@ internal static class JsExecution
     /// belongs.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=622F66
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=AA8194
     // Broiler-Falsified-If: an embedder that throws leaves an instance a caller can obtain
     // Broiler-Human:        PENDING
     private static VmExecutionStep? InstallHostSurface(JsEngine engine, IJsHostSurface surface)
     {
         var realm = engine.HostRealm;
+
+        // THE LOADER IS RECOGNISED ONCE, HERE, and only on a surface the composition was permitted
+        // to install: an embedder that also answers imports is asked about them for this realm's
+        // whole life, and one that does not leaves every import synchronous (JSD-0024 section 15).
+        realm.ModuleLoader = surface as IJsHostModuleLoader;
 
         try
         {
@@ -547,8 +552,20 @@ internal static class JsExecution
         }
     }
 
+    /// <summary>The text a completion value is reported with.</summary>
+    /// <remarks>
+    /// <b>A Symbol is rendered the way <c>String(symbol)</c> renders it</b>, because
+    /// <c>ToString</c> of a Symbol is a <c>TypeError</c>: a script whose last statement was
+    /// <c>Symbol("x")</c> completed normally and was reported as an uncaught exception it never
+    /// threw (VM-FIX-D). Every other value keeps the <c>ToString</c> it had.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=870ED5
+    // Broiler-Human:        PENDING
+    private static string CompletionText(JsInstance instance, JsValue value) =>
+        value.IsSymbol ? value.AsSymbol().Rendered : instance.Engine.ToStringValue(value);
+
     /// <summary>Runs every due job on the guest stack and reports what happened.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BF301D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2FD85C
     // Broiler-Human:        PENDING
     private static VmExecutionStep DrainJobs(VmProfileId profileId, JsInstance instance)
     {
@@ -562,7 +579,7 @@ internal static class JsExecution
             var value = RunOnGuestStack(instance, unit: null);
 
             return VmExecutionStep.Completed(
-                new JsCompletion(profileId, instance.Engine.ToStringValue(value), value.TypeOf()));
+                new JsCompletion(profileId, CompletionText(instance, value), value.TypeOf()));
         }
         catch (JsThrow thrown)
         {
@@ -591,7 +608,7 @@ internal static class JsExecution
     }
 
     /// <summary>Runs one entry point against an existing realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=79BFAA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=32F352
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Invoke(
         VmProfileId profileId, JsInstance instance, in VmInvocationRequest request)
@@ -680,8 +697,7 @@ internal static class JsExecution
             var value = RunOnGuestStack(instance, unit);
 
             return VmExecutionStep.Completed(
-                new JsCompletion(
-                    profileId, instance.Engine.ToStringValue(value), value.TypeOf()));
+                new JsCompletion(profileId, CompletionText(instance, value), value.TypeOf()));
         }
         catch (JsThrow thrown)
         {

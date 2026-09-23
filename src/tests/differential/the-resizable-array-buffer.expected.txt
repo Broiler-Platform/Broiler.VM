@@ -1,0 +1,91 @@
+# Retained host answers; not a conformance oracle.
+1 "4,16,true,false"
+2 "4,4,false,false"
+3 "false 4"
+4 false
+5 RangeError
+6 RangeError
+7 "len,max"
+8 "1,2,3,4,0,0"
+9 "1,2,0,0"
+10 "0 8"
+11 "RangeError 4"
+12 TypeError
+13 "TypeError true 0"
+14 TypeError
+15 "2,4,8,0,0"
+16 "0,0,0,"
+17 "3,4,0,0"
+18 "0 8"
+19 "0,0,0,,false,0"
+20 "1,2,3,0"
+21 TypeError
+22 0
+23 TypeError
+24 TypeError
+25 3
+26 RangeError
+27 RangeError
+28 RangeError
+29 TypeError
+30 "3,9"
+31 "TypeError"
+32 TypeError
+33 TypeError
+34 "0 4"
+35 RangeError
+36 7
+37 TypeError
+38 0
+39 RangeError
+40 "1,2,,"
+41 4
+42 "1,2,99,99"
+43 "1,2,0,0"
+44 "1,2,undefined,undefined"
+45 undefined
+46 true
+47 true
+48 -1
+49 -1
+50 "1-2--"
+51 undefined
+52 "7,7"
+53 TypeError
+54 "3,4,3,4"
+55 "1,2,1,2"
+56 "9,2,NaN,NaN"
+57 RangeError
+58 "1,8"
+59 RangeError
+60 TypeError
+61 "4,3"
+62 "1,2,0,0"
+63 TypeError
+64 5
+65 2
+66 "2,3,0,0,0,0,0,0|2,3,0,0,0,0,0,0"
+67 "1,2,TypeError"
+68 "1,2,3,4,0,0"
+69 "1,2,3"
+70 "true,true,16,4,5"
+71 RangeError
+72 TypeError
+73 "false true"
+74 TypeError
+75 TypeError
+76 "0,0,0"
+77 "0,1,2"
+78 true
+79 "5 true"
+80 RangeError
+81 TypeError
+82 RangeError
+83 "false false true"
+84 "TypeError true"
+85 "TypeError false true 5"
+86 "TypeError false"
+87 false
+88 false
+89 false
+90 "true false"

@@ -1,0 +1,2 @@
+# Retained host answers; not a conformance oracle.
+1 U+20000 to U+3FFFF: 130530 code points checked in four forms, 542 left to part 1, 0 failing

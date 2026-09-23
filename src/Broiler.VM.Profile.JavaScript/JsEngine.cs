@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   136
-// Annotated:        136/136
-// Exempt:           21
-// Human-reviewed:   0/136
+// Relevant units:   198
+// Annotated:        198/198
+// Exempt:           32
+// Human-reviewed:   0/198
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         37/37
+// Criteria:         73/73
 // Resource impact:  7/10 max
-// Unverified:       136
+// Unverified:       198
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -120,23 +120,31 @@ internal sealed partial class JsEngine
     /// an invocation-scoped queue would silently drop it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B30BDD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=703251
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.Queue<(JsValue Callable, JsValue[] Arguments)> jobs = new();
+    private readonly System.Collections.Generic.Queue<(JsValue Callable, JsValue[] Arguments, string Referrer)> jobs = new();
 
     /// <summary>Adds one job to the queue.</summary>
     /// <remarks>
+    /// <para>
     /// <b>Enqueueing is charged.</b> A program that enqueues without bound is a program that has
     /// bought unbounded future work with a bounded present, and the charge is what makes the queue
     /// a thing the allowance covers rather than a hole beside it.
+    /// </para>
+    /// <para>
+    /// <b>The job keeps the script or module that was active when it was enqueued</b> (JSD-0024
+    /// section 20.3): HostEnqueuePromiseJob requires it to be the active one again when the job
+    /// runs, so eval code or a <c>Function</c> a job's built-in callable evaluates resolves its
+    /// <c>import()</c> against the code that queued the job, not against nothing.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=93B789
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A1A336
     // Broiler-Human:        PENDING
     internal void EnqueueJob(JsValue callable, JsValue[] arguments)
     {
         Charge(1);
         Retain(64);
-        jobs.Enqueue((callable, arguments));
+        jobs.Enqueue((callable, arguments, activeReferrer));
     }
 
     /// <summary>Whether any job is waiting.</summary>
@@ -173,7 +181,7 @@ internal sealed partial class JsEngine
     /// host through the return value rather than being swallowed, and the remaining jobs still run.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=541804
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=4B5EB1
     // Broiler-Falsified-If: a job runs at a point the host did not ask for, or an endless queue is a hang rather than an exhaustion
     // Broiler-Human:        PENDING
     internal JsValue DrainJobs()
@@ -184,11 +192,11 @@ internal sealed partial class JsEngine
         while (jobs.Count != 0)
         {
             Charge(1);
-            var (callable, arguments) = jobs.Dequeue();
+            var (callable, arguments, referrer) = jobs.Dequeue();
 
             try
             {
-                _ = Call(callable, JsValue.Undefined, arguments);
+                _ = CallJob(callable, arguments, referrer);
             }
             catch (JsThrow thrown)
             {
@@ -227,7 +235,7 @@ internal sealed partial class JsEngine
     /// the first.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=D67CCF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=FB280D
     // Broiler-Falsified-If: more than one job runs in a step, or a step reports a queue state the queue does not have
     // Broiler-Human:        PENDING
     internal bool StepOneJob(out JsValue thrown)
@@ -240,11 +248,11 @@ internal sealed partial class JsEngine
         }
 
         Charge(1);
-        var (callable, arguments) = jobs.Dequeue();
+        var (callable, arguments, referrer) = jobs.Dequeue();
 
         try
         {
-            _ = Call(callable, JsValue.Undefined, arguments);
+            _ = CallJob(callable, arguments, referrer);
         }
         catch (JsThrow raised)
         {
@@ -253,6 +261,31 @@ internal sealed partial class JsEngine
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Calls one dequeued job with the script or module that queued it as the active one.
+    /// </summary>
+    /// <remarks>
+    /// A job whose callable is a guest function enters a frame that sets its own referrer anyway; a
+    /// built-in one - <c>eval</c>, the <c>Function</c> constructor, a host function - enters none,
+    /// and this is what it then sees. The previous referrer is restored however the job ends.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B91E1A
+    // Broiler-Human:        PENDING
+    private JsValue CallJob(JsValue callable, JsValue[] arguments, string referrer)
+    {
+        var outerReferrer = activeReferrer;
+        activeReferrer = referrer;
+
+        try
+        {
+            return Call(callable, JsValue.Undefined, arguments);
+        }
+        finally
+        {
+            activeReferrer = outerReferrer;
+        }
     }
 
     /// <summary>
@@ -315,17 +348,19 @@ internal sealed partial class JsEngine
     /// where the second half of it happens.
     /// </para>
     /// <para>
-    /// <b>The direct form is admitted only where it means the same thing as the indirect one.</b>
-    /// A direct <c>eval</c> evaluates in the CALLER's scope, and this profile resolves every name
-    /// statically at lowering: the artifact the provider answers with was compiled without any
-    /// knowledge of the frame that asked for it, so its free names reach the global object. At the
-    /// top level of a script that is exactly right, because the caller's scope IS the global scope.
-    /// Inside a function it is not, and rather than answer a program that reads a local with a
-    /// global's value, this refuses by name and says why. That refusal is the published exclusion,
-    /// not a defect to be discovered later.
+    /// <b>The direct form reaches this method only where it means the same thing as the indirect
+    /// one.</b> A direct <c>eval</c> evaluates in the CALLER's scope, and the artifact this method
+    /// asks for is compiled without any knowledge of the frame that asked for it, so its free names
+    /// reach the global object. At the top level of a script with nothing between the call and the
+    /// body's entry record that is exactly right, because the caller's scope IS the global scope. A
+    /// site whose caller's artifact carries a scope-map row is evaluated against the caller's own
+    /// records by <see cref="EvaluateAtSite"/> instead (JSeal V14, JSD-0026); a direct call that
+    /// arrives here from anywhere else - a function unit whose site has no row - is refused by name
+    /// rather than answered with a global's value. That refusal is the published exclusion, not a
+    /// defect to be discovered later.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=EA0B7E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=F0977B
     // Broiler-Falsified-If: guest source becomes executable bytes without passing through the mediator
     // Broiler-Human:        PENDING
     internal JsValue Evaluate(JsValue[] arguments, bool direct, Format.JsFormat.FunctionFlags callerFlags)
@@ -344,10 +379,12 @@ internal sealed partial class JsEngine
         {
             throw Error(
                 "EvalError",
-                "a direct eval inside a function is not admitted: this profile resolves every " +
-                "name at lowering, so evaluated source cannot see the calling frame's bindings. " +
-                "An indirect eval - (0, eval)(source) - evaluates in the global scope and is " +
-                "admitted");
+                "a direct eval at this call site is not admitted: its artifact describes no scope " +
+                "for it - code whose scope reaches a module, a function body whose parameter list " +
+                "both calls eval and creates closures, or an artifact written without an eval " +
+                "scope map - so evaluated source cannot see the " +
+                "calling frame's bindings. An indirect eval - (0, eval)(source) - evaluates in " +
+                "the global scope and is admitted");
         }
 
         if (Loader is null)
@@ -363,6 +400,17 @@ internal sealed partial class JsEngine
         // Proportional to the source, because a guest that could buy an unbounded compilation with
         // one instruction would have found the hole every budget dimension exists to close.
         Charge(1 + (ulong)bytes.Length);
+
+        // A SOURCE THAT BEGINS WITH A CONTROL CHARACTER BEGINS NO PROGRAM, and it is answered here
+        // rather than sent. U+0000 to U+0008 and U+000E to U+001F are neither white space nor a line
+        // terminator and begin no token, so every front end refuses such a source - and the first two
+        // of them are the marks a module request and an eval request begin with, so sending one would
+        // ask the provider a different question than the guest did (JSeal V14). The answer is the
+        // one the provider's refusal would have become.
+        if (text.Length != 0 && (text[0] <= '\u0008' || text[0] is >= '\u000E' and <= '\u001F'))
+        {
+            return ThrowSyntaxError("the evaluated source is not a program this profile admits");
+        }
 
         // The request carries the profile's identity, a nesting depth of one, and the source. The
         // core fills in and enforces everything else - the operation the work is charged to, the
@@ -417,8 +465,1433 @@ internal sealed partial class JsEngine
         // IT RUNS IN THIS REALM AND NOT IN A NEW ONE. The handle is a separate verified artifact -
         // its own constants, its own code, its own function table - but the global object it
         // reaches is this engine's, which is what makes `eval("var f = function () {}")` define
-        // something the calling program can afterwards call.
+        // something the calling program can afterwards call. AND IT RUNS AS ITS CALLER'S SCRIPT OR
+        // MODULE: this is dynamic code, whatever referrer a provider compiled it with (JSD-0024
+        // section 20).
+        return RunEntry(evaluated, unit, activeReferrer);
+    }
+
+    /// <summary>
+    /// Performs a direct <c>eval</c> from one call site, or refuses it by name.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A direct evaluation without a site row is admitted only where it means what a global
+    /// evaluation means</b>, and three places that used to be admitted are not (JSD-0026 step 1). A
+    /// module's top level has bindings of its own - its declarations are slots and its imports are
+    /// indirections - so evaluating there globally answered a <c>ReferenceError</c> for a name the
+    /// module declares; since JSeal V15-module the lowering writes a row for every module site, so
+    /// only an artifact without one meets that refusal. A script's body with a block, a <c>for</c>-<c>let</c> head, a
+    /// <c>switch</c>, a <c>catch</c> or a <c>with</c> record around the call site has names the
+    /// global scope does not, and the frame's current record is not the one the body was entered
+    /// with exactly when one of those lies between: a block that declares nothing pushes no
+    /// record and binds nothing a global evaluation could miss. Each of these used to run the
+    /// source against the global scope and answer with the wrong binding's value.
+    /// </para>
+    /// <para>
+    /// <b>A value that is not a String is answered unchanged before anything is refused</b>,
+    /// because that is what <c>eval</c> does with one wherever it is called from: there is no
+    /// program to evaluate, so there is nothing about the calling scope to get wrong.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=C613DA
+    // Broiler-Falsified-If: a direct eval with no site row at a module's top level, or in a script body whose current record is not its entry record, evaluates the source instead of throwing an EvalError
+    // Broiler-Human:        PENDING
+    private JsValue EvaluateDirect(
+        JsProgram program,
+        int unitIndex,
+        int site,
+        System.Collections.Generic.List<JsEnvironment> scopes,
+        JsValue[] arguments,
+        JsValue thisValue,
+        JsCell? thisBinding,
+        JsValue newTarget,
+        JsScriptFunction? active)
+    {
+        if (arguments.Length == 0 || !arguments[0].IsString)
+        {
+            return arguments.Length == 0 ? JsValue.Undefined : arguments[0];
+        }
+
+        // A SITE THE CALLER'S MAP DESCRIBES IS EVALUATED AGAINST THE CALLER'S RECORDS, and every
+        // other site keeps the answer it had: the global path at a script body's top level, and the
+        // explicit refusal everywhere else (JSeal V14, JSD-0026 step 5).
+        if (program.EvalMap is { } map && map.TryFindSite((uint)site, out var described))
+        {
+            return EvaluateAtSite(
+                program, described, scopes[^1], arguments[0].AsString(),
+                thisValue, thisBinding, newTarget, active);
+        }
+
+        var unit = program.Functions[unitIndex];
+
+        if ((unit.Flags & Format.JsFormat.FunctionFlags.ProgramBody) != 0)
+        {
+            if (program.ModuleOfUnit[unitIndex] >= 0)
+            {
+                throw Error(
+                    "EvalError",
+                    "a direct eval at a module's top level is not admitted: the module's own " +
+                    "bindings and imports are not visible to evaluated source. An indirect " +
+                    "eval - (0, eval)(source) - evaluates in the global scope and is admitted");
+            }
+
+            if (scopes.Count != 1)
+            {
+                throw Error(
+                    "EvalError",
+                    "a direct eval inside a block, loop head, switch, catch clause or with " +
+                    "statement that has bindings of its own is not admitted: evaluated source " +
+                    "cannot see them. An indirect eval - (0, eval)(source) - evaluates in the " +
+                    "global scope and is admitted");
+            }
+
+            // A SCRIPT'S OWN TOP LEVEL WITH NOTHING BETWEEN THE CALL AND THE BODY'S ENTRY RECORD is
+            // the global scope and nothing else, so the evaluation is global eval code: its lexical
+            // declarations stay its own, it inherits the script's strictness, and its `var`s and
+            // functions become configurable globals after the global checks (JSeal V15, JSD-0026
+            // step 8). It answers with the caller's `this`, which at a script's top level is the
+            // global one.
+            return EvaluateGlobal(
+                arguments[0].AsString(),
+                unit.IsStrict ? Format.JsFormat.EvalRequestFlags.Strict : Format.JsFormat.EvalRequestFlags.None,
+                thisValue);
+        }
+
+        return Evaluate(arguments, direct: true, unit.Flags);
+    }
+
+    /// <summary>
+    /// Evaluates a String as global eval code: an indirect <c>eval</c>, or a direct one at a script's
+    /// top level with no record around the call.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is eval code and not a script</b> (JSeal V15, JSD-0026 step 8), which is four differences
+    /// a script lowering could not give: the program's <c>let</c>, <c>const</c> and <c>class</c>
+    /// declarations are its own and never the realm's lexical half; a strict program's <c>var</c>s
+    /// and functions are its own too; a sloppy program's become properties of the global object that
+    /// are configurable, so <c>delete</c> removes them; and before any is created the global checks run
+    /// - a <c>var</c> colliding with a global lexical declaration is a <c>SyntaxError</c> and a
+    /// function the global object cannot take is a <c>TypeError</c>, with nothing created either way.
+    /// </para>
+    /// <para>
+    /// <b>The route is the direct one's</b>: the source and the request flags - strict when a strict
+    /// script asked directly, never for an indirect call - go to the one provider as an eval request,
+    /// the answer is bound to it, and the boundary record it is entered with has no parent and a view
+    /// of the global scope alone.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=C997CA
+    // Broiler-Falsified-If: guest source becomes executable bytes without passing through the mediator, or a global evaluation's lexical declaration becomes a binding of the realm
+    // Broiler-Human:        PENDING
+    internal JsValue EvaluateGlobal(string text, Format.JsFormat.EvalRequestFlags flags, JsValue thisValue)
+    {
+        var (evaluated, unit, declaration) = LoadEvalCode(flags, text);
+        var view = JsEvalView.Global();
+
+        // NO CLASS ENCLOSES A GLOBAL EVALUATION, so a private name it uses and does not declare is
+        // the SyntaxError `AllPrivateIdentifiersValid` makes it (JSeal V15-finish).
+        if (declaration.PrivateNames.Length != 0)
+        {
+            ThrowSyntaxError(
+                "the evaluated source names the private name " + declaration.PrivateNames[0][1..] +
+                ", which no class encloses");
+        }
+
+        if (declaration.Introduces)
+        {
+            InstantiateEvalDeclarations(view, null, declaration);
+        }
+
+        var code = evaluated.Functions[(int)unit];
+        var boundary = new JsEnvironment((int)code.ScopeSlots, null, view);
+
+        // EVAL CODE RUNS AS ITS CALLER'S SCRIPT OR MODULE (PerformEval, JSD-0024 section 20).
+        return Execute(
+            evaluated,
+            (int)unit,
+            boundary,
+            thisValue,
+            System.Array.Empty<JsValue>(),
+            null,
+            JsValue.Undefined,
+            null,
+            null,
+            activeReferrer);
+    }
+
+    /// <summary>
+    /// Evaluates a String as a SCRIPT an embedder is running in this realm, and answers its completion
+    /// value (JSeal V15-host, JSD-0024 section 15).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is a script and not eval code</b>, which is everything the global eval path is not: its
+    /// <c>let</c>, <c>const</c> and <c>class</c> declarations are bindings of the realm's global lexical
+    /// environment that later scripts see, its <c>var</c>s and functions are non-configurable
+    /// properties of the global object, and <c>GlobalDeclarationInstantiation</c>'s checks run before
+    /// its first instruction - a lexical declaration colliding with an earlier script's lexical one or
+    /// with a non-configurable global property is a <c>SyntaxError</c>, a <c>var</c> or function
+    /// colliding with a global lexical one likewise, and a function or <c>var</c> the global object
+    /// cannot take a <c>TypeError</c>, with nothing created either way.
+    /// </para>
+    /// <para>
+    /// <b>The route is every guest-initiated load's, with the one mark no guest can write</b>: the
+    /// source, its name and the strictness the embedder asked for go to the provider as a script
+    /// request, the core verifies the answer under this operation's allowance, and the answer is
+    /// bound to the request. Whether a guest may evaluate source is the provider's policy for the
+    /// OTHER marks; a guest <c>eval</c> inside the script is still an eval request.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=1248A2
+    // Broiler-Falsified-If: a host script's source becomes executable bytes without passing through the mediator, or an answer that is not a script compiled under the requested strictness runs
+    // Broiler-Human:        PENDING
+    internal JsValue EvaluateScript(string text, string sourceName, bool strict)
+    {
+        if (Loader is null)
+        {
+            throw Error(
+                "EvalError",
+                "this composition registered no artifact provider, so no source can become code");
+        }
+
+        var payload = Format.JsFormat.ScriptRequest(
+            strict ? Format.JsFormat.ScriptRequestFlags.Strict : Format.JsFormat.ScriptRequestFlags.None,
+            sourceName,
+            text);
+
+        // Proportional to the request, exactly as every other evaluation is charged.
+        Charge(1 + (ulong)payload.Length);
+
+        var request = new VmArtifactRequest(
+            JavaScriptProfile.Id,
+            default,
+            default,
+            1,
+            default,
+            cancellation,
+            new VmBytes(payload));
+
+        var loaded = Loader.RequestLoad(in request);
+
+        // A REFUSAL IS THE SCRIPT'S `SyntaxError`, named by the source name the embedder gave: the
+        // provider holds the diagnostic and its position, and the reason vocabulary cannot carry it.
+        if (loaded.Reason == VmReason.ProviderRefused)
+        {
+            ThrowSyntaxError(
+                (sourceName.Length == 0 ? "the host script" : "the host script " + sourceName) +
+                " is not a program this profile admits");
+        }
+
+        if (loaded.Outcome != VmOutcome.Normal || !loaded.TryGetArtifact(out var artifact))
+        {
+            throw Error(
+                "EvalError",
+                "the artifact provider did not supply a program: " +
+                    loaded.Outcome.ToString() + "/" + loaded.Reason.ToString());
+        }
+
+        if (!artifact.TryGetState(out var state) || state is not JsProgram evaluated)
+        {
+            throw Error("EvalError", "the artifact provider answered with a foreign program");
+        }
+
+        RequireInstanceForm(evaluated);
+
+        if (!evaluated.TryFindEntry("main", out var unit) ||
+            (evaluated.Functions[(int)unit].Flags &
+                (Format.JsFormat.FunctionFlags.ProgramBody | Format.JsFormat.FunctionFlags.EvalCode)) !=
+                Format.JsFormat.FunctionFlags.ProgramBody ||
+            evaluated.ModuleOfUnit[(int)unit] >= 0 ||
+            (strict && !evaluated.Functions[(int)unit].IsStrict))
+        {
+            throw Error(
+                "EvalError",
+                "the artifact provider answered for another goal: a host script is answered by a " +
+                "script compiled under the strictness its request asked for");
+        }
+
+        // IT RUNS IN THIS REALM AND NOT IN A NEW ONE, through the one entry every script takes.
         return RunEntry(evaluated, unit);
+    }
+
+    /// <summary>
+    /// Asks the provider for eval code compiled under <paramref name="flags"/>, and binds its answer to
+    /// the request or refuses it by name.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The route is the one every guest-initiated load takes, with a marked payload</b> (JSD-0026
+    /// sections 5 and 8): the source and the request flags go to the one provider the composition
+    /// registered, which is asked once per evaluation and may refuse, and the core verifies what it
+    /// answers before a byte of it runs, under this operation's allowance and at a depth it counts.
+    /// </para>
+    /// <para>
+    /// <b>The answer is bound to the request.</b> It must be a program whose entry named <c>eval</c> is
+    /// eval code compiled under the flags that were asked for, and anything else - a provider that
+    /// compiled the payload as a script, or for another site - is refused with an <c>EvalError</c>
+    /// naming a provider that answered for another goal. A program an earlier lowering marked as
+    /// one this build does not run - the refusal of sloppy declarations JSeal V14 wrote, or of a
+    /// reference to the caller's <c>super</c> or private names V14 and V15 wrote - is refused by
+    /// name before its first instruction.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=541E1E
+    // Broiler-Falsified-If: guest source becomes executable bytes without passing through the mediator, or an answer that is not eval code compiled under the requested flags is returned
+    // Broiler-Human:        PENDING
+    private (JsProgram Program, uint Unit, JsEvalDeclaration Declaration) LoadEvalCode(
+        Format.JsFormat.EvalRequestFlags flags, string text)
+    {
+        if (Loader is null)
+        {
+            throw Error(
+                "EvalError",
+                "this composition registered no artifact provider, so no source can become code");
+        }
+
+        var payload = Format.JsFormat.EvalRequest(flags, text);
+
+        // Proportional to the source, exactly as every other evaluation is charged.
+        Charge(1 + (ulong)(payload.Length - 2));
+
+        var request = new VmArtifactRequest(
+            JavaScriptProfile.Id,
+            default,
+            default,
+            1,
+            default,
+            cancellation,
+            new VmBytes(payload));
+
+        var loaded = Loader.RequestLoad(in request);
+
+        if (loaded.Reason == VmReason.ProviderRefused)
+        {
+            ThrowSyntaxError("the evaluated source is not a program this profile admits");
+        }
+
+        if (loaded.Outcome != VmOutcome.Normal || !loaded.TryGetArtifact(out var artifact))
+        {
+            throw Error(
+                "EvalError",
+                "the artifact provider did not supply a program: " +
+                    loaded.Outcome.ToString() + "/" + loaded.Reason.ToString());
+        }
+
+        if (!artifact.TryGetState(out var state) || state is not JsProgram evaluated)
+        {
+            throw Error("EvalError", "the artifact provider answered with a foreign program");
+        }
+
+        RequireInstanceForm(evaluated);
+
+        if (!evaluated.TryFindEntry("eval", out var unit) ||
+            (evaluated.Functions[(int)unit].Flags & Format.JsFormat.FunctionFlags.EvalCode) == 0 ||
+            evaluated.EvalMap is not { } answered ||
+            !answered.TryFindDeclaration((int)unit, out var declaration) ||
+            declaration.Flags != flags)
+        {
+            throw Error(
+                "EvalError",
+                "the artifact provider answered for another goal: an eval is answered by eval " +
+                "code compiled under the flags its call asked for");
+        }
+
+        switch (declaration.Refusal)
+        {
+            case Format.JsFormat.EvalRefusal.VarDeclarations:
+                throw Error(
+                    "EvalError",
+                    "the evaluated program carries the refusal of sloppy var and function " +
+                    "declarations an earlier build wrote; this build instantiates them itself");
+
+            case Format.JsFormat.EvalRefusal.SuperReference:
+                throw Error(
+                    "EvalError",
+                    "a direct eval whose source refers to the calling method's super is not admitted");
+
+            case Format.JsFormat.EvalRefusal.PrivateName:
+                throw Error(
+                    "EvalError",
+                    "a direct eval whose source names a private name of the calling class is not " +
+                    "admitted");
+        }
+
+        return (evaluated, unit, declaration);
+    }
+
+    /// <summary>
+    /// Performs the part of <c>EvalDeclarationInstantiation</c> that reaches outside a sloppy
+    /// evaluation: every check first, then the caller's new bindings.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Nothing is created until every check has passed</b> (JSeal V15, JSD-0026 step 7). The walk
+    /// goes from the site's innermost record to the variable environment through the caller's
+    /// verified map, one row and one record at a time: a lexical binding of a declared name in any
+    /// record on the way - a block's, a <c>for</c>-<c>let</c> head's, a <c>switch</c>'s, an enclosing
+    /// evaluation's own, or a function's top-level <c>let</c>, <c>const</c> or <c>class</c> - is a
+    /// <c>SyntaxError</c>. A <c>with</c> record is passed, because it holds no declarations, and so is
+    /// a catch clause's parameter, whatever its form: the pinned ES2026 text exempts the record of a
+    /// <c>Catch</c> clause (Annex B.3.4, normative-optional and supported here) and says nothing about
+    /// the parameter's shape. A declared name the function record already binds as a <c>var</c>, a
+    /// parameter, a function or <c>arguments</c> is that binding; everything else becomes a binding
+    /// of the function's eval-variables set. At the global environment a declared name that is a
+    /// global lexical declaration is a <c>SyntaxError</c> and a function or <c>var</c> the global
+    /// object cannot take a <c>TypeError</c>, exactly as <c>CanDeclareGlobalFunction</c> and
+    /// <c>CanDeclareGlobalVar</c> answer; what passes becomes a configurable property.
+    /// </para>
+    /// <para>
+    /// <b>An Annex B block function is hoisted per evaluation</b>, when no lexical binding of its name
+    /// lies between the call and the variable environment - a catch clause's parameter again
+    /// excepted - and, at the global environment, when the name is no global lexical declaration and
+    /// the global object could take a <c>var</c> of it. A hoisted name gets a binding holding
+    /// <c>undefined</c> unless it is already declared, and only a hoisted name is written when its
+    /// declaration is evaluated.
+    /// </para>
+    /// <para>
+    /// <b>The order of creation is the specification's</b>: the Annex B names, then the functions -
+    /// whose bindings are made here and written by the program's first instructions, which create the
+    /// function objects - then the <c>var</c>s, so a global evaluation that declares both shows the
+    /// function's property before the <c>var</c>'s. Each record walked and each name checked is
+    /// charged, so no loop here is unmetered.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=053159
+    // Broiler-Falsified-If: a binding is created in the caller's scope or on the global object before a later check of the same evaluation throws, or a declared name is made a binding past a lexical binding of the same name that is not a catch parameter
+    // Broiler-Human:        PENDING
+    private void InstantiateEvalDeclarations(
+        JsEvalView view, JsEnvironment? callerRecord, JsEvalDeclaration declaration)
+    {
+        var names = declaration.VarNames.Length + declaration.FunctionNames.Length;
+        var annexB = declaration.AnnexBNames;
+        var blocked = annexB.Length == 0 ? null : new bool[annexB.Length];
+        JsEnvironment? variableRecord = null;
+        JsEvalShape? variableShape = null;
+
+        if (view.Program is { } program)
+        {
+            var map = program.EvalMap;
+            var row = view.Site!.Scope;
+            var record = callerRecord;
+
+            while (true)
+            {
+                Charge(1 + (ulong)names + (ulong)annexB.Length);
+
+                if (record is null || map is null || (uint)row >= (uint)map.Shapes.Length)
+                {
+                    throw new JsAbort(JsAbortKind.InternalDefect, "an eval view named no record");
+                }
+
+                var shape = map.Shapes[row];
+
+                if (shape.Kind != Format.JsFormat.EvalScopeKind.With)
+                {
+                    RequireNoLexical(shape, declaration.VarNames);
+                    RequireNoLexical(shape, declaration.FunctionNames);
+
+                    for (var at = 0; at < annexB.Length; at++)
+                    {
+                        if (shape.BindsLexically(annexB[at]))
+                        {
+                            blocked![at] = true;
+                        }
+                    }
+                }
+
+                if (shape.Kind is Format.JsFormat.EvalScopeKind.Function or
+                    Format.JsFormat.EvalScopeKind.FunctionBody)
+                {
+                    if (record.Binding is not null)
+                    {
+                        throw new JsAbort(
+                            JsAbortKind.InternalDefect, "an eval view's function row named an object record");
+                    }
+
+
+                    variableRecord = record;
+                    variableShape = shape;
+                    break;
+                }
+
+                if (shape.Kind == Format.JsFormat.EvalScopeKind.Program)
+                {
+                    break;
+                }
+
+                if (shape.Kind == Format.JsFormat.EvalScopeKind.Eval)
+                {
+                    // AN ENCLOSING EVALUATION IS SLOPPY, or this one could not be: its variable
+                    // environment is its own caller's, so the walk goes on through the view its
+                    // boundary was entered with - to the global one when that evaluation was global.
+                    if (record.EvalView is not { } outer)
+                    {
+                        throw new JsAbort(
+                            JsAbortKind.InternalDefect, "an eval view's eval row named no boundary");
+                    }
+
+                    if (outer.Program is null)
+                    {
+                        break;
+                    }
+
+                    map = outer.Program.EvalMap;
+                    row = outer.Site!.Scope;
+                    record = record.Parent;
+                    continue;
+                }
+
+                row = shape.Parent;
+                record = record.Parent;
+            }
+        }
+
+        var global = variableRecord is null;
+
+        if (global)
+        {
+            Charge(1 + (ulong)names);
+            RequireNoGlobalLexical(declaration.VarNames);
+            RequireNoGlobalLexical(declaration.FunctionNames);
+
+            // The specification visits the functions last to first; which one is named first changes
+            // only the message of the TypeError, and the order kept here is that one.
+            for (var at = declaration.FunctionNames.Length - 1; at >= 0; at--)
+            {
+                if (!CanDeclareGlobalFunction(declaration.FunctionNames[at]))
+                {
+                    ThrowTypeError(
+                        "the global object cannot take a function named " + declaration.FunctionNames[at]);
+                }
+            }
+
+            foreach (var name in declaration.VarNames)
+            {
+                if (!CanDeclareGlobalVar(name))
+                {
+                    ThrowTypeError("the global object cannot take a var named " + name);
+                }
+            }
+        }
+
+        var declared = new System.Collections.Generic.HashSet<string>(
+            declaration.FunctionNames, System.StringComparer.Ordinal);
+
+        for (var at = 0; at < annexB.Length; at++)
+        {
+            var name = annexB[at];
+            Charge(1);
+
+            if (blocked![at])
+            {
+                continue;
+            }
+
+            if (global &&
+                ((Realm.HasLexicals && Realm.TryLexical(name, out _)) || !CanDeclareGlobalVar(name)))
+            {
+                continue;
+            }
+
+            if (!declared.Contains(name) &&
+                System.Array.IndexOf(declaration.VarNames, name) < 0)
+            {
+                if (global)
+                {
+                    CreateGlobalVarBinding(name);
+                }
+                else
+                {
+                    IntroduceEvalVariable(variableRecord!, variableShape!, name);
+                }
+            }
+
+            declared.Add(name);
+        }
+
+        foreach (var name in declaration.FunctionNames)
+        {
+            Charge(1);
+
+            if (global)
+            {
+                CreateGlobalFunctionBinding(name);
+            }
+            else
+            {
+                IntroduceEvalVariable(variableRecord!, variableShape!, name);
+            }
+        }
+
+        foreach (var name in declaration.VarNames)
+        {
+            Charge(1);
+
+            if (global)
+            {
+                CreateGlobalVarBinding(name);
+            }
+            else
+            {
+                IntroduceEvalVariable(variableRecord!, variableShape!, name);
+            }
+        }
+
+        view.VariableRecord = variableRecord;
+        view.VariableShape = variableShape;
+        view.Declared = declared;
+    }
+
+    /// <summary>
+    /// Performs the checks of <c>GlobalDeclarationInstantiation</c> for one script body, and the
+    /// definition half of its function bindings, before the body's first instruction.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Every check runs before anything is created</b> (JSeal V15-host), in the pinned ES2026
+    /// order: a lexically declared name that is already a global lexical declaration, or a
+    /// non-configurable own property of the global object (<c>HasRestrictedGlobalProperty</c>), is a
+    /// <c>SyntaxError</c>; a <c>var</c> or function name that is a global lexical declaration is a
+    /// <c>SyntaxError</c>; a function the global object cannot take (<c>CanDeclareGlobalFunction</c>,
+    /// last to first) and then a <c>var</c> it cannot take (<c>CanDeclareGlobalVar</c>) is a
+    /// <c>TypeError</c>. The edition has no <c>[[VarNames]]</c> list, so a <c>let</c> over a
+    /// configurable global - an eval-introduced <c>var</c>, say - is admitted.
+    /// </para>
+    /// <para>
+    /// <b>What passes is created by the body's own instructions</b>, which follow here unchanged, with
+    /// one step taken first: each function name gets the property <c>CreateGlobalFunctionBinding</c>
+    /// defines - writable, enumerable and not configurable, replacing an absent or configurable one
+    /// (an accessor included) and leaving a non-configurable one's attributes alone - so the body's
+    /// write stores the function into the right property. The global lexical bindings the body then
+    /// declares can no longer meet an existing one.
+    /// </para>
+    /// <para>
+    /// <b>An Annex B candidate this lowering cannot skip is refused by name.</b> The specification
+    /// hoists a block-level function only when its name is no global lexical declaration and the
+    /// global object could take a <c>var</c> of it, and skips it otherwise; the body's instructions
+    /// here create the alias and write it unconditionally, which would write an earlier script's
+    /// lexical binding or grow a non-extensible global. So such a script is an <c>EvalError</c>
+    /// before anything is created, rather than a wrong answer. Every name checked is charged.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=C0B3E2
+    // Broiler-Falsified-If: a binding is created on the global object or in the global lexical environment before a later check of the same script throws, or a lexical declaration is admitted over an existing global lexical declaration or a non-configurable global property
+    // Broiler-Human:        PENDING
+    private void InstantiateGlobalDeclarations(JsScriptDeclaration declaration)
+    {
+        var global = Realm.GlobalObject;
+
+        Charge(
+            1 + (ulong)declaration.LexicalNames.Length + (ulong)declaration.VarNames.Length +
+            (ulong)declaration.FunctionNames.Length + (ulong)declaration.AnnexBNames.Length);
+
+        foreach (var name in declaration.LexicalNames)
+        {
+            if (Realm.HasLexicals && Realm.TryLexical(name, out _))
+            {
+                ThrowSyntaxError("a script cannot declare " + name + ": it is already a global lexical declaration");
+            }
+
+            if (global.TryGetOwnProperty(name, out var existing) && !existing.Configurable)
+            {
+                ThrowSyntaxError(
+                    "a script cannot declare " + name + " lexically: it is a non-configurable property of the global object");
+            }
+        }
+
+        RequireNoScriptLexical(declaration.VarNames);
+        RequireNoScriptLexical(declaration.FunctionNames);
+
+        for (var at = declaration.FunctionNames.Length - 1; at >= 0; at--)
+        {
+            if (!CanDeclareGlobalFunction(declaration.FunctionNames[at]))
+            {
+                ThrowTypeError("the global object cannot take a function named " + declaration.FunctionNames[at]);
+            }
+        }
+
+        foreach (var name in declaration.VarNames)
+        {
+            if (!CanDeclareGlobalVar(name))
+            {
+                ThrowTypeError("the global object cannot take a var named " + name);
+            }
+        }
+
+        foreach (var name in declaration.AnnexBNames)
+        {
+            if (System.Array.IndexOf(declaration.FunctionNames, name) >= 0 ||
+                System.Array.IndexOf(declaration.VarNames, name) >= 0)
+            {
+                continue;
+            }
+
+            if ((Realm.HasLexicals && Realm.TryLexical(name, out _)) || !CanDeclareGlobalVar(name))
+            {
+                throw Error(
+                    "EvalError",
+                    "a script whose block-level function " + name + " Annex B would not hoist - a " +
+                    "global lexical declaration of that name exists, or the global object cannot " +
+                    "take it - is not admitted: this lowering writes the alias unconditionally");
+            }
+        }
+
+        foreach (var name in declaration.FunctionNames)
+        {
+            if (!global.TryGetOwnProperty(name, out var existing) || existing.Configurable)
+            {
+                global.SetOwnProperty(
+                    name,
+                    JsProperty.Data(
+                        JsValue.Undefined, JsPropertyAttributes.Writable | JsPropertyAttributes.Enumerable));
+            }
+        }
+    }
+
+    /// <summary>Throws the conflict <c>SyntaxError</c> when a global lexical declaration has one of a script's <c>var</c>-scoped <paramref name="names"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=395810
+    // Broiler-Human:        PENDING
+    private void RequireNoScriptLexical(string[] names)
+    {
+        if (!Realm.HasLexicals)
+        {
+            return;
+        }
+
+        foreach (var name in names)
+        {
+            if (Realm.TryLexical(name, out _))
+            {
+                ThrowSyntaxError("a script cannot declare var " + name + ": it is a global lexical declaration");
+            }
+        }
+    }
+
+    /// <summary>Throws the conflict <c>SyntaxError</c> when a row binds one of <paramref name="names"/> lexically.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6B1830
+    // Broiler-Human:        PENDING
+    private void RequireNoLexical(JsEvalShape shape, string[] names)
+    {
+        foreach (var name in names)
+        {
+            if (shape.BindsLexically(name))
+            {
+                ThrowSyntaxError(
+                    "a direct eval cannot declare var " + name +
+                    ": a lexical declaration, or a parameter the evaluation's parameter list binds, of the same " +
+                    "name lies between the call and its variable environment");
+            }
+        }
+    }
+
+    /// <summary>Throws the conflict <c>SyntaxError</c> when a global lexical declaration has one of <paramref name="names"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EB55E4
+    // Broiler-Human:        PENDING
+    private void RequireNoGlobalLexical(string[] names)
+    {
+        if (!Realm.HasLexicals)
+        {
+            return;
+        }
+
+        foreach (var name in names)
+        {
+            if (Realm.TryLexical(name, out _))
+            {
+                ThrowSyntaxError(
+                    "an eval cannot declare var " + name + ": it is a global lexical declaration");
+            }
+        }
+    }
+
+    /// <summary>The specification's <c>CanDeclareGlobalFunction</c>, over this realm's global object.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C0336A
+    // Broiler-Human:        PENDING
+    private bool CanDeclareGlobalFunction(string name)
+    {
+        var global = Realm.GlobalObject;
+
+        if (!global.TryGetOwnProperty(name, out var existing))
+        {
+            return global.Extensible;
+        }
+
+        return existing.Configurable || (!existing.IsAccessor && existing.Writable && existing.Enumerable);
+    }
+
+    /// <summary>The specification's <c>CanDeclareGlobalVar</c>, over this realm's global object.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F88789
+    // Broiler-Human:        PENDING
+    private bool CanDeclareGlobalVar(string name) =>
+        Realm.GlobalObject.HasOwnProperty(name) || Realm.GlobalObject.Extensible;
+
+    /// <summary>
+    /// The specification's <c>CreateGlobalVarBinding</c> with a deletable binding: a configurable
+    /// property holding <c>undefined</c>, unless the global object already has one of the name.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7BBBC9
+    // Broiler-Human:        PENDING
+    private void CreateGlobalVarBinding(string name)
+    {
+        var global = Realm.GlobalObject;
+
+        if (!global.HasOwnProperty(name) && global.Extensible)
+        {
+            global.SetOwnProperty(name, JsProperty.Data(JsValue.Undefined, JsPropertyAttributes.Default));
+        }
+    }
+
+    /// <summary>
+    /// The definition half of the specification's <c>CreateGlobalFunctionBinding</c> with a deletable
+    /// binding; the program's first instructions write the function object into it.
+    /// </summary>
+    /// <remarks>
+    /// An absent or configurable property is replaced by a writable, enumerable, configurable data
+    /// property - an accessor included, which is what "if a binding already exists, it is replaced"
+    /// means; a non-configurable one, which <see cref="CanDeclareGlobalFunction"/> admitted only as a
+    /// writable, enumerable data property, keeps its attributes.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E28910
+    // Broiler-Human:        PENDING
+    private void CreateGlobalFunctionBinding(string name)
+    {
+        var global = Realm.GlobalObject;
+
+        if (!global.TryGetOwnProperty(name, out var existing) || existing.Configurable)
+        {
+            global.SetOwnProperty(name, JsProperty.Data(JsValue.Undefined, JsPropertyAttributes.Default));
+        }
+    }
+
+    /// <summary>
+    /// Gives a function's variable environment a binding of <paramref name="name"/> holding
+    /// <c>undefined</c>, unless it has one: a slot the function declares, or an earlier evaluation's.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=01E0CE
+    // Broiler-Human:        PENDING
+    private void IntroduceEvalVariable(JsEnvironment record, JsEvalShape shape, string name)
+    {
+        if (shape.Binds(name))
+        {
+            return;
+        }
+
+        var introduced = record.EvalVariables;
+
+        if (introduced is null)
+        {
+            introduced = new JsEvalVariables();
+            Retain(64);
+            record.EvalVariables = introduced;
+        }
+
+        if (!introduced.HasOwnProperty(name))
+        {
+            // A BINDING NUMBER THE GUEST CONTROLS is retained like a collection entry, and it is
+            // bounded by the source bytes the evaluation already paid for (JSD-0026 section 10).
+            Retain(96);
+            introduced.SetOwnProperty(name, JsProperty.Data(JsValue.Undefined, JsPropertyAttributes.Default));
+        }
+    }
+
+    /// <summary>
+    /// Writes one name of the variable environment an evaluation's boundary was entered with: the
+    /// write <see cref="Format.JsOpcode.StoreEvalVariable"/> performs.
+    /// </summary>
+    /// <remarks>
+    /// A name the evaluation's instantiation did not declare - an Annex B alias the caller's bindings
+    /// kept from hoisting - is not written. At a function's environment the write lands in the slot the
+    /// function declares or in its eval-variables set, recreating a binding a <c>delete</c> removed, as
+    /// <c>SetMutableBinding</c> does for a sloppy caller; at the global environment it is the global
+    /// environment's <c>SetMutableBinding</c>: a global lexical binding when one has the name, and a
+    /// sloppy <c>Set</c> on the global object otherwise.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=19B50E
+    // Broiler-Falsified-If: the write reaches a record other than the evaluation's variable environment, or writes a name its instantiation did not declare
+    // Broiler-Human:        PENDING
+    private void WriteEvalVariable(JsEnvironment boundary, string name, JsValue value)
+    {
+        var view = boundary.EvalView!;
+
+        if (view.Declared is not { } declared || !declared.Contains(name))
+        {
+            return;
+        }
+
+        if (view.VariableRecord is { } record)
+        {
+            if (view.VariableShape!.TryFind(name, out var slot, out _, out _))
+            {
+                if (slot >= record.Slots.Length)
+                {
+                    throw new JsAbort(JsAbortKind.InternalDefect, "an eval scope map named no slot");
+                }
+
+                record.Slots[slot] = value;
+                return;
+            }
+
+            var introduced = record.EvalVariables;
+
+            if (introduced is null)
+            {
+                introduced = new JsEvalVariables();
+                Retain(64);
+                record.EvalVariables = introduced;
+            }
+
+            if (!introduced.HasOwnProperty(name))
+            {
+                Retain(96);
+            }
+
+            introduced.SetOwnProperty(name, JsProperty.Data(value, JsPropertyAttributes.Default));
+            return;
+        }
+
+        if (Realm.HasLexicals && Realm.TryLexical(name, out var bound))
+        {
+            if (!bound.Initialised)
+            {
+                ThrowReferenceError("cannot access " + name + " before its declaration");
+            }
+
+            if (bound.Mutable)
+            {
+                bound.Value = value;
+            }
+
+            return;
+        }
+
+        SetProperty(JsValue.Object(Realm.GlobalObject), name, value, false);
+    }
+
+    /// <summary>
+    /// Evaluates a String as direct <c>eval</c> code against one site's caller: its records, its
+    /// <c>this</c>, its <c>new.target</c> and its strictness.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The route is the one every guest-initiated load takes, with a marked payload</b> (JSD-0026
+    /// sections 5 and 8): the source and the site's request flags go to the one provider the
+    /// composition registered, which is asked once per evaluation and may refuse, and the core
+    /// verifies what it answers before a byte of it runs, under this operation's allowance and at a
+    /// depth it counts. Compile permission is therefore the provider's answer here exactly as it is
+    /// for an indirect <c>eval</c>; the scope map grants nothing.
+    /// </para>
+    /// <para>
+    /// <b>The answer is bound to the request.</b> It must be a program whose entry named <c>eval</c>
+    /// is eval code compiled under the flags the site asked for, and anything else - a provider that
+    /// compiled the payload as a script, or for another site - is refused with an <c>EvalError</c>
+    /// naming a provider that answered for another goal. A program the provider compiled and this
+    /// build does not run - a sloppy <c>var</c> or function declaration, a reference to the caller's
+    /// <c>super</c> or to a private name - is refused by name before its first instruction.
+    /// </para>
+    /// <para>
+    /// <b>The boundary record is new for every evaluation and its parent is the caller's current
+    /// record</b>, so two activations of one caller, and two evaluations in one activation, never
+    /// share the evaluated program's own bindings, while every write the program makes to one of
+    /// its caller's is a write to the caller's own slot - which every closure over that record sees.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=9109EA
+    // Broiler-Falsified-If: guest source becomes executable bytes without passing through the mediator, or an answer that is not eval code compiled under the site's flags runs
+    // Broiler-Human:        PENDING
+    private JsValue EvaluateAtSite(
+        JsProgram caller,
+        JsEvalSite site,
+        JsEnvironment record,
+        string text,
+        JsValue thisValue,
+        JsCell? thisBinding,
+        JsValue newTarget,
+        JsScriptFunction? active)
+    {
+        var (evaluated, unit, declaration) = LoadEvalCode(site.Flags, text);
+        var view = new JsEvalView(caller, site);
+        var code = evaluated.Functions[(int)unit];
+        var boundary = new JsEnvironment((int)code.ScopeSlots, record, view);
+
+        // EVERY PRIVATE NAME THE PROGRAM USES AND DOES NOT DECLARE IS ONE A CLASS AROUND THE CALL
+        // DECLARES, or the evaluation is the SyntaxError `AllPrivateIdentifiersValid` makes it -
+        // before anything is instantiated (JSeal V15-finish). The names are found through the same
+        // verified map the program's own `LoadEvalName` reads them through, by a walk that reads
+        // class slots alone - an early error runs no guest code and asks no `with` object.
+        foreach (var name in declaration.PrivateNames)
+        {
+            if (!EvalPrivateNameDeclared(boundary, name))
+            {
+                ThrowSyntaxError(
+                    "the evaluated source names the private name " + name[1..] +
+                    ", which no class enclosing the call declares");
+            }
+        }
+
+        // A SLOPPY EVALUATION'S `var` AND FUNCTION DECLARATIONS ARE ITS CALLER'S, checked and made
+        // before its first instruction (JSeal V15, JSD-0026 steps 6-7).
+        if (declaration.Introduces)
+        {
+            InstantiateEvalDeclarations(view, record, declaration);
+        }
+
+        // EVAL CODE RUNS AS ITS CALLER'S SCRIPT OR MODULE (PerformEval, JSD-0024 section 20),
+        // which is the calling frame's and not necessarily the active function's.
+        return Execute(
+            evaluated,
+            (int)unit,
+            boundary,
+            thisValue,
+            System.Array.Empty<JsValue>(),
+            active,
+            newTarget,
+            thisBinding,
+            null,
+            activeReferrer);
+    }
+
+    /// <summary>The eval boundary record <paramref name="hops"/> records out from the current one.</summary>
+    /// <remarks>
+    /// An eval name instruction that reaches a record with no view was not emitted by the lowering
+    /// that wrote the verified program - the verifier admits these instructions only in eval code -
+    /// so the answer is an internal defect and never a lookup somewhere else.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=BFC809
+    // Broiler-Falsified-If: it answers a record that was not entered as an eval boundary
+    // Broiler-Human:        PENDING
+    private static JsEnvironment EvalBoundary(
+        System.Collections.Generic.List<JsEnvironment> scopes, int hops)
+    {
+        var boundary = scopes[^1].Ancestor(hops);
+
+        if (boundary?.EvalView is null)
+        {
+            throw new JsAbort(
+                JsAbortKind.InternalDefect, "an eval name instruction reached no eval boundary");
+        }
+
+        return boundary;
+    }
+
+    /// <summary>Where one of the caller's names lives, as an eval view resolved it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=99F935
+    // Broiler-Human:        PENDING
+    private readonly struct JsEvalBinding(
+        JsEnvironment? record,
+        int slot,
+        bool immutable,
+        JsObject? holder,
+        bool functionName = false,
+        JsProgram? importer = null)
+    {
+        /// <summary>The declarative record the name is a slot of, or null.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=240892
+        // Broiler-Human:        PENDING
+        internal JsEnvironment? Record { get; } = record;
+
+        /// <summary>The slot, when <see cref="Record"/> is set.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=897E94
+        // Broiler-Human:        PENDING
+        internal int Slot { get; } = slot;
+
+        /// <summary>Whether a write to the slot is a <c>TypeError</c>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=936BE6
+        // Broiler-Human:        PENDING
+        internal bool Immutable { get; } = immutable;
+
+        /// <summary>
+        /// Whether the slot is a named function expression's own name, which sloppy code's write
+        /// leaves alone rather than throwing (VM-FIX-D).
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C09ECA
+        // Broiler-Human:        PENDING
+        internal bool FunctionName { get; } = functionName;
+
+        /// <summary>The <c>with</c> object that has the name, or null.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3A0FD4
+        // Broiler-Human:        PENDING
+        internal JsObject? Object { get; } = holder;
+
+        /// <summary>
+        /// The program whose import table <see cref="Slot"/> indexes, when the name is one of a
+        /// module's imports (JSeal V15-module), or null.
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3D2B2D
+        // Broiler-Human:        PENDING
+        internal JsProgram? Importer { get; } = importer;
+    }
+
+    /// <summary>
+    /// Resolves one of the caller's names outward from an eval boundary, through the view it was
+    /// entered with.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The map and the chain are walked in step, one row and one record at a time</b>, starting at
+    /// the site's innermost row and the record the evaluation was entered under. A declarative row
+    /// answers with its slot of the record, a <c>with</c> row asks its record's object -
+    /// <c>HasProperty</c>, then <c>Symbol.unscopables</c>, as <see cref="ResolveName"/> does - and a
+    /// root ends the walk: a program row in the realm's global scope, which the caller answers with
+    /// a binding of neither kind, and an eval row, after its own names, by continuing through the
+    /// view ITS boundary record was entered with. Nothing is cached.
+    /// </para>
+    /// <para>
+    /// <b>A disagreement between the map and the chain is an internal defect</b>: a row the map does
+    /// not have, a <c>with</c> row over a record with no object, a slot the record does not have. The
+    /// verifier admitted the map against the code that pushes the records, so a disagreement means
+    /// one of them was not what the verifier read, and the walk stops rather than reading elsewhere.
+    /// </para>
+    /// <para>
+    /// <b>Each record walked is charged one unit</b>, as <see cref="ResolveName"/> charges, and the
+    /// walk is bounded by the chain, which the scope-depth ceiling bounds per unit.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=7216D6
+    // Broiler-Falsified-If: a name is answered from a slot the view's site row chain does not name, or from a record past a declarative binding of the same name
+    // Broiler-Human:        PENDING
+    private JsEvalBinding ResolveEvalName(JsEnvironment boundary, string name)
+    {
+        var view = boundary.EvalView!;
+
+        // A GLOBAL EVALUATION SEES THE GLOBAL SCOPE AND NOTHING ELSE (JSeal V15).
+        if (view.Program is null)
+        {
+            Charge(1);
+            return default;
+        }
+
+        var record = boundary.Parent;
+        var map = view.Program.EvalMap;
+        var row = view.Site!.Scope;
+
+        while (true)
+        {
+            Charge(1);
+
+            if (record is null || map is null || (uint)row >= (uint)map.Shapes.Length)
+            {
+                throw new JsAbort(JsAbortKind.InternalDefect, "an eval view named no record");
+            }
+
+            var shape = map.Shapes[row];
+
+            if (shape.Kind == Format.JsFormat.EvalScopeKind.With)
+            {
+                if (record.Binding is not { } holder)
+                {
+                    throw new JsAbort(
+                        JsAbortKind.InternalDefect, "an eval view's with row named a declarative record");
+                }
+
+                if (HasProperty(holder, name) && !Unscopable(holder, name))
+                {
+                    return new JsEvalBinding(null, 0, false, holder);
+                }
+            }
+            else if (shape.TryFind(name, out var slot, out var immutable, out var functionName))
+            {
+                if (record.Binding is not null || slot >= record.Slots.Length)
+                {
+                    throw new JsAbort(JsAbortKind.InternalDefect, "an eval scope map named no slot");
+                }
+
+                return new JsEvalBinding(record, slot, immutable, null, functionName);
+            }
+            else if (shape.TryFindImport(name, out var entry))
+            {
+                // A MODULE'S IMPORT IS READ THROUGH THE CALLER'S IMPORT TABLE, whose entry the
+                // verifier bounded (JSeal V15-module); the record is the module's own and holds
+                // no slot for it.
+                if (record.Binding is not null)
+                {
+                    throw new JsAbort(
+                        JsAbortKind.InternalDefect, "an eval view's module row named an object record");
+                }
+
+                return new JsEvalBinding(null, entry, true, null, false, view.Program);
+            }
+            else if (shape.Kind is (Format.JsFormat.EvalScopeKind.Function or
+                    Format.JsFormat.EvalScopeKind.FunctionBody) &&
+                record.EvalVariables is { } introduced &&
+                introduced.HasOwnProperty(name))
+            {
+                // A NAME AN EVALUATION INTRODUCED INTO THE FUNCTION is found after the function's own
+                // slots and before anything outside it, which is where its variable environment is
+                // (JSeal V15).
+                return new JsEvalBinding(null, 0, false, introduced);
+            }
+
+            // A MODULE'S RECORD ENDS ITS CHAIN AS A SCRIPT BODY'S DOES, in the realm's global scope
+            // (JSeal V15-module).
+            if (shape.Kind is Format.JsFormat.EvalScopeKind.Program or Format.JsFormat.EvalScopeKind.Module)
+            {
+                return default;
+            }
+
+            if (shape.Kind == Format.JsFormat.EvalScopeKind.Eval)
+            {
+                if (record.EvalView is not { } outer)
+                {
+                    throw new JsAbort(
+                        JsAbortKind.InternalDefect, "an eval view's eval row named no boundary");
+                }
+
+                if (outer.Program is null)
+                {
+                    return default;
+                }
+
+                view = outer;
+                map = outer.Program.EvalMap;
+                row = outer.Site!.Scope;
+                record = record.Parent;
+                continue;
+            }
+
+            row = shape.Parent;
+            record = record.Parent;
+        }
+    }
+
+    /// <summary>
+    /// Whether a class around an eval boundary declares a private name, as the map's declarative
+    /// rows answer it.
+    /// </summary>
+    /// <remarks>
+    /// The walk is <see cref="ResolveEvalName"/>'s, row by row and record by record, but a
+    /// <c>with</c> row is passed over without asking its object and a function's evaluation-introduced
+    /// names are not consulted: only a class declares a private name, and the check this answers is
+    /// an early error, which runs no guest code and never shows guest code the profile's internal
+    /// <c>##</c> spelling (JSeal V15-finish).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=01D083
+    // Broiler-Falsified-If: it asks a with object or runs guest code, or answers true for a name no declarative row on the site's row chain names
+    // Broiler-Human:        PENDING
+    private bool EvalPrivateNameDeclared(JsEnvironment boundary, string name)
+    {
+        var view = boundary.EvalView!;
+
+        if (view.Program is null)
+        {
+            Charge(1);
+            return false;
+        }
+
+        var record = boundary.Parent;
+        var map = view.Program.EvalMap;
+        var row = view.Site!.Scope;
+
+        while (true)
+        {
+            Charge(1);
+
+            if (record is null || map is null || (uint)row >= (uint)map.Shapes.Length)
+            {
+                throw new JsAbort(JsAbortKind.InternalDefect, "an eval view named no record");
+            }
+
+            var shape = map.Shapes[row];
+
+            if (shape.Kind != Format.JsFormat.EvalScopeKind.With &&
+                shape.TryFind(name, out var slot, out _, out _))
+            {
+                if (record.Binding is not null || slot >= record.Slots.Length)
+                {
+                    throw new JsAbort(JsAbortKind.InternalDefect, "an eval scope map named no slot");
+                }
+
+                return true;
+            }
+
+            if (shape.Kind is Format.JsFormat.EvalScopeKind.Program or Format.JsFormat.EvalScopeKind.Module)
+            {
+                return false;
+            }
+
+            if (shape.Kind == Format.JsFormat.EvalScopeKind.Eval)
+            {
+                if (record.EvalView is not { } outer)
+                {
+                    throw new JsAbort(
+                        JsAbortKind.InternalDefect, "an eval view's eval row named no boundary");
+                }
+
+                if (outer.Program is null)
+                {
+                    return false;
+                }
+
+                view = outer;
+                map = outer.Program.EvalMap;
+                row = outer.Site!.Scope;
+                record = record.Parent;
+                continue;
+            }
+
+            row = shape.Parent;
+            record = record.Parent;
+        }
+    }
+
+    /// <summary>Reads a resolved binding, or the realm's global scope when it resolved to neither kind.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=940B72
+    // Broiler-Human:        PENDING
+    private JsValue ReadEvalBinding(JsEvalBinding binding, string name, bool orUndefined)
+    {
+        if (binding.Record is { } record)
+        {
+            // A BINDING IN ITS DEAD ZONE THROWS FOR `typeof` TOO, which is the one respect in which
+            // `typeof` of a declared name differs from `typeof` of one nobody declared.
+            if (record.Slots[binding.Slot].IsEmpty)
+            {
+                ThrowReferenceError("Cannot access a binding before initialisation");
+            }
+
+            return record.Slots[binding.Slot];
+        }
+
+        // AN IMPORT IS READ WHERE IT LIVES, every time: a live binding, in its dead zone until the
+        // exporting module initialises it (JSeal V15-module).
+        if (binding.Importer is { } importer)
+        {
+            return JsModuleNamespace.Read(importer.ImportBindings[binding.Slot], Graph(importer), this);
+        }
+
+        if (binding.Object is { } holder)
+        {
+            return GetProperty(JsValue.Object(holder), name);
+        }
+
+        if (Realm.HasLexicals && Realm.TryLexical(name, out var bound))
+        {
+            return ReadLexical(name, bound);
+        }
+
+        if (!HasProperty(Realm.GlobalObject, name))
+        {
+            return orUndefined ? JsValue.Undefined : ThrowReferenceError(name + " is not defined");
+        }
+
+        return GetProperty(JsValue.Object(Realm.GlobalObject), name);
+    }
+
+    /// <summary>Reads one of the caller's names from eval code.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6D2647
+    // Broiler-Human:        PENDING
+    private JsValue ReadEvalName(JsEnvironment boundary, string name, bool orUndefined) =>
+        ReadEvalBinding(ResolveEvalName(boundary, name), name, orUndefined);
+
+    /// <summary>Writes one of the caller's names from eval code.</summary>
+    /// <remarks>
+    /// <b>The rules are the caller's own instructions' rules</b>: a slot in its dead zone is a
+    /// <c>ReferenceError</c> and an immutable one a <c>TypeError</c>, as <c>StoreScoped</c> and
+    /// <c>ThrowImmutable</c> answer; a <c>with</c> object's property is set on the object; and a name
+    /// nothing binds is <c>StoreGlobal</c>'s question, asked with the evaluated program's strictness
+    /// - so strict eval code cannot create a global by assignment and sloppy eval code can.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=290144
+    // Broiler-Falsified-If: a write through the map reaches a slot the map does not name, or succeeds on an immutable or uninitialised binding
+    // Broiler-Human:        PENDING
+    private void WriteEvalName(JsEnvironment boundary, string name, JsValue value, bool strict)
+    {
+        var binding = ResolveEvalName(boundary, name);
+
+        if (binding.Record is { } record)
+        {
+            if (record.Slots[binding.Slot].IsEmpty)
+            {
+                ThrowReferenceError("Cannot access a binding before initialisation");
+            }
+
+            if (binding.Immutable)
+            {
+                // A NAMED FUNCTION EXPRESSION'S OWN NAME IS IMMUTABLE AND NOT STRICT: sloppy eval
+                // code's `g = 1` is ignored, as the lowering ignores the same store outside eval,
+                // and strict eval code's throws. Until VM-FIX-D's review the slot was written.
+                if (binding.FunctionName && !strict)
+                {
+                    return;
+                }
+
+                throw Error("TypeError", "assignment to constant variable " + name);
+            }
+
+            record.Slots[binding.Slot] = value;
+            return;
+        }
+
+        // AN IMPORT IS AN IMMUTABLE BINDING, and assigning to one is the TypeError it is outside
+        // eval code (JSeal V15-module).
+        if (binding.Importer is not null)
+        {
+            throw Error("TypeError", "assignment to constant variable " + name);
+        }
+
+        if (binding.Object is { } holder)
+        {
+            SetProperty(JsValue.Object(holder), name, value, strict);
+            return;
+        }
+
+        if (Realm.HasLexicals && Realm.TryLexical(name, out var bound))
+        {
+            if (!bound.Initialised)
+            {
+                ThrowReferenceError("cannot access " + name + " before its declaration");
+            }
+
+            if (!bound.Mutable)
+            {
+                throw Error("TypeError", "assignment to constant variable " + name);
+            }
+
+            bound.Value = value;
+            return;
+        }
+
+        if (strict && !HasProperty(Realm.GlobalObject, name))
+        {
+            ThrowReferenceError(name + " is not defined");
+        }
+
+        SetProperty(JsValue.Object(Realm.GlobalObject), name, value, strict);
+    }
+
+    /// <summary>Answers <c>delete</c> of one of the caller's names from eval code.</summary>
+    /// <remarks>
+    /// A declarative binding is never deletable and answers <c>false</c>; a <c>with</c> object's
+    /// property is deleted from the object, with <c>DeleteProperty</c>'s strict rule; a global
+    /// answers what <c>DeleteGlobalBinding</c> answers; and a name nothing binds answers
+    /// <c>true</c>, because there was nothing to keep.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BA5477
+    // Broiler-Human:        PENDING
+    private JsValue DeleteEvalName(JsEnvironment boundary, string name, bool strict)
+    {
+        var binding = ResolveEvalName(boundary, name);
+
+        if (binding.Record is not null || binding.Importer is not null)
+        {
+            return JsValue.False;
+        }
+
+        if (binding.Object is { } holder)
+        {
+            var went = holder.DeleteOwnProperty(name);
+
+            if (!went && strict)
+            {
+                ThrowTypeError("Cannot delete property '" + name + "'");
+            }
+
+            return JsValue.Boolean(went);
+        }
+
+        return JsValue.Boolean(
+            (!Realm.HasLexicals || !Realm.TryLexical(name, out _)) &&
+            (!Realm.GlobalObject.HasOwnProperty(name) || Realm.GlobalObject.DeleteOwnProperty(name)));
     }
 
     /// <summary>
@@ -774,6 +2247,29 @@ internal sealed partial class JsEngine
     internal void Retain(ulong bytes) =>
         meter.ReportRetained(VmBudgetDimension.LiveBytes, bytes);
 
+    /// <summary>
+    /// Retains bytes only if every level admits them, aborting BEFORE the allocation otherwise.
+    /// </summary>
+    /// <remarks>
+    /// <b><see cref="Retain"/> reports after the fact, and a host that is handed a value cannot be
+    /// told one operation later that it should not have been.</b> A retention report returns
+    /// nothing and its refusal is latched for the next charge or poll, which is right for a guest
+    /// allocation whose result the same operation is about to fail anyway. An embedder building a
+    /// buffer through the host surface would already hold the value by then, so this gates on
+    /// <c>TryCharge</c> - which is the meter's own statement of how a caller that must observe a
+    /// ceiling refusal does it - and the refusal is decided before a byte is allocated.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=13932D
+    // Broiler-Falsified-If: a retention the LiveBytes ceiling refuses returns normally or leaves the allocation to happen
+    // Broiler-Human:        PENDING
+    internal void RetainOrAbort(ulong bytes)
+    {
+        if (!meter.TryCharge(VmBudgetDimension.LiveBytes, bytes))
+        {
+            throw new JsAbort(JsAbortKind.Exhausted, "the live-bytes ceiling does not admit the allocation");
+        }
+    }
+
     // ---- throwing ------------------------------------------------------------------------------
 
     /// <summary>Throws a <c>TypeError</c>.</summary>
@@ -872,7 +2368,7 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>The abstract operation <c>ToNumber</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D4B151
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B3645E
     // Broiler-Human:        PENDING
     internal double ToNumber(JsValue value) => value.Type switch
     {
@@ -889,6 +2385,15 @@ internal sealed partial class JsEngine
         // on the other conversion, and the reason is the same - a Symbol is a key nobody can
         // forge, and a key that silently became a number would be forgeable by arithmetic.
         JsType.Symbol => ThrowTypeError("Cannot convert a Symbol value to a number").AsNumber(),
+
+        // A BIGINT IS REFUSED BY `ToNumber` ITSELF, which is the specification's own answer and not
+        // a placeholder: `ToNumber(1n)` is a TypeError. The operations that may turn a BigInt into
+        // a Number - `Number(x)` alone - do so through `ToNumeric` and `JsBigInt.ToNumber`, and the
+        // operators and comparisons that take either type convert with `ToNumeric` (JSeal B03-B05).
+        // What stops here is unary `+`, `Math`, `isNaN` and every other operation that asks for a
+        // Number, none of which may produce one from a BigInt. Leaving it to the arm below would
+        // loop exactly as a Symbol did, because a BigInt is its own primitive.
+        JsType.BigInt => ThrowTypeError("Cannot convert a BigInt value to a number").AsNumber(),
         _ => ToNumber(ToPrimitive(value, "number")),
     };
 
@@ -906,8 +2411,31 @@ internal sealed partial class JsEngine
         return JsNumberFormat.ToNumber(text);
     }
 
+    /// <summary>
+    /// The abstract operation <c>ToNumeric</c>: a Number or a BigInt, from one conversion.
+    /// </summary>
+    /// <remarks>
+    /// An object is converted to a primitive once, with the <c>"number"</c> hint, and a BigInt it
+    /// answers is kept; anything else goes on to <see cref="ToNumber"/>, which is where a Symbol is
+    /// refused. A value of either numeric type is returned as it is, so a Number operand costs one
+    /// test more than it did.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=5C1B6B
+    // Broiler-Falsified-If: an object operand is converted to a primitive twice, or a BigInt reaches ToNumber through this operation
+    // Broiler-Human:        PENDING
+    internal JsValue ToNumeric(JsValue value)
+    {
+        if (value.Type is JsType.Number or JsType.BigInt)
+        {
+            return value;
+        }
+
+        var primitive = value.IsObject ? ToPrimitive(value, "number") : value;
+        return primitive.IsBigInt ? primitive : JsValue.Number(ToNumber(primitive));
+    }
+
     /// <summary>The abstract operation <c>ToString</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=02CC42
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C35FB5
     // Broiler-Human:        PENDING
     internal string ToStringValue(JsValue value) => value.Type switch
     {
@@ -923,11 +2451,173 @@ internal sealed partial class JsEngine
         // and `symbol.toString()` are the explicit forms the language nonetheless provides, and
         // they go through the Symbol intrinsic rather than through here.
         JsType.Symbol => ThrowTypeError("Cannot convert a Symbol value to a string").AsString(),
+
+        // A BIGINT HAS A STRING, AND IT IS EXACT: `BigInt::toString(x, 10)`, with no `n`. The
+        // conversion is charged on the digits it can produce before it produces them.
+        JsType.BigInt => BigIntText(value.AsBigInt()),
         _ => ToStringValue(ToPrimitive(value, "string")),
     };
 
+    /// <summary>
+    /// <c>BigInt::toString(x, 10)</c>, charged on the digits it can produce and on the square of the
+    /// value's width, step by step (JSeal B03).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=E0D910
+    // Broiler-Falsified-If: a wider BigInt is converted to text for the same charge as a narrower one
+    // Broiler-Human:        PENDING
+    private string BigIntText(JsBigInt value) => value.ToDecimalString(ChargeFuel);
+
+    /// <summary>
+    /// <see cref="Charge"/> as a delegate, made once, which is how the BigInt operations charge fuel
+    /// - and so meet the cancellation poll - between the steps of a long operation.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=718B75
+    // Broiler-Human:        PENDING
+    internal System.Action<ulong> ChargeFuel => chargeFuel ??= Charge;
+
+    /// <summary>The delegate <see cref="ChargeFuel"/> made.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5990A0
+    // Broiler-Human:        PENDING
+    private System.Action<ulong>? chargeFuel;
+
+    /// <summary>
+    /// The abstract operation <c>ToBigInt</c>: a BigInt from a Boolean, a BigInt or a String, after
+    /// one <c>ToPrimitive</c> with the <c>"number"</c> hint; anything else is refused as the
+    /// specification refuses it.
+    /// </summary>
+    /// <remarks>
+    /// <b>A Number is a TypeError here, not a conversion</b>: <c>BigInt.asIntN(8, 1)</c> must not
+    /// quietly accept a value that might have lost its low bits on the way in. The one caller that
+    /// takes a Number, the <c>BigInt</c> function, tests for it before calling this.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=66E934
+    // Broiler-Falsified-If: a Number, undefined, null or a Symbol converts to a BigInt, or a String outside StringIntegerLiteral answers anything but a SyntaxError
+    // Broiler-Human:        PENDING
+    internal JsBigInt ToBigInt(JsValue value) => PrimitiveToBigInt(ToPrimitive(value, "number"));
+
+    /// <summary><see cref="ToBigInt"/> after its <c>ToPrimitive</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=29E42B
+    // Broiler-Falsified-If: a Number, undefined, null or a Symbol converts to a BigInt
+    // Broiler-Human:        PENDING
+    internal JsBigInt PrimitiveToBigInt(JsValue primitive)
+    {
+        switch (primitive.Type)
+        {
+            case JsType.BigInt:
+                return primitive.AsBigInt();
+
+            case JsType.Boolean:
+                return primitive.AsBoolean() ? JsBigInt.One : JsBigInt.Zero;
+
+            case JsType.String:
+                return StringToBigIntOrThrow(primitive.AsString());
+
+            case JsType.Number:
+                throw Error(
+                    "TypeError",
+                    "Cannot convert " + JsNumberFormat.ToJsString(primitive.AsNumber()) + " to a BigInt");
+
+            case JsType.Symbol:
+                throw Error("TypeError", "Cannot convert a Symbol value to a BigInt");
+
+            default:
+                throw Error(
+                    "TypeError",
+                    "Cannot convert " + (primitive.Type == JsType.Null ? "null" : "undefined") + " to a BigInt");
+        }
+    }
+
+    /// <summary>
+    /// <c>StringToBigInt</c> for a caller that needs a value: a SyntaxError for text outside the
+    /// grammar, and the ceiling's RangeError for a value too wide for the realm.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=60A446
+    // Broiler-Falsified-If: a text outside StringIntegerLiteral answers a value, or a value past the ceiling is answered
+    // Broiler-Human:        PENDING
+    internal JsBigInt StringToBigIntOrThrow(string text)
+    {
+        if (!JsBigInt.TryParseStringInteger(text, ChargeFuel, out var parsed, out _))
+        {
+            throw Error(
+                "SyntaxError",
+                "Cannot convert " + (text.Length > 64 ? text[..64] + "..." : text) + " to a BigInt");
+        }
+
+        return parsed ?? BigIntResult(null).AsBigInt();
+    }
+
+    /// <summary>
+    /// The abstract operation <c>NumberToBigInt</c>: the exact integer an integral Number is, and a
+    /// RangeError for a fraction, a NaN or an infinity.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=9A4F6D
+    // Broiler-Falsified-If: a Number that is not an integer converts to a BigInt, or an integral one converts to any integer but its own
+    // Broiler-Human:        PENDING
+    internal JsBigInt NumberToBigInt(double number)
+    {
+        if (!double.IsFinite(number) || System.Math.Floor(number) != number)
+        {
+            throw Error(
+                "RangeError",
+                "The number " + JsNumberFormat.ToJsString(number) +
+                " cannot be converted to a BigInt because it is not an integer");
+        }
+
+        return JsBigInt.FromIntegralNumber(number);
+    }
+
+    /// <summary>
+    /// The conversion every write into a typed-array element makes first: <c>ToBigInt</c> for a
+    /// BigInt kind and <c>ToNumber</c> for every other, as the specification's
+    /// <c>TypedArraySetElement</c> and the built-ins that follow it choose by the view's
+    /// <c>[[ContentType]]</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The answer is a value the element write stores without converting again</b>, and it is
+    /// always of the view's content type: a Number for a Number kind, a BigInt for a BigInt kind.
+    /// Assigning <c>1</c> to a <c>BigInt64Array</c> element is therefore the <c>TypeError</c>
+    /// <c>ToBigInt</c> owes a Number, and assigning <c>1n</c> to a <c>Float64Array</c> element the
+    /// one <c>ToNumber</c> owes a BigInt; neither is silently converted the other way.
+    /// </para>
+    /// <para>
+    /// <b>A BigInt wider than 64 bits is narrowed here, once, and charged for it</b>, because the
+    /// narrowing reads every word of the value; the narrowed value writes the same eight bytes the
+    /// wide one would, so a <c>fill</c> that stores it a million times masks it once.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=AB31B4
+    // Broiler-Falsified-If: a BigInt kind accepts a Number, a Number kind accepts a BigInt, or either converts with the other content type's operation
+    // Broiler-Human:        PENDING
+    internal JsValue ToElementValue(JsElementKind kind, JsValue value)
+    {
+        if (!JsElements.HoldsBigInts(kind))
+        {
+            return JsValue.Number(ToNumber(value));
+        }
+
+        var integer = ToBigInt(value);
+
+        if (integer.Bits <= 64)
+        {
+            return JsValue.BigInt(integer);
+        }
+
+        Charge(JsBigInt.LinearCost(integer.Words));
+        return JsValue.BigInt(JsElements.Narrow(kind, integer));
+    }
+
+    /// <summary>
+    /// The Number a BigInt stands for, <c>F(R(x))</c>: the nearest one, ties to even, charged on
+    /// its width. <c>Number(x)</c> is the one operation that asks for it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=1D0F36
+    // Broiler-Falsified-If: a BigInt converts to a Number other than the nearest one with ties to even
+    // Broiler-Human:        PENDING
+    internal double BigIntToNumber(JsBigInt value) => value.ToNumber(ChargeFuel);
+
     /// <summary>The abstract operation <c>ToObject</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=76DF0A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=46C66A
     // Broiler-Human:        PENDING
     internal JsObject ToObject(JsValue value) => value.Type switch
     {
@@ -936,6 +2626,11 @@ internal sealed partial class JsEngine
         JsType.Number => new JsPrimitiveWrapper(Realm.NumberPrototype, "Number", value),
         JsType.Boolean => new JsPrimitiveWrapper(Realm.BooleanPrototype, "Boolean", value),
         JsType.Symbol => new JsPrimitiveWrapper(Realm.SymbolPrototype, "Symbol", value),
+
+        // A BIGINT WRAPPER IS AN ORDINARY OBJECT WITH A [[BigIntData]] SLOT (JSeal B05): its
+        // `Object.prototype.toString` tag comes from `BigInt.prototype[Symbol.toStringTag]` and not
+        // from a class name, so the class is `Object`, as the specification's builtinTag is.
+        JsType.BigInt => new JsPrimitiveWrapper(BigIntPrototypeOrRefuse(), "Object", value),
         _ => (JsObject)ThrowTypeError("Cannot convert undefined or null to object").AsObject(),
     };
 
@@ -959,6 +2654,30 @@ internal sealed partial class JsEngine
     // Broiler-Human:        PENDING
     internal string ToPropertyKey(JsValue value) =>
         value.Type == JsType.String ? value.AsString() : ToStringValue(value);
+
+    /// <summary>
+    /// The abstract operation <c>ToPropertyKey</c> over both kinds of key, answering a String or a
+    /// Symbol value.
+    /// </summary>
+    /// <remarks>
+    /// <b>A Symbol survives, and so does a Symbol an object converts to.</b> <see cref="ToPropertyKey"/>
+    /// answers a string and therefore refuses both, which is right only where the caller has already
+    /// taken the Symbol path. This one is for a caller that has not: it runs <c>ToPrimitive</c> with
+    /// the string hint exactly once, keeps a Symbol it produces, and converts anything else with
+    /// <c>ToString</c>, which for a primitive runs no guest code.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=AD4C8B
+    // Broiler-Human:        PENDING
+    internal JsValue ToPropertyKeyValue(JsValue value)
+    {
+        if (value.IsSymbol || value.Type == JsType.String)
+        {
+            return value;
+        }
+
+        var primitive = ToPrimitive(value, "string");
+        return primitive.IsSymbol ? primitive : JsValue.String(ToStringValue(primitive));
+    }
 
     /// <summary>
     /// The one Symbol-keyed lookup the engine performs on its own behalf, for a well-known Symbol.
@@ -993,7 +2712,7 @@ internal sealed partial class JsEngine
     // ---- properties ----------------------------------------------------------------------------
 
     /// <summary>The prototype a primitive's property lookup starts from.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=800C9F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=4659EB
     // Broiler-Human:        PENDING
     private JsObject? PrototypeFor(JsValue value) => value.Type switch
     {
@@ -1001,11 +2720,29 @@ internal sealed partial class JsEngine
         JsType.Number => Realm.NumberPrototype,
         JsType.Boolean => Realm.BooleanPrototype,
         JsType.Symbol => Realm.SymbolPrototype,
+
+        JsType.BigInt => BigIntPrototypeOrRefuse(),
         _ => null,
     };
 
+    /// <summary>
+    /// <c>BigInt.prototype</c>, which a realm has whenever a BigInt can reach it.
+    /// </summary>
+    /// <remarks>
+    /// <b>A composition that declines the BigInt surface has no BigInt values</b>: every artifact
+    /// holding a BigInt constant or naming the <c>BigInt</c> global is refused at its verification,
+    /// and no other source makes one. So this refusal is unreachable by a program; it exists so that
+    /// a value that arrived some way nobody foresaw is refused by name rather than read as an object
+    /// with no chain.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=31B5DF
+    // Broiler-Human:        PENDING
+    private JsObject BigIntPrototypeOrRefuse() =>
+        Realm.BigIntPrototype ??
+        throw Error("TypeError", "this composition declined the BigInt surface, so BigInt.prototype does not exist");
+
     /// <summary>Reads a property off any value, walking the prototype chain.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=6EE048
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=62779B
     // Broiler-Human:        PENDING
     internal JsValue GetProperty(JsValue baseValue, string key)
     {
@@ -1041,7 +2778,10 @@ internal sealed partial class JsEngine
         // `Object.prototype[9] = 42` would answer 42 for `new Int32Array(3)[9]`, where the language
         // says `undefined`: the index is out of the view, and out of the view is the end of the
         // search rather than the start of a walk.
-        if (start is JsTypedArray view && JsObject.IsArrayIndex(key, out _))
+        //
+        // The same holds for a numeric key that is not an index - "-0", "1.5", "-1": it names no
+        // element, so the answer is `undefined` without a walk (JsTypedArray.IsNumericKey).
+        if (start is JsTypedArray view && JsTypedArray.IsNumericKey(key))
         {
             return view.TryGetOwnProperty(key, out var element) ? element.Value : JsValue.Undefined;
         }
@@ -1049,7 +2789,7 @@ internal sealed partial class JsEngine
         return start is null ? JsValue.Undefined : Lookup(start, key, baseValue);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=AAD480
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A1708E
     // Broiler-Human:        PENDING
     private JsValue Lookup(JsObject start, string key, JsValue receiver)
     {
@@ -1066,6 +2806,16 @@ internal sealed partial class JsEngine
             if (current is JsProxy proxy)
             {
                 return proxy.ProxyGet(JsValue.String(key), receiver);
+            }
+
+            // A TYPED ARRAY PART-WAY UP THE CHAIN ENDS THE WALK FOR A NUMERIC KEY, for the reason
+            // it does at the start: its [[Get]] answers the element or `undefined` and never asks
+            // its own prototype.
+            if (current is JsTypedArray passedView && JsTypedArray.IsNumericKey(key))
+            {
+                return passedView.TryGetOwnProperty(key, out var element)
+                    ? element.Value
+                    : JsValue.Undefined;
             }
 
             if (current.TryGetOwnProperty(key, out var property))
@@ -1087,7 +2837,7 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Writes a property on any value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=02C33F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=BEFA3A
     // Broiler-Human:        PENDING
     internal void SetProperty(JsValue baseValue, string key, JsValue value, bool strict)
     {
@@ -1107,8 +2857,21 @@ internal sealed partial class JsEngine
         // the check has to be here because it can THROW: `a.length = -1` is a RangeError in every
         // engine, and the object model has no engine to raise one with. What reaches the object is
         // the coerced number, so `a.length = "2"` sets two rather than nothing.
+        // A `length` that is already closed refuses the write before anything is converted:
+        // `OrdinarySet` stops at the non-writable own property and never reaches `ArraySetLength`,
+        // so a `valueOf` on the assigned value does not run.
         if (target is JsArray sized && string.Equals(key, "length", System.StringComparison.Ordinal))
         {
+            if (!sized.LengthWritable)
+            {
+                if (strict)
+                {
+                    ThrowTypeError("Cannot assign to read only property 'length' of object '[object Array]'");
+                }
+
+                return;
+            }
+
             value = JsValue.Number(ArrayLengthOrRefuse(value));
         }
 
@@ -1133,10 +2896,18 @@ internal sealed partial class JsEngine
         // makes the write silently discarded when the index is out of the view or the buffer is
         // detached — after the conversion has happened, which is the order the specification asks
         // for and is observable through a `valueOf` with a side effect.
-        if (target is JsTypedArray view && JsObject.IsArrayIndex(key, out var at))
+        if (target is JsTypedArray view && JsTypedArray.IsNumericKey(key))
         {
-            var number = ToNumber(value);
-            _ = view.TryWriteAt((int)at, number);
+            // A numeric key that is not an index is converted and then discarded the same way, and
+            // it never walks the chain: no inherited setter may see it. The conversion is the one
+            // the view's content type names: ToBigInt for a BigInt kind (JSeal B07).
+            var element = ToElementValue(view.Kind, value);
+
+            if (JsObject.IsArrayIndex(key, out var at))
+            {
+                _ = view.TryWriteAt((int)at, element);
+            }
+
             return;
         }
 
@@ -1169,6 +2940,16 @@ internal sealed partial class JsEngine
                     ThrowTypeError("Cannot assign to read only property '" + key + "'");
                 }
 
+                return;
+            }
+
+            // A TYPED ARRAY PART-WAY UP THE CHAIN, with a numeric key it holds no element for,
+            // takes the write and discards it without converting the value: its [[Set]] answers
+            // true for a receiver other than itself, and no setter behind it is reached. An element
+            // it does hold is an ordinary writable data property from here on.
+            if (current is JsTypedArray passedView && JsTypedArray.IsNumericKey(key) &&
+                !passedView.TryGetOwnProperty(key, out _))
+            {
                 return;
             }
 
@@ -1242,13 +3023,19 @@ internal sealed partial class JsEngine
     /// wording and is why <c>-1</c>, <c>1.5</c> and <c>NaN</c> are all refused while <c>"2"</c> is
     /// accepted: each of the three has a <c>ToUint32</c> that differs from its <c>ToNumber</c>, and
     /// the string does not.
+    /// <para>
+    /// <b>The value is converted twice, as <c>ArraySetLength</c> says</b>: once by
+    /// <c>ToUint32</c> and once by <c>ToNumber</c>. An object's <c>valueOf</c> therefore runs twice
+    /// and the two answers are compared, so one that answers differently the second time is a
+    /// <c>RangeError</c> rather than whichever length the first call chose.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4781FB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3406AB
     // Broiler-Human:        PENDING
     internal uint ArrayLengthOrRefuse(JsValue value)
     {
+        var index = JsValue.ToUint32(ToNumber(value));
         var number = ToNumber(value);
-        var index = JsValue.ToUint32(number);
 
         if (index != number)
         {
@@ -1289,11 +3076,11 @@ internal sealed partial class JsEngine
     /// on one object against an object that does not have it, which is how a class hierarchy reads
     /// an inherited accessor without inheriting.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D12778
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B99E24
     // Broiler-Human:        PENDING
     internal JsValue GetWithReceiver(JsObject target, string key, JsValue receiver)
     {
-        if (target is JsTypedArray view && JsObject.IsArrayIndex(key, out _))
+        if (target is JsTypedArray view && JsTypedArray.IsNumericKey(key))
         {
             return view.TryGetOwnProperty(key, out var element) ? element.Value : JsValue.Undefined;
         }
@@ -1349,14 +3136,32 @@ internal sealed partial class JsEngine
     /// call that does not name a receiver, which is nearly all of them.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2593E6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D0728E
     // Broiler-Human:        PENDING
     internal bool SetWithReceiver(JsObject target, string key, JsValue value, JsValue receiver)
     {
-        if (target is JsTypedArray view && JsObject.IsArrayIndex(key, out var at))
+        // A NUMERIC KEY ON A TYPED ARRAY IS THE INTEGER-INDEXED [[Set]]. When the view is its own
+        // receiver the value is converted and written, or discarded if the key names no element;
+        // for any other receiver a key that names no element is a success with no conversion,
+        // and only a valid element goes on to the ordinary walk, which lands it on the receiver.
+        if (target is JsTypedArray view && JsTypedArray.IsNumericKey(key))
         {
-            _ = view.TryWriteAt((int)at, ToNumber(value));
-            return true;
+            if (receiver.IsObject && ReferenceEquals(receiver.AsObject(), view))
+            {
+                var element = ToElementValue(view.Kind, value);
+
+                if (JsObject.IsArrayIndex(key, out var at))
+                {
+                    _ = view.TryWriteAt((int)at, element);
+                }
+
+                return true;
+            }
+
+            if (!view.TryGetOwnProperty(key, out _))
+            {
+                return true;
+            }
         }
 
         // A NAMESPACE REFUSES EVERY WRITE, INCLUDING ONE TO A NAME IT DOES NOT EXPORT. Its export
@@ -1377,6 +3182,28 @@ internal sealed partial class JsEngine
             if (current is JsProxy proxy)
             {
                 return proxy.ProxySet(JsValue.String(key), value, receiver);
+            }
+
+            // THE SAME RULE FOR A TYPED ARRAY PART-WAY UP THE CHAIN as for one at its start.
+            if (current is JsTypedArray passedView && !ReferenceEquals(current, target) &&
+                JsTypedArray.IsNumericKey(key))
+            {
+                if (receiver.IsObject && ReferenceEquals(receiver.AsObject(), passedView))
+                {
+                    var element = ToElementValue(passedView.Kind, value);
+
+                    if (JsObject.IsArrayIndex(key, out var passedAt))
+                    {
+                        _ = passedView.TryWriteAt((int)passedAt, element);
+                    }
+
+                    return true;
+                }
+
+                if (!passedView.TryGetOwnProperty(key, out _))
+                {
+                    return true;
+                }
             }
 
             if (current.TryGetOwnProperty(key, out var property))
@@ -1403,11 +3230,11 @@ internal sealed partial class JsEngine
             current = current.Prototype;
         }
 
-        return LandOnReceiver(receiver, key, value);
+        return LandOnReceiver(receiver, JsValue.String(key), value);
     }
 
     /// <summary>The same write for a Symbol-keyed property.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=033448
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C15A9A
     // Broiler-Human:        PENDING
     internal bool SetSymbolWithReceiver(JsObject target, JsSymbol key, JsValue value, JsValue receiver)
     {
@@ -1445,38 +3272,28 @@ internal sealed partial class JsEngine
             current = current.Prototype;
         }
 
-        if (!receiver.IsObject)
-        {
-            return false;
-        }
-
-        var holder = receiver.AsObject();
-
-        if (holder.TryGetOwnSymbol(key, out var existing))
-        {
-            if (existing.IsAccessor || !existing.Writable)
-            {
-                return false;
-            }
-
-            existing.Value = value;
-            holder.SetOwnSymbol(key, existing);
-            return true;
-        }
-
-        if (!holder.Extensible)
-        {
-            return false;
-        }
-
-        holder.SetOwnSymbol(key, JsProperty.Data(value, JsPropertyAttributes.Default));
-        return true;
+        return LandOnReceiver(receiver, JsValue.Symbol(key), value);
     }
 
     /// <summary>Where a reflective write ends up: an own property of the receiver, or a refusal.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=974BD1
+    /// <remarks>
+    /// <para>
+    /// <b>The receiver is asked through its own internal methods and is handed exactly what the
+    /// specification hands it.</b> <c>OrdinarySetWithOwnDescriptor</c> reads the receiver's own
+    /// property with <c>[[GetOwnProperty]]</c>; an existing writable data property is updated with
+    /// <c>[[DefineOwnProperty]](P, { [[Value]]: V })</c> - the value and nothing else, so a Proxy
+    /// receiver's <c>defineProperty</c> trap sees a one-field descriptor and an Array receiver's
+    /// <c>length</c> goes through the Array's own definition - and an absent one is created by
+    /// <c>CreateDataProperty</c>. Restating the whole stored descriptor, as this used to, showed a
+    /// trap fields the language never passes and threw where a trap's <c>false</c> is the answer.
+    /// </para>
+    /// <para>
+    /// Both key kinds come here, so a Symbol-keyed write cannot drift from a String-keyed one.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=E7D724
     // Broiler-Human:        PENDING
-    private static bool LandOnReceiver(JsValue receiver, string key, JsValue value)
+    private bool LandOnReceiver(JsValue receiver, JsValue key, JsValue value)
     {
         if (!receiver.IsObject)
         {
@@ -1485,25 +3302,30 @@ internal sealed partial class JsEngine
 
         var holder = receiver.AsObject();
 
-        if (holder.TryGetOwnProperty(key, out var existing))
+        var held = key.IsSymbol
+            ? holder.TryGetOwnSymbol(key.AsSymbol(), out var existing)
+            : holder.TryGetOwnProperty(key.AsString(), out existing);
+
+        var fields = new JsRealm.ObjectDescriptorFields { HasValue = true, Value = value };
+
+        if (held)
         {
             if (existing.IsAccessor || !existing.Writable)
             {
                 return false;
             }
-
-            existing.Value = value;
-            holder.SetOwnProperty(key, existing);
-            return true;
         }
-
-        if (!holder.Extensible)
+        else
         {
-            return false;
+            fields.HasWritable = true;
+            fields.Writable = true;
+            fields.HasEnumerable = true;
+            fields.Enumerable = true;
+            fields.HasConfigurable = true;
+            fields.Configurable = true;
         }
 
-        holder.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
-        return true;
+        return JsRealm.ObjectDefineOwn(this, holder, key, fields);
     }
 
     // ---- classes -------------------------------------------------------------------------------
@@ -1830,7 +3652,7 @@ internal sealed partial class JsEngine
     /// <c>class C { x = this.y }</c> reads the instance and <c>class C { static x = this.name }</c>
     /// reads the constructor - one rule, two objects, decided by which list the element was in.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3FE4BF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=7AB1A4
     // Broiler-Human:        PENDING
     private void ApplyClassElements(
         JsObject target,
@@ -1888,9 +3710,7 @@ internal sealed partial class JsEngine
 
             if (element.Key.IsSymbol)
             {
-                target.SetOwnSymbol(
-                    element.Key.AsSymbol(), JsProperty.Data(value, JsPropertyAttributes.Default));
-
+                DefineOwnSymbolDataProperty(target, element.Key.AsSymbol(), value);
                 continue;
             }
 
@@ -1908,10 +3728,47 @@ internal sealed partial class JsEngine
     /// reachable: a derived constructor may return a frozen object, and a class whose fields then
     /// fail to define must say so rather than produce an instance missing them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=640086
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=26D8A1
     // Broiler-Human:        PENDING
     private void DefineOwnDataProperty(JsObject target, string key, JsValue value)
     {
+        // A PROXY IS ASKED ONLY ITS defineProperty TRAP. CreateDataPropertyOrThrow is one
+        // [[DefineOwnProperty]] call, so reading the standing property or the extensibility first
+        // would run getOwnPropertyDescriptor and isExtensible traps the language never calls. The
+        // proxy's own define refuses with a TypeError when the trap does.
+        if (target is JsProxy)
+        {
+            target.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
+            return;
+        }
+
+        // A TYPED ARRAY'S NUMERIC KEY IS ITS OWN [[DefineOwnProperty]], which converts the value
+        // with the engine - ToNumber, or ToBigInt for a BigInt kind - and refuses a key that names
+        // no element. Storing it through SetOwnProperty would convert without the engine, which
+        // cannot run a `valueOf` and cannot refuse a Number bound for a BigInt element.
+        // (JSeal B07, 2026-09-22.)
+        if (target is JsTypedArray && JsTypedArray.IsNumericKey(key))
+        {
+            var fields = new JsRealm.ObjectDescriptorFields
+            {
+                HasValue = true,
+                Value = value,
+                HasWritable = true,
+                Writable = true,
+                HasEnumerable = true,
+                Enumerable = true,
+                HasConfigurable = true,
+                Configurable = true,
+            };
+
+            if (!JsRealm.ObjectDefineOwn(this, target, JsValue.String(key), fields))
+            {
+                ThrowTypeError("Cannot define property " + key + " on a typed array");
+            }
+
+            return;
+        }
+
         if (target.TryGetOwnProperty(key, out var standing)
             ? !standing.Configurable
             : !target.Extensible)
@@ -1920,6 +3777,35 @@ internal sealed partial class JsEngine
         }
 
         target.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
+    }
+
+    /// <summary>
+    /// <see cref="DefineOwnDataProperty"/> for a Symbol key, with the same refusal.
+    /// </summary>
+    /// <remarks>
+    /// A class field named by a computed Symbol is <c>CreateDataPropertyOrThrow</c> exactly as a
+    /// String-named one is, so an instance a derived constructor froze refuses it the same way
+    /// rather than gaining a Symbol-keyed property it could not otherwise be given.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=CEB03F
+    // Broiler-Human:        PENDING
+    private void DefineOwnSymbolDataProperty(JsObject target, JsSymbol key, JsValue value)
+    {
+        // A PROXY IS ASKED ONLY ITS defineProperty TRAP, for the reason the String twin gives.
+        if (target is JsProxy)
+        {
+            target.SetOwnSymbol(key, JsProperty.Data(value, JsPropertyAttributes.Default));
+            return;
+        }
+
+        if (target.TryGetOwnSymbol(key, out var standing)
+            ? !standing.Configurable
+            : !target.Extensible)
+        {
+            ThrowTypeError("Cannot define property " + key.Rendered + ", object is not extensible");
+        }
+
+        target.SetOwnSymbol(key, JsProperty.Data(value, JsPropertyAttributes.Default));
     }
 
     /// <summary>The private element one recorded method or accessor installs.</summary>
@@ -2183,7 +4069,7 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>The <c>in</c> operator's lookup: does any object in the chain have the key.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D089CD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=856713
     // Broiler-Human:        PENDING
     internal bool HasProperty(JsObject start, string key)
     {
@@ -2191,7 +4077,7 @@ internal sealed partial class JsEngine
         // does not inherit its indices, so `9 in new Int32Array(3)` is false whatever anybody put
         // on `Object.prototype`. Expressing it here rather than on the object is forced: the walk
         // is the engine's, not the object's.
-        if (start is JsTypedArray view && JsObject.IsArrayIndex(key, out _))
+        if (start is JsTypedArray view && JsTypedArray.IsNumericKey(key))
         {
             return view.TryGetOwnProperty(key, out _);
         }
@@ -2217,6 +4103,12 @@ internal sealed partial class JsEngine
             if (current is JsProxy proxy)
             {
                 return proxy.ProxyHas(JsValue.String(key));
+            }
+
+            // A typed array part-way up the chain answers a numeric key itself, and ends the walk.
+            if (current is JsTypedArray passedView && JsTypedArray.IsNumericKey(key))
+            {
+                return passedView.TryGetOwnProperty(key, out _);
             }
 
             if (current.TryGetOwnProperty(key, out _))
@@ -2357,7 +4249,7 @@ internal sealed partial class JsEngine
     /// language promises rather than a half-built object.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3D9576
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=78D681
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
@@ -2392,8 +4284,10 @@ internal sealed partial class JsEngine
             // C# body is given - so without this the instance would be an Error and not a Failure,
             // and `catch (e) { e instanceof Failure }` would be false for an object the program
             // just threw. The re-pointing is skipped when the built-in is what `new` named, which
-            // is every ordinary construction.
-            if (made.IsObject && !ReferenceEquals(newTarget.AsObjectOrNull(), target))
+            // is every ordinary construction, and when the built-in read `new.target` itself
+            // (JsNativeFunction.BuildsFromNewTarget), because a second read is a second getter call.
+            if (made.IsObject && !native.BuildsFromNewTarget &&
+                !ReferenceEquals(newTarget.AsObjectOrNull(), target))
             {
                 var wanted = GetProperty(newTarget, "prototype");
 
@@ -2567,7 +4461,7 @@ internal sealed partial class JsEngine
         return binding.Value;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=CD987E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=305714
     // Broiler-Human:        PENDING
     internal string Describe(JsValue value) => value.Type switch
     {
@@ -2584,6 +4478,9 @@ internal sealed partial class JsEngine
         // message, failed the cast, and ended the whole invocation as a contract violation: an
         // internal fault, uncatchable, in place of the language's own error.
         JsType.Symbol => value.AsSymbol().Rendered,
+
+        // Described the way a literal spells it, and charged the way `ToString` is.
+        JsType.BigInt => BigIntText(value.AsBigInt()) + "n",
         _ => value.IsObject && value.AsObject().IsCallable ? "function" : "object",
     };
 
@@ -2617,7 +4514,7 @@ internal sealed partial class JsEngine
     /// <c>GetIterator</c> and calls that same function at every step.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=77B2C3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=8BAE7A
     // Broiler-Human:        PENDING
     internal JsIteratorRecord GetIterator(JsValue iterable)
     {
@@ -2633,6 +4530,23 @@ internal sealed partial class JsEngine
             ThrowTypeError(Describe(iterable) + " is not iterable");
         }
 
+        return GetIteratorFromMethod(iterable, method);
+    }
+
+    /// <summary>
+    /// The specification's <c>GetIteratorFromMethod</c>: an iterator record from a
+    /// <c>Symbol.iterator</c> method the caller has already read.
+    /// </summary>
+    /// <remarks>
+    /// <b>It exists for the callers that have to read the method BEFORE deciding to iterate.</b>
+    /// A typed array constructor asks <c>GetMethod(argument, @@iterator)</c> to choose between the
+    /// iteration protocol and the array-like reading; reading the method a second time through
+    /// <see cref="GetIterator"/> would run a getter twice that the language runs once.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D2ED70
+    // Broiler-Human:        PENDING
+    internal JsIteratorRecord GetIteratorFromMethod(JsValue iterable, JsValue method)
+    {
         var iterator = Call(method, iterable, System.Array.Empty<JsValue>());
 
         if (!iterator.IsObject)
@@ -2672,7 +4586,7 @@ internal sealed partial class JsEngine
     /// send: an iterator written in the guest can see the difference in its own
     /// <c>arguments.length</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=47A7F8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=91005A
     // Broiler-Human:        PENDING
     internal bool TryIterateNext(
         JsIteratorRecord record,
@@ -2713,19 +4627,33 @@ internal sealed partial class JsEngine
         // everybody is observable through a getter - the pinned suite's set-like iterators count
         // exactly these reads - and a `for … of` that read it would be asking a question the
         // language does not ask.
-        if (GetProperty(result, "done").ToBooleanValue())
+        //
+        // A THROWING `done` OR `value` GETTER MARKS THE RECORD DONE AS A THROWING `next` DOES.
+        // `IteratorComplete` and `IteratorValue` are part of the step, and a step that failed
+        // leaves the iterator unclosed: a `for … of` that went on to call `return` would run guest
+        // code the language never runs there.
+        try
         {
-            record.Done = true;
-
-            if (wantsCompleted)
+            if (GetProperty(result, "done").ToBooleanValue())
             {
-                completed = GetProperty(result, "value");
+                record.Done = true;
+
+                if (wantsCompleted)
+                {
+                    completed = GetProperty(result, "value");
+                }
+
+                return false;
             }
 
-            return false;
+            value = GetProperty(result, "value");
+        }
+        catch (JsThrow)
+        {
+            record.Done = true;
+            throw;
         }
 
-        value = GetProperty(result, "value");
         return true;
     }
 
@@ -2866,13 +4794,27 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Runs a program's entry point and answers what it completed with.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3D2B88
+    /// <remarks>
+    /// <b>The frame's referrer is the script's own</b> - the one its artifact placed it at, or none -
+    /// unless <paramref name="referrer"/> states another: a program the <c>Function</c> constructor
+    /// compiled is dynamic code, and runs as its caller's (JSD-0024 section 20).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D406D6
     // Broiler-Human:        PENDING
-    internal JsValue RunEntry(JsProgram program, uint unit)
+    internal JsValue RunEntry(JsProgram program, uint unit, string? referrer = null)
     {
         if (program.ModuleOfUnit[(int)unit] is var moduleIndex and >= 0)
         {
             return RunModuleGraph(program, moduleIndex);
+        }
+
+        // A SCRIPT'S GLOBAL DECLARATIONS ARE CHECKED BEFORE ITS FIRST INSTRUCTION (JSeal V15-host):
+        // every conflict and definability check of `GlobalDeclarationInstantiation` runs here, over
+        // the row the artifact carries for the body, so a script that fails one creates nothing.
+        if (program.ScriptDeclarations is { } scripts &&
+            scripts.TryGetValue((int)unit, out var declared))
+        {
+            InstantiateGlobalDeclarations(declared);
         }
 
         var code = program.Functions[(int)unit];
@@ -2887,10 +4829,40 @@ internal sealed partial class JsEngine
             null,
             JsValue.Undefined,
             null,
-            null);
+            null,
+            referrer ??
+                (program.ScriptReferrers is { } placed && placed.TryGetValue((int)unit, out var own)
+                    ? own
+                    : string.Empty));
     }
 
     // ---- modules -------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The referrer of the running execution context: what <c>GetActiveScriptOrModule()</c> answers,
+    /// as the string a host resolves against (JSeal I12-upstream, JSD-0024 section 20).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Every frame sets it on entry and restores it on exit</b> (<see cref="Execute"/>): a
+    /// function's frame to the function's <c>[[ScriptOrModule]]</c>, a script body's to the referrer
+    /// its artifact placed it at, a module's initialiser and body to the module's key, and eval code
+    /// and a <c>Function</c> body to the referrer of the code that evaluated them. A built-in -
+    /// <c>eval</c>, the <c>Function</c> constructor, a host function - enters no frame, so while one
+    /// runs this is still its caller's, which is the specification's "topmost execution context
+    /// whose ScriptOrModule is not null". A job runs with the referrer that was active when it was
+    /// enqueued (<see cref="CallJob"/>, as HostEnqueuePromiseJob requires). With no guest frame and
+    /// no job on the stack at all it is empty, which is the language's null referrer.
+    /// </para>
+    /// <para>
+    /// <b>What reads it</b>: an <c>import()</c> whose code carries no referrer of its own (eval code,
+    /// a <c>Function</c> body), a function being created (its <c>[[ScriptOrModule]]</c>), and eval
+    /// code or a <c>Function</c> body being entered (their frame's referrer).
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6825FB
+    // Broiler-Human:        PENDING
+    private string activeReferrer = string.Empty;
 
     /// <summary>
     /// The module instances of this realm, one array per artifact, created when its first module is
@@ -2932,6 +4904,15 @@ internal sealed partial class JsEngine
     private readonly System.Collections.Generic.Dictionary<string, JsModuleInstance> instanced =
         new(System.StringComparer.Ordinal);
 
+    /// <summary>
+    /// The instance this realm holds under <paramref name="key"/>, or <see langword="null"/> when it
+    /// has linked no module of that key (JSeal I11-upstream).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A80ADE
+    // Broiler-Human:        PENDING
+    internal JsModuleInstance? FindModuleInstance(string key) =>
+        instanced.TryGetValue(key, out var instance) ? instance : null;
+
     /// <summary>The instances of one artifact's modules, instantiating them if it has not.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=870296
     // Broiler-Human:        PENDING
@@ -2962,17 +4943,122 @@ internal sealed partial class JsEngine
     private JsValue RunModuleGraph(JsProgram program, int root) =>
         Evaluated(program, root).Completion;
 
-    /// <summary>Links and evaluates the graph rooted at one module, and answers its instance.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=3D2BD8
-    // Broiler-Falsified-If: a module body runs twice in one realm
+    /// <summary>
+    /// The realm's template registry: one strings object per tagged-template site, by program and
+    /// instruction offset.
+    /// </summary>
+    /// <remarks>
+    /// <b>Weak in the program</b>, so the sites of an evaluated program that nothing can run again
+    /// do not keep their strings objects alive; a guest that still holds one keeps its own.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=AB410D
+    // Broiler-Human:        PENDING
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<
+        JsProgram, System.Collections.Generic.Dictionary<int, JsObject>> templates = new();
+
+    /// <summary>
+    /// Answers the template object of the site at <paramref name="site"/>, building it the first
+    /// time the site is evaluated.
+    /// </summary>
+    /// <remarks>
+    /// <b>GetTemplateObject as the specification writes it</b>: a cooked Array and a raw Array of
+    /// the site's chunks, <c>raw</c> defined on the first with every attribute off, and both frozen.
+    /// Nothing here reads a global, so a guest that replaced <c>Object.freeze</c> or
+    /// <c>Object.defineProperty</c> sees no call and cannot change the object.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=CEE75C
+    // Broiler-Falsified-If: two evaluations of one site answer different objects, two sites answer one object, or the answer is observably not frozen
+    // Broiler-Human:        PENDING
+    private JsObject TemplateObject(JsProgram program, int site, JsValue[] stack, int at, int count)
+    {
+        var registry = templates.GetOrCreateValue(program);
+
+        if (registry.TryGetValue(site, out var existing))
+        {
+            return existing;
+        }
+
+        var cooked = new JsArray(Realm.ArrayPrototype);
+        var raw = new JsArray(Realm.ArrayPrototype);
+
+        for (var index = 0; index < count; index++)
+        {
+            Charge(1);
+            cooked.Push(stack[at + index]);
+            raw.Push(stack[at + count + index]);
+        }
+
+        JsRealm.ObjectSetIntegrity(this, raw, freeze: true);
+        cooked.SetOwnProperty("raw", JsProperty.Data(JsValue.Object(raw), JsPropertyAttributes.None));
+        JsRealm.ObjectSetIntegrity(this, cooked, freeze: true);
+        registry[site] = cooked;
+        return cooked;
+    }
+
+    /// <summary>
+    /// The realm's <c>IncrementModuleAsyncEvaluationCount</c>: the last
+    /// <see cref="JsModuleInstance.AsyncEvaluationOrder"/> handed out.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3305A0
+    // Broiler-Human:        PENDING
+    private long moduleAsyncEvaluationCount;
+
+    /// <summary>
+    /// How many module evaluations are under way on the native stack: an <c>Evaluate</c> walk, or
+    /// the bodies one async completion releases.
+    /// </summary>
+    /// <remarks>
+    /// <b>The specification never lets two evaluations overlap</b> (<c>Evaluate</c> step 1), and a
+    /// body that reaches back into the host, or asks for an evaluation by some other route while
+    /// one is running, would make them overlap here; such a request is deferred to a job while this
+    /// is not zero, which is where the language's own route puts it (JSeal I11-async).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=42921A
+    // Broiler-Human:        PENDING
+    private int moduleEvaluationDepth;
+
+    /// <summary>
+    /// Evaluates the graph rooted at one module for the artifact's entry point, and answers its
+    /// instance.
+    /// </summary>
+    /// <remarks>
+    /// <b>The entry point has nobody holding its promise, so a failure has to be raised</b>: one
+    /// found while the walk is still synchronous - or recorded by an earlier evaluation - is thrown
+    /// here, as it always was, and one that arrives later, when an async module of the graph
+    /// rejects, is raised from a job of its own, which the host's drain reports like any other job
+    /// that threw (JSeal I11-async). Throwing it inside the promise reaction instead would only
+    /// have rejected a promise nobody can see.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=CE0B69
+    // Broiler-Falsified-If: a module body runs twice in one realm, or the entry graph's failure is reported nowhere
     // Broiler-Human:        PENDING
     private JsModuleInstance Evaluated(JsProgram program, int root)
     {
-        var instances = Graph(program);
-        var order = new System.Collections.Generic.List<int>(program.Modules.Length);
-        Order(program, instances, root, order);
-        Step(program, instances, order, 0);
-        return instances[root];
+        var instance = Graph(program)[root];
+        var promise = EvaluateModule(instance);
+
+        if (promise.State == JsPromiseState.Rejected)
+        {
+            throw new JsThrow(promise.Result, Render(promise.Result));
+        }
+
+        if (promise.State == JsPromiseState.Pending)
+        {
+            Realm.ReactOn(this, promise, static (engine, value, threw) =>
+            {
+                if (threw)
+                {
+                    engine.EnqueueJob(
+                        JsValue.Object(engine.Realm.Native(
+                            "",
+                            0,
+                            (inner, thisValue, arguments) => throw new JsThrow(value, inner.Render(value)))),
+                        System.Array.Empty<JsValue>());
+                }
+            });
+        }
+
+        return instance;
     }
 
     /// <summary>Creates every module of one artifact and initialises its declarations.</summary>
@@ -2984,11 +5070,18 @@ internal sealed partial class JsEngine
     /// environments for one module; taking the ones it has is what makes the second artifact a
     /// second VIEW of a graph rather than a second graph.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=A1564F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=6D69E9
     // Broiler-Falsified-If: a module body runs before every module of its artifact has its declarations initialised
     // Broiler-Human:        PENDING
     private JsModuleInstance[] Instantiate(JsProgram program)
     {
+        // THE COMPOSITION IS ASKED BEFORE ANYTHING IS REGISTERED. A refused resolution used to be
+        // raised after the fresh instances were already in the realm's registry, uninitialised, so
+        // a later import of the same key adopted an instance whose declarations had never been put
+        // in place. Asking first leaves a refused graph unlinked and invisible, and a later load
+        // links it again from the start.
+        Confirm(program);
+
         var instances = new JsModuleInstance[program.Modules.Length];
         var fresh = new bool[instances.Length];
 
@@ -3003,7 +5096,7 @@ internal sealed partial class JsEngine
             }
 
             var slots = (int)program.Functions[(int)record.BodyUnit].ScopeSlots;
-            instances[index] = new JsModuleInstance(new JsEnvironment(slots, null));
+            instances[index] = new JsModuleInstance(new JsEnvironment(slots, null), program, index);
             instanced[record.Key] = instances[index];
             fresh[index] = true;
         }
@@ -3018,7 +5111,6 @@ internal sealed partial class JsEngine
         }
 
         graphs[program] = instances;
-        Confirm(program);
 
         for (var index = 0; index < instances.Length; index++)
         {
@@ -3038,7 +5130,8 @@ internal sealed partial class JsEngine
                 null,
                 JsValue.Undefined,
                 null,
-                null);
+                null,
+                program.Modules[index].Key);
 
             instances[index].State = JsModuleState.Initialised;
         }
@@ -3047,174 +5140,416 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>
-    /// Puts the graph rooted at one module into the order its bodies must be evaluated in.
+    /// The specification's <c>Evaluate</c>: evaluates the graph rooted at one module and answers
+    /// the promise its component settles when it has finished.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>The walk ORDERS and does not evaluate, which is what lets a module await.</b> A walk that
-    /// evaluated as it descended would hold the rest of the graph on the native stack, and a module
-    /// that suspended half way would have to be resumed into a stack that no longer exists. An
-    /// explicit order is a list a continuation can carry, so the module after an awaiting one is
-    /// reached from a job rather than from a frame.
+    /// <b>The pinned ES2026 algorithm, step for step</b> (JSeal I11-async): <c>Evaluate</c>,
+    /// <c>InnerModuleEvaluation</c>, <c>ExecuteAsyncModule</c>, <c>GatherAvailableAncestors</c> and
+    /// <c>AsyncModuleExecutionFulfilled</c>/<c>Rejected</c>, over the instance's own fields. A
+    /// module with a top-level <c>await</c> does not hold up the walk: its body is started, the
+    /// walk goes on to its siblings, and the modules that depend on it are counted as waiting
+    /// (<c>[[PendingAsyncDependencies]]</c>) and run, in the order the walk first reached them,
+    /// when the last thing they wait on finishes. The walk this replaces evaluated async siblings
+    /// one after another, so a sibling that did not depend on an awaiting module waited for it.
     /// </para>
     /// <para>
-    /// A module already on the walk is skipped rather than descended into, which is what makes a
-    /// cyclic import terminate here.
+    /// <b>A second evaluation of a module that is under way answers the same promise</b>, its
+    /// component root's <c>[[TopLevelCapability]]</c>, or a new one that the root's completion
+    /// settles; there is no second walk to coordinate with. An evaluation that failed stays failed
+    /// (<c>[[EvaluationError]]</c>): every later request answers the identical value, and no body
+    /// runs again.
+    /// </para>
+    /// <para>
+    /// <b>Fuel, not the guest, bounds the work</b>: every module the walk visits, every parent it
+    /// records and every ancestor a completion gathers is charged; every wait is a promise
+    /// reaction, so nothing here blocks.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DCE14A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=BC6F73
+    // Broiler-Falsified-If: a module body runs twice in one realm, runs before a module it requests has finished, or a module that does not depend on an awaiting module waits for it
     // Broiler-Human:        PENDING
-    private void Order(
-        JsProgram program,
-        JsModuleInstance[] instances,
-        int index,
-        System.Collections.Generic.List<int> order)
+    private JsPromiseObject EvaluateModule(JsModuleInstance module)
     {
-        var instance = instances[index];
-
-        if (instance.State is JsModuleState.Ordered or JsModuleState.Evaluating or
-            JsModuleState.Evaluated)
+        if (module.State is JsModuleState.EvaluatingAsync or JsModuleState.Evaluated &&
+            module.CycleRoot is { } root)
         {
-            return;
+            module = root;
         }
 
-        instance.State = JsModuleState.Ordered;
-        Charge(FuelPerInstruction);
-
-        foreach (var request in program.Modules[index].Requests)
+        if (module.TopLevelCapability is { } existing)
         {
-            Order(program, instances, request, order);
+            return existing;
         }
 
-        order.Add(index);
+        var stack = new System.Collections.Generic.List<JsModuleInstance>();
+        var capability = Realm.NewHostPromise(this);
+        module.TopLevelCapability = capability;
+
+        bool completed;
+        JsValue failure;
+        moduleEvaluationDepth++;
+
+        try
+        {
+            var index = 0;
+            completed = InnerModuleEvaluation(module, stack, ref index, out failure);
+        }
+        finally
+        {
+            moduleEvaluationDepth--;
+        }
+
+        if (!completed)
+        {
+            // EVERY MODULE STILL ON THE WALK IS FINISHED WITH THE ERROR: the thrower, what depends
+            // on it, and the members of its cycle, whose bodies may already have run.
+            foreach (var member in stack)
+            {
+                Charge(FuelPerInstruction);
+                member.State = JsModuleState.Evaluated;
+                member.EvaluationError = failure;
+            }
+
+            Realm.SettleAsyncPromise(this, capability, failure, rejected: true);
+        }
+        else if (module.State == JsModuleState.Evaluated)
+        {
+            Realm.SettleAsyncPromise(this, capability, JsValue.Undefined, rejected: false);
+        }
+
+        return capability;
     }
 
     /// <summary>
-    /// Evaluates the ordered modules from <paramref name="at"/>, pausing where one awaits.
+    /// The specification's <c>InnerModuleEvaluation</c>: visits one module and what it requests,
+    /// and runs or starts its body; answers false with what was thrown when the walk must stop.
     /// </summary>
     /// <remarks>
-    /// <b>A module that suspends does not hold the walk open - it schedules the rest of it.</b> The
-    /// continuation is registered on the promise the module's own evaluation answers with, so the
-    /// module after it runs when that settles and not before, which is the ordering guarantee
-    /// top-level <c>await</c> exists to give. Nothing here drains the queue: the host does that, at
-    /// a point the host chooses, exactly as it does for any other asynchronous program.
+    /// <b>The depth-first indices find each strongly connected component</b>, whose root becomes
+    /// every member's <see cref="JsModuleInstance.CycleRoot"/> when the component is complete; a
+    /// module that depends on a finished component waits on that root, never on the member.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=DFDCE7
-    // Broiler-Falsified-If: a module body runs before a module it requested has finished awaiting
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=91CD77
+    // Broiler-Falsified-If: a module body runs before every module it requests has run or started, or a module waiting on async dependencies runs before they finish
     // Broiler-Human:        PENDING
-    private void Step(
-        JsProgram program,
-        JsModuleInstance[] instances,
-        System.Collections.Generic.List<int> order,
-        int at,
-        System.Action<JsEngine, JsValue, bool>? settled = null)
+    private bool InnerModuleEvaluation(
+        JsModuleInstance module,
+        System.Collections.Generic.List<JsModuleInstance> stack,
+        ref int index,
+        out JsValue failure)
     {
-        for (var position = at; position < order.Count; position++)
+        Charge(FuelPerInstruction);
+        failure = JsValue.Undefined;
+
+        if (module.State is JsModuleState.EvaluatingAsync or JsModuleState.Evaluated)
         {
-            var index = order[position];
-            var instance = instances[index];
-
-            if (instance.State == JsModuleState.Evaluated)
+            if (module.EvaluationError is { } error)
             {
-                // A MODULE THAT IS STILL AWAITING READS AS EVALUATED, and a walk somebody is
-                // waiting on has to wait for it rather than walk past it. The state is set the
-                // moment an async body is entered - it must be, or a second walk would enter the
-                // body twice - so the state alone cannot say whether the body has finished, and the
-                // promise it settles is what can. Only a dynamic import asks: the entry point's own
-                // walk has nobody holding a promise for it and keeps the behaviour it had.
-                if (settled is not null &&
-                    instance.Evaluation is { State: JsPromiseState.Pending } waiting)
+                failure = error;
+                return false;
+            }
+
+            return true;
+        }
+
+        if (module.State == JsModuleState.Evaluating)
+        {
+            return true;
+        }
+
+        if (module.State != JsModuleState.Initialised)
+        {
+            throw new JsAbort(JsAbortKind.InternalDefect, "a module was evaluated before it was linked");
+        }
+
+        module.State = JsModuleState.Evaluating;
+        var moduleIndex = index;
+        module.DfsIndex = index;
+        module.DfsAncestorIndex = index;
+        module.PendingAsyncDependencies = 0;
+        index++;
+        stack.Add(module);
+
+        var graph = Graph(module.Program);
+
+        foreach (var request in module.Program.Modules[module.Index].Requests)
+        {
+            var required = graph[request];
+
+            if (!InnerModuleEvaluation(required, stack, ref index, out failure))
+            {
+                return false;
+            }
+
+            if (required.State == JsModuleState.Evaluating)
+            {
+                module.DfsAncestorIndex = System.Math.Min(
+                    module.DfsAncestorIndex, required.DfsAncestorIndex);
+            }
+            else
+            {
+                required = required.CycleRoot ?? required;
+
+                if (required.EvaluationError is { } error)
                 {
-                    var next = position + 1;
-
-                    Realm.AwaitOn(
-                        this,
-                        JsValue.Object(waiting),
-                        (engine, value, threw) =>
-                        {
-                            if (threw)
-                            {
-                                settled(engine, value, true);
-                                return;
-                            }
-
-                            engine.Step(program, instances, order, next, settled);
-                        });
-
-                    return;
+                    failure = error;
+                    return false;
                 }
-
-                continue;
             }
 
-            instance.State = JsModuleState.Evaluating;
-            var record = program.Modules[index];
-            var unit = program.Functions[(int)record.BodyUnit];
-
-            if (!unit.IsAsync)
+            if (required.AsyncEvaluationOrder > 0)
             {
-                instance.Completion = Execute(
-                    program,
-                    (int)record.BodyUnit,
-                    instance.Environment,
-                    JsValue.Undefined,
-                    System.Array.Empty<JsValue>(),
-                    null,
-                    JsValue.Undefined,
-                    null,
-                    null);
-
-                instance.State = JsModuleState.Evaluated;
-                continue;
+                Charge(FuelPerInstruction);
+                module.PendingAsyncDependencies++;
+                (required.AsyncParentModules ??= []).Add(module);
             }
+        }
 
-            var promise = StartAsyncModule(program, record, instance);
-            instance.State = JsModuleState.Evaluated;
-            instance.Evaluation = promise;
+        if (module.PendingAsyncDependencies > 0 || module.HasTla)
+        {
+            module.AsyncEvaluationOrder = ++moduleAsyncEvaluationCount;
 
-            // A MODULE THAT RAN TO ITS END WITHOUT SUSPENDING NEEDS NO CONTINUATION, and taking
-            // one anyway would put the rest of the graph on the job queue for no reason - which is
-            // observable, because a reaction registered by the next module would then run first.
-            if (promise.State != JsPromiseState.Pending)
+            if (module.PendingAsyncDependencies == 0)
             {
-                continue;
+                ExecuteAsyncModule(module);
             }
+        }
+        else if (!ExecuteModule(module, out failure))
+        {
+            return false;
+        }
 
-            var resume = position + 1;
+        if (module.DfsAncestorIndex == moduleIndex)
+        {
+            // THE COMPONENT IS COMPLETE, and this module is its root: every member still on the
+            // stack above it is finished, or awaiting, with it.
+            while (true)
+            {
+                Charge(FuelPerInstruction);
+                var member = stack[^1];
+                stack.RemoveAt(stack.Count - 1);
+                member.State = member.AsyncEvaluationOrder == 0
+                    ? JsModuleState.Evaluated
+                    : JsModuleState.EvaluatingAsync;
+                member.CycleRoot = module;
 
-            Realm.AwaitOn(
-                this,
-                JsValue.Object(promise),
-                (engine, value, threw) =>
+                if (ReferenceEquals(member, module))
                 {
-                    if (threw)
-                    {
-                        // A GRAPH SOMEBODY IS WAITING ON HANDS ITS FAILURE TO THEM RATHER THAN
-                        // RAISING IT INSIDE A JOB. A graph entered through the artifact's entry
-                        // point has nobody waiting, so the throw is the only place it can go and it
-                        // goes there; a graph entered through a dynamic `import()` has a promise
-                        // that was answered before it started, and the language says that promise
-                        // is what a failure anywhere in the graph reaches the guest through.
-                        if (settled is not null)
-                        {
-                            settled(engine, value, true);
-                            return;
-                        }
+                    break;
+                }
+            }
+        }
 
-                        throw new JsThrow(value, engine.Render(value));
-                    }
+        return true;
+    }
 
-                    engine.Step(program, instances, order, resume, settled);
-                });
+    /// <summary>Runs one synchronous module body, and answers false with what it threw.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=341144
+    // Broiler-Human:        PENDING
+    private bool ExecuteModule(JsModuleInstance module, out JsValue failure)
+    {
+        failure = JsValue.Undefined;
 
+        try
+        {
+            module.Completion = Execute(
+                module.Program,
+                (int)module.Program.Modules[module.Index].BodyUnit,
+                module.Environment,
+                JsValue.Undefined,
+                System.Array.Empty<JsValue>(),
+                null,
+                JsValue.Undefined,
+                null,
+                null,
+                module.Program.Modules[module.Index].Key);
+
+            return true;
+        }
+        catch (JsThrow thrown)
+        {
+            failure = thrown.Value;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// The specification's <c>ExecuteAsyncModule</c>: starts a body with a top-level <c>await</c>
+    /// and hands its completion to the module's async bookkeeping, from a job.
+    /// </summary>
+    /// <remarks>
+    /// <b>A body that throws before its first <c>await</c> has rejected its promise, and that is
+    /// all it has done</b>: the failure reaches the module, and every module waiting on it, when the
+    /// rejection's reaction runs, exactly as a later throw does.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=44A4F9
+    // Broiler-Human:        PENDING
+    private void ExecuteAsyncModule(JsModuleInstance module)
+    {
+        var promise = StartAsyncModule(module.Program, module.Program.Modules[module.Index], module);
+
+        Realm.ReactOn(this, promise, (engine, value, threw) =>
+        {
+            if (threw)
+            {
+                engine.AsyncModuleExecutionRejected(module, value);
+                return;
+            }
+
+            engine.AsyncModuleExecutionFulfilled(module);
+        });
+    }
+
+    /// <summary>
+    /// The specification's <c>GatherAvailableAncestors</c>: collects the modules that were waiting
+    /// on <paramref name="module"/> alone, and the synchronous ones above them that this completion
+    /// releases too.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=57E12A
+    // Broiler-Human:        PENDING
+    private void GatherAvailableAncestors(
+        JsModuleInstance module,
+        System.Collections.Generic.List<JsModuleInstance> released,
+        System.Collections.Generic.HashSet<JsModuleInstance> seen)
+    {
+        if (module.AsyncParentModules is not { } parents)
+        {
             return;
         }
 
-        // THE WALK IS OVER ONLY WHERE THE LOOP RUNS OUT, which is why this is here and not beside
-        // the call. Every `return` above is a graph that has SUSPENDED, and a caller told the graph
-        // was finished at the point a module awaited would have answered a namespace whose module
-        // has not run - which is exactly the read the temporal dead zone exists to refuse.
-        settled?.Invoke(this, JsValue.Undefined, false);
+        foreach (var parent in parents)
+        {
+            Charge(FuelPerInstruction);
+
+            if (seen.Contains(parent) || (parent.CycleRoot ?? parent).EvaluationError is not null)
+            {
+                continue;
+            }
+
+            if (parent.State != JsModuleState.EvaluatingAsync || parent.PendingAsyncDependencies <= 0)
+            {
+                throw new JsAbort(
+                    JsAbortKind.InternalDefect, "a module waiting on an async dependency was not awaiting");
+            }
+
+            parent.PendingAsyncDependencies--;
+
+            if (parent.PendingAsyncDependencies == 0)
+            {
+                released.Add(parent);
+                seen.Add(parent);
+
+                if (!parent.HasTla)
+                {
+                    GatherAvailableAncestors(parent, released, seen);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// The specification's <c>AsyncModuleExecutionFulfilled</c>: finishes a module whose async
+    /// evaluation completed, and runs or starts what that releases, in walk order.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=42DB0E
+    // Broiler-Falsified-If: the modules one completion releases run in an order other than the one the walk reached them in, or a module runs while something it waits on has not finished
+    // Broiler-Human:        PENDING
+    private void AsyncModuleExecutionFulfilled(JsModuleInstance module)
+    {
+        if (module.State == JsModuleState.Evaluated)
+        {
+            return;
+        }
+
+        module.AsyncEvaluationOrder = JsModuleInstance.AsyncEvaluationDone;
+        module.State = JsModuleState.Evaluated;
+
+        if (module.TopLevelCapability is { } capability)
+        {
+            Realm.SettleAsyncPromise(this, capability, JsValue.Undefined, rejected: false);
+        }
+
+        var released = new System.Collections.Generic.List<JsModuleInstance>();
+        GatherAvailableAncestors(module, released, []);
+        module.AsyncParentModules = null;
+        released.Sort(static (left, right) => left.AsyncEvaluationOrder.CompareTo(right.AsyncEvaluationOrder));
+        moduleEvaluationDepth++;
+
+        try
+        {
+            foreach (var next in released)
+            {
+                Charge(FuelPerInstruction);
+
+                if (next.State == JsModuleState.Evaluated)
+                {
+                    continue;
+                }
+
+                if (next.HasTla)
+                {
+                    ExecuteAsyncModule(next);
+                }
+                else if (!ExecuteModule(next, out var failure))
+                {
+                    AsyncModuleExecutionRejected(next, failure);
+                }
+                else
+                {
+                    next.AsyncEvaluationOrder = JsModuleInstance.AsyncEvaluationDone;
+                    next.State = JsModuleState.Evaluated;
+                    next.AsyncParentModules = null;
+
+                    if (next.TopLevelCapability is { } settled)
+                    {
+                        Realm.SettleAsyncPromise(this, settled, JsValue.Undefined, rejected: false);
+                    }
+                }
+            }
+        }
+        finally
+        {
+            moduleEvaluationDepth--;
+        }
+    }
+
+    /// <summary>
+    /// The specification's <c>AsyncModuleExecutionRejected</c>: fails a module whose async
+    /// evaluation threw, and every module waiting on it, with the same value.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=140497
+    // Broiler-Falsified-If: a module that waits on one whose async evaluation threw later runs, or a module not waiting on it is failed
+    // Broiler-Human:        PENDING
+    private void AsyncModuleExecutionRejected(JsModuleInstance module, JsValue error)
+    {
+        Charge(FuelPerInstruction);
+
+        if (module.State == JsModuleState.Evaluated)
+        {
+            return;
+        }
+
+        module.EvaluationError = error;
+        module.State = JsModuleState.Evaluated;
+        module.AsyncEvaluationOrder = JsModuleInstance.AsyncEvaluationDone;
+
+        if (module.TopLevelCapability is { } capability)
+        {
+            Realm.SettleAsyncPromise(this, capability, error, rejected: true);
+        }
+
+        var parents = module.AsyncParentModules;
+        module.AsyncParentModules = null;
+
+        if (parents is not null)
+        {
+            foreach (var parent in parents)
+            {
+                AsyncModuleExecutionRejected(parent, error);
+            }
+        }
     }
 
     /// <summary>Enters one module body as an async frame and answers the promise it settles.</summary>
@@ -3224,13 +5559,16 @@ internal sealed partial class JsEngine
     /// reaches the guest; what it carries is the unit index and the scope chain the frame would
     /// otherwise have to be told twice.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=07269D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A5152E
     // Broiler-Human:        PENDING
     private JsPromiseObject StartAsyncModule(
         JsProgram program, JsModuleRecord record, JsModuleInstance instance)
     {
         var body = new JsScriptFunction(
-            Realm.FunctionPrototype, program, (int)record.BodyUnit, instance.Environment);
+            Realm.FunctionPrototype, program, (int)record.BodyUnit, instance.Environment)
+        {
+            ScriptOrModule = record.Key,
+        };
 
         var frame = new JsFrame(
             program,
@@ -3241,7 +5579,7 @@ internal sealed partial class JsEngine
             body);
 
         Charge((frame.FrameBytes / 64) + 4);
-        var call = new JsAsyncCall(frame, Realm.NewAsyncPromise());
+        var call = new JsAsyncCall(frame, Realm.NewAsyncPromise()) { DiscardsCompletion = true };
         ResumeAsync(call, JsResumeMode.Next, JsValue.Undefined);
         return call.Promise;
     }
@@ -3346,7 +5684,7 @@ internal sealed partial class JsEngine
     /// <c>catch</c> can be written against.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=166A0A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=880ABC
     // Broiler-Falsified-If: this throws instead of rejecting, or a specifier reaches bytes without passing through the mediator or the artifact's own records
     // Broiler-Human:        PENDING
     internal JsValue DynamicImport(
@@ -3362,27 +5700,23 @@ internal sealed partial class JsEngine
             // rejects with `a`.
             var specifier = ToStringValue(specifierValue);
             RequireHonourableAttributes(optionsValue);
-            var found = ImportedModule(program, referrer, specifier);
-            var instances = Graph(found.Program);
-            var order = new System.Collections.Generic.List<int>(found.Program.Modules.Length);
-            Order(found.Program, instances, found.Index, order);
 
-            // THE PROMISE IS SETTLED WHEN THE GRAPH IS FINISHED AND NOT WHEN IT IS STARTED, which
-            // is the whole of what a module with a top-level `await` costs a dynamic import. The
-            // walk suspends where a module awaits and resumes from a job; settling here rather than
-            // from that walk's own end would have handed the guest a namespace whose module has not
-            // run, and a read through it would answer the dead zone's `ReferenceError` for a
-            // binding that is about to exist.
-            Step(
-                found.Program,
-                instances,
-                order,
-                0,
-                (engine, value, threw) => engine.Realm.SettleAsyncPromise(
-                    engine,
-                    promise,
-                    threw ? value : JsValue.Object(instances[found.Index].Namespace!),
-                    threw));
+            if (!TryOwnRequest(program, referrer, specifier, out var found))
+            {
+                // A SPECIFIER NOBODY RESOLVED BEFORE THE BYTES WERE WRITTEN MAY BE ANSWERED LATER.
+                // An embedder that loads its modules asynchronously takes the request here and
+                // completes it from a turn of its own; until then the promise is simply pending,
+                // and nothing on this path waits for it (JSD-0024 section 15).
+                if (hostRealm is { ModuleLoader: not null } seam &&
+                    seam.OfferModuleRequest(referrer, specifier, promise))
+                {
+                    return JsValue.Object(promise);
+                }
+
+                found = MediatedModule(referrer, specifier);
+            }
+
+            EvaluateInto(found.Program, found.Index, promise, settleWithNamespace: true);
         }
         catch (JsThrow thrown)
         {
@@ -3391,6 +5725,144 @@ internal sealed partial class JsEngine
 
         return JsValue.Object(promise);
     }
+
+    /// <summary>
+    /// Evaluates the graph rooted at one module and settles <paramref name="promise"/> when it is
+    /// finished: with the module's namespace for an import, with <c>undefined</c> for a host.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The promise is settled when the graph is finished and not when it is started</b>, from
+    /// the reaction to the evaluation's own promise, so every caller has one channel for every
+    /// failure and a namespace is never handed out before its module has run.
+    /// </para>
+    /// <para>
+    /// <b>An import links and evaluates from a job</b>, as <c>ContinueDynamicImport</c> does once
+    /// its load promise settles (JSeal I11-async): the evaluation never begins inside the body that
+    /// asked for it, so an import of a module that is still on the walk waits for it rather than
+    /// meeting it half evaluated. A host's evaluation starts at once, unless it too arrives while an
+    /// evaluation is under way.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=50B9DF
+    // Broiler-Falsified-If: the promise settles before every module of the graph has finished, or a failure escapes as a throw
+    // Broiler-Human:        PENDING
+    internal void EvaluateInto(
+        JsProgram program, int root, JsPromiseObject promise, bool settleWithNamespace)
+    {
+        if (settleWithNamespace || moduleEvaluationDepth != 0)
+        {
+            var ready = Realm.NewHostPromise(this);
+            Realm.SettleAsyncPromise(this, ready, JsValue.Undefined, rejected: false);
+
+            Realm.ReactOn(
+                this,
+                ready,
+                (engine, value, threw) => engine.LinkAndEvaluate(program, root, promise, settleWithNamespace));
+
+            return;
+        }
+
+        LinkAndEvaluate(program, root, promise, settleWithNamespace);
+    }
+
+    /// <summary>
+    /// Links the graph rooted at one module, evaluates it, and settles <paramref name="promise"/>
+    /// from the evaluation's reaction.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=F6359B
+    // Broiler-Falsified-If: the promise settles other than through the job queue, or a failure escapes as a throw
+    // Broiler-Human:        PENDING
+    private void LinkAndEvaluate(
+        JsProgram program, int root, JsPromiseObject promise, bool settleWithNamespace)
+    {
+        try
+        {
+            var instances = Graph(program);
+            var evaluation = EvaluateModule(instances[root]);
+
+            // A HOST'S EVALUATION THAT FINISHED ON THE WALK IS SETTLED AT ONCE, as JSD-0024 section
+            // 15 has always settled it; its reactions still run from the queue. An import waits for
+            // the evaluation's reaction, which is `ContinueDynamicImport`'s own step.
+            if (!settleWithNamespace && evaluation.State != JsPromiseState.Pending)
+            {
+                var rejected = evaluation.State == JsPromiseState.Rejected;
+                Realm.SettleAsyncPromise(
+                    this, promise, rejected ? evaluation.Result : JsValue.Undefined, rejected);
+
+                return;
+            }
+
+            Realm.ReactOn(
+                this,
+                evaluation,
+                (engine, value, threw) => engine.Realm.SettleAsyncPromise(
+                    engine,
+                    promise,
+                    threw
+                        ? value
+                        : settleWithNamespace
+                            ? JsValue.Object(instances[root].Namespace!)
+                            : JsValue.Undefined,
+                    threw));
+        }
+        catch (JsThrow thrown)
+        {
+            Realm.SettleAsyncPromise(this, promise, thrown.Value, rejected: true);
+        }
+    }
+
+    /// <summary>
+    /// Loads and links the graph a host names, evaluating nothing, and answers its root.
+    /// </summary>
+    /// <remarks>
+    /// <b>The same door a dynamic import goes through, and no other.</b> The request is a module
+    /// request to the composition's artifact provider, verified by the core under this operation's
+    /// allowance, and answered only by an artifact whose entry is a module graph - so a provider
+    /// that compiled the text as a classic script is refused by name. The graph is instantiated
+    /// here, so its namespace exists and its declarations are initialised, but no body runs until
+    /// a host asks for an evaluation.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=85EF5C
+    // Broiler-Falsified-If: a module body runs before a host asks for an evaluation, or a module request is answered without the mediator
+    // Broiler-Human:        PENDING
+    internal (JsProgram Program, int Index) LinkHostModule(string referrer, string specifier)
+    {
+        var found = MediatedModule(referrer, specifier);
+        _ = Graph(found.Program);
+        return found;
+    }
+
+    /// <summary>
+    /// Completes an import an embedder deferred: loads through the mediator now, and settles the
+    /// import's promise when the graph is finished.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=DD5620
+    // Broiler-Falsified-If: a deferred import settles other than through the job queue, or a failure escapes as a throw
+    // Broiler-Human:        PENDING
+    internal void CompleteImport(string referrer, string specifier, JsPromiseObject promise)
+    {
+        try
+        {
+            var found = MediatedModule(referrer, specifier);
+            EvaluateInto(found.Program, found.Index, promise, settleWithNamespace: true);
+        }
+        catch (JsThrow thrown)
+        {
+            Realm.SettleAsyncPromise(this, promise, thrown.Value, rejected: true);
+        }
+    }
+
+    /// <summary>The key the composition resolved one module of one artifact to.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=709ABF
+    // Broiler-Human:        PENDING
+    internal static string ModuleKey(JsProgram program, int index) => program.Modules[index].Key;
+
+    /// <summary>The namespace of one module of one artifact, which linking has already built.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6DBC15
+    // Broiler-Human:        PENDING
+    internal JsValue ModuleNamespace(JsProgram program, int index) =>
+        JsValue.Object(Graph(program)[index].Namespace!);
 
     /// <summary>
     /// Reads a dynamic import's second argument, and declines every attribute it carries.
@@ -3469,19 +5941,23 @@ internal sealed partial class JsEngine
         }
     }
 
-    /// <summary>Finds or loads the module one specifier names from one referrer.</summary>
+    /// <summary>
+    /// Finds the module one specifier names from one referrer in the referring artifact's own
+    /// request table, answering false when the referrer never requested it statically.
+    /// </summary>
     /// <remarks>
     /// <b>A module this realm already holds is never loaded a second time</b>, and the two routes
-    /// meet at that rule rather than each keeping their own answer. The fast path finds it through
-    /// the referring module's own request table; the mediator's answer is matched against the keys
-    /// this realm has already instanced, so an artifact that arrives carrying a module the realm
-    /// has is a second VIEW of that module and not a second copy of it.
+    /// meet at that rule rather than each keeping their own answer. This fast path finds it through
+    /// the referring module's own request table; the mediator's answer
+    /// (<see cref="MediatedModule"/>) is matched against the keys this realm has already instanced,
+    /// so an artifact that arrives carrying a module the realm has is a second VIEW of that module
+    /// and not a second copy of it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=CEFB56
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=8970EB
     // Broiler-Falsified-If: one module key is evaluated twice in one realm
     // Broiler-Human:        PENDING
-    private (JsProgram Program, int Index) ImportedModule(
-        JsProgram program, string referrer, string specifier)
+    private bool TryOwnRequest(
+        JsProgram program, string referrer, string specifier, out (JsProgram Program, int Index) found)
     {
         foreach (var record in program.Modules)
         {
@@ -3497,13 +5973,32 @@ internal sealed partial class JsEngine
                 if (string.Equals(
                     record.RequestSpecifiers[index], specifier, System.StringComparison.Ordinal))
                 {
-                    return (program, record.Requests[index]);
+                    found = (program, record.Requests[index]);
+                    return true;
                 }
             }
 
             break;
         }
 
+        found = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Asks the composition's artifact provider for the module one specifier names from one
+    /// referrer, and answers the verified graph's root.
+    /// </summary>
+    /// <remarks>
+    /// The answer must be a module graph: an artifact whose <c>module</c> entry is a module body.
+    /// Anything else - a classic script compiled from the same text, a program with no such entry -
+    /// is refused, so a module payload never runs under the script goal.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=006C6A
+    // Broiler-Falsified-If: a module request is answered by an artifact whose root is not a module body
+    // Broiler-Human:        PENDING
+    private (JsProgram Program, int Index) MediatedModule(string referrer, string specifier)
+    {
         if (Loader is null)
         {
             ThrowTypeError(
@@ -3985,7 +6480,7 @@ internal sealed partial class JsEngine
     /// can never run again.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=99B3DF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=04C185
     // Broiler-Falsified-If: an async call whose body is already on the interpreter's stack is resumed again, or a program that awaits without end is a hang rather than an exhaustion
     // Broiler-Human:        PENDING
     private void ResumeAsync(JsAsyncCall call, JsResumeMode mode, JsValue carried)
@@ -4097,7 +6592,12 @@ internal sealed partial class JsEngine
 
         if (settled)
         {
-            Realm.SettleAsyncPromise(this, call.Promise, outcome, rejected);
+            Realm.SettleAsyncPromise(
+                this,
+                call.Promise,
+                call.DiscardsCompletion && !rejected ? JsValue.Undefined : outcome,
+                rejected);
+
             return;
         }
 
@@ -4533,7 +7033,7 @@ internal sealed partial class JsEngine
     /// native-only branch the importer removes; the native arm is a call that is never inlined.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=1E35A3
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=28C3E3
     // Broiler-Falsified-If: a program whose form differs from the engine's reaches ExecuteCore or emitted code
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -4547,7 +7047,8 @@ internal sealed partial class JsEngine
         JsScriptFunction? self,
         JsValue newTarget,
         JsCell? thisBinding,
-        JsFrame? frame)
+        JsFrame? frame,
+        string? referrer = null)
     {
         if ((program.NativeCode.Length != 0) != nativeForm)
         {
@@ -4555,13 +7056,25 @@ internal sealed partial class JsEngine
                 JsAbortKind.InternalDefect, "a program of the other output form reached this engine");
         }
 
-        return nativeForm
-            ? RunNative(
-                program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
-                thisBinding, frame)
-            : ExecuteCore<JsInterpreted>(
-                program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
-                thisBinding, frame, null);
+        // THE FRAME'S SCRIPT OR MODULE, SET FOR ITS WHOLE LIFE AND RESTORED WHEN IT ENDS, however it
+        // ends (JSD-0024 section 20): the one a caller states, else the function's own.
+        var outerReferrer = activeReferrer;
+        activeReferrer = referrer ?? self?.ScriptOrModule ?? string.Empty;
+
+        try
+        {
+            return nativeForm
+                ? RunNative(
+                    program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+                    thisBinding, frame)
+                : ExecuteCore<JsInterpreted>(
+                    program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+                    thisBinding, frame, null);
+        }
+        finally
+        {
+            activeReferrer = outerReferrer;
+        }
     }
 
     /// <summary>
@@ -4604,7 +7117,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=CAC8EF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=31159E
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -4793,8 +7306,19 @@ internal sealed partial class JsEngine
                             break;
 
                         case JsOpcode.NewArguments:
+                            // A UNIT THAT DOES NOT BIND ITS OWN PARAMETERS HAS A SIMPLE LIST, and
+                            // its parameters are slots `0..ParameterCount-1` of the record this
+                            // frame entered with - which is what the frame's copy loop filled. A
+                            // sloppy one of those is the one unit whose `arguments` is MAPPED onto
+                            // them; every other unit gets the unmapped object *(corrected: JSeal
+                            // V05)*.
                             stack[sp++] = JsValue.Object(
-                                Realm.CreateArguments(actualArguments, self, strict));
+                                Realm.CreateArguments(
+                                    actualArguments,
+                                    self,
+                                    strict,
+                                    strict || unit.BindsParameters ? null : scopes[0],
+                                    (int)unit.ParameterCount));
 
                             pc++;
                             break;
@@ -5073,6 +7597,85 @@ internal sealed partial class JsEngine
                             pc += 4;
                             break;
 
+                        // EVAL CODE'S FREE NAMES, RESOLVED THROUGH THE VIEW ITS BOUNDARY RECORD WAS
+                        // ENTERED WITH (JSD-0026 section 5). The operand's high half counts the
+                        // records to the boundary and its low half names the name; everything past
+                        // the boundary is the caller's, described by the caller's verified map.
+                        case JsOpcode.LoadEvalName:
+                            stack[sp++] = ReadEvalName(
+                                EvalBoundary(scopes, code[pc + 1]), names[U16(code, pc + 1)], false);
+
+                            pc += 4;
+                            break;
+
+                        case JsOpcode.LoadEvalNameOrUndefined:
+                            stack[sp++] = ReadEvalName(
+                                EvalBoundary(scopes, code[pc + 1]), names[U16(code, pc + 1)], true);
+
+                            pc += 4;
+                            break;
+
+                        case JsOpcode.StoreEvalName:
+                            WriteEvalName(
+                                EvalBoundary(scopes, code[pc + 1]),
+                                names[U16(code, pc + 1)],
+                                stack[--sp],
+                                strict);
+
+                            pc += 4;
+                            break;
+
+                        case JsOpcode.LoadEvalNameWithBase:
+                        {
+                            var name = names[U16(code, pc + 1)];
+                            var binding = ResolveEvalName(EvalBoundary(scopes, code[pc + 1]), name);
+
+                            if (binding.Object is { } holder)
+                            {
+                                stack[sp++] = GetProperty(JsValue.Object(holder), name);
+                                stack[sp++] = holder is JsEvalVariables
+                                    ? JsValue.Undefined
+                                    : JsValue.Object(holder);
+                            }
+                            else
+                            {
+                                stack[sp++] = ReadEvalBinding(binding, name, false);
+                                stack[sp++] = JsValue.Undefined;
+                            }
+
+                            pc += 4;
+                            break;
+                        }
+
+                        case JsOpcode.DeleteEvalName:
+                            stack[sp++] = DeleteEvalName(
+                                EvalBoundary(scopes, code[pc + 1]), names[U16(code, pc + 1)], strict);
+
+                            pc += 4;
+                            break;
+
+                        // A SLOPPY EVALUATION'S FUNCTION DECLARATIONS AND ANNEX B ALIASES ARE WRITTEN
+                        // TO ITS VARIABLE ENVIRONMENT DIRECTLY (JSeal V15), past any `with` object or
+                        // catch parameter of the same name between the call and it.
+                        case JsOpcode.StoreEvalVariable:
+                            WriteEvalVariable(
+                                EvalBoundary(scopes, code[pc + 1]), names[U16(code, pc + 1)], stack[--sp]);
+
+                            pc += 4;
+                            break;
+
+                        // THE RECEIVER OF A CALL THROUGH A NAME A SEARCH ANSWERED: the object for a
+                        // `with` record, `undefined` for a function's eval variables, which no guest
+                        // code may hold (JSeal V15).
+                        case JsOpcode.WithBaseObject:
+                            if (stack[sp - 1].IsObject && stack[sp - 1].AsObject() is JsEvalVariables)
+                            {
+                                stack[sp - 1] = JsValue.Undefined;
+                            }
+
+                            pc++;
+                            break;
+
                         case JsOpcode.PopScope:
                             scopes.RemoveAt(scopes.Count - 1);
                             pc++;
@@ -5306,7 +7909,8 @@ internal sealed partial class JsEngine
                                     thisValue,
                                     thisBinding,
                                     newTarget,
-                                    active));
+                                    active,
+                                    activeReferrer));
 
                             pc += 3;
                             break;
@@ -5346,9 +7950,15 @@ internal sealed partial class JsEngine
                                 ? thisValue
                                 : ThisBinding(thisBinding);
 
+                            // A SUPER KEY IS A PROPERTY KEY AND NOT A STRING: `super[Symbol.replace]`
+                            // is how a subclass of a built-in reaches the parent's protocol method.
                             var start = SuperBase(active);
-                            var key = ToPropertyKey(stack[--sp]);
-                            stack[sp++] = Lookup(start, key, receiver);
+                            var key = ToPropertyKeyValue(stack[--sp]);
+
+                            stack[sp++] = key.IsSymbol
+                                ? GetSymbolWithReceiver(start, key.AsSymbol(), receiver)
+                                : Lookup(start, key.AsString(), receiver);
+
                             pc++;
                             break;
                         }
@@ -5362,8 +7972,18 @@ internal sealed partial class JsEngine
                                 : ThisBinding(thisBinding);
 
                             var start = SuperBase(active);
-                            var key = ToPropertyKey(stack[--sp]);
-                            SetSuper(start, receiver, key, value, strict);
+                            var key = ToPropertyKeyValue(stack[--sp]);
+
+                            if (!key.IsSymbol)
+                            {
+                                SetSuper(start, receiver, key.AsString(), value, strict);
+                            }
+                            else if (!SetSymbolWithReceiver(start, key.AsSymbol(), value, receiver) &&
+                                strict)
+                            {
+                                ThrowTypeError("Cannot assign to a read only Symbol-keyed property");
+                            }
+
                             stack[sp++] = value;
                             pc++;
                             break;
@@ -5526,10 +8146,31 @@ internal sealed partial class JsEngine
                             // may assign to the global `eval`, and a call to whatever it now holds
                             // is an ordinary call however it is written.
                             stack[sp++] = Realm.IsEvalIntrinsic(callee)
-                                ? Evaluate(arguments, direct: true, unit.Flags)
+                                ? EvaluateDirect(
+                                    program, unitIndex, current, scopes, arguments,
+                                    thisValue, thisBinding, newTarget, active)
                                 : Call(callee, receiver, arguments);
 
                             pc += 2;
+                            break;
+                        }
+
+                        // THE SPREAD SPELLING OF THE SAME CALL, AND THE SAME TWO ANSWERS. The
+                        // arguments arrive as one Array, exactly as `CallSpread`'s do; what the
+                        // callee's identity decides is the same thing it decides for `CallEval`.
+                        case JsOpcode.CallEvalSpread:
+                        {
+                            var spread = ArgumentsOf(stack[--sp]);
+                            var receiver = stack[--sp];
+                            var callee = stack[--sp];
+
+                            stack[sp++] = Realm.IsEvalIntrinsic(callee)
+                                ? EvaluateDirect(
+                                    program, unitIndex, current, scopes, spread,
+                                    thisValue, thisBinding, newTarget, active)
+                                : Call(callee, receiver, spread);
+
+                            pc++;
                             break;
                         }
 
@@ -5588,37 +8229,57 @@ internal sealed partial class JsEngine
                         }
 
                         case JsOpcode.Subtract:
-                            Binary(stack, ref sp, static (a, b) => a - b, this);
+                            Binary(stack, ref sp, opcode, static (a, b) => a - b, this);
                             pc++;
                             break;
 
                         case JsOpcode.Multiply:
-                            Binary(stack, ref sp, static (a, b) => a * b, this);
+                            Binary(stack, ref sp, opcode, static (a, b) => a * b, this);
                             pc++;
                             break;
 
                         case JsOpcode.Divide:
-                            Binary(stack, ref sp, static (a, b) => a / b, this);
+                            Binary(stack, ref sp, opcode, static (a, b) => a / b, this);
                             pc++;
                             break;
 
                         case JsOpcode.Remainder:
-                            Binary(stack, ref sp, static (a, b) => a % b, this);
+                            Binary(stack, ref sp, opcode, static (a, b) => a % b, this);
                             pc++;
                             break;
 
                         case JsOpcode.Exponent:
-                            Binary(stack, ref sp, static (a, b) => System.Math.Pow(a, b), this);
+                            Binary(stack, ref sp, opcode, static (a, b) => JsRealm.MathPower(a, b), this);
                             pc++;
                             break;
 
                         case JsOpcode.Negate:
-                            stack[sp - 1] = JsValue.Number(-ToNumber(stack[sp - 1]));
+                        {
+                            var numeric = ToNumeric(stack[sp - 1]);
+                            stack[sp - 1] = numeric.IsNumber
+                                ? JsValue.Number(-numeric.AsNumber())
+                                : BigIntResult(JsBigInt.Negate(numeric.AsBigInt(), ChargeFuel));
+
                             pc++;
                             break;
+                        }
 
                         case JsOpcode.ToNumber:
                             stack[sp - 1] = JsValue.Number(ToNumber(stack[sp - 1]));
+                            pc++;
+                            break;
+
+                        // THE UPDATE EXPRESSIONS (JSeal B05): one conversion that keeps a BigInt,
+                        // then one step of the operand's own type. A Number takes exactly the
+                        // arithmetic `x + 1` and `x - 1` always took.
+                        case JsOpcode.ToNumeric:
+                            stack[sp - 1] = ToNumeric(stack[sp - 1]);
+                            pc++;
+                            break;
+
+                        case JsOpcode.Increment:
+                        case JsOpcode.Decrement:
+                            stack[sp - 1] = NumericStep(stack[sp - 1], opcode == JsOpcode.Increment);
                             pc++;
                             break;
 
@@ -5628,9 +8289,15 @@ internal sealed partial class JsEngine
                             break;
 
                         case JsOpcode.BitwiseNot:
-                            stack[sp - 1] = JsValue.Number(~ToInt32(stack[sp - 1]));
+                        {
+                            var numeric = ToNumeric(stack[sp - 1]);
+                            stack[sp - 1] = numeric.IsNumber
+                                ? JsValue.Number(~JsValue.ToInt32(numeric.AsNumber()))
+                                : BigIntResult(JsBigInt.BitwiseNot(numeric.AsBigInt(), ChargeFuel));
+
                             pc++;
                             break;
+                        }
 
                         case JsOpcode.LessThan:
                         case JsOpcode.LessThanOrEqual:
@@ -5683,55 +8350,15 @@ internal sealed partial class JsEngine
                         }
 
                         case JsOpcode.BitwiseOr:
-                        {
-                            var right = ToInt32(stack[--sp]);
-                            var left = ToInt32(stack[--sp]);
-                            stack[sp++] = JsValue.Number(left | right);
-                            pc++;
-                            break;
-                        }
-
                         case JsOpcode.BitwiseAnd:
-                        {
-                            var right = ToInt32(stack[--sp]);
-                            var left = ToInt32(stack[--sp]);
-                            stack[sp++] = JsValue.Number(left & right);
-                            pc++;
-                            break;
-                        }
-
                         case JsOpcode.BitwiseXor:
-                        {
-                            var right = ToInt32(stack[--sp]);
-                            var left = ToInt32(stack[--sp]);
-                            stack[sp++] = JsValue.Number(left ^ right);
-                            pc++;
-                            break;
-                        }
-
                         case JsOpcode.ShiftLeft:
-                        {
-                            var right = ToUint32(stack[--sp]) & 31;
-                            var left = ToInt32(stack[--sp]);
-                            stack[sp++] = JsValue.Number(left << (int)right);
-                            pc++;
-                            break;
-                        }
-
                         case JsOpcode.ShiftRight:
-                        {
-                            var right = ToUint32(stack[--sp]) & 31;
-                            var left = ToInt32(stack[--sp]);
-                            stack[sp++] = JsValue.Number(left >> (int)right);
-                            pc++;
-                            break;
-                        }
-
                         case JsOpcode.ShiftRightUnsigned:
                         {
-                            var right = ToUint32(stack[--sp]) & 31;
-                            var left = ToUint32(stack[--sp]);
-                            stack[sp++] = JsValue.Number(left >> (int)right);
+                            var rightValue = stack[--sp];
+                            var leftValue = stack[--sp];
+                            stack[sp++] = Bitwise(opcode, leftValue, rightValue);
                             pc++;
                             break;
                         }
@@ -5790,6 +8417,32 @@ internal sealed partial class JsEngine
                             }
 
                             pc += 3;
+                            break;
+                        }
+
+                        // ONLY AN OBJECT KEY IS CONVERTED HERE, because only an object can run code
+                        // on its way to becoming a key; the read and the write after this see the
+                        // String or Symbol it produced and convert nothing observable. The base is
+                        // refused first, as `GetValue` refuses it before converting the key.
+                        case JsOpcode.ToPropertyKey:
+                        {
+                            var key = stack[sp - 1];
+
+                            if (key.IsObject)
+                            {
+                                var target = stack[sp - 2];
+
+                                if (target.IsNullish)
+                                {
+                                    ThrowTypeError(
+                                        "Cannot read properties of " +
+                                            (target.Type == JsType.Null ? "null" : "undefined"));
+                                }
+
+                                stack[sp - 1] = ToPropertyKeyValue(key);
+                            }
+
+                            pc++;
                             break;
                         }
 
@@ -5973,8 +8626,12 @@ internal sealed partial class JsEngine
                             var options = stack[--sp];
                             var specifier = stack[--sp];
 
+                            // CODE COMPILED WITH NO REFERRER - eval code, a Function body - resolves
+                            // against the running script or module (JSD-0024 section 20).
+                            var written = names[U16(code, pc)];
+
                             stack[sp++] = DynamicImport(
-                                program, names[U16(code, pc)], specifier, options);
+                                program, written.Length == 0 ? activeReferrer : written, specifier, options);
 
                             pc += 3;
                             break;
@@ -6139,6 +8796,67 @@ internal sealed partial class JsEngine
                             break;
                         }
 
+                        // ---- resource scopes (JSD-0034) -----------------------------------------
+                        //
+                        // THE SCOPE VALUE CARRIES THE WHOLE OF DISPOSAL'S STATE, so these five arms
+                        // hold nothing between them: the entries, how far the unwinding has got,
+                        // the completion so far and the two await flags all live on the object the
+                        // lowering keeps in a hidden slot. That is what lets an async disposal leave
+                        // this loop at every `Await` and come back to the next step.
+
+                        case JsOpcode.DisposeScope:
+                            Charge(1);
+                            stack[sp++] = JsValue.Object(new JsDisposeScope());
+                            pc++;
+                            break;
+
+                        case JsOpcode.DisposeAdd:
+                        {
+                            var disposal = JsDisposeScope.From(stack[--sp]);
+                            Realm.DisposeScopeAdd(this, disposal, stack[sp - 1], code[pc + 1] != 0);
+                            pc += 2;
+                            break;
+                        }
+
+                        case JsOpcode.DisposeFold:
+                        {
+                            var disposal = JsDisposeScope.From(stack[--sp]);
+                            Realm.DisposeScopeFold(this, disposal, stack[--sp]);
+                            pc++;
+                            break;
+                        }
+
+                        case JsOpcode.DisposeStep:
+                        {
+                            var disposal = JsDisposeScope.From(stack[--sp]);
+
+                            if (Realm.DisposeScopeStep(this, disposal, out var awaited))
+                            {
+                                stack[sp++] = awaited;
+                                pc += 5;
+                            }
+                            else
+                            {
+                                pc = (int)U32(code, pc);
+                            }
+
+                            break;
+                        }
+
+                        case JsOpcode.DisposeEnd:
+                        {
+                            var disposal = JsDisposeScope.From(stack[--sp]);
+                            var settled = Realm.DisposeScopeEnd(this, disposal, code[pc + 1] != 0);
+
+                            if (code[pc + 1] != 0)
+                            {
+                                stack[sp++] = settled;
+                            }
+
+                            pc += 2;
+                            break;
+                        }
+
                         case JsOpcode.Pop:
                             sp--;
                             pc++;
@@ -6169,6 +8887,16 @@ internal sealed partial class JsEngine
                             sp++;
                             pc += 2;
                             break;
+
+                        case JsOpcode.GetTemplateObject:
+                        {
+                            var count = code[pc + 1];
+                            var strings = TemplateObject(program, pc, stack, sp - (2 * count), count);
+                            sp -= 2 * count;
+                            stack[sp++] = JsValue.Object(strings);
+                            pc += 2;
+                            break;
+                        }
 
                         default:
                             throw new JsAbort(
@@ -6740,7 +9468,7 @@ internal sealed partial class JsEngine
     /// run a getter, which is charged like any other call this walk makes.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=1AC0F4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=E98FC8
     // Broiler-Falsified-If: this walk answers with anything but an object a `PushObjectScope` placed on the chain
     // Broiler-Human:        PENDING
     private JsValue ResolveName(
@@ -6755,6 +9483,13 @@ internal sealed partial class JsEngine
             if (current.Binding is { } bound && HasProperty(bound, name) && !Unscopable(bound, name))
             {
                 return JsValue.Object(bound);
+            }
+
+            // A FUNCTION'S EVAL VARIABLES ARE ASKED AS A `with` OBJECT IS, without its
+            // `Symbol.unscopables`: an own-property test of an object nobody else holds (JSeal V15).
+            if (current.EvalVariables is { } introduced && introduced.HasOwnProperty(name))
+            {
+                return JsValue.Object(introduced);
             }
 
             current = current.Parent;
@@ -6801,18 +9536,32 @@ internal sealed partial class JsEngine
         return current;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D7D299
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B5B178
     // Broiler-Human:        PENDING
     private static void Binary(
-        JsValue[] stack, ref int sp, System.Func<double, double, double> operation, JsEngine engine)
+        JsValue[] stack,
+        ref int sp,
+        JsOpcode opcode,
+        System.Func<double, double, double> operation,
+        JsEngine engine)
     {
-        var right = engine.ToNumber(stack[--sp]);
-        var left = engine.ToNumber(stack[--sp]);
-        stack[sp++] = JsValue.Number(operation(left, right));
+        // BOTH OPERANDS LEAVE THE STACK BEFORE EITHER IS CONVERTED, AND THE LEFT IS CONVERTED FIRST.
+        // ToNumeric can run guest code (valueOf, toString, Symbol.toPrimitive), so the order is
+        // observable, and a throw from the left operand's conversion must leave the right one
+        // unconverted. Two Numbers take the operation they always took; anything else is BigInt
+        // arithmetic or the TypeError for mixing the two (JSeal B03).
+        var rightValue = stack[--sp];
+        var leftValue = stack[--sp];
+        var left = engine.ToNumeric(leftValue);
+        var right = engine.ToNumeric(rightValue);
+
+        stack[sp++] = left.IsNumber && right.IsNumber
+            ? JsValue.Number(operation(left.AsNumber(), right.AsNumber()))
+            : engine.BigIntBinary(opcode, left, right);
     }
 
     /// <summary>The <c>+</c> operator, which is concatenation when either side is a String.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=414277
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=454988
     // Broiler-Human:        PENDING
     internal JsValue Add(JsValue left, JsValue right)
     {
@@ -6824,30 +9573,157 @@ internal sealed partial class JsEngine
             return JsValue.String(ToStringValue(primitiveLeft) + ToStringValue(primitiveRight));
         }
 
-        return JsValue.Number(ToNumber(primitiveLeft) + ToNumber(primitiveRight));
+        var numericLeft = ToNumeric(primitiveLeft);
+        var numericRight = ToNumeric(primitiveRight);
+
+        return numericLeft.IsNumber && numericRight.IsNumber
+            ? JsValue.Number(numericLeft.AsNumber() + numericRight.AsNumber())
+            : BigIntBinary(JsOpcode.Add, numericLeft, numericRight);
     }
 
+    /// <summary>
+    /// The six bitwise and shift operators: <c>ToNumeric</c> on both operands, left first, then the
+    /// 32-bit Number operation or the BigInt one.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1760EF
+    // Broiler-Human:        PENDING
+    internal JsValue Bitwise(JsOpcode opcode, JsValue leftValue, JsValue rightValue)
+    {
+        var left = ToNumeric(leftValue);
+        var right = ToNumeric(rightValue);
+
+        if (!left.IsNumber || !right.IsNumber)
+        {
+            return BigIntBinary(opcode, left, right);
+        }
+
+        var a = left.AsNumber();
+        var b = right.AsNumber();
+
+        return opcode switch
+        {
+            JsOpcode.BitwiseOr => JsValue.Number(JsValue.ToInt32(a) | JsValue.ToInt32(b)),
+            JsOpcode.BitwiseAnd => JsValue.Number(JsValue.ToInt32(a) & JsValue.ToInt32(b)),
+            JsOpcode.BitwiseXor => JsValue.Number(JsValue.ToInt32(a) ^ JsValue.ToInt32(b)),
+            JsOpcode.ShiftLeft => JsValue.Number(JsValue.ToInt32(a) << (int)(JsValue.ToUint32(b) & 31)),
+            JsOpcode.ShiftRight => JsValue.Number(JsValue.ToInt32(a) >> (int)(JsValue.ToUint32(b) & 31)),
+            _ => JsValue.Number(JsValue.ToUint32(a) >> (int)(JsValue.ToUint32(b) & 31)),
+        };
+    }
+
+    /// <summary>
+    /// A binary numeric operator over two values <c>ToNumeric</c> has already produced, at least
+    /// one of them a BigInt: the TypeError for mixing, or the BigInt operation (JSeal B03-B04).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>No operand is ever read as a Number here.</b> Mixing is refused before anything is
+    /// computed, as the specification's <c>ApplyStringOrNumericBinaryOperator</c> refuses it, and
+    /// <c>&gt;&gt;&gt;</c> is refused on two BigInts because <c>BigInt::unsignedRightShift</c> is a
+    /// TypeError - a BigInt has no fixed width to fill with zeros.
+    /// </para>
+    /// <para>
+    /// The errors the specification gives the arithmetic itself are raised here, before the
+    /// operation runs: a zero divisor for <c>/</c> and <c>%</c> and a negative exponent for
+    /// <c>**</c> are RangeErrors. A result wider than the realm's ceiling is a RangeError too
+    /// (<see cref="BigIntResult"/>); the operations charge fuel before each step.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=346910
+    // Broiler-Falsified-If: a Number operand is mixed into a BigInt result, a BigInt is read as a Number, a zero divisor or negative exponent answers anything but a RangeError, or >>> answers a value
+    // Broiler-Human:        PENDING
+    internal JsValue BigIntBinary(JsOpcode opcode, JsValue left, JsValue right)
+    {
+        if (!left.IsBigInt || !right.IsBigInt)
+        {
+            return ThrowTypeError("Cannot mix BigInt and other types, use explicit conversions");
+        }
+
+        var a = left.AsBigInt();
+        var b = right.AsBigInt();
+
+        switch (opcode)
+        {
+            case JsOpcode.Divide or JsOpcode.Remainder when b.IsZero:
+                return ThrowRangeError("Division by zero");
+
+            case JsOpcode.Exponent when b.Value.Sign < 0:
+                return ThrowRangeError("Exponent must be non-negative");
+
+            case JsOpcode.ShiftRightUnsigned:
+                return ThrowTypeError("BigInts have no unsigned right shift, use >> instead");
+        }
+
+        return BigIntResult(opcode switch
+        {
+            JsOpcode.Add => JsBigInt.Add(a, b, ChargeFuel),
+            JsOpcode.Subtract => JsBigInt.Subtract(a, b, ChargeFuel),
+            JsOpcode.Multiply => JsBigInt.Multiply(a, b, ChargeFuel),
+            JsOpcode.Divide => JsBigInt.Divide(a, b, ChargeFuel),
+            JsOpcode.Remainder => JsBigInt.Remainder(a, b, ChargeFuel),
+            JsOpcode.Exponent => JsBigInt.Power(a, b, ChargeFuel),
+            JsOpcode.BitwiseAnd => JsBigInt.And(a, b, ChargeFuel),
+            JsOpcode.BitwiseOr => JsBigInt.Or(a, b, ChargeFuel),
+            JsOpcode.BitwiseXor => JsBigInt.Xor(a, b, ChargeFuel),
+            JsOpcode.ShiftLeft => JsBigInt.ShiftLeft(a, b, ChargeFuel),
+            JsOpcode.ShiftRight => JsBigInt.ShiftRight(a, b, ChargeFuel),
+            _ => throw new System.InvalidOperationException("not a binary numeric operator: " + opcode),
+        });
+    }
+
+    /// <summary>
+    /// One step of an update expression: <c>x + 1</c> or <c>x - 1</c> for a Number, <c>x + 1n</c>
+    /// or <c>x - 1n</c> for a BigInt, after a <c>ToNumeric</c> of anything else.
+    /// </summary>
+    /// <remarks>
+    /// The specification's update is <c>Number::add(oldValue, 1)</c> or <c>BigInt::add(oldValue,
+    /// 1n)</c> by the operand's type (and the same with subtract); mixing cannot arise, because the
+    /// one is always of the operand's own type. The BigInt step is charged and bounded exactly as
+    /// the <c>+</c> and <c>-</c> operators are.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=27D8C7
+    // Broiler-Falsified-If: a BigInt operand is stepped through a double or answers a Number, or a Number operand answers anything but x + 1 or x - 1
+    // Broiler-Human:        PENDING
+    internal JsValue NumericStep(JsValue value, bool increment)
+    {
+        var numeric = ToNumeric(value);
+
+        if (numeric.IsNumber)
+        {
+            return JsValue.Number(increment ? numeric.AsNumber() + 1 : numeric.AsNumber() - 1);
+        }
+
+        return BigIntResult(
+            increment
+                ? JsBigInt.Add(numeric.AsBigInt(), JsBigInt.One, ChargeFuel)
+                : JsBigInt.Subtract(numeric.AsBigInt(), JsBigInt.One, ChargeFuel));
+    }
+
+    /// <summary>
+    /// A computed BigInt as a value, or the RangeError for one wider than the realm's ceiling.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=FAB1EA
+    // Broiler-Falsified-If: an operation whose result is past JsBigInt.MaximumBits answers a value or escapes as anything but a RangeError
+    // Broiler-Human:        PENDING
+    internal JsValue BigIntResult(JsBigInt? result) =>
+        result is null
+            ? ThrowRangeError(
+                "Maximum BigInt size exceeded: the result would be wider than " +
+                JsBigInt.MaximumBits.ToString(System.Globalization.CultureInfo.InvariantCulture) + " bits")
+            : JsValue.BigInt(result);
+
     /// <summary>The four relational operators, through one abstract comparison.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=6700C2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A7E258
     // Broiler-Human:        PENDING
     internal bool Relational(JsOpcode opcode, JsValue left, JsValue right)
     {
-        // THE ORDER OF EVALUATION IS THE SPECIFICATION'S: `<` and `<=` convert left first, `>` and
-        // `>=` convert RIGHT first. It is observable through a valueOf with a side effect, and it
-        // is the kind of thing only a conformance suite ever notices.
-        JsValue first;
-        JsValue second;
-
-        if (opcode is JsOpcode.LessThan or JsOpcode.LessThanOrEqual)
-        {
-            first = ToPrimitive(left, "number");
-            second = ToPrimitive(right, "number");
-        }
-        else
-        {
-            second = ToPrimitive(right, "number");
-            first = ToPrimitive(left, "number");
-        }
+        // THE ORDER OF EVALUATION IS THE SPECIFICATION'S: all four operators convert the LEFT
+        // operand first. `>` and `>=` swap the operands of IsLessThan but pass LeftFirst = false,
+        // which converts that call's second argument - the source's left operand - first. It is
+        // observable through a valueOf with a side effect, and it is the kind of thing only a
+        // conformance suite ever notices.
+        var first = ToPrimitive(left, "number");
+        var second = ToPrimitive(right, "number");
 
         if (first.IsString && second.IsString)
         {
@@ -6869,6 +9745,21 @@ internal sealed partial class JsEngine
             };
         }
 
+        // A BIGINT ON EITHER SIDE IS COMPARED EXACTLY (JSeal B05), never through a double:
+        // `9007199254740993n > 9007199254740992` is true, which no rounding of the left operand
+        // could answer. An undefined comparison - a NaN, or a String that is not an integer - is
+        // false for all four operators, as the Number path's IEEE comparison already makes it.
+        if (first.IsBigInt || second.IsBigInt)
+        {
+            return BigIntOrder(first, second) is { } order && opcode switch
+            {
+                JsOpcode.LessThan => order < 0,
+                JsOpcode.LessThanOrEqual => order <= 0,
+                JsOpcode.GreaterThan => order > 0,
+                _ => order >= 0,
+            };
+        }
+
         var a = ToNumber(first);
         var b = ToNumber(second);
 
@@ -6882,6 +9773,82 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>
+    /// The order of two primitives at least one of which is a BigInt and which are not both
+    /// Strings: negative, zero or positive, or <see langword="null"/> where the specification's
+    /// <c>IsLessThan</c> answers <c>undefined</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A String beside a BigInt is read with <c>StringToBigInt</c>, not <c>ToNumber</c></b>, so
+    /// <c>'9007199254740993' &gt; 9007199254740992n</c> is true; a String outside the grammar is
+    /// undefined, and one spelling a value wider than the realm's ceiling is ordered by its sign,
+    /// which is exact because no value in the realm is that wide.
+    /// </para>
+    /// <para>
+    /// Otherwise both sides take <c>ToNumeric</c>, which refuses a Symbol, and a Number beside a
+    /// BigInt is compared by <see cref="JsBigInt.CompareToNumber"/>: a NaN is undefined and an
+    /// infinity is beyond every BigInt.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=309DC2
+    // Broiler-Falsified-If: a BigInt and a Number or String are ordered other than by their mathematical values, or either is read through a double
+    // Broiler-Human:        PENDING
+    private int? BigIntOrder(JsValue first, JsValue second)
+    {
+        if (first.IsBigInt && second.IsString)
+        {
+            if (!JsBigInt.TryParseStringInteger(second.AsString(), ChargeFuel, out var parsed, out var wide))
+            {
+                return null;
+            }
+
+            return parsed is null ? -wide : CompareBigInts(first.AsBigInt(), parsed);
+        }
+
+        if (first.IsString && second.IsBigInt)
+        {
+            if (!JsBigInt.TryParseStringInteger(first.AsString(), ChargeFuel, out var parsed, out var wide))
+            {
+                return null;
+            }
+
+            return parsed is null ? wide : CompareBigInts(parsed, second.AsBigInt());
+        }
+
+        var a = ToNumeric(first);
+        var b = ToNumeric(second);
+
+        if (a.IsBigInt && b.IsBigInt)
+        {
+            return CompareBigInts(a.AsBigInt(), b.AsBigInt());
+        }
+
+        return a.IsBigInt ? OrderAgainstNumber(a.AsBigInt(), b.AsNumber()) : -OrderAgainstNumber(b.AsBigInt(), a.AsNumber());
+    }
+
+    /// <summary>The order of two BigInts, charged on the narrower one's words.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B271B5
+    // Broiler-Human:        PENDING
+    private int CompareBigInts(JsBigInt left, JsBigInt right)
+    {
+        ChargeText(System.Math.Min(left.Words, right.Words));
+        return left.Value.CompareTo(right.Value);
+    }
+
+    /// <summary>
+    /// The order of a BigInt against a Number, or <see langword="null"/> for a NaN; an infinity is
+    /// beyond every BigInt.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=5CB7FA
+    // Broiler-Falsified-If: a BigInt is ordered against a Number other than by their mathematical values
+    // Broiler-Human:        PENDING
+    private int? OrderAgainstNumber(JsBigInt value, double number) =>
+        double.IsNaN(number) ? null
+        : double.IsPositiveInfinity(number) ? -1
+        : double.IsNegativeInfinity(number) ? 1
+        : value.CompareToNumber(number, ChargeFuel);
+
+    /// <summary>
     /// Charges an equality comparison for the text it may have to read.
     /// </summary>
     /// <remarks>
@@ -6890,7 +9857,7 @@ internal sealed partial class JsEngine
     /// answers immediately when the lengths differ, so like the relational comparison beside it the
     /// shorter operand bounds the work.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=B5D7E9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=8F73E3
     // Broiler-Falsified-If: comparing two long equal strings costs what comparing two short ones costs
     // Broiler-Human:        PENDING
     private void ChargeComparison(JsValue left, JsValue right)
@@ -6899,10 +9866,16 @@ internal sealed partial class JsEngine
         {
             ChargeText(System.Math.Min(left.AsString().Length, right.AsString().Length));
         }
+
+        // Two BigInts compare word by word, and like two Strings the shorter bounds the work.
+        if (left.IsBigInt && right.IsBigInt)
+        {
+            ChargeText(System.Math.Min(left.AsBigInt().Words, right.AsBigInt().Words));
+        }
     }
 
     /// <summary>The abstract equality comparison, <c>==</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D30801
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=8DCC17
     // Broiler-Human:        PENDING
     internal bool LooselyEquals(JsValue left, JsValue right)
     {
@@ -6917,9 +9890,11 @@ internal sealed partial class JsEngine
             return true;
         }
 
+        // AN [[IsHTMLDDA]] OBJECT IS LOOSELY EQUAL TO BOTH NULLISH VALUES (Annex B.3.6.2), and it is
+        // the only object that is.
         if (left.IsNullish || right.IsNullish)
         {
-            return false;
+            return (left.IsObject && left.AsObject().IsHtmlDda) || (right.IsObject && right.AsObject().IsHtmlDda);
         }
 
         if (left.Type == JsType.Number && right.Type == JsType.String)
@@ -6932,6 +9907,19 @@ internal sealed partial class JsEngine
             return ToNumber(left) == right.AsNumber();
         }
 
+        // A BIGINT BESIDE A STRING READS THE STRING WITH `StringToBigInt` (JSeal B05): `1n == '1'`
+        // is true, `1n == '1.0'` is false because the text is not an integer, and a text spelling
+        // a value wider than the realm's ceiling equals nothing the realm can hold.
+        if (left.IsBigInt && right.Type == JsType.String)
+        {
+            return BigIntEqualsText(left.AsBigInt(), right.AsString());
+        }
+
+        if (left.Type == JsType.String && right.IsBigInt)
+        {
+            return BigIntEqualsText(right.AsBigInt(), left.AsString());
+        }
+
         if (left.Type == JsType.Boolean)
         {
             return LooselyEquals(JsValue.Number(left.AsBoolean() ? 1 : 0), right);
@@ -6942,18 +9930,42 @@ internal sealed partial class JsEngine
             return LooselyEquals(left, JsValue.Number(right.AsBoolean() ? 1 : 0));
         }
 
-        if (left.IsObject && right.Type is JsType.Number or JsType.String)
+        // AN OBJECT BESIDE ANY OF THE FOUR PRIMITIVES THE SPECIFICATION LISTS IS CONVERTED ONCE:
+        // String, Number, BigInt and Symbol. The Symbol arm was missing, so `sym == Object(sym)`
+        // answered false (Test262 `equals/coerce-symbol-to-prim-return-prim.js`).
+        if (left.IsObject && right.Type is JsType.Number or JsType.String or JsType.BigInt or JsType.Symbol)
         {
             return LooselyEquals(ToPrimitive(left, "default"), right);
         }
 
-        if (right.IsObject && left.Type is JsType.Number or JsType.String)
+        if (right.IsObject && left.Type is JsType.Number or JsType.String or JsType.BigInt or JsType.Symbol)
         {
             return LooselyEquals(left, ToPrimitive(right, "default"));
         }
 
+        // A BIGINT BESIDE A NUMBER IS EQUAL ONLY TO THE SAME INTEGER, compared exactly: a NaN and
+        // an infinity equal no BigInt, and `9007199254740993n == 9007199254740992` is false.
+        if (left.IsBigInt && right.IsNumber)
+        {
+            return OrderAgainstNumber(left.AsBigInt(), right.AsNumber()) == 0;
+        }
+
+        if (left.IsNumber && right.IsBigInt)
+        {
+            return OrderAgainstNumber(right.AsBigInt(), left.AsNumber()) == 0;
+        }
+
         return false;
     }
+
+    /// <summary>Whether a String spells exactly this BigInt under <c>StringToBigInt</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=783A53
+    // Broiler-Falsified-If: a String that is not an integer, or spells another integer, is answered equal
+    // Broiler-Human:        PENDING
+    private bool BigIntEqualsText(JsBigInt value, string text) =>
+        JsBigInt.TryParseStringInteger(text, ChargeFuel, out var parsed, out _) &&
+        parsed is not null &&
+        CompareBigInts(value, parsed) == 0;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D3DBFB
     // Broiler-Human:        PENDING
@@ -7108,7 +10120,7 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Writes a Symbol-keyed property.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=5F0900
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=E3C0FB
     // Broiler-Human:        PENDING
     internal void SetSymbol(JsValue baseValue, JsSymbol key, JsValue value, bool strict)
     {
@@ -7121,8 +10133,11 @@ internal sealed partial class JsEngine
             return;
         }
 
+        // A PRIMITIVE BASE WALKS ITS WRAPPER'S PROTOTYPE, as the String write does: a Symbol-keyed
+        // setter inherited from `Number.prototype` runs with the primitive as `this`. Only a write
+        // that would have to create or change an own property on the primitive is refused.
         var target = baseValue.AsObjectOrNull();
-        var current = target;
+        var current = target ?? PrototypeFor(baseValue);
 
         while (current is not null)
         {
@@ -7165,6 +10180,16 @@ internal sealed partial class JsEngine
                     return;
                 }
 
+                // AN OWN WRITABLE PROPERTY KEEPS ITS ATTRIBUTES AND TAKES ONLY THE VALUE. Writing
+                // the default attribute set here, as this once did, made a sealed property
+                // configurable again and a non-enumerable one enumerable on the first assignment.
+                if (ReferenceEquals(current, target))
+                {
+                    property.Value = value;
+                    target.SetOwnSymbol(key, property);
+                    return;
+                }
+
                 break;
             }
 
@@ -7173,6 +10198,24 @@ internal sealed partial class JsEngine
 
         if (target is null)
         {
+            if (strict)
+            {
+                ThrowTypeError("Cannot create a Symbol-keyed property on a primitive");
+            }
+
+            return;
+        }
+
+        // THE SAME EXTENSIBILITY DECISION THE STRING WRITE MAKES. A Symbol key is a new own
+        // property like any other, so a frozen, sealed or merely non-extensible object refuses it:
+        // silently in sloppy code and as a TypeError in strict code.
+        if (!target.Extensible)
+        {
+            if (strict)
+            {
+                ThrowTypeError("Cannot add a Symbol-keyed property, object is not extensible");
+            }
+
             return;
         }
 
@@ -7206,7 +10249,7 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Writes an indexed property, with the fast path an Array element deserves.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=240C80
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DAF660
     // Broiler-Human:        PENDING
     internal void SetIndexed(JsValue target, JsValue key, JsValue value, bool strict)
     {
@@ -7256,7 +10299,8 @@ internal sealed partial class JsEngine
                         return;
                     }
                 }
-                else if (array.Extensible && at == array.Length)
+                else if (array.Extensible && at == array.Length &&
+                         !ChainMayAnswerIndex(array.Prototype, at))
                 {
                     array.SetIndex((uint)at, value);
                     return;
@@ -7271,6 +10315,43 @@ internal sealed partial class JsEngine
         }
 
         SetProperty(target, ToPropertyKey(key), value, strict);
+    }
+
+    /// <summary>
+    /// Whether anything on a prototype chain could answer a write to index <paramref name="at"/>
+    /// before it lands on the Array that starts the chain.
+    /// </summary>
+    /// <remarks>
+    /// <b>An append is <c>OrdinarySet</c>, and <c>OrdinarySet</c> walks the chain.</b> An inherited
+    /// setter at the index runs instead of the append, and an inherited read-only property refuses
+    /// it; the append fast path stepped over both, so <c>Array.prototype</c> defining a setter at
+    /// <c>"0"</c> never saw <c>[].push(1)</c>. A Proxy or a typed array on the chain answers the
+    /// write itself and is always sent to the full walk; any other prototype is asked only whether
+    /// it holds the key, and the ordinary chain - <c>Array.prototype</c> then
+    /// <c>Object.prototype</c> - holds none.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=35F4F3
+    // Broiler-Human:        PENDING
+    private static bool ChainMayAnswerIndex(JsObject? prototype, int at)
+    {
+        string? key = null;
+
+        for (var current = prototype; current is not null; current = current.Prototype)
+        {
+            if (current is JsProxy or JsTypedArray)
+            {
+                return true;
+            }
+
+            key ??= JsNumberFormat.ToUintString((uint)at);
+
+            if (current.TryGetOwnProperty(key, out _))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

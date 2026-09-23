@@ -1,0 +1,9 @@
+# the-bigint-public-surface.js on the base build (D:/wt/vm-b05-basebin/cli, HEAD + base-vm-w5.patch), 2026-09-21
+# command: Broiler.VM.Composition.JavaScript.Cli.exe --quiet src/tests/differential/the-bigint-public-surface.js
+broiler-js: src/tests/differential/the-bigint-public-surface.js: 2104:ConstructOutsideManifest at 15:32: a BigInt literal is not admitted by the declared feature manifest
+# exit 3
+# BigInt behaviour probe of the base build, 2026-09-21: every operation B05 owns, as the base answered it
+# base:
+undefined,SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError
+# this build:
+function,true,true,1,TypeError,1,1

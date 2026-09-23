@@ -167,10 +167,20 @@ internal static class Test262Command
             "selection candidates=" + Count(candidates.Count) + " selected=" + Count(selected.Count) +
             " thisShard=" + Count(mine.Count));
 
+        var skippedProposals = features.ProposedNotAdmitted;
+        var admitted = features.Proposed
+            .Where(name => SuiteFeatures.AdmittedProposals.ContainsKey(name))
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .Select(name => name + " (" + SuiteFeatures.AdmittedProposals[name] + ")")
+            .ToList();
+
         Console.WriteLine(
             $"features {SuiteFeatures.FileName} declares {features.Proposed.Count} proposed, " +
             $"{features.Standard.Count} standard and {features.TestHarness.Count} test-harness " +
-            "flags; a test claiming a proposed one is skipped");
+            "flags; a test claiming a proposed one is skipped" +
+            (admitted.Count == 0
+                ? string.Empty
+                : " unless the proposal is admitted: " + string.Join(", ", admitted)));
 
         Console.WriteLine(
             "allowance fuel=" + fuel.ToString(CultureInfo.InvariantCulture) +
@@ -181,7 +191,7 @@ internal static class Test262Command
         foreach (var relative in mine)
         {
             foreach (var outcome in Test262Run.RunOne(
-                suiteRoot, relative, manifest, fuel, wallClock, features.Proposed))
+                suiteRoot, relative, manifest, fuel, wallClock, skippedProposals))
             {
                 results.Add(outcome);
 

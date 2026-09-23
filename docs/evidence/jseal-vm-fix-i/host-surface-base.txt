@@ -1,0 +1,5 @@
+FAIL an exotic hook that throws, is refused, or answers a foreign value gives the guest a catchable error: the run answered ProfileFault/ProfileContractViolation and Normal was expected
+FAIL an exotic hook that throws while the object is enumerated gives the guest the thrown value: the run answered ProfileFault/ProfileContractViolation and Normal was expected
+FAIL an exotic hook whose guest callback exhausts the allowance ends the run, uncatchably: the run answered ProfileFault/ProfileContractViolation and ResourceExhaustion was expected
+ok   a BigInt a host body throws or an exotic hook answers reaches the guest as itself
+FAIL a BigInt a host body returns or throws, or an exotic hook answers, is a TypeError in a realm that declined BigInt: invoking 'routes' answered ProfileFault/ProfileContractViolation

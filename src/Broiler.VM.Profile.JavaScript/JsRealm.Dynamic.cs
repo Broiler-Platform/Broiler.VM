@@ -75,7 +75,7 @@ internal sealed partial class JsRealm
         EvalIntrinsic is not null && value.IsObject && ReferenceEquals(value.AsObject(), EvalIntrinsic);
 
     /// <summary>Builds <c>eval</c> and <c>Function</c> on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=31E9B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=209E66
     // Broiler-Falsified-If: it installs a global that turns source into code without going through the mediator
     // Broiler-Human:        PENDING
     private void SetupDynamic()
@@ -89,9 +89,17 @@ internal sealed partial class JsRealm
 
                 // REACHED THROUGH THE VALUE RATHER THAN THROUGH THE SPELLING, so this is the
                 // INDIRECT form by construction: the executor answers a direct call site itself and
-                // never gets here. Indirect evaluation is global-scope evaluation, which is exactly
-                // what an artifact compiled without knowledge of the calling frame produces.
-                return engine.Evaluate(arguments, direct: false, Format.JsFormat.FunctionFlags.ProgramBody);
+                // never gets here. Indirect evaluation is global eval code - sloppy whatever its
+                // caller is, its lexical declarations its own, its `var`s and functions configurable
+                // globals after the global checks - and not a script (JSeal V15, JSD-0026 step 8).
+                var source = arguments.Length == 0 ? JsValue.Undefined : arguments[0];
+
+                return source.IsString
+                    ? engine.EvaluateGlobal(
+                        source.AsString(),
+                        Format.JsFormat.EvalRequestFlags.None,
+                        JsValue.Object(engine.Realm.GlobalObject))
+                    : source;
             });
 
         EvalIntrinsic = evaluate;

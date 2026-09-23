@@ -1,0 +1,56 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 29 the SuppressedError that disposal combines two throws into is created with no own message, as the proposal's DisposeResources says; V8 gives it an implementation-chosen message (the-disposal-stacks case 41)
+1 "ok"
+2 "ok"
+3 "SyntaxError"
+4 "SyntaxError"
+5 "SyntaxError"
+6 "SyntaxError"
+7 "ok"
+8 "SyntaxError"
+9 "SyntaxError"
+10 "ok"
+11 "SyntaxError"
+12 "SyntaxError"
+13 "SyntaxError"
+14 "ok"
+15 "SyntaxError"
+16 7
+17 "body,b,a"
+18 "body body,f"
+19 "after0,i0,i1,i2"
+20 "lab"
+21 "iter,o1,iter,o2"
+22 "loop,loop,h2,h1"
+23 "{\"value\":5,\"done\":true} gen"
+24 "v1,close"
+25 "get,body,call"
+26 "orig"
+27 "Error one"
+28 "SuppressedError:a:SuppressedError:b:body"
+29 "raw false"
+30 "throws a"
+31 "TypeError"
+32 "TypeError"
+33 "TypeError"
+34 "TypeError a"
+35 "TypeError"
+36 "ReferenceError"
+37 body,c,b,a
+38 b,a SuppressedError:a:b:body
+39 iter,x1,iter,x2,iter
+40 ret r
+41 2,3,4
+42 43
+43 {"value":5,"done":true} gen
+44 RangeError
+45 "ok ok"
+46 "in,c1,after"
+47 "in,c,after,outer"
+48 "in,b,px"
+49 "ret c"
+50 "d"
+51 "t,fin,f,after"
+52 "x fin,f"
+53 in,ac,after
+54 t,fin,sf,af,after

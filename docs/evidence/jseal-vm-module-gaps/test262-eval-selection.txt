@@ -1,0 +1,5 @@
+# pinned Test262 ccaac100, eval selection; base (pass 7226, fail 112) vs after (pass 7228, fail 110) of 7347 variants
+fail -> pass:
+  test/language/eval-code/direct/export.js [module]
+  test/language/eval-code/direct/import.js [module]
+pass -> fail:

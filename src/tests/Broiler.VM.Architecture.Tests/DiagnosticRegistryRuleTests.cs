@@ -130,10 +130,37 @@ public sealed class DiagnosticRegistryRuleTests
         // the bytes of JSC-208. The kind was withdrawn with the promotion on 2026-09-08. THE
         // REVISION DID NOT MOVE FOR EITHER: `since` and the registry's own revision date the
         // MEANING of a code, and 1625 means exactly what it meant when it was minted.
-        Assert.Equal(66, Vocabulary.Count);
+        //
+        // Revision 13 is the eval scope map (JSeal V14, the proposed and unsigned JSD-0026), and it
+        // grows the core half by two while THE SEAM HALF DOES NOT GROW, for revision 11's reason: a
+        // direct eval's source is refused through the codes a script's source already has, and what
+        // needed numbers is the artifact - a map carried without the dynamic surface that lets a
+        // composition decline evaluation, and a map that disagrees with itself, the code or the
+        // function table. ONE CODE COVERS EVERY CLAUSE OF THE SECOND KIND, and the retained
+        // `eval-scopes-*` entries are what tell the clauses apart. It is published at no milestone.
+        //
+        // Revision 14 is ONE CODE, the BigInt constant (JSeal B02, the proposed JSD-0033), and THE
+        // SEAM HALF DOES NOT GROW: a malformed BigInt literal is the malformed-literal code's and an
+        // over-wide one is refused as a construct outside the manifest. The tag without the gate
+        // keeps the unknown-tag code every older build answered, and a declared width past the
+        // format's ceiling is the declared-maximum code, so only the non-canonical spelling needed a
+        // number. It is published at no milestone.
+        //
+        // Revision 15 is ONE CODE, the script-declarations section (JSeal V15-host, JSD-0024 section
+        // 15), and THE SEAM HALF DOES NOT GROW: a host script's source is refused through the codes
+        // every script's source already has. One code covers every clause of a row that disagrees
+        // with itself or the function table, and the retained `script-declarations-*` entries tell
+        // the clauses apart. It is published at no milestone.
+        //
+        // Revision 16 is ONE CODE, the script-referrers section (JSeal I12-upstream, JSD-0024 section
+        // 20), and THE SEAM HALF DOES NOT GROW: the section carries a referrer a host already gave the
+        // compilation, and no source is refused for it. One code covers every clause of a row that
+        // disagrees with itself or the function table, and the retained `script-referrers-*` entries
+        // tell the clauses apart. It is published at no milestone.
+        Assert.Equal(71, Vocabulary.Count);
         Assert.Equal(29, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(12, DiagnosticRegistry.Revision);
+        Assert.Equal(16, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -316,8 +343,12 @@ public sealed class DiagnosticRegistryRuleTests
             violation => violation.Contains(
                 "claims the reachability check, which is not one",
                 StringComparison.Ordinal));
+        // Sixty-seven since revision 13, whose two eval scope rows name retained entries, and
+        // sixty-eight since revision 14, whose BigInt constant row names one, sixty-nine since
+        // revision 15, whose script-declarations row names one, and seventy since revision 16, whose
+        // script-referrers row names one.
         Assert.Equal(
-            65,
+            70,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
             28,

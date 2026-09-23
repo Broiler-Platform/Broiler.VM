@@ -58,7 +58,7 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds <c>Reflect</c> and defines it on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=556765
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5BFEE7
     // Broiler-Human:        PENDING
     private void SetupReflect()
     {
@@ -198,10 +198,14 @@ internal sealed partial class JsRealm
             // `[[PreventExtensions]]` ANSWERS A BOOLEAN AND AN ORDINARY OBJECT'S IS ALWAYS TRUE,
             // which is why this read as an assignment for as long as nothing could refuse. A Proxy
             // can refuse, and this is the member whose whole purpose is to say so rather than throw.
+            // A typed array over a resizable buffer refuses too (JSeal F05-F06).
             return JsValue.Boolean(
-                target is JsProxy proxy
-                    ? proxy.ProxyPreventExtensions()
-                    : ObjectPreventExtensionsOrdinary(target));
+                target switch
+                {
+                    JsProxy proxy => proxy.ProxyPreventExtensions(),
+                    JsTypedArray view => view.PreventExtensions(),
+                    _ => ObjectPreventExtensionsOrdinary(target),
+                });
         });
 
         Method(reflect, "defineProperty", 3, (engine, thisValue, arguments) =>
@@ -210,44 +214,19 @@ internal sealed partial class JsRealm
             var target = ReflectTarget(engine, arguments, "defineProperty");
             var key = ArgOfReflect(arguments, 1);
 
-            // THE KEY AND THE DESCRIPTOR ARE READ OUTSIDE THE `try`, and that is not tidiness. Both
-            // can run guest code - a `toString` on the key, a getter on the descriptor - and an
-            // exception from THAT is the program's own, not this object's refusal. Reading them
-            // inside would report a `TypeError` the guest threw as `false`.
+            // THE KEY AND THE DESCRIPTOR ARE READ FIRST. Both can run guest code - a `toString` on
+            // the key, a getter on the descriptor - and an exception from THAT is the program's own,
+            // not this object's refusal.
             var name = key.IsSymbol ? null : engine.ToPropertyKey(key);
             var fields = ObjectToDescriptorFields(engine, ArgOfReflect(arguments, 2));
 
-            // A PROXY IS ASKED DIRECTLY AND ITS REFUSAL IS RETURNED RATHER THAN CAUGHT. The catch
-            // below turns a refusal into `false` by turning an exception into one, which is right
-            // for an ordinary object whose only way of refusing IS to throw - but a `defineProperty`
-            // trap answers `false` in its own voice, and routing it through the ordinary path would
-            // have validated the descriptor against the PROXY (two more trap calls the language
-            // never asks for) before ever reaching the trap that decides.
-            if (target is JsProxy proxy)
-            {
-                return JsValue.Boolean(
-                    proxy.ProxyDefineOwnProperty(name is null ? key : JsValue.String(name), fields));
-            }
-
-            // THE ANSWER IS A BOOLEAN AND THE REFUSAL IS STILL A REFUSAL. `ObjectApplyDescriptor`
-            // throws when the object declines, because that is what `Object.defineProperty` owes;
-            // here the throw IS the answer, and turning it into `false` is the one place this file
-            // catches rather than reports.
-            try
-            {
-                if (name is null)
-                {
-                    target.SetOwnSymbol(key.AsSymbol(), ObjectPropertyFromFields(engine, target, fields));
-                    return JsValue.True;
-                }
-
-                ObjectApplyDescriptor(engine, target, name, fields);
-                return JsValue.True;
-            }
-            catch (JsThrow)
-            {
-                return JsValue.False;
-            }
+            // THE ANSWER IS THE OBJECT'S OWN `[[DefineOwnProperty]]`, a refusal and nothing else as
+            // `false`. A proxy is asked through its trap with the fields as written; an exception on
+            // the way - a `RangeError` from an Array's `length`, a guest `valueOf`, a trap's
+            // invariant check - is not a refusal and propagates, where catching every throw once
+            // reported each of them as `false`.
+            return JsValue.Boolean(
+                ObjectDefineOwn(engine, target, name is null ? key : JsValue.String(name), fields));
         });
 
         Method(reflect, "getOwnPropertyDescriptor", 2, (engine, thisValue, arguments) =>

@@ -455,19 +455,15 @@ internal static class NativeLifecycle
                 return VmArtifactProviderAnswer.NotFound(VmReason.ProviderArtifactNotFound);
             }
 
-            string source;
-
-            try
-            {
-                source = System.Text.Encoding.UTF8.GetString(artifactRequest.RequestPayload.Span);
-            }
-            catch (ArgumentException)
+            // AN EVAL REQUEST IS DISPATCHED AS EVERY FIRST-PARTY PROVIDER DISPATCHES IT
+            // (source-provider version 2, JSeal V14), so a row that reaches a direct `eval` is
+            // answered under the run's own form.
+            if (!JsCompiler.TryReadProgramRequest(artifactRequest.RequestPayload.Span, out var script))
             {
                 return VmArtifactProviderAnswer.Refused(VmReason.MalformedEncoding);
             }
 
-            var compiled = JsCompiler.Compile(
-                [new JsScriptUnit("main", source, SliceParseOptions.Script)], [], request);
+            var compiled = JsCompiler.Compile([script], [], request);
 
             if (!compiled.Succeeded || compiled.Artifact is null)
             {

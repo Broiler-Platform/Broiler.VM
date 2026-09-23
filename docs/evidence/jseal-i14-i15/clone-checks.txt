@@ -1,0 +1,22 @@
+ok   clone/i14/primitives-survive-including-negative-zero-and-nan: the program answered true,true,true,false,42,true,true,true,true,true
+ok   clone/i14/an-ordinary-object-copies-own-enumerable-string-keys-in-order: the program answered 1|2|b|a|z,true,true,true,1+2,0,false,undefined
+ok   clone/i14/getters-run-depth-first-and-a-deleted-key-is-skipped: the program answered azb,abd,1,2,true
+ok   clone/i14/a-getter-throw-propagates-as-the-same-value: the program answered true
+ok   clone/i14/cycles-terminate-and-shared-references-stay-shared: the program answered true,true,true,true,true,true,true
+ok   clone/i14/holes-length-and-non-index-properties-of-an-array-survive: the program answered true,10,false,3,L,0|2|label,true,1000000001,5|1000000000,far
+ok   clone/i14/mutation-does-not-cross-the-boundary-in-either-direction: the program answered 2,1+2+3,9,x+2,false
+ok   clone/i14/functions-symbols-proxies-and-unlisted-brands-are-refused: the program answered refused,refused,refused,refused,refused,refused,refused,refused,refused,refused,refused,refused,refused,refused,refused,refused,refused,refused
+ok   clone/i14/a-deep-chain-clones-without-recursing-on-the-host-stack: the program answered 200000,199999
+ok   clone/i15/boolean-number-and-string-wrappers-keep-their-brand-and-value: the program answered object,[object Boolean],false,true,[object Number],true,[object String],ab,2,false,true
+ok   clone/i15/a-date-keeps-its-time-value-and-nothing-else: the program answered [object Date],true,86400000,false,true,true
+ok   clone/i15/a-regexp-keeps-source-and-flags-and-resets-lastindex: the program answered [object RegExp],a+(b),gy,reset,false,b,3,(?:),dimsu,true
+ok   clone/i15/maps-and-sets-keep-order-cycles-and-repeated-keys-and-values: the program answered [object Map],7,7,object,true,true,zero,true,nan,true,false,[object Set],4,true,true,true,true,true
+ok   clone/i15/errors-keep-their-listed-name-message-and-cause: the program answered [object Error],true,TypeError,bad,because,false,false/true/true,Error,true,-1,true,false,Error,false,-1,string,[object Object],refused
+ok   clone/i15/buffers-copy-their-bytes-and-views-over-one-buffer-share-one-clone: the program answered [object ArrayBuffer],true,true,true,true,2/3,1/4,4/2,1+2+42+4+5+6+7+8,[object Uint8Array],[object DataView],[object Int16Array],false,true,true,4,42
+ok   clone/i15/a-detached-buffer-and-a-view-over-one-are-refused: the program answered refused,refused,refused,refused,refused,refused
+ok   clone/i15/every-brand-keeps-graph-identity-and-refuses-an-unsupported-member: the program answered truetruetruetruetruetruetruetruetruetruetrue,refused,refused,refused,refused,refused
+ok   clone/i15/no-brand-is-flattened-into-an-ordinary-object: the program answered true,true,true,true,true,true,true,true,true,true,true,true,true
+ok   clone/i14/validation-and-allocation-are-bounded: answered cloned,refused,refused,refused,cloned (cloned,refused,refused,refused,cloned expected): a hundred-entry graph and a 128-byte string are refused under narrowed bounds, a three-element array is admitted, and one string named three times is counted once
+ok   clone/i14-i15/a-carrier-outlives-its-source-realm-and-rebuilds-on-the-destination: the destination answered true,true,false,false,true,true,true,false,true,5,true,true,true,g,true,7,true,true,true,7 (true,true,false,false,true,true,true,false,true,5,true,true,true,g,true,7,true,true,true,7 expected) after the source runtime was disposed; its objects inherit from its own intrinsics, not the source's marked ones, and two adoptions share no object and no buffer
+ok   clone/i14/the-clone-is-charged-in-proportion-to-the-graph: attributed fuel n=64: 1227, n=128: 2443, n=256: 4875, n=512: 9739
+broiler-js-slice-compiler: 277 checks passed, 2 not run on this machine and claimed by nothing

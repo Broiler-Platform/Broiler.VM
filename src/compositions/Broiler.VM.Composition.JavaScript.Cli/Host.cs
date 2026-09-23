@@ -96,7 +96,7 @@ internal static class Host
         var goal = module ? SliceGoal.Module : SliceGoal.Script;
 
         var options = maximumDepth is { } depth
-            ? new SliceParseOptions(goal, allowTopLevelAwait: false, depth)
+            ? new SliceParseOptions(goal, allowTopLevelAwait: module, depth)
             : module ? SliceParseOptions.Module : SliceParseOptions.Script;
 
         var compiled = SliceSourceCompiler.Compile(file.Text, options);

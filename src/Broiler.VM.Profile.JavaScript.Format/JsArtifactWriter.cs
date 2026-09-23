@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   32
-// Annotated:        32/32
+// Relevant units:   41
+// Annotated:        41/41
 // Exempt:           0
-// Human-reviewed:   0/32
+// Human-reviewed:   0/41
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       32
+// Unverified:       41
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -153,6 +153,107 @@ public sealed record JsModuleRow(
 // Broiler-Human:        PENDING
 public readonly record struct JsNativeSymbolRow(uint FunctionIndex, uint Offset);
 
+/// <summary>One name a row of the eval scope map binds.</summary>
+/// <param name="NameConstant">The interned-name constant spelling the name.</param>
+/// <param name="Slot">
+/// The slot of the record the row describes. It is not bounded here: the record may belong to a
+/// closure outside the unit, so the executor bounds it where it is used, exactly as it bounds a
+/// <see cref="JsOpcode.LoadScoped"/>.
+/// </param>
+/// <param name="Flags">
+/// <see cref="JsFormat.EvalBindingImmutable"/>, that bit with
+/// <see cref="JsFormat.EvalBindingFunctionName"/>, or nothing; no other combination is defined.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=BDB51E
+// Broiler-Human:        PENDING
+public readonly record struct JsEvalNameRow(uint NameConstant, uint Slot, byte Flags);
+
+/// <summary>One compile-time scope a direct-<c>eval</c> site can see (JSD-0026 section 4).</summary>
+/// <param name="Kind">What kind of record the scope is at run time.</param>
+/// <param name="Parent">
+/// The enclosing scope's row index plus one, or zero for a root. A parent is always an EARLIER row,
+/// which is what makes every chain finite without a cycle check.
+/// </param>
+/// <param name="Names">The names the scope binds; empty for a <c>with</c> row.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E2C6FF
+// Broiler-Human:        PENDING
+public sealed record JsEvalScopeRow(JsFormat.EvalScopeKind Kind, uint Parent, JsEvalNameRow[] Names);
+
+/// <summary>One direct-<c>eval</c> call site and the scope it sees.</summary>
+/// <param name="FunctionIndex">The code unit the site is in.</param>
+/// <param name="Offset">The code-section offset of its <see cref="JsOpcode.CallEval"/> or <see cref="JsOpcode.CallEvalSpread"/>.</param>
+/// <param name="Scope">The row of the innermost scope the site sees.</param>
+/// <param name="Depth">
+/// How many rows of that chain lie inside the unit, before its own root row - which is the scope
+/// depth the verifier's abstract pass computes at the offset.
+/// </param>
+/// <param name="Flags">What an evaluation from this site is compiled under.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=ECBDB7
+// Broiler-Human:        PENDING
+public readonly record struct JsEvalSiteRow(
+    uint FunctionIndex, uint Offset, uint Scope, uint Depth, JsFormat.EvalRequestFlags Flags);
+
+/// <summary>What one evaluated program declares, and whether this build runs it.</summary>
+/// <param name="FunctionIndex">The unit flagged <see cref="JsFormat.FunctionFlags.EvalCode"/> the row belongs to.</param>
+/// <param name="Flags">The request flags the program was compiled under, which the executor binds the answer to.</param>
+/// <param name="Refusal">Why the program is refused before it runs, or <see cref="JsFormat.EvalRefusal.None"/>.</param>
+/// <param name="VarNameConstants">
+/// The <c>var</c> names a sloppy program introduces into its caller's variable environment, in
+/// source order and without the names <paramref name="FunctionNameConstants"/> lists - the
+/// specification's <c>declaredVarNames</c>. Empty for a strict program, whose declarations are
+/// slots of its own record.
+/// </param>
+/// <param name="LexicalNameConstants">The program's top-level lexical declarations.</param>
+/// <param name="FunctionNameConstants">
+/// The top-level function declarations a sloppy program introduces, in the order the executor
+/// initialises them - the specification's <c>declaredFunctionNames</c>, one per name, the last
+/// declaration of a name winning. Empty for a strict program (JSeal V15).
+/// </param>
+/// <param name="AnnexBNameConstants">
+/// The names of the block-level function declarations Annex B may hoist into the caller's variable
+/// environment - those a <c>var</c> of the same name would not make an early error - one per name,
+/// whether or not the name is also a <c>var</c> or a top-level function. Whether each is hoisted is
+/// decided per evaluation, against the caller's bindings. Empty for a strict program (JSeal V15).
+/// </param>
+/// <param name="PrivateNameConstants">
+/// The private names the program uses and does not declare - each spelled as the slot a class keeps
+/// it under, <c>#</c> followed by the name's own <c>#</c>-prefixed spelling - which must each be
+/// declared by a class enclosing the call, or the evaluation is the <c>SyntaxError</c>
+/// <c>AllPrivateIdentifiersValid</c> makes it, before anything is instantiated (JSeal V15-finish).
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E5E4C5
+// Broiler-Human:        PENDING
+public sealed record JsEvalDeclarationRow(
+    uint FunctionIndex,
+    JsFormat.EvalRequestFlags Flags,
+    JsFormat.EvalRefusal Refusal,
+    uint[] VarNameConstants,
+    uint[] LexicalNameConstants,
+    uint[] FunctionNameConstants,
+    uint[] AnnexBNameConstants,
+    uint[] PrivateNameConstants);
+
+/// <summary>What one script body declares at the global scope (JSeal V15-host).</summary>
+/// <param name="FunctionIndex">The program-body unit the row belongs to.</param>
+/// <param name="LexicalNameConstants">Its top-level <c>let</c>, <c>const</c> and <c>class</c> names.</param>
+/// <param name="VarNameConstants">
+/// Its <c>var</c> names, without the names <paramref name="FunctionNameConstants"/> lists - the
+/// specification's <c>declaredVarNames</c>.
+/// </param>
+/// <param name="FunctionNameConstants">Its top-level function names, one per name.</param>
+/// <param name="AnnexBNameConstants">
+/// The block-level functions Annex B may hoist to the global object, one per name; empty for a
+/// strict body.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=35A5C2
+// Broiler-Human:        PENDING
+public sealed record JsScriptDeclarationRow(
+    uint FunctionIndex,
+    uint[] LexicalNameConstants,
+    uint[] VarNameConstants,
+    uint[] FunctionNameConstants,
+    uint[] AnnexBNameConstants);
+
 /// <summary>
 /// Writes the byte layout of a format-version-2 artifact.
 /// </summary>
@@ -233,6 +334,29 @@ public static class JsArtifactWriter
         System.Buffers.Binary.BinaryPrimitives.WriteDoubleLittleEndian(
             System.MemoryExtensions.AsSpan(bytes, 1), value);
         return bytes;
+    }
+
+    /// <summary>A BigInt constant: a sign and the magnitude's bytes, least significant first.</summary>
+    /// <remarks>
+    /// The bytes are written as given, canonical or not, for the reason <see cref="Surfaces"/>
+    /// gives: an encoder that could only produce a valid artifact could not produce the negative
+    /// controls the verifier has to be shown refusing.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C160E9
+    // Broiler-Human:        PENDING
+    public static byte[] BigIntConstant(bool negative, byte[] magnitude)
+    {
+        System.ArgumentNullException.ThrowIfNull(magnitude);
+
+        var buffer = new System.Collections.Generic.List<byte>(magnitude.Length + 7)
+        {
+            (byte)JsFormat.ConstantTag.BigInt,
+            negative ? (byte)1 : (byte)0,
+        };
+
+        JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)magnitude.Length);
+        buffer.AddRange(magnitude);
+        return buffer.ToArray();
     }
 
     /// <summary>A String value constant.</summary>
@@ -373,6 +497,150 @@ public static class JsArtifactWriter
             {
                 JavaScriptArtifactWriter.WriteVarUInt(buffer, request);
             }
+        }
+
+        return buffer.ToArray();
+    }
+
+    /// <summary>Encodes the eval scope map section body: shapes, sites, then declarations.</summary>
+    /// <remarks>
+    /// Every integer is a variable-length one and every table is count-prefixed, as the module
+    /// section's are; a flags or kind field is one byte. A declaration row carries four name lists:
+    /// its <c>var</c>s, its lexical declarations, and since JSeal V15 its top-level functions and its
+    /// Annex B candidates. The three counts are written as told, so a
+    /// malformed map can be written as easily as a sound one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=8F098A
+    // Broiler-Human:        PENDING
+    public static byte[] EvalScopes(
+        JsEvalScopeRow[] scopes, JsEvalSiteRow[] sites, JsEvalDeclarationRow[] declarations)
+    {
+        var buffer = new System.Collections.Generic.List<byte>();
+        JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)scopes.Length);
+
+        foreach (var scope in scopes)
+        {
+            buffer.Add((byte)scope.Kind);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, scope.Parent);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)scope.Names.Length);
+
+            foreach (var name in scope.Names)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, name.NameConstant);
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, name.Slot);
+                buffer.Add(name.Flags);
+            }
+        }
+
+        JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)sites.Length);
+
+        foreach (var site in sites)
+        {
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, site.FunctionIndex);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, site.Offset);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, site.Scope);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, site.Depth);
+            buffer.Add((byte)site.Flags);
+        }
+
+        JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)declarations.Length);
+
+        foreach (var declaration in declarations)
+        {
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, declaration.FunctionIndex);
+            buffer.Add((byte)declaration.Flags);
+            buffer.Add((byte)declaration.Refusal);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)declaration.VarNameConstants.Length);
+
+            foreach (var name in declaration.VarNameConstants)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, name);
+            }
+
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)declaration.LexicalNameConstants.Length);
+
+            foreach (var name in declaration.LexicalNameConstants)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, name);
+            }
+
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)declaration.FunctionNameConstants.Length);
+
+            foreach (var name in declaration.FunctionNameConstants)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, name);
+            }
+
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)declaration.AnnexBNameConstants.Length);
+
+            foreach (var name in declaration.AnnexBNameConstants)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, name);
+            }
+
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)declaration.PrivateNameConstants.Length);
+
+            foreach (var name in declaration.PrivateNameConstants)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, name);
+            }
+        }
+
+        return buffer.ToArray();
+    }
+
+    /// <summary>Encodes the script-declarations section body.</summary>
+    /// <remarks>
+    /// A count of rows, then per row the unit and four counted runs of name constants in the
+    /// record's order - lexical, <c>var</c>, function, Annex B. Every figure is a variable-length
+    /// integer, and the counts are written as told.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=3FE7A1
+    // Broiler-Human:        PENDING
+    public static byte[] ScriptDeclarations(JsScriptDeclarationRow[] rows)
+    {
+        var buffer = new System.Collections.Generic.List<byte>();
+        JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)rows.Length);
+
+        foreach (var row in rows)
+        {
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, row.FunctionIndex);
+
+            foreach (var names in (uint[][])[
+                row.LexicalNameConstants,
+                row.VarNameConstants,
+                row.FunctionNameConstants,
+                row.AnnexBNameConstants])
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)names.Length);
+
+                foreach (var name in names)
+                {
+                    JavaScriptArtifactWriter.WriteVarUInt(buffer, name);
+                }
+            }
+        }
+
+        return buffer.ToArray();
+    }
+
+    /// <summary>Encodes the script-referrers section body (JSeal I12-upstream).</summary>
+    /// <remarks>
+    /// A count of rows, then per row the script body's unit and the interned-name constant that
+    /// spells its referrer. Every figure is a variable-length integer, and the count is written as
+    /// told.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=1F9C91
+    // Broiler-Human:        PENDING
+    public static byte[] ScriptReferrers((uint FunctionIndex, uint ReferrerConstant)[] rows)
+    {
+        var buffer = new System.Collections.Generic.List<byte>();
+        JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)rows.Length);
+
+        foreach (var (function, referrer) in rows)
+        {
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, function);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, referrer);
         }
 
         return buffer.ToArray();

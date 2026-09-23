@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   38
-// Annotated:        38/38
-// Exempt:           37
-// Human-reviewed:   0/38
+// Relevant units:   55
+// Annotated:        55/55
+// Exempt:           78
+// Human-reviewed:   0/55
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         4/4
+// Criteria:         9/9
 // Resource impact:  2/10 max
-// Unverified:       38
+// Unverified:       55
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -38,9 +38,17 @@ namespace Broiler.VM.Profile.JavaScript;
 /// <b>BigInt is absent because the surface underneath has no BigInt</b>, not as a policy. A value
 /// of that kind is unreachable rather than unhandled, which is the same statement <c>JsType</c>
 /// makes one level down.
+/// <i>(Amended 2026-09-21. <c>JsType</c> now has a BigInt kind (JSD-0033), admitted with card B05;
+/// a program that hands one to the host surface is refused with a <c>TypeError</c> at the
+/// crossing. This kind gains a member with card B06.)</i>
+/// </para>
+/// <para>
+/// <i>(Amended 2026-09-22, JSeal B06, decision JSD-0024 section 19.)</i> <see cref="BigInt"/> is
+/// the eighth language kind. It is appended rather than inserted, so every value an embedder
+/// already stored keeps its number.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D452DA
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8B59F3
 // Broiler-Human:        PENDING
 public enum JsHostValueKind : byte
 {
@@ -73,6 +81,14 @@ public enum JsHostValueKind : byte
 
     /// <summary>An Array exotic object.</summary>
     Array = 9,
+
+    /// <summary>A BigInt: an exact integer, held as a <see cref="System.Numerics.BigInteger"/>.</summary>
+    /// <remarks>
+    /// A primitive, like a String: it carries no realm and no identity, and two BigInts with the
+    /// same mathematical value are the same value. A BigInt OBJECT - what <c>Object(1n)</c> makes -
+    /// is an <see cref="Object"/>.
+    /// </remarks>
+    BigInt = 10,
 }
 
 /// <summary>
@@ -170,6 +186,15 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     }
 
     /// <summary>No value at all: what an argument past the end of a list answers.</summary>
+    /// <remarks>
+    /// <b>It never reaches the guest as a value</b> (JSD-0024 section 20). A member that requires a
+    /// value - an argument of <see cref="JsHostRealm.Invoke"/> or <see cref="JsHostRealm.Construct"/>,
+    /// a value written or defined, an element of <see cref="JsHostRealm.NewArray"/>, a thrown value, a
+    /// promise settlement, a clone root, a property target - refuses it with an
+    /// <see cref="System.ArgumentException"/>; where the host answers the guest or a value is only
+    /// read - a body's return, an exotic hook's answer, a receiver, a conversion - it is
+    /// <c>undefined</c>.
+    /// </remarks>
     public static JsHostValue Missing => default;
 
     /// <summary>The one <c>undefined</c>.</summary>
@@ -182,7 +207,7 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     // Broiler-Human:        PENDING
     public static JsHostValue Null { get; } = new(JsHostValueKind.Null, 0, null);
 
-    /// <summary>Which of the ten kinds this is.</summary>
+    /// <summary>Which of the eleven kinds this is.</summary>
     public JsHostValueKind Kind { get; }
 
     /// <summary>A Boolean.</summary>
@@ -206,6 +231,27 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     // Broiler-Human:        PENDING
     public static JsHostValue String(string value) =>
         new(JsHostValueKind.String, 0, value ?? string.Empty);
+
+    /// <summary>A BigInt of exactly <paramref name="value"/> (JSeal B06).</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Realm-free, as a String is</b>: a BigInt is a primitive with no identity, so nothing about
+    /// it is per-realm and an embedder may build one before it knows which realm it will call.
+    /// </para>
+    /// <para>
+    /// <b>Nothing is checked here, and everything is checked at the crossing.</b> The width the realm
+    /// admits - <c>2^20</c> bits, the ceiling every BigInt the language computes answers a
+    /// <c>RangeError</c> past - and whether the realm's composition admitted the BigInt surface at
+    /// all are properties of a realm, and this has none. A value past the ceiling reaches the realm
+    /// as that <c>RangeError</c> before the realm allocates anything for it; a realm that declined
+    /// the surface refuses it with <see cref="JsHostRefusal.SurfaceDeclined"/>. The crossing charges
+    /// fuel per 64-bit word, in both directions.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F79C3D
+    // Broiler-Human:        PENDING
+    public static JsHostValue BigInt(System.Numerics.BigInteger value) =>
+        new(JsHostValueKind.BigInt, 0, value);
 
     /// <summary>True when this is <see cref="Missing"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B12B56
@@ -248,6 +294,17 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     // Broiler-Human:        PENDING
     public string? AsString() => Kind == JsHostValueKind.String ? (string)reference! : null;
 
+    /// <summary>The BigInt this holds, or <see langword="null"/> for any other kind.</summary>
+    /// <remarks>
+    /// Exact: the integer the guest computed, whatever its width. A Number is not a BigInt and
+    /// answers <see langword="null"/> here, as a BigInt answers NaN from <see cref="AsNumber"/> -
+    /// nothing on this surface converts one into the other.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D432AB
+    // Broiler-Human:        PENDING
+    public System.Numerics.BigInteger? AsBigInt() =>
+        Kind == JsHostValueKind.BigInt ? (System.Numerics.BigInteger)reference! : null;
+
     /// <summary>
     /// The identity of the guest object or symbol this names, or <see langword="null"/>.
     /// </summary>
@@ -276,22 +333,36 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
     /// and <c>===</c> does not: a host stores these in lists - an argument vector, a listener set -
     /// and a value not equal to itself could not be found in the list it was put into. A host that
     /// wants the language's relation over a Number asks for it in the language's terms.
+    /// <para>
+    /// <i>(Amended 2026-09-22, JSeal B06.)</i> <b>A BigInt compares by its mathematical value</b>,
+    /// because that is what <c>===</c> does and a BigInt has no identity to compare: two crossings
+    /// of one guest <c>10n</c>, and a <see cref="BigInt"/> the host built from <c>10</c>, are equal
+    /// and hash alike. A BigInt never equals a Number of the same magnitude, as <c>10n === 10</c>
+    /// is false. <b>A String still compares by reference</b>, as it did before this amendment: two
+    /// equal texts that crossed separately may be unequal here. That is a limitation of this
+    /// member, recorded in JSD-0024 section 19 and not changed silently, because an embedder's
+    /// existing tables hash on it; a host that needs the language's answer over two Strings compares
+    /// <see cref="AsString"/>.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B6680A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A08401
     // Broiler-Human:        PENDING
     public bool Equals(JsHostValue other) =>
         Kind == other.Kind &&
-        number.Equals(other.number) &&
-        ReferenceEquals(reference, other.reference);
+        (Kind == JsHostValueKind.BigInt
+            ? ((System.Numerics.BigInteger)reference!).Equals((System.Numerics.BigInteger)other.reference!)
+            : number.Equals(other.number) && ReferenceEquals(reference, other.reference));
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is JsHostValue other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B343DB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=41C3E9
     // Broiler-Human:        PENDING
-    public override int GetHashCode() => System.HashCode.Combine(
-        Kind, number, reference is null ? 0 : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(reference));
+    public override int GetHashCode() => Kind == JsHostValueKind.BigInt
+        ? System.HashCode.Combine(Kind, ((System.Numerics.BigInteger)reference!).GetHashCode())
+        : System.HashCode.Combine(
+            Kind, number, reference is null ? 0 : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(reference));
 
     /// <summary>Identity equality.</summary>
     public static bool operator ==(JsHostValue left, JsHostValue right) => left.Equals(right);
@@ -313,6 +384,11 @@ public readonly struct JsHostValue : System.IEquatable<JsHostValue>
 /// <b>An argument past the end of <paramref name="arguments"/> is not supplied</b>, and a body that
 /// wants that distinction reads the span's length rather than coercing
 /// <see cref="JsHostValue.Missing"/>.
+/// </para>
+/// <para>
+/// <b>A body that answers <see cref="JsHostValue.Missing"/></b> - <c>default</c>, a body with nothing
+/// to return - gives the guest <c>undefined</c> (JSD-0024 section 20); a construct body that answers
+/// it gives the guest the object the realm made.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=659F51
@@ -380,7 +456,7 @@ public enum JsHostErrorKind
 /// interpret: they name a programming error at the seam, and the realm raises them as
 /// <see cref="JsHostSurfaceException"/> so that a provider cannot mistake one for a guest throw.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C088FA
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=08DA4A
 // Broiler-Human:        PENDING
 public enum JsHostRefusal
 {
@@ -404,6 +480,81 @@ public enum JsHostRefusal
     /// for, and never observe.
     /// </remarks>
     NotCallable = 3,
+
+    /// <summary>
+    /// What was offered for adoption is not a clone carrier this profile build minted (card I17).
+    /// </summary>
+    /// <remarks>
+    /// Another engine's carrier, a carrier from a second copy of this profile, and any other
+    /// object all answer this: none is a graph this realm can walk.
+    /// </remarks>
+    ForeignCarrier = 4,
+
+    /// <summary>
+    /// A clone carrier holding transferred bytes was already claimed by an earlier adoption (card I17).
+    /// </summary>
+    CarrierConsumed = 5,
+
+    /// <summary>
+    /// A value of a surface the realm's composition declined was presented: a BigInt, to a realm
+    /// whose composition declined <c>broiler.javascript.bigint</c> (card B06).
+    /// </summary>
+    /// <remarks>
+    /// Such a realm holds no BigInt at all - its programs were refused one at verification - so a
+    /// host that hands it one has a wiring defect, not a guest to argue with.
+    /// </remarks>
+    SurfaceDeclined = 6,
+}
+
+/// <summary>What a bulk read of an <c>ArrayBuffer</c> found.</summary>
+/// <remarks>
+/// <para>
+/// <b>These are answers about the value, not refusals of the embedder</b>, which is why they are a
+/// status rather than members of <see cref="JsHostRefusal"/>. Asking whether an arbitrary value is a
+/// buffer is the ordinary question a <c>BufferSource</c>-shaped embedder asks, and "no" is a normal
+/// answer to it. What stays a refusal is what always was: a value minted by another realm, or a
+/// crossing outside a step.
+/// </para>
+/// <para>
+/// <b>Only <see cref="Copied"/> means bytes were written</b>, and it is also the answer for an
+/// empty buffer: a buffer of length zero is a buffer, and its answer is zero bytes copied. A
+/// detached buffer is told apart from both. <b>A later version may add members</b> - a shared
+/// buffer, when this profile has one, would need its own answer rather than being folded into an
+/// existing one - so an embedder treats any value it does not recognise as "nothing was written".
+/// </para>
+/// <para>
+/// <b>A resizable buffer answers exactly as a fixed-length one does, over the bytes it holds at
+/// the moment of the call.</b> (Decided 2026-09-21 with JSeal F04-F06, which superseded this
+/// remark's earlier expectation that it would need its own member; decision JSD-0024 section 12.)
+/// A read is one crossing in which no guest code runs, so the buffer cannot resize between the
+/// length being measured and the bytes being copied: <see cref="Copied"/> means the current length
+/// was copied, and <see cref="DestinationTooSmall"/> reports the current length, which a later
+/// resize may change before the embedder asks again. Nothing about the maximum or the
+/// resizability is reported, and the realm keeps no reference to the destination.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F3509A
+// Broiler-Human:        PENDING
+public enum JsHostBufferStatus
+{
+    /// <summary>The value is an <c>ArrayBuffer</c>, and all of its bytes were copied.</summary>
+    Copied = 0,
+
+    /// <summary>The value is not an <c>ArrayBuffer</c>. Nothing was written.</summary>
+    /// <remarks>
+    /// A typed array, a <c>DataView</c>, a proxy, an object whose prototype is
+    /// <c>ArrayBuffer.prototype</c> and every primitive all answer this: the test is the value's
+    /// brand, not anything a guest can write.
+    /// </remarks>
+    NotAnArrayBuffer = 1,
+
+    /// <summary>The value is an <c>ArrayBuffer</c> whose bytes are gone. Nothing was written.</summary>
+    Detached = 2,
+
+    /// <summary>
+    /// The value is an <c>ArrayBuffer</c> larger than the destination. Nothing was written.
+    /// </summary>
+    DestinationTooSmall = 3,
 }
 
 /// <summary>A refusal at the host surface: the embedder used the seam wrongly.</summary>
@@ -554,6 +705,11 @@ public interface IJsHostSurface
 public interface IJsHostExotic
 {
     /// <summary>Answers a name the object's own storage did not hold.</summary>
+    /// <remarks>
+    /// A hook that answers <see langword="true"/> with <see cref="JsHostValue.Missing"/> gives the
+    /// guest a property whose value is <c>undefined</c> (JSD-0024 section 20), as
+    /// <see cref="TryGetIndex"/> does.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=430F87
     // Broiler-Human:        PENDING
     bool TryGetNamed(JsHostRealm realm, string name, out JsHostValue value);
@@ -597,4 +753,467 @@ public interface IJsHostExotic
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CBA49F
     // Broiler-Human:        PENDING
     uint IndexedLength(JsHostRealm realm);
+}
+
+/// <summary>
+/// The deletion half of a host-completed lookup, for an object whose behaviour includes taking a
+/// named item away: a storage area, a legacy platform object with a named deleter.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>It is a second interface rather than a sixth member of <see cref="IJsHostExotic"/>, so no
+/// existing handler has to change.</b> A handler that does not implement it is minted and behaves
+/// exactly as before: a <c>delete</c> on its object is the ordinary deletion and nothing else. The
+/// object asks the question once, when it is minted, so implementing this interface IS the
+/// declaration that an object deletes, and a type is a declaration the compiler keeps honest.
+/// </para>
+/// <para>
+/// <b>Which keys arrive here is the language's line and not one this surface invents.</b> A key
+/// that is a canonical array index (<c>"7"</c>, but not <c>"007"</c> or <c>"4294967295"</c>) is an
+/// index and is never offered; a symbol is never offered; every other string key is a name and is
+/// offered exactly once per deletion, whether the guest deleted it with <c>delete</c>, through
+/// <c>Reflect.deleteProperty</c> or a <c>Proxy</c> without a trap of its own, or the host deleted
+/// it with <see cref="JsHostRealm.DeleteProperty"/>. That matches the named hooks: an index key
+/// reaches <see cref="IJsHostExotic.TryGetIndex"/> and is never offered to
+/// <see cref="IJsHostExotic.TrySetNamed"/> either.
+/// </para>
+/// <para>
+/// <b>The hook runs BEFORE the ordinary deletion, and the ordinary deletion runs either way.</b> A
+/// named deleter has to take the item out before a property mirroring it goes, and a mirror that
+/// outlived its item would answer for something the object no longer has. What <c>delete</c>
+/// evaluates to is the ordinary deletion's answer, not the handler's: an absent or configurable
+/// own property answers <c>true</c>; a non-configurable own property stays, answers <c>false</c>,
+/// and throws a <c>TypeError</c> in strict code - after the handler was offered the name, because
+/// the offer does not depend on what the object's own storage holds. That is the order the JSeal
+/// contract's <c>IJsExoticDelete</c> specifies and both of its providers implement.
+/// </para>
+/// <para>
+/// <b>A handler that throws ends the deletion there.</b> A <see cref="JsHostThrowException"/>
+/// reaches the guest as the value it carries, a refusal at the seam reaches it as a
+/// <c>TypeError</c>, and a termination re-raises the latched abort - the same translation every
+/// host function body gets. In each case the ordinary deletion does not run, so the object's own
+/// storage is left as it was.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=7EB180
+// Broiler-Falsified-If: an index key or a symbol reaches the hook, or one deletion offers a name twice
+// Broiler-Human:        PENDING
+public interface IJsHostExoticDeletion
+{
+    /// <summary>
+    /// Takes the deletion of a named property, removing whatever the name stands for, or declines
+    /// it so that only the ordinary deletion happens.
+    /// </summary>
+    /// <remarks>
+    /// <b>Declining is a real answer and the common one</b>: a name the object does not own is a
+    /// page deleting an expando it put there itself. The answer is the handler's own record of
+    /// whether it owned the name; it does not change what <c>delete</c> evaluates to, because the
+    /// ordinary deletion runs after it either way.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=175929
+    // Broiler-Human:        PENDING
+    bool TryDeleteNamed(JsHostRealm realm, string name);
+}
+
+/// <summary>What one settlement of a host promise capability did.</summary>
+/// <remarks>
+/// <b>Two outcomes and no third, because the rest are refusals.</b> A settlement from outside a
+/// step, from another thread, after the instance was released, or with a capability or value
+/// another realm minted is a mistake at the seam, and it is raised as a
+/// <see cref="JsHostSurfaceException"/> rather than answered here - an embedder that could read a
+/// misuse as an ordinary outcome would carry on as if its promise had been settled.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A34841
+// Broiler-Human:        PENDING
+public enum JsHostSettlement
+{
+    /// <summary>
+    /// This call resolved the promise: it is fulfilled or rejected, or it is following a thenable.
+    /// </summary>
+    Accepted = 0,
+
+    /// <summary>
+    /// An earlier call already resolved it, so this one did nothing: no value was read, no
+    /// <c>then</c> was looked up, and no reaction was queued.
+    /// </summary>
+    AlreadyResolved = 1,
+}
+
+/// <summary>
+/// A genuine promise of one realm, and the right to resolve or reject it, held by an embedder.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>It is the specification's PromiseCapability with the resolving functions kept on the host
+/// side.</b> The promise is an ordinary promise of the realm, built on its own intrinsic
+/// <c>Promise.prototype</c> - not through the <c>Promise</c> global, which a guest may replace -
+/// and it is settled through the realm's own resolve procedure and reaction queue. The resolving
+/// functions are never guest values, so nothing a guest does can settle it and nothing a guest
+/// does to <c>Promise</c> changes how it is built.
+/// </para>
+/// <para>
+/// <b>It settles only through <see cref="JsHostRealm.ResolvePromise"/> and
+/// <see cref="JsHostRealm.RejectPromise"/>, inside a step, on the guest's thread</b> - which is
+/// what keeps a settlement charged to an operation and keeps guest code (a <c>then</c> getter on a
+/// resolution value) off an arbitrary CLR thread. An embedder whose work completes elsewhere asks
+/// for a turn and settles inside it.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=5E7572
+// Broiler-Falsified-If: a capability settles a promise twice, or settles one outside a step of its own realm
+// Broiler-Human:        PENDING
+public sealed class JsHostPromiseCapability
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=163E8A
+    // Broiler-Human:        PENDING
+    internal JsHostPromiseCapability(JsHostRealm realm, JsPromiseObject target, JsHostValue promise)
+    {
+        Realm = realm;
+        Target = target;
+        Promise = promise;
+    }
+
+    /// <summary>The promise, as the embedder hands it to the guest.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=90EC23
+    // Broiler-Human:        PENDING
+    public JsHostValue Promise { get; }
+
+    /// <summary>The realm that minted it. A capability presented elsewhere is a foreign one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=65204F
+    // Broiler-Human:        PENDING
+    internal JsHostRealm Realm { get; }
+
+    /// <summary>The engine's own promise object.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4365E8
+    // Broiler-Human:        PENDING
+    internal JsPromiseObject Target { get; }
+
+    /// <summary>
+    /// The specification's <c>[[AlreadyResolved]]</c>, shared by both halves of the capability.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=331D25
+    // Broiler-Human:        PENDING
+    internal bool AlreadyResolved { get; set; }
+}
+
+/// <summary>
+/// One module graph a host linked into a realm through <see cref="JsHostRealm.LoadModule"/>: its
+/// root's key and namespace, and the handle a host evaluates it by.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>It is the realm's module and not a copy of it.</b> The key names the one instance the realm
+/// holds for it, so a second <see cref="JsHostRealm.LoadModule"/> naming the same module, a static
+/// import of it and a guest <c>import()</c> of it all reach the same environment, and
+/// <see cref="Namespace"/> is the same object a guest's namespace import sees. The realm answers the
+/// same handle for the same key every time.
+/// </para>
+/// <para>
+/// <b>Holding one is not permission to touch the realm.</b> <see cref="Key"/> and
+/// <see cref="Namespace"/> are plain data and readable at any time, even after the instance is
+/// released; everything that does work - evaluating the graph, reading a binding through the
+/// namespace - is a <see cref="JsHostRealm"/> member and is refused outside a step like every other
+/// crossing.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=E66A7A
+// Broiler-Falsified-If: two handles, or two namespaces, exist for one module key in one realm
+// Broiler-Human:        PENDING
+public sealed class JsHostModule
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B864B3
+    // Broiler-Human:        PENDING
+    internal JsHostModule(
+        JsHostRealm realm, JsProgram program, int index, string key, JsHostValue moduleNamespace)
+    {
+        Realm = realm;
+        Program = program;
+        Index = index;
+        Key = key;
+        Namespace = moduleNamespace;
+    }
+
+    /// <summary>The key the composition resolved the module to, exactly as the artifact carries it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7BAFB4
+    // Broiler-Human:        PENDING
+    public string Key { get; }
+
+    /// <summary>
+    /// The module's namespace object: sorted keys, <c>@@toStringTag</c> <c>"Module"</c>, not
+    /// extensible, and read through to the live bindings.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=81F597
+    // Broiler-Human:        PENDING
+    public JsHostValue Namespace { get; }
+
+    /// <summary>The realm that linked it. A handle presented elsewhere is a foreign one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=65204F
+    // Broiler-Human:        PENDING
+    internal JsHostRealm Realm { get; }
+
+    /// <summary>The verified artifact the graph was linked from.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9D1393
+    // Broiler-Human:        PENDING
+    internal JsProgram Program { get; }
+
+    /// <summary>The root module's index in that artifact.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=82DC37
+    // Broiler-Human:        PENDING
+    internal int Index { get; }
+
+    /// <summary>
+    /// The evaluation promise, made by the first <see cref="JsHostRealm.EvaluateModule"/> and
+    /// answered by every later one; <see cref="JsHostValue.Missing"/> until then.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=946015
+    // Broiler-Human:        PENDING
+    internal JsHostValue Evaluation { get; set; }
+}
+
+/// <summary>
+/// A guest <c>import()</c> the realm offered an embedder's <see cref="IJsHostModuleLoader"/>, and
+/// the right to complete it.
+/// </summary>
+/// <remarks>
+/// <b>It is completed at most once, only in a step of its own realm.</b>
+/// <see cref="JsHostRealm.CompleteModuleRequest"/> loads the module through the composition's
+/// artifact provider at that moment and settles the import's promise when the graph has finished
+/// evaluating; <see cref="JsHostRealm.FailModuleRequest"/> rejects it. Either settles through the
+/// realm's job queue and runs no reaction before it returns. A request whose instance was released
+/// can never be completed, because no step can open for that realm again.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=F7D8EF
+// Broiler-Falsified-If: a request settles its promise twice, or settles it outside a step of its own realm
+// Broiler-Human:        PENDING
+public sealed class JsHostModuleRequest
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=77D194
+    // Broiler-Human:        PENDING
+    internal JsHostModuleRequest(
+        JsHostRealm realm, string referrer, string specifier, JsPromiseObject promise)
+    {
+        Realm = realm;
+        Referrer = referrer;
+        Specifier = specifier;
+        Target = promise;
+    }
+
+    /// <summary>
+    /// The calling module's key, or the referrer a classic script was compiled with (empty when it
+    /// was compiled with none).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3FC18C
+    // Broiler-Human:        PENDING
+    public string Referrer { get; }
+
+    /// <summary>The specifier, after the guest's value was converted to a String.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FEEFFE
+    // Broiler-Human:        PENDING
+    public string Specifier { get; }
+
+    /// <summary>The realm that offered it. A request presented elsewhere is a foreign one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=65204F
+    // Broiler-Human:        PENDING
+    internal JsHostRealm Realm { get; }
+
+    /// <summary>The import's own promise.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4365E8
+    // Broiler-Human:        PENDING
+    internal JsPromiseObject Target { get; }
+
+    /// <summary>Whether the loader is still deciding, during which the request cannot be completed.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4AFCBE
+    // Broiler-Human:        PENDING
+    internal bool Offering { get; set; }
+
+    /// <summary>Whether it was completed or failed already.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4B8BDA
+    // Broiler-Human:        PENDING
+    internal bool Settled { get; set; }
+}
+
+/// <summary>
+/// A linked module's <c>[[Status]]</c>, as the specification names it (JSeal I11-upstream, JSD-0024
+/// section 20).
+/// </summary>
+/// <remarks>
+/// <b>Numbered as the specification lists them</b>, with the specification's <c>~new~</c> left out:
+/// a module the realm holds has at least begun linking. Which of them a host can actually observe,
+/// and when, is stated on <see cref="JsHostRealm.TryGetModuleState"/>.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4208BE
+// Broiler-Human:        PENDING
+public enum JsHostModuleStatus
+{
+    /// <summary>
+    /// <c>~unlinked~</c>. Never answered: a module whose graph did not link is not registered, and
+    /// <see cref="JsHostRealm.TryGetModuleState"/> answers <see langword="false"/> for it.
+    /// </summary>
+    Unlinked = 0,
+
+    /// <summary>
+    /// <c>~linking~</c>: its environment exists and its declarations are being initialised. The
+    /// realm links a graph inside one host operation that runs no guest or host code, so no call can
+    /// observe this today; it is answered rather than mislabelled if one ever does.
+    /// </summary>
+    Linking = 1,
+
+    /// <summary>
+    /// <c>~linked~</c>: its declarations are in place and no evaluation has run its body - including
+    /// a module a failed evaluation never reached.
+    /// </summary>
+    Linked = 2,
+
+    /// <summary>
+    /// <c>~evaluating~</c>: an evaluation walk has entered it and its strongly connected component
+    /// has not completed. Only observable while that walk is running, from host code a module body
+    /// calls synchronously.
+    /// </summary>
+    Evaluating = 3,
+
+    /// <summary>
+    /// <c>~evaluating-async~</c>: its component completed, and it or a module it depends on has a
+    /// top-level <c>await</c> that has not finished.
+    /// </summary>
+    EvaluatingAsync = 4,
+
+    /// <summary>
+    /// <c>~evaluated~</c>: finished, successfully or with the error
+    /// <see cref="JsHostModuleState.EvaluationError"/> holds.
+    /// </summary>
+    Evaluated = 5,
+}
+
+/// <summary>
+/// What a realm knows about one linked module at the moment it was asked: its status, its
+/// evaluation error, whether it has a top-level <c>await</c>, and its cycle root (JSeal
+/// I11-upstream, JSD-0024 section 20).
+/// </summary>
+/// <remarks>
+/// <b>A snapshot, not a view.</b> The realm answers a new one on every
+/// <see cref="JsHostRealm.TryGetModuleState"/>, and nothing here changes when the module does.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=60D80C
+// Broiler-Human:        PENDING
+public sealed class JsHostModuleState
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9516E1
+    // Broiler-Human:        PENDING
+    internal JsHostModuleState(
+        string key, JsHostModuleStatus status, bool hasTopLevelAwait, JsHostValue evaluationError, string cycleRoot)
+    {
+        Key = key;
+        Status = status;
+        HasTopLevelAwait = hasTopLevelAwait;
+        EvaluationError = evaluationError;
+        CycleRoot = cycleRoot;
+    }
+
+    /// <summary>The module's key, exactly as the artifact carries it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7BAFB4
+    // Broiler-Human:        PENDING
+    public string Key { get; }
+
+    /// <summary>The module's <c>[[Status]]</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ED9E63
+    // Broiler-Human:        PENDING
+    public JsHostModuleStatus Status { get; }
+
+    /// <summary>
+    /// The module's <c>[[HasTLA]]</c>: whether its own body has a top-level <c>await</c> (a top-level
+    /// <c>for await</c> or <c>await using</c> included). A module that only imports one that awaits
+    /// answers <see langword="false"/>; its status says whether it is still waiting.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D13ED3
+    // Broiler-Human:        PENDING
+    public bool HasTopLevelAwait { get; }
+
+    /// <summary>
+    /// The module's <c>[[EvaluationError]]</c>: the identical value its evaluation threw, which every
+    /// later evaluation of it rejects with; <see cref="JsHostValue.Missing"/> while it has none.
+    /// </summary>
+    /// <remarks>
+    /// A module that threw <c>undefined</c> holds <see cref="JsHostValue.Undefined"/> here, which is
+    /// why "no error" is Missing and not undefined.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=28B641
+    // Broiler-Human:        PENDING
+    public JsHostValue EvaluationError { get; }
+
+    /// <summary>Whether <see cref="EvaluationError"/> holds an error.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F85621
+    // Broiler-Human:        PENDING
+    public bool HasEvaluationError => !EvaluationError.IsMissing;
+
+    /// <summary>
+    /// The key of the module's <c>[[CycleRoot]]</c> - the root of the strongly connected component
+    /// it was evaluated in, itself when it is not in a cycle - or empty while it has none (it has not
+    /// completed a walk, or failed on one).
+    /// </summary>
+    /// <remarks>
+    /// <b>A cycle member is finished only when its root is</b>: a member whose own body ran reads
+    /// <see cref="JsHostModuleStatus.Evaluated"/> while its root may still be
+    /// <see cref="JsHostModuleStatus.EvaluatingAsync"/>, which is the specification's own state, and
+    /// an evaluation of the member answers the root's promise.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D35777
+    // Broiler-Human:        PENDING
+    public string CycleRoot { get; }
+}
+
+/// <summary>What an embedder's loader answers for one guest <c>import()</c>.</summary>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=30E5EE
+// Broiler-Human:        PENDING
+public enum JsHostModuleLoad
+{
+    /// <summary>
+    /// Load it now: the composition's artifact provider is asked in this step, as it would be with
+    /// no loader at all.
+    /// </summary>
+    Now = 0,
+
+    /// <summary>
+    /// The embedder keeps the request and completes or fails it from a later step; the import's
+    /// promise stays pending until then.
+    /// </summary>
+    Deferred = 1,
+}
+
+/// <summary>
+/// An embedder's say over when a guest <c>import()</c> is loaded: now, or later from a turn.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>Optional, and recognised once.</b> A composition's <see cref="IJsHostSurface"/> that also
+/// implements this is taken as the realm's loader when the realm is handed over; one that does not
+/// leaves every import answered synchronously by the artifact provider, exactly as before. Like the
+/// surface itself, it exists only where the composition registered
+/// <see cref="JavaScriptProfile.HostSurfaceCapability"/>.
+/// </para>
+/// <para>
+/// <b>It is offered only what the realm cannot answer on its own.</b> A specifier the calling module
+/// already requested statically names a module of the same artifact and is answered without asking.
+/// Every other <c>import()</c> is offered here, inside the step the guest is running in, after the
+/// specifier was converted and the options were checked; the offer is a charged crossing. The loader
+/// must not complete the request it is being offered - doing so throws
+/// <see cref="System.InvalidOperationException"/> - and answers <see cref="JsHostModuleLoad.Deferred"/>
+/// to complete it later instead. A <see cref="JsHostThrowException"/> it raises rejects the import
+/// with the value it carries, and a <see cref="JsHostSurfaceException"/> rejects it with a
+/// <c>TypeError</c>.
+/// </para>
+/// <para>
+/// <b>It decides WHEN, never WHAT.</b> Completing a request asks the composition's artifact provider
+/// for the module exactly as an undeferred import would, so the provider's answer - and the core's
+/// verification of it - is still the only way a module reaches the realm.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=F28A83
+// Broiler-Falsified-If: a deferred import reaches the realm without the artifact provider and the core's verification
+// Broiler-Human:        PENDING
+public interface IJsHostModuleLoader
+{
+    /// <summary>Answers whether one guest <c>import()</c> is loaded now or completed later.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=247610
+    // Broiler-Human:        PENDING
+    JsHostModuleLoad OnImport(JsHostRealm realm, JsHostModuleRequest request);
 }

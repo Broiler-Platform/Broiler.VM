@@ -79,7 +79,7 @@ internal sealed partial class JsRealm
     private const string DateZoneText = " GMT+0000 (Coordinated Universal Time)";
 
     /// <summary>Builds <c>Date</c>, its statics and <c>Date.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4A1236
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9219B5
     // Broiler-Human:        PENDING
     private void SetupDate()
     {
@@ -257,13 +257,24 @@ internal sealed partial class JsRealm
                 : JsValue.String(DateToIsoText(time));
         });
 
+        // GENERIC BY DEFINITION, NOT A DATE METHOD (ES2026 Date.prototype.toJSON; since
+        // 2026-09-22, JSeal VM-FIX-J): any receiver goes through ToObject and ToPrimitive with hint
+        // number, and whatever `toISOString` that object has is invoked - it read a Date's time
+        // value and refused every other receiver. A non-finite Number answers `null`, which is how
+        // JSON.stringify serialises an invalid Date rather than throwing through toISOString.
         Method(DatePrototype, "toJSON", 1, static (engine, thisValue, arguments) =>
         {
-            var time = DateReceiver(engine, thisValue).TimeValue;
+            _ = arguments;
+            var target = JsValue.Object(engine.ToObject(thisValue));
+            var primitive = engine.ToPrimitive(target, "number");
 
-            // JSON.stringify SERIALISES AN INVALID DATE AS `null` RATHER THAN THROWING, which is
-            // why this is not simply a call to toISOString.
-            return double.IsNaN(time) ? JsValue.Null : JsValue.String(DateToIsoText(time));
+            if (primitive.IsNumber && !double.IsFinite(primitive.AsNumber()))
+            {
+                return JsValue.Null;
+            }
+
+            return engine.Call(
+                engine.GetProperty(target, "toISOString"), target, System.Array.Empty<JsValue>());
         });
 
         // THE LOCALE FORMS ARE THE PLAIN FORMS. This profile carries no locale data, and the

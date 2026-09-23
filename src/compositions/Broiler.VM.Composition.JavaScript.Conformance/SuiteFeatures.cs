@@ -60,6 +60,39 @@ internal sealed record SuiteFeatures(
     /// </remarks>
     internal const string TestHarnessHeading = "## Test-Harness Features";
 
+    /// <summary>
+    /// The proposals this profile implements ahead of its pinned edition, each by a decision record
+    /// that names it; a test claiming one is scored rather than skipped by the <c>--test262</c> run.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The suite still decides what a proposal is; this decides only which proposals this
+    /// profile has built.</b> JSD-0018 excludes a proposal because a test about it is a test about a
+    /// language nothing here claims to implement - true of every proposal until a decision record
+    /// admits one and the profile implements the whole of it. Explicit resource management was
+    /// admitted by JSD-0034 when its syntax (JSeal F21-F22) joined the runtime half (F18-F20), so
+    /// its tests are answers about this profile and skipping them would hide both its passes and
+    /// its failures.
+    /// </para>
+    /// <para>
+    /// <b>An entry needs a record, and the record is named beside it</b>, so this set cannot grow
+    /// the way JSD-0018 feared a hand-written list would: quietly, whenever something failed. It can
+    /// only move tests from the skipped column into the scored ones, never out of them. The
+    /// ingested-dialect command keeps excluding every proposal: its fixture suite's flag names are a
+    /// format exercise, and two of its fixtures exist to prove a proposal is excluded.
+    /// </para>
+    /// </remarks>
+    internal static IReadOnlyDictionary<string, string> AdmittedProposals { get; } =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["explicit-resource-management"] = "JSD-0034",
+        };
+
+    /// <summary>The proposed flags a <c>--test262</c> run skips: every proposal not admitted.</summary>
+    internal IReadOnlySet<string> ProposedNotAdmitted =>
+        new HashSet<string>(
+            Proposed.Where(name => !AdmittedProposals.ContainsKey(name)), StringComparer.Ordinal);
+
     /// <summary>Every name the file declares, whichever section declared it.</summary>
     internal IReadOnlySet<string> All =>
         new HashSet<string>(Proposed.Concat(Standard).Concat(TestHarness), StringComparer.Ordinal);

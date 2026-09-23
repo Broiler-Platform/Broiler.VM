@@ -1,0 +1,69 @@
+# Retained host answers; not a conformance oracle.
+1 1
+2 2
+3 "ReferenceError"
+4 7
+5 3
+6 9
+7 4
+8 1
+9 3
+10 5
+11 "TypeError"
+12 "undefined"
+13 10
+14 "om"
+15 4
+16 "a1"
+17 1
+18 "b"
+19 "use strict1"
+20 1
+21 5
+22 "SyntaxError"
+23 true
+24 "object"
+25 true
+26 true
+27 "true true true"
+28 "false false false"
+29 "0,1"
+30 false
+31 true
+32 false
+33 true
+34 "[\"a\",\"b\\n\"] [\"a\",\"b\\\\n\"] 2"
+35 "SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError"
+36 "ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok"
+37 "SyntaxError"
+38 "SyntaxError"
+39 "SyntaxError"
+40 "SyntaxError"
+41 "SyntaxError"
+42 "SyntaxError"
+43 "ok"
+44 "ok"
+45 "SyntaxError"
+46 "function"
+47 "function"
+48 "function"
+49 "function"
+50 "function"
+51 true
+52 "TypeError"
+53 6
+54 "function"
+55 3
+56 "function"
+57 "function"
+58 "SyntaxError | 4 | -4 | 0.25 | SyntaxError | SyntaxError | SyntaxError | SyntaxError | SyntaxError | SyntaxError | 512 | -8 | SyntaxError | -8"
+59 "SyntaxError"
+60 "ok"
+61 "function"
+62 true
+63 "function"
+64 "function"
+65 "TypeError"
+66 "SyntaxError | SyntaxError | SyntaxError | SyntaxError | SyntaxError | SyntaxError | SyntaxError | SyntaxError | SyntaxError | SyntaxError"
+67 "ok | ok | ok | ok"
+68 3

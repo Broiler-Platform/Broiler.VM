@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   81
-// Annotated:        81/81
-// Exempt:           13
-// Human-reviewed:   0/81
-// IP risk:          None
+// Relevant units:   83
+// Annotated:        83/83
+// Exempt:           16
+// Human-reviewed:   0/83
+// IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       81
+// Unverified:       83
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -50,6 +50,15 @@ internal abstract record JsStatement(SliceSourceSpan Span) : JsNode(Span);
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=167200
 // Broiler-Human:        PENDING
 internal sealed record JsNumberLiteral(SliceSourceSpan Span, double Value, bool IsLegacyOctal)
+    : JsExpression(Span);
+
+/// <summary>
+/// A BigInt literal, held exactly. Only a parse admitting BigInt - the wide manifest's - produces
+/// one (JSD-0033).
+/// </summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=4DDF58
+// Broiler-Human:        PENDING
+internal sealed record JsBigIntLiteral(SliceSourceSpan Span, System.Numerics.BigInteger Value)
     : JsExpression(Span);
 
 /// <summary>A string literal, with the raw text a directive prologue needs.</summary>
@@ -481,13 +490,41 @@ internal sealed record JsDestructuringAssignment(
 internal sealed record JsDeclarator(
     SliceSourceSpan Span, string Name, JsPattern? Pattern, JsExpression? Initialiser) : JsNode(Span);
 
-/// <summary>A <c>var</c>, <c>let</c> or <c>const</c> statement.</summary>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=9AEB53
+/// <summary>Whether a lexical declaration registers what it binds for disposal, and how.</summary>
+/// <remarks>
+/// <b>A resource declaration is a <c>const</c> declaration with one more step, and it is recorded
+/// as that.</b> Its bindings are immutable lexical bindings in every respect the scope rules ask
+/// about, so the declaration keeps <see cref="SliceDeclarationKind.Const"/> and every collector
+/// that asks for lexical names answers for it unchanged; what this adds is the registration each
+/// binding performs before it leaves its dead zone, and the hint that decides whether the scope's
+/// exit awaits (JSeal F21-F22, JSD-0034).
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6E28F6
+// Broiler-Human:        PENDING
+internal enum JsUsing
+{
+    /// <summary>An ordinary declaration.</summary>
+    None = 0,
+
+    /// <summary><c>using</c>: disposed through <c>Symbol.dispose</c>, synchronously.</summary>
+    Sync = 1,
+
+    /// <summary><c>await using</c>: disposed through <c>Symbol.asyncDispose</c>, awaited.</summary>
+    Async = 2,
+}
+
+/// <summary>A <c>var</c>, <c>let</c>, <c>const</c>, <c>using</c> or <c>await using</c> statement.</summary>
+/// <param name="Using">
+/// Whether this is a resource declaration, whose <see cref="Kind"/> is then
+/// <see cref="SliceDeclarationKind.Const"/>.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=D4E89A
 // Broiler-Human:        PENDING
 internal sealed record JsVariableStatement(
     SliceSourceSpan Span,
     SliceDeclarationKind Kind,
-    System.Collections.Generic.IReadOnlyList<JsDeclarator> Declarators) : JsStatement(Span);
+    System.Collections.Generic.IReadOnlyList<JsDeclarator> Declarators,
+    JsUsing Using = JsUsing.None) : JsStatement(Span);
 
 /// <summary>An expression evaluated for its value.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=96699D
@@ -573,7 +610,11 @@ internal sealed record JsForInStatement(
 /// head grammar, the per-iteration binding copy, the four exits that owe a close and the three
 /// forms of head are identical, and a second record would have been a second copy of all of it.
 /// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=6A873D
+/// <param name="Using">
+/// Whether the head is <c>using x</c> or <c>await using x</c>: each iteration's binding is then a
+/// resource registered in that iteration's own scope and disposed when the iteration ends.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=9915BF
 // Broiler-Human:        PENDING
 internal sealed record JsForOfStatement(
     SliceSourceSpan Span,
@@ -583,7 +624,8 @@ internal sealed record JsForOfStatement(
     JsExpression? Target,
     JsExpression Right,
     JsStatement Body,
-    bool IsAwait = false) : JsStatement(Span);
+    bool IsAwait = false,
+    JsUsing Using = JsUsing.None) : JsStatement(Span);
 
 /// <summary><c>break</c>, with an optional label.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=095D71

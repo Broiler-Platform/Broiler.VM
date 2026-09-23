@@ -1,0 +1,66 @@
+// For every key the harness exported, the set Node's own \p{...} (Unicode 17.0 through ICU) matches,
+// as ranges in the harness's format, or REFUSED when Node rejects the escape.
+const fs = require('fs');
+const dir = process.argv[2];
+const B = String.fromCharCode(92);
+const keys = fs.readFileSync(dir + "/keys.txt", "utf8").split(String.fromCharCode(10)).map(k => k.split(String.fromCharCode(13)).join("")).filter(k => k.length > 0);
+
+// One string of every non-surrogate code point, and where each starts.
+const cps = [];
+for (let cp = 0; cp <= 0x10FFFF; cp++) if (cp < 0xD800 || cp > 0xDFFF) cps.push(cp);
+const all = cps.map(cp => String.fromCodePoint(cp)).join('');
+const at = new Map();
+{ let index = 0; for (const cp of cps) { at.set(index, cp); index += cp > 0xFFFF ? 2 : 1; } }
+
+function unescape(k) { return k.replace('<NUL>', String.fromCharCode(0)).replace('<EACUTE>', 'é'); }
+
+const out = [];
+for (const key of keys) {
+  let k = key.startsWith('BAD') ? key.slice(3) : key;
+  k = unescape(k);
+  const body = k.startsWith('lone:') ? k.slice(5) : k;
+  let re;
+  try { re = new RegExp('[' + B + 'p{' + body + '}]', 'gu'); } catch (e) { out.push(key + '\tREFUSED'); continue; }
+  const member = new Uint8Array(0x110000);
+  for (const m of all.matchAll(re)) member[at.get(m.index)] = 1;
+  const single = new RegExp('^[' + B + 'p{' + body + '}]$', 'u');
+  for (let cp = 0xD800; cp <= 0xDFFF; cp++) if (single.test(String.fromCharCode(cp))) member[cp] = 1;
+  const ranges = [];
+  for (let cp = 0; cp <= 0x10FFFF; cp++) {
+    if (!member[cp]) continue;
+    let last = cp; while (last + 1 <= 0x10FFFF && member[last + 1]) last++;
+    ranges.push(last === cp ? cp.toString(16).toUpperCase() : cp.toString(16).toUpperCase() + '-' + last.toString(16).toUpperCase());
+    cp = last;
+  }
+  out.push(key + '\t' + ranges.join(','));
+}
+fs.writeFileSync(dir + '/node.tsv', out.join('\n') + '\n');
+
+// Case folding: for every code point in a non-trivial orbit the harness found, Node's /x/iu and
+// /[x]/iu must match every other member and nothing the orbit excludes among its case mappings.
+const fold = fs.readFileSync(dir + '/fold.tsv', 'utf8').split('\n').filter(l => l.length > 0).map(l => l.split('\t'));
+const inOrbit = new Map(fold.map(([cp, , orbit]) => [parseInt(cp, 16), orbit.split(',').map(x => parseInt(x, 16))]));
+let foldChecks = 0, foldDiffs = 0;
+function esc(cp) { return B + 'u{' + cp.toString(16) + '}'; }
+function check(cp, other, expected) {
+  foldChecks++;
+  const s = String.fromCodePoint(other);
+  const a = new RegExp('^' + esc(cp) + '$', 'iu').test(s);
+  const b = new RegExp('^[' + esc(cp) + ']$', 'iu').test(s);
+  if (a !== expected || b !== expected) { foldDiffs++; if (foldDiffs < 20) console.log('FOLD DIFF U+' + cp.toString(16) + ' vs U+' + other.toString(16) + ' expected ' + expected + ' node ' + a + '/' + b); }
+}
+for (const [cp, orbit] of inOrbit) for (const other of orbit) check(cp, other, true);
+// Every code point whose single-code-point lower or upper case differs: matched exactly when the orbit says so.
+for (let cp = 0; cp <= 0x10FFFF; cp++) {
+  if (cp >= 0xD800 && cp <= 0xDFFF) continue;
+  const s = String.fromCodePoint(cp);
+  for (const t of [s.toLowerCase(), s.toUpperCase()]) {
+    const cps2 = [...t];
+    if (cps2.length !== 1) continue;
+    const other = cps2[0].codePointAt(0);
+    if (other === cp) continue;
+    const expected = (inOrbit.get(cp) || [cp]).includes(other);
+    check(cp, other, expected);
+  }
+}
+console.log('case folding against Node: ' + foldChecks + ' pairs checked, ' + foldDiffs + ' differ');

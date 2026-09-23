@@ -970,6 +970,24 @@
       "witness": "witnesses/N21-a-crossing-that-charges-nothing.cs.witness"
     },
     {
+      "id": "N22",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The JavaScript profile's generated Unicode tables are byte-identical to what UnicodeTableGenerator writes from the files src/tests/unicode/pins/unicode.pin names, and those files are the ones the pin describes: every pinned file is present with its recorded length and SHA-256, every UCD file but UnicodeData.txt opens with a header naming the pinned version 17.0.0, the pin itself names 17.0.0 and says archived, every name the archived ECMAScript property tables admit is a name PropertyAliases.txt gives the same property, generation twice gives the same bytes, the measured table data stays under the owner's hard cap of 300 x 1024 bytes, the specification directory's README records each property table's length and hash, and THIRD_PARTY_NOTICES.md carries the archived Unicode licence text. Decision JSD-0031 section 5 moves the profile's normalization, property-escape and u-mode case-folding answers onto these tables; a table is numbers nobody reads, so the statement worth having about it is the mechanical one this rule makes.",
+      "evidence": "The pin parsed as the generator parses it, the archive hashed from its bytes, the tables regenerated in memory by the same function that writes them and compared with the checked-in .g.cs files, and the byte literals of those files counted with Roslyn",
+      "nonVacuousWhen": "The pin is populated from 2026-09-22 and every entry it names is read and hashed; each generated file is compared whole and must exceed ten thousand characters, holding over a hundred thousand bytes of table data counted independently from the literals. Each of the four failures JSD-0031 names has its own witness: a changed byte of CaseFolding.txt and a hand edit to a generated file are made in memory against the real archive and the real output, because a two-megabyte witness would be a second archive; a header naming 16.0.0 is refused even under a pin recording exactly its bytes; and a property table admitting an alias PropertyAliases.txt lacks is reported for that row alone.",
+      "witness": "witnesses/register/N22-a-header-naming-another-version.txt.witness, witnesses/register/N22-a-property-table-admitting-an-alias-the-ucd-lacks.html.witness, UnicodePinRuleTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "N23",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "No product source of the JavaScript profile names the host platform's Unicode normalizer: no identifier token Normalize, IsNormalized or NormalizationForm in any of the profile's product assemblies. Decision JSD-0031 section 2 measured string.Normalize returning an unnormalized string as normalized under invariant globalization, which nine compositions here set, and throwing for a lone surrogate the language requires to pass through where globalization is on, so one profile build would answer differently on different hosts; normalize refuses non-ASCII input until it reads the generated tables, and the one line that would silence the refusal is a call on the string.",
+      "evidence": "The JavaScript profile's product assemblies, read as Roslyn identifier tokens; witnesses/register/N23-a-product-source-that-calls-the-platform-normalizer.cs.witness",
+      "nonVacuousWhen": "Each of the profile's product assemblies has to be represented and the file holding the normalize method has to be among the sources by name before the empty result is read. The rejecting direction is a witness writing all three identifiers in code and all three again in a comment and a string literal, and exactly the three code occurrences are reported, so a text search that tripped over its own documentation would fail the witness as surely as a rule that saw nothing.",
+      "witness": "witnesses/register/N23-a-product-source-that-calls-the-platform-normalizer.cs.witness"
+    },
+    {
       "id": "W1",
       "owningAdr": "0011",
       "status": "Active",

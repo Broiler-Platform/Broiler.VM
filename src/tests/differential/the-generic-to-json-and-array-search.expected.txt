@@ -1,0 +1,56 @@
+# Retained host answers; not a conformance oracle.
+1 "1970-01-01T00:00:00.000Z"
+2 null
+3 1
+4 "own 0"
+5 true
+6 null
+7 null
+8 null
+9 "str"
+10 "valueOf,get,call"
+11 "number"
+12 "RangeError vo"
+13 "SyntaxError iso"
+14 TypeError
+15 TypeError
+16 TypeError
+17 TypeError
+18 "object"
+19 TypeError
+20 "{\"d\":\"iso\"}"
+21 "[null]"
+22 TypeError
+23 TypeError
+24 TypeError
+25 TypeError
+26 "a,b"
+27 0
+28 true
+29 "[[0,\"a\"],[1,\"b\"]]"
+30 Infinity
+31 Infinity
+32 Infinity
+33 Infinity
+34 -1
+35 0
+36 2
+37 -1
+38 2
+39 0
+40 0
+41 2
+42 0
+43 0
+44 -1
+45 2
+46 0
+47 "2,0"
+48 TypeError
+49 TypeError
+50 true
+51 "a,b"
+52 "0,1"
+53 0
+54 0
+55 "[[0,\"z\"],[1,null]] 1"

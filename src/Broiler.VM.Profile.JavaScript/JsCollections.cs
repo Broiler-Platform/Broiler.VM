@@ -63,7 +63,7 @@ internal sealed class JsSameValueZero : System.Collections.Generic.IEqualityComp
     public bool Equals(JsValue left, JsValue right) => left.SameValueZero(right);
 
     /// <summary>A hash that agrees with <see cref="Equals"/> on every pair it calls equal.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=83BB32
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9E06CF
     // Broiler-Human:        PENDING
     public int GetHashCode(JsValue value) => value.Type switch
     {
@@ -72,6 +72,10 @@ internal sealed class JsSameValueZero : System.Collections.Generic.IEqualityComp
             JsType.String, System.StringComparer.Ordinal.GetHashCode(value.AsString())),
         JsType.Boolean => System.HashCode.Combine(JsType.Boolean, value.AsBoolean()),
         JsType.Object => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value.AsObject()),
+
+        // A BIGINT KEY HASHES ON ITS INTEGER, because `SameValueZero` compares integers: two
+        // constants spelling one value are one key, and hashing their instances would split them.
+        JsType.BigInt => System.HashCode.Combine(JsType.BigInt, value.AsBigInt().GetHashCode()),
         _ => (int)value.Type,
     };
 

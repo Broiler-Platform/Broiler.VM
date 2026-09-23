@@ -1,0 +1,79 @@
+1 "4,,,"
+2 "4,,,"
+3 "undefined undefined"
+4 undefined
+5 [object ArrayBuffer]
+6 [object ArrayBuffer]
+7 "len"
+8 TypeError
+9 TypeError
+10 TypeError
+11 "TypeError 4"
+12 TypeError
+13 "TypeError undefined undefined"
+14 TypeError
+15 TypeError
+16 TypeError
+17 TypeError
+18 "0 8"
+19 TypeError
+20 TypeError
+21 TypeError
+22 TypeError
+23 TypeError
+24 TypeError
+25 RangeError
+26 RangeError
+27 RangeError
+28 RangeError
+29 TypeError
+30 TypeError
+31 TypeError
+32 TypeError
+33 TypeError
+34 TypeError
+35 RangeError
+36 TypeError
+37 TypeError
+38 0
+39 TypeError
+40 TypeError
+41 TypeError
+42 TypeError
+43 TypeError
+44 TypeError
+45 TypeError
+46 TypeError
+47 TypeError
+48 TypeError
+49 TypeError
+50 TypeError
+51 TypeError
+52 TypeError
+53 TypeError
+54 TypeError
+55 TypeError
+56 TypeError
+57 TypeError
+58 TypeError
+59 TypeError
+60 TypeError
+61 TypeError
+62 TypeError
+63 TypeError
+64 TypeError
+65 TypeError
+66 TypeError
+67 "1,2,TypeError"
+68 TypeError
+69 TypeError
+70 ",,,4,5"
+71 20
+72 TypeError
+73 "undefined undefined"
+74 TypeError
+75 [object ArrayBuffer]
+76 "0,0,0"
+77 TypeError
+78 TypeError
+79 TypeError

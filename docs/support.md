@@ -272,6 +272,14 @@ record anywhere in this repository saying the wide run names no unsupported fami
 retained bundle `jsw-10-001` continues to state figures for a run taken **before** the change, and
 that is not a defect in the bundle: a bundle describes the run it retains and nothing later.)*
 
+*(Recorded 2026-09-21, and it is a name and not a count, like the sweep above.)* JSeal card B05
+admitted BigInt under the wide manifest (the profile's decision JSD-0033 section 7), so the BigInt
+literal no longer meets the refusal the sweep names, and **the wide run's `unsupported` column is
+empty again from 2026-09-21**. A record saying it is empty was false from 2026-09-08 until this
+date and is not false after it. The run showing that was taken in a working tree and is retainable
+and not retained, exactly as the 2026-09-08 run was, and its counts belong to the profile's ledger
+under core ledger update rule 6.
+
 **A plan naming a profile is not a profile, and this section exists so that a reader of the plan does
 not infer one.** The core roadmap already names both intended first profiles and keeps a list of what
 each expects to require of the contract. **That sentence used to end by saying one of those plans

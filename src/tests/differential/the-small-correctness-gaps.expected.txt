@@ -1,0 +1,23 @@
+# Retained host answers; not a conformance oracle.
+1 next,body,return,done 42/true
+2 next,return,fin,fin2,done 7/true
+3 next,return,rejected r
+4 next,return,rejected TypeError
+5 next,done 3/true
+6 got 9,sync-return,done 2/true
+7 next,next,return,inner,return,outer,done 4/true
+8 next,return,done 6/true,done undefined/true
+9 "SyntaxError"
+10 "SyntaxError"
+11 "null"
+12 "b"
+13 "b"
+14 "b"
+15 "b"
+16 "adbac"
+17 "acbdc"
+18 "true,true"
+19 "a𝟚"
+20 throws SyntaxError
+21 throws SyntaxError
+22 throws SyntaxError

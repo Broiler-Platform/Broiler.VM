@@ -1,0 +1,50 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 8 the pinned RegExp.prototype[Symbol.replace] decides globality from ToString(Get(rx, "flags")) (Test262 Symbol.replace/get-flags-err); the comparison engine answers as though it read the receiver's "global" property, which this RegExp-like object lacks
+#diverges node 13 the pinned flags getter reads unicodeSets before sticky (sec-get-regexp.prototype.flags); the comparison engine reads sticky first
+#diverges node 15 an own flags of "g" makes Symbol.replace and Symbol.match global in the pinned edition; the comparison engine answers as though it read the pattern's "global" getter
+#diverges node 16 an own flags of "" makes Symbol.replace non-global in the pinned edition, so one built-in exec of a g pattern runs and leaves lastIndex at 1; the comparison engine answers as though it read "global"
+1 TypeError
+2 TypeError
+3 TypeError
+4 TypeError
+5 "[\"zz\"]"
+6 "q,r"
+7 "a[b]c"
+8 "-b-"
+9 2
+10 "7;abcQ;[\"x\"]"
+11 "---;4"
+12 TypeError
+13 "gy:hasIndices,global,ignoreCase,multiline,dotAll,unicode,unicodeSets,sticky"
+14 ";baa"
+15 "bbba;2"
+16 "baa;1"
+17 TypeError
+18 RangeError
+19 "4;0"
+20 TypeError
+21 "-1;2"
+22 "0;;object"
+23 "[\"\",\"\",\"\"];0,1,2,3"
+24 "[\"\",\"\"]"
+25 "a|b|c;y"
+26 "a|b;y;0"
+27 "[\"abc\"]"
+28 "[\"A\",null,\"B\",\"bold\",\"/\",\"B\",\"and\"]"
+29 "[\"a\",\"b\"][\"\",\"b\"][][\"a\",\"b\"]"
+30 "09/2026||$<"
+31 "a[K]c"
+32 "a[3]c"
+33 "ab,c1,1,abc,{1}c"
+34 "abb0$00$0$2c"
+35 "aX11c"
+36 "ab<>"
+37 "ab_"
+38 "0;valueOf"
+39 RangeError
+40 true
+41 TypeError
+42 "<xbx>"
+43 "012"
+44 "[0object]x[1object]E[3object]y[4object]|a<1>b<2><2>"
+45 "a|b;bXb;6"

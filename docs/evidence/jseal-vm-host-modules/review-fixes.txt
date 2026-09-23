@@ -1,0 +1,25 @@
+# Review fixes, 2026-09-22 (local implementation validation, not accepted milestone evidence).
+
+## 1. Promise jobs carry the referrer that queued them (HostEnqueuePromiseJob)
+# The new row, run on this change with JsEngine.CallJob's referrer assignment reverted:
+FAIL import() in eval and Function code a promise job runs carries the referrer that queued the job: line 1 was 'offered=|./b' and 'offered=mem:/dir/j|./b' was expected
+host-surface: 1 check(s) failed
+# With it restored: 87 rows, every check passed (host-surface-after.txt).
+
+## 2. the-eval-code-import-referrer.mjs, rewritten so every case can fail (cases now built in
+## modules/referrer-inner.mjs, one directory below the probe), plus cases 8-9 (a job calls eval /
+## Function directly). Cli.exe --quiet --module, run from src/tests/differential:
+# base build:   1 TypeError, 2 TypeError, 3 TypeError, 4 TypeError, 5 TypeError, 6 TypeError, 7 TypeError, 8 TypeError, 9 TypeError
+# this change:  1 true ... 9 true
+# node v24.17:  1 true ... 8 true, 9 TypeError  (declared: #diverges node 9, V8 gap)
+# run-differential --only the-eval-code-import-referrer --against node: exit 0, one declared divergence.
+
+## 3. Hot-path timing of Execute's referrer save/restore (review minor finding 4)
+# Cli.exe --quiet calls.js: 30 x fib(22), about 1.7 million guest calls; wall-clock ms incl. startup.
+# base build: 1289 1315 1318 1305 1289 1310   (startup only, empty loop: 305 308 296)
+# this change: 1310 1293 1301 1299 1311 1295  (startup only, empty loop: 308 312 299)
+# No difference beyond run-to-run noise; fuel accounting is unchanged.
+
+## 4. Test262 re-run after the fixes (same four directories, --shards 1 --jobs 1)
+after-review: # test262 2601 files, 3619 variants: pass 2943, fail 124, unsupported 0, exhausted 0, skipped 552
+# The failure list is identical to the first after-run.

@@ -38,14 +38,14 @@ namespace Broiler.VM.Profile.JavaScript;
 /// in the declaring frame would be gone before the test that reads it ran.
 /// </para>
 /// <para>
-/// <b>A declaration that meets an existing binding replaces it rather than refusing.</b> The
-/// language makes a re-declaration a <c>SyntaxError</c> raised before the script runs, and refusing
-/// here would be the same answer at the same moment — except for one caller it would be wrong for:
-/// evaluated source reaches this through the same program lowering a script does, and the language
-/// gives eval code a lexical environment of its own that is discarded afterwards, so a second
-/// <c>(0, eval)("let x = 1")</c> is a program and not an error. Replacing is right for that caller
-/// and lenient for the other; refusing is right for one and wrong for the other, and the
-/// divergence this leaves is recorded rather than hidden.
+/// <b>A declaration that meets an existing binding replaces it rather than refusing</b>, and since
+/// JSeal V15-host no script reaches that case with a row to check. The language makes a
+/// re-declaration a <c>SyntaxError</c> raised before the script runs, and the executor now raises it
+/// there: a script body's script-declarations row is checked by <c>GlobalDeclarationInstantiation</c>
+/// before its first instruction, so a script that would meet an existing binding creates nothing.
+/// Evaluated source no longer comes here at all - since V15 eval code keeps its lexical declarations
+/// in a record of its own - so what is left of the old leniency is an artifact written before the
+/// row existed, which is instantiated as it always was.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=60DD8D

@@ -1,0 +1,44 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 35 the pinned language asks only an Object pattern for Symbol.replace (Test262 replaceAll/cstm-replaceall-on-number-primitive); the comparison engine still consults Number.prototype
+#diverges node 36 the same for Symbol.matchAll (Test262 matchAll/cstm-matchall-on-number-primitive): a primitive pattern is converted to a global RegExp and never dispatched
+1 TypeError
+2 TypeError
+3 TypeError
+4 true
+5 true
+6 true
+7 TypeError
+8 TypeError
+9 true
+10 TypeError
+11 true
+12 RangeError
+13 RangeError
+14 TypeError
+15 "this,match,search,position=true"
+16 "this,match,search,position=false"
+17 "this,match,search,position=true"
+18 "true,true,false"
+19 "bbb"
+20 TypeError
+21 "custom:xy"
+22 TypeError
+23 TypeError
+24 TypeError
+25 "ba"
+26 "a2b4"
+27 "=done:match,flags,replace"
+28 "a-a,abbabb"
+29 TypeError
+30 TypeError
+31 TypeError
+32 "custom:x"
+33 "1,2"
+34 TypeError
+35 "ax"
+36 "1"
+37 1
+38 "0"
+39 "b,true,true"
+40 0
+41 "0"

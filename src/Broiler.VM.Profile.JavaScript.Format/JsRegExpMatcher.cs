@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   120
-// Annotated:        120/120
-// Exempt:           93
-// Human-reviewed:   0/120
+// Relevant units:   127
+// Annotated:        127/127
+// Exempt:           97
+// Human-reviewed:   0/127
 // IP risk:          Medium
 // Security risk:    Medium
 // Criteria:         1/0
 // Resource impact:  6/10 max
-// Unverified:       120
+// Unverified:       127
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -79,194 +79,76 @@ public sealed class JsRegExpOverflowError : System.Exception
 /// is the simple upper-case mapping with the rule that a non-ASCII character whose upper case is
 /// ASCII does not fold - which is what keeps <c>/ſ/i</c> from matching <c>"S"</c>. With
 /// <c>u</c> it is Unicode's simple case folding, under which the long s and the Kelvin sign DO join
-/// their ASCII neighbours. Both are computed from the invariant culture's simple mappings rather
-/// than from a table shipped here: <c>ToUpperInvariant</c> is a one-to-one mapping, so the
-/// specification's "return the character unchanged when the upper case is longer than one
-/// character" clause is satisfied by construction rather than by a length test.
+/// their ASCII neighbours.
 /// </para>
 /// <para>
-/// <b>What that costs, stated rather than hidden.</b> Simple case folding is approximated as
-/// <c>lower(upper(c))</c> with <c>U+0130</c> and <c>U+0131</c> excluded by hand, because those two
-/// are the only characters in the invariant mapping whose round trip crosses a fold the
-/// <c>CaseFolding</c> file does not make. Every other pair this reproduces - the final sigma, the
-/// combining iota, the Kelvin sign, capital sharp s, the Cherokee case pairs - is the file's own
-/// answer. A character folded wrongly by this approximation would show up as a case-insensitive
-/// match the comparison engine does not make; none has been found.
+/// <b>Both paths read the pinned Unicode 17.0.0 tables.</b> Under <c>u</c>,
+/// <see cref="Canonicalize"/> is <c>CaseFolding.txt</c>'s status <c>C</c> and <c>S</c> mapping and
+/// <see cref="UnicodeVariants"/> is its reverse, both from the generated table in
+/// <see cref="JsUnicodeCaseFolding"/> and both over the whole code space, supplementary planes
+/// included (decision JSD-0031 section 7). Literals, classes, back-references and property escapes
+/// all go through them, so one pattern cannot answer two ways. The table is why U+0130 and U+0131
+/// fold to themselves (the file gives them only Turkic and full mappings) and why the long s folds
+/// to <c>s</c> whatever the host's globalization mode is. Without <c>u</c> the canonical form is
+/// <c>UnicodeData.txt</c>'s simple upper case of one code unit from the same generated file, with
+/// the language's two exceptions already applied by the generator - so <c>/\uA7CE/i</c> matches
+/// U+A7CF, a Unicode 17.0 pair the platform's Unicode 16 data lacked. It no longer reads
+/// <c>char.ToUpperInvariant</c>. The one known difference from the specification is the 27 Greek
+/// letters with a ypogegrammeni, whose full upper case is two code points and which the language
+/// therefore leaves alone; <c>SpecialCasing.txt</c> is not archived, so they map to their
+/// title-case partner, as they did before (see <see cref="JsUnicodeCaseFolding"/>).
 /// </para>
 /// <para>
-/// <b>The closure is built once and read many times.</b> A class such as <c>[k]</c> under <c>iu</c>
-/// has to match the Kelvin sign, and the only way to know that from the input character is to know
-/// every character that folds to <c>k</c>. That is a reverse mapping, and it is built by walking
-/// the Basic Multilingual Plane once on first use - about fifteen hundred characters have a fold
-/// at all - rather than by iterating a class's ranges at compile time, which a class spanning the
-/// whole plane would make quadratic.
+/// <b>Neither closure is built at run time.</b> A class such as <c>[k]</c> under <c>i</c> has to
+/// match <c>K</c>, and the only way to know that from the input character is to know every
+/// character that shares its canonical form. That reverse relation is generated beside each
+/// mapping, so a lookup is two binary searches and allocates nothing, and no walk of the Basic
+/// Multilingual Plane happens on first use any more.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=854A69
 // Broiler-Human:        PENDING
 internal static class JsRegExpCase
 {
-    /// <summary>The answer for a character that is alone in its equivalence class.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3511E0
+    /// <summary>The most code points <see cref="UnicodeVariants"/> ever writes.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2FCE3F
     // Broiler-Human:        PENDING
-    private static readonly int[] Alone = [];
+    internal const int MaxUnicodeVariants = JsUnicodeCaseFolding.MaxOrbit;
 
-    /// <summary>Every character that simple-case-folds to a given character, that one included.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D314FC
+    /// <summary>The most code units <see cref="Variants"/> ever writes.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7D4DC6
     // Broiler-Human:        PENDING
-    private static readonly System.Lazy<System.Collections.Generic.Dictionary<int, int[]>> FoldedVariants =
-        new(static () => BuildVariants(true));
-
-    /// <summary>Every character that upper-cases to a given character, that one included.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7926C2
-    // Broiler-Human:        PENDING
-    private static readonly System.Lazy<System.Collections.Generic.Dictionary<int, int[]>> UpperVariants =
-        new(static () => BuildVariants(false));
+    internal const int MaxVariants = JsUnicodeCaseFolding.MaxUpperOrbit;
 
     /// <summary>The specification's <c>Canonicalize</c> for one code point.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=D8C8EA
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=4DCBBB
     // Broiler-Human:        PENDING
     internal static int Canonicalize(int codePoint, bool unicode) =>
-        unicode ? Fold(codePoint) : Upper(codePoint);
+        unicode ? JsUnicodeCaseFolding.SimpleFold(codePoint) : JsUnicodeCaseFolding.SimpleUpper(codePoint);
 
     /// <summary>
-    /// Every code point whose canonical form is that of <paramref name="codePoint"/>, or an empty
-    /// array when it stands alone.
+    /// Writes every code unit whose non-<c>u</c> canonical form is that of
+    /// <paramref name="codePoint"/>, itself included, into <paramref name="destination"/> and
+    /// answers how many there are. Reads the generated table and allocates nothing.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=D84E2D
+    /// <remarks>
+    /// Outside <c>u</c> the matcher reads code units, so nothing above the Basic Multilingual Plane
+    /// arrives here; one that did would answer itself alone, as the table holds no such entry.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=E3E08E
     // Broiler-Human:        PENDING
-    internal static int[] Variants(int codePoint, bool unicode)
-    {
-        var canonical = Canonicalize(codePoint, unicode);
+    internal static int Variants(int codePoint, System.Span<int> destination) =>
+        JsUnicodeCaseFolding.UpperOrbit(codePoint, destination);
 
-        if (codePoint > 0xFFFF || canonical > 0xFFFF)
-        {
-            // ASTRAL CASE PAIRS ARE NOT IN THE TABLE, because building it over the whole of Unicode
-            // to serve Deseret and Adlam would be a megabyte nobody asked for. The pair is
-            // reconstructed instead: a folded form and whatever upper-cases to it.
-            var mate = UpperOf(canonical);
-            return mate == canonical ? [canonical] : [canonical, mate];
-        }
-
-        var table = unicode ? FoldedVariants.Value : UpperVariants.Value;
-        return table.TryGetValue(canonical, out var found) ? found : Alone;
-    }
-
-    /// <summary>Unicode simple case folding, approximated from the invariant simple mappings.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=6122F8
+    /// <summary>
+    /// Writes every code point whose <c>u</c>-mode canonical form - its simple case folding - is
+    /// that of <paramref name="codePoint"/>, itself included, into <paramref name="destination"/>
+    /// and answers how many there are. Reads the generated table and allocates nothing.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=241C55
     // Broiler-Human:        PENDING
-    private static int Fold(int codePoint)
-    {
-        // The dotted capital I and the dotless small i fold to themselves: the CaseFolding file
-        // gives each only a Turkic and a full mapping, and a round trip through an upper-case
-        // mapping that had them would otherwise join both to plain `i`.
-        if (codePoint is 0x0130 or 0x0131)
-        {
-            return codePoint;
-        }
-
-        // THE LONG S IS THE ONE CHARACTER THE HOST'S INVARIANT MAPPINGS DO NOT CARRY. Compositions
-        // of this profile run with globalization set to invariant, and that mode leaves U+017F
-        // alone where Unicode upper-cases it to `S`; every other character in the plane folds the
-        // same way with the mappings present and absent, which was checked rather than assumed.
-        if (codePoint == 0x017F)
-        {
-            return 0x0073;
-        }
-
-        if (codePoint <= 0xFFFF)
-        {
-            return char.ToLowerInvariant(char.ToUpperInvariant((char)codePoint));
-        }
-
-        var text = char.ConvertFromUtf32(codePoint).ToUpperInvariant().ToLowerInvariant();
-
-        if (text.Length == 2 && char.IsHighSurrogate(text[0]) && char.IsLowSurrogate(text[1]))
-        {
-            return char.ConvertToUtf32(text[0], text[1]);
-        }
-
-        return text.Length == 1 ? text[0] : codePoint;
-    }
-
-    /// <summary>The non-unicode canonicalisation: simple upper case, with the ASCII guard.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=671101
-    // Broiler-Human:        PENDING
-    private static int Upper(int codePoint)
-    {
-        if (codePoint > 0xFFFF)
-        {
-            return codePoint;
-        }
-
-        var upper = char.ToUpperInvariant((char)codePoint);
-
-        // A NON-ASCII CHARACTER WHOSE UPPER CASE IS ASCII DOES NOT FOLD. Without this clause the
-        // long s would match "S" and the dotless i would match "I", neither of which the language
-        // does outside `u` mode.
-        return codePoint >= 128 && upper < 128 ? codePoint : upper;
-    }
-
-    /// <summary>The simple upper case of one code point, surrogate pairs included.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=83CDE6
-    // Broiler-Human:        PENDING
-    private static int UpperOf(int codePoint)
-    {
-        if (codePoint <= 0xFFFF)
-        {
-            return char.ToUpperInvariant((char)codePoint);
-        }
-
-        var text = char.ConvertFromUtf32(codePoint).ToUpperInvariant();
-
-        if (text.Length == 2 && char.IsHighSurrogate(text[0]) && char.IsLowSurrogate(text[1]))
-        {
-            return char.ConvertToUtf32(text[0], text[1]);
-        }
-
-        return codePoint;
-    }
-
-    /// <summary>Walks the Basic Multilingual Plane once, collecting the reverse mapping.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=9D333C
-    // Broiler-Human:        PENDING
-    private static System.Collections.Generic.Dictionary<int, int[]> BuildVariants(bool unicode)
-    {
-        var collected =
-            new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<int>>();
-
-        for (var codePoint = 0; codePoint <= 0xFFFF; codePoint++)
-        {
-            if (char.IsSurrogate((char)codePoint))
-            {
-                continue;
-            }
-
-            var canonical = unicode ? Fold(codePoint) : Upper(codePoint);
-
-            if (canonical == codePoint)
-            {
-                continue;
-            }
-
-            if (!collected.TryGetValue(canonical, out var members))
-            {
-                members = [canonical];
-                collected[canonical] = members;
-            }
-
-            members.Add(codePoint);
-        }
-
-        var table = new System.Collections.Generic.Dictionary<int, int[]>(collected.Count);
-
-        foreach (var pair in collected)
-        {
-            table[pair.Key] = pair.Value.ToArray();
-        }
-
-        return table;
-    }
+    internal static int UnicodeVariants(int codePoint, System.Span<int> destination) =>
+        JsUnicodeCaseFolding.Orbit(codePoint, destination);
 }
 
 /// <summary>A set of code points: sorted, merged ranges and a negation bit.</summary>
@@ -274,7 +156,9 @@ internal static class JsRegExpCase
 /// Ranges rather than a bitmap, because a class under <c>u</c> spans a million code points and a
 /// bitmap of that is 128 kilobytes per class. Membership is a binary search, which is the cost a
 /// class pays per character; the alternative - expanding a range into its case-folded members at
-/// compile time - is quadratic in the width of the range and was rejected for it.
+/// compile time - is quadratic in the width of the range and was rejected for it. A property escape
+/// joins the set as a reference to the generated Unicode table, not as ranges copied out of it
+/// (<see cref="AddProperty"/>).
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0F1A03
 // Broiler-Human:        PENDING
@@ -287,6 +171,16 @@ internal sealed class JsRegExpCharSet
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=71170F
     // Broiler-Human:        PENDING
     private int count;
+
+    /// <summary>The Unicode property sets the class holds by reference, each possibly complemented.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E6602E
+    // Broiler-Human:        PENDING
+    private (JsUnicodeSet Set, bool Complement)[]? properties;
+
+    /// <summary>How many entries of <see cref="properties"/> are in use.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C3A1F7
+    // Broiler-Human:        PENDING
+    private int propertyCount;
 
     /// <summary>Whether membership is inverted, which is what <c>[^...]</c> sets.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5BBBFD
@@ -387,6 +281,41 @@ internal sealed class JsRegExpCharSet
         count = written;
     }
 
+    /// <summary>
+    /// Adds a Unicode property's set, or its complement when <paramref name="complement"/> is set,
+    /// as a reference to the generated table rather than a copy of its ranges.
+    /// </summary>
+    /// <remarks>
+    /// <b>A reference, so building a class costs the same whatever the property.</b> The largest
+    /// property sets run to thousands of ranges; copying them into every class that names one would
+    /// let a pattern repeating <c>\p{L}</c> spend memory and compile time proportional to that
+    /// width times its own length, before a single character was matched. A reference costs one
+    /// entry, and a membership test reads the table in place. What the class pays instead is one
+    /// binary search per referenced property per character, and <see cref="Weight"/> is how the
+    /// machine charges for it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3CADE0
+    // Broiler-Human:        PENDING
+    internal void AddProperty(JsUnicodeSet set, bool complement)
+    {
+        properties ??= new (JsUnicodeSet Set, bool Complement)[2];
+
+        if (propertyCount == properties.Length)
+        {
+            System.Array.Resize(ref properties, properties.Length * 2);
+        }
+
+        properties[propertyCount++] = (set, complement);
+    }
+
+    /// <summary>
+    /// How many table lookups one membership test makes beyond the set's own ranges: zero for a
+    /// class with no property escape in it, which is why an ordinary class costs what it always did.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B48346
+    // Broiler-Human:        PENDING
+    internal int Weight => propertyCount;
+
     /// <summary>The frozen ranges, as low-high pairs, for a set built out of another.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0E64A2
     // Broiler-Human:        PENDING
@@ -398,7 +327,7 @@ internal sealed class JsRegExpCharSet
     }
 
     /// <summary>Whether the set lists <paramref name="codePoint"/>, negation not applied.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FECA63
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=88A53A
     // Broiler-Human:        PENDING
     internal bool Lists(int codePoint)
     {
@@ -423,11 +352,21 @@ internal sealed class JsRegExpCharSet
             }
         }
 
+        for (var at = 0; at < propertyCount; at++)
+        {
+            // A complemented property lists every code point its set does not hold; the code point
+            // never exceeds U+10FFFF, so the complement needs no ceiling of its own.
+            if (properties![at].Set.Contains(codePoint) != properties[at].Complement)
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 
     /// <summary>The specification's <c>CharacterSetMatcher</c>: membership, folded and inverted.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=2598C5
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=3; Fingerprint=838460
     // Broiler-Human:        PENDING
     internal bool Matches(int codePoint, bool ignoreCase, bool unicode)
     {
@@ -438,13 +377,26 @@ internal sealed class JsRegExpCharSet
             // THE COMPARISON IS BETWEEN CANONICAL FORMS AND NOT BETWEEN CHARACTERS, so a class
             // listing `k` matches the Kelvin sign and a class listing the Kelvin sign matches `k`.
             // Walking the closure of the INPUT character is what makes both directions work with
-            // the class left exactly as it was written.
-            foreach (var variant in JsRegExpCase.Variants(codePoint, unicode))
+            // the class left exactly as it was written - and what makes `\p{Lu}` under `iu` match
+            // a lower-case letter without the property's set ever being case-closed.
+            if (unicode)
             {
-                if (variant != codePoint && Lists(variant))
+                System.Span<int> variants = stackalloc int[JsRegExpCase.MaxUnicodeVariants];
+                var total = JsRegExpCase.UnicodeVariants(codePoint, variants);
+
+                for (var at = 0; at < total && !found; at++)
                 {
-                    found = true;
-                    break;
+                    found = variants[at] != codePoint && Lists(variants[at]);
+                }
+            }
+            else
+            {
+                System.Span<int> variants = stackalloc int[JsRegExpCase.MaxVariants];
+                var total = JsRegExpCase.Variants(codePoint, variants);
+
+                for (var at = 0; at < total && !found; at++)
+                {
+                    found = variants[at] != codePoint && Lists(variants[at]);
                 }
             }
         }
@@ -541,12 +493,39 @@ public sealed class JsRegExpMatch
 /// by a pattern that was going to answer.
 /// </para>
 /// <para>
-/// <b>What it does not do.</b> No <c>\p{...}</c> or <c>\P{...}</c> property escapes - under <c>u</c>
-/// they are a <c>SyntaxError</c> and outside it they are the identity escape Annex B makes them. No
-/// <c>v</c> flag and none of its set operations. The <c>d</c> flag is parsed, ordered and reported
-/// by <c>hasIndices</c>, and no <c>indices</c> array is built for a result. Case folding is
-/// computed from the invariant culture's simple mappings rather than from a shipped table, which
-/// <see cref="JsRegExpCase"/> states the cost of.
+/// <b>The unit is one step: one instruction dispatched, or one character a greedy run examines</b>
+/// (since 2026-09-22, JSeal VM-FIX-J). A run's character costs what an <c>Op.Set</c> dispatch
+/// costs, because it is the same work - one read and one class test, with a property-escape class's
+/// weight added in <c>TakeSet</c> for both - and not the five steps the loop it replaced
+/// dispatched per character, four of which were the loop's own bookkeeping (a split, a counter
+/// increment, an empty check and a jump) that a run does not do. So the meter follows what the
+/// machine does rather than what the pattern would once have compiled to.
+/// </para>
+/// <para>
+/// <b>The two ceilings bound memory as well, and that memory is not charged to the realm.</b> A
+/// backtrack frame is five 32-bit fields (<c>Pc</c>, <c>Sp</c>, <c>Trail</c>, <c>AssertKind</c> and,
+/// since F09, a run's <c>Floor</c>): 20 bytes, so the frame array of one match tops out at
+/// 2^20 x 20 bytes = 20 MiB (16 MiB before <c>Floor</c>). The undo trail's two arrays top out at
+/// 2 x 2^21 x 4 bytes = 16 MiB. Both are transient, live only for one <c>Match</c> call, and are not
+/// charged to <c>LiveBytes</c> - a pre-existing gap, recorded here rather than closed.
+/// </para>
+/// <para>
+/// <b>Property escapes are <c>u</c>-mode only, and exact.</b> Under <c>u</c>, <c>\p{...}</c> and
+/// <c>\P{...}</c> resolve through <see cref="JsUnicodeProperties"/> - Unicode 17.0.0, by the exact
+/// names and aliases ES2026 admits - inside and outside classes; any other spelling is a
+/// <c>SyntaxError</c>. Outside <c>u</c> they are the identity escape Annex B makes them.
+/// </para>
+/// <para>
+/// <b>What it does not do.</b> No <c>v</c> flag, none of its set operations and none of the seven
+/// properties of strings: a pattern naming one (<c>\p{RGI_Emoji}</c>) is a <c>SyntaxError</c> under
+/// <c>u</c>, as the language says; the realm refuses the flag itself, and the front end refuses a
+/// literal carrying it when the source is compiled, naming the flag. The <c>d</c> flag is parsed, ordered
+/// and reported by <c>hasIndices</c>, and no <c>indices</c> array is built for a result. Case
+/// folding under <c>u</c> is the pinned <c>CaseFolding.txt</c> table; without <c>u</c> it is the
+/// pinned <c>UnicodeData.txt</c> simple upper case, which differs from the specification's full
+/// upper-casing for 27 Greek letters <see cref="JsRegExpCase"/> names. Group names are classified
+/// by the pinned <c>ID_Start</c> and <c>ID_Continue</c> through <see cref="JsUnicodeLexical"/>, as
+/// identifiers are (JSeal slice JSD-0031-later).
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=008C58
@@ -623,7 +602,7 @@ public sealed class JsRegExpMatcher
     private readonly int prefilterValue;
 
     /// <summary>Creates a compiled matcher out of a finished lowering.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B59D0F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=5F9C95
     // Broiler-Human:        PENDING
     private JsRegExpMatcher(
         Instruction[] program,
@@ -666,6 +645,14 @@ public sealed class JsRegExpMatcher
             if (!instruction.Backward && instruction.Op is Op.Char or Op.Set)
             {
                 kind = instruction.Op == Op.Char ? 1 : 2;
+                value = instruction.A;
+            }
+
+            // A run that must take at least one character begins with its class just as a lone
+            // class does.
+            if (!instruction.Backward && instruction.Op == Op.Run && instruction.B > 0)
+            {
+                kind = 2;
                 value = instruction.A;
             }
 
@@ -769,7 +756,7 @@ public sealed class JsRegExpMatcher
     /// which is what the flag is for and what an emulation over a forward-searching engine cannot
     /// give.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=F50CA4
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=336BD9
     // Broiler-Human:        PENDING
     public JsRegExpMatch? Match(string input, int start, bool anchored, JsRegExpCharge? charge)
     {
@@ -781,19 +768,22 @@ public sealed class JsRegExpMatcher
         var runner = new Runner(this, input, charge);
         var at = start;
 
+        // A skip tested against a class holding property escapes costs what that class costs, and
+        // the scan hands the meter each skip as it goes, so a long scan polls cancellation too.
+        var perSkip = prefilterKind == 2
+            ? 1 + ((ulong)classes[prefilterValue].Weight *
+                (IgnoreCase ? (ulong)JsRegExpCase.MaxUnicodeVariants + 1 : 1))
+            : 1;
+
         while (true)
         {
             if (!anchored && prefilterKind != 0)
             {
-                var skipped = 0;
-
                 while (at < input.Length && !PrefilterAdmits(input, at))
                 {
                     at = Advance(input, at, Unicode);
-                    skipped++;
+                    runner.Spend(perSkip);
                 }
-
-                runner.Spend((ulong)skipped);
 
                 if (at >= input.Length)
                 {
@@ -870,7 +860,7 @@ public sealed class JsRegExpMatcher
     /// The set is computed from the folding rather than written down, so it stays right if the
     /// folding is ever corrected.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=9D5633
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=CA137B
     // Broiler-Human:        PENDING
     private static int[] WordRangesFor(bool ignoreCase, bool unicode)
     {
@@ -881,14 +871,17 @@ public sealed class JsRegExpMatcher
 
         var set = new JsRegExpCharSet();
         set.AddAll(WordRanges);
+        System.Span<int> variants = stackalloc int[JsRegExpCase.MaxUnicodeVariants];
 
         for (var pair = 0; pair < WordRanges.Length; pair += 2)
         {
             for (var codePoint = WordRanges[pair]; codePoint <= WordRanges[pair + 1]; codePoint++)
             {
-                foreach (var variant in JsRegExpCase.Variants(codePoint, true))
+                var total = JsRegExpCase.UnicodeVariants(codePoint, variants);
+
+                for (var at = 0; at < total; at++)
                 {
-                    set.Add(variant, variant);
+                    set.Add(variants[at], variants[at]);
                 }
             }
         }
@@ -909,7 +902,7 @@ public sealed class JsRegExpMatcher
     }
 
     /// <summary>What one instruction of the lowered program does.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=4D7A7A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=DF8A98
     // Broiler-Human:        PENDING
     private enum Op : byte
     {
@@ -969,6 +962,12 @@ public sealed class JsRegExpMatcher
 
         /// <summary>The whole pattern has matched.</summary>
         Accept = 18,
+
+        /// <summary>
+        /// Consume at least <c>B</c> and at most <c>C</c> characters the class numbered <c>A</c>
+        /// admits, as many as possible, giving them back one at a time on backtracking.
+        /// </summary>
+        Run = 19,
     }
 
     /// <summary>One lowered instruction: an operation and three operands.</summary>
@@ -1148,7 +1147,7 @@ public sealed class JsRegExpMatcher
         private readonly int[] wordRanges;
 
         /// <summary>Reads the pattern once to count its groups, then prepares to parse it.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=8BD675
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=BBBFF3
         // Broiler-Human:        PENDING
         internal Parser(string source, bool inUnicodeMode, bool inDotAllMode, bool foldsCase)
         {
@@ -1209,12 +1208,8 @@ public sealed class JsRegExpMatcher
                     throw new JsRegExpSyntaxError("Invalid capture group name");
                 }
 
-                var name = source.Substring(scan + 3, close - scan - 3);
-
-                if (!IsGroupName(name))
-                {
-                    throw new JsRegExpSyntaxError("Invalid capture group name");
-                }
+                var name = GroupName(source.Substring(scan + 3, close - scan - 3))
+                    ?? throw new JsRegExpSyntaxError("Invalid capture group name");
 
                 if (found.Contains(name))
                 {
@@ -1235,42 +1230,166 @@ public sealed class JsRegExpMatcher
         internal int CaptureCount { get; }
 
         /// <summary>
-        /// Whether a group name is one the language would accept.
+        /// The name a group specifier spells, as a String of code points, or <c>null</c> when the
+        /// language would refuse it.
         /// </summary>
         /// <remarks>
-        /// The language's <c>RegExpIdentifierName</c> admits a <c>\u</c> escape and every character
-        /// the ID_Start and ID_Continue properties cover; this admits the unescaped ones only, so a
-        /// name spelled with an escape - <c>(?&lt;a&gt;x)</c> - is refused here and accepted by
-        /// the comparison engine. Every name anybody writes is in the accepted set.
+        /// <para>
+        /// <b>The name is read by code point, in either mode.</b> <c>RegExpIdentifierName</c> admits
+        /// every <c>ID_Start</c> and <c>ID_Continue</c> character, and a character outside the basic
+        /// plane is a surrogate pair in the pattern, so a test over UTF-16 units refused
+        /// <c>(?&lt;&#x1D49C;&gt;b)</c>, which the language accepts with or without the <c>u</c>
+        /// flag. The grammar also admits a <c>\u</c> escape in both modes - four digits, a braced
+        /// code point, or two four-digit escapes spelling a surrogate pair - and the name is the code
+        /// points the escapes stand for, so <c>(?&lt;a&gt;x)</c> and <c>\k&lt;a&gt;</c> name the
+        /// same group.
+        /// </para>
+        /// <para>
+        /// <b>The sets are the pinned Unicode 17.0.0 <c>ID_Start</c> and <c>ID_Continue</c></b>, read
+        /// through <see cref="JsUnicodeLexical"/> exactly as the tokenizer reads them for an
+        /// identifier, with <c>$</c>, <c>_</c> and the two joiners the grammar adds. They were the
+        /// platform's general categories (Unicode 16) with hand-written <c>Other_ID_Start</c> and
+        /// <c>Other_ID_Continue</c> lists until JSeal slice JSD-0031-later, so a Unicode 17.0 letter
+        /// such as U+A7CE was refused as a group name.
+        /// </para>
         /// </remarks>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=7B71E5
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=77E03B
         // Broiler-Human:        PENDING
-        private static bool IsGroupName(string name)
+        private static string? GroupName(string raw)
         {
-            if (name.Length == 0)
+            var decoded = new System.Text.StringBuilder(raw.Length);
+            var at = 0;
+
+            while (at < raw.Length)
+            {
+                int codePoint;
+
+                if (raw[at] == '\\')
+                {
+                    if (!TryReadNameEscape(raw, ref at, out codePoint))
+                    {
+                        return null;
+                    }
+
+                    // A LEAD SURROGATE ESCAPE FOLLOWED BY A TRAIL SURROGATE ESCAPE IS ONE CODE POINT,
+                    // which is how `𝓑` spells what `\u{1d4d1}` does.
+                    if (codePoint <= 0xFFFF && char.IsHighSurrogate((char)codePoint))
+                    {
+                        var after = at;
+
+                        if (after < raw.Length && raw[after] == '\\' &&
+                            TryReadNameEscape(raw, ref after, out var trail) &&
+                            trail <= 0xFFFF && char.IsLowSurrogate((char)trail))
+                        {
+                            codePoint = char.ConvertToUtf32((char)codePoint, (char)trail);
+                            at = after;
+                        }
+                    }
+                }
+                else if (char.IsHighSurrogate(raw[at]) && at + 1 < raw.Length && char.IsLowSurrogate(raw[at + 1]))
+                {
+                    codePoint = char.ConvertToUtf32(raw[at], raw[at + 1]);
+                    at += 2;
+                }
+                else
+                {
+                    codePoint = raw[at];
+                    at++;
+                }
+
+                if (decoded.Length == 0 ? !IsNameStart(codePoint) : !IsNamePart(codePoint))
+                {
+                    return null;
+                }
+
+                decoded.Append(char.ConvertFromUtf32(codePoint));
+            }
+
+            return decoded.Length == 0 ? null : decoded.ToString();
+        }
+
+        /// <summary>
+        /// Reads one <c>\u</c> escape of a group name, starting at the backslash at
+        /// <paramref name="at"/>, and moves past it.
+        /// </summary>
+        /// <remarks>
+        /// A surrogate is answered as the code unit it is, so the caller can pair it with the next
+        /// escape; one left unpaired fails the character test, because a surrogate is not an
+        /// identifier character.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=946BAA
+        // Broiler-Human:        PENDING
+        private static bool TryReadNameEscape(string raw, ref int at, out int codePoint)
+        {
+            codePoint = 0;
+
+            if (at + 1 >= raw.Length || raw[at + 1] != 'u')
             {
                 return false;
             }
 
-            for (var at = 0; at < name.Length; at++)
+            var cursor = at + 2;
+
+            if (cursor < raw.Length && raw[cursor] == '{')
             {
-                var character = name[at];
+                cursor++;
+                var digits = 0;
 
-                if (character is '$' or '_' || char.IsLetter(character))
+                while (cursor < raw.Length && raw[cursor] != '}')
                 {
-                    continue;
+                    if (!System.Uri.IsHexDigit(raw[cursor]))
+                    {
+                        return false;
+                    }
+
+                    codePoint = codePoint * 16 + System.Uri.FromHex(raw[cursor]);
+
+                    if (codePoint > 0x10FFFF)
+                    {
+                        return false;
+                    }
+
+                    digits++;
+                    cursor++;
                 }
 
-                if (at > 0 && char.IsDigit(character))
+                if (digits == 0 || cursor >= raw.Length)
                 {
-                    continue;
+                    return false;
                 }
 
+                at = cursor + 1;
+                return true;
+            }
+
+            if (cursor + 4 > raw.Length)
+            {
                 return false;
             }
 
+            for (var digit = 0; digit < 4; digit++)
+            {
+                if (!System.Uri.IsHexDigit(raw[cursor + digit]))
+                {
+                    return false;
+                }
+
+                codePoint = codePoint * 16 + System.Uri.FromHex(raw[cursor + digit]);
+            }
+
+            at = cursor + 4;
             return true;
         }
+
+        /// <summary>Whether a code point may start a group name: <c>ID_Start</c>, <c>$</c> or <c>_</c>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0C7E39
+        // Broiler-Human:        PENDING
+        private static bool IsNameStart(int codePoint) => JsUnicodeLexical.IsIdentifierStart(codePoint);
+
+        /// <summary>Whether a code point may continue a group name: <c>ID_Continue</c>, <c>$</c> or a joiner.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=62B7E8
+        // Broiler-Human:        PENDING
+        private static bool IsNamePart(int codePoint) => JsUnicodeLexical.IsIdentifierPart(codePoint);
 
         /// <summary>The group names, indexed by group number.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=34336A
@@ -1745,7 +1864,7 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>An escape in atom position: a class escape, a back-reference or a character.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=D0B8AB
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=414FD7
         // Broiler-Human:        PENDING
         private Node ParseAtomEscape()
         {
@@ -1760,6 +1879,14 @@ public sealed class JsRegExpMatcher
             {
                 at += 2;
                 return new Node { Kind = NodeKind.Set, Set = BuildClassEscape(marker) };
+            }
+
+            if (unicode && marker is 'p' or 'P')
+            {
+                var property = new JsRegExpCharSet();
+                ReadPropertyEscape(property);
+                property.Freeze();
+                return new Node { Kind = NodeKind.Set, Set = property };
             }
 
             if (marker is >= '1' and <= '9')
@@ -1798,7 +1925,7 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Reads <c>\k&lt;name&gt;</c>, or answers that this <c>\k</c> is not one.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=BBC9DB
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=9B0987
         // Broiler-Human:        PENDING
         private Node? ParseNamedBackReference()
         {
@@ -1828,7 +1955,9 @@ public sealed class JsRegExpMatcher
                 throw new JsRegExpSyntaxError("Invalid named reference");
             }
 
-            var wanted = pattern.Substring(at + 3, close - at - 3);
+            var wanted = GroupName(pattern.Substring(at + 3, close - at - 3))
+                ?? throw new JsRegExpSyntaxError("Invalid named reference");
+
             at = close + 1;
 
             for (var group = 1; group < names.Length; group++)
@@ -1884,6 +2013,78 @@ public sealed class JsRegExpMatcher
                     set.AddComplement(SpaceRanges, ceiling);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Reads <c>\p{...}</c> or <c>\P{...}</c> under <c>u</c> and adds the property's set, or its
+        /// complement, to <paramref name="set"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>The grammar first, then an exact lookup.</b> The braces must hold
+        /// <c>UnicodePropertyValueCharacters</c> - ASCII letters, digits and <c>_</c> - optionally as
+        /// <c>name=value</c>; any other character, a missing brace or an empty name is refused before
+        /// a table is read. The name, or the name and value, then go to
+        /// <see cref="JsUnicodeProperties"/>, which matches ordinally against the names ES2026 admits,
+        /// so <c>\p{letter}</c>, <c>\p{Script_Extensions=greek}</c>, <c>\p{scx:Greek}</c> and
+        /// <c>\p{ASCII=Y}</c> are refused exactly as the specification's early errors say. So are
+        /// the seven properties of strings, which the language admits only under <c>v</c>.
+        /// </para>
+        /// <para>
+        /// The scan is bounded by the pattern and each character is read once, so a guest cannot
+        /// make the parser do more than the pattern's length in work here.
+        /// </para>
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B4A1CA
+        // Broiler-Human:        PENDING
+        private void ReadPropertyEscape(JsRegExpCharSet set)
+        {
+            var complement = pattern[at + 1] == 'P';
+            at += 2;
+
+            if (at >= pattern.Length || pattern[at] != '{')
+            {
+                throw new JsRegExpSyntaxError("Invalid property name");
+            }
+
+            var begin = ++at;
+            var equals = -1;
+
+            while (at < pattern.Length && pattern[at] != '}')
+            {
+                var character = pattern[at];
+
+                if (character == '=' && equals < 0)
+                {
+                    equals = at;
+                }
+                else if (!char.IsAsciiLetterOrDigit(character) && character != '_')
+                {
+                    throw new JsRegExpSyntaxError("Invalid property name");
+                }
+
+                at++;
+            }
+
+            if (at >= pattern.Length)
+            {
+                throw new JsRegExpSyntaxError("Invalid property name");
+            }
+
+            var body = System.MemoryExtensions.AsSpan(pattern, begin, at - begin);
+            at++;
+
+            var resolved = equals < 0
+                ? JsUnicodeProperties.TryResolveLone(body, out var property)
+                : JsUnicodeProperties.TryResolve(
+                    body[..(equals - begin)], body[(equals - begin + 1)..], out property);
+
+            if (!resolved)
+            {
+                throw new JsRegExpSyntaxError("Invalid property name");
+            }
+
+            set.AddProperty(property, complement);
         }
 
         /// <summary>A character class in brackets.</summary>
@@ -1967,7 +2168,7 @@ public sealed class JsRegExpMatcher
         /// One member of a class: a code point, or a class escape added to <paramref name="set"/>
         /// directly.
         /// </summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=EF7074
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=56E6AE
         // Broiler-Human:        PENDING
         private int ReadClassAtom(JsRegExpCharSet set, out bool wasSet)
         {
@@ -1990,6 +2191,13 @@ public sealed class JsRegExpMatcher
                 at += 2;
                 wasSet = true;
                 AddClassEscape(set, marker);
+                return 0;
+            }
+
+            if (unicode && marker is 'p' or 'P')
+            {
+                wasSet = true;
+                ReadPropertyEscape(set);
                 return 0;
             }
 
@@ -2016,7 +2224,7 @@ public sealed class JsRegExpMatcher
         /// Annex B relaxes is relaxed here and nowhere else: an unknown escape is the character
         /// itself outside <c>u</c> mode and a refusal inside it.
         /// </remarks>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=769BD4
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=1E279F
         // Broiler-Human:        PENDING
         private int ReadCharacterEscape(bool inClass)
         {
@@ -2071,13 +2279,11 @@ public sealed class JsRegExpMatcher
 
                 case 'p':
                 case 'P':
-                    // PROPERTY ESCAPES ARE NOT IMPLEMENTED. Under `u` the language says this is a
-                    // pattern with a property escape in it, and refusing it is the honest answer;
-                    // outside `u` the grammar already says it is the letter itself.
+                    // Under `u` a property escape is a class escape and both callers read it before
+                    // reaching here; outside `u` the grammar says it is the letter itself.
                     if (unicode)
                     {
-                        throw new JsRegExpSyntaxError(
-                            "Unicode property escapes are not supported by this matcher");
+                        throw new JsRegExpSyntaxError("Invalid property name");
                     }
 
                     return marker;
@@ -2556,7 +2762,7 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Lowers a quantifier.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=1306FA
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=92BBE3
         // Broiler-Human:        PENDING
         private void EmitRepeat(Node node, bool backward)
         {
@@ -2566,6 +2772,19 @@ public sealed class JsRegExpMatcher
 
             if (max == 0)
             {
+                return;
+            }
+
+            // A GREEDY QUANTIFIER OVER ONE CLASS IS A RUN, NOT A LOOP. Its body always consumes one
+            // character, holds no group and needs no empty check, so the loop's backtrack order -
+            // the most characters first, then one fewer at a time - is kept by one instruction that
+            // consumes the run and one backtrack point that gives it back character by character.
+            // The loop form would push a backtrack point and write two cells per character, which
+            // is what made `^\p{Any}+$` over the whole code space exhaust the frame ceiling.
+            if (node.Greedy && body.Kind == NodeKind.Set)
+            {
+                sets.Add(body.Set!);
+                Add(Op.Run, sets.Count - 1, min, max, backward);
                 return;
             }
 
@@ -2701,11 +2920,29 @@ public sealed class JsRegExpMatcher
         // Broiler-Human:        PENDING
         internal int Trail;
 
-        /// <summary>Which assertion this frame opened, or <c>-1</c> for an ordinary alternative.</summary>
+        /// <summary>
+        /// Which assertion this frame opened, <c>-1</c> for an ordinary alternative, or
+        /// <see cref="RunForward"/> / <see cref="RunBackward"/> for a run's characters.
+        /// </summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=7382C9
         // Broiler-Human:        PENDING
         internal int AssertKind;
+
+        /// <summary>For a run's frame, the position its required characters end at: what it cannot give back.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B6220A
+        // Broiler-Human:        PENDING
+        internal int Floor;
     }
+
+    /// <summary>The frame kind of a run read left to right.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B5B5AF
+    // Broiler-Human:        PENDING
+    private const int RunForward = -2;
+
+    /// <summary>The frame kind of a run read right to left, inside a lookbehind.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=077405
+    // Broiler-Human:        PENDING
+    private const int RunBackward = -3;
 
     /// <summary>The backtracking machine: an explicit stack and nothing on the CLR's.</summary>
     /// <remarks>
@@ -2813,7 +3050,7 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Runs the program once, from exactly <paramref name="start"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=3AE975
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=05EBDF
         // Broiler-Human:        PENDING
         internal bool Attempt(int start)
         {
@@ -2852,6 +3089,11 @@ public sealed class JsRegExpMatcher
 
                     case Op.Set:
                         failed = !TakeSet(ref position, instruction.A, instruction.Backward);
+                        pc++;
+                        break;
+
+                    case Op.Run:
+                        failed = !TakeRun(ref position, instruction, pc + 1);
                         pc++;
                         break;
 
@@ -2958,7 +3200,7 @@ public sealed class JsRegExpMatcher
             unit is '\n' or '\r' or (char)0x2028 or (char)0x2029;
 
         /// <summary>Pops the newest backtrack point, running the assertions it closes.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=9C52C3
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=1A7ABD
         // Broiler-Human:        PENDING
         private bool Backtrack(ref int position, ref int pc)
         {
@@ -2966,6 +3208,22 @@ public sealed class JsRegExpMatcher
             {
                 var frame = frames[--frameTop];
                 Unwind(frame.Trail);
+
+                if (frame.AssertKind is RunForward or RunBackward)
+                {
+                    // A RUN GIVES BACK ONE CHARACTER PER BACKTRACK, and keeps its frame while it
+                    // still holds more than it was required to take.
+                    position = GiveBack(frame.Sp, frame.Floor, frame.AssertKind == RunBackward);
+                    pc = frame.Pc;
+
+                    if (position != frame.Floor)
+                    {
+                        frame.Sp = position;
+                        frames[frameTop++] = frame;
+                    }
+
+                    return true;
+                }
 
                 if (frame.AssertKind < 0)
                 {
@@ -3153,7 +3411,7 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Consumes one character a class admits.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=3B109F
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=3BE282
         // Broiler-Human:        PENDING
         private bool TakeSet(ref int position, int set, bool backward)
         {
@@ -3163,14 +3421,122 @@ public sealed class JsRegExpMatcher
             }
 
             var found = Read(position, backward, out var width);
+            var chosen = owner.classes[set];
 
-            if (!owner.classes[set].Matches(found, owner.IgnoreCase, owner.Unicode))
+            // A class holding property escapes searches one table per escape, and more under `i`,
+            // where every variant of the character is looked up: that work is charged here, so a
+            // class naming a thousand properties costs what it does rather than one step.
+            if (chosen.Weight > 0)
+            {
+                steps += (ulong)chosen.Weight *
+                    (owner.IgnoreCase ? (ulong)JsRegExpCase.MaxUnicodeVariants + 1 : 1);
+            }
+
+            if (!chosen.Matches(found, owner.IgnoreCase, owner.Unicode))
             {
                 return false;
             }
 
             position = backward ? position - width : position + width;
             return true;
+        }
+
+        /// <summary>
+        /// Consumes a greedy run of characters the class admits: the required ones, then as many
+        /// more as the bound allows, leaving one backtrack point that gives the extra ones back.
+        /// </summary>
+        /// <remarks>
+        /// Every character read is one step for the meter - the unit the class remarks state, the
+        /// cost of an <c>Op.Set</c> dispatch doing the same read and test - and each character given
+        /// back is paid for by the instructions that run after it, so a run over a long input still
+        /// spends the guest's fuel and polls cancellation as it goes. What is gone is the loop's
+        /// frame, its two cell writes and its four bookkeeping instructions per character, which
+        /// are not charged because they are not done.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=FE8416
+        // Broiler-Human:        PENDING
+        private bool TakeRun(ref int position, Instruction run, int resume)
+        {
+            var taken = 0;
+
+            while (taken < run.B)
+            {
+                Tick();
+
+                if (!TakeSet(ref position, run.A, run.Backward))
+                {
+                    return false;
+                }
+
+                taken++;
+            }
+
+            var floor = position;
+
+            while (taken < run.C)
+            {
+                Tick();
+
+                if (!TakeSet(ref position, run.A, run.Backward))
+                {
+                    break;
+                }
+
+                taken++;
+            }
+
+            if (position != floor)
+            {
+                PushFrame(resume, position, run.Backward ? RunBackward : RunForward);
+                frames[frameTop - 1].Floor = floor;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// The position one character short of <paramref name="position"/> in a run, towards
+        /// <paramref name="floor"/>: the character the run took last, whose width is read the way
+        /// the run read it.
+        /// </summary>
+        /// <remarks>
+        /// A surrogate pair is one character under <c>u</c>, and a pair is only ever a high unit
+        /// followed by a low one, so reading back from the run's end finds the same boundaries
+        /// reading forward did - except at the floor itself, where a low unit the run began with
+        /// alone must not be joined to a high unit before it. The floor bound is that exception.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=D11711
+        // Broiler-Human:        PENDING
+        private int GiveBack(int position, int floor, bool backward)
+        {
+            if (!backward)
+            {
+                return owner.Unicode &&
+                    position - 2 >= floor &&
+                    char.IsLowSurrogate(input[position - 1]) &&
+                    char.IsHighSurrogate(input[position - 2])
+                    ? position - 2
+                    : position - 1;
+            }
+
+            return owner.Unicode &&
+                position + 2 <= floor &&
+                char.IsHighSurrogate(input[position]) &&
+                char.IsLowSurrogate(input[position + 1])
+                ? position + 2
+                : position + 1;
+        }
+
+        /// <summary>Counts one step, handing the meter a block of them when one is complete.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=7908A2
+        // Broiler-Human:        PENDING
+        private void Tick()
+        {
+            if (++steps >= StepsPerCharge)
+            {
+                charge?.Invoke(steps);
+                steps = 0;
+            }
         }
 
         /// <summary>Whether the two characters around a position differ in wordness.</summary>

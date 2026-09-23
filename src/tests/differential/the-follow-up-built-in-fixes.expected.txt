@@ -1,0 +1,26 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 24 V8 reads new.target's prototype before refusing a length past maxByteLength; the pinned AllocateArrayBuffer throws the RangeError at step 3.a, before OrdinaryCreateFromConstructor
+1 "true,2,2,b"
+2 "1:0"
+3 "true,2"
+4 "true,3"
+5 throws TypeError
+6 throws TypeError
+7 "true,3,1-2-3"
+8 "0,1,set length=2,length"
+9 "true,2,2"
+10 "delete a;[0,{\"a\":1,\"b\":2}]"
+11 "b;[0,{\"a\":1}]"
+12 throws RangeError
+13 "[0,{\"a\":1}]"
+14 "[object Object],[object Object],[object Object]"
+15 "[object Object],[object Object]"
+16 throws TypeError
+17 "[object Error],[object Error],[object Date],[object RegExp]"
+18 "Error,TypeError,/(?:)/,(?:),"
+19 "[object Object],[object Object],[object Object],[object Object]"
+20 "4,3,2,1"
+21 "1,2,3"
+22 "D"
+23 "true,4"
+24 "RangeError"

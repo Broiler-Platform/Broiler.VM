@@ -1,0 +1,16 @@
+# Pinned Test262 ccaac100, bytecode form, wide manifest, public harness (eng/run-test262.py --shards 1).
+# before = the base tree (git archive of the .base tree) built in a scratch directory; after = this worktree.
+## operator subset: expressions/{addition,subtraction,multiplication,division,modulus,exponentiation,unary-minus,unary-plus,
+##   bitwise-and,bitwise-or,bitwise-xor,bitwise-not,left-shift,right-shift,unsigned-right-shift,prefix-/postfix-increment/decrement,compound-assignment}
+before: # test262 1115 files, 2059 variants: pass 1839, fail 60, unsupported 160, exhausted 0, skipped 0
+after:  # test262 1115 files, 2059 variants: pass 1839, fail 60, unsupported 160, exhausted 0, skipped 0
+per-variant report files identical (diff of test262.report empty)
+## B01-B02 subset: literals, expressions/typeof, expressions/object, built-ins/BigInt
+before: # test262 1797 files, 3475 variants: pass 3220, fail 119, unsupported 128, exhausted 8, skipped 0
+after:  # test262 1797 files, 3475 variants: pass 3220, fail 119, unsupported 128, exhausted 8, skipped 0
+per-variant report files identical
+## wider: test/language/expressions + test/language/statements/for (--jobs 2)
+before: # test262 11480 files, 21660 variants: pass 20585, fail 361, unsupported 300, exhausted 0, skipped 414
+after:  # test262 11480 files, 21660 variants: pass 20585, fail 361, unsupported 300, exhausted 0, skipped 414
+per-variant report files identical; this after-run used the build before the last change to JsBigInt's
+decimal split (a BigInt-only path no ungated compilation reaches); the operator subset above was re-run on the final build.

@@ -1,0 +1,5 @@
+FAIL bigint/b02/a-value-past-two-to-the-53-survives-compile-verify-execute: the program answered '9007199254740992|18446744073709551616' and '9007199254740993|18446744073709551617' was expected
+FAIL bigint/b02/every-radix-and-separators-are-exact: the program answered '2305843009213693696,144115188075855856,36028797018963964,1000000000000000000000,171,15,5,0,0' and '2305843009213693951,14411
+FAIL bigint/b01/strict-equality-is-mathematical: the program answered 'true,true,true,false,true,true,false,false,true,false' and 'true,true,false,false,true,true,false,false,true,false' was expected
+FAIL bigint/b01/string-conversion-is-exact-everywhere-it-is-reached: the program answered '12345678901234567168,12345678901234567168,0+7,127' and '12345678901234567890,12345678901234567890,0+7,127' wa
+broiler-js-slice-compiler: 4 of 318 checks FAILED, 2 not run on this machine and claimed by nothing

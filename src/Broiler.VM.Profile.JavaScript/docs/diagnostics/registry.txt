@@ -1,9 +1,16 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 12
+# registry-revision: 16
 # published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4),
 #                         JSW-5 (revisions 5, 6, 7 and 9), JSW-8 (revisions 8 and 10),
-#                         JSN-1 (revisions 11 and 12)
+#                         JSN-1 (revisions 11 and 12); revision 13 at no milestone (JSeal V14, the
+#                         eval scope map of proposed decision JSD-0026, not an accepted stage);
+#                         revision 14 at no milestone (JSeal B02, the gated BigInt constant of
+#                         proposed decision JSD-0033, not an accepted stage); revision 15 at no
+#                         milestone (JSeal V15-host, the script-declarations section of JSD-0024
+#                         section 15, not an accepted stage); revision 16 at no milestone (JSeal
+#                         I12-upstream, the script-referrers section of JSD-0024 section 20, not
+#                         an accepted stage)
 # owning-decision: JSD-0009
 # format-version: 1, 2
 # feature-manifest: broiler.javascript.slice, broiler.javascript.wide, broiler.javascript.numeric
@@ -92,6 +99,7 @@
 1302|MalformedBooleanConstant|core-result|MalformedEncoding|constants|corpus|a-boolean-constant-that-is-neither|1
 1303|ConstantCountExceedsDeclaredMaximum|core-result|InconsistentStructure|constants|corpus|more-constants-than-the-limits-section-admits|1
 1304|InternedNameOutsideManifest|core-result|UnknownFeature|constants|corpus|an-interned-name-the-manifest-excludes|1
+1305|MalformedBigIntConstant|core-result|MalformedEncoding|constants|corpus|wide-a-bigint-constant-that-is-not-canonical|14
 1401|UnknownOpcode|core-result|UnknownFeature|code|corpus|an-unknown-opcode|1
 1402|TruncatedInstruction|core-result|Truncated|code|corpus|an-instruction-whose-operand-runs-off-the-end|1
 1403|JumpTargetNotAnInstructionBoundary|core-result|InconsistentStructure|code|corpus|a-jump-out-of-range|1
@@ -147,7 +155,11 @@
 1623|NativeSectionOutsideManifest|core-result|UnknownFeature|native|corpus|wide-a-native-payload-no-surface-declares|11
 1624|MalformedNativeSection|core-result|InconsistentStructure|native|corpus|wide-a-native-code-section-that-disagrees-with-itself|11
 1625|NativePayloadNotTemplateClosed|core-result|InconsistentStructure|native|corpus|wide-a-native-payload-of-four-zero-bytes|12
+1626|EvalScopesOutsideManifest|core-result|UnknownFeature|code|corpus|eval-scopes-a-map-no-surface-declares|13
+1627|MalformedEvalScopes|core-result|InconsistentStructure|code|corpus|eval-scopes-a-site-that-is-not-an-eval-call|13
 1630|AsyncIterationOutsideAsync|core-result|SemanticValidationFailed|code|corpus|wide-an-async-iteration-step-outside-an-async-function|9
+1631|MalformedScriptDeclarations|core-result|InconsistentStructure|functions|corpus|script-declarations-a-row-for-a-function|15
+1632|MalformedScriptReferrers|core-result|InconsistentStructure|functions|corpus|script-referrers-a-row-for-a-function|16
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
 1903|ReaderStopped|core-result|InconsistentStructure|reader|defensive|every bounded-read status this build was compiled against has its own arm, so this one answers a status the reader does not currently have|1

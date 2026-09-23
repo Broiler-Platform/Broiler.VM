@@ -148,7 +148,7 @@ public sealed class JsNativeCompiler : IVmNativeCompiler
         return OperatingSystem.IsWindows() ? JsNativeBackends.X64Windows : JsNativeBackends.X64SystemV;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=06F867
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E58012
     // Broiler-Human:        PENDING
     private static bool TryExtractSections(
         ReadOnlySpan<byte> artifact,
@@ -272,6 +272,17 @@ public sealed class JsNativeCompiler : IVmNativeCompiler
                                     if (TryReadVarUInt(sectionBody, ref constOff, out var strLen))
                                     {
                                         constOff += (int)strLen;
+                                        constants.Add(sectionBody.Slice(start, constOff - start).ToArray());
+                                    }
+                                    break;
+
+                                // A sign byte and a length-prefixed magnitude (JSD-0033). Stepped
+                                // over whole, or every constant after it would be read misaligned.
+                                case JsFormat.ConstantTag.BigInt:
+                                    constOff += 1;
+                                    if (TryReadVarUInt(sectionBody, ref constOff, out var magnitudeLength))
+                                    {
+                                        constOff += (int)magnitudeLength;
                                         constants.Add(sectionBody.Slice(start, constOff - start).ToArray());
                                     }
                                     break;

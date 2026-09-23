@@ -1,0 +1,8 @@
+# Broiler.VM.Composition.JavaScript.SliceCompiler --checks on the base tree with only the new FinallyMatrixChecks.cs rows added
+FAIL a finally that throws on the way out runs once: expected `fin,caught t` and the program recorded `fin,fin,caught t`
+FAIL a throw on the way out runs each finally it passes once: expected `in,out,caught t` and the program recorded `in,in,out,caught t`
+FAIL a disposer that throws after a passed finally runs it once: expected `fin,a,caught a` and the program recorded `fin,a,fin,caught a`
+FAIL a catch does not see the iterator close of the jump that left it: expected `ret,caught c` and the program recorded `ret,wrong`
+SKIP not-run/native/baseline/entry-points-survive/x86-64-sysv: this machine uses x86-64-win64, so a unit emitted for x86-64-sysv was not entered; its bytes are held by the baseline closure, golden and cross-convention rows on every machine
+SKIP not-run/native/baseline/a-misaligned-reservation-is-caught/x86-64-sysv: this machine uses x86-64-win64, so a unit emitted for x86-64-sysv was not entered; its bytes are held by the baseline closure, golden and cross-convention rows on every machine
+broiler-js-slice-compiler: 4 of 331 checks FAILED, 2 not run on this machine and claimed by nothing

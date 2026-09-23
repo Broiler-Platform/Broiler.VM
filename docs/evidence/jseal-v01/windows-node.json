@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-09-21T16:17:28.857046+00:00",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9",
+  "driver": {
+    "path": "D:\\wt\\vm-v01\\eng\\run-differential.py",
+    "sha256": "69a422a84335a4e4f9c1eb9573242a2f48fe615c626921e2a233e8e9017dfa4c"
+  },
+  "environment": {
+    "TZ": "UTC",
+    "PYTHONIOENCODING": "utf-8",
+    "DOTNET_CLI_UI_LANGUAGE": "en-US"
+  },
+  "engines": [
+    {
+      "name": "broiler-vm",
+      "executable": "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "scriptArgs": [
+        "--quiet",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--quiet",
+        "--module",
+        "{probe}"
+      ],
+      "sourceRoot": "D:\\wt\\vm-v01",
+      "resolvedExecutable": "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "binaries": [
+        {
+          "path": "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Abstractions.dll",
+          "sha256": "c6645927a87bc6ccb781b877695ee13869eb24d08d13f6361d70e5787699d6e1"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Binary.dll",
+          "sha256": "c9982a25be04e1537f0ef9efbf0f92d36a68aeb82d89a77d38993d3bee7a8528"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.dll",
+          "sha256": "83420bfde0bdb9affc83da5af4e26e88c62791f4f5f138a81c59230c86e83d1c"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+          "sha256": "55a32f3fd9d1622b9c8b3f44e37e917eb8bd21edc8fb7d7e6fa3cae09f979611"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Compiler.dll",
+          "sha256": "7f51663634448f4b01e6df7b1ed1c451934ca75a0dd8ef4d16912f5f145d36b5"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.dll",
+          "sha256": "ecb80837b0ca4dccf99a393a4d4ea791a8c33515e11b487f046540c2a27a8031"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Format.dll",
+          "sha256": "f2b597d4a490884aea740e2cf2214726b5b8d39832f39df259e184ee1e53cc0b"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Runtime.dll",
+          "sha256": "ebcafc30ad6f854e585ced4ffdbd64d433aa29e737a32da440d65cdfa1b6c7d6"
+        }
+      ],
+      "source": {
+        "revision": "484f389f0dda0e0a15da5b111a64389d0ec14a59",
+        "workingTree": "M HUMAN_REVIEW.md\n M assurance.manifest.json\n M src/Broiler.VM.Profile.JavaScript/JsEngine.cs\n?? docs/evidence/jseal-v01/\n?? src/tests/differential/the-numeric-operand-order.expected.txt\n?? src/tests/differential/the-numeric-operand-order.js"
+      }
+    },
+    {
+      "name": "node",
+      "executable": "node",
+      "scriptArgs": [
+        "--require",
+        "{shim}",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--require",
+        "{shim}",
+        "{probe}"
+      ],
+      "resolvedExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "binaries": [
+        {
+          "path": "C:\\Program Files\\nodejs\\node.exe",
+          "sha256": "c6335d08331c23d68b9f2b18adb102002d76ef150b47248e954c507e0d033664"
+        }
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "name": "the-numeric-operand-order.js",
+      "input": {
+        "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\the-numeric-operand-order.js",
+        "sha256": "dde6fad7fed6b1f12996d913541f49564e4686752cf563bfcc53ec2035a10623"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\wt\\vm-v01\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\wt\\vm-v01\\src\\tests\\differential\\the-numeric-operand-order.js"
+          ],
+          "cwd": "D:\\wt\\vm-v01\\src\\tests\\differential",
+          "timeoutSeconds": 20.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 \"ab:5\"\r\n2 \"ab:14\"\r\n3 \"ab:3.5\"\r\n4 \"ab:1\"\r\n5 \"ab:49\"\r\n6 \"ab:9\"\r\n7 \"ab:2\"\r\n8 \"ab:7\"\r\n9 \"ab:5\"\r\n10 \"ab:-48\"\r\n11 \"ab:-8\"\r\n12 \"ab:536870904\"\r\n13 \"ab:true\"\r\n14 \"ab:true\"\r\n15 \"ab:false\"\r\n16 \"ab:false\"\r\n17 \"RangeError:a\"\r\n18 \"RangeError:a\"\r\n19 \"RangeError:a\"\r\n20 \"RangeError:a\"\r\n21 \"RangeError:a\"\r\n22 \"RangeError:a\"\r\n23 \"RangeError:a\"\r\n24 \"RangeError:a\"\r\n25 \"RangeError:a\"\r\n26 \"RangeError:a\"\r\n27 \"RangeError:a\"\r\n28 \"ab:5\"\r\n29 \"ab:14\"\r\n30 \"ab:3.5\"\r\n31 \"ab:1\"\r\n32 \"ab:49\"\r\n33 \"ab:2\"\r\n34 \"ab:7\"\r\n35 \"ab:5\"\r\n36 \"ab:-48\"\r\n37 \"ab:-8\"\r\n38 \"ab:536870904\"\r\n39 \"ab:5\"\r\n40 \"ab:49\"\r\n41 \":5:anumber,b\"\r\n42 \"1024:ab\"\r\n43 \"Infinity:-1:abba\"\r\n44 \"evalB,convA,convB:4\"\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.484
+        },
+        {
+          "engine": "node",
+          "goal": "script",
+          "argv": [
+            "C:\\Program Files\\nodejs\\node.exe",
+            "--require",
+            "C:\\Users\\proof\\AppData\\Local\\Temp\\broiler-differential-u_i6ogib\\print.cjs",
+            "D:\\wt\\vm-v01\\src\\tests\\differential\\the-numeric-operand-order.js"
+          ],
+          "cwd": "D:\\wt\\vm-v01\\src\\tests\\differential",
+          "timeoutSeconds": 20.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 \"ab:5\"\n2 \"ab:14\"\n3 \"ab:3.5\"\n4 \"ab:1\"\n5 \"ab:49\"\n6 \"ab:9\"\n7 \"ab:2\"\n8 \"ab:7\"\n9 \"ab:5\"\n10 \"ab:-48\"\n11 \"ab:-8\"\n12 \"ab:536870904\"\n13 \"ab:true\"\n14 \"ab:true\"\n15 \"ab:false\"\n16 \"ab:false\"\n17 \"RangeError:a\"\n18 \"RangeError:a\"\n19 \"RangeError:a\"\n20 \"RangeError:a\"\n21 \"RangeError:a\"\n22 \"RangeError:a\"\n23 \"RangeError:a\"\n24 \"RangeError:a\"\n25 \"RangeError:a\"\n26 \"RangeError:a\"\n27 \"RangeError:a\"\n28 \"ab:5\"\n29 \"ab:14\"\n30 \"ab:3.5\"\n31 \"ab:1\"\n32 \"ab:49\"\n33 \"ab:2\"\n34 \"ab:7\"\n35 \"ab:5\"\n36 \"ab:-48\"\n37 \"ab:-8\"\n38 \"ab:536870904\"\n39 \"ab:5\"\n40 \"ab:49\"\n41 \":5:anumber,b\"\n42 \"1024:ab\"\n43 \"Infinity:-1:abba\"\n44 \"evalB,convA,convB:4\"\n",
+          "stderr": "",
+          "elapsedSeconds": 0.078
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\the-numeric-operand-order.expected.txt",
+        "sha256": "d7d2b84f48a5b263601472e77ddadd363256530500afec3a35c8b46b84308589"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\wt\\vm-v01\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "ok": true
+}

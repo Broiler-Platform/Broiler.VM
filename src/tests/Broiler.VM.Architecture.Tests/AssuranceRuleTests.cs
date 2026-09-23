@@ -1602,14 +1602,23 @@ public sealed class AssuranceRuleTests
             unnamed,
             StringComparison.Ordinal);
 
-        // ...and the real report, which states zero and names none because this component uses the
-        // hatch nowhere.
-        Assert.Empty(AssuranceScanner.DeclaredExemptions(ProductUnits));
-        Assert.Contains("| Per-unit exemptions | 0 |", ComponentReport, StringComparison.Ordinal);
-        Assert.Contains(
-            "No unit in this component states a per-unit exemption.",
-            ComponentReport,
-            StringComparison.Ordinal);
+        // ...and the real report. Until 2026-09-22 this component used the hatch nowhere and the
+        // report stated zero. Decision JSD-0031 section 5 then chose the hatch, unchanged, for the
+        // generated Unicode tables (JSeal F07 U2): every table member of the three .g.cs files
+        // carries it with a reason UnicodeTableGenerator writes, and rule N22 holds those files to
+        // the generator byte for byte. So the fact asserted here moved with the tree: every use in
+        // the product is one of those members stating that reason - nothing hand-written uses it -
+        // and the report counts and names each one.
+        var declared = AssuranceScanner.DeclaredExemptions(ProductUnits);
+
+        Assert.NotEmpty(declared);
+        Assert.All(declared, static unit =>
+        {
+            Assert.Contains(unit.File.RelativePath, UnicodeTableGenerator.OutputPaths);
+            Assert.Equal(UnicodeTableGenerator.ExemptReason, unit.Annotation!.ExemptReason);
+        });
+        Assert.Contains($"| Per-unit exemptions | {declared.Count} |", ComponentReport, StringComparison.Ordinal);
+        Assert.All(declared, unit => Assert.Contains($"`{unit.Name}` in `{unit.File.RelativePath}`", ComponentReport, StringComparison.Ordinal));
 
         // Clause: the criteria figures. A report that overstates how much of its high-risk surface
         // carries a falsification criterion, and understates how much of it carries none, is a

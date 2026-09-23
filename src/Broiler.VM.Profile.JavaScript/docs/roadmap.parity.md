@@ -170,6 +170,8 @@ near neighbour of themselves, and integrity clauses on the object model that are
 Every row below was observed by running both engines. Nothing here is a status, and nothing here is
 accepted.
 
+*(Implementation note, 2026-09-21: many rows below were addressed in the working tree by JSeal slices; the dated notes under the JSP stages in section 6 say which. The rows are kept as the observation they were.)*
+
 ### 4.1 What is no longer a gap, and what that costs the record
 
 **Every construct family the workload roadmap lists as refused by name now compiles.** Asked one at
@@ -567,6 +569,17 @@ a milestone with a ledger row.
 
 ### JSP-2 — The refusal that was lost: a BigInt literal is not a Number
 
+- **2026-09-21 implementation note:** JSeal B01-B05 implemented BigInt (proposed, unsigned
+  JSD-0033): an exact internal value, gated literals, arithmetic and bitwise operators, and then
+  public admission through the optional surface `broiler.javascript.bigint` with the BigInt global,
+  conversions and exact comparisons. The wide manifest no longer refuses the literal; the numeric
+  manifest still does, and a composition may decline the surface. The wide floor's unsupported row
+  was re-based by hand to 0 with its reason written in the floor file. On 2026-09-22 JSeal B06-B08
+  added the host crossing and clone of BigInt values (JSD-0024 section 19, JSD-0032 section 5),
+  BigInt64Array/BigUint64Array and the DataView BigInt accessors (JSD-0033 section 8), leaving the
+  JSeal adoption of the crossing. Local implementation in the working
+  tree, validated as recorded in the named `docs/evidence/jseal-*` records; unreviewed, not accepted
+  evidence, and no milestone or stage moves.
 - **Objective.** No program silently gets a wrong number. A BigInt literal is either refused by name
   at compile time or evaluated as a BigInt; it is never a Number.
 - **Waits on.** Nothing for the refusal. The type itself waits on the value representation of
@@ -591,6 +604,17 @@ a milestone with a ledger row.
 
 ### JSP-3 — The static semantics the wide front end does not have
 
+- **2026-09-21 implementation note:** JSeal V13-V15 designed and implemented direct eval against
+  caller bindings (proposed, unsigned JSD-0026): per-site scope maps (section kind 13), the eval
+  request and goal, caller-binding name instructions, eval-introduced var/function bindings with
+  EvalDeclarationInstantiation checks and the Annex B.3.4 catch exemption, and global/indirect eval
+  as eval code; a separate body variable environment for observable parameter expressions, `super`
+  and the calling class's private names in evaluated source, and a module row kind for module-scoped
+  sites followed, so no direct-eval shape is refused by name. VM-FIX-D repaired hoisted functions
+  seeing their body's lexical bindings, directive prologues, strict reserved words, named function
+  expression names and early errors on unary operands of `**`. Local implementation in the working
+  tree, validated as recorded in the named `docs/evidence/jseal-*` records; unreviewed, not accepted
+  evidence, and no milestone or stage moves.
 - **Objective.** The wide surface raises the early errors the language requires, and its string
   lexer decodes what the language says it decodes.
 - **Waits on.** `JS-3b`, whose subject static semantics as a verification stage is.
@@ -607,6 +631,13 @@ a milestone with a ledger row.
 
 ### JSP-4 — The abstract operations underneath the library
 
+- **2026-09-21 implementation note:** JSeal V01 fixed left-before-right operand conversion for the
+  arithmetic, bitwise, shift and relational operators; VM-FIX-B made computed compound, logical and
+  update assignments convert their key once (not yet `super[k] op= v`) and made `**`/`Math.pow`
+  follow Number::exponentiate; VM-FIX-C made Array methods use ToLength with the 2^53-1 checks.
+  Local implementation in the working tree, validated as recorded in the named
+  `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
+  moves.
 - **Objective.** The operations the library is written on top of are the language's, so a defect in
   one stops being a defect in every method that calls it.
 - **Waits on.** `JS-6`.
@@ -620,6 +651,13 @@ a milestone with a ledger row.
 
 ### JSP-5 — The integrity clauses on the object model
 
+- **2026-09-21 implementation note:** JSeal V02-V03 applied the extensibility and
+  descriptor-integrity rules to Symbol keys; VM-FIX-A/C/F routed typed-array canonical numeric keys,
+  freeze/seal, Array mutators (DeletePropertyOrThrow), ArraySetLength and the module namespace
+  [[DefineOwnProperty]] through the specified paths; F05 added the typed-array [[PreventExtensions]]
+  for resizable views. Local implementation in the working tree, validated as recorded in the named
+  `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
+  moves.
 - **Objective.** `freeze`, `seal` and `preventExtensions` mean what they say, for every key kind and
   every exotic object this profile has.
 - **Waits on.** `JS-4`. The typed-array half is [JSW-2](roadmap.workloads.md#jsw-2--the-binary-surface-and-a-manifest-identity-for-it)'s
@@ -635,6 +673,15 @@ a milestone with a ledger row.
 
 ### JSP-6 — The protocols the realm publishes and does not consult
 
+- **2026-09-21 implementation note:** JSeal V04 added IsRegExp to startsWith/endsWith/includes and
+  the replaceAll dispatch; V05-V06 made the sloppy simple-parameter `arguments` object mapped (the
+  section 4 declaration against case 132 of the-general-surface was removed); V07-V12 implemented
+  ArraySpeciesCreate, IsConcatSpreadable and the typed-array/ArrayBuffer species protocols; F11 gave
+  each iterator kind its own prototype under %Iterator.prototype%; VM-FIX-E made the matchAll/RegExp
+  String Iterator/constructor protocols observe exec, flags, species and IsRegExp, and VM-FIX-G did
+  the same for the match/replace/search/split Symbol methods. Local implementation in the working
+  tree, validated as recorded in the named `docs/evidence/jseal-*` records; unreviewed, not accepted
+  evidence, and no milestone or stage moves.
 - **Objective.** A well-known symbol installed by a guest changes what the realm does, everywhere the
   language says it does.
 - **Waits on.** `JS-6`, and `JS-4` for the intrinsic graph.
@@ -654,6 +701,20 @@ a milestone with a ledger row.
 
 ### JSP-7 — The surfaces that are absent without being declared
 
+- **2026-09-21 implementation note:** Several section 4 absences are implemented in the working
+  tree: Float16Array and the float16 DataView accessors (F01-F03), resizable ArrayBuffer (F04-F06),
+  RegExp.escape (F10), the Iterator global and helpers plus Iterator.concat (F11-F15),
+  Array.fromAsync (F16), JSON.rawJSON/isRawJSON (F17), the disposal Symbols, SuppressedError,
+  DisposableStack and AsyncDisposableStack (F18-F20) and `using`/`await using` (F21-F22, admitted
+  ahead of the edition by proposed JSD-0034), and an own Array.prototype.toLocaleString (JSD-0027
+  N1). BigInt is admitted through the optional surface `broiler.javascript.bigint` (B01-B05,
+  JSD-0033), and BigInt64Array/BigUint64Array and the DataView BigInt accessors followed (B07-B08,
+  JSD-0033 section 8). `String.prototype.normalize` and `u`-mode property escapes run on Unicode
+  17.0.0 tables generated from archived UCD files (F07-F09, JSD-0031). Decision records JSD-0027 to
+  JSD-0031 record Intl, shared memory, FinalizationRegistry, ShadowRealm and Unicode data as
+  proposed decisions. Local implementation in the working tree, validated as recorded in the named
+  `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
+  moves.
 - **Objective.** Every surface this profile does not have is named somewhere a reader and a rule can
   find, with its deterministic failure.
 - **Waits on.** [JSW-6](roadmap.workloads.md#jsw-6--the-core-library-still-absent-from-the-realm) for
@@ -698,6 +759,22 @@ a milestone with a ledger row.
 
 ### JSP-10 — The host surface an embedder meets first
 
+- **2026-09-21 implementation note:** JSeal I01/I03/I05/I07 added host-surface members (bulk
+  ArrayBuffer read and construction, an optional exotic-deletion hook, host promise capabilities;
+  JSD-0024 sections 12-13), VM-FIX-A added DetachArrayBuffer (section 14) for the conformance
+  harness, and the J17 upstream half added `JsScriptUnit.SourceName`. Later additions: module graphs
+  and deferred imports (section 15), the script-goal route `EvaluateScript` (section 16), detached
+  clone adoption across threads (section 17, over the JSD-0032 carrier), the conformance-only
+  IsHTMLDDA object (section 18) and BigInt values across the surface and in the clone carrier
+  (section 19, B06), with exotic-object hooks and host re-throws translated like every other
+  crossing (section 19.1, VM-FIX-I) and every exotic hook charged (section 19.2, VM-FIX-J). Section
+  20 adds module state (`TryGetModuleState`: status, evaluation error, top-level await, cycle root),
+  the referrer of eval, `Function` and job-run code for `import()` (a new optional ScriptReferrers
+  section), and the rule that a host `Missing` never reaches guest code. JSeal has prepared its
+  adoption against a local candidate but has not merged it: its pins wait for a released package.
+  Local implementation in the working tree, validated as recorded in the named
+  `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
+  moves.
 - **Objective.** The host's defaults, its capabilities and its format ceilings are things a reader
   can find out before meeting them, and none of them is a surprise reachable by ordinary code.
 - **Waits on.** Nothing for the reporting half. The allowance defaults are a decision rather than a

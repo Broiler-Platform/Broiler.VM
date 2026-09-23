@@ -76,19 +76,16 @@ internal sealed class SourceProvider : IVmArtifactProvider
             return Module(referrer, specifier);
         }
 
-        string source;
-
-        try
-        {
-            source = System.Text.Encoding.UTF8.GetString(request.RequestPayload.Span);
-        }
-        catch (System.ArgumentException)
+        // A THIRD QUESTION, MARKED THE SAME WAY: a direct `eval` asks for its String compiled as
+        // eval code for one call site, under the flags byte its request carries (source-provider
+        // version 2, JSeal V14). Any other leading control byte is a vocabulary this host does not
+        // speak, and compiling it as source would be answering a question nobody asked.
+        if (!JsCompiler.TryReadProgramRequest(request.RequestPayload.Span, out var script))
         {
             return VmArtifactProviderAnswer.Refused(VmReason.MalformedEncoding);
         }
 
-        var compiled = JsCompiler.Compile(
-            [new JsScriptUnit("main", source, SliceParseOptions.Script)]);
+        var compiled = JsCompiler.Compile([script]);
 
         if (!compiled.Succeeded || compiled.Artifact is null)
         {

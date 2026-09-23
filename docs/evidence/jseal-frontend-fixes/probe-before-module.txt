@@ -1,0 +1,23 @@
+# base build, the probe as written (compile refusal):
+broiler-js: the-module-evaluation-errors.mjs: 2201:DuplicateLexicalDeclaration at 13:7: `` is declared twice at this module's top level
+# base build, a variant whose top level keeps one destructuring declaration:
+1 "1 2"
+2 "5 3 6 7"
+3 8
+4 TypeError
+5 boom runs=1 dependentRan=undefined
+6 resolved
+7 resolved
+8 resolved
+9 TypeError Cannot read properties of undefined (reading 'sibling') runs=undefined
+10 false runs=1
+11 resolved
+12 resolved
+# base build, cases 14-20 alone (a module printing each as it settles; 19 and 20 were never printed):
+14 rejected fulfilled false runs=1
+15 second ReferenceError
+16 first 1
+17 cycle
+18 resolved
+# base build, case 21 alone (a guard: the base answers it; the review's wait for a pending module deadlocked on it until an async module body's evaluation promise was resolved with undefined):
+21 self-then settled

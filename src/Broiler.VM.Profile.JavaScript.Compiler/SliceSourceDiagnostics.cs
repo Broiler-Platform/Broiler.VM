@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   3
-// Annotated:        3/3
-// Exempt:           29
-// Human-reviewed:   0/3
-// IP risk:          None
+// Relevant units:   4
+// Annotated:        4/4
+// Exempt:           30
+// Human-reviewed:   0/4
+// IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       3
+// Unverified:       4
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -265,11 +265,40 @@ public sealed record SliceSourceDiagnostic(
     int Line,
     int Column)
 {
+    /// <summary>
+    /// The name the host gave the text this refusal is about, or empty when it gave none.
+    /// </summary>
+    /// <remarks>
+    /// It is the refused unit's <see cref="JsScriptUnit.SourceName"/>, copied and never
+    /// interpreted: the line and column are positions in that unit's text whatever the name
+    /// says. A refusal no single unit owns, and every refusal of a unit given no name, carries
+    /// none. An init-only member, so the constructor every existing caller names is unchanged.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6731DA
+    // Broiler-Human:        PENDING
+    public string SourceName
+    {
+        get => sourceName;
+        init => sourceName = value ?? string.Empty;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CCA0B1
+    // Broiler-Human:        PENDING
+    private readonly string sourceName = string.Empty;
+
     /// <summary>The one-line form a check or a log prints.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=7972D6
+    /// <remarks>
+    /// A named refusal reads <c>code at name:line:column</c>; an unnamed one keeps the form it
+    /// always had, so no retained line that recorded one changes.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=353CB9
     // Broiler-Human:        PENDING
     public override string ToString() =>
-        string.Create(
-            System.Globalization.CultureInfo.InvariantCulture,
-            $"{(int)Code}:{Code} at {Line}:{Column}: {Message}");
+        sourceName.Length == 0
+            ? string.Create(
+                System.Globalization.CultureInfo.InvariantCulture,
+                $"{(int)Code}:{Code} at {Line}:{Column}: {Message}")
+            : string.Create(
+                System.Globalization.CultureInfo.InvariantCulture,
+                $"{(int)Code}:{Code} at {sourceName}:{Line}:{Column}: {Message}");
 }

@@ -1,0 +1,16 @@
+# Mutation runs against the final (UnsafeAccessor) checks, JIT build, --checks, 2026-09-21.
+# Each mutation was reverted after its run (the file restored from a copy and rebuilt).
+# 1. memory map disabled (every object met gets a new record)
+FAIL clone/i14/cycles-terminate-and-shared-references-stay-shared: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL clone/i15/maps-and-sets-keep-order-cycles-and-repeated-keys-and-values: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL clone/i15/errors-keep-their-listed-name-message-and-cause: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL clone/i15/buffers-copy-their-bytes-and-views-over-one-buffer-share-one-clone: the program answered '[object ArrayBuffer],true,false,false,false,2/3,1/4,4/2,1+2+3+4+5+6+7+8,[object Uint8Array],[ob
+FAIL clone/i15/every-brand-keeps-graph-identity-and-refuses-an-unsupported-member: the program answered 'falsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalse,refused,refused,refused,refused,refused
+FAIL clone/i14-i15/a-carrier-outlives-its-source-realm-and-rebuilds-on-the-destination: the source realm: the run answered ProfileFault/ProfileFaultUnspecified
+broiler-js-slice-compiler: 6 of 277 checks FAILED, 2 not run on this machine and claimed by nothing
+# 2. fuel charges removed from the walk and the rebuild (buffer byte charges kept)
+FAIL clone/i14/the-clone-is-charged-in-proportion-to-the-graph: at n=64 the candidate cost 1996 and the control 1996
+broiler-js-slice-compiler: 1 of 277 checks FAILED, 2 not run on this machine and claimed by nothing
+# 3. the view's own detached check (RefuseDetachedView) removed; this is also the state before the review fix
+FAIL clone/i15/a-detached-buffer-and-a-view-over-one-are-refused: the program answered 'refused,refused,refused,cloned,cloned,cloned' and 'refused,refused,refused,refused,refused,refused' was expected
+broiler-js-slice-compiler: 1 of 277 checks FAILED, 2 not run on this machine and claimed by nothing

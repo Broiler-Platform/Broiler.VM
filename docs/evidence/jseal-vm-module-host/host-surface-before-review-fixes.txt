@@ -1,0 +1,2 @@
+FAIL an errored module stays errored, and a cycle member waits for its awaiting root, whoever started them: line 2 was 'host-boom=fulfilled' and 'host-boom=true:1' was expected
+host-surface: 1 check(s) failed

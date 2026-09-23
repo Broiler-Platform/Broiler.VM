@@ -1,0 +1,4 @@
+# Mutations run on 2026-09-22 against this change; each was reverted and the tree rebuilt.
+1. Wrap and AdmitBigInt without their per-word engine.Charge -> FAIL bigint/b06/a-host-crossing-is-charged-per-word: the wide crossings cost 0 units more than the narrow ones (floor 40960)
+2. JsHostValue.Equals by reference for a BigInt -> FAIL (host-surface) a BigInt equals another of the same value...: line 1 was 'value=false,false,false'
+3. AdmitBigInt ceiling off by one (MaximumBits + 1) -> FAIL (host-surface) a BigInt the host builds reaches the guest exactly, and one past the ceiling is a RangeError: the run answered ProfileFault/ProfileContractViolation

@@ -394,12 +394,18 @@ file, and it now runs several of them and prints a score.
 
 **The Kind column did not change, and that is the part worth reading rather than
 skimming.** **A tool advertised as a JavaScript host has to be able to run
-JavaScript**, and this one runs a great deal of it. **BigInt is the only
-construct this paragraph denies of the default manifest
-`broiler.javascript.wide`**, and the qualifier is meant: a BigInt literal is
-refused at compile time, by name, as
-`2104:ConstructOutsideManifest at 1:14: a BigInt literal is not admitted by the
-declared feature manifest`, and the value kind is implemented nowhere. Class,
+JavaScript**, and this one runs a great deal of it. **BigInt is admitted by the
+default manifest `broiler.javascript.wide` from 2026-09-21**, through its own
+optional surface `broiler.javascript.bigint` (JSeal B05, decision JSD-0033
+section 7): `1n` is an exact integer and the `BigInt` global is bound. What this
+paragraph still denies of that manifest is narrower and named:
+`--numeric` still refuses a BigInt literal by name as
+`2104:ConstructOutsideManifest ... a BigInt literal is not admitted by the
+declared feature manifest`. *(2026-09-22, JSeal B07-B08: `BigInt64Array`, `BigUint64Array` and the DataView
+BigInt accessors exist wherever the BigInt surface is admitted, and naming either
+constructor declares both the binary and the BigInt surface. An earlier draft of
+this paragraph, written within the same unpublished change and never released,
+named them as absences.)* Class,
 generator, `async` function, module, destructuring, spread, template literal,
 `for … of`, Proxy, Symbol, typed array, `eval` and the `Function` constructor
 **all run to completion on this root's built binary**, and a reader should point
@@ -412,6 +418,23 @@ enumerated against a comparison engine. Nothing in it has been
 read by a human, and it has no conformance run of its own over the pinned suite.
 Advertising it would be the untruthful support claim the core roadmap makes a
 stop condition, and section 1's advertised set stays empty.
+
+**Corrected 2026-09-21, because the value kind this paragraph called
+unimplemented was implemented and admitted.** The BigInt sentence above read,
+until this date:
+
+> **BigInt is the only construct this paragraph denies of the default manifest
+> `broiler.javascript.wide`**, and the qualifier is meant: a BigInt literal is
+> refused at compile time, by name, as `2104:ConstructOutsideManifest at 1:14: a
+> BigInt literal is not admitted by the declared feature manifest`, and the value
+> kind is implemented nowhere.
+
+JSeal cards B01-B04 implemented the value kind behind a gate no shipped
+composition opened, and card B05 admitted it: the wide manifest lowers a BigInt
+literal, and the full descriptor this root composes admits the surface. Point
+this root at `1n + 2n` and at `--numeric` with the same file and read both
+answers rather than taking them from here. The Kind column does not move: a
+wider surface is not a review.
 
 **Corrected 2026-09-08, and the correction is of an UNDERSTATEMENT, which this
 register treats as exactly the same defect as an overstatement.** The paragraph
@@ -655,12 +678,11 @@ realm and every module its own instance. It has a subcommand grammar - `run`,
 cannot be told apart by a flat option list, and bare `broiler <file>` still runs the
 file. **The Kind column is `demonstration` for the reason the JavaScript host's row
 gives and for one more.** A tool advertised as a polyglot host claims both surfaces,
-and neither claim is available: **BigInt is the only construct this sentence denies
-of that JavaScript surface** — a BigInt literal is refused at compile time by name,
-with the same `2104:ConstructOutsideManifest` diagnostic the JavaScript host's row
-quotes, because both hosts compose the same profile at the same default manifest,
-and that row is also where the library surfaces the wide realm merely lacks are
-pointed at — and this
+and neither claim is available: the JavaScript surface is the one the JavaScript
+host's row describes, BigInt included from 2026-09-21, because both hosts compose
+the same profile at the same default manifest, and that row is where its remaining
+named absences — the 64-bit typed arrays and the DataView BigInt accessors — and
+the library surfaces the wide realm merely lacks are pointed at — and this
 WebAssembly surface admits no import, no text format, no vector instruction, no
 garbage collection, no exception handling, no thread and no memory64. A module that
 declares an import is refused rather than linked. Advertising either would be the
@@ -685,6 +707,20 @@ and it survives as a refusal rather than as an absence**: until 2026-09-08 the w
 front end admitted a BigInt literal and evaluated it as a Number, so a program doing
 big-integer arithmetic here got a silently wrong number instead of meeting a
 denial. The JavaScript host's row records that finding, its source and its repair.
+
+**Corrected 2026-09-21, and the refusal the paragraph above says survives did not.**
+The JavaScript clause of this row read, until this date:
+
+> **BigInt is the only construct this sentence denies of that JavaScript surface** —
+> a BigInt literal is refused at compile time by name, with the same
+> `2104:ConstructOutsideManifest` diagnostic the JavaScript host's row quotes
+
+JSeal card B05 admitted the value kind under the default manifest, and this root's
+built binary now prints `3` for `print(1n + 2n)` and `function` for
+`print(typeof BigInt)`; `--numeric` still refuses the literal with that diagnostic, and
+`typeof BigInt64Array` still answered `undefined` at B05; since JSeal B07 (2026-09-22) it
+answers `function`. The paragraph above is kept as it stands because it records what was true on
+2026-09-08.
 
 **Correcting an understatement is not an argument for advertising, and neither
 column of this row moves.** This root reads `demonstration` because nothing here has

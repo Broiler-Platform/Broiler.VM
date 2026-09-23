@@ -98,4 +98,15 @@ src/tests/conformance/pins/*.tar.gz binary
 # workload or the checkout had changed.
 src/tests/octane/pins/*.tar.gz binary
 
+# THE UNICODE CHARACTER DATABASE AND ITS LICENCE, and the declaration matters more for these than for
+# anything above them, because the generic `*.txt text eol=lf` line near the top claims every one of
+# them as text. They are LF today, so nothing would change on an ordinary checkout; but `unicode.pin`
+# names each file's SHA-256, rule N22 hashes the bytes against it, and the tables in two product
+# assemblies are generated from exactly those bytes - so a filter allowed to rewrite a line ending
+# would move a digest on one platform and leave the generator refusing input nobody edited. The pin
+# file and the README beside it stay text: they are this repository's own writing and nothing
+# hashes them. Declared 2026-09-22 in the change that archived the files (JSD-0031, slice U1/U2).
+src/tests/unicode/pins/ucd-17.0.0/** binary
+src/tests/unicode/pins/unicode-LICENSE.txt binary
+
 *.png                     binary

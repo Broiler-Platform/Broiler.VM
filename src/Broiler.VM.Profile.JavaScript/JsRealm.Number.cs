@@ -248,10 +248,23 @@ internal sealed partial class JsRealm
         at < arguments.Length ? arguments[at] : JsValue.Undefined;
 
     /// <summary>What <c>Number(...)</c> and <c>new Number(...)</c> both compute.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=51B42B
+    /// <remarks>
+    /// <b><c>ToNumeric</c> and not <c>ToNumber</c></b>, because this is the one operation the
+    /// language lets turn a BigInt into a Number (JSeal B05): <c>Number(2n ** 53n + 1n)</c> is the
+    /// nearest Number, ties to even, where <c>+(2n ** 53n + 1n)</c> is a TypeError.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0B48FC
     // Broiler-Human:        PENDING
-    private static double NumberFromArguments(JsEngine engine, JsValue[] arguments) =>
-        arguments.Length == 0 ? 0 : engine.ToNumber(ArgOfNumber(arguments, 0));
+    private static double NumberFromArguments(JsEngine engine, JsValue[] arguments)
+    {
+        if (arguments.Length == 0)
+        {
+            return 0;
+        }
+
+        var numeric = engine.ToNumeric(ArgOfNumber(arguments, 0));
+        return numeric.IsBigInt ? engine.BigIntToNumber(numeric.AsBigInt()) : numeric.AsNumber();
+    }
 
     /// <summary>The specification's <c>thisNumberValue</c>: a Number, or a wrapper holding one.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=558C25

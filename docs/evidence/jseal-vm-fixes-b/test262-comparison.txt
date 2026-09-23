@@ -1,0 +1,61 @@
+# Pinned Test262 ccaac100, bytecode form, win-x64, local run 2026-09-21 (not a conformance score).
+## narrow selection: before totals {"files": 852, "variants": 1514, "passed": 1334, "failed": 152, "unsupported": 28, "exhausted": 0, "skipped": 0, "accountsForEveryVariant": true}
+## narrow selection: after totals  {"files": 852, "variants": 1514, "passed": 1378, "failed": 108, "unsupported": 28, "exhausted": 0, "skipped": 0, "accountsForEveryVariant": true}
+fail->pass test/built-ins/Array/prototype/toLocaleString/S15.4.4.3_A1_T1.js [sloppy]
+fail->pass test/built-ins/Array/prototype/toLocaleString/S15.4.4.3_A1_T1.js [strict]
+fail->pass test/built-ins/Array/prototype/toLocaleString/S15.4.4.3_A3_T1.js [sloppy]
+fail->pass test/built-ins/Array/prototype/toLocaleString/S15.4.4.3_A3_T1.js [strict]
+fail->pass test/built-ins/Array/prototype/toLocaleString/invoke-element-tolocalestring.js [sloppy]
+fail->pass test/built-ins/Array/prototype/toLocaleString/invoke-element-tolocalestring.js [strict]
+fail->pass test/built-ins/Array/prototype/toLocaleString/primitive_this_value.js [strict]
+fail->pass test/built-ins/Array/prototype/toLocaleString/primitive_this_value_getter.js [strict]
+fail->pass test/built-ins/Array/prototype/toLocaleString/prop-desc.js [sloppy]
+fail->pass test/built-ins/Array/prototype/toLocaleString/prop-desc.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.10_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.10_T4.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.11_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.11_T4.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.1_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.1_T4.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.2_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.2_T4.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.3_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.3_T4.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.4_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.4_T4.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.5_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.5_T4.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.6_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.6_T4.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.7_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.7_T4.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.8_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.8_T4.js [strict]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.9_T4.js [sloppy]
+fail->pass test/language/expressions/compound-assignment/S11.13.2_A7.9_T4.js [strict]
+fail->pass test/language/expressions/exponentiation/applying-the-exp-operator_A7.js [sloppy]
+fail->pass test/language/expressions/exponentiation/applying-the-exp-operator_A7.js [strict]
+fail->pass test/language/expressions/exponentiation/applying-the-exp-operator_A8.js [sloppy]
+fail->pass test/language/expressions/exponentiation/applying-the-exp-operator_A8.js [strict]
+fail->pass test/language/expressions/postfix-decrement/S11.3.2_A6_T3.js [sloppy]
+fail->pass test/language/expressions/postfix-decrement/S11.3.2_A6_T3.js [strict]
+fail->pass test/language/expressions/postfix-increment/S11.3.1_A6_T3.js [sloppy]
+fail->pass test/language/expressions/postfix-increment/S11.3.1_A6_T3.js [strict]
+fail->pass test/language/expressions/prefix-decrement/S11.4.5_A6_T3.js [sloppy]
+fail->pass test/language/expressions/prefix-decrement/S11.4.5_A6_T3.js [strict]
+fail->pass test/language/expressions/prefix-increment/S11.4.4_A6_T3.js [sloppy]
+fail->pass test/language/expressions/prefix-increment/S11.4.4_A6_T3.js [strict]
+## wide selection: before totals {"files": 2415, "variants": 4644, "passed": 4347, "failed": 267, "unsupported": 28, "exhausted": 0, "skipped": 2, "accountsForEveryVariant": true}
+## wide selection: after totals  {"files": 2415, "variants": 4644, "passed": 4347, "failed": 267, "unsupported": 28, "exhausted": 0, "skipped": 2, "accountsForEveryVariant": true}
+## JSD-0027 N1 accounting, TypedArray/prototype/toLocaleString outside BigInt/ (wide-after run, wide-before identical; re-checked in run n1-after, which also shows TypedArrayConstructors/prototype/toLocaleString/inherited.js passing in both modes)
+## required by N1: 21 files; passing in both modes: 20; failing: detached-buffer.js; excluded by name in N1: resizable-buffer.js, user-provided-tolocalestring-grow.js, user-provided-tolocalestring-shrink.js, return-abrupt-from-this-out-of-bounds.js
+failed test/built-ins/TypedArray/prototype/toLocaleString/detached-buffer.js [sloppy]: uncaught TypeError: $262.detachArrayBuffer: this profile has no ArrayBuffer to detach (Testing with Float64Array and makePassthrough.)
+failed test/built-ins/TypedArray/prototype/toLocaleString/detached-buffer.js [strict]: uncaught TypeError: $262.detachArrayBuffer: this profile has no ArrayBuffer to detach (Testing with Float64Array and makePassthrough.)
+failed test/built-ins/TypedArray/prototype/toLocaleString/resizable-buffer.js [sloppy]: uncaught ReferenceError: BigInt64Array is not defined
+failed test/built-ins/TypedArray/prototype/toLocaleString/resizable-buffer.js [strict]: uncaught ReferenceError: BigInt64Array is not defined
+failed test/built-ins/TypedArray/prototype/toLocaleString/return-abrupt-from-this-out-of-bounds.js [sloppy]: uncaught Error: implements ArrayBuffer.prototype.resize Expected SameValue(<<"undefined">>, <<"function">>) to be true
+failed test/built-ins/TypedArray/prototype/toLocaleString/return-abrupt-from-this-out-of-bounds.js [strict]: uncaught Error: implements ArrayBuffer.prototype.resize Expected SameValue(<<"undefined">>, <<"function">>) to be true
+failed test/built-ins/TypedArray/prototype/toLocaleString/user-provided-tolocalestring-grow.js [sloppy]: uncaught ReferenceError: BigInt is not defined
+failed test/built-ins/TypedArray/prototype/toLocaleString/user-provided-tolocalestring-grow.js [strict]: uncaught ReferenceError: BigInt is not defined
+failed test/built-ins/TypedArray/prototype/toLocaleString/user-provided-tolocalestring-shrink.js [sloppy]: uncaught ReferenceError: BigInt is not defined
+failed test/built-ins/TypedArray/prototype/toLocaleString/user-provided-tolocalestring-shrink.js [strict]: uncaught ReferenceError: BigInt is not defined

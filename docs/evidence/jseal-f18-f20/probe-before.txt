@@ -1,0 +1,72 @@
+1 "undefined undefined"
+2 throws TypeError
+3 "absent absent"
+4 false
+5 throws TypeError
+6 "number"
+7 throws ReferenceError
+8 throws ReferenceError
+9 throws ReferenceError
+10 throws ReferenceError
+11 throws ReferenceError
+12 throws ReferenceError
+13 throws ReferenceError
+14 throws ReferenceError
+15 throws ReferenceError
+16 throws ReferenceError
+17 throws ReferenceError
+18 throws ReferenceError
+19 throws ReferenceError
+20 throws ReferenceError
+21 throws ReferenceError
+22 throws ReferenceError
+23 throws ReferenceError
+24 throws ReferenceError
+25 throws ReferenceError
+26 throws ReferenceError
+27 throws ReferenceError
+28 throws ReferenceError
+29 throws ReferenceError
+30 throws ReferenceError
+31 throws ReferenceError
+32 throws ReferenceError
+33 throws ReferenceError
+34 throws ReferenceError
+35 throws ReferenceError
+36 throws ReferenceError
+37 throws ReferenceError
+38 throws ReferenceError
+39 throws ReferenceError
+40 throws ReferenceError
+41 throws ReferenceError
+42 throws ReferenceError
+43 throws ReferenceError
+44 throws ReferenceError
+45 throws ReferenceError
+46 throws ReferenceError
+47 throws ReferenceError
+48 throws ReferenceError
+49 throws ReferenceError
+50 throws ReferenceError
+51 throws TypeError
+52 throws TypeError
+53 throws TypeError
+54 throws ReferenceError
+55 throws ReferenceError
+56 throws ReferenceError
+57 throws ReferenceError
+58 throws ReferenceError
+59 throws ReferenceError
+60 throws ReferenceError
+61 rejects ReferenceError AsyncDisposableStack is not defined
+62 rejects ReferenceError AsyncDisposableStack is not defined
+63 rejects ReferenceError AsyncDisposableStack is not defined
+64 rejects ReferenceError AsyncDisposableStack is not defined
+65 rejects ReferenceError AsyncDisposableStack is not defined
+66 rejects ReferenceError AsyncDisposableStack is not defined
+67 rejects ReferenceError AsyncDisposableStack is not defined
+68 rejects ReferenceError AsyncDisposableStack is not defined
+69 rejects ReferenceError AsyncDisposableStack is not defined
+70 rejects TypeError undefined is not a function
+71 rejects TypeError undefined is not a function
+72 rejects ReferenceError AsyncDisposableStack is not defined

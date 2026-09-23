@@ -1,0 +1,25 @@
+ok   a host method answers an object, and the guest reads a string off it
+ok   wrapper identity survives the crossing in both directions
+ok   an accessor the host installed runs host code on every read
+ok   a host method calls back into the guest, synchronously, before it returns
+ok   a listener's throw reaches the host and is re-raised into the guest
+ok   an error the host raises is a real guest error the guest can catch
+ok   an exotic object answers a name it was never given, and enumerates it
+ok   an exotic object answers an index, and enumerates its elements before its names
+ok   an exotic object takes the name it claims and lets every other assignment through
+ok   the host links a wrapper to a prototype the guest can see
+ok   a realm in a composition that registered no permission has no host object
+ok   the host queues a job beside the guest's own, and a drain runs both in order
+ok   an embedder reaches its realm between invocations, and only by asking
+ok   the host reads an ArrayBuffer's exact bytes: empty, short and multi-chunk
+ok   the host reads into a span it owns, and a short span is written nothing
+ok   only the realm's own ArrayBuffer brand is read; a subclass instance is one
+ok   a detached buffer answers Detached, and the buffer it moved to answers its bytes
+ok   replaced globals, prototypes, species and join change nothing either member does
+ok   the host makes an ArrayBuffer from its bytes: empty, short and multi-chunk, and a copy
+ok   a read the fuel allowance refuses ends the operation and copies nothing (ResourceExhaustion/AllowanceExhausted)
+ok   a cancelled read ends the operation and copies nothing (Cancellation/Cancelled)
+ok   a buffer the live-bytes ceiling refuses is never made, after one it admits (ResourceExhaustion/CeilingReached)
+ok   a buffer the fuel allowance refuses is never made (ResourceExhaustion/AllowanceExhausted)
+ok   a cancelled construction is never made (Cancellation/Cancelled)
+host-surface: every check passed

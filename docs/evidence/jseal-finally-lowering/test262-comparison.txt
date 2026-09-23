@@ -1,0 +1,81 @@
+# Test262 per-variant comparison, JSeal F21 completion (2026-09-21), local validation only.
+# Suite test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e, manifest broiler.javascript.wide, bytecode form, win-x64 Release.
+# before = base-vm-w4 build; after = this patch. Columns: area|variants|before passing|after passing.
+
+## focused selection (run-test262.py --dir ... x27, before --shards 1 --jobs 4, after --shards 6 --jobs 6)
+test/built-ins/AsyncGeneratorPrototype|96|94|94
+test/built-ins/GeneratorPrototype|122|122|122
+test/language/expressions/async-generator|1212|1208|1208
+test/language/expressions/class|8020|7915|7917
+test/language/expressions/generators|546|542|542
+test/language/expressions/yield|123|115|115
+test/language/statements/async-generator|590|589|589
+test/language/statements/await-using|184|184|184
+test/language/statements/block|40|38|38
+test/language/statements/break|40|40|40
+test/language/statements/class|8651|8505|8507
+test/language/statements/const|271|269|271
+test/language/statements/continue|48|48|48
+test/language/statements/do-while|70|68|68
+test/language/statements/for|758|750|750
+test/language/statements/for-await-of|2431|2431|2431
+test/language/statements/for-in|198|176|176
+test/language/statements/for-of|1442|1424|1424
+test/language/statements/generators|510|509|509
+test/language/statements/labeled|37|33|33
+test/language/statements/let|287|284|286
+test/language/statements/return|31|30|30
+test/language/statements/switch|216|213|213
+test/language/statements/try|388|377|381
+test/language/statements/using|152|150|152
+test/language/statements/while|72|70|70
+test/staging/explicit-resource-management|105|103|103
+TOTAL 26640 26287 26301
+--- changed
+test/language/expressions/class/static-init-await-binding.js sloppy Failed -> Passed
+test/language/expressions/class/static-init-await-binding.js strict Failed -> Passed
+test/language/statements/class/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/class/static-init-await-binding-invalid.js strict Failed -> Passed
+test/language/statements/const/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/const/static-init-await-binding-invalid.js strict Failed -> Passed
+test/language/statements/let/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/let/static-init-await-binding-invalid.js strict Failed -> Passed
+test/language/statements/try/completion-values-fn-finally-abrupt.js sloppy Failed -> Passed
+test/language/statements/try/completion-values-fn-finally-abrupt.js strict Failed -> Passed
+test/language/statements/try/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/try/static-init-await-binding-invalid.js strict Failed -> Passed
+test/language/statements/using/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/using/static-init-await-binding-invalid.js strict Failed -> Passed
+
+## test/language and test/built-ins (run-test262.py --dir test/language --dir test/built-ins --shards 6 --jobs 6)
+before totals: variants 86224, passing 73363, failing 5635, unsupported 1617, exhausted 16, skipped 5593
+after totals:  variants 86224, passing 73391, failing 5607, unsupported 1617, exhausted 16, skipped 5593
+--- changed
+test/language/expressions/arrow-function/static-init-await-reference.js sloppy Failed -> Passed
+test/language/expressions/arrow-function/static-init-await-reference.js strict Failed -> Passed
+test/language/expressions/class/static-init-await-binding.js sloppy Failed -> Passed
+test/language/expressions/class/static-init-await-binding.js strict Failed -> Passed
+test/language/expressions/object/identifier-shorthand-static-init-await-invalid.js sloppy Failed -> Passed
+test/language/expressions/object/identifier-shorthand-static-init-await-invalid.js strict Failed -> Passed
+test/language/identifier-resolution/static-init-invalid-await.js sloppy Failed -> Passed
+test/language/identifier-resolution/static-init-invalid-await.js strict Failed -> Passed
+test/language/statements/class/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/class/static-init-await-binding-invalid.js strict Failed -> Passed
+test/language/statements/const/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/const/static-init-await-binding-invalid.js strict Failed -> Passed
+test/language/statements/function/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/function/static-init-await-binding-invalid.js strict Failed -> Passed
+test/language/statements/let/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/let/static-init-await-binding-invalid.js strict Failed -> Passed
+test/language/statements/try/completion-values-fn-finally-abrupt.js sloppy Failed -> Passed
+test/language/statements/try/completion-values-fn-finally-abrupt.js strict Failed -> Passed
+test/language/statements/try/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/try/static-init-await-binding-invalid.js strict Failed -> Passed
+test/language/statements/using/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/using/static-init-await-binding-invalid.js strict Failed -> Passed
+test/language/statements/variable/dstr/ary-ptrn-elem-id-static-init-await-invalid.js sloppy Failed -> Passed
+test/language/statements/variable/dstr/ary-ptrn-elem-id-static-init-await-invalid.js strict Failed -> Passed
+test/language/statements/variable/dstr/obj-ptrn-elem-id-static-init-await-invalid.js sloppy Failed -> Passed
+test/language/statements/variable/dstr/obj-ptrn-elem-id-static-init-await-invalid.js strict Failed -> Passed
+test/language/statements/variable/static-init-await-binding-invalid.js sloppy Failed -> Passed
+test/language/statements/variable/static-init-await-binding-invalid.js strict Failed -> Passed

@@ -115,13 +115,19 @@ internal sealed class JsNumericAdmission
     /// decided on, and a walk that admitted the unrecognised would grow the manifest every time the
     /// parser grew a production.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=4954C3
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=6BC92C
     // Broiler-Falsified-If: a statement kind this pass does not recognise reaches the lowering
     // Broiler-Human:        PENDING
     private void Statement(JsStatement statement, bool insideFunction)
     {
         switch (statement)
         {
+            // A RESOURCE DECLARATION IS REFUSED BY NAME: its value is an object with a disposer, and
+            // the scope it registers with is nothing this manifest's instructions can express.
+            case JsVariableStatement { Using: not JsUsing.None } resource:
+                Refuse(resource.Span, "a `using` declaration");
+                return;
+
             case JsVariableStatement declaration:
                 foreach (var declarator in declaration.Declarators)
                 {

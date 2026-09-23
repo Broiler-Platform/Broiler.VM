@@ -1,0 +1,43 @@
+# Pinned Test262 ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e, bytecode form, 2026-09-22.
+# Focused selection (--shards 1 --jobs 1): built-ins/Date/prototype/toJSON, built-ins/Array/prototype/{entries,keys,values,indexOf,lastIndexOf,Symbol.iterator}, built-ins/Array/of
+before: 465 files, 928 variants: pass 896, fail 32, unsupported 0, exhausted 0, skipped 0
+after:  465 files, 928 variants: pass 926, fail 2, unsupported 0, exhausted 0, skipped 0 (the 2: Array/of/proto-from-ctor-realm.js, needs $262.createRealm)
+# After review fixes, focused selection plus built-ins/ArrayIteratorPrototype (--shards 1 --jobs 1)
+before: 492 files, 974 variants: pass 942, fail 32, unsupported 0, exhausted 0, skipped 0
+after:  492 files, 974 variants: pass 972, fail 2, unsupported 0, exhausted 0, skipped 0 (the 2: Array/of/proto-from-ctor-realm.js)
+# Wide selection (--shards 1 --jobs 4): built-ins/{Array,Date,String,TypedArray,TypedArrayConstructors,Number,Math,JSON,ArrayBuffer,DataView,RegExp,Iterator,Object}, annexB/built-ins
+before: 14720 files, 29161 variants: pass 27696, fail 1300, unsupported 0, exhausted 4, skipped 161
+after:  14720 files, 29161 variants: pass 27728, fail 1268, unsupported 0, exhausted 4, skipped 161
+# variants whose result changed (path|mode|before#after); none changed from Passed
+test/built-ins/Array/prototype/entries/return-abrupt-from-this.js|sloppy#Failed#Passed
+test/built-ins/Array/prototype/entries/return-abrupt-from-this.js|strict#Failed#Passed
+test/built-ins/Array/prototype/indexOf/15.4.4.14-5-9.js|sloppy#Failed#Passed
+test/built-ins/Array/prototype/indexOf/15.4.4.14-5-9.js|strict#Failed#Passed
+test/built-ins/Array/prototype/indexOf/fromindex-zero-conversion.js|sloppy#Failed#Passed
+test/built-ins/Array/prototype/indexOf/fromindex-zero-conversion.js|strict#Failed#Passed
+test/built-ins/Array/prototype/keys/return-abrupt-from-this.js|sloppy#Failed#Passed
+test/built-ins/Array/prototype/keys/return-abrupt-from-this.js|strict#Failed#Passed
+test/built-ins/Array/prototype/lastIndexOf/15.4.4.15-5-9.js|sloppy#Failed#Passed
+test/built-ins/Array/prototype/lastIndexOf/15.4.4.15-5-9.js|strict#Failed#Passed
+test/built-ins/Array/prototype/lastIndexOf/fromindex-zero-conversion.js|sloppy#Failed#Passed
+test/built-ins/Array/prototype/lastIndexOf/fromindex-zero-conversion.js|strict#Failed#Passed
+test/built-ins/Array/prototype/methods-called-as-functions.js|sloppy#Failed#Passed
+test/built-ins/Array/prototype/methods-called-as-functions.js|strict#Failed#Passed
+test/built-ins/Array/prototype/values/this-val-non-obj-coercible.js|sloppy#Failed#Passed
+test/built-ins/Array/prototype/values/this-val-non-obj-coercible.js|strict#Failed#Passed
+test/built-ins/Date/prototype/toJSON/invoke-abrupt.js|sloppy#Failed#Passed
+test/built-ins/Date/prototype/toJSON/invoke-abrupt.js|strict#Failed#Passed
+test/built-ins/Date/prototype/toJSON/invoke-arguments.js|sloppy#Failed#Passed
+test/built-ins/Date/prototype/toJSON/invoke-arguments.js|strict#Failed#Passed
+test/built-ins/Date/prototype/toJSON/invoke-result.js|sloppy#Failed#Passed
+test/built-ins/Date/prototype/toJSON/invoke-result.js|strict#Failed#Passed
+test/built-ins/Date/prototype/toJSON/non-finite.js|sloppy#Failed#Passed
+test/built-ins/Date/prototype/toJSON/non-finite.js|strict#Failed#Passed
+test/built-ins/Date/prototype/toJSON/to-object.js|sloppy#Failed#Passed
+test/built-ins/Date/prototype/toJSON/to-object.js|strict#Failed#Passed
+test/built-ins/Date/prototype/toJSON/to-primitive-abrupt.js|sloppy#Failed#Passed
+test/built-ins/Date/prototype/toJSON/to-primitive-abrupt.js|strict#Failed#Passed
+test/built-ins/Date/prototype/toJSON/to-primitive-symbol.js|sloppy#Failed#Passed
+test/built-ins/Date/prototype/toJSON/to-primitive-symbol.js|strict#Failed#Passed
+test/built-ins/Date/prototype/toJSON/to-primitive-value-of.js|sloppy#Failed#Passed
+test/built-ins/Date/prototype/toJSON/to-primitive-value-of.js|strict#Failed#Passed

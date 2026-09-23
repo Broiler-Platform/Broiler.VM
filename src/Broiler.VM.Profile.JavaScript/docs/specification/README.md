@@ -59,10 +59,40 @@ subject to three conditions, all of which are met here:
 required, with the confirmation that the notice's opening claim about the three packable assemblies
 is unaffected.
 
+## The three Unicode property tables, archived 2026-09-22
+
+The edition does not contain the tables that say which Unicode property names a regular
+expression may use: `spec.html` pulls them in with three `<emu-import>` elements, so the archived
+document has none of the 53 binary property names in it. Decision
+[JSD-0031](../decisions/0031-unicode-data-source-and-build-boundary.md) section 5 therefore adds
+the three imported files to the Unicode retrieval, and they are archived here, beside the edition
+they belong to, from the **same revision** `0248456c758431e4bb8e5d26333ff1865123c9cd` of
+`tc39/ecma262`:
+
+| File | Bytes | SHA-256 |
+|---|---|---|
+| [`table-nonbinary-unicode-properties.html`](table-nonbinary-unicode-properties.html) | 1,033 | `08da59f7725ab8c8c932c965d22de931bbf38b1ea9430f67a2cd0163984074f2` |
+| [`table-binary-unicode-properties.html`](table-binary-unicode-properties.html) | 10,528 | `bb09794cb0cf887f011f5d1a133b2a29734e432ba0cf87db9281afbd151b8ea0` |
+| [`table-binary-unicode-properties-of-strings.html`](table-binary-unicode-properties-of-strings.html) | 702 | `9c4e35660c28217fb8dd7786de72010c30f901e534a57e3c16eef4831d6bf0e1` |
+
+They were retrieved twice on 2026-09-22 from
+`https://raw.githubusercontent.com/tc39/ecma262/0248456c758431e4bb8e5d26333ff1865123c9cd/<name>`,
+by Claude with the repository owner's permission given in conversation, and the two retrievals
+were byte-identical. They are unmodified, so their own notices are intact and there are no changes
+to give notice of; **the Ecma notice above covers them on the same three conditions as the
+edition**, because they are part of the same specification text at the same revision.
+
+**They do not change `JavaScriptLanguageEdition.DocumentDigest`**, which names `spec.html` alone,
+and rule N14 is unaffected. They are held instead by rule **N22**: `src/tests/unicode/pins/unicode.pin`
+records the same lengths and hashes, the Unicode table generator reads the admitted names from
+these files and refuses them if a byte has moved, and N22 checks that this table and the pin agree.
+They are declared `binary` by the existing `docs/specification/*.html` line in `.gitattributes`.
+
 ## What is here and what deliberately is not
 
-**One edition is archived: the one that is pinned.** Four more were retrieved and hashed on the
-same day to check three claims this component had made about the language in prose — that `#!` is a
+**One edition is archived: the one that is pinned**, with three of its own imported tables (the
+section above). Four more editions were retrieved and hashed on
+2026-09-03 to check three claims this component had made about the language in prose — that `#!` is a
 comment from ES2023, that `using` declarations are in no published edition, and that a binding used
 before its initialiser is a runtime `ReferenceError`. Those four are **not** archived, because they
 are not the pin; they are cited by revision so the measurement can be repeated:

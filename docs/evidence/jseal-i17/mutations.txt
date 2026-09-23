@@ -1,0 +1,19 @@
+# Falsification of the I17 host-surface rows. Each mutation was applied to the product source,
+# the CLI rebuilt, the lane run, and the file restored from a copy; the last line is the restored run.
+== M1: no sender charge (RetainOrAbort removed)
+FAIL the sender's live bytes pay for a carrier, the receiver's for what it rebuilds, and a carrier the ceiling refuses ends the turn: line 1 was 'copy=False,True' and 'copy=True,True' was expected
+host-surface: 1 check(s) failed
+== M2: no compatibility check (direct cast)
+FAIL a foreign carrier is refused, and a crossing outside the realm's step or thread claims nothing: the turn answered ProfileFault
+host-surface: 1 check(s) failed
+== M3: adoption without the step gate (Enter removed from AdoptClone)
+FAIL a foreign carrier is refused, and a crossing outside the realm's step or thread claims nothing: threw JsHostTerminatedException: the operation ended underneath this call and no host code may continue
+host-surface: 1 check(s) failed
+== M4: single-use claim, consumed pre-check and record guard all removed
+FAIL a carrier with transferred bytes detaches its source at once and is adopted exactly once across racing threads: racer 0 answered the turn answered ProfileFault
+host-surface: 1 check(s) failed
+host-surface: every check passed
+== M3 again, with the gate at its final position (first statement of AdoptClone removed), then restored
+FAIL a foreign carrier is refused, and a crossing outside the realm's step or thread claims nothing: threw JsHostTerminatedException: the operation ended underneath this call and no host code may continue
+host-surface: 1 check(s) failed
+host-surface: every check passed

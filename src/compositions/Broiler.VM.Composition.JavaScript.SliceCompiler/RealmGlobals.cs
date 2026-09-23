@@ -56,7 +56,7 @@ internal static class RealmGlobals
 
         var catalog = VmCatalog.CreateBuilder()
             .Add(JavaScriptProfile.DescriptorAdmitting(
-                JavaScriptProfile.BinaryManifest, JavaScriptProfile.DynamicManifest))
+                JavaScriptProfile.BigIntManifest, JavaScriptProfile.BinaryManifest, JavaScriptProfile.DynamicManifest))
             .Build();
 
         var ceilings = ImmutableArray.CreateBuilder<VmCeilingSpec>();

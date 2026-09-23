@@ -1,0 +1,45 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 40 Reflect.set with a receiver other than the view: the comparison engine calls valueOf for a key that names no element ("1.5", 4), where ES2026 TypedArray [[Set]] answers true without converting and the pinned suite asserts no coercion (internals/Set/key-is-canonical-invalid-index-reflect-set.js)
+1 1
+2 true
+3 2
+4 "true true"
+5 "kept"
+6 "3 false false"
+7 "true 4"
+8 true
+9 true
+10 "x,y"
+11 "x"
+12 "s"
+13 "undefined false 0"
+14 "true undefined"
+15 true
+16 7
+17 "2 undefined false"
+18 TypeError
+19 TypeError
+20 TypeError
+21 "no throw, nothing to move"
+22 "undefined undefined undefined"
+23 "undefinedundefinedundefinedundefined 0,1"
+24 "1 2 0,1,01,1.0"
+25 "false false true"
+26 TypeError
+27 "undefined false false"
+28 "undefined undefined false"
+29 0
+30 2
+31 "false false false true"
+32 TypeError
+33 false
+34 TypeError
+35 TypeError
+36 4
+37 "true 2 true"
+38 "0 undefined false false false"
+39 "true 7 5"
+40 "true true true 0 false true 0"
+41 "false,false,false,false,true,2"
+42 7
+43 "true undefined"

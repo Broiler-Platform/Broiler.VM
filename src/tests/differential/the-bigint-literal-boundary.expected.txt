@@ -1,0 +1,16 @@
+1 SyntaxError
+2 SyntaxError
+3 SyntaxError
+4 SyntaxError
+5 SyntaxError
+6 SyntaxError
+7 SyntaxError
+8 SyntaxError
+9 SyntaxError
+10 SyntaxError
+11 "9007199254740993"
+12 "3|7|16"
+13 "1000000000000000000001"
+14 "exact"
+15 true
+16 "bigint"

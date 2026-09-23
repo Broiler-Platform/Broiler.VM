@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   31
-// Annotated:        31/31
-// Exempt:           5
-// Human-reviewed:   0/31
+// Relevant units:   36
+// Annotated:        36/36
+// Exempt:           6
+// Human-reviewed:   0/36
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       31
+// Unverified:       36
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -90,7 +90,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>JSON</c> and defines it on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DB1866
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B75A7D
     // Broiler-Human:        PENDING
     private void SetupJson()
     {
@@ -98,9 +98,109 @@ internal sealed partial class JsRealm
 
         Method(json, "parse", 2, (engine, thisValue, arguments) => JsonParseEntry(engine, arguments));
         Method(json, "stringify", 3, (engine, thisValue, arguments) => JsonStringifyEntry(engine, arguments));
+        Method(json, "rawJSON", 1, (engine, thisValue, arguments) => JsonRawJsonEntry(engine, arguments));
+        Method(json, "isRawJSON", 1, static (engine, thisValue, arguments) =>
+            JsValue.Boolean(JsonArgument(arguments, 0) is { IsObject: true } value && value.AsObject() is RawJsonObject));
+
+        // `JSON[Symbol.toStringTag]` is "JSON", configurable and nothing else, as it is for
+        // `Math` and `Reflect`.
+        json.SetOwnSymbol(
+            ToStringTagSymbol,
+            JsProperty.Data(JsValue.String("JSON"), JsPropertyAttributes.Configurable));
 
         GlobalObject.DefineBuiltIn("JSON", JsValue.Object(json));
     }
+
+    /// <summary>
+    /// A raw JSON value: an ordinary object whose type is the specification's <c>[[IsRawJSON]]</c>
+    /// internal slot.
+    /// </summary>
+    /// <remarks>
+    /// <b>The brand is the CLR type and not a property</b>, because a property is something guest
+    /// code can write: <c>{ rawJSON: "1" }</c>, a frozen null-prototype copy of one, an object
+    /// inheriting from a real one, and a Proxy over a real one all read the same as the genuine
+    /// article and none of them is it. Only <c>JSON.rawJSON</c> constructs this type, so only its
+    /// validation stands between guest text and the verbatim output of <c>JSON.stringify</c>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=55D87A
+    // Broiler-Human:        PENDING
+    private sealed class RawJsonObject : JsObject
+    {
+        /// <summary>Creates the frozen, null-prototype object carrying <paramref name="text"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=574EEC
+        // Broiler-Human:        PENDING
+        internal RawJsonObject(string text)
+            : base(null)
+        {
+            Text = text;
+            SetOwnProperty("rawJSON", JsProperty.Data(JsValue.String(text), JsPropertyAttributes.Enumerable));
+            Extensible = false;
+        }
+
+        /// <summary>
+        /// The validated text, which is also the value of the object's own, non-writable,
+        /// non-configurable <c>rawJSON</c> property and therefore cannot drift from it.
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=37F0D2
+        // Broiler-Human:        PENDING
+        internal string Text { get; }
+    }
+
+    /// <summary><c>JSON.rawJSON</c>.</summary>
+    /// <remarks>
+    /// The first and last code-unit checks come before the parse and are what confine the result to a
+    /// primitive: no permitted first character opens an object or an Array, and none of JSON's four
+    /// whitespace characters may stand at either end, so the text is exactly one value with nothing
+    /// around it. The parse itself is the ordinary reader, so a raw number or string is held to the
+    /// same grammar <c>JSON.parse</c> is.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=19CDFC
+    // Broiler-Human:        PENDING
+    private JsValue JsonRawJsonEntry(JsEngine engine, JsValue[] arguments)
+    {
+        engine.Charge(1);
+        var text = engine.ToStringValue(JsonArgument(arguments, 0));
+
+        if (text.Length == 0)
+        {
+            throw JsonSyntax(engine, "Unexpected end of raw JSON text", 0);
+        }
+
+        if (!JsonRawMayStart(text[0]))
+        {
+            throw JsonSyntax(engine, "Raw JSON text may not start with '" + text[0] + "'", 0);
+        }
+
+        if (!JsonRawMayEnd(text[^1]))
+        {
+            throw JsonSyntax(engine, "Raw JSON text may not end with '" + text[^1] + "'", text.Length - 1);
+        }
+
+        // The value read is discarded: what the object carries is the text, and the reader is here
+        // only to refuse text that is not one JSON primitive. Nothing it can reach creates an object,
+        // because no character allowed first is `{` or `[`.
+        var at = 0;
+        _ = JsonParseValue(engine, text, ref at, 0);
+
+        if (at != text.Length)
+        {
+            throw JsonUnexpected(engine, text, at);
+        }
+
+        return JsValue.Object(new RawJsonObject(text));
+    }
+
+    /// <summary>Whether raw JSON text may start with <paramref name="character"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BDC408
+    // Broiler-Human:        PENDING
+    private static bool JsonRawMayStart(char character) =>
+        character is (>= 'a' and <= 'z') or (>= '0' and <= '9') or '"' or '-';
+
+    /// <summary>Whether raw JSON text may end with <paramref name="character"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=632CCC
+    // Broiler-Human:        PENDING
+    private static bool JsonRawMayEnd(char character) =>
+        character is (>= 'a' and <= 'z') or (>= '0' and <= '9') or '"';
 
     /// <summary>Reads one argument, which may not have been supplied.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=307331
@@ -597,7 +697,20 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Revives one member in place, deleting it when the reviver returns <c>undefined</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=41BF0A
+    /// <remarks>
+    /// <b>The revived value is stored by <c>CreateDataProperty</c>, the target's own
+    /// <c>[[DefineOwnProperty]]</c>, and a refusal is ignored.</b> The reviver can hand back any
+    /// object as the holder of the next level, so the target may be a typed array - whose element
+    /// write converts with the engine, ToBigInt for a BigInt kind, and throws a catchable
+    /// <c>TypeError</c> for a Number - or a frozen object, which refuses. Storing through
+    /// <see cref="JsObject.SetOwnProperty"/>, as this did, converted without the engine (ending the
+    /// invocation for a Number bound for a BigInt element) and overwrote a non-writable property.
+    /// (JSeal B07 review fix, 2026-09-22.) The removal is the holder's own <c>[[Delete]]</c>:
+    /// <see cref="JsObject.DeleteOwnProperty"/> is virtual, so a Proxy holder's <c>deleteProperty</c>
+    /// trap runs and its throw propagates, and a <c>false</c> answer is ignored, as
+    /// <c>InternalizeJSONProperty</c> says (checked for JSeal VM-FIX-I).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=73DF6C
     // Broiler-Human:        PENDING
     private static void JsonReviveInto(
         JsEngine engine, JsObject target, string name, JsValue reviver, int depth)
@@ -610,7 +723,19 @@ internal sealed partial class JsRealm
             return;
         }
 
-        target.SetOwnProperty(name, JsProperty.Data(revived, JsPropertyAttributes.Default));
+        var fields = new ObjectDescriptorFields
+        {
+            HasValue = true,
+            Value = revived,
+            HasWritable = true,
+            Writable = true,
+            HasEnumerable = true,
+            Enumerable = true,
+            HasConfigurable = true,
+            Configurable = true,
+        };
+
+        _ = ObjectDefineOwn(engine, target, JsValue.String(name), fields);
     }
 
     // ---- writing -----------------------------------------------------------------------------
@@ -642,7 +767,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Reads the replacer argument into either a function or a key allow-list.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=16A326
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D5825F
     // Broiler-Human:        PENDING
     private static void JsonApplyReplacer(JsEngine engine, JsonWriter state, JsValue replacer)
     {
@@ -659,16 +784,19 @@ internal sealed partial class JsRealm
             return;
         }
 
-        if (target is not JsArray list)
+        // `IsArray` AND `LengthOfArrayLike`, not a type test and the stored length: a Proxy over an
+        // Array is an allow-list too, and its `length` is read through its `get` trap like every
+        // element after it.
+        if (!ArrayIsArray(engine, target))
         {
             return;
         }
 
         var names = new System.Collections.Generic.List<string>();
         var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
-        var length = list.Length;
+        var length = ArrayLengthOf(engine, replacer);
 
-        for (uint at = 0; at < length; at++)
+        for (double at = 0; at < length; at++)
         {
             engine.Charge(1);
             var element = engine.GetIndexed(replacer, JsValue.Number(at));
@@ -734,14 +862,17 @@ internal sealed partial class JsRealm
     /// The specification's <c>SerializeJSONProperty</c>, returning <see langword="null"/> for the
     /// values that have no JSON text at all.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A42B0C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0ECED0
     // Broiler-Human:        PENDING
     private static string? JsonSerialize(
         JsEngine engine, JsonWriter state, string key, JsObject holder)
     {
         var value = engine.GetProperty(JsValue.Object(holder), key);
 
-        if (value.IsObject)
+        // A BIGINT IS ASKED FOR `toJSON` AS AN OBJECT IS (JSeal B05), through `BigInt.prototype`, so a
+        // program that installs `BigInt.prototype.toJSON` chooses how its BigInts serialise; one
+        // that does not meets the TypeError below.
+        if (value.IsObject || value.IsBigInt)
         {
             var toJson = engine.GetProperty(value, "toJSON");
 
@@ -757,6 +888,15 @@ internal sealed partial class JsRealm
                 state.ReplacerFunction, JsValue.Object(holder), [JsValue.String(key), value]);
         }
 
+        // A RAW VALUE IS EMITTED ONLY AFTER toJSON AND THE REPLACER HAVE HAD THEIR TURN, which is the
+        // specification's order: a replacer sees the branded object and may substitute it, and a
+        // toJSON may produce one. The check is on the type, so a Proxy over a raw value is an
+        // ordinary object here and serialises its `rawJSON` member as a string.
+        if (value.IsObject && value.AsObject() is RawJsonObject raw)
+        {
+            return raw.Text;
+        }
+
         if (value.IsObject && value.AsObject() is JsPrimitiveWrapper wrapper)
         {
             if (wrapper.Primitive.IsNumber)
@@ -767,7 +907,7 @@ internal sealed partial class JsRealm
             {
                 value = JsValue.String(engine.ToStringValue(value));
             }
-            else if (wrapper.Primitive.Type == JsType.Boolean)
+            else if (wrapper.Primitive.Type is JsType.Boolean or JsType.BigInt)
             {
                 value = wrapper.Primitive;
             }
@@ -789,6 +929,12 @@ internal sealed partial class JsRealm
                 var number = value.AsNumber();
                 return double.IsFinite(number) ? JsNumberFormat.ToJsString(number) : "null";
             }
+
+            // THE LANGUAGE THROWS A TypeError FOR A BIGINT HERE, after consulting `toJSON` and the
+            // replacer and unwrapping a BigInt object. Falling through would answer "not
+            // serialisable" and OMIT the value, a plausible wrong answer.
+            case JsType.BigInt:
+                throw engine.Error("TypeError", "Do not know how to serialize a BigInt");
 
             default:
                 break;

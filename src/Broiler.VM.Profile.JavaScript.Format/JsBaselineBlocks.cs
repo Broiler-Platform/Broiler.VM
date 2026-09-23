@@ -148,6 +148,7 @@ public static class JsBaselineBlocks
     /// the object test of <c>JsEngine.ToPrimitive</c> or <c>JsEngine.Render</c>, which a coerced or thrown
     /// value passes only when it is an object; the getter or setter test of <c>Lookup</c>,
     /// <c>GetSymbol</c>, <c>SetProperty</c>, <c>SetSymbol</c>, <c>SetWithReceiver</c>, <c>SetSuper</c>,
+    /// <c>GetSymbolWithReceiver</c>, <c>SetSymbolWithReceiver</c>,
     /// <c>ReadPrivate</c> or <c>WritePrivate</c>; the dispatch to <c>JsProxy</c> or <c>JsHostObject</c>;
     /// or <c>InstanceOf</c>'s test for a <c>Symbol.hasInstance</c> method. A <c>valueOf</c> that is a
     /// plain method still runs guest code under <see cref="JsOpcode.Add"/>, behind the first of those
@@ -165,21 +166,36 @@ public static class JsBaselineBlocks
     /// running alone.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=B2EC80
-    // Broiler-Falsified-If: an opcode of the call class is not named here, or an opcode not named here has an arm or an unconditionally called helper that reaches guest or embedder code other than behind the object test of ToPrimitive or Render, the getter or setter test of Lookup, GetSymbol, SetProperty, SetSymbol, SetWithReceiver, SetSuper, ReadPrivate or WritePrivate, the dispatch to JsProxy or JsHostObject, or InstanceOf's test for a Symbol.hasInstance method
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=C25AED
+    // Broiler-Falsified-If: an opcode of the call class is not named here, or an opcode not named here has an arm or an unconditionally called helper that reaches guest or embedder code other than behind the object test of ToPrimitive or Render, the getter or setter test of Lookup, GetSymbol, SetProperty, SetSymbol, SetWithReceiver, SetSuper, GetSymbolWithReceiver, SetSymbolWithReceiver, ReadPrivate or WritePrivate, the dispatch to JsProxy or JsHostObject, or InstanceOf's test for a Symbol.hasInstance method
     // Broiler-Human:        PENDING
     public static bool RunsAlone(JsOpcode opcode) => opcode switch
     {
         // THE CALL CLASS: a nested activation under every one of these.
         JsOpcode.Call or JsOpcode.Construct or JsOpcode.CallEval or JsOpcode.SuperCall or
         JsOpcode.SuperCallForwarded or JsOpcode.CallSpread or JsOpcode.ConstructSpread or
-        JsOpcode.SuperCallSpread or JsOpcode.ImportCall or
+        JsOpcode.SuperCallSpread or JsOpcode.ImportCall or JsOpcode.CallEvalSpread or
+
+        // THE EVAL NAME INSTRUCTIONS: a name resolved through an eval view may reach a `with`
+        // object's `has`, `get`, `set` or `deleteProperty` trap or accessor at any record of the walk,
+        // with no test in front of the walk that its common path fails. They are classified here
+        // rather than argued into a block against this method's falsifier (JSD-0026 section 11).
+        JsOpcode.LoadEvalName or JsOpcode.LoadEvalNameOrUndefined or JsOpcode.StoreEvalName or
+        JsOpcode.LoadEvalNameWithBase or JsOpcode.DeleteEvalName or
+
+        // AND THE VARIABLE-ENVIRONMENT WRITE OF A SLOPPY EVALUATION (JSeal V15): at the global
+        // environment it is a `Set` on the global object, which reaches an accessor's setter or a
+        // proxy's trap on its common path.
+        JsOpcode.StoreEvalVariable or
 
         // THE EXPLICIT GUEST ENTRIES: the iterator protocol, delegation and static elements enter
         // guest code on their common path.
         JsOpcode.IterateStart or JsOpcode.IterateNext or JsOpcode.IterateRest or JsOpcode.IterateClose or
         JsOpcode.SpreadArray or JsOpcode.YieldDelegate or
         JsOpcode.IterateStartAsync or JsOpcode.IterateNextAsync or JsOpcode.IterateCloseAsync or
+
+        // AND DISPOSAL: a step or an end calls every registered disposer on its common path.
+        JsOpcode.DisposeStep or JsOpcode.DisposeEnd or
         JsOpcode.RunStaticElements => true,
         _ => false,
     };

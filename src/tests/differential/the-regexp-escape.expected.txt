@@ -1,0 +1,37 @@
+# Retained host answers; not a conformance oracle.
+1 "function"
+2 "1:escape"
+3 "true,false,true"
+4 ""
+5 "\\x66oo"
+6 "\\x31st"
+7 "_foo"
+8 "\\x5a9"
+9 "\\^\\$\\\\\\.\\*\\+\\?\\(\\)\\[\\]\\{\\}\\|\\/"
+10 "\\x2c\\x2d\\x3d\\x3c\\x3e\\x23\\x26\\x21\\x25\\x3a\\x3b\\x40\\x7e\\x27\\x60\\x22"
+11 "\\t\\n\\v\\f\\r"
+12 "\\x20\\xa0\\u1680\\u2000\\u200a\\u202f\\u205f\\u3000\\ufeff"
+13 "\\u2028\\u2029"
+14 "\\ud800\\|\\udfff\\| d83d de00"
+15 "e9 4e2d 200b 180e 5f"
+16 "\\x61\\.b\\*c"
+17 TypeError
+18 TypeError
+19 TypeError
+20 TypeError
+21 "TypeError:false"
+22 TypeError
+23 TypeError
+24 "\\x61\\.b"
+25 true
+26 true
+27 true
+28 true
+29 "z-a^]\\"
+30 true
+31 true
+32 true
+33 true
+34 true
+35 true
+36 60003

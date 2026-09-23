@@ -1,0 +1,111 @@
+// Scratch runner used for the gated Test262 run (not product code, not in any project of this
+// repository). Built against the Release SliceCompiler output with
+//   dotnet build -c Release -p:BIN=<worktree>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0
+// Modes: t262 <suite> <list>, run <file> [fuel], fuel <file> (binary search), fmt (formatting vs BigInteger.ToString).
+// Scratch runner (not product): runs pinned Test262 files through the internal BigInt gate.
+using Broiler.VM;
+using Broiler.VM.Profile.JavaScript;
+using Broiler.VM.Profile.JavaScript.Compiler;
+using Broiler.VM.Profile.JavaScript.Format;
+using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+
+static class P
+{
+    const string Caller = "js-scratch://gated262";
+    const string ProfileType = "Broiler.VM.Profile.JavaScript.JavaScriptProfile, Broiler.VM.Profile.JavaScript";
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "AdmittingBigIntLiterals")]
+    static extern JsCompileRequest Gated(JsCompileRequest? owner, JsCompileRequest request);
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "DescriptorAdmittingTheBigIntGate")]
+    static extern VmProfileDescriptor GateDoor([UnsafeAccessorType(ProfileType)] object? owner, IJsHostSurface? hostSurface, VmFeatureManifestId[] surfaces);
+
+    const string BigIntType = "Broiler.VM.Profile.JavaScript.JsBigInt, Broiler.VM.Profile.JavaScript";
+    [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+    [return: UnsafeAccessorType(BigIntType)]
+    static extern object NewBigInt(System.Numerics.BigInteger value);
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "ToDecimalString")]
+    static extern string Fmt([UnsafeAccessorType(BigIntType)] object instance, Action<ulong> charge);
+
+    static int Main(string[] args)
+    {
+        if (args[0] == "fmt") {
+            var rnd = new Random(7); int bad = 0, n = 0;
+            var cases = new List<System.Numerics.BigInteger>();
+            foreach (var k in new[]{0,1,18,19,20,38,39,40,76,1000,1233,1234,1300,2466,5000,20000,100000,315652})
+            { var t = System.Numerics.BigInteger.Pow(10, k); cases.Add(t); cases.Add(t - 1); cases.Add(t + 1); cases.Add(-t); cases.Add(t * 7 + 3); }
+            foreach (var b in new[]{1,63,64,65,4095,4096,4097,8193,65536,262143,1048575}) { var t = System.Numerics.BigInteger.One << b; cases.Add(t); cases.Add(t - 1); cases.Add(-t); }
+            for (int i = 0; i < 300; i++) { var bits = rnd.Next(1, i < 280 ? 70000 : 1048000); var bytes = new byte[bits / 8 + 1]; rnd.NextBytes(bytes); bytes[^1] &= 0x7f; var v = new System.Numerics.BigInteger(bytes); if (rnd.Next(2) == 0) v = -v; cases.Add(v);
+              // values with long zero runs
+              cases.Add(System.Numerics.BigInteger.Pow(10, rnd.Next(4000, 40000)) * rnd.Next(1, 1000) + rnd.Next()); }
+            foreach (var v in cases) { if (v.GetBitLength() > (1L << 20)) continue; n++; ulong charged = 0; var got = Fmt(NewBigInt(v), u => charged += u); var want = v.ToString(); if (got != want) { bad++; Console.WriteLine($"MISMATCH bits={v.GetBitLength()} len={want.Length}"); } }
+            Console.WriteLine($"fmt: {n} values, {bad} mismatches"); return bad == 0 ? 0 : 1; }
+        if (args[0] == "run") { Console.WriteLine(Run(File.ReadAllText(args[1]), args.Length > 2 ? ulong.Parse(args[2]) : null, gated: true)); return 0; }
+        if (args[0] == "fuel") { // binary search for the fuel a program needs
+            var src = File.ReadAllText(args[1]); ulong lo = 1, hi = 1UL << 40;
+            while (lo < hi) { var mid = lo + (hi - lo) / 2; var r = Run(src, mid, true); if (r.StartsWith("ResourceExhaustion")) lo = mid + 1; else hi = mid; }
+            Console.WriteLine("fuel needed ~ " + lo); return 0; }
+        // t262 <suite> <listfile> [ungated]
+        var suite = args[1]; var files = File.ReadAllLines(args[2]).Where(l => l.Length > 0).ToArray();
+        var gatedMode = !(args.Length > 3 && args[3] == "ungated");
+        var assert = File.ReadAllText(Path.Combine(suite, "harness", "assert.js"));
+        var sta = File.ReadAllText(Path.Combine(suite, "harness", "sta.js"));
+        int pass = 0, fail = 0, skipped = 0;
+        foreach (var rel in files)
+        {
+            var text = File.ReadAllText(Path.Combine(suite, rel));
+            var meta = Regex.Match(text, @"/\*---(.*?)---\*/", RegexOptions.Singleline).Groups[1].Value;
+            var flags = Regex.Match(meta, @"flags:\s*\[(.*?)\]").Groups[1].Value;
+            var includes = new List<string>();
+            var inc = Regex.Match(meta, @"includes:\s*\[(.*?)\]"); if (inc.Success) includes.AddRange(inc.Groups[1].Value.Split(',').Select(s => s.Trim()).Where(s => s.Length > 0));
+            var incBlock = Regex.Match(meta, @"includes:\s*\n((?:\s*-\s*\S+\s*\n)+)"); if (incBlock.Success) includes.AddRange(Regex.Matches(incBlock.Groups[1].Value, @"-\s*(\S+)").Select(m => m.Groups[1].Value));
+            var negative = Regex.Match(meta, @"negative:\s*\n\s*phase:\s*(\S+)\s*\n\s*type:\s*(\S+)");
+            if (flags.Contains("async") || flags.Contains("module")) { Console.WriteLine($"SKIP {rel}: flags {flags}"); skipped++; continue; }
+            var prelude = flags.Contains("raw") ? "" : assert + "\n" + sta + "\n" + string.Concat(includes.Select(i => File.ReadAllText(Path.Combine(suite, "harness", i)) + "\n"));
+            var variants = new List<(string, string)>();
+            if (flags.Contains("raw")) variants.Add(("raw", text));
+            else { if (!flags.Contains("noStrict")) variants.Add(("strict", "\"use strict\";\n" + prelude + text)); if (!flags.Contains("onlyStrict")) variants.Add(("sloppy", prelude + text)); }
+            foreach (var (name, src) in variants)
+            {
+                var r = Run(src + "\n;'__PASS__';", null, gatedMode);
+                bool ok = negative.Success ? !r.StartsWith("__PASS__") && (negative.Groups[1].Value == "parse" ? r.StartsWith("refused") : !r.StartsWith("refused")) : r == "__PASS__";
+                if (ok) pass++; else fail++;
+                Console.WriteLine($"{(ok ? "PASS" : "FAIL")} {rel} [{name}]{(ok ? "" : ": " + r)}");
+            }
+        }
+        Console.WriteLine($"summary: {pass} variants passed, {fail} failed, {skipped} files skipped");
+        return 0;
+    }
+
+    static string Run(string source, ulong? fuel, bool gated)
+    {
+        var request = gated ? Gated(null, new JsCompileRequest()) : new JsCompileRequest();
+        var compiled = JsCompiler.Compile([new JsScriptUnit("main", source, SliceParseOptions.Script, false, Caller)], [], request);
+        if (!compiled.Succeeded || compiled.Artifact is null) return "refused: " + (compiled.Diagnostics.Count == 0 ? "?" : compiled.Diagnostics[0].ToString());
+        var profile = gated ? GateDoor(null, null, []) : JavaScriptProfile.Descriptor;
+        var catalog = VmCatalog.CreateBuilder().Add(profile).Build();
+        var ceilings = ImmutableArray.CreateBuilder<VmCeilingSpec>();
+        foreach (var d in VmBudgetDimensions.All)
+            ceilings.Add(d switch { VmBudgetDimension.LiveRuntimes => VmCeilingSpec.AdoptParentRemaining(d), VmBudgetDimension.Fuel when fuel is { } f => VmCeilingSpec.Value(d, f), _ => VmCeilingSpec.AdoptProfileDefault(d) });
+        var created = VmRuntime.Create(catalog, new VmRuntimeCreationOptions(null, ceilings.ToImmutable(), TimeSpan.FromMinutes(1), 1, VmGuestLoadBoundsSpec.AdoptProfileMaxima, VmExternalSuspensionMode.Disabled, ImmutableArray<VmCapabilityRegistration>.Empty));
+        if (!created.TryGetRuntime(out var runtime)) return "runtime refused";
+        using (runtime)
+        {
+            var descriptor = new VmArtifactDescriptor(JavaScriptProfile.Id, JsFormat.FormatVersion, JavaScriptProfile.WideManifest, default, VmCallerIdentity.FromCanonicalIdentity(Caller));
+            var verified = runtime.Verify(in descriptor, compiled.Artifact, CancellationToken.None);
+            if (!verified.TryGetArtifact(out var handle)) return $"verification {verified.Outcome}/{verified.Reason}/{verified.Diagnostics.ProfileDiagnosticCode}";
+            using (handle)
+            {
+                var inst = runtime.Instantiate(handle, CancellationToken.None);
+                if (!inst.TryGetInstance(out var instance)) return "instantiation " + inst.Outcome;
+                using (instance)
+                {
+                    var req = new VmInvocationRequest(new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes("main")));
+                    var invoked = instance.Invoke(in req, CancellationToken.None);
+                    if (JavaScriptProfile.TryGetWideCompletion(in invoked, out var c)) return c.Value;
+                    return $"{invoked.Outcome}/{invoked.Reason} {invoked.Diagnostics.ProfileDiagnosticCode} {invoked.Diagnostics}";
+                }
+            }
+        }
+    }
+}

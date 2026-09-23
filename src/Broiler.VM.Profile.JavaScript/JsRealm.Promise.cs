@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   28
-// Annotated:        28/28
+// Relevant units:   30
+// Annotated:        30/30
 // Exempt:           6
-// Human-reviewed:   0/28
+// Human-reviewed:   0/30
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         2/2
+// Criteria:         3/3
 // Resource impact:  4/10 max
-// Unverified:       28
+// Unverified:       30
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1096,6 +1096,24 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsPromiseObject NewAsyncPromise() => new(PromisePrototype);
 
+    /// <summary>The pending promise a host capability holds, charged as <c>new Promise</c> is.</summary>
+    /// <remarks>
+    /// <b>It is built on the intrinsic prototype held here, not through the <c>Promise</c>
+    /// global</b>, and it is settled through <see cref="SettleAsyncPromise"/> - the same resolve
+    /// procedure and the same single scheduling point every other promise in the realm uses. What
+    /// differs from the constructor is only that no executor runs and no resolving functions are
+    /// minted: the host holds the right to settle, and the guest never sees it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=D45325
+    // Broiler-Falsified-If: a host promise is built from a prototype a guest assignment to Promise can replace
+    // Broiler-Human:        PENDING
+    internal JsPromiseObject NewHostPromise(JsEngine engine)
+    {
+        engine.Charge(4);
+        engine.Retain(PromiseReactionBytes);
+        return new JsPromiseObject(PromisePrototype);
+    }
+
     /// <summary>
     /// Settles an async call's promise with what its body completed with.
     /// </summary>
@@ -1141,14 +1159,28 @@ internal sealed partial class JsRealm
     /// an <c>await</c> and a <c>then</c> on one promise is decided by one queue and one list.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=DB2999
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=6F23A9
     // Broiler-Falsified-If: an `await` of a value that is not a promise continues without yielding to the job queue
     // Broiler-Human:        PENDING
     internal void AwaitOn(
-        JsEngine engine, JsValue value, System.Action<JsEngine, JsValue, bool> resume)
-    {
-        var awaited = PromiseResolveValue(engine, value);
+        JsEngine engine, JsValue value, System.Action<JsEngine, JsValue, bool> resume) =>
+        ReactOn(engine, PromiseResolveValue(engine, value), resume);
 
+    /// <summary>
+    /// Performs <c>PerformPromiseThen</c> on a promise this realm made: registers
+    /// <paramref name="resume"/> to run, from a job, on whichever side it settles.
+    /// </summary>
+    /// <remarks>
+    /// <b>No <c>PromiseResolve</c> in front, because the specification has none there</b>: the
+    /// module evaluation's own reactions (<c>ExecuteAsyncModule</c>, <c>ContinueDynamicImport</c>)
+    /// attach to a promise the engine made, and reading its <c>constructor</c> first would run a
+    /// guest getter the language never calls (JSeal I11-async).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=35BFBC
+    // Broiler-Human:        PENDING
+    internal void ReactOn(
+        JsEngine engine, JsPromiseObject awaited, System.Action<JsEngine, JsValue, bool> resume)
+    {
         var onFulfil = JsValue.Object(Native("", 1, (inner, thisValue, arguments) =>
         {
             resume(inner, ArgOfPromise(arguments, 0), false);

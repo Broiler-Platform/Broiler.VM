@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   165
-// Annotated:        165/165
+// Relevant units:   201
+// Annotated:        201/201
 // Exempt:           1
-// Human-reviewed:   0/165
-// IP risk:          None
+// Human-reviewed:   0/201
+// IP risk:          Low
 // Security risk:    Critical
-// Criteria:         166/166
+// Criteria:         202/202
 // Resource impact:  4/10 max
-// Unverified:       165
+// Unverified:       201
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -82,7 +82,7 @@ internal static unsafe class JsBaselineHandlers
     /// <b>A static constructor and not a module initializer</b>, so the table is built the first time
     /// a baseline instance asks for it and never in a process that runs only bytecode.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=B49754
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=63B4DD
     // Broiler-Falsified-If: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
     // Broiler-Human:        PENDING
     static JsBaselineHandlers()
@@ -175,6 +175,8 @@ internal static unsafe class JsBaselineHandlers
         slots[(int)JsOpcode.In] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&In;
         slots[(int)JsOpcode.Void] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&Void;
         slots[(int)JsOpcode.RequireCoercible] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&RequireCoercible;
+        slots[(int)JsOpcode.ToPropertyKey] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&ToPropertyKey;
+        slots[(int)JsOpcode.GetTemplateObject] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&GetTemplateObject;
         slots[(int)JsOpcode.Jump] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&Jump;
         slots[(int)JsOpcode.JumpIfFalse] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&JumpIfFalse;
         slots[(int)JsOpcode.JumpIfTrue] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&JumpIfTrue;
@@ -214,6 +216,24 @@ internal static unsafe class JsBaselineHandlers
         slots[(int)JsOpcode.ImportCall] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&ImportCall;
         slots[(int)JsOpcode.ImportMeta] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&ImportMeta;
 
+        slots[(int)JsOpcode.CallEvalSpread] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&CallEvalSpread;
+        slots[(int)JsOpcode.LoadEvalName] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&LoadEvalName;
+        slots[(int)JsOpcode.LoadEvalNameOrUndefined] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&LoadEvalNameOrUndefined;
+        slots[(int)JsOpcode.StoreEvalName] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&StoreEvalName;
+        slots[(int)JsOpcode.LoadEvalNameWithBase] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&LoadEvalNameWithBase;
+        slots[(int)JsOpcode.DeleteEvalName] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&DeleteEvalName;
+        slots[(int)JsOpcode.WithBaseObject] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&WithBaseObject;
+        slots[(int)JsOpcode.StoreEvalVariable] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&StoreEvalVariable;
+
+        slots[(int)JsOpcode.DisposeScope] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&DisposeScope;
+        slots[(int)JsOpcode.DisposeAdd] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&DisposeAdd;
+        slots[(int)JsOpcode.DisposeFold] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&DisposeFold;
+        slots[(int)JsOpcode.DisposeStep] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&DisposeStep;
+        slots[(int)JsOpcode.DisposeEnd] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&DisposeEnd;
+
+        slots[(int)JsOpcode.ToNumeric] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&ToNumeric;
+        slots[(int)JsOpcode.Increment] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&Increment;
+        slots[(int)JsOpcode.Decrement] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&Decrement;
         if (!Sound(slots, undefined))
         {
             Table = 0;
@@ -962,6 +982,22 @@ internal static unsafe class JsBaselineHandlers
     private static int RequireCoercible(JsBaselineFrame* frame, int pc) =>
         JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.RequireCoercible);
 
+    /// <summary>The entry point for <see cref="JsOpcode.ToPropertyKey"/> (0x5D): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=64B161
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one ToPropertyKey at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int ToPropertyKey(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.ToPropertyKey);
+
+    /// <summary>The entry point for <see cref="JsOpcode.GetTemplateObject"/> (0x5E): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=680DFE
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one GetTemplateObject at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int GetTemplateObject(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.GetTemplateObject);
+
     /// <summary>The entry point for <see cref="JsOpcode.Jump"/> (0x60): a block step starting at one.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=E36AB7
     // Broiler-Falsified-If: this runs anything other than a block step starting at one Jump at the offset the managed side expects
@@ -1285,6 +1321,151 @@ internal static unsafe class JsBaselineHandlers
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
     private static int ImportMeta(JsBaselineFrame* frame, int pc) =>
         JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.ImportMeta);
+
+    /// <summary>The entry point for <see cref="JsOpcode.CallEvalSpread"/> (0x90), which runs alone.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=949682
+    // Broiler-Falsified-If: this runs any instruction other than one CallEvalSpread at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int CallEvalSpread(JsBaselineFrame* frame, int pc) =>
+        PerOpcodeSteps
+            ? JsNativeActivation.Step<StepCallEvalSpread>(frame, pc, JsOpcode.CallEvalSpread)
+            : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.CallEvalSpread);
+
+    /// <summary>The entry point for <see cref="JsOpcode.LoadEvalName"/> (0x91), which runs alone.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=1D4439
+    // Broiler-Falsified-If: this runs any instruction other than one LoadEvalName at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int LoadEvalName(JsBaselineFrame* frame, int pc) =>
+        PerOpcodeSteps
+            ? JsNativeActivation.Step<StepLoadEvalName>(frame, pc, JsOpcode.LoadEvalName)
+            : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.LoadEvalName);
+
+    /// <summary>The entry point for <see cref="JsOpcode.LoadEvalNameOrUndefined"/> (0x92), which runs alone.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=A0FC49
+    // Broiler-Falsified-If: this runs any instruction other than one LoadEvalNameOrUndefined at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int LoadEvalNameOrUndefined(JsBaselineFrame* frame, int pc) =>
+        PerOpcodeSteps
+            ? JsNativeActivation.Step<StepLoadEvalNameOrUndefined>(frame, pc, JsOpcode.LoadEvalNameOrUndefined)
+            : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.LoadEvalNameOrUndefined);
+
+    /// <summary>The entry point for <see cref="JsOpcode.StoreEvalName"/> (0x93), which runs alone.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=856FEB
+    // Broiler-Falsified-If: this runs any instruction other than one StoreEvalName at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int StoreEvalName(JsBaselineFrame* frame, int pc) =>
+        PerOpcodeSteps
+            ? JsNativeActivation.Step<StepStoreEvalName>(frame, pc, JsOpcode.StoreEvalName)
+            : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.StoreEvalName);
+
+    /// <summary>The entry point for <see cref="JsOpcode.LoadEvalNameWithBase"/> (0x94), which runs alone.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=64C206
+    // Broiler-Falsified-If: this runs any instruction other than one LoadEvalNameWithBase at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int LoadEvalNameWithBase(JsBaselineFrame* frame, int pc) =>
+        PerOpcodeSteps
+            ? JsNativeActivation.Step<StepLoadEvalNameWithBase>(frame, pc, JsOpcode.LoadEvalNameWithBase)
+            : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.LoadEvalNameWithBase);
+
+    /// <summary>The entry point for <see cref="JsOpcode.DeleteEvalName"/> (0x95), which runs alone.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3CA5A8
+    // Broiler-Falsified-If: this runs any instruction other than one DeleteEvalName at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int DeleteEvalName(JsBaselineFrame* frame, int pc) =>
+        PerOpcodeSteps
+            ? JsNativeActivation.Step<StepDeleteEvalName>(frame, pc, JsOpcode.DeleteEvalName)
+            : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.DeleteEvalName);
+
+    /// <summary>The entry point for <see cref="JsOpcode.WithBaseObject"/> (0x9A): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=C6F53B
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one WithBaseObject at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int WithBaseObject(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.WithBaseObject);
+
+    /// <summary>The entry point for <see cref="JsOpcode.StoreEvalVariable"/> (0x9B), which runs alone.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=247561
+    // Broiler-Falsified-If: this runs any instruction other than one StoreEvalVariable at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int StoreEvalVariable(JsBaselineFrame* frame, int pc) =>
+        PerOpcodeSteps
+            ? JsNativeActivation.Step<StepStoreEvalVariable>(frame, pc, JsOpcode.StoreEvalVariable)
+            : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.StoreEvalVariable);
+    /// <summary>The entry point for <see cref="JsOpcode.DisposeScope"/> (0xA0): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=A60F4D
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one DisposeScope at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int DisposeScope(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.DisposeScope);
+
+    /// <summary>The entry point for <see cref="JsOpcode.DisposeAdd"/> (0xA1): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=3411DD
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one DisposeAdd at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int DisposeAdd(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.DisposeAdd);
+
+    /// <summary>The entry point for <see cref="JsOpcode.DisposeFold"/> (0xA2): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F89672
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one DisposeFold at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int DisposeFold(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.DisposeFold);
+
+    /// <summary>The entry point for <see cref="JsOpcode.ToNumeric"/> (0xB0): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=EC258B
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one ToNumeric at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int ToNumeric(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.ToNumeric);
+
+    /// <summary>The entry point for <see cref="JsOpcode.Increment"/> (0xB1): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=12C42C
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one Increment at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int Increment(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Increment);
+
+    /// <summary>The entry point for <see cref="JsOpcode.Decrement"/> (0xB2): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=57F69F
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one Decrement at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int Decrement(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Decrement);
+
+    /// <summary>The entry point for <see cref="JsOpcode.DisposeStep"/> (0xA3), which runs alone.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=098985
+    // Broiler-Falsified-If: this runs any instruction other than one DisposeStep at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int DisposeStep(JsBaselineFrame* frame, int pc) =>
+        PerOpcodeSteps
+            ? JsNativeActivation.Step<StepDisposeStep>(frame, pc, JsOpcode.DisposeStep)
+            : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.DisposeStep);
+
+    /// <summary>The entry point for <see cref="JsOpcode.DisposeEnd"/> (0xA4), which runs alone.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=2C6414
+    // Broiler-Falsified-If: this runs any instruction other than one DisposeEnd at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int DisposeEnd(JsBaselineFrame* frame, int pc) =>
+        PerOpcodeSteps
+            ? JsNativeActivation.Step<StepDisposeEnd>(frame, pc, JsOpcode.DisposeEnd)
+            : JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.DisposeEnd);
 
     /// <summary>The step that runs one <see cref="JsOpcode.Call"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=821976
@@ -1625,6 +1806,168 @@ internal static unsafe class JsBaselineHandlers
             [System.Runtime.CompilerServices.MethodImpl(
                 System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get => JsOpcode.ImportCall;
+        }
+    }
+
+    /// <summary>The step that runs one <see cref="JsOpcode.CallEvalSpread"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=DAB9CA
+    // Broiler-Falsified-If: this step names an opcode other than CallEvalSpread
+    // Broiler-Human:        PENDING
+    internal readonly struct StepCallEvalSpread : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.CallEvalSpread"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1FA07A
+        // Broiler-Falsified-If: this answers any opcode other than CallEvalSpread
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.CallEvalSpread;
+        }
+    }
+
+    /// <summary>The step that runs one <see cref="JsOpcode.LoadEvalName"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=556454
+    // Broiler-Falsified-If: this step names an opcode other than LoadEvalName
+    // Broiler-Human:        PENDING
+    internal readonly struct StepLoadEvalName : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.LoadEvalName"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=98D74C
+        // Broiler-Falsified-If: this answers any opcode other than LoadEvalName
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.LoadEvalName;
+        }
+    }
+
+    /// <summary>The step that runs one <see cref="JsOpcode.LoadEvalNameOrUndefined"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E42664
+    // Broiler-Falsified-If: this step names an opcode other than LoadEvalNameOrUndefined
+    // Broiler-Human:        PENDING
+    internal readonly struct StepLoadEvalNameOrUndefined : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.LoadEvalNameOrUndefined"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=407A2F
+        // Broiler-Falsified-If: this answers any opcode other than LoadEvalNameOrUndefined
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.LoadEvalNameOrUndefined;
+        }
+    }
+
+    /// <summary>The step that runs one <see cref="JsOpcode.StoreEvalName"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E03E43
+    // Broiler-Falsified-If: this step names an opcode other than StoreEvalName
+    // Broiler-Human:        PENDING
+    internal readonly struct StepStoreEvalName : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.StoreEvalName"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8F0D6F
+        // Broiler-Falsified-If: this answers any opcode other than StoreEvalName
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.StoreEvalName;
+        }
+    }
+
+    /// <summary>The step that runs one <see cref="JsOpcode.LoadEvalNameWithBase"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=7DD129
+    // Broiler-Falsified-If: this step names an opcode other than LoadEvalNameWithBase
+    // Broiler-Human:        PENDING
+    internal readonly struct StepLoadEvalNameWithBase : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.LoadEvalNameWithBase"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=697B36
+        // Broiler-Falsified-If: this answers any opcode other than LoadEvalNameWithBase
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.LoadEvalNameWithBase;
+        }
+    }
+
+    /// <summary>The step that runs one <see cref="JsOpcode.DeleteEvalName"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=21A508
+    // Broiler-Falsified-If: this step names an opcode other than DeleteEvalName
+    // Broiler-Human:        PENDING
+    internal readonly struct StepDeleteEvalName : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.DeleteEvalName"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1EF902
+        // Broiler-Falsified-If: this answers any opcode other than DeleteEvalName
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.DeleteEvalName;
+        }
+    }
+
+    /// <summary>The step that runs one <see cref="JsOpcode.StoreEvalVariable"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=ADB718
+    // Broiler-Falsified-If: this step names an opcode other than StoreEvalVariable
+    // Broiler-Human:        PENDING
+    internal readonly struct StepStoreEvalVariable : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.StoreEvalVariable"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=CF3F82
+        // Broiler-Falsified-If: this answers any opcode other than StoreEvalVariable
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.StoreEvalVariable;
+        }
+    }
+
+    /// <summary>The step that runs one <see cref="JsOpcode.DisposeStep"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=CB0B02
+    // Broiler-Falsified-If: this step names an opcode other than DisposeStep
+    // Broiler-Human:        PENDING
+    internal readonly struct StepDisposeStep : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.DisposeStep"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=2ACA17
+        // Broiler-Falsified-If: this answers any opcode other than DisposeStep
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.DisposeStep;
+        }
+    }
+
+    /// <summary>The step that runs one <see cref="JsOpcode.DisposeEnd"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=FAC970
+    // Broiler-Falsified-If: this step names an opcode other than DisposeEnd
+    // Broiler-Human:        PENDING
+    internal readonly struct StepDisposeEnd : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.DisposeEnd"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=3C4E84
+        // Broiler-Falsified-If: this answers any opcode other than DisposeEnd
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.DisposeEnd;
         }
     }
 }

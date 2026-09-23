@@ -1,0 +1,23 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 14 V8 refuses a namespace receiver in OrdinarySet; the pinned spec defines { [[Value]]: V } on it and the namespace [[DefineOwnProperty]] answers SameValue, true for the export's current value
+1 true
+2 "false/1"
+3 true
+4 true
+5 false
+6 false
+7 false
+8 false
+9 false
+10 ReferenceError
+11 true
+12 false
+13 TypeError
+14 true
+15 "false/1"
+16 false
+17 false
+18 ReferenceError
+19 false
+20 TypeError
+21 true

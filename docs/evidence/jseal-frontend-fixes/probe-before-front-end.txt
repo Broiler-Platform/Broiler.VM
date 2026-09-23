@@ -1,0 +1,68 @@
+1 ReferenceError
+2 ReferenceError
+3 "ReferenceError"
+4 ReferenceError
+5 ReferenceError
+6 ReferenceError
+7 ReferenceError
+8 1
+9 3
+10 5
+11 "wrote"
+12 "undefined"
+13 ReferenceError
+14 ReferenceError
+15 4
+16 1
+17 SyntaxError
+18 1
+19 1
+20 SyntaxError
+21 SyntaxError
+22 "ok"
+23 true
+24 "object"
+25 true
+26 false
+27 "true true true"
+28 "false false false"
+29 "0,1"
+30 false
+31 Error
+32 true
+33 true
+34 "[\"a\",\"b\\n\"] [\"a\",\"b\\\\n\"] 2"
+35 "ok,ok,ok,ok,ok,ok,ok,SyntaxError,SyntaxError,SyntaxError,SyntaxError"
+36 "ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,ok"
+37 "ok"
+38 "ok"
+39 "ok"
+40 "ok"
+41 "ok"
+42 "ok"
+43 "ok"
+44 "ok"
+45 "ok"
+46 "number"
+47 "string"
+48 "number"
+49 "number"
+50 "string"
+51 "wrote"
+52 "wrote"
+53 6
+54 "number"
+55 3
+56 "number"
+57 "function"
+58 "4 | 4 | -4 | 0.25 | 1 | 0 | 4 | NaN | NaN | 1 | 512 | -8 | 4 | -8"
+59 "ok"
+60 "ok"
+61 "number"
+62 "wrote"
+63 "number"
+64 "number"
+65 "wrote"
+66 "ok | ok | ok | ok | ok | ok | SyntaxError | SyntaxError | ok | ok"
+67 "ok | ok | ok | ok"
+68 3

@@ -1,0 +1,4 @@
+# the-eval-super-and-private-names.js cases 38-40 on the build before the review fix, captured 2026-09-21
+38 RangeError
+39 SyntaxError:eval|##y|__log
+40 5

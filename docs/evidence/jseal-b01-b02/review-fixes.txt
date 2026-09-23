@@ -1,0 +1,24 @@
+Review fixes, 2026-09-21, Release, Windows 11. Local validation only.
+
+1. Every public descriptor door refuses the BigInt gate.
+   Mutation: JavaScriptProfile.Named with its refusal disabled (the behaviour as first reviewed),
+   SliceCompiler rebuilt, --checks --verbose:
+FAIL bigint/b01/every-public-descriptor-door-refuses-the-gate: the doors answered admitted,admitted,admitted,admitted
+broiler-js-slice-compiler: 1 of 320 checks FAILED, 2 not run on this machine and claimed by nothing
+   Restored:
+ok   bigint/b01/every-public-descriptor-door-refuses-the-gate: the doors answered refused,refused,refused,refused
+
+2. A thrown BigInt reaches the host as a JsHostThrowException.
+   Before the JsHostRealm.Thrown fix (check written first, run red):
+FAIL bigint/b01/a-thrown-bigint-reaches-the-host-as-a-host-throw: the program answered escaped:JsThrow|host-throw:2
+broiler-js-slice-compiler: 1 of 320 checks FAILED, 2 not run on this machine and claimed by nothing
+   After:
+ok   bigint/b01/a-thrown-bigint-reaches-the-host-as-a-host-throw: the program answered host-throw:TypeError|host-throw:2
+
+3. ToString cost of the widest constant (65,536 bits, 19,729 digits), gated through the internal
+   door, default fuel allowance, wall time of one run each (scratch harness, not retained):
+[for (var i = 0; i < 200; i++) String(0x<16384 f>] => done in 1383 ms
+[for (var i = 0; i < 1000; i++) String(0x<16384 f>] => done in 3920 ms
+[for (;;) String(0x<16384 f>] => run ResourceExhaustion/AllowanceExhausted/0 in 4967 ms
+[for (;;) String('x');] => run ResourceExhaustion/AllowanceExhausted/0 in 1047 ms
+   Ratio of time to exhaustion: 4967 / 1047 = about 4.7.
