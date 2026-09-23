@@ -36,7 +36,7 @@
 #
 #   python3 eng/run-octane.py [--binary-directory <dir>] [--only <name>]... [--skip <name>]...
 #                             [--fuel <n>] [--wall <ms>] [--live-bytes <n>] [--max-depth <n>]
-#                             [--report <path>]
+#                             [--native <backend>] [--report <path>]
 #
 # `--only` may be repeated and names a SELECTION; with none of them the fifteen in the pin all run.
 # `--skip` removes a benchmark from whatever that selection came to, and every run that uses one
@@ -61,6 +61,14 @@
 # the middle of a transcript that a reader has to learn to ignore, which is the kind of thing that
 # teaches a reader to ignore the next line too. `--quiet` suppresses the completion value and
 # nothing else: the driver's own `print` calls are the write capability and are untouched.
+#
+# `--native <backend>` RUNS THE WORKLOAD IN THE BASELINE NATIVE FORM, added 2026-09-23. The host has
+# taken `--native` since 2026-09-15 and this script had no way to pass it, so every Octane report
+# this repository retains is a bytecode run and no benchmark had ever been driven through emitted
+# code. The backend is handed to the host unchanged - `x86-64-sysv` on Linux and macOS, `x86-64-win64`
+# on Windows - and a backend this machine does not arm is the host's refusal to print, not this
+# script's. The form is written into the report, because a bytecode score and a native score of the
+# same benchmark are two numbers about two configurations and a reader must never have to guess which.
 
 import argparse
 import hashlib
@@ -78,8 +86,11 @@ from datetime import datetime, timezone
 
 # The report format's own version, bumped whenever a reader of an older file would misread a newer
 # one. It is NOT the pin's version and not the suite's: it names the shape of the JSON below.
+#
+# VERSION 2 ADDED `form`. A version-1 reader handed a native report would read its scores as the
+# bytecode form's, which is a misreading and not a missing field, so the number moved.
 REPORT_SCHEMA = "broiler-js octane report"
-REPORT_VERSION = 1
+REPORT_VERSION = 2
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PINS = ROOT / "src/tests/octane/pins"
@@ -240,7 +251,7 @@ def whole_or_partial(wanted, skipped, missing):
     return "whole" if not reasons else "partial|" + "; ".join(reasons)
 
 
-def run(binary, checkout, name, fuel, wall, live_bytes, max_depth):
+def run(binary, checkout, name, fuel, wall, live_bytes, max_depth, native):
     """One benchmark, one process, through the ordinary command line."""
     files = [str(checkout / "base.js")]
     files += [str(checkout / f) for f in COMPANIONS.get(name, [f"{name}.js"])]
@@ -252,6 +263,9 @@ def run(binary, checkout, name, fuel, wall, live_bytes, max_depth):
     command = [str(binary)] + files + [
         DRIVER, "--fuel", str(fuel), "--wall", str(wall), "--live-bytes", str(live_bytes),
         "--max-depth", str(max_depth), "--quiet"]
+
+    if native:
+        command += ["--native", native]
 
     # WHAT THE BENCHMARK COST, WHICH THIS SCRIPT DID NOT REPORT AND SHOULD HAVE. The `--wall`
     # above is an allowance a caller states in milliseconds, and a caller with no per-benchmark
@@ -316,6 +330,10 @@ def report(path, fields, binary, rows, components, total, coverage, skipped, spe
             "files": int(fields["files"]) if "files" in fields else None,
         },
         "host": host(binary),
+        "form": {
+            "form": "native" if arguments.native else "bytecode",
+            "backend": arguments.native,
+        },
         "allowances": {
             "fuel": arguments.fuel,
             "wall-ms-requested": arguments.wall,
@@ -405,6 +423,9 @@ def main():
     # move that bound and this script does not pretend it does.
     parser.add_argument("--max-depth", type=int, default=512)
 
+    # THE OUTPUT FORM, passed to the host unchanged. See the header for why it exists.
+    parser.add_argument("--native", default=None, metavar="BACKEND")
+
     # `--report` IS OPT-IN AND WRITES OUTSIDE THE DOCUMENTS. Scores have only ever existed as
     # `score <n>` lines in a transcript, which means every reader of a run has been a person and
     # every comparison between two runs has been a person's eye. A file with a schema and a version
@@ -465,6 +486,7 @@ def main():
         print(f"# octane {fields['upstream']} at {fields['revision']}")
         print(f"# {fields['files']} files, content {fields['content-sha256']}")
         print(f"# judging {binary}")
+        print("# form " + (f"native ({arguments.native})" if arguments.native else "bytecode"))
 
         # THE SKIPS ARE PRINTED BEFORE ANYTHING RUNS, and that placement is the point: a reader who
         # sees only the summary at the end still meets the exclusion at the top of the transcript,
@@ -483,7 +505,7 @@ def main():
         for name in wanted:
             code, output, seconds = run(
                 binary, checkout, name, arguments.fuel, arguments.wall, arguments.live_bytes,
-                arguments.max_depth)
+                arguments.max_depth, arguments.native)
             spent += seconds
             print(f"--- {name} (exit {code}, {seconds:.0f}s)")
 
