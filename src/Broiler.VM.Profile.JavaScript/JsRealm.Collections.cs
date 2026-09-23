@@ -104,7 +104,7 @@ internal sealed partial class JsRealm
     internal JsObject FinalizationRegistryPrototype { get; private set; } = null!;
 
     /// <summary>Builds every keyed collection and its prototype.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=173FAA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7CD601
     // Broiler-Human:        PENDING
     private void SetupCollections()
     {
@@ -120,6 +120,22 @@ internal sealed partial class JsRealm
         SetupWeakMap();
         SetupWeakSet();
         SetupWeakReferences();
+
+        // THE FOUR WEAK BRANDS' `Symbol.toStringTag`, which the specification gives each prototype
+        // and this realm had left to the class name (JSeal B06): Object.prototype.toString answers a
+        // builtin tag only for the ten kinds the specification lists, so without these a WeakMap
+        // would print as `[object Object]`.
+        foreach (var (prototype, tag) in new[]
+        {
+            (WeakMapPrototype, "WeakMap"),
+            (WeakSetPrototype, "WeakSet"),
+            (WeakRefPrototype, "WeakRef"),
+            (FinalizationRegistryPrototype, "FinalizationRegistry"),
+        })
+        {
+            prototype.SetOwnSymbol(
+                ToStringTagSymbol, JsProperty.Data(JsValue.String(tag), JsPropertyAttributes.Configurable));
+        }
     }
 
     /// <summary>Builds <c>Map</c> and <c>Map.prototype</c>.</summary>

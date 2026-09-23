@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
-// Exempt:           5
-// Human-reviewed:   0/10
+// Relevant units:   11
+// Annotated:        11/11
+// Exempt:           7
+// Human-reviewed:   0/11
 // IP risk:          None
 // Security risk:    High
 // Criteria:         4/3
 // Resource impact:  0/10 max
-// Unverified:       10
+// Unverified:       11
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -177,10 +177,26 @@ public readonly record struct SliceParseOptions
 
     /// <summary>Whether <c>await</c> is a keyword at the top level.</summary>
     /// <remarks>
-    /// The slice manifest admits no <c>await</c> in any position, so today this switch only ever
-    /// changes which refusal a program gets - a construct outside the manifest, or an identifier
-    /// named <c>await</c>. It is carried anyway, because it is the second of the two switches the
-    /// seed made ambient and leaving it out would leave the gate above testing one of them.
+    /// <para>
+    /// The slice manifest admits no <c>await</c> in any position, so under the slice front end this
+    /// switch only ever changes which refusal a program gets - a construct outside the manifest, or
+    /// an identifier named <c>await</c>. It is carried anyway, because it is the second of the two
+    /// switches the seed made ambient and leaving it out would leave the gate above testing one of
+    /// them.
+    /// </para>
+    /// <para>
+    /// <i>(Amended 2026-09-22, JSeal I11-upstream, decision JSD-0024 section 20.)</i> <b>The wide
+    /// compiler (<c>JsCompiler</c>) honours it for a module.</b> A module compiled with it
+    /// <see langword="false"/> has an ordinary module top level: <c>await</c> is reserved there and
+    /// is not an operator, so a top-level <c>await</c>, a top-level <c>for await</c> and a top-level
+    /// <c>await using</c> are refused with the diagnostic the same construct gets inside a module's
+    /// non-async function (<c>ReservedWordAsBinding</c> for <c>await</c> and <c>await using</c>,
+    /// <c>UnexpectedToken</c> for <c>for await</c>), and the module carries no <c>[[HasTLA]]</c>.
+    /// Async functions inside it are unaffected. <see cref="SliceParseOptions(SliceGoal)"/> and
+    /// <see cref="Module"/> set it for the module goal, so only an embedder that states
+    /// <see langword="false"/> meets the refusal; a script is unaffected either way, because
+    /// <c>await</c> is never an operator at a script's top level.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=DB0BD1
     // Broiler-Human:        PENDING
@@ -226,4 +242,38 @@ public readonly record struct SliceParseOptions
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=E7520C
     // Broiler-Human:        PENDING
     public static SliceParseOptions Module => new(SliceGoal.Module);
+
+    /// <summary>
+    /// Whether the source is DIRECT <c>eval</c> code, compiled for one call site under
+    /// <see cref="EvalFlags"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the script grammar and a different lowering, which is why it is a switch on the
+    /// script goal rather than a third goal.</b> Eval code is parsed as a Script is - no
+    /// <c>import</c>, <c>await</c> an identifier - but its free names are resolved through the
+    /// caller at run time rather than to globals, its lexical declarations are slots of its own
+    /// record, and its entry unit is flagged as eval code (JSD-0026 section 5). Every place that asks
+    /// which goal a parse has keeps the answer it had.
+    /// </para>
+    /// <para>
+    /// <b>The flags come from the request and from nothing ambient</b>, as every other switch of this
+    /// type does: a provider reads them off the payload the executor wrote and passes them here.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=24410A
+    // Broiler-Human:        PENDING
+    public bool IsEval { get; private init; }
+
+    /// <summary>What the calling site permits the evaluated source, when <see cref="IsEval"/> holds.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=944AFF
+    // Broiler-Human:        PENDING
+    public Format.JsFormat.EvalRequestFlags EvalFlags { get; private init; }
+
+    /// <summary>The options a direct evaluation's source is compiled under.</summary>
+    /// <param name="flags">What the calling site permits, exactly as its eval request carried it.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=23F467
+    // Broiler-Human:        PENDING
+    public static SliceParseOptions Eval(Format.JsFormat.EvalRequestFlags flags) =>
+        new(SliceGoal.Script) { IsEval = true, EvalFlags = flags };
 }

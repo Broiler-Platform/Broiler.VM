@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 3877 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 4505 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 184 |
-| Code units | 6914 |
-| Relevant | 3877 |
-| Exempt | 3037 |
-| Assessed | 3877 of 3877 (100%) |
-| Human reviewed | 0 of 3877 (0%) |
-| Unverified | 3877 |
+| Files scanned | 200 |
+| Code units | 7937 |
+| Relevant | 4505 |
+| Exempt | 3432 |
+| Assessed | 4505 of 4505 (100%) |
+| Human reviewed | 0 of 4505 (0%) |
+| Unverified | 4505 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 3877 |
+| HUMAN_PENDING | 4505 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 3037 |
+| EXEMPT | 3432 |
 
 ## 5. Aliases In The Tree
 
@@ -146,12 +146,12 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` | 54 | 45 | 9 | 45 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Backend.cs` | 42 | 37 | 5 | 37 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` | 31 | 18 | 13 | 18 | Low | High | 4/4 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 281 | 190 | 91 | 190 | None | High | 12/11 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 347 | 228 | 119 | 228 | Low | High | 19/18 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeBackend.cs` | 19 | 12 | 7 | 12 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeCompiler.cs` | 9 | 7 | 2 | 7 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` | 14 | 12 | 2 | 12 | None | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 169 | 149 | 20 | 149 | None | High | 4/4 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 94 | 81 | 13 | 81 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 185 | 162 | 23 | 162 | Low | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 99 | 83 | 16 | 83 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Abi.cs` | 11 | 9 | 2 | 9 | Low | High | 8/8 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Assembler.cs` | 95 | 65 | 30 | 65 | Low | Critical | 20/20 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Backend.cs` | 34 | 29 | 5 | 29 | Low | High | 17/17 |
@@ -161,88 +161,104 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructs.cs` | 61 | 6 | 55 | 6 | None | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceControlFlow.cs` | 8 | 8 | 0 | 8 | None | Medium | 4/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceLowering.cs` | 22 | 22 | 0 | 22 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParseOptions.cs` | 15 | 10 | 5 | 10 | None | High | 4/3 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParseOptions.cs` | 18 | 11 | 7 | 11 | None | High | 4/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` | 70 | 63 | 7 | 63 | None | High | 21/21 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceProgramBuilder.cs` | 35 | 24 | 11 | 24 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` | 35 | 26 | 9 | 26 | None | High | 19/19 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs` | 32 | 3 | 29 | 3 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs` | 34 | 4 | 30 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` | 11 | 10 | 1 | 10 | None | High | 6/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs` | 40 | 24 | 16 | 24 | None | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSyntax.cs` | 29 | 26 | 3 | 26 | None | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 140 | 40 | 100 | 40 | None | High | 22/18 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 142 | 42 | 100 | 42 | Low | High | 22/18 |
 | `src/Broiler.VM.Profile.JavaScript.Format/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptArtifactWriter.cs` | 20 | 17 | 3 | 17 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptFormat.cs` | 26 | 14 | 12 | 14 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` | 40 | 10 | 30 | 10 | None | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsArtifactWriter.cs` | 32 | 32 | 0 | 32 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsArtifactWriter.cs` | 41 | 41 | 0 | 41 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` | 74 | 44 | 30 | 44 | None | High | 17/15 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineFrame.cs` | 16 | 9 | 7 | 9 | None | Critical | 8/8 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs` | 64 | 31 | 33 | 31 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs` | 111 | 52 | 59 | 52 | None | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` | 28 | 17 | 11 | 17 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeFrame.cs` | 17 | 3 | 14 | 3 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` | 47 | 22 | 25 | 22 | Low | Critical | 11/11 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` | 61 | 39 | 22 | 39 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNumericManifest.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 150 | 23 | 127 | 23 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 213 | 120 | 93 | 120 | Medium | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 10 | 10 | 0 | 10 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 168 | 23 | 145 | 23 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 224 | 127 | 97 | 127 | Medium | Medium | 1/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 12 | 12 | 0 | 12 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.cs` | 12 | 12 | 0 | 12 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs` | 7 | 1 | 6 | 1 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeLexical.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.cs` | 17 | 15 | 2 | 15 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs` | 18 | 1 | 17 | 1 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 75 | 8 | 67 | 8 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 80 | 8 | 72 | 8 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` | 36 | 18 | 18 | 18 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptLanguageEdition.cs` | 13 | 13 | 0 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptPosition.cs` | 10 | 6 | 4 | 6 | None | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` | 38 | 25 | 13 | 25 | Low | High | 12/12 |
+| `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` | 40 | 26 | 14 | 26 | Low | High | 12/12 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs` | 28 | 20 | 8 | 20 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` | 62 | 33 | 29 | 33 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript/JsArray.cs` | 19 | 14 | 5 | 14 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` | 166 | 165 | 1 | 165 | None | Critical | 166/166 |
-| `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 51 | 31 | 20 | 31 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` | 202 | 201 | 1 | 201 | Low | Critical | 202/202 |
+| `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` | 55 | 51 | 4 | 51 | Low | High | 24/24 |
+| `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 80 | 53 | 27 | 53 | Low | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript/JsClone.cs` | 92 | 30 | 62 | 30 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 87 | 51 | 36 | 51 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` | 4 | 4 | 0 | 4 | None | Critical | 4/4 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 157 | 136 | 21 | 136 | Low | High | 37/37 |
-| `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 43 | 25 | 18 | 25 | Low | High | 12/12 |
-| `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 57 | 27 | 30 | 27 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 68 | 17 | 51 | 17 | None | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` | 9 | 6 | 3 | 6 | Low | High | 3/3 |
-| `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` | 58 | 48 | 10 | 48 | Low | High | 13/13 |
-| `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` | 75 | 38 | 37 | 38 | Low | High | 4/4 |
-| `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 40 | 13 | 27 | 13 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 230 | 198 | 32 | 198 | Low | High | 73/73 |
+| `src/Broiler.VM.Profile.JavaScript/JsEvalMap.cs` | 33 | 15 | 18 | 15 | Low | High | 3/3 |
+| `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 44 | 26 | 18 | 26 | Low | High | 12/12 |
+| `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 64 | 29 | 35 | 29 | Low | High | 3/3 |
+| `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 69 | 17 | 52 | 17 | None | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` | 14 | 10 | 4 | 10 | Low | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` | 92 | 80 | 12 | 80 | Low | High | 41/41 |
+| `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` | 133 | 55 | 78 | 55 | Low | High | 9/9 |
+| `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 51 | 15 | 36 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` | 4 | 4 | 0 | 4 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` | 26 | 4 | 22 | 4 | None | Critical | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` | 22 | 13 | 9 | 13 | Low | Critical | 17/17 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` | 12 | 4 | 8 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 59 | 31 | 28 | 31 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 51 | 16 | 35 | 16 | Low | Medium | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 69 | 38 | 31 | 38 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 59 | 17 | 42 | 17 | Low | Medium | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsProxy.cs` | 44 | 37 | 7 | 37 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 30 | 30 | 0 | 30 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 39 | 38 | 1 | 38 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.ArrayFromAsync.cs` | 23 | 14 | 9 | 14 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs` | 19 | 14 | 5 | 14 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` | 33 | 28 | 5 | 28 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.BigInt.cs` | 6 | 5 | 1 | 5 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` | 45 | 38 | 7 | 38 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Boolean.cs` | 4 | 4 | 0 | 4 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` | 53 | 36 | 17 | 36 | Low | High | 22/22 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.CollectionIterators.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs` | 33 | 27 | 6 | 27 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs` | 65 | 56 | 9 | 56 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Disposal.cs` | 57 | 36 | 21 | 36 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` | 5 | 4 | 1 | 4 | Low | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs` | 6 | 6 | 0 | 6 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs` | 9 | 8 | 1 | 8 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs` | 7 | 7 | 0 | 7 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Generator.cs` | 12 | 9 | 3 | 9 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs` | 25 | 25 | 0 | 25 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs` | 36 | 31 | 5 | 31 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Iterator.cs` | 29 | 16 | 13 | 16 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.IteratorHelpers.cs` | 27 | 18 | 9 | 18 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs` | 42 | 36 | 6 | 36 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Lexical.cs` | 10 | 5 | 5 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs` | 19 | 18 | 1 | 18 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs` | 24 | 24 | 0 | 24 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs` | 40 | 25 | 15 | 25 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` | 34 | 28 | 6 | 28 | Low | High | 2/2 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs` | 50 | 33 | 17 | 33 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` | 36 | 30 | 6 | 30 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Proxy.cs` | 8 | 6 | 2 | 6 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Reflect.cs` | 6 | 6 | 0 | 6 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs` | 49 | 39 | 10 | 39 | Medium | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` | 15 | 15 | 0 | 15 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 29 | 10 | 19 | 10 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.cs` | 37 | 18 | 19 | 18 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs` | 65 | 53 | 12 | 53 | Medium | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` | 21 | 21 | 0 | 21 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 31 | 10 | 21 | 10 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.cs` | 39 | 19 | 20 | 19 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsSymbol.cs` | 6 | 2 | 4 | 2 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsThrow.cs` | 10 | 5 | 5 | 5 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsValue.cs` | 49 | 29 | 20 | 29 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` | 86 | 48 | 38 | 48 | Low | High | 7/7 |
+| `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.cs` | 27 | 18 | 9 | 18 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` | 9 | 1 | 8 | 1 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsValue.cs` | 53 | 32 | 21 | 32 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` | 107 | 61 | 46 | 61 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.MachineCode/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.MachineCode/MachineCodeArtifactWriter.cs` | 2 | 2 | 0 | 2 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.MachineCode/MachineCodeExecutor.cs` | 19 | 9 | 10 | 9 | Low | Medium | 0/0 |
@@ -462,6 +478,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this method answers true for a unit in which some reachable offset is reached with two different entry states
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Walk.Step(int, int[], bool[], int, System.Collections.Generic.Queue<(int At, int[] Scopes, bool[] Slots, int Height)>, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` - Security=High, Spec=none cited, `76E929`, PENDING
   - Falsified if: this method reports a frame effect for an instruction that differs from what this profile's interpreter does to its operand stack and scopes
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.TryReadProgramRequest(System.ReadOnlySpan<byte>, out JsScriptUnit)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `4CF8C0`, PENDING
+  - Falsified if: a payload that begins with a reserved mark, or with the eval or script mark and no well-formed request, is answered as source to compile
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.SweepAgainstTheNumericManifest(JsAssembledProgram)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `375AB9`, PENDING
   - Falsified if: an artifact naming the numeric manifest is produced carrying an instruction that manifest does not admit
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ScanAnnexB(System.Collections.Generic.IReadOnlyList<JsStatement>, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `8DEF5C`, PENDING
@@ -470,23 +488,35 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a statement that opens a lexical record forwards the enclosing blocking set unchanged
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ScanAnnexBBlock(System.Collections.Generic.IReadOnlyList<JsStatement>, System.Collections.Generic.HashSet<string>, System.Collections.Generic.List<string>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `CEAD6A`, PENDING
   - Falsified if: a block's own lexical names reach the test its own declarations are judged by
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitAnnexBAlias(string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `DE88FF`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitAnnexBAlias(string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `84DFE0`, PENDING
   - Falsified if: the write lands on the block's own binding rather than the hoisting scope's
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.BeginDisposal(SliceSourceSpan, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `83FAFA`, PENDING
+  - Falsified if: a resource registered in the list can be left without its scope being disposed, by falling off the end, a jump, a return, a throw or a forced return
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EndDisposal(Exit)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `FDF86E`, PENDING
+  - Falsified if: the handler of a resource scope runs a disposer the normal path already ran, or re-raises anything other than the folded completion or the forced return it was entered with
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitDisposal(Exit, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `5B2B12`, PENDING
+  - Falsified if: an asynchronous disposal is emitted into a unit that may not await, or a rejected disposer's reason escapes without being folded into the completion
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ProtectSomething(int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `EAD16F`, PENDING
   - Falsified if: a region is emitted whose start offset equals its end offset
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.UnwindAbove(int, Exit?)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `8C6605`, PENDING
+  - Falsified if: an exit that owns regions is unwound without its start being answered, or a region open at the jump is left with no instruction outside the answered starts
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileTemplate(JsTemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `3E5E65`, PENDING
   - Falsified if: a substitution coerces through `valueOf` before `toString`, or a Symbol substitution does not throw
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitToString(JsExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `A802C8`, PENDING
   - Falsified if: the two paths reach the call at different operand-stack heights
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitTemplateStrings(JsTemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `2E89AA`, PENDING
-  - Falsified if: two evaluations of one call site produce two strings objects
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitTemplateStrings(JsTemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `28BE61`, PENDING
+  - Falsified if: two evaluations of one call site produce two strings objects, or the cache is reachable from guest code
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileChain(JsChainExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `E0C92D`, PENDING
   - Falsified if: a link after a short-circuited one is evaluated, or the two paths meet at different heights
-- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Shadowable(string, out int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `80888B`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Shadowable(string, out int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `B1DA0C`, PENDING
   - Falsified if: the bound reaches a record at or beyond the binding this name resolves to
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Shadowable(string, out int, out bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `7112BF`, PENDING
+  - Falsified if: the bound reaches a record at or beyond the binding this name resolves to, or a function that may hold eval variables inside the bound is not reported
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.UnitBuffer.Leave(int, int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `9DE8CE`, PENDING
+  - Falsified if: a region of the statement at the given level, or of one nested in it, is closed with a row covering an instruction between start and the cursor at the call
 - `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `27925C`, PENDING
   - Falsified if: a construct outside the numeric manifest reaches the lowering unrefused, or a construct the manifest admits is refused
-- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Statement(JsStatement, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `4954C3`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Statement(JsStatement, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `6BC92C`, PENDING
   - Falsified if: a statement kind this pass does not recognise reaches the lowering
 - `Broiler.VM.Profile.JavaScript.Compiler.JsNumericAdmission.Function(JsFunctionDeclaration, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` - Security=High, Spec=none cited, `DBB3D5`, PENDING
   - Falsified if: a function body that can fall off its end is admitted, or a function that closes over an enclosing binding is
@@ -496,6 +526,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a call whose callee is not a function this program declares is admitted
 - `Broiler.VM.Profile.JavaScript.Compiler.JsParser.ParseArrowParameters()` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` - Security=High, Spec=none cited, `7804D2`, PENDING
   - Falsified if: an arrow's parameter list is parsed with the enclosing `[Await]` context cleared
+- `Broiler.VM.Profile.JavaScript.Compiler.JsParser.TryBigIntValue(SliceToken, out System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` - Security=High, Spec=none cited, `9C1B5C`, PENDING
+  - Falsified if: a BigInt literal's value differs from the integer its text spells, or a literal wider than the constant ceiling is converted
 - `Broiler.VM.Profile.JavaScript.Compiler.JsParser.Deepen(SliceSourceSpan, out JsExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` - Security=High, Spec=none cited, `FEEA6B`, PENDING
   - Falsified if: a source whose tree is deeper than this bound reaches a walk
 - `Broiler.VM.Profile.JavaScript.Compiler.JsParser.TemplateReader` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` - Security=High, Spec=none cited, `09F45E`, PENDING
@@ -748,17 +780,17 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a second call site for this type appears, or a consumer re-reads the source text
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Tokenize()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `7C304A`, PENDING
   - Falsified if: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadToken(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `9013CA`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadToken(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `415EF1`, PENDING
   - Falsified if: a character that starts an identifier is read as a punctuator, or a numeric literal is read as an identifier
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadIdentifierEscape(System.Text.StringBuilder, int, int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `380942`, PENDING
-  - Falsified if: an escaped identifier and its unescaped spelling are different names
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadIdentifierEscape(System.Text.StringBuilder, bool, int, int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `91F171`, PENDING
+  - Falsified if: an escaped identifier and its unescaped spelling are different names, or an escape naming a code point the literal spelling would refuse is admitted
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.AppendScalar(System.Text.StringBuilder, int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `F77C9C`, PENDING
   - Falsified if: an escape naming a lone surrogate throws, or a supplementary code point is not encoded as a surrogate pair
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadUnicodeEscapeValue(out int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `6142E3`, PENDING
   - Falsified if: either spelling produces a value the language does not give it
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadNumericLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `730FCD`, PENDING
   - Falsified if: the value this produces differs from the language's MV for the same literal text
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadStringLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `872F0C`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadStringLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `B80E71`, PENDING
   - Falsified if: a directive is recognised from the string's value rather than from its raw text
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.RegularExpressionIsAllowedHere()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `6559F9`, PENDING
   - Falsified if: a division after a value is read as a regular expression, or a literal after an operator is read as a division
@@ -766,13 +798,13 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a `/` inside a character class ends the literal
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadTemplateLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `9ABBF8`, PENDING
   - Falsified if: a template, string, comment or object literal inside a substitution ends the outer literal
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanTemplateBody()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `BB535C`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanTemplateBody()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `0FABF8`, PENDING
   - Falsified if: a substitution consumes the backtick that closes the template it belongs to
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanSubstitution()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `00BA21`, PENDING
   - Falsified if: a brace inside a string, comment, nested template or object literal closes the substitution
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanStringBody(char)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `98CF66`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanStringBody(char)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `6DD49B`, PENDING
   - Falsified if: an escaped quote ends the string, or an unterminated one swallows the rest of the source
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanRegularExpressionBody()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `EB5032`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ScanRegularExpressionBody()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `685B24`, PENDING
   - Falsified if: a slash inside a character class ends the literal
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.StartsRegularExpression(char)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `17FBC0`, PENDING
   - Falsified if: a division after an identifier or a literal is taken for a regular expression
@@ -794,8 +826,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: for some defined opcode RunsAlone, EndsBlock and StopsAfter disagree, or TryPlan, LayoutLength or Layout answers differently for the same image, unit and handler offsets
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Table` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `58E210`, PENDING
   - Falsified if: for a defined byte the entry's width or either bit differs from JsOpcodes.InstructionWidth, EndsBlock or RunsAlone, or an undefined byte's entry lacks either bit
-- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.RunsAlone(JsOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `B2EC80`, PENDING
-  - Falsified if: an opcode of the call class is not named here, or an opcode not named here has an arm or an unconditionally called helper that reaches guest or embedder code other than behind the object test of ToPrimitive or Render, the getter or setter test of Lookup, GetSymbol, SetProperty, SetSymbol, SetWithReceiver, SetSuper, ReadPrivate or WritePrivate, the dispatch to JsProxy or JsHostObject, or InstanceOf's test for a Symbol.hasInstance method
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.RunsAlone(JsOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `C25AED`, PENDING
+  - Falsified if: an opcode of the call class is not named here, or an opcode not named here has an arm or an unconditionally called helper that reaches guest or embedder code other than behind the object test of ToPrimitive or Render, the getter or setter test of Lookup, GetSymbol, SetProperty, SetSymbol, SetWithReceiver, SetSuper, GetSymbolWithReceiver, SetSymbolWithReceiver, ReadPrivate or WritePrivate, the dispatch to JsProxy or JsHostObject, or InstanceOf's test for a Symbol.hasInstance method
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.EndsBlock(JsOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `4AA9FF`, PENDING
   - Falsified if: it answers false for an opcode that is terminal, has a code target or runs alone, or true for any other opcode
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.StopsAfter(byte[], int, int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, Spec=none cited, `DD109B`, PENDING
@@ -836,6 +868,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an emitted call can index the table at or beyond this many slots
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineAbi.FrameBytes(JsNativeArchitecture)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineFrame.cs` - Security=High, Spec=none cited, `ED86E7`, PENDING
   - Falsified if: a baseline unit calls a handler with the stack pointer not sixteen-aligned or with less shadow space than the convention requires
+- `Broiler.VM.Profile.JavaScript.Format.JsFormat.ScriptRequestMark` in `src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs` - Security=High, Spec=none cited, `F9CFC2`, PENDING
+  - Falsified if: a guest-initiated load can send a payload that begins with this byte
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeValues` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, Spec=none cited, `5F6922`, PENDING
   - Falsified if: an arithmetic operation over ordinary Numbers produces either of these bit patterns
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeValues.UninitialisedBits` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, Spec=none cited, `10ECDD`, PENDING
@@ -904,19 +938,19 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a turn runs outside a step, or reaches an embedder no composition registered
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.HostSurfaceBindingIndex` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `F33DA9`, PENDING
   - Falsified if: a realm carries a host object in a composition that did not register this slot
-- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.SourceProviderCapability` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `9A3E06`, PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.SourceProviderCapability` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `0E9FDF`, PENDING
   - Falsified if: this profile obtains executable bytes by any route but a provider registered under this identity
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.ResolveCapability` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `D7A399`, PENDING
   - Falsified if: this profile opens a file, follows a specifier, or honours a module request the host was not asked to rule on
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.HostSurfaceCapability` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `FA1E2A`, PENDING
   - Falsified if: this profile invokes this binding rather than only asking whether it is bound
-- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorAdmitting(params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `420B8F`, PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorAdmitting(params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `A90981`, PENDING
   - Falsified if: a descriptor built here accepts an optional surface its caller did not name
-- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorReEmittingWith(Format.IJsNativeEmitter, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `A32D4C`, PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorReEmittingWith(Format.IJsNativeEmitter, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `F076BD`, PENDING
   - Falsified if: a descriptor built here admits a native payload whose bytes its emitter does not reproduce
-- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorHostingRealms(IJsHostSurface, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `3DAE1C`, PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorHostingRealms(IJsHostSurface, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `11215D`, PENDING
   - Falsified if: a descriptor built here installs a surface in a runtime that registered no permission
-- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Build(ImmutableArray<string>, Format.IJsNativeEmitter?, IJsHostSurface?)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `69AC6C`, PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Build(ImmutableArray<string>, Format.IJsNativeEmitter?, IJsHostSurface?)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `7C0731`, PENDING
   - Falsified if: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Defaults()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `B1B19D`, PENDING
   - Falsified if: a default here is zero on a dimension this profile declares inapplicable, or any default exceeds its maximum
@@ -964,7 +998,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the two settings produce a different JavaScript answer for any program
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Table` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=Critical, Spec=none cited, `FD6363`, PENDING
   - Falsified if: this is non-zero while a defined opcode's slot holds anything but that opcode's own entry point, or an undefined byte's slot holds anything but the refusing one
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.JsBaselineHandlers()` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=Critical, Spec=none cited, `B49754`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.JsBaselineHandlers()` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=Critical, Spec=none cited, `63B4DD`, PENDING
   - Falsified if: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Sound(nint[], nint)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=Critical, Spec=none cited, `131DD4`, PENDING
   - Falsified if: this answers true for a table in which two defined opcodes share an entry point, a defined opcode has the refusing one, or an undefined byte has any other
@@ -1138,6 +1172,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this runs anything other than a block step starting at one Void at the offset the managed side expects
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.RequireCoercible(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `D09ED2`, PENDING
   - Falsified if: this runs anything other than a block step starting at one RequireCoercible at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ToPropertyKey(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `64B161`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ToPropertyKey at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GetTemplateObject(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `680DFE`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one GetTemplateObject at the offset the managed side expects
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Jump(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E36AB7`, PENDING
   - Falsified if: this runs anything other than a block step starting at one Jump at the offset the managed side expects
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.JumpIfFalse(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `72F3C2`, PENDING
@@ -1214,6 +1252,38 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this runs any instruction other than one ImportCall at the offset the managed side expects
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ImportMeta(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `BC6690`, PENDING
   - Falsified if: this runs anything other than a block step starting at one ImportMeta at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.CallEvalSpread(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `949682`, PENDING
+  - Falsified if: this runs any instruction other than one CallEvalSpread at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadEvalName(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1D4439`, PENDING
+  - Falsified if: this runs any instruction other than one LoadEvalName at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadEvalNameOrUndefined(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A0FC49`, PENDING
+  - Falsified if: this runs any instruction other than one LoadEvalNameOrUndefined at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StoreEvalName(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `856FEB`, PENDING
+  - Falsified if: this runs any instruction other than one StoreEvalName at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadEvalNameWithBase(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `64C206`, PENDING
+  - Falsified if: this runs any instruction other than one LoadEvalNameWithBase at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DeleteEvalName(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3CA5A8`, PENDING
+  - Falsified if: this runs any instruction other than one DeleteEvalName at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.WithBaseObject(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `C6F53B`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one WithBaseObject at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StoreEvalVariable(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `247561`, PENDING
+  - Falsified if: this runs any instruction other than one StoreEvalVariable at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeScope(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `A60F4D`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DisposeScope at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeAdd(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3411DD`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DisposeAdd at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeFold(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F89672`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one DisposeFold at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ToNumeric(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `EC258B`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one ToNumeric at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Increment(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `12C42C`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Increment at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Decrement(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `57F69F`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one Decrement at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeStep(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `098985`, PENDING
+  - Falsified if: this runs any instruction other than one DisposeStep at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeEnd(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2C6414`, PENDING
+  - Falsified if: this runs any instruction other than one DisposeEnd at the offset the managed side expects
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCall` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `821976`, PENDING
   - Falsified if: this step names an opcode other than Call
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCall.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `AEA809`, PENDING
@@ -1290,6 +1360,112 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this step names an opcode other than ImportCall
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepImportCall.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `33B0A7`, PENDING
   - Falsified if: this answers any opcode other than ImportCall
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCallEvalSpread` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `DAB9CA`, PENDING
+  - Falsified if: this step names an opcode other than CallEvalSpread
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCallEvalSpread.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1FA07A`, PENDING
+  - Falsified if: this answers any opcode other than CallEvalSpread
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadEvalName` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `556454`, PENDING
+  - Falsified if: this step names an opcode other than LoadEvalName
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadEvalName.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `98D74C`, PENDING
+  - Falsified if: this answers any opcode other than LoadEvalName
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadEvalNameOrUndefined` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E42664`, PENDING
+  - Falsified if: this step names an opcode other than LoadEvalNameOrUndefined
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadEvalNameOrUndefined.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `407A2F`, PENDING
+  - Falsified if: this answers any opcode other than LoadEvalNameOrUndefined
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStoreEvalName` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `E03E43`, PENDING
+  - Falsified if: this step names an opcode other than StoreEvalName
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStoreEvalName.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `8F0D6F`, PENDING
+  - Falsified if: this answers any opcode other than StoreEvalName
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadEvalNameWithBase` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7DD129`, PENDING
+  - Falsified if: this step names an opcode other than LoadEvalNameWithBase
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepLoadEvalNameWithBase.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `697B36`, PENDING
+  - Falsified if: this answers any opcode other than LoadEvalNameWithBase
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeleteEvalName` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `21A508`, PENDING
+  - Falsified if: this step names an opcode other than DeleteEvalName
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDeleteEvalName.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `1EF902`, PENDING
+  - Falsified if: this answers any opcode other than DeleteEvalName
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStoreEvalVariable` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `ADB718`, PENDING
+  - Falsified if: this step names an opcode other than StoreEvalVariable
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepStoreEvalVariable.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CF3F82`, PENDING
+  - Falsified if: this answers any opcode other than StoreEvalVariable
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDisposeStep` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `CB0B02`, PENDING
+  - Falsified if: this step names an opcode other than DisposeStep
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDisposeStep.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2ACA17`, PENDING
+  - Falsified if: this answers any opcode other than DisposeStep
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDisposeEnd` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `FAC970`, PENDING
+  - Falsified if: this step names an opcode other than DisposeEnd
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepDisposeEnd.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `3C4E84`, PENDING
+  - Falsified if: this answers any opcode other than DisposeEnd
+- `Broiler.VM.Profile.JavaScript.JsBigInt.JsBigInt(System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `4BD330`, PENDING
+  - Falsified if: an instance holding a magnitude wider than MaximumBits is constructed
+- `Broiler.VM.Profile.JavaScript.JsBigInt.FromConstant(bool, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `2C9E91`, PENDING
+  - Falsified if: a payload decodes to an integer other than the one its bytes spell
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ToDecimalString(System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `4CE1C6`, PENDING
+  - Falsified if: a wider BigInt is converted to text for the same charge as a narrower one, or the text differs from the integer
+- `Broiler.VM.Profile.JavaScript.JsBigInt.AppendDecimal(System.Text.StringBuilder, System.Numerics.BigInteger, int, int, System.Collections.Generic.List<System.Numerics.BigInteger>, System.Collections.Generic.List<int>, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `8795FC`, PENDING
+  - Falsified if: a digit is dropped, duplicated or unpadded where a split leaves a remainder with leading zeros
+- `Broiler.VM.Profile.JavaScript.JsBigInt.LinearCost(int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `EA891E`, PENDING
+  - Falsified if: an operation linear in its operands is charged less for wider operands
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ProductCost(int, int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `B7A09B`, PENDING
+  - Falsified if: a multiplication or division of wider operands is charged less than one of narrower operands, or less than the product of their sizes over eight
+- `Broiler.VM.Profile.JavaScript.JsBigInt.LeafCost(int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `38E03F`, PENDING
+  - Falsified if: a wider part is converted for a smaller charge
+- `Broiler.VM.Profile.JavaScript.JsBigInt.Bounded(System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `81A77E`, PENDING
+  - Falsified if: a value wider than MaximumBits is wrapped, or the constructor throws for a computed result
+- `Broiler.VM.Profile.JavaScript.JsBigInt.Multiply(JsBigInt, JsBigInt, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `531F83`, PENDING
+  - Falsified if: a product whose operands already prove it wider than MaximumBits is computed, or a product is charged less than ProductCost of its operands
+- `Broiler.VM.Profile.JavaScript.JsBigInt.Divide(JsBigInt, JsBigInt, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `32A18C`, PENDING
+  - Falsified if: a quotient is rounded other than toward zero, or a division is charged less than ProductCost of its operands
+- `Broiler.VM.Profile.JavaScript.JsBigInt.Remainder(JsBigInt, JsBigInt, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `EED233`, PENDING
+  - Falsified if: a remainder takes the sign of the divisor, or is charged less than ProductCost of its operands
+- `Broiler.VM.Profile.JavaScript.JsBigInt.Power(JsBigInt, JsBigInt, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `A8C216`, PENDING
+  - Falsified if: a power is computed without charging each multiplication, or a result past MaximumBits is answered, or a huge exponent of a trivial base is refused
+- `Broiler.VM.Profile.JavaScript.JsBigInt.Shift(JsBigInt, System.Numerics.BigInteger, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `CC5259`, PENDING
+  - Falsified if: a left shift allocates a result its widths already prove wider than MaximumBits, a right shift rounds toward zero, or an oversized count reaches the base class library
+- `Broiler.VM.Profile.JavaScript.JsBigInt.AsIntN(ulong, JsBigInt, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `09DD62`, PENDING
+  - Falsified if: a value that fits the signed width is changed, or a wrapped value takes the wrong sign
+- `Broiler.VM.Profile.JavaScript.JsBigInt.AsUintN(ulong, JsBigInt, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `443166`, PENDING
+  - Falsified if: a non-negative value that fits the width is changed, a negative value is answered negative, or a modulus past MaximumBits is allocated
+- `Broiler.VM.Profile.JavaScript.JsBigInt.FromIntegralNumber(double)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `861F87`, PENDING
+  - Falsified if: an integral Number converts to an integer other than its exact value
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ToNumber(System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `A48858`, PENDING
+  - Falsified if: a BigInt converts to a Number other than the nearest one with ties to even, or a value at or past 2 ** 1024 - 2 ** 970 converts to a finite Number
+- `Broiler.VM.Profile.JavaScript.JsBigInt.CompareToNumber(double, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `616D0D`, PENDING
+  - Falsified if: a BigInt and a Number compare other than their mathematical values do, or either is rounded to compare
+- `Broiler.VM.Profile.JavaScript.JsBigInt.TryParseStringInteger(string, System.Action<ulong>, out JsBigInt?, out int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `7E3B41`, PENDING
+  - Falsified if: a text outside StringIntegerLiteral answers a value, a text inside it answers an integer other than its mathematical value, or a value past MaximumBits is constructed
+- `Broiler.VM.Profile.JavaScript.JsBigInt.TryParseRadix(System.ReadOnlySpan<char>, int, System.Action<ulong>, out JsBigInt?, out int)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `6AC22E`, PENDING
+  - Falsified if: a digit outside the radix is admitted, or the packed bits spell an integer other than the digits do
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ParseDecimal(System.ReadOnlySpan<char>, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `254B9F`, PENDING
+  - Falsified if: a digit is dropped or misplaced in a split, or a join is not charged before it runs
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ParseDecimalPart(System.ReadOnlySpan<char>, int, System.Collections.Generic.List<System.Numerics.BigInteger>, System.Collections.Generic.List<int>, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `C444EA`, PENDING
+  - Falsified if: the high part is scaled by a power other than ten to the low part's length
+- `Broiler.VM.Profile.JavaScript.JsBigInt.ToRadixString(int, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `DEB859`, PENDING
+  - Falsified if: a wider BigInt is converted for the same charge as a narrower one, or the digits differ from the integer in that radix
+- `Broiler.VM.Profile.JavaScript.JsBigInt.AppendRadix(System.Text.StringBuilder, System.Numerics.BigInteger, int, int, int, ulong, int, System.Collections.Generic.List<System.Numerics.BigInteger>, System.Collections.Generic.List<int>, System.Action<ulong>)` in `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` - Security=High, Spec=none cited, `75C725`, PENDING
+  - Falsified if: a digit is dropped, duplicated or unpadded where a split leaves a remainder with leading zeros
+- `Broiler.VM.Profile.JavaScript.JsElements.ReadValue(byte[], int, JsElementKind, bool)` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, Spec=none cited, `BAB170`, PENDING
+  - Falsified if: a BigInt64 element reads as anything but the two's-complement integer of its eight bytes, a BigUint64 element as anything but their unsigned integer, or either as a Number
+- `Broiler.VM.Profile.JavaScript.JsElements.WriteValue(byte[], int, JsElementKind, JsValue, bool)` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, Spec=none cited, `D893D2`, PENDING
+  - Falsified if: a BigInt element stores anything but its value modulo 2**64, or a value of the other content type is stored rather than refused
+- `Broiler.VM.Profile.JavaScript.JsElements.Low64(System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, Spec=none cited, `33AFD0`, PENDING
+  - Falsified if: the answer differs from the value modulo 2**64 for any integer, negative ones included
+- `Broiler.VM.Profile.JavaScript.JsElements.ElementOf(JsElementKind, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, Spec=none cited, `50F640`, PENDING
+  - Falsified if: a BigInt kind stores a value converted from a Number, a String or an object on this engine-less path
+- `Broiler.VM.Profile.JavaScript.JsArrayBuffer.TryReplaceStorage(byte[])` in `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` - Security=High, Spec=none cited, `B340C3`, PENDING
+  - Falsified if: a resize is committed on a fixed-length or detached buffer, past the maximum, or loses a byte of the common prefix or exposes a stale byte past it
+- `Broiler.VM.Profile.JavaScript.JsCloneCarrier` in `src/Broiler.VM.Profile.JavaScript/JsClone.cs` - Security=High, Spec=none cited, `D07D0E`, PENDING
+  - Falsified if: a carrier holds a JsObject, a JsValue or any other reference into the realm that produced it
+- `Broiler.VM.Profile.JavaScript.JsCloneCarrier.MaxEntries` in `src/Broiler.VM.Profile.JavaScript/JsClone.cs` - Security=High, Spec=none cited, `8888D4`, PENDING
+  - Falsified if: a serialization completes with more entries than this
+- `Broiler.VM.Profile.JavaScript.JsCloneCarrier.MaxBytes` in `src/Broiler.VM.Profile.JavaScript/JsClone.cs` - Security=High, Spec=none cited, `7362FC`, PENDING
+  - Falsified if: a serialization completes holding more bytes than this
+- `Broiler.VM.Profile.JavaScript.JsCloneCarrier.ChargeFor(long, long)` in `src/Broiler.VM.Profile.JavaScript/JsClone.cs` - Security=High, Spec=none cited, `ECD920`, PENDING
+  - Falsified if: the charge does not grow with the carrier's entries and copied bytes
+- `Broiler.VM.Profile.JavaScript.JsCloneCarrier.TryClaimMoved()` in `src/Broiler.VM.Profile.JavaScript/JsClone.cs` - Security=High, Spec=none cited, `D7D2C4`, PENDING
+  - Falsified if: two adoptions of one carrier holding moved bytes both succeed
+- `Broiler.VM.Profile.JavaScript.JsHostCloneCarrier` in `src/Broiler.VM.Profile.JavaScript/JsClone.cs` - Security=High, Spec=none cited, `B2EC01`, PENDING
+  - Falsified if: a carrier exposes its graph, holds a reference into a realm, or is adopted by a realm of another profile build
 - `Broiler.VM.Profile.JavaScript.JsFinalizationRegistryObject` in `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` - Security=High, Spec=none cited, `66E399`, PENDING
   - Falsified if: a cleanup callback registered here is ever invoked, or any guest code runs from a CLR finalizer
 - `Broiler.VM.Profile.JavaScript.JsEngine` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, Spec=none cited, `7BBE7E`, PENDING
@@ -1302,16 +1478,40 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a guest-loaded program of the other form, of another architecture, or of the numeric manifest runs in a baseline instance
 - `Broiler.VM.Profile.JavaScript.JsEngine.nativeForm` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `05B362`, PENDING
   - Falsified if: an engine built for one form runs a program of the other form
-- `Broiler.VM.Profile.JavaScript.JsEngine.DrainJobs()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `541804`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.DrainJobs()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `4B5EB1`, PENDING
   - Falsified if: a job runs at a point the host did not ask for, or an endless queue is a hang rather than an exhaustion
-- `Broiler.VM.Profile.JavaScript.JsEngine.StepOneJob(out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `D67CCF`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.StepOneJob(out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `FB280D`, PENDING
   - Falsified if: more than one job runs in a step, or a step reports a queue state the queue does not have
 - `Broiler.VM.Profile.JavaScript.JsEngine.DropPendingJobs()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `459593`, PENDING
   - Falsified if: a queued job runs during an unwind
 - `Broiler.VM.Profile.JavaScript.JsEngine.Loader` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `67C7AE`, PENDING
   - Falsified if: a mediator is used outside the invocation that supplied it
-- `Broiler.VM.Profile.JavaScript.JsEngine.Evaluate(JsValue[], bool, Format.JsFormat.FunctionFlags)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `EA0B7E`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.Evaluate(JsValue[], bool, Format.JsFormat.FunctionFlags)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `F0977B`, PENDING
   - Falsified if: guest source becomes executable bytes without passing through the mediator
+- `Broiler.VM.Profile.JavaScript.JsEngine.EvaluateDirect(JsProgram, int, int, System.Collections.Generic.List<JsEnvironment>, JsValue[], JsValue, JsCell?, JsValue, JsScriptFunction?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `C613DA`, PENDING
+  - Falsified if: a direct eval with no site row at a module's top level, or in a script body whose current record is not its entry record, evaluates the source instead of throwing an EvalError
+- `Broiler.VM.Profile.JavaScript.JsEngine.EvaluateGlobal(string, Format.JsFormat.EvalRequestFlags, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `C997CA`, PENDING
+  - Falsified if: guest source becomes executable bytes without passing through the mediator, or a global evaluation's lexical declaration becomes a binding of the realm
+- `Broiler.VM.Profile.JavaScript.JsEngine.EvaluateScript(string, string, bool)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `1248A2`, PENDING
+  - Falsified if: a host script's source becomes executable bytes without passing through the mediator, or an answer that is not a script compiled under the requested strictness runs
+- `Broiler.VM.Profile.JavaScript.JsEngine.LoadEvalCode(Format.JsFormat.EvalRequestFlags, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `541E1E`, PENDING
+  - Falsified if: guest source becomes executable bytes without passing through the mediator, or an answer that is not eval code compiled under the requested flags is returned
+- `Broiler.VM.Profile.JavaScript.JsEngine.InstantiateEvalDeclarations(JsEvalView, JsEnvironment?, JsEvalDeclaration)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `053159`, PENDING
+  - Falsified if: a binding is created in the caller's scope or on the global object before a later check of the same evaluation throws, or a declared name is made a binding past a lexical binding of the same name that is not a catch parameter
+- `Broiler.VM.Profile.JavaScript.JsEngine.InstantiateGlobalDeclarations(JsScriptDeclaration)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `C0B3E2`, PENDING
+  - Falsified if: a binding is created on the global object or in the global lexical environment before a later check of the same script throws, or a lexical declaration is admitted over an existing global lexical declaration or a non-configurable global property
+- `Broiler.VM.Profile.JavaScript.JsEngine.WriteEvalVariable(JsEnvironment, string, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `19B50E`, PENDING
+  - Falsified if: the write reaches a record other than the evaluation's variable environment, or writes a name its instantiation did not declare
+- `Broiler.VM.Profile.JavaScript.JsEngine.EvaluateAtSite(JsProgram, JsEvalSite, JsEnvironment, string, JsValue, JsCell?, JsValue, JsScriptFunction?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `9109EA`, PENDING
+  - Falsified if: guest source becomes executable bytes without passing through the mediator, or an answer that is not eval code compiled under the site's flags runs
+- `Broiler.VM.Profile.JavaScript.JsEngine.EvalBoundary(System.Collections.Generic.List<JsEnvironment>, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `BFC809`, PENDING
+  - Falsified if: it answers a record that was not entered as an eval boundary
+- `Broiler.VM.Profile.JavaScript.JsEngine.ResolveEvalName(JsEnvironment, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `7216D6`, PENDING
+  - Falsified if: a name is answered from a slot the view's site row chain does not name, or from a record past a declarative binding of the same name
+- `Broiler.VM.Profile.JavaScript.JsEngine.EvalPrivateNameDeclared(JsEnvironment, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `01D083`, PENDING
+  - Falsified if: it asks a with object or runs guest code, or answers true for a name no declarative row on the site's row chain names
+- `Broiler.VM.Profile.JavaScript.JsEngine.WriteEvalName(JsEnvironment, string, JsValue, bool)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `290144`, PENDING
+  - Falsified if: a write through the map reaches a slot the map does not name, or succeeds on an immutable or uninitialised binding
 - `Broiler.VM.Profile.JavaScript.JsEngine.EndHostStep()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `39C37F`, PENDING
   - Falsified if: an abort latched at the seam is dropped when the step ends
 - `Broiler.VM.Profile.JavaScript.JsEngine.MaximumCallDepth` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `321EE5`, PENDING
@@ -1324,46 +1524,94 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a text operation's charge does not grow with the input the guest controls
 - `Broiler.VM.Profile.JavaScript.JsEngine.ChargeHostCrossing(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `62A22B`, PENDING
   - Falsified if: a crossing of the host surface completes without charging HostCalls
+- `Broiler.VM.Profile.JavaScript.JsEngine.RetainOrAbort(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `13932D`, PENDING
+  - Falsified if: a retention the LiveBytes ceiling refuses returns normally or leaves the allocation to happen
 - `Broiler.VM.Profile.JavaScript.JsEngine.ToNumberFromText(string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `07B791`, PENDING
   - Falsified if: a longer numeric string is read for the same charge as a shorter one
+- `Broiler.VM.Profile.JavaScript.JsEngine.ToNumeric(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `5C1B6B`, PENDING
+  - Falsified if: an object operand is converted to a primitive twice, or a BigInt reaches ToNumber through this operation
+- `Broiler.VM.Profile.JavaScript.JsEngine.BigIntText(JsBigInt)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `E0D910`, PENDING
+  - Falsified if: a wider BigInt is converted to text for the same charge as a narrower one
+- `Broiler.VM.Profile.JavaScript.JsEngine.ToBigInt(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `66E934`, PENDING
+  - Falsified if: a Number, undefined, null or a Symbol converts to a BigInt, or a String outside StringIntegerLiteral answers anything but a SyntaxError
+- `Broiler.VM.Profile.JavaScript.JsEngine.PrimitiveToBigInt(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `29E42B`, PENDING
+  - Falsified if: a Number, undefined, null or a Symbol converts to a BigInt
+- `Broiler.VM.Profile.JavaScript.JsEngine.StringToBigIntOrThrow(string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `60A446`, PENDING
+  - Falsified if: a text outside StringIntegerLiteral answers a value, or a value past the ceiling is answered
+- `Broiler.VM.Profile.JavaScript.JsEngine.NumberToBigInt(double)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `9A4F6D`, PENDING
+  - Falsified if: a Number that is not an integer converts to a BigInt, or an integral one converts to any integer but its own
+- `Broiler.VM.Profile.JavaScript.JsEngine.ToElementValue(JsElementKind, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `AB31B4`, PENDING
+  - Falsified if: a BigInt kind accepts a Number, a Number kind accepts a BigInt, or either converts with the other content type's operation
+- `Broiler.VM.Profile.JavaScript.JsEngine.BigIntToNumber(JsBigInt)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `1D0F36`, PENDING
+  - Falsified if: a BigInt converts to a Number other than the nearest one with ties to even
 - `Broiler.VM.Profile.JavaScript.JsEngine.instanced` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `9CFED6`, PENDING
   - Falsified if: two instances of one module key exist in one realm
 - `Broiler.VM.Profile.JavaScript.JsEngine.RunModuleGraph(JsProgram, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `6350BB`, PENDING
   - Falsified if: a module body runs twice in one realm, or a module body runs before every module's declarations are initialised
-- `Broiler.VM.Profile.JavaScript.JsEngine.Evaluated(JsProgram, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `3D2BD8`, PENDING
-  - Falsified if: a module body runs twice in one realm
-- `Broiler.VM.Profile.JavaScript.JsEngine.Instantiate(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `A1564F`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.TemplateObject(JsProgram, int, JsValue[], int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `CEE75C`, PENDING
+  - Falsified if: two evaluations of one site answer different objects, two sites answer one object, or the answer is observably not frozen
+- `Broiler.VM.Profile.JavaScript.JsEngine.Evaluated(JsProgram, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `CE0B69`, PENDING
+  - Falsified if: a module body runs twice in one realm, or the entry graph's failure is reported nowhere
+- `Broiler.VM.Profile.JavaScript.JsEngine.Instantiate(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `6D69E9`, PENDING
   - Falsified if: a module body runs before every module of its artifact has its declarations initialised
-- `Broiler.VM.Profile.JavaScript.JsEngine.Step(JsProgram, JsModuleInstance[], System.Collections.Generic.List<int>, int, System.Action<JsEngine, JsValue, bool>?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `DFDCE7`, PENDING
-  - Falsified if: a module body runs before a module it requested has finished awaiting
+- `Broiler.VM.Profile.JavaScript.JsEngine.EvaluateModule(JsModuleInstance)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `BC6F73`, PENDING
+  - Falsified if: a module body runs twice in one realm, runs before a module it requests has finished, or a module that does not depend on an awaiting module waits for it
+- `Broiler.VM.Profile.JavaScript.JsEngine.InnerModuleEvaluation(JsModuleInstance, System.Collections.Generic.List<JsModuleInstance>, ref int, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `91CD77`, PENDING
+  - Falsified if: a module body runs before every module it requests has run or started, or a module waiting on async dependencies runs before they finish
+- `Broiler.VM.Profile.JavaScript.JsEngine.AsyncModuleExecutionFulfilled(JsModuleInstance)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `42DB0E`, PENDING
+  - Falsified if: the modules one completion releases run in an order other than the one the walk reached them in, or a module runs while something it waits on has not finished
+- `Broiler.VM.Profile.JavaScript.JsEngine.AsyncModuleExecutionRejected(JsModuleInstance, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `140497`, PENDING
+  - Falsified if: a module that waits on one whose async evaluation threw later runs, or a module not waiting on it is failed
 - `Broiler.VM.Profile.JavaScript.JsEngine.Confirm(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `4B22CD`, PENDING
   - Falsified if: a module request is honoured without the composition being asked, or a refusal is treated as an answer
-- `Broiler.VM.Profile.JavaScript.JsEngine.DynamicImport(JsProgram, string, JsValue, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `166A0A`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.DynamicImport(JsProgram, string, JsValue, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `880ABC`, PENDING
   - Falsified if: this throws instead of rejecting, or a specifier reaches bytes without passing through the mediator or the artifact's own records
-- `Broiler.VM.Profile.JavaScript.JsEngine.ImportedModule(JsProgram, string, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `CEFB56`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.EvaluateInto(JsProgram, int, JsPromiseObject, bool)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `50B9DF`, PENDING
+  - Falsified if: the promise settles before every module of the graph has finished, or a failure escapes as a throw
+- `Broiler.VM.Profile.JavaScript.JsEngine.LinkAndEvaluate(JsProgram, int, JsPromiseObject, bool)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `F6359B`, PENDING
+  - Falsified if: the promise settles other than through the job queue, or a failure escapes as a throw
+- `Broiler.VM.Profile.JavaScript.JsEngine.LinkHostModule(string, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `85EF5C`, PENDING
+  - Falsified if: a module body runs before a host asks for an evaluation, or a module request is answered without the mediator
+- `Broiler.VM.Profile.JavaScript.JsEngine.CompleteImport(string, string, JsPromiseObject)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `DD5620`, PENDING
+  - Falsified if: a deferred import settles other than through the job queue, or a failure escapes as a throw
+- `Broiler.VM.Profile.JavaScript.JsEngine.TryOwnRequest(JsProgram, string, string, out (JsProgram Program, int Index))` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `8970EB`, PENDING
   - Falsified if: one module key is evaluated twice in one realm
+- `Broiler.VM.Profile.JavaScript.JsEngine.MediatedModule(string, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `006C6A`, PENDING
+  - Falsified if: a module request is answered by an artifact whose root is not a module body
 - `Broiler.VM.Profile.JavaScript.JsEngine.BindParameters(JsProgram, JsCodeUnit, JsScriptFunction, JsFrame, JsValue, JsValue[])` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `E1EDFC`, PENDING
   - Falsified if: a generator over a non-simple parameter list reports a binding failure at its first resumption rather than at its call
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResumeGenerator(JsValue, JsResumeMode, JsValue, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `984439`, PENDING
   - Falsified if: a generator resumed while its own body is running re-enters that body, or a completed generator runs any instruction
-- `Broiler.VM.Profile.JavaScript.JsEngine.ResumeAsync(JsAsyncCall, JsResumeMode, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `99B3DF`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.ResumeAsync(JsAsyncCall, JsResumeMode, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `04C185`, PENDING
   - Falsified if: an async call whose body is already on the interpreter's stack is resumed again, or a program that awaits without end is a hang rather than an exhaustion
 - `Broiler.VM.Profile.JavaScript.JsEngine.EnqueueAsyncGenerator(JsValue, JsResumeMode, JsValue, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `CB6E30`, PENDING
   - Falsified if: a call of `next`, `return` or `throw` on an async generator answers anything but a promise, or two calls made before the first settles are answered out of order
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResumeAsyncGenerator(JsAsyncGenerator, JsResumeMode, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `30F939`, PENDING
   - Falsified if: an async generator whose body is on the interpreter's stack is resumed again, or an `await` inside an async generator body settles a request the way a `yield` does
-- `Broiler.VM.Profile.JavaScript.JsEngine.Execute(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `1E35A3`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.Execute(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?, string?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `28C3E3`, PENDING
   - Falsified if: a program whose form differs from the engine's reaches ExecuteCore or emitted code
-- `Broiler.VM.Profile.JavaScript.JsEngine.ExecuteCore<TMode>(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?, JsNativeActivation?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `CAC8EF`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.ExecuteCore<TMode>(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?, JsNativeActivation?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `31159E`, PENDING
   - Falsified if: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
 - `Broiler.VM.Profile.JavaScript.JsEngine.Delegate(JsFrame, JsValue[], ref int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `E53DC7`, PENDING
   - Falsified if: a `return` or a `throw` that arrives while a `yield*` is suspended is not offered to the inner iterator first
 - `Broiler.VM.Profile.JavaScript.JsEngine.DelegateAsync(JsFrame, JsValue[], ref int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `197F48`, PENDING
   - Falsified if: an inner step of an async `yield*` reaches the outer body unawaited, or a `return` or a `throw` that arrives while one is suspended is not offered to the inner iterator first
-- `Broiler.VM.Profile.JavaScript.JsEngine.ResolveName(System.Collections.Generic.List<JsEnvironment>, int, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `1AC0F4`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.ResolveName(System.Collections.Generic.List<JsEnvironment>, int, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `E98FC8`, PENDING
   - Falsified if: this walk answers with anything but an object a `PushObjectScope` placed on the chain
-- `Broiler.VM.Profile.JavaScript.JsEngine.ChargeComparison(JsValue, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `B5D7E9`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.BigIntBinary(JsOpcode, JsValue, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `346910`, PENDING
+  - Falsified if: a Number operand is mixed into a BigInt result, a BigInt is read as a Number, a zero divisor or negative exponent answers anything but a RangeError, or >>> answers a value
+- `Broiler.VM.Profile.JavaScript.JsEngine.NumericStep(JsValue, bool)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `27D8C7`, PENDING
+  - Falsified if: a BigInt operand is stepped through a double or answers a Number, or a Number operand answers anything but x + 1 or x - 1
+- `Broiler.VM.Profile.JavaScript.JsEngine.BigIntResult(JsBigInt?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `FAB1EA`, PENDING
+  - Falsified if: an operation whose result is past JsBigInt.MaximumBits answers a value or escapes as anything but a RangeError
+- `Broiler.VM.Profile.JavaScript.JsEngine.BigIntOrder(JsValue, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `309DC2`, PENDING
+  - Falsified if: a BigInt and a Number or String are ordered other than by their mathematical values, or either is read through a double
+- `Broiler.VM.Profile.JavaScript.JsEngine.OrderAgainstNumber(JsBigInt, double)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `5CB7FA`, PENDING
+  - Falsified if: a BigInt is ordered against a Number other than by their mathematical values
+- `Broiler.VM.Profile.JavaScript.JsEngine.ChargeComparison(JsValue, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `8F73E3`, PENDING
   - Falsified if: comparing two long equal strings costs what comparing two short ones costs
+- `Broiler.VM.Profile.JavaScript.JsEngine.BigIntEqualsText(JsBigInt, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `783A53`, PENDING
+  - Falsified if: a String that is not an integer, or spells another integer, is answered equal
 - `Broiler.VM.Profile.JavaScript.IJsExecutionMode` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `7F0A56`, PENDING
   - Falsified if: a mode's opcode is read by the dispatch loop for a mode that reads its opcode from the code
 - `Broiler.VM.Profile.JavaScript.IJsExecutionMode.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `A70DF0`, PENDING
@@ -1374,6 +1622,12 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the loop instantiated over this mode charges for or runs an instruction
 - `Broiler.VM.Profile.JavaScript.JsStepBlock` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `0FD013`, PENDING
   - Falsified if: the loop instantiated over this mode stops at its first boundary, runs an instruction after a later boundary at which JsBaselineBlocks.StopsAfter holds, or stops at a later boundary at which it does not
+- `Broiler.VM.Profile.JavaScript.JsEvalMap` in `src/Broiler.VM.Profile.JavaScript/JsEvalMap.cs` - Security=High, Spec=none cited, `DE8935`, PENDING
+  - Falsified if: a site, shape or declaration row reaches the executor without the verifier having checked it against the code and function tables
+- `Broiler.VM.Profile.JavaScript.JsEvalView` in `src/Broiler.VM.Profile.JavaScript/JsEvalMap.cs` - Security=High, Spec=none cited, `6138EF`, PENDING
+  - Falsified if: a name resolved through a view reaches a record other than the ones the view's own site row describes
+- `Broiler.VM.Profile.JavaScript.JsEvalVariables` in `src/Broiler.VM.Profile.JavaScript/JsEvalMap.cs` - Security=High, Spec=none cited, `60C215`, PENDING
+  - Falsified if: an eval-variables object becomes reachable from guest code, as a receiver, a property value or through a prototype
 - `Broiler.VM.Profile.JavaScript.JsPause` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `6E5458`, PENDING
   - Falsified if: anything reachable from the realm is published through this payload
 - `Broiler.VM.Profile.JavaScript.JsContinuation` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `231B03`, PENDING
@@ -1382,7 +1636,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this environment is asked for a mediator outside an invocation it supplied one for
 - `Broiler.VM.Profile.JavaScript.JsExecution.RunHostTurn(VmProfileId, JsInstance, IJsHostSurface)` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `A28546`, PENDING
   - Falsified if: a turn touches the realm outside the step bracket it opens
-- `Broiler.VM.Profile.JavaScript.JsExecution.InstallHostSurface(JsEngine, IJsHostSurface)` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `622F66`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsExecution.InstallHostSurface(JsEngine, IJsHostSurface)` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `AA8194`, PENDING
   - Falsified if: an embedder that throws leaves an instance a caller can obtain
 - `Broiler.VM.Profile.JavaScript.JsExecution.StepEntryPoint` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `815A20`, PENDING
   - Falsified if: a guest pause creates a core suspension, or a step runs more than one job
@@ -1400,6 +1654,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a job runs on the caller's stack, or a job that throws ends the stepping
 - `Broiler.VM.Profile.JavaScript.JsEnvironment` in `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` - Security=High, Spec=none cited, `D0AAD1`, PENDING
   - Falsified if: a lookup by name reaches a slot of a declarative record
+- `Broiler.VM.Profile.JavaScript.JsEnvironment.JsEnvironment(int, JsEnvironment?, JsEvalView)` in `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` - Security=High, Spec=none cited, `F9EB3D`, PENDING
+  - Falsified if: a boundary record is created with a parent other than the calling frame's current record
+- `Broiler.VM.Profile.JavaScript.JsEnvironment.EvalVariables` in `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` - Security=High, Spec=none cited, `FF611F`, PENDING
+  - Falsified if: a lookup by name reaches a slot of this record rather than a binding an evaluation introduced
 - `Broiler.VM.Profile.JavaScript.JsFrame` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, Spec=none cited, `9F431B`, PENDING
   - Falsified if: a generator resumed after a suspension observes an operand stack, a scope chain or an instruction pointer other than the one it suspended with
 - `Broiler.VM.Profile.JavaScript.JsForcedReturn` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, Spec=none cited, `4AB7F8`, PENDING
@@ -1412,34 +1670,94 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: two requests made before the first settles are answered out of order, or a request reaches a body that is already on the interpreter's stack
 - `Broiler.VM.Profile.JavaScript.JsHostObject` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `5BF8DC`, PENDING
   - Falsified if: a handler is consulted for a name this object's own storage already holds
-- `Broiler.VM.Profile.JavaScript.JsHostObject.TryGetOwnProperty(string, out JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `4B34C8`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostObject.TryGetOwnProperty(string, out JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `0A2ACE`, PENDING
   - Falsified if: the handler answers a key the base found
-- `Broiler.VM.Profile.JavaScript.JsHostObject.SetOwnProperty(string, JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `DB8428`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostObject.SetOwnProperty(string, JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `539B64`, PENDING
   - Falsified if: an assignment reaches the handler for a key this object's storage already holds
+- `Broiler.VM.Profile.JavaScript.JsHostObject.OfferNamedWrite(string, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `60F60B`, PENDING
+  - Falsified if: an exception the handler raises unwinds through interpreter frames untranslated
+- `Broiler.VM.Profile.JavaScript.JsHostObject.DeleteOwnProperty(string)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `889091`, PENDING
+  - Falsified if: an index key reaches the deletion hook, or the ordinary deletion is skipped after the hook returned
 - `Broiler.VM.Profile.JavaScript.JsHostRealm` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `88DEB7`, PENDING
   - Falsified if: a crossing runs outside a step, on another thread, or without charging HostCalls
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.EndStep()` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `EF50C7`, PENDING
   - Falsified if: an operation whose allowance was spent completes because host code caught the abort
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.DefineIndex(JsHostValue, uint, JsHostValue, JsHostPropertyFlags)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `7D9C59`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.DefineIndex(JsHostValue, uint, JsHostValue, JsHostPropertyFlags)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `19C400`, PENDING
   - Falsified if: an index defined here is not found by an operation that walks length
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.Invoke(JsHostValue, JsHostValue, System.ReadOnlySpan<JsHostValue>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `4C7364`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.TryReadArrayBuffer(JsHostValue, out byte[])` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `9302B3`, PENDING
+  - Falsified if: a guest-writable property or function decides the answer, or the realm's own storage is answered
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.TryReadArrayBuffer(JsHostValue, System.Span<byte>, out int)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `780A25`, PENDING
+  - Falsified if: a destination is written when the answer is not Copied, or is written before the charge is admitted
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.NewArrayBuffer(System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `E9CCCF`, PENDING
+  - Falsified if: a buffer is answered after its fuel or live-bytes charge was refused, or a later write to the caller's memory changes it
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.BufferBytes(JsHostValue, out byte[]?)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `78A87E`, PENDING
+  - Falsified if: an object that is not the realm's own buffer type answers Copied
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.DetachArrayBuffer(JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `D9D821`, PENDING
+  - Falsified if: a buffer this detaches can still be read or written through any view, or a guest reaches this without a function an embedder installed
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Invoke(JsHostValue, JsHostValue, System.ReadOnlySpan<JsHostValue>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `790C56`, PENDING
   - Falsified if: a guest call from host code skips the call-depth charge or lets a JsAbort escape as a guest throw
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.EnqueueJob(System.Action)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `530D9B`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.EvaluateScript(string, string, bool)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `634ACD`, PENDING
+  - Falsified if: a host script runs outside a step, without charging HostCalls, or lets a JsAbort escape as a guest throw
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.EnqueueJob(System.Action)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `749324`, PENDING
   - Falsified if: a host job and a guest job run in an order neither queue decided
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.DrainJobs(int)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `0D75AE`, PENDING
   - Falsified if: a drain runs more than its limit, or a throwing job discards the queue behind it
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.Wrap(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `26A22A`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.NewPromiseCapability()` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `33371B`, PENDING
+  - Falsified if: the promise is built through a binding a guest can replace
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.ResolvePromise(JsHostPromiseCapability, JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `402C27`, PENDING
+  - Falsified if: a second resolution changes the promise or queues a reaction
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.RejectPromise(JsHostPromiseCapability, JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `586445`, PENDING
+  - Falsified if: a rejection after a resolution changes the promise or queues a reaction
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Settle(JsHostPromiseCapability, JsHostValue, bool)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `531055`, PENDING
+  - Falsified if: a capability another realm minted settles a promise in this one
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.LoadModule(string, string)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `B6FBE2`, PENDING
+  - Falsified if: a module reaches the realm without the artifact provider, a module body runs, or one key answers two handles
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.EvaluateModule(JsHostModule)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `418E05`, PENDING
+  - Falsified if: two calls answer two promises, a module body runs twice, the promise fulfils while a module of the graph is still suspended, or it fulfils for a graph holding an errored module
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.CompleteModuleRequest(JsHostModuleRequest)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `1CDAD4`, PENDING
+  - Falsified if: a request settles twice, settles outside a step of its own realm, or settles other than through the job queue
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.FailModuleRequest(JsHostModuleRequest, JsHostErrorKind, string)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `882B8B`, PENDING
+  - Falsified if: a failed request settles twice, or settles outside a step of its own realm
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Claim(JsHostModuleRequest)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `36AF6C`, PENDING
+  - Falsified if: a request another realm offered, or one still being offered, is settled here
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.OfferModuleRequest(string, string, JsPromiseObject)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `7999FB`, PENDING
+  - Falsified if: a loader's JsHostThrowException unwinds through interpreter frames untranslated, or a request the realm answered can be completed again
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.OfferDeletion(IJsHostExoticDeletion, string)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `20E4E7`, PENDING
+  - Falsified if: a handler's JsHostThrowException unwinds through interpreter frames untranslated
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.HookRaised(System.Exception)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `7B7F0D`, PENDING
+  - Falsified if: a hook's JsHostThrowException or JsHostSurfaceException unwinds through interpreter frames untranslated
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.TryEnterHook()` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `9046ED`, PENDING
+  - Falsified if: an exotic hook runs without charging HostCalls, outside a step, or after the realm latched an abort
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Raised(JsHostThrowException)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `9154C2`, PENDING
+  - Falsified if: a host's thrown value that this realm refuses escapes as a JsHostSurfaceException
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Wrap(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `5F3135`, PENDING
   - Falsified if: two calls over one guest object answer two different JsHostRef instances
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.Unwrap(JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `2E3384`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Unwrap(JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `F7AD59`, PENDING
   - Falsified if: a value minted by another realm resolves rather than being refused
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.AdmitBigInt(System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `EABD9A`, PENDING
+  - Falsified if: a BigInt wider than JsBigInt.MaximumBits reaches the realm, or one reaches a realm whose composition declined the surface
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.UnwrapAtCrossing(JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `6B2764`, PENDING
+  - Falsified if: a JsThrow or a JsAbort escapes a public crossing untranslated
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Installing` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `DBCA8A`, PENDING
   - Falsified if: a member the realm installs reaches an exotic handler as an assignment
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.BindConstructor(JsHostFunction)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `1A9B56`, PENDING
   - Falsified if: a nested construction leaves the outer body reading the inner target
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.Bind(JsHostFunction)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `79C96E`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Bind(JsHostFunction)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `9EA8DF`, PENDING
   - Falsified if: a host body's CLR exception unwinds through interpreter frames uncaught
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.CloneSerialize(JsHostValue, long, long)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `BCF1B2`, PENDING
+  - Falsified if: a serialization runs outside a step, or a refusal reaches host code as anything but a guest throw
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.CloneSerializeWithTransfer(JsHostValue, JsHostValue[], long, long)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `2B215E`, PENDING
+  - Falsified if: a refused transfer leaves any listed buffer detached, or a completed one leaves any attached
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.CloneDeserialize(JsCloneCarrier)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `28EF4E`, PENDING
+  - Falsified if: a deserialization runs outside a step, or answers an object built on another realm's intrinsics
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.DetachClone(JsHostValue, System.ReadOnlySpan<JsHostValue>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `37F58D`, PENDING
+  - Falsified if: a carrier is made outside a step, holds an object of this realm, or leaves a listed buffer attached after returning
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.AdoptClone(object)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `1EC4C5`, PENDING
+  - Falsified if: an adoption answers an object on another realm's intrinsics, accepts a foreign carrier, or adopts a single-use carrier twice
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Enter(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `48F054`, PENDING
   - Falsified if: a crossing proceeds while the realm is outside a step or on another thread
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Thrown(JsThrow)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `871C26`, PENDING
+  - Falsified if: a guest throw of any value reaches host code as anything but a JsHostThrowException or the latched termination
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Latch(JsAbort)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `F6EE30`, PENDING
   - Falsified if: an abort reaches host code as anything a catch clause can clear
 - `Broiler.VM.Profile.JavaScript.JsHostRef` in `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` - Security=High, Spec=none cited, `5A4DC0`, PENDING
@@ -1450,6 +1768,16 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a realm is handed to a surface a composition did not register, or outside a step
 - `Broiler.VM.Profile.JavaScript.IJsHostExotic` in `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` - Security=High, Spec=none cited, `FADADB`, PENDING
   - Falsified if: a handler is consulted for a name the object's own storage already holds
+- `Broiler.VM.Profile.JavaScript.IJsHostExoticDeletion` in `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` - Security=High, Spec=none cited, `7EB180`, PENDING
+  - Falsified if: an index key or a symbol reaches the hook, or one deletion offers a name twice
+- `Broiler.VM.Profile.JavaScript.JsHostPromiseCapability` in `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` - Security=High, Spec=none cited, `5E7572`, PENDING
+  - Falsified if: a capability settles a promise twice, or settles one outside a step of its own realm
+- `Broiler.VM.Profile.JavaScript.JsHostModule` in `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` - Security=High, Spec=none cited, `E66A7A`, PENDING
+  - Falsified if: two handles, or two namespaces, exist for one module key in one realm
+- `Broiler.VM.Profile.JavaScript.JsHostModuleRequest` in `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` - Security=High, Spec=none cited, `F7D8EF`, PENDING
+  - Falsified if: a request settles its promise twice, or settles it outside a step of its own realm
+- `Broiler.VM.Profile.JavaScript.IJsHostModuleLoader` in `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` - Security=High, Spec=none cited, `F28A83`, PENDING
+  - Falsified if: a deferred import reaches the realm without the artifact provider and the core's verification
 - `Broiler.VM.Profile.JavaScript.JsNativeAbiObservation` in `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` - Security=High, Spec=none cited, `AB829C`, PENDING
   - Falsified if: a field here reports something the trampoline did not record
 - `Broiler.VM.Profile.JavaScript.JsNativeAbi` in `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` - Security=Critical, Spec=none cited, `2AA164`, PENDING
@@ -1520,30 +1848,110 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a completion of undefined is reported as a Number, or a Number as undefined
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.TypeOf(double)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `0FC6E8`, PENDING
   - Falsified if: this disagrees with what the interpreter's typeof answers for the same value
+- `Broiler.VM.Profile.JavaScript.JsMappedArguments` in `src/Broiler.VM.Profile.JavaScript/JsObject.cs` - Security=High, Spec=none cited, `0C7FAE`, PENDING
+  - Falsified if: a mapped index answers a value other than its parameter's current binding, or a deleted, accessor-replaced or non-writable index still writes or reads the parameter
 - `Broiler.VM.Profile.JavaScript.JsProgram.NativePage` in `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` - Security=Critical, Spec=none cited, `F05E06`, PENDING
   - Falsified if: this is written more than once for one program, or holds a mapping that is not armed
 - `Broiler.VM.Profile.JavaScript.JsRealm.GetAsyncIterator(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs` - Security=High, Spec=none cited, `EFF362`, PENDING
   - Falsified if: a `for await` over an object carrying `Symbol.asyncIterator` reaches the synchronous wrapper, or one over an Array of promises answers the promises rather than their values
+- `Broiler.VM.Profile.JavaScript.JsRealm.BigIntWrap(JsEngine, JsValue[], bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.BigInt.cs` - Security=High, Spec=none cited, `2F9DBC`, PENDING
+  - Falsified if: the value is converted before the width, a Number value is accepted, or a result past MaximumBits is answered
+- `Broiler.VM.Profile.JavaScript.JsRealm.BinaryResizeBuffer(JsEngine, JsArrayBuffer, int)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` - Security=High, Spec=none cited, `A87CC7`, PENDING
+  - Falsified if: a resize the fuel meter, the live-bytes ceiling or the allocator refuses leaves the buffer at a different length or with different bytes
+- `Broiler.VM.Profile.JavaScript.JsRealm` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `60DD8D`, PENDING
+  - Falsified if: a clone graph carries a reference into the realm that produced it
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneSerialize(JsValue, long, long)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `33240C`, PENDING
+  - Falsified if: a serialization completes for a function, a symbol, a Proxy or an unlisted brand, or its work is not charged
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneSerializeWithTransfer(JsValue, JsValue[], long, long)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `8C1269`, PENDING
+  - Falsified if: a refused transfer leaves any listed buffer detached, or a completed one leaves any listed buffer attached
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneDeserialize(JsCloneCarrier)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `185FAE`, PENDING
+  - Falsified if: a rebuilt object has a prototype that is not this realm's, or two adoptions share a buffer
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneBuffer(JsCloneRecord)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `A67638`, PENDING
+  - Falsified if: the destination buffer shares its byte array with the carrier or another adoption
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneView(JsCloneRecord, JsObject?[])` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `36BE86`, PENDING
+  - Falsified if: a view is built over bytes outside its buffer, or two views of one source buffer see two buffers
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneBigInt(JsCloneSlot)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `4CF6A0`, PENDING
+  - Falsified if: a BigInt slot is rebuilt uncharged, or a slot of another kind is read as a BigInt
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `499643`, PENDING
+  - Falsified if: one source object produces two records, or a bound is passed without a refusal
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.maxEntries` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `88E752`, PENDING
+  - Falsified if: this bound is larger than JsCloneCarrier.MaxEntries
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.maxBytes` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `5AF476`, PENDING
+  - Falsified if: this bound is larger than JsCloneCarrier.MaxBytes
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.Run(JsValue, JsValue[])` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `549634`, PENDING
+  - Falsified if: getters run in an order other than HTML's recursive depth-first order
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.CheckTransferList(JsValue[])` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `D25FD2`, PENDING
+  - Falsified if: a transfer list naming a non-ArrayBuffer or one buffer twice is admitted
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.Validate(System.Collections.Generic.List<(JsArrayBuffer Buffer, JsCloneRecord Record)>)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `E91B98`, PENDING
+  - Falsified if: a detached buffer or one past the byte bound reaches the commit
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.Slot(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `DF1346`, PENDING
+  - Falsified if: a Symbol value serializes rather than being refused
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.Record(JsObject)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `1A9F4B`, PENDING
+  - Falsified if: an object whose brand is not in the matrix is recorded as any kind at all
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.RefuseDetachedView(bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `551994`, PENDING
+  - Falsified if: a typed array or DataView over a detached buffer serializes, whether or not its buffer was recorded first
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.RefuseResizable(JsArrayBuffer)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `22B2B9`, PENDING
+  - Falsified if: a resizable ArrayBuffer, or a typed array or DataView over one, serializes
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.Buffer(JsObject, JsArrayBuffer)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `BF8169`, PENDING
+  - Falsified if: the carrier holds the source buffer's own byte array, or a detached buffer serializes
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.New(JsObject, JsCloneKind, out JsCloneRecord)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `E54E31`, PENDING
+  - Falsified if: an object is entered in the memory map after its contents are serialized
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.Count(long)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `CDB11E`, PENDING
+  - Falsified if: an entry is added past the bound without a refusal
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.CountText(string)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `2BB13D`, PENDING
+  - Falsified if: distinct string text is carried past the byte bound without a refusal
+- `Broiler.VM.Profile.JavaScript.JsRealm.CloneWriter.CountBigInt(JsBigInt)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Clone.cs` - Security=High, Spec=none cited, `0651DE`, PENDING
+  - Falsified if: a BigInt is carried past the byte bound without a refusal, or carried uncharged
+- `Broiler.VM.Profile.JavaScript.JsRealm.DisposeScopeFold(JsEngine, JsDisposeScope, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Disposal.cs` - Security=High, Spec=none cited, `6F7B69`, PENDING
+  - Falsified if: a second throw during one scope's disposal replaces the first instead of suppressing it, or a forced return is reported as a thrown value
+- `Broiler.VM.Profile.JavaScript.JsRealm.DisposeScopeStep(JsEngine, JsDisposeScope, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Disposal.cs` - Security=High, Spec=none cited, `F3F6F6`, PENDING
+  - Falsified if: an entry of one scope is called twice, a synchronous entry's result is awaited, or a nullish await using owes more or fewer awaits than DisposeResources performs
+- `Broiler.VM.Profile.JavaScript.JsRealm.DisposeScopeEnd(JsEngine, JsDisposeScope, bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Disposal.cs` - Security=High, Spec=none cited, `2AD8C7`, PENDING
+  - Falsified if: a scope whose disposal threw completes normally, or a scope disposed twice runs any entry twice
+- `Broiler.VM.Profile.JavaScript.JsRealm.JsDisposalRun` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Disposal.cs` - Security=High, Spec=none cited, `E99113`, PENDING
+  - Falsified if: an entry of one disposeAsync() run is called twice, or the run settles its promise before every entry's awaited result has settled
+- `Broiler.VM.Profile.JavaScript.JsRealm.JsDisposalRun.Continue(JsEngine)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Disposal.cs` - Security=High, Spec=none cited, `A97F1B`, PENDING
+  - Falsified if: a guest throw from a disposer escapes disposeAsync() synchronously instead of rejecting its promise
+- `Broiler.VM.Profile.JavaScript.JsDisposeScope.From(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Disposal.cs` - Security=High, Spec=none cited, `119C32`, PENDING
+  - Falsified if: a value that is not a disposal scope is treated as one
 - `Broiler.VM.Profile.JavaScript.JsRealm` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, Spec=none cited, `60DD8D`, PENDING
   - Falsified if: anything in this file is built into a realm whose composition did not admit broiler.javascript.dynamic
 - `Broiler.VM.Profile.JavaScript.JsRealm.EvalIntrinsic` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, Spec=none cited, `D093DD`, PENDING
   - Falsified if: this holds a function object the guest can reach under any other name
 - `Broiler.VM.Profile.JavaScript.JsRealm.IsEvalIntrinsic(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, Spec=none cited, `B458DE`, PENDING
   - Falsified if: it answers true for a function object this realm did not build as its own eval
-- `Broiler.VM.Profile.JavaScript.JsRealm.SetupDynamic()` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, Spec=none cited, `31E9B4`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsRealm.SetupDynamic()` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, Spec=none cited, `209E66`, PENDING
   - Falsified if: it installs a global that turns source into code without going through the mediator
 - `Broiler.VM.Profile.JavaScript.JsRealm.FromSource(JsEngine, JsValue[])` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, Spec=none cited, `01B333`, PENDING
   - Falsified if: the assembled source is evaluated anywhere but the global scope
 - `Broiler.VM.Profile.JavaScript.JsRealm.PromiseSchedule(JsEngine, JsPromiseReaction, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, Spec=none cited, `C89A73`, PENDING
   - Falsified if: a promise reaction runs before the synchronous continuation of whatever settled or observed the promise
-- `Broiler.VM.Profile.JavaScript.JsRealm.AwaitOn(JsEngine, JsValue, System.Action<JsEngine, JsValue, bool>)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, Spec=none cited, `DB2999`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsRealm.NewHostPromise(JsEngine)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, Spec=none cited, `D45325`, PENDING
+  - Falsified if: a host promise is built from a prototype a guest assignment to Promise can replace
+- `Broiler.VM.Profile.JavaScript.JsRealm.AwaitOn(JsEngine, JsValue, System.Action<JsEngine, JsValue, bool>)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, Spec=none cited, `6F23A9`, PENDING
   - Falsified if: an `await` of a value that is not a promise continues without yielding to the job queue
+- `Broiler.VM.Profile.JavaScript.JsRealm.NormalizeText(JsEngine, string, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` - Security=High, Spec=none cited, `E5D2CC`, PENDING
+  - Falsified if: a guest string makes normalize allocate or loop over an expansion it was not charged for, or answer other than the pinned NormalizationTest.txt vectors
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadManifest(in VmArtifactDescriptor, ref VmBoundedReader, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `7CFF0B`, PENDING
   - Falsified if: an artifact naming a manifest this build does not accept is admitted, or the descriptor and the payload are allowed to name different ones
+- `Broiler.VM.Profile.JavaScript.JsVerifier.ReadBigInt(ref VmBoundedReader, Sections, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `07C246`, PENDING
+  - Falsified if: a BigInt constant wider than the format ceiling, or spelled non-canonically, is admitted
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadNativeCode(ref VmBoundedReader, ulong, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `FA7FCC`, PENDING
   - Falsified if: a declared length that disagrees with the bytes present is accepted, or an architecture value this build cannot name is
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadNativeSymbols(ref VmBoundedReader, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `F1C392`, PENDING
   - Falsified if: an offset outside the emitted blob is accepted, or two rows naming one code unit are
+- `Broiler.VM.Profile.JavaScript.JsVerifier.ReadEvalScopes(ref VmBoundedReader, JavaScriptReadAdapter, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `D1DE97`, PENDING
+  - Falsified if: a row of a kind, flag or refusal this build does not define is read as one it does
+- `Broiler.VM.Profile.JavaScript.JsVerifier.IsEvalCall(byte[], JsCodeUnit, uint, JavaScriptReadAdapter)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `D3432C`, PENDING
+  - Falsified if: it answers true for an offset inside an instruction, past the unit, or holding anything but CallEval or CallEvalSpread
+- `Broiler.VM.Profile.JavaScript.JsVerifier.LinkEvalScopes(Sections, JsCodeUnit[], JavaScriptReadAdapter, out JsEvalMap?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `BF07DB`, PENDING
+  - Falsified if: an eval scope map row that names a non-name constant, a unit, an offset or a row it may not name reaches the executor
+- `Broiler.VM.Profile.JavaScript.JsVerifier.LinkScriptDeclarations(Sections, JsCodeUnit[], JavaScriptReadAdapter, out System.Collections.Generic.Dictionary<int, JsScriptDeclaration>?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `A345C7`, PENDING
+  - Falsified if: a script-declarations row that names a unit other than a script body, or a constant that is not an interned name, reaches the executor
+- `Broiler.VM.Profile.JavaScript.JsVerifier.LinkScriptReferrers(Sections, JsCodeUnit[], JavaScriptReadAdapter, out System.Collections.Generic.Dictionary<int, string>?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `806351`, PENDING
+  - Falsified if: a script-referrers row that names a unit other than a script body, or a constant that is not a non-empty interned name, reaches the executor
+- `Broiler.VM.Profile.JavaScript.JsVerifier.ReachesRoot(Sections, JsEvalShape[], JsEvalSiteRow, JsCodeUnit)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `0AFF44`, PENDING
+  - Falsified if: it answers true for a chain whose row at the declared depth is not the root kind the unit's flags call for
 - `Broiler.VM.Profile.JavaScript.JsVerifier.LinkNative(Sections, JsCodeUnit[], IJsNativeEmitter?)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `DE9B5A`, PENDING
   - Falsified if: an artifact whose symbol table names fewer units than the function table is admitted, or a symbol offset outside the emitted blob is
 - `Broiler.VM.Profile.JavaScript.JsVerifier.NativeImage(Sections, JsNativeTier)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `5F3660`, PENDING
@@ -1970,7 +2378,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 3763 of the 3877 assessed units declare
+That is not a figure of speech. 4388 of the 4505 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

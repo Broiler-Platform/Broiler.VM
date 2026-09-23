@@ -1,0 +1,13 @@
+# pinned Test262 ccaac100, module selection; base (pass 3293, fail 66) vs after (pass 3301, fail 58) of 4129 variants
+fail -> pass:
+  test/language/eval-code/direct/export.js [module]
+  test/language/eval-code/direct/import.js [module]
+  test/language/expressions/import.meta/not-accessible-from-direct-eval.js [module]
+  test/language/module-code/top-level-await/async-module-does-not-block-sibling-modules.js [module]
+  test/language/module-code/top-level-await/await-dynamic-import-rejection.js [module]
+  test/language/module-code/top-level-await/module-import-rejection-body.js [module]
+  test/language/module-code/top-level-await/module-import-rejection-tick.js [module]
+  test/language/module-code/top-level-await/module-import-rejection.js [module]
+pass -> fail:
+still failing in top-level-await:
+  test/language/module-code/top-level-await/await-expr-reject-throws.js [module] a job threw: Error: symbol Expected SameValue(«TypeError: Cannot convert a Symbol value to a string», «Symbol()») to be true

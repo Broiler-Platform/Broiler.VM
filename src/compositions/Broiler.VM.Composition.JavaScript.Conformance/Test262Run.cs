@@ -625,6 +625,19 @@ internal static class Test262Run
             // one is about, and calling it "printed no completion" would name the symptom.
             if (TryUncaught(in drained, manifest, out var jobError, out var thrown))
             {
+                // A MODULE WHOSE EVALUATION REJECTS AFTER IT AWAITED threw at run time: the host
+                // raises the entry graph's rejection from a job of its own, since nothing else
+                // holds its evaluation's promise (JSeal I11-async), and that is the runtime error a
+                // negative module test declares.
+                if (negative is not null &&
+                    flags.Contains("module") &&
+                    string.Equals(negative.Phase, "runtime", StringComparison.Ordinal) &&
+                    string.Equals(negative.Type, jobError, StringComparison.Ordinal))
+                {
+                    return new Test262Outcome(
+                        relativePath, variant, Test262Verdict.Passed, "the evaluation rejected with " + jobError);
+                }
+
                 return new Test262Outcome(
                     relativePath, variant, Test262Verdict.Failed, "a job threw: " + thrown,
                     Kind: Test262Failures.JobThrew(jobError));
@@ -794,6 +807,21 @@ internal static class Test262Run
                     ? VmHostCallOutcome.Completed
                     : VmHostCallOutcome.Refused;
             }));
+
+        // THE PERMISSION FOR `$262`, AND IT CARRIES NO TRAFFIC. The profile asks `IsBound` once, at
+        // instantiation, and installs `Test262Host` only when the catalog's descriptor carries it
+        // as well - which it does exactly when the run loads the suite's harness. The handler is
+        // never invoked.
+        if (manifest.LoadsHarness)
+        {
+            capabilities.Add(VmCapabilityRegistration.Value(
+                JavaScriptProfile.HostSurfaceCapability,
+                (VmBytes argument, out VmOpaqueRef result) =>
+                {
+                    result = default;
+                    return VmHostCallOutcome.Completed;
+                }));
+        }
 
         return new VmRuntimeCreationOptions(
             aggregateBudget: null,

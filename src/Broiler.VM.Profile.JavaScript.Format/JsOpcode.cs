@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   23
 // Annotated:        23/23
-// Exempt:           127
+// Exempt:           145
 // Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    Medium
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=C3B5DA
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=14CE45
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -596,6 +596,46 @@ public enum JsOpcode : byte
     /// name decide what a destructuring failure throws.
     /// </remarks>
     RequireCoercible = 0x5C,
+
+    /// <summary>
+    /// Convert the key on top of the stack to a property key in place, leaving the base under it;
+    /// a <c>TypeError</c> first when the key would run guest code and the base is <c>null</c> or
+    /// <c>undefined</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>The first half of <c>GetValue</c> on a computed reference, performed once so the read and
+    /// the write that follow share its answer.</b> A compound, logical or update assignment to
+    /// <c>o[k]</c> reads and then writes one reference, and the language converts <c>k</c> the first
+    /// time and keeps the key it produced; <see cref="GetIndex"/> and <see cref="SetIndex"/> each
+    /// convert, so without this a <c>toString</c> on <c>k</c> ran twice. Only an object key is
+    /// converted, because only an object can run code: a primitive is left as it is, which keeps the
+    /// Array element path taking a Number, and converting it later is unobservable. The base is
+    /// checked first because <c>GetValue</c> applies <c>ToObject</c> to it before converting the key.
+    /// </remarks>
+    ToPropertyKey = 0x5D,
+
+    /// <summary>
+    /// Pop <c>u8</c> cooked strings and then <c>u8</c> raw strings; push the template object of the
+    /// tagged-template site this instruction is.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The site IS the instruction.</b> The language keys a realm's template registry by Parse
+    /// Node, so one site answers one frozen strings object for as long as the realm lives and two
+    /// sites never share one, however alike their text. An instruction of one loaded program is
+    /// exactly one Parse Node, so the executor keys its cache by the program and the instruction's
+    /// offset - a key no guest can name, spell or collide with, which a property of the global
+    /// object keyed by script ordinal, line and column was not.
+    /// </para>
+    /// <para>
+    /// <b>The strings object is built by the executor and not by calls the guest can intercept.</b>
+    /// The first evaluation of a site makes the cooked Array, gives it a non-enumerable,
+    /// non-writable, non-configurable <c>raw</c> Array, and freezes both; later evaluations push the
+    /// same object and discard the operands. A cooked string that is <c>undefined</c> is pushed as
+    /// <c>undefined</c>. The count is the number of chunks, one more than the substitutions.
+    /// </para>
+    /// </remarks>
+    GetTemplateObject = 0x5E,
 
     // ---- control flow ---------------------------------------------------------------------------------
 
@@ -1131,6 +1171,209 @@ public enum JsOpcode : byte
     /// </para>
     /// </remarks>
     ImportMeta = 0x86,
+
+    /// <summary>
+    /// Pop an Array of arguments, a receiver and a callee spelled as the bare name <c>eval</c>;
+    /// push the result.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is <see cref="CallEval"/> for the one spelling <see cref="CallEval"/> cannot carry.</b>
+    /// <c>eval(...xs)</c> is a DIRECT eval in the language - the call site is still a call to the
+    /// name - and its argument count is not known until <c>xs</c> has been iterated, so the
+    /// arguments arrive as one Array exactly as they do for <see cref="CallSpread"/>, whose stack
+    /// effect this has. Lowering the spelling to <see cref="CallSpread"/> instead, which is what
+    /// the front end did until JSeal V14, turned a direct evaluation into a silent global one
+    /// (JSD-0026 step 1).
+    /// </para>
+    /// <para>
+    /// <b>The executor treats it exactly as it treats <see cref="CallEval"/></b>: the callee is
+    /// compared against the realm's intrinsic, an ordinary call is made when they differ, and a
+    /// direct evaluation is performed only where <see cref="CallEval"/> at the same site would
+    /// perform one; everywhere else it is the same explicit refusal.
+    /// </para>
+    /// </remarks>
+    CallEvalSpread = 0x90,
+
+    // ---- eval code's free names (JSD-0026 section 5) ------------------------------------------
+    //
+    // FIVE INSTRUCTIONS, ONE OPERAND SHAPE, AND NONE OF THEM ADDRESSES A SLOT IT WAS COMPILED
+    // WITH. Each carries a `u8` count of records to the eval boundary - the record an evaluated
+    // program was entered with - and a `u16` interned name, exactly the shape `ResolveName` has. The
+    // executor walks to the boundary, reads the eval view it was entered with (the caller's program,
+    // site row and record), and resolves the name outward through the scope map the caller's
+    // artifact carries: a declarative row by its slot, a `with` row by its object, an eval row by
+    // its own names and then by ITS caller's view, and a root program row by the realm's global
+    // scope. The provider that compiled the eval code never learns a slot number of the caller's,
+    // and nothing in these bytes names one.
+
+    /// <summary>Push the value of name <c>u16</c>, resolved through the eval view <c>u8</c> records up.</summary>
+    /// <remarks>An unresolvable name is a <c>ReferenceError</c>, as <see cref="LoadGlobal"/>'s is.</remarks>
+    LoadEvalName = 0x91,
+
+    /// <summary>
+    /// Push the value of name <c>u16</c> resolved through the eval view, or <c>undefined</c> when
+    /// nothing binds it. Backs <c>typeof</c>.
+    /// </summary>
+    LoadEvalNameOrUndefined = 0x92,
+
+    /// <summary>Pop a value into name <c>u16</c>, resolved through the eval view <c>u8</c> records up.</summary>
+    /// <remarks>
+    /// A binding in its dead zone is a <c>ReferenceError</c>, an immutable one a <c>TypeError</c>, and an
+    /// unresolvable name creates a global property in sloppy code and is a <c>ReferenceError</c> in
+    /// strict code - the strictness of the unit the instruction is in, which is the evaluated
+    /// program's.
+    /// </remarks>
+    StoreEvalName = 0x93,
+
+    /// <summary>
+    /// Push the value of name <c>u16</c> resolved through the eval view, and then the receiver a call
+    /// through it gets: the object when a <c>with</c> row answered, <c>undefined</c> otherwise.
+    /// </summary>
+    LoadEvalNameWithBase = 0x94,
+
+    /// <summary>Push the result of <c>delete</c> applied to name <c>u16</c>, resolved through the eval view.</summary>
+    /// <remarks>
+    /// A declarative binding is not deletable and answers <c>false</c>; a <c>with</c> object's
+    /// property is deleted from the object; a global answers what <see cref="DeleteGlobalBinding"/>
+    /// answers; a name nothing binds answers <c>true</c>.
+    /// </remarks>
+    DeleteEvalName = 0x95,
+
+    // ---- eval declarations (JSeal V15, JSD-0026 steps 6-8) ------------------------------------
+
+    /// <summary>
+    /// Replace the receiver a name search answered with the one a call through that name gets: the
+    /// object itself when a <c>with</c> record answered, <c>undefined</c> when the bindings a direct
+    /// <c>eval</c> introduced into a function answered.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the specification's <c>WithBaseObject</c>, and it exists because a function's
+    /// eval-introduced bindings are searched by name exactly as a <c>with</c> object is.</b> The
+    /// search answers with the object that holds the name, which for a <c>with</c> record is the
+    /// receiver the call must get and for the eval-variables record is an internal object no guest
+    /// code may ever see: <c>function f() { eval("function g() { return this; }"); g(); }</c> calls
+    /// <c>g</c> with <c>undefined</c>. The lowering emits it after the search of every call whose
+    /// search can pass such a record; it is not needed where only <c>with</c> records can answer.
+    /// </para>
+    /// <para>
+    /// <b>Any other value passes unchanged</b>, so an <c>undefined</c> the failed search answered and
+    /// a <c>with</c> object stay what they were.
+    /// </para>
+    /// </remarks>
+    WithBaseObject = 0x9A,
+
+    /// <summary>
+    /// Pop a value into name <c>u16</c> of the variable environment the evaluation whose boundary
+    /// record is <c>u8</c> records up was entered with.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It writes the variable environment directly and resolves nothing</b>, which is what a sloppy
+    /// evaluation's function declarations and its Annex B block-function aliases are written with:
+    /// the specification initialises them through the variable environment itself (its
+    /// <c>SetMutableBinding</c>), so a <c>with</c> object or a catch parameter of the same name
+    /// between the call and that environment never answers - which is the one thing
+    /// <see cref="StoreEvalName"/> could not promise.
+    /// </para>
+    /// <para>
+    /// <b>A name the evaluation's declaration instantiation did not declare is not written</b>: an
+    /// Annex B alias the caller's own bindings kept from being hoisted is skipped, exactly as the
+    /// specification skips its replacement evaluation step. Only eval code carries it, as the eval
+    /// name instructions.
+    /// </para>
+    /// </remarks>
+    StoreEvalVariable = 0x9B,
+    // ---- resource scopes: `using` and `await using` (JSeal F21-F22, JSD-0034) ---------------------
+    //
+    // FIVE INSTRUCTIONS OVER ONE HIDDEN VALUE, AND THE COMPLETION LIVES IN THAT VALUE RATHER THAN ON
+    // THE STACK. A statement list that declares a resource keeps a disposal scope in a slot whose
+    // name no source can write, registers each resource with it, and disposes it on every way out:
+    // inline where the list ends and where a `break`, `continue` or `return` leaves it, and from a
+    // `finally` region for a throw or a generator's forced return. The scope carries the
+    // specification's completion (the exception in flight, folded with every disposer that throws),
+    // so an exit that suspends in the middle of disposal finds it again after the `Await` and the
+    // lowering needs no second slot for it. Only `DisposeStep` belongs to an async unit; a
+    // synchronous scope is disposed by `DisposeEnd` alone.
+
+    /// <summary>Push a fresh, empty disposal scope.</summary>
+    DisposeScope = 0xA0,
+
+    /// <summary>
+    /// Pop a disposal scope and register the value under it, which stays; the <c>u8</c> hint is
+    /// zero for <c>using</c> and one for <c>await using</c>.
+    /// </summary>
+    /// <remarks>
+    /// The specification's <c>AddDisposableResource</c>: the method is read and captured now, a
+    /// value that is not an object or has no method is a <c>TypeError</c> here, and a nullish value
+    /// is skipped under hint zero and recorded as owing an <c>Await</c> under hint one.
+    /// </remarks>
+    DisposeAdd = 0xA1,
+
+    /// <summary>
+    /// Pop a disposal scope and the value under it, and fold that value into the scope's completion.
+    /// </summary>
+    /// <remarks>
+    /// A thrown value becomes the completion, or wraps the one already there as a
+    /// <c>SuppressedError</c> whose <c>error</c> is the new value; a generator's forced return is
+    /// kept beside it and is what <see cref="DisposeEnd"/> hands back when nothing threw.
+    /// </remarks>
+    DisposeFold = 0xA2,
+
+    /// <summary>
+    /// Pop a disposal scope; run its entries, newest first, until one owes an <c>Await</c> and push
+    /// what is to be awaited, or jump to <c>u32</c> when none is left.
+    /// </summary>
+    /// <remarks>
+    /// The two-effect shape <see cref="IterateNext"/> has: the target is one below this
+    /// instruction's height. A disposer that throws is folded into the scope's completion and the
+    /// run goes on; the <see cref="Await"/> after this instruction is guarded by a region whose
+    /// handler folds a rejection the same way. Admitted only in a unit that may await.
+    /// </remarks>
+    DisposeStep = 0xA3,
+
+    /// <summary>
+    /// Pop a disposal scope, run whatever entries it has left, and settle its completion: under
+    /// <c>u8</c> zero throw the completion when something threw, under one push the value to
+    /// re-raise with <see cref="Throw"/>.
+    /// </summary>
+    DisposeEnd = 0xA4,
+
+    // THREE INSTRUCTIONS FOR THE UPDATE EXPRESSIONS, BECAUSE `x++` IS NOT `x + 1` ONCE A BIGINT CAN
+    // REACH IT (JSeal B05, decision JSD-0033 section 7). The specification converts the operand with
+    // `ToNumeric` and adds the one of the operand's own type - `1` to a Number, `1n` to a BigInt -
+    // so the old lowering (`ToNumber`, the constant `1`, `Add`) throws for `5n++` and the language
+    // answers `6n`. The value is only known when the program runs; these three decide there, with
+    // no branch in the bytes. The numeric manifest keeps the old lowering and admits none of them.
+
+    /// <summary>
+    /// The update expressions' conversion: <c>ToNumeric</c>, which keeps a BigInt where
+    /// <see cref="ToNumber"/> refuses one.
+    /// </summary>
+    /// <remarks>
+    /// An object is converted to a primitive once, with the <c>"number"</c> hint; a BigInt it answers
+    /// is kept and anything else goes on to <c>ToNumber</c>. A Number or a BigInt is left as it is.
+    /// </remarks>
+    ToNumeric = 0xB0,
+
+    /// <summary>
+    /// Add one of the operand's own type: <c>Number::add(x, 1)</c> for a Number,
+    /// <c>BigInt::add(x, 1n)</c> for a BigInt.
+    /// </summary>
+    /// <remarks>
+    /// The lowering puts a <see cref="ToNumeric"/> in front of it, so its operand is already a
+    /// Number or a BigInt; anything else is converted with <c>ToNumeric</c> first, so the answer
+    /// never depends on the lowering having done so.
+    /// </remarks>
+    Increment = 0xB1,
+
+    /// <summary>
+    /// Subtract one of the operand's own type: <c>Number::subtract(x, 1)</c> for a Number,
+    /// <c>BigInt::subtract(x, 1n)</c> for a BigInt.
+    /// </summary>
+    /// <remarks>The counterpart of <see cref="Increment"/>, with the same conversion.</remarks>
+    Decrement = 0xB2,
 }
 
 /// <summary>The operand shape that follows an opcode byte.</summary>
@@ -1283,7 +1526,7 @@ public static class JsOpcodes
         ElementIsMethod | ElementIsGetter | ElementIsSetter;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=2C8028
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=506D9B
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1316,7 +1559,7 @@ public static class JsOpcodes
         JsOpcode.BitwiseOr, JsOpcode.BitwiseAnd, JsOpcode.BitwiseXor,
         JsOpcode.ShiftLeft, JsOpcode.ShiftRight, JsOpcode.ShiftRightUnsigned,
         JsOpcode.TypeOf, JsOpcode.InstanceOf, JsOpcode.In, JsOpcode.Void,
-        JsOpcode.RequireCoercible,
+        JsOpcode.RequireCoercible, JsOpcode.ToPropertyKey, JsOpcode.GetTemplateObject,
         JsOpcode.Jump, JsOpcode.JumpIfFalse, JsOpcode.JumpIfTrue, JsOpcode.Throw,
         JsOpcode.ForInStart, JsOpcode.ForInNext,
         JsOpcode.IterateStart, JsOpcode.IterateNext, JsOpcode.IterateRest, JsOpcode.IterateClose,
@@ -1332,6 +1575,13 @@ public static class JsOpcodes
         JsOpcode.DeleteGlobalBinding,
         JsOpcode.EnterBody,
         JsOpcode.ImportCall, JsOpcode.ImportMeta,
+        JsOpcode.CallEvalSpread,
+        JsOpcode.LoadEvalName, JsOpcode.LoadEvalNameOrUndefined, JsOpcode.StoreEvalName,
+        JsOpcode.LoadEvalNameWithBase, JsOpcode.DeleteEvalName,
+        JsOpcode.WithBaseObject, JsOpcode.StoreEvalVariable,
+        JsOpcode.DisposeScope, JsOpcode.DisposeAdd, JsOpcode.DisposeFold, JsOpcode.DisposeStep,
+        JsOpcode.DisposeEnd,
+        JsOpcode.ToNumeric, JsOpcode.Increment, JsOpcode.Decrement,
     ];
 
     /// <summary>Whether <paramref name="value"/> is an opcode format version 2 defines.</summary>
@@ -1366,13 +1616,13 @@ public static class JsOpcodes
     };
 
     /// <summary>Whether this opcode's <c>u32</c> operand is a code offset the verifier must check.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=227EC2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=70C49F
     // Broiler-Human:        PENDING
     public static bool HasCodeTarget(JsOpcode opcode) => opcode switch
     {
         JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
         JsOpcode.ForInNext or JsOpcode.IterateNext or
-        JsOpcode.IterateAwaitStep or JsOpcode.IterateCloseAsync => true,
+        JsOpcode.IterateAwaitStep or JsOpcode.IterateCloseAsync or JsOpcode.DisposeStep => true,
         _ => false,
     };
 
@@ -1380,7 +1630,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=19AD95
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A6222A
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1401,6 +1651,7 @@ public static class JsOpcodes
         JsOpcode.BitwiseOr or JsOpcode.BitwiseAnd or JsOpcode.BitwiseXor or
         JsOpcode.ShiftLeft or JsOpcode.ShiftRight or JsOpcode.ShiftRightUnsigned or
         JsOpcode.TypeOf or JsOpcode.InstanceOf or JsOpcode.In or JsOpcode.Void or
+        JsOpcode.ToPropertyKey or
         JsOpcode.Throw or JsOpcode.ForInStart or
         JsOpcode.ArrayAppend or JsOpcode.SpreadArray or JsOpcode.SpreadObject or
         JsOpcode.CallSpread or JsOpcode.ConstructSpread or JsOpcode.SuperCallSpread or
@@ -1411,12 +1662,15 @@ public static class JsOpcodes
         JsOpcode.LoadPrivate or JsOpcode.StorePrivate or JsOpcode.HasPrivate or
         JsOpcode.RunStaticElements or
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap or
-        JsOpcode.EnterBody
+        JsOpcode.EnterBody or JsOpcode.CallEvalSpread or JsOpcode.WithBaseObject or
+        JsOpcode.DisposeScope or JsOpcode.DisposeFold or
+        JsOpcode.ToNumeric or JsOpcode.Increment or JsOpcode.Decrement
             => JsOperandShape.None,
 
         JsOpcode.Call or JsOpcode.CallEval or JsOpcode.Construct or JsOpcode.Pick or
         JsOpcode.DefineMethod or JsOpcode.NewClass or JsOpcode.SuperCall or
-        JsOpcode.IterateClose or JsOpcode.DefineClassElement
+        JsOpcode.IterateClose or JsOpcode.DefineClassElement or JsOpcode.GetTemplateObject or
+        JsOpcode.DisposeAdd or JsOpcode.DisposeEnd
             => JsOperandShape.U8,
 
         JsOpcode.LoadConstant or
@@ -1436,7 +1690,7 @@ public static class JsOpcodes
 
         JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
         JsOpcode.ForInNext or JsOpcode.IterateNext or
-        JsOpcode.IterateAwaitStep or JsOpcode.IterateCloseAsync
+        JsOpcode.IterateAwaitStep or JsOpcode.IterateCloseAsync or JsOpcode.DisposeStep
             => JsOperandShape.U32,
 
         // `ResolveName` shares the shape the three slot instructions use, and for the same reason:
@@ -1444,7 +1698,9 @@ public static class JsOpcodes
         // rather than a hop count and the index names a constant rather than a slot, which is a
         // difference in meaning and not in encoding.
         JsOpcode.LoadScoped or JsOpcode.StoreScoped or JsOpcode.InitialiseScoped or
-        JsOpcode.ResolveName
+        JsOpcode.ResolveName or
+        JsOpcode.LoadEvalName or JsOpcode.LoadEvalNameOrUndefined or JsOpcode.StoreEvalName or
+        JsOpcode.LoadEvalNameWithBase or JsOpcode.DeleteEvalName or JsOpcode.StoreEvalVariable
             => JsOperandShape.U8U16,
 
         _ => null,
@@ -1458,7 +1714,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6FC803
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B7D135
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1505,16 +1761,24 @@ public static class JsOpcodes
             case JsOpcode.SuperCallForwarded:
             case JsOpcode.LoadArgument:
             case JsOpcode.RestArguments:
+            case JsOpcode.LoadEvalName:
+            case JsOpcode.LoadEvalNameOrUndefined:
+            case JsOpcode.DeleteEvalName:
                 pushes = 1;
                 return true;
 
+            // The callee and then the receiver, which is the order every call lowering leaves them
+            // in: exactly what a `with`-resolved callee's search leaves.
             case JsOpcode.DuplicateTwo:
+            case JsOpcode.LoadEvalNameWithBase:
                 pushes = 2;
                 return true;
 
             case JsOpcode.StoreScoped:
             case JsOpcode.InitialiseScoped:
             case JsOpcode.StoreGlobal:
+            case JsOpcode.StoreEvalName:
+            case JsOpcode.StoreEvalVariable:
             case JsOpcode.InitialiseGlobalLexical:
             case JsOpcode.ThrowImmutable:
             case JsOpcode.Pop:
@@ -1551,6 +1815,9 @@ public static class JsOpcodes
             case JsOpcode.DeleteProperty:
             case JsOpcode.Negate:
             case JsOpcode.ToNumber:
+            case JsOpcode.ToNumeric:
+            case JsOpcode.Increment:
+            case JsOpcode.Decrement:
             case JsOpcode.Not:
             case JsOpcode.BitwiseNot:
             case JsOpcode.TypeOf:
@@ -1657,9 +1924,17 @@ public static class JsOpcodes
                 pushes = 1;
                 return true;
 
+            // Each chunk is on the stack twice, cooked and raw, and one object comes back.
+            case JsOpcode.GetTemplateObject:
+                pops = checked((int)operand * 2);
+                pushes = 1;
+                return true;
+
             // The argument Array carries the count, so these two have a fixed effect where Call and
-            // Construct have one that varies.
+            // Construct have one that varies. The direct-eval spelling of a spread call has the
+            // ordinary one's effect, for the reason CallEval has Call's.
             case JsOpcode.CallSpread:
+            case JsOpcode.CallEvalSpread:
                 pops = 3;
                 pushes = 1;
                 return true;
@@ -1713,11 +1988,15 @@ public static class JsOpcodes
             case JsOpcode.Yield:
             case JsOpcode.YieldDelegate:
             case JsOpcode.Await:
+
+            // The receiver goes and the receiver a call gets comes back (JSeal V15).
+            case JsOpcode.WithBaseObject:
                 pops = 1;
                 pushes = 1;
                 return true;
 
             case JsOpcode.Swap:
+            case JsOpcode.ToPropertyKey:
                 pops = 2;
                 pushes = 2;
                 return true;
@@ -1749,6 +2028,38 @@ public static class JsOpcodes
             // The constructor stays, so a class lowering can run its static elements and then go on
             // using the value it already had.
             case JsOpcode.RunStaticElements:
+                return true;
+
+            // ---- resource scopes ----------------------------------------------------------------
+
+            case JsOpcode.DisposeScope:
+                pushes = 1;
+                return true;
+
+            // THE VALUE UNDER THE SCOPE STAYS, because the binding the declaration initialises is
+            // written from it next: the resource is registered before its binding leaves the dead
+            // zone, which is the order `InitializeBinding` gives the two.
+            case JsOpcode.DisposeAdd:
+                pops = 1;
+                return true;
+
+            case JsOpcode.DisposeFold:
+                pops = 2;
+                return true;
+
+            // THE FALLTHROUGH EFFECT, the same two-effect shape IterateNext has: the scope goes and
+            // what is to be awaited arrives; on the taken branch nothing arrives, so the target is
+            // one below this instruction's height.
+            case JsOpcode.DisposeStep:
+                pops = 1;
+                pushes = 1;
+                return true;
+
+            // Operand zero settles by throwing or by nothing; operand one leaves the value the
+            // `Throw` after it re-raises.
+            case JsOpcode.DisposeEnd:
+                pops = 1;
+                pushes = operand == 0 ? 0 : 1;
                 return true;
 
             default:

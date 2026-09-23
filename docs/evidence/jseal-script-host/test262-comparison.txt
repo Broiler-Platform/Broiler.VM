@@ -1,0 +1,46 @@
+# Test262 variants whose verdict moved: test/language, test/annexB, test/built-ins/Proxy/revocable.
+# before: base tree (HEAD + base-vm-w4.patch); after: this slice. 2026-09-21, bytecode form, 1 shard, 1 job.
+# The two Passed -> Exhausted rows are WallClock on a loaded machine: a rerun of their directory
+# after the change passes 110 of 110 (see README).
+test/annexB/language/eval-code/direct/script-decl-lex-no-collision.js [sloppy] Failed -> Passed
+test/annexB/language/eval-code/direct/script-decl-lex-no-collision.js [strict] Failed -> Passed
+test/annexB/language/global-code/block-decl-global-existing-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/block-decl-global-existing-non-enumerable-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/if-decl-else-decl-a-global-existing-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/if-decl-else-decl-a-global-existing-non-enumerable-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/if-decl-else-decl-b-global-existing-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/if-decl-else-decl-b-global-existing-non-enumerable-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/if-decl-else-stmt-global-existing-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/if-decl-else-stmt-global-existing-non-enumerable-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/if-decl-no-else-global-existing-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/if-decl-no-else-global-existing-non-enumerable-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/if-stmt-else-decl-global-existing-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/if-stmt-else-decl-global-existing-non-enumerable-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/script-decl-lex-collision.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/switch-case-global-existing-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/switch-case-global-existing-non-enumerable-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/switch-dflt-global-existing-global-init.js [sloppy] Failed -> Passed
+test/annexB/language/global-code/switch-dflt-global-existing-non-enumerable-global-init.js [sloppy] Failed -> Passed
+test/language/expressions/async-arrow-function/prototype.js [sloppy] Passed -> Exhausted
+test/language/expressions/async-arrow-function/prototype.js [strict] Passed -> Exhausted
+test/language/global-code/decl-lex-restricted-global.js [sloppy] Failed -> Passed
+test/language/global-code/decl-lex-restricted-global.js [strict] Failed -> Passed
+test/language/global-code/script-decl-func-dups.js [sloppy] Failed -> Passed
+test/language/global-code/script-decl-func-dups.js [strict] Failed -> Passed
+test/language/global-code/script-decl-func.js [sloppy] Failed -> Passed
+test/language/global-code/script-decl-func.js [strict] Failed -> Passed
+test/language/global-code/script-decl-lex-deletion.js [sloppy] Failed -> Passed
+test/language/global-code/script-decl-lex-lex.js [sloppy] Failed -> Passed
+test/language/global-code/script-decl-lex-lex.js [strict] Failed -> Passed
+test/language/global-code/script-decl-lex-restricted-global.js [sloppy] Failed -> Passed
+test/language/global-code/script-decl-lex-restricted-global.js [strict] Failed -> Passed
+test/language/global-code/script-decl-lex-var-declared-via-eval.js [sloppy] Failed -> Passed
+test/language/global-code/script-decl-lex-var-declared-via-eval.js [strict] Failed -> Passed
+test/language/global-code/script-decl-lex-var.js [sloppy] Failed -> Passed
+test/language/global-code/script-decl-lex-var.js [strict] Failed -> Passed
+test/language/global-code/script-decl-lex.js [sloppy] Failed -> Passed
+test/language/global-code/script-decl-lex.js [strict] Failed -> Passed
+test/language/global-code/script-decl-var-collision.js [sloppy] Failed -> Passed
+test/language/global-code/script-decl-var-collision.js [strict] Failed -> Passed
+test/language/global-code/script-decl-var.js [sloppy] Failed -> Passed
+test/language/global-code/script-decl-var.js [strict] Failed -> Passed

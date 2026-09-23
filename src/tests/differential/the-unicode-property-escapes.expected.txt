@@ -1,0 +1,77 @@
+#diverges node 16 the pinned edition admits every Script value PropertyValueAliases.txt lists, Hrkt and Katakana_Or_Hiragana included (UnicodeMatchPropertyValue); V8 refuses them
+#diverges node 46 WSpace is a UCD alias the specification's binary property table does not list, so UnicodeMatchProperty refuses it; V8 accepts it
+#diverges node 60 this realm refuses the v flag, and advertises neither it nor properties of strings (JSD-0031 section 7); V8 implements it
+1 true
+2 false
+3 true
+4 false
+5 true
+6 "true,false"
+7 "true,false"
+8 "true,false"
+9 "false,true,true"
+10 true
+11 "false,true"
+12 "true,false,true"
+13 "true,false"
+14 "true,true,false"
+15 "true,true"
+16 "false,false"
+17 "true,false"
+18 "true,true,true"
+19 "true,false"
+20 "true,false"
+21 "true,false"
+22 "true,false"
+23 "true,true"
+24 "3,2"
+25 "x_y"
+26 "c,a"
+27 "true,false"
+28 "true,false"
+29 "true,true,false"
+30 "true,true,false"
+31 "true,true,false,false"
+32 "true,true,true"
+33 "false,false,false"
+34 SyntaxError
+35 SyntaxError
+36 SyntaxError
+37 SyntaxError
+38 SyntaxError
+39 SyntaxError
+40 SyntaxError
+41 SyntaxError
+42 SyntaxError
+43 SyntaxError
+44 SyntaxError
+45 SyntaxError
+46 SyntaxError
+47 SyntaxError
+48 SyntaxError
+49 SyntaxError
+50 SyntaxError
+51 SyntaxError
+52 SyntaxError
+53 SyntaxError
+54 "true,true,true"
+55 "true,true"
+56 SyntaxError
+57 "true,true,true"
+58 SyntaxError
+59 SyntaxError
+60 SyntaxError
+61 SyntaxError
+62 "28 pairs, 0 missed"
+63 "1414 pairs, 0 missed"
+64 "1414 pairs, 0 missed"
+65 "1414 pairs, 0 missed"
+66 "1414 pairs, 0 missed"
+67 "true,true"
+68 "2,0"
+69 "3,2"
+70 "abcd,abc,abcabc"
+71 "1,4"
+72 "true,false,true"
+73 "<1><2><2>,x|y"
+74 "true,true"

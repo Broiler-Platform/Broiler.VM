@@ -1053,7 +1053,66 @@ public sealed class ReviewRecordRuleTests
         // which decouples native machine code execution from the JavaScript profile into a first-class
         // VM profile (broiler.machinecode) and native compiler lowering pipeline. They are covered on
         // the same terms as every other product file, and nothing in them has been read by a human.
-        Assert.Equal(184, AssuranceSources.Files.Count);
+        //
+        // TWO MORE JOINED THEM WITH THE ITERATOR GLOBAL AND ITS HELPERS, JsRealm.Iterator.cs and
+        // JsRealm.IteratorHelpers.cs: the kind-specific iterator prototypes, the `Iterator`
+        // constructor and `Iterator.from`, and the helper state machine every lazy helper and
+        // `Iterator.concat` step through. They are partial files of the realm rather than regions of
+        // the Symbol setup because the helpers are a surface of their own, and they are covered on
+        // the same terms as every other product file; nothing in them has been read by a human.
+        //
+        // ONE MORE IS THE DISPOSAL STACKS, JsRealm.Disposal.cs (JSeal slices
+        // F19-F20): DisposableStack, AsyncDisposableStack and the two iterator disposers. It is a
+        // file of its own because the asynchronous unwinding is a continuation over the realm's
+        // promise machinery, and a review of when a guest disposer runs should find it in one
+        // place. It is covered on the same terms as every other product file, and nothing in it has
+        // been read by a human.
+        //
+        // AND ARRAY.FROMASYNC, JsRealm.ArrayFromAsync.cs: the built-in
+        // async function written as continuations over the realm's own Await, beside the other
+        // per-intrinsic realm files. It is covered on the same terms as every other product file,
+        // and nothing in it has been read by a human.
+        //
+        // TWO MORE JOINED THEM WITH THE INTERNAL STRUCTURED-CLONE CARRIER (decision JSD-0032, JSeal
+        // cards I14 and I15): JsClone.cs, the carrier's data types and its refusal, and
+        // JsRealm.Clone.cs, the serializer and deserializer. They are internal and nothing public
+        // reaches them, which is a reason to read them rather than a reason not to: they walk every
+        // object a guest hands them and copy its bytes. They are covered on the same terms as every
+        // other product file, and nothing in them has been read by a human.
+        //
+        // AND THE EVAL SCOPE MAP, JsEvalMap.cs (JSeal V14, the proposed
+        // and unsigned JSD-0026): what a verified artifact says each direct-eval site can see, and
+        // the view an evaluated program's boundary record is entered with. It is the one table a
+        // name inside evaluated code is resolved through, so a review that did not read it would be
+        // a review of eval code's every free name. It is covered on the same terms as every other
+        // product file, and nothing in it has been read by a human.
+        //
+        // AND THE INTERNAL BIGINT VALUE, JsBigInt.cs (JSeal B01, the proposed JSD-0033): the one
+        // type a BigInt's magnitude is held in, with its width ceiling and the size its charges are
+        // computed from. It is internal and behind a gate no shipped composition opens, and it is
+        // covered on the same terms as every other product file; nothing in it has been read by a
+        // human. (Amended 2026-09-21: the gate is gone since B05 below; the type stays internal and
+        // is reached through the admitted surface.)
+        //
+        // AND THE BIGINT INTRINSIC, JsRealm.BigInt.cs (JSeal B05, JSD-0033 section 7): the `BigInt`
+        // function, `asIntN`/`asUintN` and `BigInt.prototype`, built only when a composition admits
+        // `broiler.javascript.bigint`, which the descriptor admitting every surface now does. It is
+        // covered on the same terms as every other product file; nothing in it has been read by a
+        // human.
+        //
+        // AND THE UNICODE TABLES (JSeal F07 U2, the proposed JSD-0031): three generated files -
+        // JsUnicodeProperties.g.cs and JsUnicodeCaseFolding.g.cs in the format assembly,
+        // JsUnicodeNormalization.g.cs in the profile - and the three hand-written files that read
+        // them. The generated ones are written by UnicodeTableGenerator and held to it by rule N22;
+        // each table member carries the per-unit EXEMPT line and each type an assessment the
+        // generator emits. All six are covered on the same terms as every other product file, and
+        // nothing in them has been read by a human.
+        //
+        // AND JsUnicodeLexical.cs (JSeal slice JSD-0031-later): the format assembly's public reading
+        // of ID_Start, ID_Continue and WhiteSpace from those tables, which the tokenizer and the
+        // matcher's group names share. Covered on the same terms; nothing in it has been read by a
+        // human.
+        Assert.Equal(200, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

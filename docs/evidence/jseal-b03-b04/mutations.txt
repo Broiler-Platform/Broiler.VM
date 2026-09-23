@@ -1,0 +1,19 @@
+# Mutation runs (each reverted afterwards). Run 1 applied M1-M4 together; run 2 applied M1 alone after the
+# cancellation row was given a latency bound (the first form of that row did not detect M1).
+# M1: ToDecimalString converts through one BigInteger.ToString call (no divide and conquer)
+# M2: ProductCost loses its size-squared term
+# M3: Remainder takes the divisor's sign (floor modulo)
+# M4: JsBigInt.Equals is reference equality (the B01 mutation no row could detect)
+## run 1 (M1+M2+M3+M4)
+FAIL bigint/b03/division-and-remainder-truncate-toward-zero: the program answered '3,-3,-3,3,1,1,-1,-1,0,0,1000000000000000,1' and '3,-3,-3,3,1,-1,1,-1,0,0,1000000000000000,1' was expected
+FAIL bigint/b03/computed-bigints-are-equal-to-constants-by-value-not-identity: the program answered 'false,false,4,,false,-1,false,false,true,false' and 'true,true,1,t,true,0,true,true,false,true' was expected
+FAIL bigint/b03/compound-assignment-is-exact: the program answered '42,27,-3,2' and '42,27,-3,-1' was expected
+FAIL bigint/b03/results-wider-than-the-ceiling-are-range-errors: the program answered 'RangeError,RangeError,RangeError,RangeError,bigint,RangeError,RangeError,bigint,false,RangeError' and 'RangeError,RangeError,RangeError,RangeError,bigint
+FAIL bigint/b04/an-oversized-shift-is-refused-before-it-allocates: the program answered 'RangeError,RangeError,false,0,1' and 'RangeError,RangeError,true,0,1' was expected
+FAIL bigint/b03/a-wide-multiplication-is-charged-for-its-size: narrow answered done; wide answered done
+FAIL bigint/b03/formatting-the-widest-value-is-charged-for-its-square: under 5000000 fuel it answered ResourceExhaustion/AllowanceExhausted; under the default allowance ResourceExhaustion/AllowanceExhausted
+broiler-js-slice-compiler: 7 of 349 checks FAILED, 2 not run on this machine and claimed by nothing
+## run 2 (M1 alone)
+FAIL bigint/b03/formatting-the-widest-value-is-charged-for-its-square: under 5000000 fuel it answered ResourceExhaustion/AllowanceExhausted; under the default allowance ResourceExhaustion/AllowanceExhausted
+FAIL bigint/b03/cancellation-stops-a-long-formatting: the run answered Cancellation/Cancelled after 4020 ms
+broiler-js-slice-compiler: 2 of 349 checks FAILED, 2 not run on this machine and claimed by nothing

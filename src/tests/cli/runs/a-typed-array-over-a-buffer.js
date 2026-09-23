@@ -10,6 +10,10 @@
 // they need the agent model, and folding them into an ordinary byte buffer's identity would let a
 // composition that wanted one admit cross-agent shared memory by accident. The line that asserts
 // their absence is the one that would go red if that ever stopped being true.
+//
+// (Amended 2026-09-22, JSeal B07. The same line also printed `typeof BigInt64Array` and expected
+// `undefined` while BigInt typed arrays were absent; they exist now wherever BigInt is admitted,
+// so its third field answers `function`. The first two, the deliberate absences, are unchanged.)
 
 var bytes = new Uint8Array(4);
 bytes[0] = 255;

@@ -1,0 +1,174 @@
+# Pinned Test262 ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e, bytecode form, --shards 1 --jobs 1.
+# before = base (HEAD + wave-1 patch); after = this slice. Counts are variants.
+
+## Math/f16round + DataView/prototype/{getFloat16,setFloat16}
+before: pass 24, fail 74, unsupported 0, skipped 1
+after:  pass 80, fail 18, unsupported 0, skipped 1
+newly failing: 0
+newly passing, by directory:
+    28  test/built-ins/DataView/prototype/getFloat16
+    28  test/built-ins/DataView/prototype/setFloat16
+still failing after, by cause:
+    14  $262.detachArrayBuffer refused by this host
+     4  resizable buffers (out of scope, F04-F06)
+
+## After review (Array argument drain), same subtrees, binaries D:/wt/t262/vm-f01-f03/bin-fix
+TypedArrayConstructors: pass 594, fail 635, unsupported 213, skipped 2 (identical to after, per variant)
+TypedArray:             pass 1410, fail 898, unsupported 552, skipped 0 (identical to after, per variant)
+variants whose result changed against the after run: 0 in both
+
+## TypedArrayConstructors
+before: pass 552, fail 677, unsupported 213, skipped 2
+after:  pass 594, fail 635, unsupported 213, skipped 2
+newly failing: 0
+newly passing, by directory:
+     4  test/built-ins/TypedArrayConstructors/ctors/length-arg
+    22  test/built-ins/TypedArrayConstructors/ctors/object-arg
+     2  test/built-ins/TypedArrayConstructors/ctors/typedarray-arg
+     4  test/built-ins/TypedArrayConstructors/internals/Delete
+     2  test/built-ins/TypedArrayConstructors/internals/GetOwnProperty
+     2  test/built-ins/TypedArrayConstructors/internals/HasProperty
+     6  test/built-ins/TypedArrayConstructors/internals/OwnPropertyKeys
+still failing after, by cause:
+   426  BigInt (out of scope)
+    78  other (pre-existing; first failing constructor is not Float16Array)
+    54  SharedArrayBuffer (absent by design)
+    45  $262.detachArrayBuffer refused by this host
+    22  $262.createRealm refused by this host
+    10  resizable buffers (out of scope, F04-F06)
+
+## TypedArray
+before: pass 1042, fail 1266, unsupported 552, skipped 0
+after:  pass 1410, fail 898, unsupported 552, skipped 0
+newly failing: 0
+newly passing, by directory:
+    10  test/built-ins/TypedArray/prototype/at
+     2  test/built-ins/TypedArray/prototype/byteLength
+    30  test/built-ins/TypedArray/prototype/copyWithin
+    16  test/built-ins/TypedArray/prototype/every
+    14  test/built-ins/TypedArray/prototype/fill
+    22  test/built-ins/TypedArray/prototype/filter
+    12  test/built-ins/TypedArray/prototype/find
+    12  test/built-ins/TypedArray/prototype/findIndex
+    12  test/built-ins/TypedArray/prototype/findLast
+    12  test/built-ins/TypedArray/prototype/findLastIndex
+    14  test/built-ins/TypedArray/prototype/forEach
+    10  test/built-ins/TypedArray/prototype/includes
+    10  test/built-ins/TypedArray/prototype/indexOf
+     4  test/built-ins/TypedArray/prototype/join
+    10  test/built-ins/TypedArray/prototype/lastIndexOf
+     2  test/built-ins/TypedArray/prototype/length
+    28  test/built-ins/TypedArray/prototype/map
+    20  test/built-ins/TypedArray/prototype/reduce
+    20  test/built-ins/TypedArray/prototype/reduceRight
+    24  test/built-ins/TypedArray/prototype/set
+    18  test/built-ins/TypedArray/prototype/slice
+    18  test/built-ins/TypedArray/prototype/some
+    12  test/built-ins/TypedArray/prototype/sort
+    20  test/built-ins/TypedArray/prototype/subarray
+     2  test/built-ins/TypedArray/prototype/toReversed
+     2  test/built-ins/TypedArray/prototype/toSorted
+    12  test/built-ins/TypedArray/prototype/with
+still failing after, by cause:
+   560  BigInt (out of scope)
+   174  resizable buffers (out of scope, F04-F06)
+   110  $262.detachArrayBuffer refused by this host
+    46  other (pre-existing; first failing constructor is not Float16Array)
+     8  SharedArrayBuffer (absent by design)
+
+## staging/sm/{TypedArray,Math} + harness + Array/prototype/concat + DataView + Math
+before: pass 1697, fail 607, unsupported 64, skipped 11
+after:  pass 1755, fail 549, unsupported 64, skipped 11
+newly failing: 0
+newly passing, by directory:
+    28  test/built-ins/DataView/prototype/getFloat16
+    28  test/built-ins/DataView/prototype/setFloat16
+     2  test/staging/sm/TypedArray/constructor-iterator-primitive.js
+still failing after, by cause:
+   160  $262.detachArrayBuffer refused by this host
+   146  other (pre-existing; first failing constructor is not Float16Array)
+    78  SharedArrayBuffer (absent by design)
+    58  BigInt (out of scope)
+    55  $262.createRealm refused by this host
+    52  resizable buffers (out of scope, F04-F06)
+
+## Per-kind check of every still-failing in-scope file (TypedArray + TypedArrayConstructors)
+# Each file re-run through the CLI with the harness's constructor list narrowed to one kind and
+# $262.detachArrayBuffer supplied through ArrayBuffer.prototype.transfer (sloppy unless onlyStrict).
+files considered: 141
+  73  Float32 fail / Float16 fail
+  68  Float32 pass / Float16 pass
+--- differing, or failing for Float16Array:
+test/built-ins/TypedArray/from/arylk-get-length-error.js | fail | fail | broiler-js: uncaught Error: Expected a Test2
+test/built-ins/TypedArray/from/arylk-to-length-error.js | fail | fail | broiler-js: uncaught Error: Expected a Test26
+test/built-ins/TypedArray/from/from-array-mapper-detaches-result.js | fail | fail | broiler-js: uncaught TypeError: %
+test/built-ins/TypedArray/from/from-typedarray-into-itself-mapper-detaches-result.js | fail | fail | broiler-js: unca
+test/built-ins/TypedArray/from/from-typedarray-mapper-detaches-result.js | fail | fail | broiler-js: uncaught TypeErr
+test/built-ins/TypedArray/from/iter-access-error.js | fail | fail | broiler-js: uncaught Error: Expected a Test262Err
+test/built-ins/TypedArray/from/iter-invoke-error.js | fail | fail | broiler-js: uncaught Error: Expected a Test262Err
+test/built-ins/TypedArray/from/iter-next-error.js | fail | fail | broiler-js: uncaught Error: Expected a Test262Error
+test/built-ins/TypedArray/from/iter-next-value-error.js | fail | fail | broiler-js: uncaught Error: Expected a Test26
+test/built-ins/TypedArray/prototype/Symbol.toStringTag/detached-buffer.js | fail | fail | broiler-js: uncaught Error:
+test/built-ins/TypedArray/prototype/Symbol.toStringTag/invoked-as-func.js | fail | fail | broiler-js: uncaught TypeEr
+test/built-ins/TypedArray/prototype/Symbol.toStringTag/length.js | fail | fail | broiler-js: uncaught TypeError: Cann
+test/built-ins/TypedArray/prototype/Symbol.toStringTag/name.js | fail | fail | broiler-js: uncaught TypeError: Cannot
+test/built-ins/TypedArray/prototype/Symbol.toStringTag/prop-desc.js | fail | fail | broiler-js: uncaught TypeError: C
+test/built-ins/TypedArray/prototype/Symbol.toStringTag/return-typedarrayname.js | fail | fail | broiler-js: uncaught 
+test/built-ins/TypedArray/prototype/Symbol.toStringTag/this-has-no-typedarrayname-internal.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArray_prototype_Symbol.toStringTag_this-has-no-typedarrayname-internal.js.Float16Array
+test/built-ins/TypedArray/prototype/Symbol.toStringTag/this-is-not-object.js | fail | fail | broiler-js: uncaught Typ
+test/built-ins/TypedArray/prototype/includes/length-zero-returns-false.js | fail | fail | broiler-js: uncaught Error:
+test/built-ins/TypedArray/prototype/indexOf/detached-buffer-during-fromIndex-returns-minus-one-for-undefined.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArray_prototype_indexOf_detached-buffer-during-fromIndex-returns-minus-one-for-undefin
+test/built-ins/TypedArray/prototype/indexOf/length-zero-returns-minus-one.js | fail | fail | broiler-js: uncaught Err
+test/built-ins/TypedArray/prototype/lastIndexOf/detached-buffer-during-fromIndex-returns-minus-one-for-undefined.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArray_prototype_lastIndexOf_detached-buffer-during-fromIndex-returns-minus-one-for-und
+test/built-ins/TypedArray/prototype/lastIndexOf/length-zero-returns-minus-one.js | fail | fail | broiler-js: uncaught
+test/built-ins/TypedArray/prototype/set/array-arg-targetbuffer-detached-on-tointeger-offset-throws.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArray_prototype_set_array-arg-targetbuffer-detached-on-tointeger-offset-throws.js.Floa
+test/built-ins/TypedArray/prototype/set/typedarray-arg-targetbuffer-detached-during-tointeger-offset-throws.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArray_prototype_set_typedarray-arg-targetbuffer-detached-during-tointeger-offset-throw
+test/built-ins/TypedArray/prototype/sort/sort-tonumber.js | fail | fail | broiler-js: uncaught TypeError: ArrayBuffer
+test/built-ins/TypedArray/prototype/subarray/byteoffset-with-detached-buffer.js | fail | fail | broiler-js: uncaught 
+test/built-ins/TypedArray/prototype/toString.js | fail | fail | broiler-js: uncaught Error: Expected SameValue(�funct
+test/built-ins/TypedArrayConstructors/BigUint64Array/is-a-constructor.js | fail | fail | broiler-js: uncaught Referen
+test/built-ins/TypedArrayConstructors/ctors/object-arg/iterated-array-with-modified-array-iterator.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_ctors_object-arg_iterated-array-with-modified-array-iterator.js.Floa
+test/built-ins/TypedArrayConstructors/from/custom-ctor-returns-other-instance.js | fail | fail | broiler-js: uncaught
+test/built-ins/TypedArrayConstructors/from/custom-ctor.js | fail | fail | broiler-js: uncaught Error: Expected a Test
+test/built-ins/TypedArrayConstructors/from/new-instance-using-custom-ctor.js | fail | fail | broiler-js: uncaught Typ
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/desc-value-throws.js | fail | fail | broiler-js: un
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/detached-buffer-throws.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_detached-buffer-throws.js.Float16Array.j
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/detached-buffer.js | fail | fail | broiler-js: unca
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-greater-than-last-index.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_key-is-greater-than-last-index.js.Float1
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-lower-than-zero.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_key-is-lower-than-zero.js.Float16Array.j
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-minus-zero.js | fail | fail | broiler-js: un
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-not-integer.js | fail | fail | broiler-js: u
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-not-numeric-index-throws.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_key-is-not-numeric-index-throws.js.Float
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-numericindex-accessor-desc-throws.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_key-is-numericindex-accessor-desc-throws
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-numericindex-accessor-desc.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_key-is-numericindex-accessor-desc.js.Flo
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-numericindex-desc-not-configurable-throws.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_key-is-numericindex-desc-not-configurabl
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-numericindex-desc-not-enumerable-throws.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_key-is-numericindex-desc-not-enumerable-
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-numericindex-desc-not-enumerable.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_key-is-numericindex-desc-not-enumerable.
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-numericindex-desc-not-writable-throws.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_key-is-numericindex-desc-not-writable-th
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/key-is-numericindex-desc-not-writable.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_key-is-numericindex-desc-not-writable.js
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/this-is-not-extensible.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_this-is-not-extensible.js.Float16Array.j
+test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/tonumber-value-detached-buffer.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_DefineOwnProperty_tonumber-value-detached-buffer.js.Float1
+test/built-ins/TypedArrayConstructors/internals/Get/detached-buffer-key-is-not-numeric-index.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_Get_detached-buffer-key-is-not-numeric-index.js.Float16Arr
+test/built-ins/TypedArrayConstructors/internals/Get/key-is-not-integer.js | fail | fail | broiler-js: uncaught Error:
+test/built-ins/TypedArrayConstructors/internals/Get/key-is-not-minus-zero.js | fail | fail | broiler-js: uncaught Err
+test/built-ins/TypedArrayConstructors/internals/Get/key-is-out-of-bounds.js | fail | fail | broiler-js: uncaught Erro
+test/built-ins/TypedArrayConstructors/internals/GetOwnProperty/detached-buffer-key-is-not-number.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_GetOwnProperty_detached-buffer-key-is-not-number.js.Float1
+test/built-ins/TypedArrayConstructors/internals/HasProperty/detached-buffer-key-is-not-number.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_HasProperty_detached-buffer-key-is-not-number.js.Float16Ar
+test/built-ins/TypedArrayConstructors/internals/HasProperty/key-is-lower-than-zero.js | fail | fail | broiler-js: unc
+test/built-ins/TypedArrayConstructors/internals/HasProperty/key-is-minus-zero.js | fail | fail | broiler-js: uncaught
+test/built-ins/TypedArrayConstructors/internals/HasProperty/key-is-not-integer.js | fail | fail | broiler-js: uncaugh
+test/built-ins/TypedArrayConstructors/internals/Set/detached-buffer-key-is-not-numeric-index.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_Set_detached-buffer-key-is-not-numeric-index.js.Float16Arr
+test/built-ins/TypedArrayConstructors/internals/Set/key-is-canonical-invalid-index-prototype-chain-set.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_Set_key-is-canonical-invalid-index-prototype-chain-set.js.
+test/built-ins/TypedArrayConstructors/internals/Set/key-is-canonical-invalid-index-reflect-set.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_Set_key-is-canonical-invalid-index-reflect-set.js.Float16A
+test/built-ins/TypedArrayConstructors/internals/Set/key-is-in-bounds-receiver-is-not-typed-array.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_Set_key-is-in-bounds-receiver-is-not-typed-array.js.Float1
+test/built-ins/TypedArrayConstructors/internals/Set/key-is-minus-zero.js | fail | fail | broiler-js: uncaught Error: 
+test/built-ins/TypedArrayConstructors/internals/Set/key-is-not-integer.js | fail | fail | broiler-js: uncaught Error:
+test/built-ins/TypedArrayConstructors/internals/Set/key-is-out-of-bounds-receiver-is-not-object.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_Set_key-is-out-of-bounds-receiver-is-not-object.js.Float16
+test/built-ins/TypedArrayConstructors/internals/Set/key-is-out-of-bounds-receiver-is-not-typed-array.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_Set_key-is-out-of-bounds-receiver-is-not-typed-array.js.Fl
+test/built-ins/TypedArrayConstructors/internals/Set/key-is-out-of-bounds-receiver-is-proto.js | fail | fail | broiler-js: D:/wt/t262/vm-f01-f03/kindcheck/test_built-ins_TypedArrayConstructors_internals_Set_key-is-out-of-bounds-receiver-is-proto.js.Float16Array
+test/built-ins/TypedArrayConstructors/internals/Set/key-is-out-of-bounds.js | fail | fail | broiler-js: uncaught Erro
+test/built-ins/TypedArrayConstructors/internals/Set/key-is-valid-index-reflect-set.js | fail | fail | broiler-js: unc
+test/built-ins/TypedArrayConstructors/internals/Set/tonumber-value-throws.js | fail | fail | broiler-js: uncaught Err
+test/built-ins/TypedArrayConstructors/of/custom-ctor-returns-other-instance.js | fail | fail | broiler-js: uncaught T
+test/built-ins/TypedArrayConstructors/of/custom-ctor.js | fail | fail | broiler-js: uncaught Error: Expected a Test26
+test/built-ins/TypedArrayConstructors/of/new-instance-using-custom-ctor.js | fail | fail | broiler-js: uncaught TypeE

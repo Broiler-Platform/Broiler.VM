@@ -1,0 +1,19 @@
+exported 1722 keys + 30 misspellings; code points in a non-trivial folding orbit: 2994
+NormalizationTest.txt: 20034 lines, 0 failing; code points outside part 1 that do not normalize to themselves: 0; QC=No code points unchanged when normalized alone: 0; surrogate anomalies: 0
+U+FDFA NFKD length 18; MaxDecompositionLength 18; e+U+0301 composes: True -> U+00E9
+case folding against Node: 9049 pairs checked, 0 differ
+DIFF sc=Hrkt: mine= node=REFUSED
+DIFF scx=Hrkt: mine= node=REFUSED
+DIFF Script=Hrkt: mine= node=REFUSED
+DIFF Script_Extensions=Hrkt: mine= node=REFUSED
+DIFF sc=Katakana_Or_Hiragana: mine= node=REFUSED
+DIFF scx=Katakana_Or_Hiragana: mine= node=REFUSED
+DIFF Script=Katakana_Or_Hiragana: mine= node=REFUSED
+DIFF Script_Extensions=Katakana_Or_Hiragana: mine= node=REFUSED
+DIFF BADlone:WSpace: mine=REFUSED node=9-D,20,85,A0,1680,2000-200A,2028-2029,202F,205F,3000
+property names and sets against Node: 1743 agree, 9 differ
+BU-MISSING sc=Hrkt
+BU-MISSING scx=Hrkt
+BU-MISSING sc=Katakana_Or_Hiragana
+BU-MISSING scx=Katakana_Or_Hiragana
+sets against Broiler.Unicode.Properties: 946 agree, 0 differ, 4 have no entry there

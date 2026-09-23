@@ -32,7 +32,232 @@ internal static class SourceFrontEndChecks
         DeepNestingIsRefusedRatherThanSurvived(),
         AnEarlyErrorNeverProducesBytes(),
         TheSourceFuzzGuidanceLoopIsWired(),
+        EveryLineTerminatorInsideALiteralIsCountedOnce(),
+        ASourceNameReachesTheDiagnosticsAndNothingElse(),
+        AModuleCompiledWithoutTopLevelAwaitRefusesIt(),
     ];
+
+    /// <summary>
+    /// A module compiled with <c>AllowTopLevelAwait</c> false refuses a top-level <c>await</c> with
+    /// the diagnostic a non-async function of a module gets, and one compiled with it true does not
+    /// (JSeal I11-upstream, JSD-0024 section 20).
+    /// </summary>
+    /// <remarks>
+    /// <b>Both halves, and the async function inside as a control</b>: a front end that ignored the
+    /// switch passes the second half, and one that turned <c>await</c> off everywhere refuses the
+    /// control.
+    /// </remarks>
+    private static (string, bool, string) AModuleCompiledWithoutTopLevelAwaitRefusesIt()
+    {
+        var without = new SliceParseOptions(SliceGoal.Module, allowTopLevelAwait: false, maximumNestingDepth: 64);
+        var failed = new List<string>();
+
+        JsCompilation Module(string text, SliceParseOptions options) =>
+            JsCompiler.Compile([], [new JsModuleUnit("mem:/m", text, options, [])], new JsCompileRequest());
+
+        static string First(JsCompilation compiled) =>
+            compiled.Succeeded || compiled.Diagnostics.Count == 0
+                ? "bytes"
+                : compiled.Diagnostics[0].Code + ":" + compiled.Diagnostics[0].Message;
+
+        // EACH CONSTRUCT AT THE TOP LEVEL, BESIDE THE SAME CONSTRUCT IN A NON-ASYNC FUNCTION OF A
+        // MODULE: the second is the refusal the front end already had, and the first must be it.
+        foreach (var construct in new[] { "await null;", "for await (const v of []) {}", "await using r = null;" })
+        {
+            var text = construct + " export const x = 1;";
+            var refused = Module(text, without);
+            var existing = Module("function f() { " + construct + " } export const x = 1;", without);
+
+            if (refused.Succeeded || refused.Artifact is not null || existing.Succeeded ||
+                refused.Diagnostics[0].Code != existing.Diagnostics[0].Code ||
+                refused.Diagnostics[0].Message != existing.Diagnostics[0].Message)
+            {
+                failed.Add("without, `" + text + "` answered " + First(refused) +
+                    " where the same construct in a function answers " + First(existing));
+            }
+
+            var admitted = Module(text, SliceParseOptions.Module);
+
+            if (!admitted.Succeeded)
+            {
+                failed.Add("with, `" + text + "` was refused: " + string.Join(" | ", admitted.Diagnostics));
+            }
+        }
+
+        var control = Module("export async function f() { await null; } export const x = 1;", without);
+
+        if (!control.Succeeded)
+        {
+            failed.Add("an async function inside was refused: " + string.Join(" | ", control.Diagnostics));
+        }
+
+        return (
+            "a module compiled without top-level await refuses it by name, and one compiled with it does not",
+            failed.Count == 0,
+            failed.Count == 0
+                ? "await, for await and await using at the top level refused without it with the diagnostic the same construct gets in a non-async function, and compiled with it; an async function inside compiled either way"
+                : string.Join("; ", failed));
+    }
+
+    /// <summary>
+    /// A unit's source name is carried by every diagnostic that unit is refused with, and by
+    /// nothing else: not by another unit's refusal, and not by a byte of any artifact.
+    /// </summary>
+    /// <remarks>
+    /// <b>Both halves, because the second is what makes the first safe to add.</b> A name that
+    /// changed the bytes would make a label an input to what runs; one that reached another unit's
+    /// refusal would attribute an error to the wrong text.
+    /// </remarks>
+    private static (string, bool, string) ASourceNameReachesTheDiagnosticsAndNothingElse()
+    {
+        var failed = new List<string>();
+
+        var named = JsCompiler.Compile(
+            [new JsScriptUnit("main", "1;\nvar x = ;", SliceParseOptions.Script) { SourceName = "page.js" }]);
+
+        if (named.Succeeded || named.Diagnostics.Count == 0 ||
+            named.Diagnostics.Any(d => d.SourceName != "page.js") ||
+            named.Diagnostics[0].Line != 2 ||
+            !named.Diagnostics[0].ToString().Contains(" at page.js:2:9: ", StringComparison.Ordinal))
+        {
+            failed.Add("a parse refusal: " + string.Join(" | ", named.Diagnostics));
+        }
+
+        var semantic = JsCompiler.Compile(
+            [new JsScriptUnit("main", "let a; let a;", SliceParseOptions.Script, ForceStrict: true) { SourceName = "strict.js" }]);
+
+        if (semantic.Succeeded || semantic.Diagnostics.Count == 0 ||
+            semantic.Diagnostics[0].SourceName != "strict.js" || semantic.Diagnostics[0].Line != 1)
+        {
+            failed.Add("a static-semantics refusal: " + string.Join(" | ", semantic.Diagnostics));
+        }
+
+        var second = JsCompiler.Compile(
+            [
+                new JsScriptUnit("first", "var ok = 1;", SliceParseOptions.Script) { SourceName = "first.js" },
+                new JsScriptUnit("second", "var x = ;", SliceParseOptions.Script) { SourceName = "second.js" },
+            ]);
+
+        if (second.Succeeded || second.Diagnostics.Count == 0 ||
+            second.Diagnostics.Any(d => d.SourceName != "second.js"))
+        {
+            failed.Add("the second of two units: " + string.Join(" | ", second.Diagnostics));
+        }
+
+        var unnamed = JsCompiler.Compile("var x = ;", SliceParseOptions.Script);
+
+        if (unnamed.Diagnostics.Count == 0 || unnamed.Diagnostics[0].SourceName.Length != 0 ||
+            unnamed.Diagnostics[0].ToString() != "2101:UnexpectedToken at 1:9: `;` begins no expression")
+        {
+            failed.Add("an unnamed unit: " + string.Join(" | ", unnamed.Diagnostics));
+        }
+
+        const string Program = "var t = `a\\\nb`; function f(s) { return s.raw[0]; } f`c`;";
+        var plain = JsCompiler.Compile([new JsScriptUnit("main", Program, SliceParseOptions.Script)]);
+        var labelled = JsCompiler.Compile(
+            [new JsScriptUnit("main", Program, SliceParseOptions.Script) { SourceName = "labelled.js" }]);
+
+        if (plain.Artifact is null || labelled.Artifact is null ||
+            !plain.Artifact.AsSpan().SequenceEqual(labelled.Artifact))
+        {
+            failed.Add("a name changed the artifact's bytes");
+        }
+
+        var cleared = new JsScriptUnit("main", "1;", SliceParseOptions.Script) { SourceName = null! };
+
+        if (cleared.SourceName.Length != 0)
+        {
+            failed.Add("a null name was kept as null");
+        }
+
+        return (
+            "a source name reaches its unit's diagnostics and nothing else",
+            failed.Count == 0,
+            failed.Count == 0
+                ? "parse and static-semantics refusals named, a second unit's refusal named by its own unit, the unnamed form unchanged, the bytes identical"
+                : string.Join("; ", failed));
+    }
+
+    /// <summary>
+    /// A line terminator inside a string or template literal moves every later diagnostic down one
+    /// line, and a separator inside a string literal is part of the string.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Positions are what an embedder attributes a syntax error by</b>, so a terminator the
+    /// front end skipped without counting names the line above the one the error is on. Each
+    /// case puts one terminator in a literal and the error on the line after it; CR, CRLF, U+2028
+    /// and U+2029 are here because only a string written in C# can hold all of them.
+    /// </para>
+    /// <para>
+    /// U+2028 and U+2029 are string characters since ES2019 and still line terminators, so they
+    /// are counted where they stand, as a lone CR in a template is.
+    /// </para>
+    /// </remarks>
+    private static (string, bool, string) EveryLineTerminatorInsideALiteralIsCountedOnce()
+    {
+        (string Name, string Source, string At)[] cases =
+        [
+            ("template continuation LF", "`a\\\nb`;\nvar x = ;", "3:9"),
+            ("template continuation CR", "`a\\\rb`;\nvar x = ;", "3:9"),
+            ("template continuation CRLF", "`a\\\r\nb`;\nvar x = ;", "3:9"),
+            ("template continuation LS", "`a\\\u2028b`;\nvar x = ;", "3:9"),
+            ("template continuation PS", "`a\\\u2029b`;\nvar x = ;", "3:9"),
+            ("String.raw continuation", "String.raw`a\\\nb`;\nvar x = ;", "3:9"),
+            ("two continuations", "`a\\\n\\\nb`;\nvar x = ;", "4:9"),
+            ("string continuation in a substitution", "`${'a\\\nb'}`;\nvar x = ;", "3:9"),
+            ("template continuation in a substitution", "`${`a\\\nb`}`;\nvar x = ;", "3:9"),
+            ("string continuation", "'a\\\nb';\nvar x = ;", "3:9"),
+            ("plain template line", "`a\nb`;\nvar x = ;", "3:9"),
+            ("LS in a string", "'a\u2028b';\nvar x = ;", "3:9"),
+            ("PS in a string", "\"a\u2029b\";\nvar x = ;", "3:9"),
+            ("LS in a string in a substitution", "`${'a\u2028b'}`;\nvar x = ;", "3:9"),
+            ("LS then an error on the same line", "'a\u2028b'; var x = ;", "2:13"),
+            ("a string still ends at LF", "'a\nb';", "1:1"),
+            ("a string still ends at CR", "'a\rb';", "1:1"),
+        ];
+
+        var failed = new List<string>();
+
+        foreach (var (name, source, at) in cases)
+        {
+            var compiled = JsCompiler.Compile(source, SliceParseOptions.Script);
+            var answered = compiled.Diagnostics.Count == 0
+                ? "no diagnostic"
+                : $"{compiled.Diagnostics[0].Line}:{compiled.Diagnostics[0].Column}";
+
+            if (!string.Equals(answered, at, StringComparison.Ordinal))
+            {
+                failed.Add($"{name}: wanted {at}, got {answered}");
+            }
+        }
+
+        (string Name, string Source)[] admitted =
+        [
+            ("LS in a string", "var s = 'a\u2028b';"),
+            ("PS in a string", "var s = \"a\u2029b\";"),
+            ("LS in a string in a substitution", "var s = `${'a\u2028b'}`;"),
+        ];
+
+        foreach (var (name, source) in admitted)
+        {
+            var compiled = JsCompiler.Compile(source, SliceParseOptions.Script);
+
+            if (!compiled.Succeeded)
+            {
+                failed.Add(
+                    $"{name}: refused as " +
+                    (compiled.Diagnostics.Count == 0 ? "nothing" : compiled.Diagnostics[0].ToString()));
+            }
+        }
+
+        return (
+            "every line terminator inside a literal is counted once, and a separator is a string character",
+            failed.Count == 0,
+            failed.Count == 0
+                ? $"{cases.Length} positions and {admitted.Length} admissions as the language counts them"
+                : string.Join("; ", failed));
+    }
 
     /// <summary>
     /// The source session's guidance loop keeps a new answer and refuses a repeat.

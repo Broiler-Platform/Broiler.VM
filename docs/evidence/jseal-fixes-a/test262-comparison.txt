@@ -1,0 +1,30 @@
+# Selection A: built-ins/ArrayBuffer, built-ins/TypedArrayConstructors/internals, built-ins/TypedArray/prototype, built-ins/DataView
+before (before): files 2409 variants 4745 pass 1918 fail 2037 unsupported 759 exhausted 0 skipped 31
+first revision (final-a): files 2409 variants 4745 pass 2213 fail 1742 unsupported 759 exhausted 0 skipped 31
+after (r4-a): files 2409 variants 4745 pass 2271 fail 1684 unsupported 759 exhausted 0 skipped 31
+failing before and passing after: 355 variants; passing before and failing after: 2 variants
+  now passing     4  test/built-ins/ArrayBuffer/prototype
+  now passing     2  test/built-ins/DataView/detached-buffer.js
+  now passing   138  test/built-ins/DataView/prototype
+  now passing   106  test/built-ins/TypedArray/prototype
+  now passing   105  test/built-ins/TypedArrayConstructors/internals
+  now failing  test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/conversion-operation-consistent-nan.js [sloppy]: uncaught TypeError: Invalid typed array index (Testing with Float64Array and makeIterable.)
+  now failing  test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/conversion-operation-consistent-nan.js [strict]: uncaught TypeError: Invalid typed array index (Testing with Float64Array and makeIterable.)
+  TypedArrayConstructors/internals failures: before 227 after 124
+  against the first revision: 60 more passing, 2 more failing
+    now failing  test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/conversion-operation-consistent-nan.js [sloppy]: uncaught TypeError: Invalid typed array index (Testing with Float64Array and makeIterable.)
+    now failing  test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/conversion-operation-consistent-nan.js [strict]: uncaught TypeError: Invalid typed array index (Testing with Float64Array and makeIterable.)
+
+# Selection B: built-ins/TypedArrayConstructors, harness, built-ins/Reflect, built-ins/Object, built-ins/Atomics
+before (wide-before): files 4800 variants 9540 pass 7718 fail 1425 unsupported 387 exhausted 0 skipped 10
+first revision (final-b): files 4800 variants 9540 pass 7767 fail 1376 unsupported 387 exhausted 0 skipped 10
+after (r4-b): files 4800 variants 9540 pass 7823 fail 1320 unsupported 387 exhausted 0 skipped 10
+failing before and passing after: 107 variants; passing before and failing after: 2 variants
+  now passing     2  test/built-ins/TypedArrayConstructors/ctors
+  now passing   105  test/built-ins/TypedArrayConstructors/internals
+  now failing  test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/conversion-operation-consistent-nan.js [sloppy]: uncaught TypeError: Invalid typed array index (Testing with Float64Array and makeIterable.)
+  now failing  test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/conversion-operation-consistent-nan.js [strict]: uncaught TypeError: Invalid typed array index (Testing with Float64Array and makeIterable.)
+  TypedArrayConstructors/internals failures: before 227 after 124
+  against the first revision: 58 more passing, 2 more failing
+    now failing  test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/conversion-operation-consistent-nan.js [sloppy]: uncaught TypeError: Invalid typed array index (Testing with Float64Array and makeIterable.)
+    now failing  test/built-ins/TypedArrayConstructors/internals/DefineOwnProperty/conversion-operation-consistent-nan.js [strict]: uncaught TypeError: Invalid typed array index (Testing with Float64Array and makeIterable.)

@@ -8,12 +8,12 @@
 // `broiler.javascript.dynamic` identity, which refuses the artifact at verification before any
 // guest exists.
 //
-// THE DIRECT FORM IS ADMITTED ONLY WHERE IT MEANS WHAT THE INDIRECT FORM MEANS. A direct `eval`
-// evaluates in the caller's scope, and this profile resolves every name at lowering: source
-// compiled without any knowledge of the calling frame reaches the global object. At the top level
-// of a script that is exactly right. Inside a function it is not, and rather than answer a program
-// that reads a local with a global's value, it refuses by name - which is what the last two lines
-// assert, and which is a published exclusion rather than a defect waiting to be found.
+// THE DIRECT FORM EVALUATES IN THE CALLER'S SCOPE, and since JSeal V14 it does inside a function
+// too: the caller's artifact carries a scope map for the call site, and the evaluated source reads
+// and writes the caller's own bindings through it (JSD-0026). Since JSeal V15 a sloppy evaluation
+// that DECLARES a `var` introduces it into the caller's function, as a binding `delete` can remove,
+// which is what the declaration line asserts. The indirect form never sees a local, which is what
+// the last line asserts.
 
 var indirect = eval;
 print(indirect("1 + 2"));
@@ -31,16 +31,22 @@ print(joined(6, 7));
 
 print(eval(42) + ":" + typeof eval({}));
 
-function localsAreNotVisible() {
+function localsAreVisible() {
   var hidden = 1;
-  try {
-    return eval("hidden");
-  } catch (refused) {
-    return refused.name + ":" + (refused.message.indexOf("direct eval") >= 0);
-  }
+  eval("hidden = hidden + 1");
+  return "local:" + hidden;
 }
 
-print(localsAreNotVisible());
+print(localsAreVisible());
+
+function declarationsAreIntroduced() {
+  eval("var introduced = 1");
+  var before = introduced;
+  var removed = delete introduced;
+  return "introduced:" + before + ":" + removed + ":" + typeof introduced;
+}
+
+print(declarationsAreIntroduced());
 
 function indirectionEscapesIt() {
   var outer = eval;

@@ -1,0 +1,167 @@
+using System.Globalization;
+using System.Text;
+using Broiler.VM.Profile.JavaScript;
+using Broiler.VM.Profile.JavaScript.Format;
+
+const string Ucd = "D:/wt/vm-unicode-u2/src/tests/unicode/pins/ucd-17.0.0/";
+var mode = args[0];
+var dir = args[1];
+
+static IEnumerable<string[]> Records(string path)
+{
+    foreach (var raw in File.ReadAllLines(path))
+    {
+        var hash = raw.IndexOf('#');
+        var line = (hash >= 0 ? raw[..hash] : raw).Trim();
+        if (line.Length > 0) yield return line.Split(';').Select(f => f.Trim()).ToArray();
+    }
+}
+
+static string Ranges(JsUnicodeSet set)
+{
+    var sb = new StringBuilder();
+    for (var i = 0; i < set.RangeCount; i++) { if (i > 0) sb.Append(','); sb.Append(set.First(i).ToString("X")); if (set.Last(i) != set.First(i)) sb.Append('-').Append(set.Last(i).ToString("X")); }
+    return sb.ToString();
+}
+
+static string Escape(string key) => key.Replace("\u0000", "<NUL>").Replace("\u00e9", "<EACUTE>");
+
+if (mode == "export")
+{
+    var keys = new List<string>();
+    foreach (var f in Records(Ucd + "PropertyValueAliases.txt").Where(f => f[0] == "gc")) foreach (var n in f.Skip(1)) { keys.Add("lone:" + n); keys.Add("gc=" + n); keys.Add("General_Category=" + n); }
+    foreach (var f in Records(Ucd + "PropertyValueAliases.txt").Where(f => f[0] == "sc")) foreach (var n in f.Skip(1)) { keys.Add("sc=" + n); keys.Add("scx=" + n); keys.Add("Script=" + n); keys.Add("Script_Extensions=" + n); }
+    var html = File.ReadAllText("D:/wt/vm-unicode-u2/src/Broiler.VM.Profile.JavaScript/docs/specification/table-binary-unicode-properties.html");
+    foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(html, "<td>`([^`]+)`</td>")) keys.Add("lone:" + m.Groups[1].Value);
+    string[] bad = ["lone:letter", "lone:L_", "lone:IsL", "lone:White Space", "lone:WSpace", "lone:whitespace", "lone:Script", "gc=Alphabetic", "sc=latin", "scx=Latin ", "lone:Latin", "Alphabetic=Y", "ASCII=Yes", "lone:Basic_Emoji", "lone:RGI_Emoji", "script_extensions=Latn", "Scx=Latn", "lone:", "gc=", "lone:Lu\u0000", "lone:Lu\u00e9", "lone:ID_start", "lone:Assigned ", "lone:any", "lone:Ascii", "lone:Cased_letter", "sc=Common_", "lone:Emoji_Keycap_Sequence", "sc=Lu", "gc=Latn"];
+    keys = keys.Distinct().ToList();
+    var mine = new StringBuilder();
+    foreach (var key in keys.Concat(bad.Select(b => "BAD" + b)))
+    {
+        var k = key.StartsWith("BAD") ? key[3..] : key;
+        bool ok; JsUnicodeSet set;
+        if (k.StartsWith("lone:")) ok = JsUnicodeProperties.TryResolveLone(k[5..], out set);
+        else { var eq = k.IndexOf('='); ok = JsUnicodeProperties.TryResolve(k[..eq], k[(eq + 1)..], out set); }
+        mine.Append(Escape(key)).Append('\t').Append(ok ? Ranges(set) : "REFUSED").Append('\n');
+    }
+    File.WriteAllText(Path.Combine(dir, "mine.tsv"), mine.ToString());
+    File.WriteAllLines(Path.Combine(dir, "keys.txt"), keys.Concat(bad.Select(b => "BAD" + b)).Select(Escape));
+
+    var fold = new StringBuilder();
+    Span<int> orbit = stackalloc int[JsUnicodeCaseFolding.MaxOrbit];
+    for (var cp = 0; cp <= 0x10FFFF; cp++)
+    {
+        var n = JsUnicodeCaseFolding.Orbit(cp, orbit);
+        if (n > 1) { fold.Append(cp.ToString("X")).Append('\t').Append(JsUnicodeCaseFolding.SimpleFold(cp).ToString("X")).Append('\t'); for (var i = 0; i < n; i++) fold.Append(i > 0 ? "," : "").Append(orbit[i].ToString("X")); fold.Append('\n'); }
+    }
+    File.WriteAllText(Path.Combine(dir, "fold.tsv"), fold.ToString());
+    Console.WriteLine($"exported {keys.Count} keys + {bad.Length} misspellings; code points in a non-trivial folding orbit: {fold.ToString().Count(c => c == '\n')}");
+    return;
+}
+
+if (mode == "compare")
+{
+    var mine = File.ReadAllLines(Path.Combine(dir, "mine.tsv")).Select(l => l.Split('\t')).ToDictionary(p => p[0], p => p[1]);
+    var node = File.ReadAllLines(Path.Combine(dir, "node.tsv")).Select(l => l.Split('\t')).ToDictionary(p => p[0], p => p[1]);
+    int same = 0, diff = 0;
+    foreach (var (k, v) in mine)
+    {
+        if (!node.TryGetValue(k, out var nv)) { Console.WriteLine($"MISSING-NODE {k}"); diff++; continue; }
+        if (nv == v) same++; else { diff++; Console.WriteLine($"DIFF {k}: mine={(v.Length > 80 ? v[..80] + "..." : v)} node={(nv.Length > 80 ? nv[..80] + "..." : nv)}"); }
+    }
+    Console.WriteLine($"property names and sets against Node: {same} agree, {diff} differ");
+
+    static string Norm(string s) => new string(s.Where(c => c != '_' && c != '-' && c != ' ').ToArray()).ToLowerInvariant();
+    static string Theirs(string ranges) => string.Join(",", ranges.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(r => { var p = r.Split('-'); return p.Length == 1 || p[0] == p[1] ? p[0] : p[0] + "-" + p[1]; }));
+    int bsame = 0, bdiff = 0, bmissing = 0;
+    foreach (var (k, v) in mine)
+    {
+        if (v == "REFUSED" || k.StartsWith("BAD")) continue;
+        Dictionary<string, string> table; string name;
+        if (k.StartsWith("lone:")) { name = k[5..]; table = Broiler.Unicode.Properties.GeneralCategoryData.Ranges.ContainsKey(Norm(name)) ? Broiler.Unicode.Properties.GeneralCategoryData.Ranges : Broiler.Unicode.Properties.BinaryPropertyData.Ranges; }
+        else if (k.StartsWith("gc=")) { name = k[3..]; table = Broiler.Unicode.Properties.GeneralCategoryData.Ranges; }
+        else if (k.StartsWith("sc=")) { name = k[3..]; table = Broiler.Unicode.Properties.ScriptData.Ranges; }
+        else if (k.StartsWith("scx=")) { name = k[4..]; table = Broiler.Unicode.Properties.ScriptExtensionsData.Ranges; }
+        else continue;
+        if (!table.TryGetValue(Norm(name), out var theirs)) { bmissing++; Console.WriteLine($"BU-MISSING {k}"); continue; }
+        if (Theirs(theirs) == v) bsame++; else { bdiff++; Console.WriteLine($"BU-DIFF {k}"); }
+    }
+    Console.WriteLine($"sets against Broiler.Unicode.Properties: {bsame} agree, {bdiff} differ, {bmissing} have no entry there");
+    return;
+}
+
+if (mode == "normalize")
+{
+    static List<int> Decompose(List<int> input, bool compat)
+    {
+        var output = new List<int>();
+        foreach (var cp in input)
+        {
+            if (JsUnicodeNormalization.TryGetDecomposition(cp, compat, out var m)) { for (var i = 0; i < m.Length; i++) output.Add(m[i]); }
+            else output.Add(cp);
+        }
+        for (var i = 1; i < output.Count; i++)
+        {
+            var j = i;
+            while (j > 0 && JsUnicodeNormalization.CombiningClass(output[j]) != 0 && JsUnicodeNormalization.CombiningClass(output[j - 1]) > JsUnicodeNormalization.CombiningClass(output[j]))
+            { (output[j - 1], output[j]) = (output[j], output[j - 1]); j--; }
+        }
+        return output;
+    }
+    static List<int> Compose(List<int> d)
+    {
+        var result = new List<int>(d);
+        var starter = -1;
+        for (var i = 0; i < result.Count; i++)
+        {
+            var ccc = JsUnicodeNormalization.CombiningClass(result[i]);
+            if (starter >= 0)
+            {
+                var prevCcc = i - 1 == starter ? -1 : JsUnicodeNormalization.CombiningClass(result[i - 1]);
+                var blocked = prevCcc != -1 && (prevCcc == 0 || prevCcc >= ccc);
+                if (!blocked && JsUnicodeNormalization.TryCompose(result[starter], result[i], out var c)) { result[starter] = c; result.RemoveAt(i); i--; continue; }
+            }
+            if (ccc == 0) starter = i;
+        }
+        return result;
+    }
+    static List<int> Cps(string field) => field.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(h => int.Parse(h, NumberStyles.HexNumber)).ToList();
+    static string S(List<int> l) => string.Join(" ", l.Select(c => c.ToString("X4")));
+    int lines = 0, failures = 0; var part1 = new HashSet<int>(); var inPart1 = false;
+    foreach (var raw in File.ReadAllLines(Ucd + "NormalizationTest.txt"))
+    {
+        if (raw.StartsWith("@Part")) { inPart1 = raw.StartsWith("@Part1"); continue; }
+        var hash = raw.IndexOf('#'); var line = (hash >= 0 ? raw[..hash] : raw).Trim(); if (line.Length == 0) continue;
+        var c = line.Split(';').Take(5).Select(Cps).ToArray(); lines++;
+        if (inPart1) part1.Add(c[0][0]);
+        var nfc = c.Select(x => S(Compose(Decompose(x, false)))).ToArray();
+        var nfd = c.Select(x => S(Decompose(x, false))).ToArray();
+        var nfkc = c.Select(x => S(Compose(Decompose(x, true)))).ToArray();
+        var nfkd = c.Select(x => S(Decompose(x, true))).ToArray();
+        bool ok = nfc[0] == S(c[1]) && nfc[1] == S(c[1]) && nfc[2] == S(c[1]) && nfc[3] == S(c[3]) && nfc[4] == S(c[3])
+            && nfd[0] == S(c[2]) && nfd[1] == S(c[2]) && nfd[2] == S(c[2]) && nfd[3] == S(c[4]) && nfd[4] == S(c[4])
+            && nfkc.All(x => x == S(c[3])) && nfkd.All(x => x == S(c[4]));
+        if (!ok) { failures++; if (failures < 10) Console.WriteLine("FAIL " + line); }
+    }
+    int identityFailures = 0;
+    for (var cp = 0; cp <= 0x10FFFF; cp++)
+    {
+        if (part1.Contains(cp) || (cp >= 0xD800 && cp <= 0xDFFF)) continue;
+        var x = new List<int> { cp };
+        if (S(Compose(Decompose(x, false))) != S(x) || S(Decompose(x, false)) != S(x) || S(Compose(Decompose(x, true))) != S(x) || S(Decompose(x, true)) != S(x)) { identityFailures++; if (identityFailures < 5) Console.WriteLine($"IDENTITY FAIL U+{cp:X4}"); }
+    }
+    int qcNoUnchanged = 0;
+    for (var cp = 0; cp <= 0x10FFFF; cp++)
+    {
+        if (cp >= 0xD800 && cp <= 0xDFFF) continue;
+        var x = new List<int> { cp };
+        if (JsUnicodeNormalization.QuickCheck(cp, false) == JsNormalizationQuickCheck.No && S(Compose(Decompose(x, false))) == S(x)) qcNoUnchanged++;
+        if (JsUnicodeNormalization.QuickCheck(cp, true) == JsNormalizationQuickCheck.No && S(Compose(Decompose(x, true))) == S(x)) qcNoUnchanged++;
+    }
+    int surrogate = 0;
+    for (var cp = 0xD800; cp <= 0xDFFF; cp++) if (JsUnicodeNormalization.CombiningClass(cp) != 0 || JsUnicodeNormalization.TryGetDecomposition(cp, true, out _) || JsUnicodeNormalization.TryCompose(cp, 0x301, out _) || JsUnicodeNormalization.QuickCheck(cp, true) != JsNormalizationQuickCheck.Yes) surrogate++;
+    Console.WriteLine($"NormalizationTest.txt: {lines} lines, {failures} failing; code points outside part 1 that do not normalize to themselves: {identityFailures}; QC=No code points unchanged when normalized alone: {qcNoUnchanged}; surrogate anomalies: {surrogate}");
+    JsUnicodeNormalization.TryGetDecomposition(0xFDFA, true, out var fdfa);
+    Console.WriteLine($"U+FDFA NFKD length {fdfa.Length}; MaxDecompositionLength {JsUnicodeNormalization.MaxDecompositionLength}; e+U+0301 composes: {JsUnicodeNormalization.TryCompose(0x65, 0x301, out var e)} -> U+{e:X4}");
+    return;
+}

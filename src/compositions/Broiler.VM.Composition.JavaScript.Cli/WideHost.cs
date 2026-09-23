@@ -60,7 +60,7 @@ internal static class WideHost
         var goal = module ? SliceGoal.Module : SliceGoal.Script;
 
         var options = maximumDepth is { } depth
-            ? new SliceParseOptions(goal, allowTopLevelAwait: false, depth)
+            ? new SliceParseOptions(goal, allowTopLevelAwait: module, depth)
             : module ? SliceParseOptions.Module : SliceParseOptions.Script;
 
         var scripts = new List<JsScriptUnit>(files.Count);

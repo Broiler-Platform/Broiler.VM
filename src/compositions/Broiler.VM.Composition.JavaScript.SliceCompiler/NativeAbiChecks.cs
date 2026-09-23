@@ -593,7 +593,7 @@ internal static class NativeAbiChecks
 
     /// <summary>
     /// The probes whose smallest completing allowance is bisected: every one that loads nothing, which is every
-    /// index but five, the eval.
+    /// index but five and thirteen to fifteen, the evals.
     /// </summary>
     private static readonly int[] BisectedProbes = [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12];
 
@@ -621,6 +621,18 @@ internal static class NativeAbiChecks
         ("a throw from a getter caught in the same run", "var o = { get bad() { throw new Error('g'); } }; var r = ''; for (var i = 0; i < 3; i++) { try { r = r + i + o.bad; } catch (e) { r = r + e.message; } } r;", false, false),
         ("recursion to RangeError through a thrown object's rendered message", "var d = 0; var e = { get message() { d = d + 1; try { throw e; } catch (x) { if (x !== e) { throw x; } } return 'm'; } }; var caught = 'nothing'; try { try { throw e; } catch (x) { if (x !== e) { throw x; } } } catch (f) { caught = f.name + ' at depth ' + d; } caught;", false, true),
         ("recursion to RangeError through an indexed getter", "var d = 0; var k = 'down'; var o = { get down() { d = d + 1; return this[k]; } }; var caught = 'nothing'; try { o[k]; } catch (e) { caught = e.name + ' at depth ' + d; } caught;", false, true),
+
+        // DIRECT EVAL AGAINST ITS CALLER'S BINDINGS (JSeal V14): the eval name instructions run alone
+        // in the baseline partition, and each of these puts them - and a boundary record whose parent
+        // is an emitted frame's record - on both sides of the comparison.
+        ("a direct eval against its caller's bindings, through a with and nested", "function f(o) { let x = 7; var g; eval('x = x + 1'); with (o) { g = eval('() => x + z'); } x = 20; return eval('x') + ':' + g() + ':' + eval(\"eval('x')\"); } f({ z: 1 });", true, false),
+        ("a direct eval spelled with a spread", "function f() { var x = 'local'; return eval(...['x']); } f();", true, false),
+
+        // AND ITS DECLARATIONS (JSeal V15): the variable-environment write runs alone as the name
+        // instructions do, and the receiver a call through a function's eval variables gets is
+        // rewritten inside a block, so both are on both sides of the comparison.
+        ("a direct eval introducing its caller's var and functions", "function f() { eval('var q = 1; function g() { return this; } { function b() { return 2; } }'); var r = q + ':' + typeof g() + ':' + b(); delete q; return r + ':' + typeof q; } f();", true, false),
+        ("an indirect eval declaring a configurable global and keeping its let", "(0, eval)('var ig = 1; let il = 2'); Object.getOwnPropertyDescriptor(globalThis, 'ig').configurable + ':' + typeof il;", true, false),
     ];
 
     /// <summary>

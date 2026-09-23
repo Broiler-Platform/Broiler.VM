@@ -42,8 +42,66 @@ namespace Broiler.VM.Composition.JavaScript.Cli;
 /// </remarks>
 internal static class Program
 {
+    /// <summary>
+    /// Installs the native page mapper before anything in this process can ask for a native run.
+    /// </summary>
+    /// <remarks>
+    /// A static constructor rather than a line in <see cref="Main"/>, because the type initializer
+    /// runs before any member of this type does - including an entry point a future host, a test
+    /// harness or a trimmed shim reaches by some other route. An install that lived in
+    /// <c>Main</c> alone would be an install that a second entry point silently does without, and
+    /// the failure it produces is a refusal by name rather than a crash, which is exactly the
+    /// shape that survives a gate.
+    /// </remarks>
+    static Program()
+    {
+        InitializeNativeMapping();
+    }
+
+    /// <summary>
+    /// Fills <see cref="JsNativePage.Mapper"/> with the arming path this image links.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the whole of what makes <c>--native</c> a run rather than a refusal in this
+    /// process.</b> The profile assembly declares no platform invoke and maps nothing; it asks the
+    /// composition for a page through this hook, and <c>JsExecution</c> refuses to instantiate a
+    /// native artifact when the hook answers null - deliberately, at instantiation, so a process
+    /// that may not make memory executable says so by name instead of faulting its first call.
+    /// With the hook unfilled, <c>--native x86-64-win64</c> on a Windows x64 process answered
+    /// <c>ProfileFault/UnsatisfiedHostAssumption</c>, which is the same sentence this host prints
+    /// for an artifact emitted for somewhere else - so the refusal a caller was meant to read as
+    /// "you asked for a backend this machine does not arm" was also what it got for the one
+    /// backend this machine does arm.
+    /// </para>
+    /// <para>
+    /// <b>Copied from the slice-compiler root rather than shared.</b> Four lines of delegate
+    /// plumbing in each root that links the arming path is the cost of the rule that keeps
+    /// <c>Broiler.VM.Profile.MachineCode</c> out of the profile assembly's own reference set; a
+    /// shared helper would have to live somewhere both roots can see, and the only such place is
+    /// a product assembly, which is the edge this arrangement exists to avoid.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal static unsafe void InitializeNativeMapping()
+    {
+        JsNativePage.Mapper = static code =>
+        {
+            var page = Broiler.VM.Profile.MachineCode.VmNativePage.TryMap(code);
+            return page is null ? null : new JsNativePage(
+                page,
+                () => page.Arm(),
+                offset => page.At(offset),
+                offset => (nint)page.Entry(offset));
+        };
+    }
+
     private static int Main(string[] args)
     {
+        InitializeNativeMapping();
+        WriteUtf8();
+
         try
         {
             return Dispatch(args);
@@ -54,6 +112,46 @@ internal static class Program
             // type and message go to standard error and the code says this component is at fault.
             Console.Error.WriteLine($"broiler-js: unhandled {failure.GetType().Name}: {failure.Message}");
             return ExitCodes.HostDefect;
+        }
+    }
+
+    /// <summary>
+    /// Makes each standard stream that is redirected to a pipe or a file write UTF-8 without a
+    /// byte-order mark, whatever code page this process inherited; a stream that is a console
+    /// window keeps the runtime's console writer.
+    /// </summary>
+    /// <remarks>
+    /// THE BYTES THIS HOST WRITES ARE PART OF WHAT IT PROMISES, the same way the bytes it reads
+    /// are (JSD-0017 section 3). The runtime's default writer encodes with the console's output
+    /// code page, so on a machine whose console uses code page 850 a guest's <c>"é"</c> left as a
+    /// different byte and <c>"∛"</c> left as <c>?</c> - a different answer on a different machine,
+    /// which no retained answer can be compared against. The writers are replaced rather than
+    /// <see cref="Console.OutputEncoding"/> being set, because setting it changes the code page of
+    /// the console window itself, which outlives this process and is not this host's to change.
+    /// Both writers flush on every write so the two streams interleave as they did before.
+    /// <para>
+    /// <b>A console window is left alone, because it is read by a person rather than compared.</b>
+    /// The raw stream under a console writes bytes that the window decodes with its own code page,
+    /// so UTF-8 there showed <c>"é"</c> as <c>"├®"</c> on a code page 850 console where the default
+    /// writer had shown it correctly. The rule is therefore per stream: redirected streams carry
+    /// deterministic UTF-8, and an interactive console keeps the runtime's writer and whatever that
+    /// console can display (JSD-0017 section 3).
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+    // Broiler-Falsified-If: a guest's non-ASCII text reaches a redirected stream as bytes other than its UTF-8 encoding
+    // Broiler-Human:        PENDING
+    private static void WriteUtf8()
+    {
+        var utf8 = new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        if (Console.IsOutputRedirected)
+        {
+            Console.SetOut(new StreamWriter(Console.OpenStandardOutput(), utf8) { AutoFlush = true });
+        }
+
+        if (Console.IsErrorRedirected)
+        {
+            Console.SetError(new StreamWriter(Console.OpenStandardError(), utf8) { AutoFlush = true });
         }
     }
 
@@ -669,6 +767,19 @@ internal static class Program
     /// The pattern is <c>src/tests/Broiler.VM.Bench.Host/Program.cs</c>, which prints the same GC
     /// and runtime-identifier facts at the head of a bench transcript for the same reason.
     /// </para>
+    /// <para>
+    /// <b><c>native-arming</c> is the one field here whose value is not the machine's.</b>
+    /// <i>(Added 2026-09-23.)</i> Every other field reports something the process was started with
+    /// and differs between machines, so the acceptance suite reads only their keys. This one
+    /// reports whether <see cref="JsNativePage.Mapper"/> was filled, which is a property of what
+    /// was composed into this image: <c>installed</c> on every platform and in every publish mode
+    /// where <see cref="InitializeNativeMapping"/> ran, and <c>none</c> in an image that links no
+    /// arming path or never reaches the one it links. It is here because between 2026-09-18 and
+    /// 2026-09-23 this host printed nothing that distinguished those two states, and the way the
+    /// difference showed was that every <c>--native</c> run verified its artifact and then refused
+    /// to instantiate it. It reports what this process holds and claims nothing about speed, about
+    /// which conventions are armed, or about whether any particular artifact will run.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
     // Broiler-Falsified-If: the line reports a setting other than the one the running process has
@@ -683,7 +794,8 @@ internal static class Program
             $"tiered-compilation-config={Configured("System.Runtime.TieredCompilation")} " +
             $"tiered-pgo-env={Asked("TieredPGO")} " +
             $"tiered-pgo-config={Configured("System.Runtime.TieredPGO")} " +
-            $"dynamic-code={System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeCompiled}");
+            $"dynamic-code={System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeCompiled} " +
+            $"native-arming={(JsNativePage.Mapper is null ? "none" : "installed")}");
 
     /// <summary>What the environment asks of the runtime for one knob, or <c>unset</c>.</summary>
     /// <remarks>
@@ -857,7 +969,14 @@ internal static class Program
         Console.WriteLine("              runtime takes it from both and neither shows the other's");
         Console.WriteLine("              setting; NEITHER IS THE TIER STATE ITSELF, which no runtime");
         Console.WriteLine("              API reports, so what is printed is what was asked of the");
-        Console.WriteLine("              runtime rather than what it did.");
+        Console.WriteLine("              runtime rather than what it did. The line ends with");
+        Console.WriteLine("              native-arming, which is the one field on it whose value is");
+        Console.WriteLine("              not this machine's: `installed` if this image filled the");
+        Console.WriteLine("              profile's page-mapping hook and `none` if it did not, which");
+        Console.WriteLine("              is the difference between --native running a program and");
+        Console.WriteLine("              refusing every one of them. (Added 2026-09-23, because this");
+        Console.WriteLine("              host spent five days printing nothing that told the two");
+        Console.WriteLine("              apart.) It says nothing about which conventions are armed.");
         Console.WriteLine("  --closure   print this composition's closure claim and exit");
         Console.WriteLine("  --version   print the profile and manifest identity");
         Console.WriteLine();
@@ -924,13 +1043,25 @@ internal static class Program
         Console.WriteLine("understates what it does is the same defect as one that overstates it, so");
         Console.WriteLine("the superseded reading is quoted rather than deleted.)");
         Console.WriteLine();
-        Console.WriteLine("BIGINT IS ABSENT IN THREE PLACES AND ALL THREE ANSWER IF YOU ASK THEM.");
-        Console.WriteLine("The `BigInt` global is not bound, so `typeof BigInt` answers `undefined`,");
-        Console.WriteLine("and `BigInt64Array` and `BigUint64Array` are absent beside it. AND A");
-        Console.WriteLine("BIGINT LITERAL IS REFUSED BY NAME AT COMPILE TIME: `1n` answers");
-        Console.WriteLine("2104:ConstructOutsideManifest, `a BigInt literal is not admitted by the");
-        Console.WriteLine("declared feature manifest`, under every manifest this host selects. Point");
-        Console.WriteLine("this host at it and read the code rather than taking it from here.");
+        Console.WriteLine("BIGINT IS ADMITTED BY THE DEFAULT MANIFEST, THROUGH ITS OWN SURFACE.");
+        Console.WriteLine("`1n` is an exact integer, the `BigInt` global and `BigInt.prototype` are");
+        Console.WriteLine("bound, and the operators, conversions and comparisons are the language's");
+        Console.WriteLine("(JSeal B01-B05, decision JSD-0033). A program holding a BigInt literal or");
+        Console.WriteLine("naming `BigInt` declares broiler.javascript.bigint, which a composition");
+        Console.WriteLine("may decline. `BigInt64Array`, `BigUint64Array` and the DataView BigInt");
+        Console.WriteLine("accessors exist wherever that surface is admitted (JSeal B07-B08); naming");
+        Console.WriteLine("either constructor declares it beside broiler.javascript.binary. --numeric");
+        Console.WriteLine("still refuses a BigInt literal by name, 2104:ConstructOutsideManifest.");
+        Console.WriteLine();
+        Console.WriteLine("(Corrected 2026-09-22. This paragraph said the BigInt typed arrays and the");
+        Console.WriteLine("DataView BigInt accessors were \"STILL ABSENT (cards B07-B08)\"; they were");
+        Console.WriteLine("added by those cards.)");
+        Console.WriteLine();
+        Console.WriteLine("(Corrected 2026-09-21. This paragraph read \"BIGINT IS ABSENT IN THREE");
+        Console.WriteLine("PLACES AND ALL THREE ANSWER IF YOU ASK THEM\": the global unbound and a");
+        Console.WriteLine("literal refused by name under every manifest this host selects. Both");
+        Console.WriteLine("stopped being true when card B05 admitted the surface; the typed arrays");
+        Console.WriteLine("are the one place of the three that still answers `undefined`.)");
         Console.WriteLine();
         Console.WriteLine("(Recorded 2026-09-08, and this note exists because the sentence it");
         Console.WriteLine("replaces became true by accident hours after it was written. Earlier the");

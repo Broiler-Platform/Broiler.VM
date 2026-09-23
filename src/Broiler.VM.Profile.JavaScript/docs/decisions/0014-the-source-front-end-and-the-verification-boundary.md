@@ -196,6 +196,36 @@ direct `eval`, a `with`, and a `debugger` — are each outside this manifest and
 moment one is admitted, the analysis must over-approximate or it is wrong, and the sentence is what
 tells whoever admits it which direction to err in.
 
+## Addendum 2026-09-21: a source name is a diagnostic label and nothing else
+
+*Added for JSeal slice J17 (upstream half); not an accepted milestone decision.* A host that
+compiles text it holds a label for - a file, a URL, a script element - can now say it with the
+init-only `JsScriptUnit.SourceName`, and every diagnostic that unit is refused with carries it as
+`SliceSourceDiagnostic.SourceName`. `ToString()` then reads `code at name:line:column`; an unnamed
+unit keeps the form it always had, so no retained line changes.
+
+- **It is the third identity of a unit, and the other two are unchanged.** `Name` is the entry point
+  a host invokes and `Referrer` is what a dynamic `import()` resolves against. Neither is a label,
+  and the pinned `eval` request still runs entry `main`.
+- **It reaches no artifact and decides nothing.** No byte depends on it, so two compilations that
+  differ only in the name produce the same bytes. It selects no goal, strictness, manifest, entry
+  point or resolution, and it is not a permission.
+- **Positions stay in the unit's own text.** The line and column are ECMAScript lines in that text
+  whatever the name says. A line continuation inside a template, a raw template or a string inside a
+  substitution now counts as the line it ends, and so do U+2028 and U+2029 inside a string literal,
+  which are string characters since ES2019. Previously the first was skipped without being counted,
+  and the second refused the literal as unterminated.
+- **No guest-visible metadata carries it, because none carries a position.** The artifact's
+  positions section maps code offsets to lines and columns for the verifier. No guest value reads
+  it: there is no `error.stack`, `fileName` or `lineNumber`. A guest `SyntaxError` from `eval` still
+  carries only the front end's refusal, because a provider answer is an artifact or a core reason.
+  A host that wants the name and position of an evaluated text's refusal compiles that text in its
+  own provider, as JSeal does, and reads the diagnostic there.
+- **Additive.** Both members are init-only properties, so the constructors and `Deconstruct`
+  signatures in [the API baseline](../api/public-api.txt) are unchanged, and existing callers and
+  artifacts are unaffected. The front-end check
+  `a source name reaches its unit's diagnostics and nothing else` holds both halves.
+
 ## What this decision does not settle
 
 - **The lowering that JS-4 deletes.** JS-1's hand-written builder is still here and still writes

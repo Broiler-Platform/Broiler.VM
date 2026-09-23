@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   30
-// Annotated:        30/30
-// Exempt:           0
-// Human-reviewed:   0/30
+// Relevant units:   38
+// Annotated:        38/38
+// Exempt:           1
+// Human-reviewed:   0/38
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       30
+// Unverified:       38
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -42,8 +42,16 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
+    /// <summary>
+    /// The intrinsic <c>%Array.prototype.toString%</c>, which <c>%TypedArray%.prototype.toString</c>
+    /// is the same function object as.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=985EF4
+    // Broiler-Human:        PENDING
+    internal JsValue IntrinsicArrayToString { get; private set; }
+
     /// <summary>Builds <c>Array</c>, its statics and <c>Array.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FFA376
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6B7E6A
     // Broiler-Human:        PENDING
     private void SetupArray()
     {
@@ -53,17 +61,26 @@ internal sealed partial class JsRealm
         Method(constructor, "isArray", 1, (engine, thisValue, arguments) =>
             JsValue.Boolean(ArrayIsArray(engine, ArgOfArray(arguments, 0).AsObjectOrNull())));
 
+        // THE RESULT IS BUILT BY THE RECEIVER WHEN IT IS A CONSTRUCTOR, as `Array.from`'s is:
+        // `Construct(C, « len »)`, then `CreateDataPropertyOrThrow` for each item and a strict `Set`
+        // of `length` (ES2026 23.1.2.3). A subclass gets an instance of itself, and a receiver whose
+        // result refuses a definition or the length is a `TypeError` rather than a quiet Array.
         Method(constructor, "of", 0, (engine, thisValue, arguments) =>
         {
-            var result = NewArray();
+            double length = arguments.Length;
+
+            var result = thisValue.IsObject && thisValue.AsObject().IsConstructor
+                ? engine.Construct(thisValue, [JsValue.Number(length)])
+                : ArrayCreate(engine, length);
 
             for (var at = 0; at < arguments.Length; at++)
             {
                 engine.Charge(1);
-                result.Push(arguments[at]);
+                ArrayCreateDataAt(engine, result, at, arguments[at]);
             }
 
-            return JsValue.Object(result);
+            ArrayWriteLength(engine, result, length);
+            return result;
         });
 
         // THE ITERATOR COMES FIRST AND THE ARRAY-LIKE READING IS THE FALLBACK, which is the order
@@ -94,29 +111,62 @@ internal sealed partial class JsRealm
             }
 
             var thisArg = ArgOfArray(arguments, 2);
-            var result = NewArray();
 
-            if (engine.TryGetSymbolMethod(items, IteratorSymbol, out _))
+            // THE RESULT IS BUILT BY THE RECEIVER WHEN THE RECEIVER IS A CONSTRUCTOR, and it is
+            // filled with `CreateDataPropertyOrThrow` and given its `length` with a strict `Set`.
+            // A subclass of Array, or any constructor `Array.from` was borrowed onto, gets an
+            // instance of itself; a result it refuses to extend is a `TypeError` rather than a
+            // silently short one.
+            var constructs = thisValue.IsObject && thisValue.AsObject().IsConstructor;
+
+            if (engine.TryGetSymbolMethod(items, IteratorSymbol, out var method))
             {
-                var iterator = engine.GetIterator(items);
+                var result = constructs
+                    ? engine.Construct(thisValue, System.Array.Empty<JsValue>())
+                    : JsValue.Object(NewArray());
+
+                var iterator = engine.GetIteratorFromMethod(items, method);
                 double index = 0;
 
                 while (engine.TryIterateNext(iterator, out var yielded))
                 {
                     engine.Charge(1);
 
-                    result.Push(mapper.IsObject
-                        ? engine.Call(mapper, thisArg, [yielded, JsValue.Number(index)])
-                        : yielded);
+                    // A THROW FROM THE MAPPER OR FROM THE DEFINITION CLOSES THE ITERATOR, which
+                    // is `IfAbruptCloseIterator`; one from the step itself has already marked the
+                    // record done and is not closed.
+                    try
+                    {
+                        if (index >= ArrayMaxSafeLength)
+                        {
+                            engine.ThrowTypeError("Array.from: the result would be too long");
+                        }
+
+                        var element = mapper.IsObject
+                            ? engine.Call(mapper, thisArg, [yielded, JsValue.Number(index)])
+                            : yielded;
+
+                        ArrayCreateDataAt(engine, result, index, element);
+                    }
+                    catch (JsThrow)
+                    {
+                        engine.CloseIteratorQuietly(iterator);
+                        throw;
+                    }
 
                     index++;
                 }
 
-                return JsValue.Object(result);
+                ArrayWriteLength(engine, result, index);
+                return result;
             }
 
             var source = ArrayReceiver(engine, items);
             var length = ArrayLengthOf(engine, source);
+
+            var target = constructs
+                ? engine.Construct(thisValue, [JsValue.Number(length)])
+                : ArrayCreate(engine, length);
 
             for (double at = 0; at < length; at++)
             {
@@ -128,12 +178,14 @@ internal sealed partial class JsRealm
                     element = engine.Call(mapper, thisArg, [element, JsValue.Number(at)]);
                 }
 
-                result.Push(element);
+                ArrayCreateDataAt(engine, target, at, element);
             }
 
-            return JsValue.Object(result);
+            ArrayWriteLength(engine, target, length);
+            return target;
         });
 
+        SetupArrayFromAsync(constructor);
         SetupArrayMutators();
         SetupArrayReaders();
         SetupArrayIteration();
@@ -208,7 +260,7 @@ internal sealed partial class JsRealm
     /// left alone.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3312C8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7E4066
     // Broiler-Human:        PENDING
     private void SetupArrayLaterAdditions()
     {
@@ -230,24 +282,31 @@ internal sealed partial class JsRealm
 
         Method(ArrayPrototype, "flat", 0, (engine, thisValue, arguments) =>
         {
+            // THE LENGTH IS READ BEFORE THE DEPTH IS COERCED, and the species is consulted after
+            // both: that is the order the specification gives and the one a getter can observe.
             var target = ArrayReceiver(engine, thisValue);
+            var length = ArrayLengthOf(engine, target);
             var stated = ArgOfArray(arguments, 0);
             var depth = stated.Type == JsType.Undefined ? 1 : engine.ToInteger(stated);
-            var result = NewArray();
-            ArrayFlattenInto(engine, target, depth, result, JsValue.Undefined, JsValue.Undefined);
-            return JsValue.Object(result);
+            var resultValue = ArraySpeciesCreate(engine, target, 0);
+
+            _ = ArrayFlattenInto(
+                engine, target, length, depth, resultValue, 0, JsValue.Undefined, JsValue.Undefined);
+
+            return resultValue;
         });
 
         Method(ArrayPrototype, "flatMap", 1, (engine, thisValue, arguments) =>
         {
             var target = ArrayReceiver(engine, thisValue);
+            var length = ArrayLengthOf(engine, target);
             var callback = ArrayCallbackOf(engine, arguments, "flatMap");
-            var result = NewArray();
+            var resultValue = ArraySpeciesCreate(engine, target, 0);
 
-            ArrayFlattenInto(
-                engine, target, 1, result, callback, ArgOfArray(arguments, 1));
+            _ = ArrayFlattenInto(
+                engine, target, length, 1, resultValue, 0, callback, ArgOfArray(arguments, 1));
 
-            return JsValue.Object(result);
+            return resultValue;
         });
 
         Method(ArrayPrototype, "copyWithin", 2, (engine, thisValue, arguments) =>
@@ -286,7 +345,7 @@ internal sealed partial class JsRealm
                 }
                 else
                 {
-                    ArrayDeleteAt(target, to);
+                    ArrayDeleteAt(engine, target, to);
                 }
 
                 from += step;
@@ -294,7 +353,7 @@ internal sealed partial class JsRealm
                 count--;
             }
 
-            return thisValue;
+            return target;
         });
 
         SetupArrayChangeByCopy();
@@ -312,7 +371,7 @@ internal sealed partial class JsRealm
     /// copy which preserved holes would have to be an Array exotic object built by a different
     /// path than the one that produces every other result here.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2CD841
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D8B2B
     // Broiler-Human:        PENDING
     private void SetupArrayChangeByCopy()
     {
@@ -321,6 +380,7 @@ internal sealed partial class JsRealm
             _ = arguments;
             var target = ArrayReceiver(engine, thisValue);
             var length = ArrayLengthOf(engine, target);
+            ArrayRefuseUncreatable(engine, length);
             var result = NewArray();
 
             for (double at = length - 1; at >= 0; at--)
@@ -344,6 +404,7 @@ internal sealed partial class JsRealm
 
             var target = ArrayReceiver(engine, thisValue);
             var length = ArrayLengthOf(engine, target);
+            ArrayRefuseUncreatable(engine, length);
             var items = new System.Collections.Generic.List<JsValue>();
             double undefinedCount = 0;
 
@@ -398,6 +459,7 @@ internal sealed partial class JsRealm
                 return engine.ThrowRangeError("Array.prototype.with: the index is out of range");
             }
 
+            ArrayRefuseUncreatable(engine, length);
             var replacement = ArgOfArray(arguments, 1);
             var result = NewArray();
 
@@ -417,6 +479,10 @@ internal sealed partial class JsRealm
             var length = ArrayLengthOf(engine, target);
             var start = ArrayRelative(engine, ArgOfArray(arguments, 0), length);
             var removed = ArraySpliceCount(engine, arguments, length, start);
+            var inserted = arguments.Length > 2 ? arguments.Length - 2 : 0;
+            var newLength = (length - removed) + inserted;
+            ArrayRefuseUnsafeLength(engine, newLength, "toSpliced");
+            ArrayRefuseUncreatable(engine, newLength);
             var result = NewArray();
 
             for (double at = 0; at < start; at++)
@@ -471,7 +537,10 @@ internal sealed partial class JsRealm
         return wantIndex ? JsValue.Number(-1) : JsValue.Undefined;
     }
 
-    /// <summary>The flattening walk <c>flat</c> and <c>flatMap</c> share.</summary>
+    /// <summary>
+    /// The flattening walk <c>flat</c> and <c>flatMap</c> share: the specification's
+    /// <c>FlattenIntoArray</c>, answering the next index to write.
+    /// </summary>
     /// <remarks>
     /// <b>It recurses on the CLR stack and the depth a guest can ask for is unbounded</b>, so the
     /// recursion is charged per element rather than per array: a guest handing this a
@@ -479,18 +548,18 @@ internal sealed partial class JsRealm
     /// - an explicit worklist - would be immune to that, and would also make the mapper's argument
     /// order harder to keep right for no behaviour a program can see.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1C5C6C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=871EB9
     // Broiler-Human:        PENDING
-    private static void ArrayFlattenInto(
+    private static double ArrayFlattenInto(
         JsEngine engine,
         JsValue source,
+        double length,
         double depth,
-        JsArray into,
+        JsValue into,
+        double written,
         JsValue mapper,
         JsValue thisArg)
     {
-        var length = ArrayLengthOf(engine, source);
-
         for (double at = 0; at < length; at++)
         {
             engine.Charge(1);
@@ -510,18 +579,34 @@ internal sealed partial class JsRealm
             // THE SAME `IsArray` THE SPREAD USES, and it looks through a Proxy for the same reason.
             if (depth > 0 && ArrayIsArray(engine, element.AsObjectOrNull()))
             {
-                ArrayFlattenInto(
-                    engine, element, depth - 1, into, JsValue.Undefined, JsValue.Undefined);
+                written = ArrayFlattenInto(
+                    engine,
+                    element,
+                    ArrayLengthOf(engine, element),
+                    depth - 1,
+                    into,
+                    written,
+                    JsValue.Undefined,
+                    JsValue.Undefined);
 
                 continue;
             }
 
-            into.Push(element);
+            if (written >= ArrayMaxSafeLength)
+            {
+                throw engine.Error(
+                    "TypeError", "the flattened Array would exceed the maximum length");
+            }
+
+            ArrayCreateDataAt(engine, into, written, element);
+            written++;
         }
+
+        return written;
     }
 
     /// <summary><c>push</c>, <c>pop</c>, <c>shift</c>, <c>unshift</c>, <c>splice</c>, <c>reverse</c>, <c>fill</c>, <c>sort</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0AB412
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1A6693
     // Broiler-Human:        PENDING
     private void SetupArrayMutators()
     {
@@ -529,6 +614,7 @@ internal sealed partial class JsRealm
         {
             var target = ArrayReceiver(engine, thisValue);
             var length = ArrayLengthOf(engine, target);
+            ArrayRefuseUnsafeLength(engine, length + arguments.Length, "push");
 
             for (var at = 0; at < arguments.Length; at++)
             {
@@ -557,7 +643,7 @@ internal sealed partial class JsRealm
 
             var last = length - 1;
             var element = ArrayGetAt(engine, target, last);
-            ArrayDeleteAt(target, last);
+            ArrayDeleteAt(engine, target, last);
             ArrayWriteLength(engine, target, last);
             return element;
         });
@@ -585,11 +671,11 @@ internal sealed partial class JsRealm
                 }
                 else
                 {
-                    ArrayDeleteAt(target, at - 1);
+                    ArrayDeleteAt(engine, target, at - 1);
                 }
             }
 
-            ArrayDeleteAt(target, length - 1);
+            ArrayDeleteAt(engine, target, length - 1);
             ArrayWriteLength(engine, target, length - 1);
             return first;
         });
@@ -602,6 +688,8 @@ internal sealed partial class JsRealm
 
             if (count > 0)
             {
+                ArrayRefuseUnsafeLength(engine, length + count, "unshift");
+
                 for (var at = length; at > 0; at--)
                 {
                     engine.Charge(1);
@@ -614,7 +702,7 @@ internal sealed partial class JsRealm
                     }
                     else
                     {
-                        ArrayDeleteAt(target, to);
+                        ArrayDeleteAt(engine, target, to);
                     }
                 }
 
@@ -635,8 +723,12 @@ internal sealed partial class JsRealm
             var length = ArrayLengthOf(engine, target);
             var start = ArrayRelative(engine, ArgOfArray(arguments, 0), length);
             var deleteCount = ArraySpliceCount(engine, arguments, length, start);
-            var removed = NewArray();
-            var removedValue = JsValue.Object(removed);
+            var itemCount = arguments.Length > 2 ? arguments.Length - 2 : 0;
+            ArrayRefuseUnsafeLength(engine, (length - deleteCount) + itemCount, "splice");
+
+            // THE REMOVED ELEMENTS ARE COLLECTED INTO THE SPECIES BEFORE THE RECEIVER IS TOUCHED, so a
+            // species result that refuses a definition throws with the receiver still intact.
+            var removedValue = ArraySpeciesCreate(engine, target, deleteCount);
 
             for (double at = 0; at < deleteCount; at++)
             {
@@ -644,12 +736,12 @@ internal sealed partial class JsRealm
 
                 if (ArrayHasAt(engine, target, start + at))
                 {
-                    ArraySetAt(engine, removedValue, at, ArrayGetAt(engine, target, start + at));
+                    ArrayCreateDataAt(
+                        engine, removedValue, at, ArrayGetAt(engine, target, start + at));
                 }
             }
 
             ArrayWriteLength(engine, removedValue, deleteCount);
-            var itemCount = arguments.Length > 2 ? arguments.Length - 2 : 0;
 
             if (itemCount < deleteCount)
             {
@@ -662,7 +754,7 @@ internal sealed partial class JsRealm
                 for (var at = length; at > (length - deleteCount) + itemCount; at--)
                 {
                     engine.Charge(1);
-                    ArrayDeleteAt(target, at - 1);
+                    ArrayDeleteAt(engine, target, at - 1);
                 }
             }
             else if (itemCount > deleteCount)
@@ -699,13 +791,20 @@ internal sealed partial class JsRealm
                 var upperExists = ArrayHasAt(engine, target, upper);
                 var upperValue = upperExists ? ArrayGetAt(engine, target, upper) : JsValue.Undefined;
 
+                // TWO HOLES ARE LEFT ALONE. The specification deletes only in the mixed cases, and a
+                // Proxy's `deleteProperty` trap sees the difference.
+                if (!lowerExists && !upperExists)
+                {
+                    continue;
+                }
+
                 if (upperExists)
                 {
                     ArraySetAt(engine, target, lower, upperValue);
                 }
                 else
                 {
-                    ArrayDeleteAt(target, lower);
+                    ArrayDeleteAt(engine, target, lower);
                 }
 
                 if (lowerExists)
@@ -714,7 +813,7 @@ internal sealed partial class JsRealm
                 }
                 else
                 {
-                    ArrayDeleteAt(target, upper);
+                    ArrayDeleteAt(engine, target, upper);
                 }
             }
 
@@ -806,7 +905,7 @@ internal sealed partial class JsRealm
             for (var at = written; at < length; at++)
             {
                 engine.Charge(1);
-                ArrayDeleteAt(target, at);
+                ArrayDeleteAt(engine, target, at);
             }
 
             return target;
@@ -814,7 +913,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>slice</c>, <c>concat</c>, <c>join</c>, <c>toString</c> and the three searches.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=18A99B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B4E0A5
     // Broiler-Human:        PENDING
     private void SetupArrayReaders()
     {
@@ -827,8 +926,9 @@ internal sealed partial class JsRealm
                 ? length
                 : ArrayRelative(engine, ArgOfArray(arguments, 1), length);
 
-            var result = NewArray();
-            var resultValue = JsValue.Object(result);
+            // THE SPECIES IS CONSULTED AFTER BOTH BOUNDS ARE COERCED, which is the order a guest sees
+            // through a `valueOf` on either bound and a getter on `constructor`.
+            var resultValue = ArraySpeciesCreate(engine, target, stop > start ? stop - start : 0);
             double written = 0;
 
             for (var at = start; at < stop; at++)
@@ -837,7 +937,7 @@ internal sealed partial class JsRealm
 
                 if (ArrayHasAt(engine, target, at))
                 {
-                    ArraySetAt(engine, resultValue, written, ArrayGetAt(engine, target, at));
+                    ArrayCreateDataAt(engine, resultValue, written, ArrayGetAt(engine, target, at));
                 }
 
                 written++;
@@ -850,8 +950,7 @@ internal sealed partial class JsRealm
         Method(ArrayPrototype, "concat", 1, (engine, thisValue, arguments) =>
         {
             var target = ArrayReceiver(engine, thisValue);
-            var result = NewArray();
-            var resultValue = JsValue.Object(result);
+            var resultValue = ArraySpeciesCreate(engine, target, 0);
             var written = ArrayConcatOne(engine, resultValue, 0, target);
 
             for (var at = 0; at < arguments.Length; at++)
@@ -907,11 +1006,49 @@ internal sealed partial class JsRealm
                 return engine.Call(join, target, System.Array.Empty<JsValue>());
             }
 
-            // A RECEIVER WHOSE `join` IS NOT CALLABLE FALLS BACK TO Object.prototype.toString,
-            // which is what makes Array.prototype.toString.call({}) answer "[object Object]"
-            // rather than throwing.
-            var fallback = engine.GetProperty(JsValue.Object(ObjectPrototype), "toString");
-            return engine.Call(fallback, target, System.Array.Empty<JsValue>());
+            // A RECEIVER WHOSE `join` IS NOT CALLABLE FALLS BACK TO THE INTRINSIC
+            // %Object.prototype.toString%, which is what makes Array.prototype.toString.call({})
+            // answer "[object Object]" rather than throwing - and it is the intrinsic, not whatever
+            // Object.prototype holds now, so deleting or replacing that property changes nothing.
+            return engine.Call(IntrinsicObjectToString, target, System.Array.Empty<JsValue>());
+        });
+
+        _ = ArrayPrototype.TryGetOwnProperty("toString", out var installed);
+        IntrinsicArrayToString = installed.Value;
+
+        // EACH ELEMENT'S OWN `toLocaleString`, and not `join`: ECMA-262 specifies this method even
+        // without ECMA-402, as `Invoke(element, "toLocaleString")` for every element that is not
+        // nullish, with no arguments and `,` as the separator. Inheriting Object.prototype's, which
+        // is what this prototype did before, called `join` and so each element's `toString`
+        // (decision JSD-0027, follow-up N1). A non-callable method is a TypeError from `Call`.
+        Method(ArrayPrototype, "toLocaleString", 0, (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            var target = ArrayReceiver(engine, thisValue);
+            var length = ArrayLengthOf(engine, target);
+            var text = new System.Text.StringBuilder();
+
+            for (double at = 0; at < length; at++)
+            {
+                engine.Charge(1);
+
+                if (at > 0)
+                {
+                    text.Append(',');
+                }
+
+                var element = ArrayGetAt(engine, target, at);
+
+                if (!element.IsNullish)
+                {
+                    var method = engine.GetProperty(element, "toLocaleString");
+
+                    text.Append(engine.ToStringValue(
+                        engine.Call(method, element, System.Array.Empty<JsValue>())));
+                }
+            }
+
+            return JsValue.String(text.ToString());
         });
 
         Method(ArrayPrototype, "indexOf", 1, (engine, thisValue, arguments) =>
@@ -1022,7 +1159,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The callback-taking methods.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=090DF4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=421761
     // Broiler-Human:        PENDING
     private void SetupArrayIteration()
     {
@@ -1052,8 +1189,12 @@ internal sealed partial class JsRealm
             var length = ArrayLengthOf(engine, target);
             var callback = ArrayCallbackOf(engine, arguments, "map");
             var thisArg = ArgOfArray(arguments, 1);
-            var result = NewArray();
-            var resultValue = JsValue.Object(result);
+
+            // THE RESULT IS THE RECEIVER'S SPECIES, sized to the receiver's length, and its elements
+            // are DEFINED rather than assigned. No `length` is written afterwards: the constructor
+            // was told the length, and a species result that is not an Array has no reason to be
+            // handed one it did not ask for.
+            var resultValue = ArraySpeciesCreate(engine, target, length);
 
             for (double at = 0; at < length; at++)
             {
@@ -1061,12 +1202,11 @@ internal sealed partial class JsRealm
 
                 if (ArrayHasAt(engine, target, at))
                 {
-                    ArraySetAt(
+                    ArrayCreateDataAt(
                         engine, resultValue, at, ArrayInvoke(engine, callback, thisArg, target, at));
                 }
             }
 
-            ArrayWriteLength(engine, resultValue, length);
             return resultValue;
         });
 
@@ -1076,7 +1216,8 @@ internal sealed partial class JsRealm
             var length = ArrayLengthOf(engine, target);
             var callback = ArrayCallbackOf(engine, arguments, "filter");
             var thisArg = ArgOfArray(arguments, 1);
-            var result = NewArray();
+            var resultValue = ArraySpeciesCreate(engine, target, 0);
+            double written = 0;
 
             for (double at = 0; at < length; at++)
             {
@@ -1093,11 +1234,12 @@ internal sealed partial class JsRealm
 
                 if (kept.ToBooleanValue())
                 {
-                    result.Push(element);
+                    ArrayCreateDataAt(engine, resultValue, written, element);
+                    written++;
                 }
             }
 
-            return JsValue.Object(result);
+            return resultValue;
         });
 
         Method(ArrayPrototype, "some", 1, (engine, thisValue, arguments) =>
@@ -1381,11 +1523,29 @@ internal sealed partial class JsRealm
         return value.IsObject ? value : JsValue.Object(engine.ToObject(value));
     }
 
-    /// <summary>The receiver's <c>length</c>, as the uint32 the specification clamps it to.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D26E1
+    /// <summary>
+    /// The specification's <c>LengthOfArrayLike</c>: the receiver's <c>length</c> through
+    /// <c>ToLength</c>, an integer in [0, 2^53-1].
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is <c>ToLength</c> and not <c>ToUint32</c></b>, and the two disagree on exactly the
+    /// lengths a program can reach with an array-like: <c>-1</c> is 0 and not 4294967295, and 2^32
+    /// is 2^32 and not 0. Reading the uint32 made <c>push</c> on <c>{ length: -5 }</c> write at index
+    /// 4294967291 and every method treat an object of length 2^32 as empty.
+    /// </para>
+    /// <para>
+    /// <b>A length past 2^32 does not make any loop here unmetered.</b> Every method that walks the
+    /// indices charges each one it visits, so an array-like claiming 2^53-1 elements meets the
+    /// instruction budget; the methods that would have to build an Array that long refuse first
+    /// with the <c>RangeError</c> <c>ArrayCreate</c> owes, and the ones that would grow the receiver
+    /// past 2^53-1 refuse with the <c>TypeError</c> the specification names before they write.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4138B7
     // Broiler-Human:        PENDING
     private static double ArrayLengthOf(JsEngine engine, JsValue target) =>
-        engine.ToUint32(engine.GetProperty(target, "length"));
+        ArrayToLength(engine, engine.GetProperty(target, "length"));
 
     /// <summary>The property key index <paramref name="at"/> is named by.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=34AD56
@@ -1417,15 +1577,21 @@ internal sealed partial class JsRealm
         engine.SetIndexed(target, JsValue.Number(at), value, true);
 
     /// <summary>Removes index <paramref name="at"/>, leaving a hole.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FEFCDF
+    /// <remarks>
+    /// <b>It is <c>DeletePropertyOrThrow</c>, as every mutator here names it.</b> A sealed or
+    /// frozen receiver, or one element made non-configurable, refuses the deletion, and the method
+    /// throws there rather than going on to shorten a <c>length</c> over an element it could not
+    /// remove.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=399716
     // Broiler-Human:        PENDING
-    private static void ArrayDeleteAt(JsValue target, double at)
+    private static void ArrayDeleteAt(JsEngine engine, JsValue target, double at)
     {
         var host = target.AsObjectOrNull();
 
-        if (host is not null)
+        if (host is not null && !host.DeleteOwnProperty(ArrayKeyOf(at)))
         {
-            _ = host.DeleteOwnProperty(ArrayKeyOf(at));
+            throw engine.Error("TypeError", "Cannot delete property " + ArrayKeyOf(at));
         }
     }
 
@@ -1486,7 +1652,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Moves one element during a <c>splice</c>, propagating the hole when there is one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FA07EA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1199C1
     // Broiler-Human:        PENDING
     private static void ArrayShiftOne(JsEngine engine, JsValue target, double from, double to)
     {
@@ -1496,25 +1662,38 @@ internal sealed partial class JsRealm
         }
         else
         {
-            ArrayDeleteAt(target, to);
+            ArrayDeleteAt(engine, target, to);
         }
     }
 
-    /// <summary>Appends one <c>concat</c> operand, spreading it when it is an Array.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B93F5A
+    /// <summary>Appends one <c>concat</c> operand, spreading it when it is concat-spreadable.</summary>
+    /// <remarks>
+    /// <b>The length a spread reads is <c>ToLength</c>, as every length here is.</b> An operand that
+    /// spreads only because it said so is an arbitrary array-like, and its <c>length</c> may be
+    /// negative, fractional or past 2^32; the specification clamps it to [0, 2^53-1] and refuses a
+    /// result that would pass that ceiling before a single element is copied. Each index the spread visits is charged, holes included, so a huge sparse length meets
+    /// the instruction budget rather than an unmetered scan.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CC5F47
     // Broiler-Human:        PENDING
     private static double ArrayConcatOne(
         JsEngine engine, JsValue result, double at, JsValue item)
     {
         engine.Charge(1);
 
-        // ONLY A REAL ARRAY SPREADS. An array-like with a length is appended whole, which is what
-        // makes [].concat(arguments) a one-element Array in every engine. The predicate looks
-        // THROUGH a Proxy, because a proxy over an Array is an Array for this purpose - a type test
-        // here appended one whole proxy where the language spreads its elements.
-        if (ArrayIsArray(engine, item.AsObjectOrNull()))
+        // THE SYMBOL DECIDES FIRST AND `IsArray` IS ONLY THE FALLBACK. An array-like that sets
+        // `Symbol.isConcatSpreadable` spreads, an Array that clears it is appended whole, and with
+        // no answer either way only a real Array - looked at THROUGH a Proxy - spreads, which is
+        // what keeps `[].concat(arguments)` a one-element Array.
+        if (ArrayIsConcatSpreadable(engine, item))
         {
-            var length = ArrayLengthOf(engine, item);
+            var length = ArrayToLength(engine, engine.GetProperty(item, "length"));
+
+            if (at + length > ArrayMaxSafeLength)
+            {
+                throw engine.Error(
+                    "TypeError", "the concatenated Array would exceed the maximum length");
+            }
 
             for (double index = 0; index < length; index++)
             {
@@ -1522,7 +1701,7 @@ internal sealed partial class JsRealm
 
                 if (ArrayHasAt(engine, item, index))
                 {
-                    ArraySetAt(engine, result, at, ArrayGetAt(engine, item, index));
+                    ArrayCreateDataAt(engine, result, at, ArrayGetAt(engine, item, index));
                 }
 
                 at++;
@@ -1531,8 +1710,255 @@ internal sealed partial class JsRealm
             return at;
         }
 
-        ArraySetAt(engine, result, at, item);
+        if (at >= ArrayMaxSafeLength)
+        {
+            throw engine.Error(
+                "TypeError", "the concatenated Array would exceed the maximum length");
+        }
+
+        ArrayCreateDataAt(engine, result, at, item);
         return at + 1;
+    }
+
+    /// <summary>The specification's <c>IsConcatSpreadable</c>.</summary>
+    /// <remarks>
+    /// <b>One read of the symbol per operand, through the ordinary <c>[[Get]]</c></b>, so an
+    /// inherited flag counts, a getter runs exactly once and its exception propagates, and a Proxy's
+    /// <c>get</c> trap is asked. A primitive operand is never spread: <c>concat</c> does not box its
+    /// arguments, so a flag on <c>String.prototype</c> does not make a string spread.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=ABA5EA
+    // Broiler-Human:        PENDING
+    private static bool ArrayIsConcatSpreadable(JsEngine engine, JsValue item)
+    {
+        if (!item.IsObject)
+        {
+            return false;
+        }
+
+        var spreadable = engine.GetSymbol(item, engine.Realm.IsConcatSpreadableSymbol);
+
+        if (spreadable.Type != JsType.Undefined)
+        {
+            return spreadable.ToBooleanValue();
+        }
+
+        return ArrayIsArray(engine, item.AsObject());
+    }
+
+    /// <summary>The largest length an array-like may have: 2^53-1.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E932DB
+    // Broiler-Human:        PENDING
+    private const double ArrayMaxSafeLength = 9007199254740991.0;
+
+    /// <summary>The specification's <c>ToLength</c>: an integer clamped to [0, 2^53-1].</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FD062F
+    // Broiler-Human:        PENDING
+    private static double ArrayToLength(JsEngine engine, JsValue value)
+    {
+        var length = engine.ToInteger(value);
+
+        if (length <= 0)
+        {
+            return 0;
+        }
+
+        return length > ArrayMaxSafeLength ? ArrayMaxSafeLength : length;
+    }
+
+    /// <summary>
+    /// The specification's <c>ArraySpeciesCreate</c>: the object an allocating method builds its
+    /// answer in, chosen by the receiver's <c>constructor[Symbol.species]</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Only an Array receiver has a species.</b> A plain array-like - including one with a
+    /// <c>constructor</c> of its own - gets an ordinary Array, and its <c>constructor</c> is never
+    /// read. <c>IsArray</c> looks through a Proxy, so a proxy over an Array is asked for its
+    /// <c>constructor</c> through its <c>get</c> trap.
+    /// </para>
+    /// <para>
+    /// <b>Two reads and two defaults, then a construction.</b> An undefined <c>constructor</c>, or a
+    /// species that is <c>null</c> or <c>undefined</c>, answers an ordinary Array; a
+    /// <c>constructor</c> that is a primitive other than undefined, or a species that cannot be
+    /// constructed, is a <c>TypeError</c>. Anything else is constructed through
+    /// <see cref="JsEngine.Construct(JsValue, JsValue[])"/> with the length as its one argument, so
+    /// the construction is charged, bounded by the call depth and throws what the guest threw -
+    /// exactly as a <c>new</c> written in the program would.
+    /// </para>
+    /// <para>
+    /// <b>The cross-realm step is vacuous here.</b> The specification replaces ANOTHER realm's
+    /// <c>%Array%</c> with undefined; an engine in this profile hosts one realm and
+    /// <c>$262.createRealm</c> refuses, so no constructor can come from another realm to be
+    /// replaced. The Test262 cases that need a second realm stay failing rather than being
+    /// counted as covered.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=09DE0F
+    // Broiler-Human:        PENDING
+    private JsValue ArraySpeciesCreate(JsEngine engine, JsValue original, double length)
+    {
+        // A NEGATIVE ZERO IS HANDED ON AS ZERO: `splice(0, -0)` must not show a species
+        // constructor a `-0` it can tell apart with `Object.is`.
+        if (length == 0)
+        {
+            length = 0;
+        }
+
+        if (!ArrayIsArray(engine, original.AsObjectOrNull()))
+        {
+            return ArrayCreate(engine, length);
+        }
+
+        var constructor = engine.GetProperty(original, "constructor");
+
+        if (constructor.IsObject)
+        {
+            constructor = engine.GetSymbol(constructor, SpeciesSymbol);
+
+            if (constructor.Type == JsType.Null)
+            {
+                constructor = JsValue.Undefined;
+            }
+        }
+
+        if (constructor.Type == JsType.Undefined)
+        {
+            return ArrayCreate(engine, length);
+        }
+
+        if (!constructor.IsObject || !constructor.AsObject().IsConstructor)
+        {
+            return engine.ThrowTypeError("the Array species is not a constructor");
+        }
+
+        return engine.Construct(constructor, [JsValue.Number(length)]);
+    }
+
+    /// <summary>
+    /// The <c>RangeError</c> <c>ArrayCreate</c> owes for a length no Array can have: past 2^32-1.
+    /// </summary>
+    /// <remarks>
+    /// The change-by-copy methods and <c>Array.from</c> build their answer by appending rather than
+    /// through <see cref="ArrayCreate"/>, and they ask this first, so an array-like claiming 2^32
+    /// elements or more is refused before a single element is read rather than copied until the
+    /// instruction budget runs out.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C43651
+    // Broiler-Human:        PENDING
+    private static void ArrayRefuseUncreatable(JsEngine engine, double length)
+    {
+        if (length > uint.MaxValue)
+        {
+            engine.ThrowRangeError("Invalid array length");
+        }
+    }
+
+    /// <summary>
+    /// The <c>TypeError</c> a method owes when the length it would leave behind passes 2^53-1.
+    /// </summary>
+    /// <remarks>
+    /// Asked before anything is written, which is the specification's order: <c>push</c>,
+    /// <c>unshift</c>, <c>splice</c> and <c>toSpliced</c> refuse with the receiver untouched. The
+    /// new length is computed as removal first and insertion second, so no intermediate sum passes
+    /// 2^53 and rounds back under the ceiling.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F9D11C
+    // Broiler-Human:        PENDING
+    private static void ArrayRefuseUnsafeLength(JsEngine engine, double length, string method)
+    {
+        if (length > ArrayMaxSafeLength)
+        {
+            engine.ThrowTypeError(
+                "Array.prototype." + method + ": the new length would exceed 2^53-1");
+        }
+    }
+
+    /// <summary>The specification's <c>ArrayCreate</c>: a fresh Array of the given length.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A0C0EF
+    // Broiler-Human:        PENDING
+    private JsValue ArrayCreate(JsEngine engine, double length)
+    {
+        ArrayRefuseUncreatable(engine, length);
+        var array = NewArray();
+
+        if (length > 0)
+        {
+            array.SetLength((uint)length);
+        }
+
+        return JsValue.Object(array);
+    }
+
+    /// <summary>
+    /// The specification's <c>CreateDataPropertyOrThrow</c> at index <paramref name="at"/>: the way
+    /// an allocating method fills the object <see cref="ArraySpeciesCreate"/> answered.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A definition and not an assignment.</b> A species result is an arbitrary object, and an
+    /// assignment would run an inherited or own setter at that index, or be swallowed by a
+    /// read-only one; a definition does neither. It replaces a configurable property of either kind
+    /// with a plain writable, enumerable, configurable data property.
+    /// </para>
+    /// <para>
+    /// <b>The definition is the RESULT's own <c>[[DefineOwnProperty]]</c></b>, the one
+    /// <c>Object.defineProperty</c> reaches, so an exotic result validates it the way the language
+    /// says: a typed array too short for the index refuses it, a String object refuses its own
+    /// characters, and a Proxy is asked through its <c>defineProperty</c> trap with the complete
+    /// four-field descriptor. Each refusal is a <c>TypeError</c>, where the store underneath would
+    /// have ignored the write silently. Writing the store directly, as this used to, skipped every
+    /// exotic object's own rules.
+    /// </para>
+    /// <para>
+    /// <b>A plain Array keeps a direct path because it is observably the same.</b> Its refusals are
+    /// the ordinary object's - a non-configurable property already there, a non-extensible Array
+    /// without one - and the Array's own: an ARRAY INDEX at or past a length that has been closed.
+    /// A key of 2^32-1 or more is not an array index and cannot move the length, so it is not
+    /// refused for that reason.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D928E
+    // Broiler-Human:        PENDING
+    private static void ArrayCreateDataAt(JsEngine engine, JsValue target, double at, JsValue value)
+    {
+        var host = target.AsObject();
+        var key = ArrayKeyOf(at);
+
+        if (host is not JsArray array)
+        {
+            var fields = new ObjectDescriptorFields
+            {
+                HasValue = true,
+                Value = value,
+                HasWritable = true,
+                Writable = true,
+                HasEnumerable = true,
+                Enumerable = true,
+                HasConfigurable = true,
+                Configurable = true,
+            };
+
+            ObjectApplyDescriptorAt(engine, host, JsValue.String(key), fields);
+            return;
+        }
+
+        var refused = array.TryGetOwnProperty(key, out var current)
+            ? !current.Configurable
+            : !array.Extensible;
+
+        if (!refused && !array.LengthWritable &&
+            JsObject.IsArrayIndex(key, out var index) && index >= array.Length)
+        {
+            refused = true;
+        }
+
+        if (refused)
+        {
+            engine.ThrowTypeError("Cannot define property " + key + " on the Array method's result");
+        }
+
+        array.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
     }
 
     /// <summary>The callback an iteration method was given, which has to be callable.</summary>

@@ -362,6 +362,22 @@ internal static class CorpusBuilder
         // the module surface and registers no resolver refuses a perfectly well-formed artifact,
         // and a row about that cannot be written as bytes at all.
         ..ModuleCorpus.Build(),
+
+        // ---- the eval scope map: the refusals a direct-eval site's map adds, and two that run ---
+        //
+        // Spliced in for the reason the other version-2 rows are, and kept in a file of their own
+        // because they are one section's clauses (JSeal V14, JSD-0026 step 2).
+        ..EvalScopeCorpus.Build(),
+
+        // ---- the script declarations: the refusals a script body's row adds, and three that run -
+        //
+        // Kept in a file of their own because they are one section's clauses (JSeal V15-host).
+        ..ScriptDeclarationCorpus.Build(),
+
+        // ---- the script referrers: the refusals a placed script body's row adds, and two that run -
+        //
+        // Kept in a file of their own because they are one section's clauses (JSeal I12-upstream).
+        ..ScriptReferrerCorpus.Build(),
     ];
 
     private static CorpusEntry Ok(string name, byte[] bytes, string completion) =>
@@ -1128,6 +1144,18 @@ internal static class JavaScriptDiagnosticCodes
     /// <summary>A byte of an emitted payload belongs to no instantiation a backend could write.</summary>
     internal const int NativePayloadNotTemplateClosed = 1625;
 
+    /// <summary>The artifact carries an eval scope map or an eval name instruction and declared no dynamic surface.</summary>
+    internal const int EvalScopesOutsideManifest = 1626;
+
+    /// <summary>The eval scope map disagrees with itself, the code or the function table.</summary>
+    internal const int MalformedEvalScopes = 1627;
+
+    /// <summary>The script-declarations section disagrees with itself or the function table.</summary>
+    internal const int MalformedScriptDeclarations = 1631;
+
+    /// <summary>The script-referrers section disagrees with itself or the function table.</summary>
+    internal const int MalformedScriptReferrers = 1632;
+
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;
     internal const int ManifestIdTooLong = 1005;
@@ -1143,6 +1171,7 @@ internal static class JavaScriptDiagnosticCodes
     internal const int MalformedBooleanConstant = 1302;
     internal const int ConstantCountExceedsDeclaredMaximum = 1303;
     internal const int InternedNameOutsideManifest = 1304;
+    internal const int MalformedBigIntConstant = 1305;
     internal const int UnknownOpcode = 1401;
     internal const int TruncatedInstruction = 1402;
     internal const int JumpTargetNotAnInstructionBoundary = 1403;

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
-// Exempt:           13
-// Human-reviewed:   0/25
+// Relevant units:   26
+// Annotated:        26/26
+// Exempt:           14
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         12/12
 // Resource impact:  3/10 max
-// Unverified:       25
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -204,6 +204,30 @@ public static class JavaScriptProfile
         VmFeatureManifestId.Parse(Format.JsSurfaces.Binary);
 
     /// <summary>
+    /// The BigInt surface: BigInt values, their literals, and the <c>BigInt</c> global.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Admitted by the descriptor that admits every surface, and declined the way the others
+    /// are</b> (decision JSD-0033 section 7, JSeal card B05). An artifact holding a BigInt constant or
+    /// reading the <c>BigInt</c> global declares this identity beside <see cref="WideManifest"/>; a
+    /// composition that does not name it refuses such an artifact at verification and builds no
+    /// <c>BigInt</c> global, so its realms hold no BigInt value at all.
+    /// </para>
+    /// <para>
+    /// <b>What it admits is the language's BigInt, not a subset of it.</b> Named exceptions
+    /// remained until 2026-09-22: the host crossing and the structured clone refused a BigInt by
+    /// name until card B06 and carry it exactly since (JSD-0024 section 19, JSD-0032 section 5);
+    /// <c>BigInt64Array</c>, <c>BigUint64Array</c> and the DataView BigInt accessors are built
+    /// wherever this identity and the binary one are both admitted (JSeal B07-B08).
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=336318
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId BigIntManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.BigInt);
+
+    /// <summary>
     /// The dynamic surface: <c>eval</c> and the <c>Function</c> constructor.
     /// </summary>
     /// <remarks>
@@ -370,20 +394,35 @@ public static class JavaScriptProfile
     /// and says they must stay distinguishable.
     /// </para>
     /// <para>
-    /// <b>The request payload is the source text, UTF-8, and nothing else.</b> The core carries it
-    /// without decoding it, because what a specifier means is a language concept; a provider that
-    /// wants to know whether it was a direct <c>eval</c> cannot be told, because the answer would
-    /// not change what it may compile.
+    /// <b>The request payload is one of four, and its first byte says which.</b> The core carries
+    /// it without decoding it. A payload beginning with
+    /// <see cref="Format.JsFormat.ModuleRequestMark"/> asks for the module a specifier names; one
+    /// beginning with <see cref="Format.JsFormat.EvalRequestMark"/> asks for a String compiled as
+    /// <c>eval</c> code under the flags byte that follows; one beginning with
+    /// <see cref="Format.JsFormat.ScriptRequestMark"/> asks for an EMBEDDER's script, named and
+    /// optionally strict, which only <c>JsHostRealm.EvaluateScript</c> sends (JSeal V15-host); anything
+    /// else is the source text of a program, UTF-8, which is what the <c>Function</c> constructor
+    /// sends.
+    /// </para>
+    /// <para>
+    /// <b>Version 2 is that vocabulary, and it is an obligation on the provider</b> (JSeal V14,
+    /// JSD-0026 section 8): a provider registered at this version dispatches both marks and refuses
+    /// any other leading control byte - <see cref="Format.JsFormat.StartsWithReservedMark"/> - as a
+    /// malformed encoding. The script mark is additive to the version: a provider that reads it -
+    /// every provider built on <c>JsCompiler.TryReadProgramRequest</c> - answers it, and one that
+    /// does not refuses it, which the embedder sees as a <c>SyntaxError</c> (JSD-0024 section 15). Version 1 had one payload and a provider written against it would
+    /// compile a marked payload as source; the executor binds every answer to the request that asked
+    /// for it besides, so such a provider's answer is refused rather than run.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=9A3E06
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=0E9FDF
     // Broiler-Falsified-If: this profile obtains executable bytes by any route but a provider registered under this identity
     // Broiler-Human:        PENDING
     public static VmHostCapabilityDescriptor SourceProviderCapability { get; } =
         new(
             VmCapabilityId.Parse("broiler.javascript.source-provider"),
-            version: 1,
-            VmCapabilitySignatureId.FromCanonicalDescription("(source-utf8)->artifact"),
+            version: 2,
+            VmCapabilitySignatureId.FromCanonicalDescription("(source-request)->artifact"),
             VmCapabilityKind.ArtifactProvider,
             VmCapabilityReentrancy.NonReentrant,
             VmCapabilityThreadAffinity.CallerThread,
@@ -506,10 +545,22 @@ public static class JavaScriptProfile
     /// stale the day a surface is added.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=420B8F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A90981
     // Broiler-Falsified-If: a descriptor built here accepts an optional surface its caller did not name
     // Broiler-Human:        PENDING
-    public static VmProfileDescriptor DescriptorAdmitting(params VmFeatureManifestId[] surfaces)
+    public static VmProfileDescriptor DescriptorAdmitting(params VmFeatureManifestId[] surfaces) =>
+        Build(Named(surfaces));
+
+    /// <summary>The names of <paramref name="surfaces"/>.</summary>
+    /// <remarks>
+    /// <i>(Amended 2026-09-21, card B05. Until B05 this refused the BigInt gate by name with an
+    /// <see cref="System.ArgumentException"/>, so that no embedder could open the verify half of a
+    /// surface whose operators were incomplete; the surface is complete and admitted now, and the
+    /// internal door that alone admitted it is gone with the refusal.)</i>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=61B316
+    // Broiler-Human:        PENDING
+    private static ImmutableArray<string> Named(VmFeatureManifestId[] surfaces)
     {
         var names = ImmutableArray.CreateBuilder<string>();
 
@@ -518,7 +569,7 @@ public static class JavaScriptProfile
             names.Add(surface.ToString());
         }
 
-        return Build(names.ToImmutable());
+        return names.ToImmutable();
     }
 
     /// <summary>
@@ -546,21 +597,12 @@ public static class JavaScriptProfile
     /// asked twice could be given two answers.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A32D4C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=F076BD
     // Broiler-Falsified-If: a descriptor built here admits a native payload whose bytes its emitter does not reproduce
     // Broiler-Human:        PENDING
     public static VmProfileDescriptor DescriptorReEmittingWith(
-        Format.IJsNativeEmitter emitter, params VmFeatureManifestId[] surfaces)
-    {
-        var names = ImmutableArray.CreateBuilder<string>();
-
-        foreach (var surface in surfaces)
-        {
-            names.Add(surface.ToString());
-        }
-
-        return Build(names.ToImmutable(), emitter);
-    }
+        Format.IJsNativeEmitter emitter, params VmFeatureManifestId[] surfaces) =>
+        Build(Named(surfaces), emitter);
 
     /// <summary>Every optional surface this build implements.</summary>
     /// <remarks>
@@ -595,7 +637,7 @@ public static class JavaScriptProfile
     /// what they are.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=3DAE1C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=11215D
     // Broiler-Falsified-If: a descriptor built here installs a surface in a runtime that registered no permission
     // Broiler-Human:        PENDING
     public static VmProfileDescriptor DescriptorHostingRealms(
@@ -606,15 +648,10 @@ public static class JavaScriptProfile
             throw new System.ArgumentNullException(nameof(surface));
         }
 
-        var names = ImmutableArray.CreateBuilder<string>();
-
-        foreach (var admitted in surfaces)
-        {
-            names.Add(admitted.ToString());
-        }
+        var names = Named(surfaces);
 
         return Build(
-            names.Count == 0 ? EverySurface : names.ToImmutable(), emitter: null, hostSurface: surface);
+            names.Length == 0 ? EverySurface : names, emitter: null, hostSurface: surface);
     }
 
     /// <summary>Projects a completion value out of an invocation result.</summary>
@@ -677,7 +714,7 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=69AC6C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7C0731
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build(
@@ -757,7 +794,7 @@ public static class JavaScriptProfile
             // the fuel rate is what charges nested verification to the operation that asked rather
             // than to a separate allowance nobody set.
             guestInitiatedLoads: VmGuestLoadDeclaration.Declared(
-                minimumProviderCapabilityVersion: 1,
+                minimumProviderCapabilityVersion: 2,
                 profileHardMaxima: new VmGuestLoadBounds(
                     nestedLoadDepth: 4,
                     nestedLoadFanOut: 1_000_000,

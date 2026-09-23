@@ -1,0 +1,9 @@
+files 240 variants 480 pass 0 fail 480
+test/built-ins/SuppressedError: 0/44
+test/built-ins/DisposableStack: 0/186
+test/built-ins/AsyncDisposableStack: 0/208
+test/built-ins/Symbol/dispose: 0/6
+test/built-ins/Symbol/asyncDispose: 0/6
+test/built-ins/Iterator/prototype/Symbol.dispose: 0/12
+test/built-ins/AsyncIteratorPrototype/Symbol.asyncDispose: 0/18
+(480 FAIL lines omitted: every variant failed: the globals, Symbols and iterator members did not exist)

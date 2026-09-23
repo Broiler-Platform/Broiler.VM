@@ -1,0 +1,44 @@
+U1 retrieval record, 2026-09-22 (JSD-0031 section 9).
+Two independent retrievals from the sources named in unicode.pin, into ./a and ./b.
+Command used to compare them: diff -r a b  (no output, exit status 0: byte-identical).
+
+## sha256 of every file in ./a
+e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96  ./license.txt
+9c4e35660c28217fb8dd7786de72010c30f901e534a57e3c16eef4831d6bf0e1  ./spec/table-binary-unicode-properties-of-strings.html
+bb09794cb0cf887f011f5d1a133b2a29734e432ba0cf87db9281afbd151b8ea0  ./spec/table-binary-unicode-properties.html
+08da59f7725ab8c8c932c965d22de931bbf38b1ea9430f67a2cd0163984074f2  ./spec/table-nonbinary-unicode-properties.html
+ff8d8fefbf123574205085d6714c36149eb946d717a0c585c27f0f4ef58c4183  ./ucd/CaseFolding.txt
+24c7fed1195c482faaefd5c1e7eb821c5ee1fb6de07ecdbaa64b56a99da22c08  ./ucd/DerivedCoreProperties.txt
+71fd6a206a2c0cdd41feb6b7f656aa31091db45e9cedc926985d718397f9e488  ./ucd/DerivedNormalizationProps.txt
+5019ffd530751a741900c849c0e010332f142a3612234639bd200b82138a87db  ./ucd/NormalizationTest.txt
+130dcddcaadaf071008bdfce1e7743e04fdfbc910886f017d9f9ac931d8c64dd  ./ucd/PropList.txt
+4441f573caf952ffece1d7c892e7715bd7136dfc26f96eb6f268bf1e474715fb  ./ucd/PropertyAliases.txt
+64e9a5f76f7a1e8b5a47d6a1f9a26522a251208f5276bdfa1559dac7cf2e827a  ./ucd/PropertyValueAliases.txt
+ec2107e58825a1586acee8e0911ce18260394ac8b87e535ca325f1ccbeb06bc6  ./ucd/ScriptExtensions.txt
+9f5e50d3abaee7d6ce09480f325c706f485ae3240912527e651954d2d6b035bf  ./ucd/Scripts.txt
+2e1efc1dcb59c575eedf5ccae60f95229f706ee6d031835247d843c11d96470c  ./ucd/UnicodeData.txt
+2cb2bb9455cda83e8481541ecf5b6dfda66a3bb89efa3fa7c5297eccf607b72b  ./ucd/emoji/emoji-data.txt
+13dd09d35a9377e33eb388a01e6581d4bfec6b2685316078c341982fa444071a  ./ucd/extracted/DerivedBinaryProperties.txt
+d62e5bab70ca74f099343f71224fa051cb1fdd61a1ab45c0488c44cfc0b6102e  ./ucd/extracted/DerivedGeneralCategory.txt
+
+## sha256 of every file in ./b
+e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96  ./license.txt
+9c4e35660c28217fb8dd7786de72010c30f901e534a57e3c16eef4831d6bf0e1  ./spec/table-binary-unicode-properties-of-strings.html
+bb09794cb0cf887f011f5d1a133b2a29734e432ba0cf87db9281afbd151b8ea0  ./spec/table-binary-unicode-properties.html
+08da59f7725ab8c8c932c965d22de931bbf38b1ea9430f67a2cd0163984074f2  ./spec/table-nonbinary-unicode-properties.html
+ff8d8fefbf123574205085d6714c36149eb946d717a0c585c27f0f4ef58c4183  ./ucd/CaseFolding.txt
+24c7fed1195c482faaefd5c1e7eb821c5ee1fb6de07ecdbaa64b56a99da22c08  ./ucd/DerivedCoreProperties.txt
+71fd6a206a2c0cdd41feb6b7f656aa31091db45e9cedc926985d718397f9e488  ./ucd/DerivedNormalizationProps.txt
+5019ffd530751a741900c849c0e010332f142a3612234639bd200b82138a87db  ./ucd/NormalizationTest.txt
+130dcddcaadaf071008bdfce1e7743e04fdfbc910886f017d9f9ac931d8c64dd  ./ucd/PropList.txt
+4441f573caf952ffece1d7c892e7715bd7136dfc26f96eb6f268bf1e474715fb  ./ucd/PropertyAliases.txt
+64e9a5f76f7a1e8b5a47d6a1f9a26522a251208f5276bdfa1559dac7cf2e827a  ./ucd/PropertyValueAliases.txt
+ec2107e58825a1586acee8e0911ce18260394ac8b87e535ca325f1ccbeb06bc6  ./ucd/ScriptExtensions.txt
+9f5e50d3abaee7d6ce09480f325c706f485ae3240912527e651954d2d6b035bf  ./ucd/Scripts.txt
+2e1efc1dcb59c575eedf5ccae60f95229f706ee6d031835247d843c11d96470c  ./ucd/UnicodeData.txt
+2cb2bb9455cda83e8481541ecf5b6dfda66a3bb89efa3fa7c5297eccf607b72b  ./ucd/emoji/emoji-data.txt
+13dd09d35a9377e33eb388a01e6581d4bfec6b2685316078c341982fa444071a  ./ucd/extracted/DerivedBinaryProperties.txt
+d62e5bab70ca74f099343f71224fa051cb1fdd61a1ab45c0488c44cfc0b6102e  ./ucd/extracted/DerivedGeneralCategory.txt
+
+## diff -r a b
+exit status 0 (identical)

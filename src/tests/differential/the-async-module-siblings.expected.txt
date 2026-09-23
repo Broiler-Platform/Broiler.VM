@@ -1,0 +1,12 @@
+# Retained host answers; not a conformance oracle.
+1 false
+2 ok;a start,b start,s,a end,b end,root
+3 ok;t start,t end,x,y,root
+4 ok;slow start,fast start,fast end,q,slow end,p,root
+5 ok;t start,t end,m1 start,m2,m1 end,root
+6 RangeError:bad;good start,bad start,good end
+7 TypeError:sync;tla start,bad,tla end
+8 SyntaxError:early;tla start,bad,tla end
+9 B,A start,releasing,A end,C,A settled,C settled
+10 again start,again end,first,second
+11 B run,releasing,slow end,A run,C run,slow settled,A settled,B settled,C settled

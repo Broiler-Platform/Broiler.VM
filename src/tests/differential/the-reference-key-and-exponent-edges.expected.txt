@@ -1,0 +1,51 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 13 node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+#diverges node 14 node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+#diverges node 15 node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+#diverges node 16 node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+#diverges node 17 node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+#diverges node 18 node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+#diverges node 19 node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+#diverges node 20 node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+#diverges node 22 node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k
+#diverges node 23 the same double conversion; the key converts once, before the right-hand side runs, so the pinned answer is kv
+#diverges node 38 node implements ECMA-402, whose %TypedArray%.prototype.toLocaleString passes the locales and options arguments to each element's toLocaleString; without ECMA-402 the ES2026 algorithm (Array.prototype.toLocaleString, which %TypedArray%.prototype.toLocaleString reuses) invokes it with no arguments, so the pinned answer records 0 arguments
+1 NaN
+2 NaN
+3 NaN
+4 NaN
+5 1
+6 1
+7 NaN
+8 "true -Infinity Infinity"
+9 "-Infinity true Infinity"
+10 "0 Infinity 0"
+11 NaN
+12 "NaN NaN 1"
+13 "k:1:1"
+14 "k:0:0"
+15 "k:0:1"
+16 "k:-1:-1"
+17 "k:7:7"
+18 "k:7:0"
+19 "k:9:9"
+20 "k:5,12"
+21 "TypeError:"
+22 "k:2"
+23 "kv:0"
+24 "12,13,14"
+25 "S:axc"
+26 10
+27 "3:false"
+28 "11:10"
+29 "got"
+30 "true 0 toLocaleString"
+31 "1,,,L"
+32 3
+33 "a,b"
+34 TypeError
+35 "b,b:boolean,boolean"
+36 "1,2,3 "
+37 TypeError
+38 "<1.5>,<-2>,<0>:0,0,0"
+39 "1,2,3||1"

@@ -269,7 +269,7 @@ public sealed class CompositionRegisterTests
 
         foreach (var row in Registered)
         {
-            Assert.Empty(NativeMappingRules.K5(row, MapsMemory));
+            Assert.Empty(NativeMappingRules.K5(row, MapsMemory, ArmingRoots));
         }
 
         var calculator = Rows.Single(row =>
@@ -285,7 +285,8 @@ public sealed class CompositionRegisterTests
                     ProfileAssemblies = [.. calculator.ProfileAssemblies, NativeMappingRules.ArmingAssembly],
                     NativeExecution = "none",
                 },
-                MapsMemory),
+                MapsMemory,
+                ArmingRoots),
             message => message.Contains("a permission nobody granted", StringComparison.Ordinal));
 
         // And the other direction, which is the half a subset check would miss: a cell claiming an
@@ -293,22 +294,53 @@ public sealed class CompositionRegisterTests
         // overstates is the failure this component treats as a stop condition, and it overstates
         // in both directions.
         Assert.Contains(
-            NativeMappingRules.K5(calculator with { NativeExecution = "x86-64" }, MapsMemory),
+            NativeMappingRules.K5(calculator with { NativeExecution = "x86-64" }, MapsMemory, ArmingRoots),
             message => message.Contains(
                 "a permission nothing in the image can exercise", StringComparison.Ordinal));
 
+        // AND THE THIRD SHAPE, WHICH IS THE ONE THAT ACTUALLY HAPPENED: a row naming an
+        // architecture over an image that DOES link the arming path and never reaches it. The
+        // profile maps nothing itself - it asks the composition for a page through a static hook -
+        // so a root that links the assembly and leaves the hook unfilled verifies a native artifact
+        // and then refuses to instantiate it, in every publish mode and on every platform. Two
+        // roots were in that state for five days with their cells reading `none`, which kept this
+        // rule green; when the reference went back, nothing here would have caught the install
+        // being left out. The control is the real Calculator row with the arming assembly added to
+        // its image and its cell moved - that root's own source names the page type nowhere.
         Assert.Contains(
-            NativeMappingRules.K5(calculator with { NativeExecution = "x86-64, none" }, MapsMemory),
+            NativeMappingRules.K5(
+                calculator with
+                {
+                    ProfileAssemblies = [.. calculator.ProfileAssemblies, NativeMappingRules.ArmingAssembly],
+                    NativeExecution = "x86-64",
+                },
+                MapsMemory,
+                ArmingRoots),
+            message => message.Contains(
+                "Linking the arming path is not arming", StringComparison.Ordinal));
+
+        // Non-vacuous in the other direction too: the set this clause consults has to hold the
+        // roots that really do install the hook, or the clause would fail every row it reads and
+        // the control above would prove nothing about the tree.
+        Assert.Contains("Broiler.VM.Composition.JavaScript.Cli", ArmingRoots);
+        Assert.Contains("Broiler.VM.Composition.JavaScript.Conformance", ArmingRoots);
+        Assert.Contains("Broiler.VM.Composition.JavaScript.SliceCompiler", ArmingRoots);
+        Assert.DoesNotContain("Broiler.VM.Composition.Calculator", ArmingRoots);
+
+        Assert.Contains(
+            NativeMappingRules.K5(
+                calculator with { NativeExecution = "x86-64, none" }, MapsMemory, ArmingRoots),
             message => message.Contains("none beside an architecture", StringComparison.Ordinal));
 
         Assert.Contains(
-            NativeMappingRules.K5(calculator with { NativeExecution = "amd64" }, MapsMemory),
+            NativeMappingRules.K5(calculator with { NativeExecution = "amd64" }, MapsMemory, ArmingRoots),
             message => message.Contains("which is not one of", StringComparison.Ordinal));
 
         // A row with no cell at all. The column can be deleted from the register in one edit, and
         // an absence read as `none` would be a permission nobody wrote and nobody withdrew.
         Assert.Contains(
-            NativeMappingRules.K5(calculator with { NativeExecution = string.Empty }, MapsMemory),
+            NativeMappingRules.K5(
+                calculator with { NativeExecution = string.Empty }, MapsMemory, ArmingRoots),
             message => message.Contains(
                 "declares nothing in the native-execution column", StringComparison.Ordinal));
     }
@@ -329,6 +361,12 @@ public sealed class CompositionRegisterTests
         // And that it fails in both directions, which is the clause a reader would otherwise have
         // to take from the implementation.
         Assert.Contains("both directions", row.NonVacuousWhen, StringComparison.OrdinalIgnoreCase);
+
+        // And that the row states the half added on 2026-09-23: linking an assembly that can map
+        // memory is not the same as reaching it. A register row that stopped at "links" would
+        // describe a weaker rule than the one that runs, and this rule's whole subject is a
+        // statement agreeing with what is true of the image.
+        Assert.Contains("not arming", row.Statement, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>Every assembly of this checkout that can map memory executable.</summary>
@@ -336,9 +374,28 @@ public sealed class CompositionRegisterTests
     /// Computed once. Both the rule and its report ask the same question of the same answer, so a
     /// second computation would be a second chance to disagree about the tree.
     /// </remarks>
+    /// <summary>The source of every shipping project and every composition root, read once.</summary>
+    /// <remarks>
+    /// Declared before the two fields that read it, because a static field initializer runs in
+    /// declaration order and one reading a field declared below it would read null. Shared by both
+    /// readings K5 makes: two enumerations of the same directories are two answers that can
+    /// disagree, and the rule asks one question about one tree.
+    /// </remarks>
+    private static readonly IReadOnlyList<NativeMappingRules.SourceUnit> SourceTree =
+        NativeMappingRules.Tree();
+
     private static readonly IReadOnlyList<string> MapsMemory =
-        NativeMappingRules.AssembliesThatMapMemory(
-            AssemblyFacts.Shipping, NativeMappingRules.Tree());
+        NativeMappingRules.AssembliesThatMapMemory(AssemblyFacts.Shipping, SourceTree);
+
+    /// <summary>Every composition root whose own source reaches the arming assembly's page type.</summary>
+    /// <remarks>
+    /// The second half of K5's overstatement check, and the half that was missing while two roots
+    /// linked the encoders and not the page. Read from the tree for the same reason the assembly
+    /// set is: a rule taking the register's word for which roots install the hook would check the
+    /// register against itself.
+    /// </remarks>
+    private static readonly IReadOnlyList<string> ArmingRoots =
+        NativeMappingRules.RootsThatReachTheArmingPath(SourceTree);
 
     /// <summary>
     /// The single-profile and two-profile closures differ by exactly one assembly.
@@ -404,7 +461,7 @@ public sealed class CompositionRegisterTests
             ("K4", () => Registered.SelectMany(row =>
                 CompositionRules.K4(row, ClosureModesFor(row)))),
             ("K5", () => Registered.SelectMany(row =>
-                NativeMappingRules.K5(row, MapsMemory))),
+                NativeMappingRules.K5(row, MapsMemory, ArmingRoots))),
         ]);
 
         if (RuleReport.Destination is { } destination)

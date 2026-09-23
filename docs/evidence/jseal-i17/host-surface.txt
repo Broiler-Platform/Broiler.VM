@@ -1,0 +1,9 @@
+# --host-surface lane, Release, Windows 11, 2026-09-21
+# before (base, HEAD + base-vm-w4.patch): 43 ok rows, no FAIL row
+host-surface: every check passed
+# after: 47 ok rows, no FAIL row; the four I17 rows:
+ok   a clone detached on one thread is adopted on two others after its source is disposed, realm-locally, repeatably
+ok   a carrier with transferred bytes detaches its source at once and is adopted exactly once across racing threads
+ok   a foreign carrier is refused, and a crossing outside the realm's step or thread claims nothing
+ok   the sender's live bytes pay for a carrier, the receiver's for what it rebuilds, and a carrier the ceiling refuses ends the turn
+host-surface: every check passed

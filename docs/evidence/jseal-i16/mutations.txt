@@ -1,0 +1,8 @@
+mutation 1: detach each listed buffer as it passes validation (HTML's order)
+FAIL clone/i16/a-refused-transfer-list-or-graph-detaches-nothing: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL clone/i16/moved-bytes-count-against-the-bound-before-anything-is-detached: answered refused,false,true,refused,0 (refused,true,true,cloned,0 expected): a 200-byte transfer under a 100-byte bound is refused with both listed buffers intact, and an 8-byte one moves
+broiler-js-slice-compiler: 2 of 287 checks FAILED, 2 not run on this machine and claimed by nothing
+
+mutation 2: remove both the single-use claim and the transferred-record guard
+FAIL clone/i16/a-carrier-holding-moved-bytes-is-adopted-once-after-its-source-is-disposed: the source saw its buffer and view detached (0,0); the destination answered 6,1+2+3+4+5+6,true,true,2/2,true,other:TypeError: DataCloneError: the carrier names a typed array outside its buffer (6,1+2+3+4+5+6,true,true,2/2,true,refused expected): the bytes arrived once and a second adoption is refused
+broiler-js-slice-compiler: 1 of 287 checks FAILED, 2 not run on this machine and claimed by nothing

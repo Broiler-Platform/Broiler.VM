@@ -1,0 +1,123 @@
+== focused: TypedArray/prototype/{map,filter,slice,subarray} + ArrayBuffer/prototype/slice (bytecode form)
+before {'files': 359, 'variants': 717, 'passed': 174, 'failed': 390, 'unsupported': 152, 'skipped': 1}
+after  {'files': 359, 'variants': 717, 'passed': 282, 'failed': 282, 'unsupported': 152, 'skipped': 1}
+newly failing variants: 0  newly passing variants: 108
+ failures by cause before: {'blocked: $262.detachArrayBuffer refuses in this host': 14, 'blocked: typed-array constructor ignores iterables (makeIterable factory)': 64, 'other': 136, 'out of scope: BigInt typed arrays': 126, 'out of scope: SharedArrayBuffer': 2, 'out of scope: resizable buffers': 48}
+ failures by cause after: {'blocked: $262.detachArrayBuffer refuses in this host': 18, 'blocked: typed-array constructor ignores iterables (makeIterable factory)': 88, 'out of scope: BigInt typed arrays': 126, 'out of scope: SharedArrayBuffer': 2, 'out of scope: resizable buffers': 48}
+
+== spot-check: TypedArrayConstructors + ArrayBuffer + the four TypedArray/prototype dirs (bytecode form)
+before {'files': 1276, 'variants': 2500, 'passed': 844, 'failed': 1261, 'unsupported': 373, 'skipped': 22}
+after  {'files': 1276, 'variants': 2500, 'passed': 952, 'failed': 1153, 'unsupported': 373, 'skipped': 22}
+newly failing variants: 0  newly passing variants: 108
+ failures by cause before: {'blocked: $262.detachArrayBuffer refuses in this host': 63, 'blocked: typed-array constructor ignores iterables (makeIterable factory)': 94, 'other': 544, 'out of scope: BigInt typed arrays': 244, 'out of scope: SharedArrayBuffer': 114, 'out of scope: resizable buffers': 202}
+ failures by cause after: {'blocked: $262.detachArrayBuffer refuses in this host': 67, 'blocked: typed-array constructor ignores iterables (makeIterable factory)': 118, 'other': 408, 'out of scope: BigInt typed arrays': 244, 'out of scope: SharedArrayBuffer': 114, 'out of scope: resizable buffers': 202}
+
+== newly passing (focused run)
+test/built-ins/ArrayBuffer/prototype/slice/species-constructor-is-not-object.js sloppy
+test/built-ins/ArrayBuffer/prototype/slice/species-constructor-is-not-object.js strict
+test/built-ins/ArrayBuffer/prototype/slice/species-is-not-constructor.js sloppy
+test/built-ins/ArrayBuffer/prototype/slice/species-is-not-constructor.js strict
+test/built-ins/ArrayBuffer/prototype/slice/species-is-not-object.js sloppy
+test/built-ins/ArrayBuffer/prototype/slice/species-is-not-object.js strict
+test/built-ins/ArrayBuffer/prototype/slice/species-returns-larger-arraybuffer.js sloppy
+test/built-ins/ArrayBuffer/prototype/slice/species-returns-larger-arraybuffer.js strict
+test/built-ins/ArrayBuffer/prototype/slice/species-returns-not-arraybuffer.js sloppy
+test/built-ins/ArrayBuffer/prototype/slice/species-returns-not-arraybuffer.js strict
+test/built-ins/ArrayBuffer/prototype/slice/species-returns-same-arraybuffer.js sloppy
+test/built-ins/ArrayBuffer/prototype/slice/species-returns-same-arraybuffer.js strict
+test/built-ins/ArrayBuffer/prototype/slice/species-returns-smaller-arraybuffer.js sloppy
+test/built-ins/ArrayBuffer/prototype/slice/species-returns-smaller-arraybuffer.js strict
+test/built-ins/ArrayBuffer/prototype/slice/species.js sloppy
+test/built-ins/ArrayBuffer/prototype/slice/species.js strict
+test/built-ins/TypedArray/prototype/filter/callbackfn-called-before-ctor.js sloppy
+test/built-ins/TypedArray/prototype/filter/callbackfn-called-before-ctor.js strict
+test/built-ins/TypedArray/prototype/filter/callbackfn-called-before-species.js sloppy
+test/built-ins/TypedArray/prototype/filter/callbackfn-called-before-species.js strict
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-ctor-abrupt.js sloppy
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-ctor-abrupt.js strict
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-ctor-inherited.js sloppy
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-ctor-inherited.js strict
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-ctor-returns-throws.js sloppy
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-ctor-returns-throws.js strict
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-ctor.js sloppy
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-ctor.js strict
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species-abrupt.js sloppy
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species-abrupt.js strict
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species-custom-ctor-length.js sloppy
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species-custom-ctor-length.js strict
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species-custom-ctor-returns-another-instance.js sloppy
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species-custom-ctor-returns-another-instance.js strict
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species-custom-ctor-throws.js sloppy
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species-custom-ctor-throws.js strict
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species-returns-throws.js sloppy
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species-returns-throws.js strict
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species.js sloppy
+test/built-ins/TypedArray/prototype/filter/speciesctor-get-species.js strict
+test/built-ins/TypedArray/prototype/map/speciesctor-get-ctor-abrupt.js sloppy
+test/built-ins/TypedArray/prototype/map/speciesctor-get-ctor-abrupt.js strict
+test/built-ins/TypedArray/prototype/map/speciesctor-get-ctor-inherited.js sloppy
+test/built-ins/TypedArray/prototype/map/speciesctor-get-ctor-inherited.js strict
+test/built-ins/TypedArray/prototype/map/speciesctor-get-ctor-returns-throws.js sloppy
+test/built-ins/TypedArray/prototype/map/speciesctor-get-ctor-returns-throws.js strict
+test/built-ins/TypedArray/prototype/map/speciesctor-get-ctor.js sloppy
+test/built-ins/TypedArray/prototype/map/speciesctor-get-ctor.js strict
+test/built-ins/TypedArray/prototype/map/speciesctor-get-species-abrupt.js sloppy
+test/built-ins/TypedArray/prototype/map/speciesctor-get-species-abrupt.js strict
+test/built-ins/TypedArray/prototype/map/speciesctor-get-species-custom-ctor-length.js sloppy
+test/built-ins/TypedArray/prototype/map/speciesctor-get-species-custom-ctor-length.js strict
+test/built-ins/TypedArray/prototype/map/speciesctor-get-species-custom-ctor-throws.js sloppy
+test/built-ins/TypedArray/prototype/map/speciesctor-get-species-custom-ctor-throws.js strict
+test/built-ins/TypedArray/prototype/map/speciesctor-get-species-returns-throws.js sloppy
+test/built-ins/TypedArray/prototype/map/speciesctor-get-species-returns-throws.js strict
+test/built-ins/TypedArray/prototype/map/speciesctor-get-species.js sloppy
+test/built-ins/TypedArray/prototype/map/speciesctor-get-species.js strict
+test/built-ins/TypedArray/prototype/slice/detached-buffer-custom-ctor-other-targettype.js sloppy
+test/built-ins/TypedArray/prototype/slice/detached-buffer-custom-ctor-other-targettype.js strict
+test/built-ins/TypedArray/prototype/slice/detached-buffer-custom-ctor-same-targettype.js sloppy
+test/built-ins/TypedArray/prototype/slice/detached-buffer-custom-ctor-same-targettype.js strict
+test/built-ins/TypedArray/prototype/slice/detached-buffer-get-ctor.js sloppy
+test/built-ins/TypedArray/prototype/slice/detached-buffer-get-ctor.js strict
+test/built-ins/TypedArray/prototype/slice/detached-buffer-speciesctor-get-species-custom-ctor-throws.js sloppy
+test/built-ins/TypedArray/prototype/slice/detached-buffer-speciesctor-get-species-custom-ctor-throws.js strict
+test/built-ins/TypedArray/prototype/slice/set-values-from-different-ctor-type.js sloppy
+test/built-ins/TypedArray/prototype/slice/set-values-from-different-ctor-type.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-ctor-abrupt.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-ctor-abrupt.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-ctor-inherited.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-ctor-inherited.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-ctor-returns-throws.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-ctor-returns-throws.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-ctor.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-ctor.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species-abrupt.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species-abrupt.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species-custom-ctor-length.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species-custom-ctor-length.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species-custom-ctor-returns-another-instance.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species-custom-ctor-returns-another-instance.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species-custom-ctor-throws.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species-custom-ctor-throws.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species-returns-throws.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species-returns-throws.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-get-species.js strict
+test/built-ins/TypedArray/prototype/slice/speciesctor-return-same-buffer-with-offset.js sloppy
+test/built-ins/TypedArray/prototype/slice/speciesctor-return-same-buffer-with-offset.js strict
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-ctor-abrupt.js sloppy
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-ctor-abrupt.js strict
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-ctor-inherited.js sloppy
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-ctor-inherited.js strict
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-ctor-returns-throws.js sloppy
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-ctor-returns-throws.js strict
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-ctor.js sloppy
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-ctor.js strict
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-abrupt.js sloppy
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-abrupt.js strict
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-custom-ctor-returns-another-instance.js sloppy
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-custom-ctor-returns-another-instance.js strict
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-custom-ctor-throws.js sloppy
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-custom-ctor-throws.js strict
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-returns-throws.js sloppy
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-species-returns-throws.js strict
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-species.js sloppy
+test/built-ins/TypedArray/prototype/subarray/speciesctor-get-species.js strict

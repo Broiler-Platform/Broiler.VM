@@ -81,8 +81,18 @@ internal sealed class Test262Manifest
             surfaces[index] = VmFeatureManifestId.Parse(admitted[index]);
         }
 
+        // A RUN THAT LOADS THE SUITE'S HARNESS ALSO GETS THE SUITE'S HOST OBJECT, because the
+        // harness files call into it: `detachArrayBuffer.js` is `$262.detachArrayBuffer` and
+        // nothing else. The descriptor carries the surface and `Options` registers the permission,
+        // and the profile installs it only where both are present. A run admitting no optional
+        // surface at all keeps the plain descriptor, because the hosting door reads an empty list
+        // as "every surface" and would widen what that run declined.
+        var descriptor = loadsHarness && surfaces.Length != 0
+            ? JavaScriptProfile.DescriptorHostingRealms(Test262Host.Instance, surfaces)
+            : JavaScriptProfile.DescriptorAdmitting(surfaces);
+
         Catalog = VmCatalog.CreateBuilder()
-            .Add(JavaScriptProfile.DescriptorAdmitting(surfaces))
+            .Add(descriptor)
             .Build();
     }
 

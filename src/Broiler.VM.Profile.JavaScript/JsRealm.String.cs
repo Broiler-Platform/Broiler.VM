@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   15
-// Annotated:        15/15
+// Relevant units:   21
+// Annotated:        21/21
 // Exempt:           0
-// Human-reviewed:   0/15
+// Human-reviewed:   0/21
 // IP risk:          Low
-// Security risk:    Medium
-// Criteria:         0/0
-// Resource impact:  3/10 max
-// Unverified:       15
+// Security risk:    High
+// Criteria:         1/1
+// Resource impact:  4/10 max
+// Unverified:       21
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -56,7 +56,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=287028
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FB076A
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -189,20 +189,14 @@ internal sealed partial class JsRealm
             return JsValue.String(StringThis(engine, thisValue));
         });
 
-        // `normalize` EXISTS, VALIDATES ITS FORM, AND REFUSES THE CASE IT CANNOT ANSWER.
+        // `normalize` IS THE UNICODE NORMALIZATION OF THE STRING'S CODE POINTS, read from the
+        // Unicode 17.0.0 tables JSD-0031 pins and never from the platform: the platform's
+        // `String.Normalize` returns its input unchanged under globalization-invariant mode and
+        // throws on a lone surrogate the language requires to pass through (rule N23).
         //
-        // Every composition here runs with globalization-invariant mode on, and in that mode the
-        // platform's own `String.Normalize` RETURNS THE INPUT UNCHANGED and reports that it is
-        // already normalized. That is not an approximation, it is a wrong answer that looks like a
-        // right one - the exact shape this profile refused for regular expressions and for `Date`.
-        // Implementing normalization properly needs the Unicode decomposition and composition
-        // tables, which is a data set this component does not hold.
-        //
-        // So: the four forms are validated, because an unknown form is a `RangeError` in every
-        // engine and that clause is answerable without any table. A string that is entirely ASCII
-        // is returned unchanged, because all four forms are the identity over ASCII and that is
-        // provable rather than assumed. Anything else is refused BY NAME, so a program that needs
-        // real normalization is told so rather than handed its input back.
+        // The order is the specification's: the receiver is coerced first, then the form, and an
+        // unknown form is a `RangeError` before any text is looked at. The work itself is
+        // `NormalizeText`'s, which charges for what it scans and what it builds.
         Method(prototype, "normalize", 0, static (engine, thisValue, arguments) =>
         {
             var text = StringThis(engine, thisValue);
@@ -218,20 +212,7 @@ internal sealed partial class JsRealm
                     "the normalization form must be one of NFC, NFD, NFKC and NFKD");
             }
 
-            StringCharge(engine, text.Length);
-
-            foreach (var unit in text)
-            {
-                if (unit > 0x7F)
-                {
-                    return engine.ThrowTypeError(
-                        "String.prototype.normalize is implemented for ASCII only in this build, " +
-                        "and this string is not ASCII; the Unicode normalization tables are not " +
-                        "held by this component");
-                }
-            }
-
-            return JsValue.String(text);
+            return JsValue.String(NormalizeText(engine, text, compose: form is "NFC" or "NFKC", compatibility: form is "NFKC" or "NFKD"));
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) =>
@@ -387,6 +368,7 @@ internal sealed partial class JsRealm
         Method(prototype, "includes", 1, static (engine, thisValue, arguments) =>
         {
             var text = StringThis(engine, thisValue);
+            RegExpRefuseAsSearchString(engine, ArgOfString(arguments, 0), "includes");
             var search = engine.ToStringValue(ArgOfString(arguments, 0));
             var start = StringBoundIndex(engine.ToInteger(ArgOfString(arguments, 1)), text.Length);
             StringCharge(engine, text.Length + search.Length);
@@ -396,6 +378,7 @@ internal sealed partial class JsRealm
         Method(prototype, "startsWith", 1, static (engine, thisValue, arguments) =>
         {
             var text = StringThis(engine, thisValue);
+            RegExpRefuseAsSearchString(engine, ArgOfString(arguments, 0), "startsWith");
             var search = engine.ToStringValue(ArgOfString(arguments, 0));
             var start = StringBoundIndex(engine.ToInteger(ArgOfString(arguments, 1)), text.Length);
             StringCharge(engine, search.Length + 1);
@@ -408,6 +391,7 @@ internal sealed partial class JsRealm
         Method(prototype, "endsWith", 1, static (engine, thisValue, arguments) =>
         {
             var text = StringThis(engine, thisValue);
+            RegExpRefuseAsSearchString(engine, ArgOfString(arguments, 0), "endsWith");
             var search = engine.ToStringValue(ArgOfString(arguments, 0));
             var endArgument = ArgOfString(arguments, 1);
 
@@ -693,6 +677,323 @@ internal sealed partial class JsRealm
         return true;
     }
 
+    /// <summary>
+    /// The Unicode normalization of <paramref name="text"/>'s code points: NFD, NFKD with
+    /// <paramref name="compatibility"/>, and NFC or NFKC with <paramref name="compose"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The algorithm is UAX #15's, over the JSD-0031 tables.</b> Every code point is replaced by
+    /// its full decomposition, each run of non-starters is put in canonical order by combining
+    /// class, and for the composed forms each code point is combined with the last starter unless
+    /// something between them blocks it. A lone surrogate is read as the code point it is: class 0,
+    /// no mapping, no composite, so it passes through where the language says it does.
+    /// </para>
+    /// <para>
+    /// <b>The common case costs one scan and allocates nothing.</b> <see cref="IsNormalizedAlready"/>
+    /// is the quick check: ASCII answers yes a unit at a time, and a string that is already in the
+    /// form is returned as it came. That is the fast path ASCII always had.
+    /// </para>
+    /// <para>
+    /// <b>The expansion is measured before it is built.</b> A compatibility decomposition can be 18
+    /// code points long (U+FDFA), so the first pass counts the decomposition, refuses one past
+    /// <see cref="StringLengthCeiling"/> UTF-16 units with the <c>RangeError</c> <c>repeat</c> gives,
+    /// and charges the storage and the three passes over it before a buffer exists. The canonical
+    /// ordering is a counting sort per run, so a long run of combining marks is linear work too.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=E5D2CC
+    // Broiler-Falsified-If: a guest string makes normalize allocate or loop over an expansion it was not charged for, or answer other than the pinned NormalizationTest.txt vectors
+    // Broiler-Human:        PENDING
+    private static string NormalizeText(JsEngine engine, string text, bool compose, bool compatibility)
+    {
+        StringCharge(engine, text.Length);
+
+        if (IsNormalizedAlready(text, compose, compatibility))
+        {
+            return text;
+        }
+
+        long points = 0;
+        long units = 0;
+
+        for (var at = 0; at < text.Length;)
+        {
+            var codePoint = ReadCodePoint(text, ref at);
+
+            if (JsUnicodeNormalization.TryGetDecomposition(codePoint, compatibility, out var mapping))
+            {
+                points += mapping.Length;
+
+                for (var index = 0; index < mapping.Length; index++)
+                {
+                    units += mapping[index] > 0xFFFF ? 2 : 1;
+                }
+            }
+            else
+            {
+                points++;
+                units += codePoint > 0xFFFF ? 2 : 1;
+            }
+        }
+
+        if (units > StringLengthCeiling)
+        {
+            throw engine.Error("RangeError", "Invalid string length");
+        }
+
+        // The storage, then the decomposition, reordering and composition passes over it.
+        StringCharge(engine, text.Length + ((int)points * 3));
+
+        var buffer = new int[(int)points];
+        var length = 0;
+
+        for (var at = 0; at < text.Length;)
+        {
+            var codePoint = ReadCodePoint(text, ref at);
+
+            if (JsUnicodeNormalization.TryGetDecomposition(codePoint, compatibility, out var mapping))
+            {
+                for (var index = 0; index < mapping.Length; index++)
+                {
+                    buffer[length++] = mapping[index];
+                }
+            }
+            else
+            {
+                buffer[length++] = codePoint;
+            }
+        }
+
+        OrderCanonically(buffer, length);
+
+        if (compose)
+        {
+            length = ComposeCanonically(buffer, length);
+        }
+
+        return WriteCodePoints(buffer, length);
+    }
+
+    /// <summary>
+    /// The quick check: true when <paramref name="text"/> is certainly in the form already, so it
+    /// can be returned unchanged.
+    /// </summary>
+    /// <remarks>
+    /// A code point breaks it when it is out of canonical order, when it decomposes (the decomposed
+    /// forms), or when its <c>NFC_QC</c> or <c>NFKC_QC</c> is not Yes (the composed forms, where
+    /// Maybe needs the full algorithm to answer). An ASCII unit is class 0 and Yes in every form.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F6938D
+    // Broiler-Human:        PENDING
+    private static bool IsNormalizedAlready(string text, bool compose, bool compatibility)
+    {
+        var lastClass = 0;
+
+        for (var at = 0; at < text.Length;)
+        {
+            if (text[at] < 0x80)
+            {
+                lastClass = 0;
+                at++;
+                continue;
+            }
+
+            var codePoint = ReadCodePoint(text, ref at);
+            var combiningClass = JsUnicodeNormalization.CombiningClass(codePoint);
+
+            if (combiningClass != 0 && lastClass > combiningClass)
+            {
+                return false;
+            }
+
+            if (compose
+                ? JsUnicodeNormalization.QuickCheck(codePoint, compatibility) != JsNormalizationQuickCheck.Yes
+                : JsUnicodeNormalization.TryGetDecomposition(codePoint, compatibility, out _))
+            {
+                return false;
+            }
+
+            lastClass = combiningClass;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// The code point at <paramref name="at"/>, advancing past it: a surrogate pair is one code
+    /// point, and a lone surrogate is itself.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=182C76
+    // Broiler-Human:        PENDING
+    private static int ReadCodePoint(string text, ref int at)
+    {
+        var unit = text[at++];
+
+        if (char.IsHighSurrogate(unit) && at < text.Length && char.IsLowSurrogate(text[at]))
+        {
+            return char.ConvertToUtf32(unit, text[at++]);
+        }
+
+        return unit;
+    }
+
+    /// <summary>
+    /// The canonical ordering algorithm: each run of non-starters is sorted by combining class,
+    /// stably, so marks of one class keep their order.
+    /// </summary>
+    /// <remarks>
+    /// A counting sort over the 256 classes rather than the textbook exchange sort, whose work is
+    /// quadratic in a run's length - and a run's length is the guest's choice.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6AE9E6
+    // Broiler-Human:        PENDING
+    private static void OrderCanonically(int[] buffer, int length)
+    {
+        int[]? scratch = null;
+        System.Span<int> starts = stackalloc int[257];
+
+        for (var start = 0; start < length;)
+        {
+            var previous = JsUnicodeNormalization.CombiningClass(buffer[start]);
+
+            if (previous == 0)
+            {
+                start++;
+                continue;
+            }
+
+            var end = start + 1;
+            var ordered = true;
+
+            while (end < length)
+            {
+                var next = JsUnicodeNormalization.CombiningClass(buffer[end]);
+
+                if (next == 0)
+                {
+                    break;
+                }
+
+                ordered &= previous <= next;
+                previous = next;
+                end++;
+            }
+
+            if (!ordered)
+            {
+                var count = end - start;
+
+                if (scratch is null || scratch.Length < count)
+                {
+                    scratch = new int[count];
+                }
+
+                starts.Clear();
+
+                for (var at = start; at < end; at++)
+                {
+                    starts[JsUnicodeNormalization.CombiningClass(buffer[at]) + 1]++;
+                }
+
+                for (var value = 1; value < starts.Length; value++)
+                {
+                    starts[value] += starts[value - 1];
+                }
+
+                for (var at = start; at < end; at++)
+                {
+                    scratch[starts[JsUnicodeNormalization.CombiningClass(buffer[at])]++] = buffer[at];
+                }
+
+                System.Array.Copy(scratch, 0, buffer, start, count);
+            }
+
+            start = end;
+        }
+    }
+
+    /// <summary>
+    /// The canonical composition algorithm over a canonically ordered decomposition, in place;
+    /// answers the composed length.
+    /// </summary>
+    /// <remarks>
+    /// A code point is blocked from the last starter when something kept between them is a starter
+    /// or has a class at least its own. Because the input is in canonical order, the last code point
+    /// kept since the starter is the only one that has to be looked at.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AD023A
+    // Broiler-Human:        PENDING
+    private static int ComposeCanonically(int[] buffer, int length)
+    {
+        var starter = -1;
+        var keptSinceStarter = false;
+        var lastClass = 0;
+        var written = 0;
+
+        for (var at = 0; at < length; at++)
+        {
+            var codePoint = buffer[at];
+            var combiningClass = JsUnicodeNormalization.CombiningClass(codePoint);
+
+            if (starter >= 0 &&
+                !(keptSinceStarter && (lastClass == 0 || lastClass >= combiningClass)) &&
+                JsUnicodeNormalization.TryCompose(buffer[starter], codePoint, out var composite))
+            {
+                buffer[starter] = composite;
+                continue;
+            }
+
+            if (combiningClass == 0)
+            {
+                starter = written;
+                keptSinceStarter = false;
+            }
+            else
+            {
+                keptSinceStarter = true;
+            }
+
+            lastClass = combiningClass;
+            buffer[written++] = codePoint;
+        }
+
+        return written;
+    }
+
+    /// <summary>The UTF-16 string of <paramref name="length"/> code points from <paramref name="buffer"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B9F894
+    // Broiler-Human:        PENDING
+    private static string WriteCodePoints(int[] buffer, int length)
+    {
+        var units = 0;
+
+        for (var at = 0; at < length; at++)
+        {
+            units += buffer[at] > 0xFFFF ? 2 : 1;
+        }
+
+        return string.Create(units, (buffer, length), static (span, state) =>
+        {
+            var written = 0;
+
+            for (var at = 0; at < state.length; at++)
+            {
+                var codePoint = state.buffer[at];
+
+                if (codePoint > 0xFFFF)
+                {
+                    span[written++] = (char)(0xD7C0 + (codePoint >> 10));
+                    span[written++] = (char)(0xDC00 | (codePoint & 0x3FF));
+                }
+                else
+                {
+                    span[written++] = (char)codePoint;
+                }
+            }
+        });
+    }
+
     /// <summary>Reads one argument, which may not have been passed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=23C5BB
     // Broiler-Human:        PENDING
@@ -877,7 +1178,9 @@ internal sealed partial class JsRealm
     /// The pattern is a string and never a RegExp: this file is built before <c>RegExp</c> exists,
     /// and an object pattern converts through <c>ToString</c> rather than matching. That is a
     /// declared deviation - <c>"a1".replace(/\d/, "x")</c> here looks for the literal characters of
-    /// the regular expression's source and finds nothing.
+    /// the regular expression's source and finds nothing. <c>SetupRegExp</c> replaces both methods
+    /// with versions that dispatch through <c>Symbol.replace</c> first, and <c>replaceAll</c> still
+    /// arrives here when its pattern does not answer that Symbol.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3B939C
     // Broiler-Human:        PENDING

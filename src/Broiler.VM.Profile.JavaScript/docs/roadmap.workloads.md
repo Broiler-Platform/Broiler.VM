@@ -153,6 +153,12 @@ direction. `Proxy` and `Reflect` are present, each with a differential probe of 
 typed array constructors and `eval` — are present, three of them behind an optional surface a
 composition may decline.
 
+*(Implementation note, 2026-09-22: in the working tree, JSeal slices have since added `Float16Array`
+(F01-F03), admitted `BigInt` through an optional surface (B01-B05) and built `BigInt64Array`,
+`BigUint64Array` and the DataView BigInt accessors (B07-B08), under proposed, unsigned records. The
+absent-globals block of the [status ledger](roadmap.status.md), which rule N17 checks, now lists
+`Atomics`, `Intl`, `SharedArrayBuffer` and `Temporal`. Nothing here is accepted evidence.)*
+
 **One absence is not an absence at all, and it is the one that matters most.** A BigInt *literal* is
 admitted by the front end and evaluated as a Number, so the declared absence of the `BigInt` binding
 does not protect a program that never names it: it gets a wrong number instead of a refusal. The

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   10
 // Annotated:        10/10
-// Exempt:           19
+// Exempt:           21
 // Human-reviewed:   0/10
 // IP risk:          Low
 // Security risk:    Medium
@@ -96,6 +96,22 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsSymbol UnscopablesSymbol { get; } = new("Symbol.unscopables", described: true);
 
+    /// <summary>The Symbol a synchronous disposer is registered under.</summary>
+    /// <remarks>
+    /// <c>DisposableStack.prototype.use</c> reads it when a resource is registered, not when the
+    /// stack is disposed, so a program that replaces the member afterwards does not change what
+    /// runs. It is per-realm like every other well-known Symbol here, for the reason the header
+    /// gives.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=43B309
+    // Broiler-Human:        PENDING
+    internal JsSymbol DisposeSymbol { get; } = new("Symbol.dispose", described: true);
+
+    /// <summary>The Symbol an asynchronous disposer is registered under.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FCBDB0
+    // Broiler-Human:        PENDING
+    internal JsSymbol AsyncDisposeSymbol { get; } = new("Symbol.asyncDispose", described: true);
+
     /// <summary>The four Symbols the String methods would dispatch a pattern object through.</summary>
     /// <remarks>
     /// They exist and nothing installs them. <c>String.prototype.match</c> and its three siblings
@@ -144,7 +160,7 @@ internal sealed partial class JsRealm
         new(System.StringComparer.Ordinal);
 
     /// <summary>Builds the <c>Symbol</c> intrinsic and the iterators the realm's own types need.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7896D4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B221B4
     // Broiler-Human:        PENDING
     private void SetupSymbol()
     {
@@ -188,6 +204,8 @@ internal sealed partial class JsRealm
         constructor.DefineFrozen("search", JsValue.Symbol(SearchSymbol));
         constructor.DefineFrozen("split", JsValue.Symbol(SplitSymbol));
         constructor.DefineFrozen("matchAll", JsValue.Symbol(MatchAllSymbol));
+        constructor.DefineFrozen("dispose", JsValue.Symbol(DisposeSymbol));
+        constructor.DefineFrozen("asyncDispose", JsValue.Symbol(AsyncDisposeSymbol));
 
         Method(constructor, "for", 1, static (engine, thisValue, arguments) =>
         {
@@ -265,12 +283,12 @@ internal sealed partial class JsRealm
                 })),
                 JsPropertyAttributes.Configurable));
 
-        Method(IteratorPrototype, "next", 0, static (engine, thisValue, arguments) =>
-        {
-            _ = arguments;
-            _ = thisValue;
-            return engine.ThrowTypeError("this iterator has no next of its own");
-        });
+        // `%Iterator.prototype%` HAS NO `next` OF ITS OWN, and it used to carry one that threw. The
+        // specification gives it none: every built-in iterator's `next` lives on its kind's own
+        // prototype, below, and an object a program builds on `Iterator.prototype` supplies its
+        // own. A throwing `next` here would have answered `"next" in Iterator.prototype` wrongly
+        // and turned a helper's missing-`next` TypeError into a different one.
+        SetupIteratorKinds();
 
         IteratorPrototype.SetOwnSymbol(
             IteratorSymbol,
@@ -338,14 +356,19 @@ internal sealed partial class JsRealm
     /// iteration stops early. Copying the elements first would be easier and would be a different
     /// program.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DB444D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F0BEE1
     // Broiler-Human:        PENDING
     private void SetupIterators()
     {
+        // EACH OF THE THREE BEGINS WITH ToObject (ES2026 Array.prototype.entries, keys and values;
+        // since 2026-09-22, JSeal VM-FIX-J): a nullish receiver is a TypeError when the method is
+        // called, not an iterator whose first step fails, and a primitive is iterated as its
+        // wrapper.
         var arrayValues = Native("values", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.Object(engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Value));
+            var target = JsValue.Object(engine.ToObject(thisValue));
+            return JsValue.Object(engine.Realm.CreateIndexedIterator(target, IndexedIteratorKind.Value));
         });
 
         ArrayPrototype.SetOwnProperty(
@@ -355,13 +378,15 @@ internal sealed partial class JsRealm
         Method(ArrayPrototype, "keys", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.Object(engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Key));
+            var target = JsValue.Object(engine.ToObject(thisValue));
+            return JsValue.Object(engine.Realm.CreateIndexedIterator(target, IndexedIteratorKind.Key));
         });
 
         Method(ArrayPrototype, "entries", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.Object(engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Entry));
+            var target = JsValue.Object(engine.ToObject(thisValue));
+            return JsValue.Object(engine.Realm.CreateIndexedIterator(target, IndexedIteratorKind.Entry));
         });
 
         ArrayPrototype.SetOwnSymbol(
@@ -410,69 +435,78 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds an iterator over anything with a <c>length</c> and indexed properties.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=00DD6D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A2CBCE
     // Broiler-Human:        PENDING
     internal JsObject CreateIndexedIterator(JsValue target, IndexedIteratorKind kind)
     {
         var at = 0u;
-        var iterator = new JsObject(IteratorPrototype, "Array Iterator");
 
-        Method(iterator, "next", 0, (engine, thisValue, arguments) =>
+        // THE STEP IS THE WHOLE OF WHAT DIFFERS BETWEEN KINDS; `next` itself is
+        // `%ArrayIteratorPrototype%.next`, shared, and the brand check, the latch and the result
+        // object are its. The length is read afresh at every step, so an array grown during
+        // iteration is iterated further - until the first step that finds it exhausted, after
+        // which the latch holds whatever is pushed later.
+        return new JsBuiltinIterator(ArrayIteratorPrototype, "Array Iterator", engine =>
         {
-            _ = thisValue;
-            _ = arguments;
-            var length = engine.ToNumber(engine.GetProperty(target, "length"));
-            var result = new JsObject(engine.Realm.ObjectPrototype);
+            // A TYPED ARRAY IS MEASURED THROUGH ITS BUFFER, NOT ITS `length` PROPERTY, and a view
+            // that is detached or out of bounds at a step is a TypeError at that step
+            // (%ArrayIteratorPrototype%.next, since 2026-09-21, JSeal F06): ending the iteration
+            // quietly would make a buffer shrunk under a `for...of` look like one that ended.
+            double length;
 
-            if (double.IsNaN(length) || at >= length)
+            if (target.AsObjectOrNull() is JsTypedArray view)
             {
-                result.DefineOrdinary("value", JsValue.Undefined);
-                result.DefineOrdinary("done", JsValue.True);
-                return JsValue.Object(result);
+                if (view.IsOutOfBounds)
+                {
+                    throw engine.Error(
+                        "TypeError", "Cannot iterate a typed array that is detached or out of bounds");
+                }
+
+                length = view.Length;
+            }
+            else
+            {
+                // `LengthOfArrayLike`, which is `ToLength`: a fractional length is truncated, so
+                // `{ length: 2.7 }` yields two elements and not three (JSeal VM-FIX-J).
+                length = ArrayLengthOf(engine, target);
+            }
+
+            if (at >= length)
+            {
+                return (false, JsValue.Undefined);
             }
 
             var index = at++;
+
+            // A KEY ITERATOR NEVER READS THE ELEMENT: the specification's step yields the index
+            // alone for `keys`, so a getter at that index is not run.
+            if (kind is IndexedIteratorKind.Key)
+            {
+                return (true, JsValue.Number(index));
+            }
+
             var element = engine.GetIndexed(target, JsValue.Number(index));
 
-            result.DefineOrdinary(
-                "value",
-                kind switch
-                {
-                    IndexedIteratorKind.Key => JsValue.Number(index),
-                    IndexedIteratorKind.Value => element,
-                    _ => JsValue.Object(engine.Realm.NewArray([JsValue.Number(index), element])),
-                });
-
-            result.DefineOrdinary("done", JsValue.False);
-            return JsValue.Object(result);
+            return (
+                true,
+                kind is IndexedIteratorKind.Value
+                    ? element
+                    : JsValue.Object(engine.Realm.NewArray([JsValue.Number(index), element])));
         });
-
-        iterator.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("Array Iterator"), JsPropertyAttributes.Configurable));
-
-        return iterator;
     }
 
     /// <summary>Builds an iterator over a String's code points.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CE35D1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2EF10A
     // Broiler-Human:        PENDING
     internal JsObject CreateStringIterator(string text)
     {
         var at = 0;
-        var iterator = new JsObject(IteratorPrototype, "String Iterator");
 
-        Method(iterator, "next", 0, (engine, thisValue, arguments) =>
+        return new JsBuiltinIterator(StringIteratorPrototype, "String Iterator", engine =>
         {
-            _ = thisValue;
-            _ = arguments;
-            var result = new JsObject(engine.Realm.ObjectPrototype);
-
             if (at >= text.Length)
             {
-                result.DefineOrdinary("value", JsValue.Undefined);
-                result.DefineOrdinary("done", JsValue.True);
-                return JsValue.Object(result);
+                return (false, JsValue.Undefined);
             }
 
             var width = at + 1 < text.Length &&
@@ -484,16 +518,8 @@ internal sealed partial class JsRealm
             var slice = text.Substring(at, width);
             at += width;
             engine.Charge(1);
-            result.DefineOrdinary("value", JsValue.String(slice));
-            result.DefineOrdinary("done", JsValue.False);
-            return JsValue.Object(result);
+            return (true, JsValue.String(slice));
         });
-
-        iterator.SetOwnSymbol(
-            ToStringTagSymbol,
-            JsProperty.Data(JsValue.String("String Iterator"), JsPropertyAttributes.Configurable));
-
-        return iterator;
     }
 
     /// <summary>Builds an iterator over a list this realm already has in hand.</summary>
@@ -513,42 +539,23 @@ internal sealed partial class JsRealm
     /// <para>
     /// <b>Exhaustion is latched.</b> The language retires the iterator when it runs out — it drops
     /// the reference to what it was iterating — so an entry appended after that is not reached, and
-    /// a cursor that merely sat at the end would have reached it.
+    /// a cursor that merely sat at the end would have reached it. The latch is now the shared
+    /// <c>next</c>'s, on <see cref="JsBuiltinIterator"/>, so every kind holds it alike.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9A4C5C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A21613
     // Broiler-Human:        PENDING
     internal JsObject CreateListIterator(
         string tag, System.Func<int, (bool Found, JsValue Value, int Next)> read)
     {
         var at = 0;
-        var spent = false;
-        var iterator = new JsObject(IteratorPrototype, tag);
 
-        Method(iterator, "next", 0, (engine, thisValue, arguments) =>
+        return new JsBuiltinIterator(IteratorKindPrototype(tag), tag, engine =>
         {
-            _ = thisValue;
-            _ = arguments;
             engine.Charge(1);
-            var result = new JsObject(engine.Realm.ObjectPrototype);
-            var found = false;
-            var value = JsValue.Undefined;
-
-            if (!spent)
-            {
-                (found, value, at) = read(at);
-                spent = !found;
-            }
-
-            result.DefineOrdinary("value", found ? value : JsValue.Undefined);
-            result.DefineOrdinary("done", found ? JsValue.False : JsValue.True);
-            return JsValue.Object(result);
+            (var found, var value, at) = read(at);
+            return (found, value);
         });
-
-        iterator.SetOwnSymbol(
-            ToStringTagSymbol, JsProperty.Data(JsValue.String(tag), JsPropertyAttributes.Configurable));
-
-        return iterator;
     }
 
     /// <summary>Reads one argument, or <c>undefined</c> when the caller omitted it.</summary>

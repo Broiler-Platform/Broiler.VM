@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   149
-// Annotated:        149/149
-// Exempt:           20
-// Human-reviewed:   0/149
-// IP risk:          None
+// Relevant units:   162
+// Annotated:        162/162
+// Exempt:           23
+// Human-reviewed:   0/162
+// IP risk:          Low
 // Security risk:    High
-// Criteria:         4/4
+// Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       149
+// Unverified:       162
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -217,6 +217,31 @@ internal sealed class JsParser
     // Broiler-Human:        PENDING
     private bool awaitIsOperator;
 
+    /// <summary>
+    /// Whether the parser is in a class static block's own statement list, where <c>await</c> is
+    /// neither the operator nor a name.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The list is <c>[+Await]</c> and may not contain an await, so the word is nothing
+    /// there.</b> <c>ClassStaticBlockStatementList</c> is <c>StatementList[~Yield, +Await,
+    /// ~Return]</c>, which takes <c>await</c> away as an identifier, and <c>ContainsAwait</c> of the
+    /// list is an early error, which takes it away as an operator. So <c>let await</c>,
+    /// <c>using await = null</c>, <c>class await {}</c>, <c>await: ;</c> and <c>await 0</c> are all
+    /// syntax errors in a static block, in a script as well as in a module.
+    /// </para>
+    /// <para>
+    /// <b>A function boundary clears it and an arrow's parameters do not.</b> A nested function,
+    /// method, accessor or field initialiser is a fresh <c>[~Await]</c> context - so a function
+    /// EXPRESSION's own name, a method's parameters and an arrow's BODY may bind or read
+    /// <c>await</c> - while an arrow's parameter list is <c>[?Await]</c> and inherits the block's.
+    /// A function DECLARATION's name belongs to the list it is declared in and inherits it too.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DB46C6
+    // Broiler-Human:        PENDING
+    private bool awaitIsReserved;
+
     /// <summary>Whether the cursor is inside a formal parameter list of its own function.</summary>
     /// <remarks>
     /// <para>
@@ -243,6 +268,28 @@ internal sealed class JsParser
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B9FB84
     // Broiler-Human:        PENDING
     private bool inParameters;
+
+    /// <summary>
+    /// Whether the statement list being read may declare a resource with <c>using</c> or
+    /// <c>await using</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A resource belongs to a scope that ENDS, and the two lists that have none are refused.</b>
+    /// A block, a function or class static block body, a module and a loop head end at a point the
+    /// lowering can dispose at; a script's top level and an eval's do not, and the proposal makes a
+    /// declaration there a syntax error rather than a resource disposed when the host feels like it.
+    /// A case clause's list is the third refusal: the scope is the whole case block, and a clause
+    /// that fell through would reach a binding whose declaration never ran.
+    /// </para>
+    /// <para>
+    /// <b>It is a flag and not a depth</b>, because the answer is the innermost list's alone: a
+    /// block inside a case clause may declare one, and a case clause inside a block may not.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=48C805
+    // Broiler-Human:        PENDING
+    private bool usingAllowed;
 
     /// <summary>Creates a parser over an already-tokenized source.</summary>
     /// <param name="stream">The tokens to read.</param>
@@ -299,6 +346,15 @@ internal sealed class JsParser
     // Broiler-Human:        PENDING
     internal bool IsStrict => strict;
 
+    /// <summary>
+    /// Whether a well-formed BigInt literal is parsed into an exact value rather than refused by
+    /// name: set under the wide manifest, which admits BigInt since card B05 (JSD-0033 section 7),
+    /// and clear under the numeric one.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=95ACD4
+    // Broiler-Human:        PENDING
+    internal bool AdmitsBigInt { get; init; }
+
     /// <summary>Whether an <c>await</c> appeared outside every function of this parse.</summary>
     /// <remarks>
     /// It is a property of the PARSE and not of the tree, because the tree records an await
@@ -310,7 +366,7 @@ internal sealed class JsParser
     internal bool SawTopLevelAwait => sawTopLevelAwait;
 
     /// <summary>Parses a whole program.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F0558F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E18D66
     // Broiler-Human:        PENDING
     internal JsProgramNode Parse()
     {
@@ -326,8 +382,16 @@ internal sealed class JsParser
             // context by the goal symbol rather than by an enclosing `async function`, so the same
             // switch every async body sets is set here - which is what makes `await p` at a
             // module's top level an await expression instead of two identifiers in a row.
-            awaitIsOperator = true;
+            //
+            // UNLESS THE EMBEDDER ASKED FOR A MODULE WITHOUT IT (JSD-0024 section 20): with
+            // `AllowTopLevelAwait` false the top level is an ordinary module context, where `await`
+            // is reserved and not an operator, so a top-level `await` - and `for await` and
+            // `await using` outside every function - is refused exactly as it is inside a
+            // non-async function of a module. Every async body inside still sets the switch.
+            awaitIsOperator = options.AllowTopLevelAwait;
         }
+
+        usingAllowed = options.Goal == SliceGoal.Module;
 
         // NOTHING TURNS STRICTNESS OFF. A directive prologue can only add it, the module goal can
         // only add it, and a caller that imposed it keeps it - so a `"use strict"` inside a
@@ -350,7 +414,7 @@ internal sealed class JsParser
 
     // ---- statements ----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9594DE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3CCC72
     // Broiler-Human:        PENDING
     private JsStatement ParseStatement()
     {
@@ -447,6 +511,17 @@ internal sealed class JsParser
                     return new JsFunctionDeclaration(
                         span, ParseFunctionRest(span, declaration: true, isAsync: true));
 
+                // `using x` AND `await using x` ARE DECLARATIONS ONLY WHERE A NAME FOLLOWS ON THE SAME
+                // LINE, and everything else they could begin stays the expression it always was:
+                // `using[x]`, `using.x`, `using` alone and `await using` alone. Where the list
+                // cannot hold a resource the declaration is refused by name rather than read as an
+                // expression that then fails on the name after it.
+                case SliceTokenKind.Identifier when BeginsUsingDeclaration():
+                    return ParseUsingDeclaration(isAwait: false);
+
+                case SliceTokenKind.Await when BeginsAwaitUsingDeclaration():
+                    return ParseUsingDeclaration(isAwait: true);
+
                 // A CONTEXTUAL KEYWORD IS A LEGAL LABEL. `of: for (var x of []) ;` did not
                 // reach the `for … of` refusal at all, because `of` was not recognised as a label
                 // and the colon became the surprise instead of the construct after it.
@@ -455,6 +530,7 @@ internal sealed class JsParser
                     SliceTokenKind.Let when Peek(1).Kind == SliceTokenKind.Colon:
                 {
                     _ = RefuseEscapedReservedWord(Current);
+                    RefuseStrictReservedIdentifier(span, Current);
                     var label = Current.RawText;
                     Advance();
                     Advance();
@@ -476,7 +552,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=074893
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D4902E
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsStringLiteral> ParseDirectives()
     {
@@ -488,10 +564,17 @@ internal sealed class JsParser
         // the body sloppy, which is a whole strictness silently lost. It also hid the rule that a
         // parameter list with a default in it may not be given a `use strict` directive, because
         // the directive the rule is about had not been seen.
+        //
+        // A LINE BREAK ENDS THE DIRECTIVE ONLY WHERE A SEMICOLON WOULD BE INSERTED THERE, and that
+        // is only where the next token cannot continue the expression. A string, a line break and
+        // `+ 1` are ONE expression statement whose value is "a1" - the string is not a directive at all - and
+        // reading every line break as the end of one dropped the string and answered 1, a silent
+        // wrong value (VM-FIX-D).
         while (Current.Kind == SliceTokenKind.StringLiteral &&
             Peek(1).Kind is SliceTokenKind.Semicolon or SliceTokenKind.EndOfSource or
                 SliceTokenKind.CloseBrace ||
-            (Current.Kind == SliceTokenKind.StringLiteral && Peek(1).PrecededByLineTerminator))
+            (Current.Kind == SliceTokenKind.StringLiteral && Peek(1).PrecededByLineTerminator &&
+                !ContinuesExpression(Peek(1).Kind)))
         {
             var token = Current;
             var literal = new JsStringLiteral(
@@ -515,6 +598,32 @@ internal sealed class JsParser
 
         return directives;
     }
+
+    /// <summary>Whether a token after a line break continues the expression before it.</summary>
+    /// <remarks>
+    /// Every binary and assignment operator, a member access, a call, a tagged template and the
+    /// conditional operator are admitted by the grammar right after a string literal, so no
+    /// semicolon is inserted in front of them. <c>++</c> and <c>--</c> are not here: a postfix
+    /// update may not follow a line break, so a semicolon is inserted before either.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CB5449
+    // Broiler-Human:        PENDING
+    private static bool ContinuesExpression(SliceTokenKind kind) =>
+        kind is SliceTokenKind.Comma or SliceTokenKind.Question or SliceTokenKind.Equals or
+            SliceTokenKind.Plus or SliceTokenKind.Minus or SliceTokenKind.Star or
+            SliceTokenKind.Slash or SliceTokenKind.Percent or SliceTokenKind.StarStar or
+            SliceTokenKind.LessThan or SliceTokenKind.LessThanEquals or
+            SliceTokenKind.GreaterThan or SliceTokenKind.GreaterThanEquals or
+            SliceTokenKind.EqualsEqualsEquals or SliceTokenKind.BangEqualsEquals or
+            SliceTokenKind.EqualsEquals or SliceTokenKind.BangEquals or
+            SliceTokenKind.Ampersand or SliceTokenKind.Bar or SliceTokenKind.Caret or
+            SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
+            SliceTokenKind.QuestionQuestion or SliceTokenKind.LessThanLessThan or
+            SliceTokenKind.GreaterThanGreaterThan or
+            SliceTokenKind.GreaterThanGreaterThanGreaterThan or SliceTokenKind.CompoundAssign or
+            SliceTokenKind.OpenBracket or SliceTokenKind.OpenParen or SliceTokenKind.Dot or
+            SliceTokenKind.QuestionDot or SliceTokenKind.TemplateLiteral or
+            SliceTokenKind.Instanceof or SliceTokenKind.In;
 
     // ---- the module goal's declarations ---------------------------------------------------------
 
@@ -1222,13 +1331,15 @@ internal sealed class JsParser
         return new JsExpressionStatement(span, expression);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D1B875
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=56BEB5
     // Broiler-Human:        PENDING
     private JsBlockStatement ParseBlock()
     {
         var span = Span();
         Expect(SliceTokenKind.OpenBrace, "{");
         var body = new System.Collections.Generic.List<JsStatement>();
+        var outerUsing = usingAllowed;
+        usingAllowed = true;
 
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
@@ -1237,6 +1348,7 @@ internal sealed class JsParser
             body.Add(ParseStatement());
         }
 
+        usingAllowed = outerUsing;
         Expect(SliceTokenKind.CloseBrace, "}");
         ValidateBlockScope(body);
         return new JsBlockStatement(span, body);
@@ -1259,6 +1371,157 @@ internal sealed class JsParser
         Semicolon();
         ValidateBindingList(kind, declarators);
         return new JsVariableStatement(span, kind, declarators);
+    }
+
+    /// <summary>
+    /// Whether the cursor is at <c>using</c> followed, on the same line, by a name it would bind.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>using</c> is an identifier everywhere else, and every other reading keeps it one.</b>
+    /// The declaration needs a binding identifier after it with no line break between, so
+    /// <c>using[x]</c>, <c>using.x</c>, <c>using = 1</c>, <c>using</c> on a line of its own and
+    /// <c>using</c> followed by a line break and a name are all the expressions they were before.
+    /// An escaped spelling is not the keyword, as with every contextual keyword.
+    /// <para>
+    /// <b><c>await</c> or <c>yield</c> after it is a declaration too, even where the word is
+    /// reserved.</b> No expression has <c>using</c> followed on the same line by either word, so the
+    /// source is an error whichever way it is read. Reading it as a declaration lets the binding
+    /// list refuse the name as the reserved word it is (<c>2209</c>), the answer <c>let await</c>
+    /// already gets in a class static block. Read as an expression it was refused as a missing
+    /// semicolon (<c>2102</c>).
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6BAF38
+    // Broiler-Human:        PENDING
+    private bool BeginsUsingDeclaration() =>
+        Current.Kind == SliceTokenKind.Identifier &&
+        !Current.IsEscaped &&
+        string.Equals(Current.RawText, "using", System.StringComparison.Ordinal) &&
+        (IsIdentifierName(Peek(1).Kind) || Peek(1).Kind is SliceTokenKind.Await or SliceTokenKind.Yield) &&
+        !Peek(1).PrecededByLineTerminator;
+
+    /// <summary>
+    /// Whether the cursor is at <c>await using</c> followed by a name, in a body that may await.
+    /// </summary>
+    /// <remarks>
+    /// Outside an async body <c>await</c> is an identifier and the three words are not a
+    /// declaration of anything; inside one, <c>await using</c> with a line break before the name is
+    /// the await expression <c>await using</c> and a second statement, as the cover grammar says.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2D4C74
+    // Broiler-Human:        PENDING
+    private bool BeginsAwaitUsingDeclaration() =>
+        awaitIsOperator &&
+        Current.Kind == SliceTokenKind.Await &&
+        Peek(1).Kind == SliceTokenKind.Identifier &&
+        !Peek(1).IsEscaped &&
+        string.Equals(Peek(1).RawText, "using", System.StringComparison.Ordinal) &&
+        !Peek(1).PrecededByLineTerminator &&
+        IsIdentifierName(Peek(2).Kind) &&
+        !Peek(2).PrecededByLineTerminator;
+
+    /// <summary>
+    /// Whether a <c>for</c> head at the cursor declares a resource with <c>using</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>for (using of …</c> is the one head that reads the other way.</b> The proposal puts a
+    /// lookahead restriction on the <c>of</c> form so that <c>for (using of of xs)</c> iterates
+    /// <c>of[…]</c> into the identifier <c>using</c>, as it always did; the counted form has no such
+    /// restriction, so <c>for (using of = null; ; )</c> declares a resource named <c>of</c>. The
+    /// token after the name settles which of the two was written.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5DB600
+    // Broiler-Human:        PENDING
+    private bool BeginsUsingHead() =>
+        BeginsUsingDeclaration() &&
+        (Peek(1).Kind != SliceTokenKind.Of ||
+            Peek(2).Kind is SliceTokenKind.Equals or SliceTokenKind.Semicolon or SliceTokenKind.Comma);
+
+    /// <summary>Parses <c>using</c> or <c>await using</c> as a statement of a list.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=383628
+    // Broiler-Human:        PENDING
+    private JsStatement ParseUsingDeclaration(bool isAwait)
+    {
+        var span = Span();
+
+        if (isAwait)
+        {
+            // AN `await using` OUTSIDE EVERY FUNCTION IS A TOP-LEVEL AWAIT, because its disposal
+            // awaits when the module body ends: the body has to be entered as an async frame.
+            sawTopLevelAwait |= functionDepth == 0;
+            Advance();
+        }
+
+        Advance();
+        var declarators = ParseDeclarators(noIn: false);
+        Semicolon();
+
+        if (!usingAllowed)
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a `using` declaration needs a block, a function body, a module or a loop head to " +
+                    "be disposed at, and a script's or an eval's top level or a case clause is none");
+
+            return new JsEmptyStatement(span);
+        }
+
+        if (!ValidateResources(declarators, requireInitialiser: true))
+        {
+            return new JsEmptyStatement(span);
+        }
+
+        ValidateBindingList(SliceDeclarationKind.Const, declarators);
+
+        return new JsVariableStatement(
+            span, SliceDeclarationKind.Const, declarators, isAwait ? JsUsing.Async : JsUsing.Sync);
+    }
+
+    /// <summary>
+    /// Refuses what a resource declaration's binding list may not contain: a pattern, and - where
+    /// the declaration is not an enumerating head - a binding with no initialiser.
+    /// </summary>
+    /// <remarks>
+    /// <b>A resource is ONE value with ONE disposer</b>, so the proposal's binding list is
+    /// <c>[~Pattern]</c>: <c>using { a } = r</c> would register what, and dispose which? The
+    /// initialiser is required for the same reason a <c>const</c>'s is, and an enumerating head
+    /// is the exception because the iteration supplies each value.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C860EB
+    // Broiler-Human:        PENDING
+    private bool ValidateResources(
+        System.Collections.Generic.IReadOnlyList<JsDeclarator> declarators, bool requireInitialiser)
+    {
+        if (diagnostics.Count != 0)
+        {
+            return false;
+        }
+
+        foreach (var declarator in declarators)
+        {
+            if (declarator.Pattern is not null)
+            {
+                Refuse(
+                    declarator.Span,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "a `using` declaration binds names, not patterns");
+
+                return false;
+            }
+
+            if (requireInitialiser && declarator.Initialiser is null)
+            {
+                Refuse(
+                    declarator.Span,
+                    SliceSourceDiagnosticCode.ConstWithoutInitialiser,
+                    "`using " + declarator.Name + "` needs an initialiser");
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B5197D
@@ -1435,7 +1698,7 @@ internal sealed class JsParser
         return new JsDoWhileStatement(span, body, test);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=74B58B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2CFBBF
     // Broiler-Human:        PENDING
     private JsStatement ParseFor()
     {
@@ -1477,7 +1740,8 @@ internal sealed class JsParser
             Advance();
         }
         else if (Current.Kind is SliceTokenKind.Var or SliceTokenKind.Const ||
-            (Current.Kind == SliceTokenKind.Let && BeginsLetDeclaration()))
+            (Current.Kind == SliceTokenKind.Let && BeginsLetDeclaration()) ||
+            BeginsUsingHead() || BeginsAwaitUsingDeclaration())
         {
             var headSpan = Span();
             var kind = Current.Kind switch
@@ -1487,8 +1751,29 @@ internal sealed class JsParser
                 _ => SliceDeclarationKind.Const,
             };
 
+            // A RESOURCE HEAD IS A `const` HEAD THAT REGISTERS WHAT IT BINDS, and it is admitted in
+            // every list, a script's top level included: the loop is the scope that disposes it.
+            var resource = JsUsing.None;
+
+            if (Current.Kind == SliceTokenKind.Await)
+            {
+                sawTopLevelAwait |= functionDepth == 0;
+                resource = JsUsing.Async;
+                Advance();
+            }
+            else if (Current.Kind == SliceTokenKind.Identifier)
+            {
+                resource = JsUsing.Sync;
+            }
+
             Advance();
             var declarators = ParseDeclarators(noIn: true);
+
+            if (resource != JsUsing.None && !ValidateResources(declarators, requireInitialiser: false))
+            {
+                return new JsEmptyStatement(span);
+            }
+
             ValidateBindingList(kind, declarators);
 
             if (Current.Kind is SliceTokenKind.In or SliceTokenKind.Of && declarators.Count == 1)
@@ -1520,6 +1805,18 @@ internal sealed class JsParser
                 var source = isOf ? ParseAssignment() : ParseExpression();
                 Expect(SliceTokenKind.CloseParen, ")");
 
+                // A RESOURCE IS NOT ENUMERATED OVER PROPERTY NAMES. A name is a string, which has no
+                // disposer, and the proposal gives `for (using x in o)` no production at all.
+                if (resource != JsUsing.None && !isOf)
+                {
+                    Refuse(
+                        declarators[0].Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "a `for … in` head cannot declare a `using` resource");
+
+                    return new JsEmptyStatement(span);
+                }
+
                 // AN `in` HEAD WITH `for await` IN FRONT OF IT IS NOT A LOOP THE LANGUAGE HAS.
                 // The production is `for await ( … of … )` and nothing else, so a `for await (x in
                 // o)` is refused rather than quietly iterating property names asynchronously - and
@@ -1535,13 +1832,18 @@ internal sealed class JsParser
                 return isOf
                     ? new JsForOfStatement(
                         span, kind, declarators[0].Name, declarators[0].Pattern, null, source,
-                        iterated, isAwait)
+                        iterated, isAwait, resource)
                     : new JsForInStatement(
                         span, kind, declarators[0].Name, declarators[0].Pattern, null, source,
                         iterated);
             }
 
-            initialiser = new JsVariableStatement(headSpan, kind, declarators);
+            if (resource != JsUsing.None && !ValidateResources(declarators, requireInitialiser: true))
+            {
+                return new JsEmptyStatement(span);
+            }
+
+            initialiser = new JsVariableStatement(headSpan, kind, declarators, resource);
             Expect(SliceTokenKind.Semicolon, ";");
         }
         else
@@ -1740,7 +2042,7 @@ internal sealed class JsParser
         return new JsTryStatement(span, block, parameter, catchPattern, handler, finaliser);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D070D8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=97D57F
     // Broiler-Human:        PENDING
     private JsStatement ParseSwitch()
     {
@@ -1784,6 +2086,8 @@ internal sealed class JsParser
 
             Expect(SliceTokenKind.Colon, ":");
             var body = new System.Collections.Generic.List<JsStatement>();
+            var outerUsing = usingAllowed;
+            usingAllowed = false;
 
             while (Current.Kind is not SliceTokenKind.Case and not SliceTokenKind.Default and
                 not SliceTokenKind.CloseBrace and not SliceTokenKind.EndOfSource &&
@@ -1791,6 +2095,8 @@ internal sealed class JsParser
             {
                 body.Add(ParseStatement());
             }
+
+            usingAllowed = outerUsing;
 
             clauses.Add(new JsSwitchClause(clauseSpan, test, body));
         }
@@ -1814,7 +2120,7 @@ internal sealed class JsParser
 
     // ---- functions -----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=72103F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CEE0CE
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionRest(
         SliceSourceSpan span, bool declaration, bool isAsync = false)
@@ -1842,8 +2148,10 @@ internal sealed class JsParser
         // does and is the opposite of what "await is reserved inside an async function" suggests.
         var outerOperator = yieldIsOperator;
         var outerAwait = awaitIsOperator;
+        var outerReserved = awaitIsReserved;
         yieldIsOperator = declaration ? outerOperator : isGenerator;
         awaitIsOperator = declaration ? outerAwait : isAsync;
+        awaitIsReserved = declaration && outerReserved;
         var name = string.Empty;
 
         if (IsIdentifierName(Current.Kind))
@@ -1872,9 +2180,23 @@ internal sealed class JsParser
 
         yieldIsOperator = isGenerator;
         awaitIsOperator = isAsync;
+        awaitIsReserved = false;
         var body = ParseFunctionBody(span, name, ParseParameters(), isArrow: false, isGenerator, isAsync);
         yieldIsOperator = outerOperator;
         awaitIsOperator = outerAwait;
+        awaitIsReserved = outerReserved;
+
+        // THE NAME IS JUDGED BY THE STRICTNESS OF THE FUNCTION'S OWN CODE, which a directive in
+        // its body can raise after the name was read: `function static() { "use strict"; }` is as
+        // much an early error as `"use strict"; function static() { }`.
+        if (body.IsStrict && diagnostics.Count == 0 && IsStrictOnlyName(name))
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                "`" + name + "` is not a function name in strict code");
+        }
+
         return body;
     }
 
@@ -1898,13 +2220,15 @@ internal sealed class JsParser
     /// gives, which is the category the language puts it in.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0665F0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=27EB7D
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsParameter> ParseOrdinaryParameters()
     {
         var outerAwait = awaitIsOperator;
         var outerYield = yieldIsOperator;
+        var outerReserved = awaitIsReserved;
         awaitIsOperator = false;
+        awaitIsReserved = false;
 
         // AND `[~Yield]` IS THE OTHER HALF OF THE SAME SENTENCE, which this cleared for `await`
         // alone. `MethodDefinition : PropertyName ( UniqueFormalParameters )` passes NEITHER
@@ -1923,6 +2247,7 @@ internal sealed class JsParser
         {
             awaitIsOperator = outerAwait;
             yieldIsOperator = outerYield;
+            awaitIsReserved = outerReserved;
         }
     }
 
@@ -2067,7 +2392,7 @@ internal sealed class JsParser
         return new JsArrayPattern(span, elements, rest);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2D455B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B023AE
     // Broiler-Human:        PENDING
     private JsPattern ParseObjectBindingPattern(SliceSourceSpan span)
     {
@@ -2110,6 +2435,16 @@ internal sealed class JsParser
                     // A SHORTHAND'S KEY IS AN Identifier AND NOT AN IdentifierName, so it answers
                     // for an escaped reserved word the way every other binding position does.
                     _ = RefuseEscapedReservedWord(keyToken);
+
+                    // AND FOR STRICT CODE'S RESERVATIONS the way `BindingName` does, because the key
+                    // is the binding: `"use strict"; var { public } = {};` binds `public`.
+                    if (strict && IsStrictOnlyName(keyToken.RawText))
+                    {
+                        Refuse(
+                            entrySpan,
+                            SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                            "`" + keyToken.RawText + "` is not a binding name in strict code");
+                    }
                 }
                 else
                 {
@@ -2183,7 +2518,7 @@ internal sealed class JsParser
             : new JsTargetPattern(span, new JsIdentifier(span, BindingName()));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=10C4F6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9ECEAF
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
@@ -2192,7 +2527,8 @@ internal sealed class JsParser
         bool isArrow,
         bool isGenerator = false,
         bool isAsync = false,
-        bool uniqueParameters = false)
+        bool uniqueParameters = false,
+        bool isStaticBlock = false)
     {
         var outer = strict;
 
@@ -2205,7 +2541,9 @@ internal sealed class JsParser
         // flag - which the verifier refuses, so the front end would have been producing artifacts
         // this host then rejected.
         var outerAwait = awaitIsOperator;
+        var outerReserved = awaitIsReserved;
         awaitIsOperator = isAsync;
+        awaitIsReserved = isStaticBlock;
 
         // AND `[Yield]` IS DECIDED HERE FOR THE SAME REASON AND WAS NOT. Every caller set the flag
         // around this call and a method's caller had nothing to set it to, so an ordinary method
@@ -2231,12 +2569,17 @@ internal sealed class JsParser
             functionDepth++;
         }
 
+        var outerUsing = usingAllowed;
+        usingAllowed = true;
+
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
             diagnostics.Count == 0)
         {
             body.Add(ParseStatement());
         }
+
+        usingAllowed = outerUsing;
 
         if (!isArrow)
         {
@@ -2257,6 +2600,7 @@ internal sealed class JsParser
         ValidateVarScope(body, parameters);
         strict = outer;
         awaitIsOperator = outerAwait;
+        awaitIsReserved = outerReserved;
         yieldIsOperator = outerYield;
         inParameters = outerArrowParameters;
 
@@ -2281,7 +2625,7 @@ internal sealed class JsParser
     /// why <c>class D extends a.b() { }</c> parses and <c>class D extends a = b { }</c> does not.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C0F049
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B7CB47
     // Broiler-Human:        PENDING
     private JsClassNode ParseClass(SliceSourceSpan span, bool declaration)
     {
@@ -2294,6 +2638,16 @@ internal sealed class JsParser
         {
             _ = RefuseEscapedReservedWord(Current);
             name = Current.RawText;
+
+            // A CLASS NAME IS STRICT CODE'S BINDING NAME, whatever surrounds the class.
+            if (IsStrictOnlyName(name))
+            {
+                Refuse(
+                    Span(),
+                    SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                    "`" + name + "` is not a class name, because a class is strict code");
+            }
+
             Advance();
         }
         else if (Current.Kind is SliceTokenKind.Yield or SliceTokenKind.Await)
@@ -2511,7 +2865,7 @@ internal sealed class JsParser
     /// <c>static m() { }</c> is a static method - and reading the key first would have made the
     /// second one a field called <c>static</c> followed by a surprise.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C1DE41
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F89CED
     // Broiler-Human:        PENDING
     private JsClassMember? ParseClassMember()
     {
@@ -2606,8 +2960,10 @@ internal sealed class JsParser
 
         var outerOperator = yieldIsOperator;
         var outerAwait = awaitIsOperator;
+        var outerReserved = awaitIsReserved;
         yieldIsOperator = isGenerator;
         awaitIsOperator = isAsync;
+        awaitIsReserved = false;
 
         // A METHOD'S PARAMETER LIST IS THE ORDINARY ONE AND AN ACCESSOR'S IS NOT OPTIONAL ABOUT IT:
         // both paths go through the same parse, and which parameter forms a member admits is the
@@ -2624,6 +2980,7 @@ internal sealed class JsParser
 
         yieldIsOperator = outerOperator;
         awaitIsOperator = outerAwait;
+        awaitIsReserved = outerReserved;
         return new JsClassMember(span, kind, isStatic, key, computed, isPrivate, body);
     }
 
@@ -2634,7 +2991,7 @@ internal sealed class JsParser
     /// it is the token after a field, and the language has no class element separator spelled that
     /// way. Parsing the wider production here would have accepted a body no engine accepts.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C98C95
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6A1F71
     // Broiler-Human:        PENDING
     private JsClassMember ParseFieldTail(
         SliceSourceSpan span, bool isStatic, string key, JsExpression? computed, bool isPrivate)
@@ -2652,11 +3009,14 @@ internal sealed class JsParser
             // the word is an operator.
             var outerOperator = yieldIsOperator;
             var outerAwait = awaitIsOperator;
+            var outerReserved = awaitIsReserved;
             yieldIsOperator = false;
             awaitIsOperator = false;
+            awaitIsReserved = false;
             var value = ParseAssignment();
             yieldIsOperator = outerOperator;
             awaitIsOperator = outerAwait;
+            awaitIsReserved = outerReserved;
 
             initialiser = new JsFunctionNode(
                 span,
@@ -2674,7 +3034,7 @@ internal sealed class JsParser
     }
 
     /// <summary>Parses <c>static { … }</c>, from just after the <c>static</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1A0E82
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0376A1
     // Broiler-Human:        PENDING
     private JsClassMember ParseStaticBlock(SliceSourceSpan span)
     {
@@ -2689,7 +3049,8 @@ internal sealed class JsParser
         awaitIsOperator = false;
 
         var body = ParseFunctionBody(
-            span, string.Empty, new System.Collections.Generic.List<JsParameter>(), isArrow: false);
+            span, string.Empty, new System.Collections.Generic.List<JsParameter>(), isArrow: false,
+            isStaticBlock: true);
 
         yieldIsOperator = outerOperator;
         awaitIsOperator = outerAwait;
@@ -3452,7 +3813,7 @@ internal sealed class JsParser
     /// <param name="unique">Whether the production takes <c>UniqueFormalParameters</c>.</param>
     /// <param name="strictHere">Whether the parameter list is strict-mode code.</param>
     /// <param name="declaredUseStrict">Whether the body's own prologue declared strictness.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5EBBDC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BAD3E2
     // Broiler-Human:        PENDING
     private void ValidateParameters(
         System.Collections.Generic.IReadOnlyList<JsParameter> parameters,
@@ -3502,6 +3863,19 @@ internal sealed class JsParser
 
             foreach (var name in names)
             {
+                // A `use strict` IN THE BODY MAKES THE PARAMETER LIST STRICT TOO, after its names
+                // were read under the enclosing strictness: `function f(public) { "use strict"; }`
+                // is refused here, where the directive is known.
+                if (strictHere && IsStrictOnlyName(name))
+                {
+                    Refuse(
+                        parameter.Span,
+                        SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                        "`" + name + "` is not a parameter name in strict code");
+
+                    return;
+                }
+
                 if (seen.Add(name))
                 {
                     continue;
@@ -3617,7 +3991,7 @@ internal sealed class JsParser
     /// Whether a plain function declaration is admitted here, which is true for an <c>if</c> clause
     /// and a labelled item in sloppy code and false everywhere else.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C9E0A0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D2B436
     // Broiler-Human:        PENDING
     private JsStatement ParseNestedStatement(string position, bool functionAllowed = false)
     {
@@ -3634,7 +4008,8 @@ internal sealed class JsParser
             return ParseExpressionStatement();
         }
 
-        if (!BeginsRefusedDeclaration(functionAllowed))
+        if (!BeginsRefusedDeclaration(functionAllowed) &&
+            !BeginsUsingDeclaration() && !BeginsAwaitUsingDeclaration())
         {
             return ParseStatement();
         }
@@ -3882,14 +4257,15 @@ internal sealed class JsParser
     /// not bind that name.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F50ACC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6658D0
     // Broiler-Human:        PENDING
     private bool IsIdentifierName(SliceTokenKind kind) => kind switch
     {
         SliceTokenKind.Identifier or SliceTokenKind.Get or SliceTokenKind.Set or
             SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or
             SliceTokenKind.Let => true,
-        SliceTokenKind.Await => options.Goal != SliceGoal.Module && !awaitIsOperator,
+        SliceTokenKind.Await =>
+            options.Goal != SliceGoal.Module && !awaitIsOperator && !awaitIsReserved,
         SliceTokenKind.Yield => !strict && !yieldIsOperator,
         _ => false,
     };
@@ -3914,11 +4290,12 @@ internal sealed class JsParser
     /// set from being added to two of the three.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3A6447
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0086A7
     // Broiler-Human:        PENDING
     private bool BeginsLetDeclaration() =>
         IsIdentifierName(Peek(1).Kind) ||
-        Peek(1).Kind is SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace;
+        Peek(1).Kind is SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace ||
+        (awaitIsReserved && Peek(1).Kind == SliceTokenKind.Await);
 
     /// <summary>
     /// Recognises an arrow function, which the grammar cannot see coming from its first token.
@@ -4123,7 +4500,7 @@ internal sealed class JsParser
         return tokens[scan].Kind == SliceTokenKind.EqualsGreaterThan;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=308CE2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=852CA3
     // Broiler-Human:        PENDING
     private JsExpression ParseArrowBody(
         SliceSourceSpan span,
@@ -4143,9 +4520,11 @@ internal sealed class JsParser
         // `[+Await]` whatever encloses it, because it is itself the async context.
         var outerOperator = yieldIsOperator;
         var outerAwait = awaitIsOperator;
+        var outerReserved = awaitIsReserved;
         var outerArrowParameters = inParameters;
         yieldIsOperator = false;
         awaitIsOperator = isAsync;
+        awaitIsReserved = false;
 
         // A CONCISE BODY IS A BODY TOO, and an arrow written as the default of another arrow's
         // parameter reaches here without passing `ParseFunctionBody`. Leaving the flag set would
@@ -4184,6 +4563,7 @@ internal sealed class JsParser
         {
             yieldIsOperator = outerOperator;
             awaitIsOperator = outerAwait;
+            awaitIsReserved = outerReserved;
             inParameters = outerArrowParameters;
         }
     }
@@ -4207,7 +4587,7 @@ internal sealed class JsParser
         return new JsConditionalExpression(span, test, whenTrue, whenFalse);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C342F9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F3FE5C
     // Broiler-Human:        PENDING
     private JsExpression ParseBinary(int minimum, bool noIn)
     {
@@ -4233,8 +4613,34 @@ internal sealed class JsParser
                 noIn);
         }
 
-        return Continue(ParseUnary(), span, minimum, noIn);
+        // A UNARY OPERATOR MAY NOT BE THE BASE OF `**`. The grammar's left operand of `**` is an
+        // `UpdateExpression`, so `-2 ** 2` matches no production at all - the reader could mean
+        // `(-2) ** 2` or `-(2 ** 2)`, and the language refuses to choose. It was parsed as the
+        // first until VM-FIX-D and answered 4. A parenthesised operand begins with `(` and is not
+        // refused, which is why the question is asked of the first token and not of the tree.
+        var unaryBase = StartsUnaryOperator(Current.Kind);
+        var left = ParseUnary();
+
+        if (unaryBase && Current.Kind == SliceTokenKind.StarStar)
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a unary operator cannot be applied directly to the base of `**`; parenthesise " +
+                    "the operand or the power");
+        }
+
+        return Continue(left, span, minimum, noIn);
     }
+
+    /// <summary>Whether this token begins a <c>UnaryExpression</c> that is not an update.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CF3690
+    // Broiler-Human:        PENDING
+    private bool StartsUnaryOperator(SliceTokenKind kind) =>
+        (awaitIsOperator && kind == SliceTokenKind.Await) ||
+        kind is SliceTokenKind.Plus or SliceTokenKind.Minus or SliceTokenKind.Bang or
+            SliceTokenKind.Tilde or SliceTokenKind.Typeof or SliceTokenKind.Void or
+            SliceTokenKind.Delete;
 
     /// <summary>The precedence of <c>in</c>, <c>instanceof</c> and the four comparisons.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2AB4A2
@@ -4919,7 +5325,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=FE0F45
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7A14B1
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -4950,7 +5356,13 @@ internal sealed class JsParser
                 // instead of being handed a double.
                 if (token.RawText.EndsWith('n'))
                 {
-                    return OutsideExpression(span, "a BigInt literal");
+                    // THE REFUSAL STAYS THE ANSWER FOR EVERY COMPILATION THAT DOES NOT ADMIT BIGINT
+                    // (JSeal B02, JSD-0033): the numeric manifest's. The wide manifest gets the exact
+                    // integer, or a refusal at the literal when it is wider than the format can
+                    // carry - never a double.
+                    return AdmitsBigInt
+                        ? BigIntLiteral(span, token)
+                        : OutsideExpression(span, "a BigInt literal");
                 }
 
                 if (strict && token.IsLegacyOctal)
@@ -5005,7 +5417,7 @@ internal sealed class JsParser
             case SliceTokenKind.Import when Peek(1).Kind == SliceTokenKind.Dot:
                 return ParseImportMeta(span);
 
-            case SliceTokenKind.Await when options.Goal != SliceGoal.Module && !awaitIsOperator:
+            case SliceTokenKind.Await when IsIdentifierName(SliceTokenKind.Await):
             case SliceTokenKind.Yield when !strict && !yieldIsOperator:
                 Advance();
                 return new JsIdentifier(span, token.RawText);
@@ -5025,7 +5437,8 @@ internal sealed class JsParser
                     SliceSourceDiagnosticCode.ReservedWordAsBinding,
                     "`" + token.RawText + "` is a reserved word " +
                         (token.Kind == SliceTokenKind.Await
-                            ? awaitIsOperator ? "in an async function" : "in a module"
+                            ? awaitIsOperator ? "in an async function"
+                                : awaitIsReserved ? "in a class static block" : "in a module"
                             : yieldIsOperator && !strict ? "in a generator" : "in strict code"));
 
                 Advance();
@@ -5059,6 +5472,7 @@ internal sealed class JsParser
                 // refuses one. `break` read as a free variable would have been a run-time
                 // `ReferenceError` about a name the source never meant to write.
                 _ = RefuseEscapedReservedWord(token);
+                RefuseStrictReservedIdentifier(span, token);
                 Advance();
                 return new JsIdentifier(span, token.RawText);
 
@@ -5186,7 +5600,7 @@ internal sealed class JsParser
         return new JsObjectLiteral(span, entries, trailing);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=464413
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F47A2E
     // Broiler-Human:        PENDING
     private JsObjectEntry ParseObjectEntry()
     {
@@ -5217,9 +5631,12 @@ internal sealed class JsParser
             // operator the early error then refuses, rather than a parameter NAME that would have
             // let `({ *g(x = yield) { } })` through as a program.
             var outerGeneratorAwait = awaitIsOperator;
+            var outerGeneratorReserved = awaitIsReserved;
             awaitIsOperator = false;
+            awaitIsReserved = false;
             var generatorParameters = ParseParameters();
             awaitIsOperator = outerGeneratorAwait;
+            awaitIsReserved = outerGeneratorReserved;
 
             var generatorBody = ParseFunctionBody(
                 span, generatorKey, generatorParameters, isArrow: false, isGenerator: true,
@@ -5334,6 +5751,7 @@ internal sealed class JsParser
             // refused here as it is in every other Identifier position. `{ break: 42 }` is a
             // property and `{ break }` is a reference to a binding no source can have.
             _ = RefuseEscapedReservedWord(keyToken);
+            RefuseStrictReservedIdentifier(new SliceSourceSpan(keyToken.Line, keyToken.Column), keyToken);
 
             // WHICH IS THE SAME REASON THE PLAIN SPELLING IS REFUSED TOO, and until now only the
             // escaped one was. A shorthand's key is an `IdentifierReference` and a written-out key
@@ -5363,6 +5781,7 @@ internal sealed class JsParser
         if (Current.Kind == SliceTokenKind.Equals && computed is null && IsIdentifierName(keyToken.Kind))
         {
             _ = RefuseEscapedReservedWord(keyToken);
+            RefuseStrictReservedIdentifier(new SliceSourceSpan(keyToken.Line, keyToken.Column), keyToken);
             Advance();
 
             return new JsObjectEntry(
@@ -5402,7 +5821,7 @@ internal sealed class JsParser
         return new JsPrivateMemberExpression(span, target, name, optional);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3562F8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BF2402
     // Broiler-Human:        PENDING
     private string PropertyKey(out JsExpression? computed)
     {
@@ -5433,6 +5852,16 @@ internal sealed class JsParser
 
             case SliceTokenKind.NumericLiteral:
                 Advance();
+
+                // A BIGINT KEY IS ITS EXACT DECIMAL SPELLING, which is `ToString` of its value and
+                // is a String whether or not the gate is open - no BigInt value is made. Read
+                // through the double it named the wrong property past 2^53: `{ 9007199254740993n:
+                // 1 }` had the key "9007199254740992".
+                if (token.RawText.EndsWith('n'))
+                {
+                    return BigIntKey(token);
+                }
+
                 return NumberKey(token.NumericValue);
 
             case SliceTokenKind.OpenBracket:
@@ -5447,6 +5876,120 @@ internal sealed class JsParser
                 Advance();
                 return token.RawText;
         }
+    }
+
+    /// <summary>
+    /// The exact integer a well-formed BigInt literal token spells, or false when it is wider than
+    /// a BigInt constant may be.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The tokenizer has already refused every malformed spelling</b>, so what is left is a
+    /// decimal integer with no leading zero, or a <c>0x</c>, <c>0o</c> or <c>0b</c> integer, with
+    /// separators only between digits, and the <c>n</c>.
+    /// </para>
+    /// <para>
+    /// <b>The width is bounded before a digit is converted.</b> A decimal literal of more digits
+    /// than the widest constant has is refused on its length, so no conversion is ever asked of a
+    /// text the format could not carry; a prefixed literal's width is its digit count times the
+    /// digit's bits. What passes is converted exactly and checked once more on its bit length.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9C1B5C
+    // Broiler-Falsified-If: a BigInt literal's value differs from the integer its text spells, or a literal wider than the constant ceiling is converted
+    // Broiler-Human:        PENDING
+    private static bool TryBigIntValue(SliceToken token, out System.Numerics.BigInteger value)
+    {
+        value = System.Numerics.BigInteger.Zero;
+        var text = token.RawText[..^1].Replace("_", string.Empty, System.StringComparison.Ordinal);
+        const long maximumBits = Format.JsFormat.CeilingBigIntConstantBytes * 8L;
+
+        var radix = text.Length > 1 && text[0] == '0'
+            ? text[1] switch { 'x' or 'X' => 16, 'o' or 'O' => 8, _ => 2 }
+            : 10;
+
+        if (radix != 10)
+        {
+            var digits = text[2..].TrimStart('0');
+            var bitsPerDigit = radix switch { 16 => 4, 8 => 3, _ => 1 };
+
+            if ((long)digits.Length * bitsPerDigit > maximumBits + bitsPerDigit)
+            {
+                return false;
+            }
+
+            // THE BITS ARE PACKED LEAST SIGNIFICANT FIRST AND CONVERTED ONCE, so the cost is linear
+            // in the literal: shifting an accumulator per digit would copy it once per digit.
+            var bytes = new byte[(((long)digits.Length * bitsPerDigit) + 7) / 8 + 1];
+            var bit = 0L;
+
+            for (var at = digits.Length - 1; at >= 0; at--)
+            {
+                var digit = digits[at];
+                var digitValue = char.IsAsciiDigit(digit) ? digit - '0' : (digit | 0x20) - 'a' + 10;
+
+                for (var within = 0; within < bitsPerDigit; within++, bit++)
+                {
+                    if ((digitValue >> within & 1) != 0)
+                    {
+                        bytes[bit / 8] |= (byte)(1 << (int)(bit % 8));
+                    }
+                }
+            }
+
+            value = new System.Numerics.BigInteger(bytes, isUnsigned: true, isBigEndian: false);
+        }
+        else
+        {
+            // 65,536 bits is 19,729 decimal digits, and one more is always wider.
+            if (text.Length > (int)(maximumBits * 30103L / 100000L) + 1)
+            {
+                return false;
+            }
+
+            value = System.Numerics.BigInteger.Parse(
+                text,
+                System.Globalization.NumberStyles.None,
+                System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        return value.GetBitLength() <= maximumBits;
+    }
+
+    /// <summary>A gated BigInt literal: its exact value, or a refusal at the literal.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BEFFB5
+    // Broiler-Human:        PENDING
+    private JsExpression BigIntLiteral(SliceSourceSpan span, SliceToken token)
+    {
+        if (!TryBigIntValue(token, out var value))
+        {
+            return OutsideExpression(
+                span,
+                "a BigInt literal wider than " +
+                (Format.JsFormat.CeilingBigIntConstantBytes * 8).ToString(System.Globalization.CultureInfo.InvariantCulture) +
+                " bits");
+        }
+
+        return new JsBigIntLiteral(span, value);
+    }
+
+    /// <summary>A BigInt literal used as a property key: its exact decimal spelling.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=EC1F06
+    // Broiler-Human:        PENDING
+    private string BigIntKey(SliceToken token)
+    {
+        if (!TryBigIntValue(token, out var value))
+        {
+            Refuse(
+                new SliceSourceSpan(token.Line, token.Column),
+                "a BigInt literal wider than " +
+                (Format.JsFormat.CeilingBigIntConstantBytes * 8).ToString(System.Globalization.CultureInfo.InvariantCulture) +
+                " bits");
+
+            return string.Empty;
+        }
+
+        return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=673640
@@ -5517,6 +6060,65 @@ internal sealed class JsParser
         string.Equals(name, "arguments", System.StringComparison.Ordinal);
 
     /// <summary>
+    /// Whether <paramref name="name"/> is one of the words strict code reserves beyond the
+    /// keywords: <c>implements</c>, <c>interface</c>, <c>package</c>, <c>private</c>,
+    /// <c>protected</c>, <c>public</c> and <c>static</c>.
+    /// </summary>
+    /// <remarks>
+    /// <c>let</c> and <c>yield</c>, the other two of the language's list, are refused where their
+    /// own token kinds are handled. A test on the spelling rather than the kind, because the
+    /// tokenizer gives five of these words the identifier kind and an escape resolves to the same
+    /// spelling.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4A6AC9
+    // Broiler-Human:        PENDING
+    private static bool IsStrictReservedWord(string name) => name switch
+    {
+        "implements" or "interface" or "package" or "private" or "protected" or "public" or
+            "static" => true,
+        _ => false,
+    };
+
+    /// <summary>
+    /// Whether <paramref name="name"/> is a binding name in sloppy code and not in strict code.
+    /// </summary>
+    /// <remarks>
+    /// The whole list, for the positions whose strictness is decided after the name was read: a
+    /// function's name and its parameters, judged by a directive in the body that follows them.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2F40B1
+    // Broiler-Human:        PENDING
+    private static bool IsStrictOnlyName(string name) =>
+        IsStrictReservedWord(name) || IsRestrictedInStrictCode(name) ||
+        string.Equals(name, "let", System.StringComparison.Ordinal) ||
+        string.Equals(name, "yield", System.StringComparison.Ordinal);
+
+    /// <summary>
+    /// Refuses, in strict code, an identifier reference or a label spelled as a word strict code
+    /// reserves: the seven of <see cref="IsStrictReservedWord"/> and <c>let</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>The language reserves these words as an <c>Identifier</c>, not only as a binding</b>, so
+    /// <c>"use strict"; public = 1</c>, <c>label: static: ;</c> and <c>({ public } = o)</c> are early
+    /// errors like <c>var public</c>. Until VM-FIX-D's review they compiled, the reference to a
+    /// global and the label to a label. <c>yield</c> is refused where its own token kind is.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CB997C
+    // Broiler-Human:        PENDING
+    private void RefuseStrictReservedIdentifier(SliceSourceSpan span, SliceToken token)
+    {
+        if (strict &&
+            (IsStrictReservedWord(token.RawText) ||
+                string.Equals(token.RawText, "let", System.StringComparison.Ordinal)))
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                "`" + token.RawText + "` is a reserved word in strict code and is not an identifier");
+        }
+    }
+
+    /// <summary>
     /// Refuses an identifier that reaches a word this context reserves through a unicode escape.
     /// </summary>
     /// <remarks>
@@ -5565,7 +6167,7 @@ internal sealed class JsParser
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B80262
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=EEBE60
     // Broiler-Human:        PENDING
     private string BindingName()
     {
@@ -5600,6 +6202,18 @@ internal sealed class JsParser
                     Span(),
                     SliceSourceDiagnosticCode.ReservedWordAsBinding,
                     "`let` is a reserved word in strict code and is not a binding name");
+            }
+
+            // AND THE REST OF STRICT CODE'S RESERVATIONS, which reached here as ordinary names until
+            // VM-FIX-D: `"use strict"; var public;` and `var static;` compiled, in strict eval code
+            // as everywhere else.
+            if (strict && IsStrictReservedWord(token.RawText))
+            {
+                Refuse(
+                    Span(),
+                    SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                    "`" + token.RawText + "` is a reserved word in strict code and is not a binding " +
+                        "name");
             }
 
             Advance();
@@ -5895,7 +6509,7 @@ internal sealed class JsParser
     /// encloses it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E2FD0F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8495AE
     // Broiler-Human:        PENDING
     private JsExpression ParseInterpolation(string text, int line, int column)
     {
@@ -5923,7 +6537,14 @@ internal sealed class JsParser
         }
 
         var inner = new JsParser(
-            stream, options, strict, functionDepth, yieldIsOperator, awaitIsOperator);
+            stream, options, strict, functionDepth, yieldIsOperator, awaitIsOperator)
+        {
+            AdmitsBigInt = AdmitsBigInt,
+        };
+
+        // A SUBSTITUTION IS PART OF THE LIST IT IS WRITTEN IN, so `${await}` in a static block is
+        // refused by the inner parse exactly as the word is outside the template.
+        inner.awaitIsReserved = awaitIsReserved;
         var value = inner.ParseInterpolationBody();
 
         foreach (var diagnostic in inner.Diagnostics)
@@ -6585,7 +7206,7 @@ internal sealed class JsParser
         }
 
         /// <summary>Advances past the quote that closes a string literal.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8183F6
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=287666
         // Broiler-Human:        PENDING
         private void ScanString(char quote)
         {
@@ -6608,7 +7229,9 @@ internal sealed class JsParser
                     return;
                 }
 
-                if (c is '\n' or '\r' or '\u2028' or '\u2029')
+                // U+2028 and U+2029 are string characters, as the tokenizer reads them; only LF
+                // and CR end a string that has not closed.
+                if (c is '\n' or '\r')
                 {
                     return;
                 }
@@ -6618,7 +7241,7 @@ internal sealed class JsParser
         }
 
         /// <summary>Advances past a regular-expression literal and its flags.</summary>
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F86139
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=03F502
         // Broiler-Human:        PENDING
         private void ScanRegularExpression()
         {
@@ -6637,6 +7260,14 @@ internal sealed class JsParser
                 if (c == '\\')
                 {
                     Step();
+
+                    // A backslash before a line terminator ends the literal unterminated, where
+                    // the tokenizer's scan ends it, so the two carve the substitution alike.
+                    if (!AtEnd && Current is '\n' or '\r' or '\u2028' or '\u2029')
+                    {
+                        return;
+                    }
+
                     Step();
                     continue;
                 }

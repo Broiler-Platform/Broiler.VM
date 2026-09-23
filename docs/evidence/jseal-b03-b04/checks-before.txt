@@ -1,0 +1,26 @@
+# Slice-compiler --checks --verbose on the base build plus the new BigIntChecks rows, before any product change
+# (the as-int-n row was left out of this run: its accessor target did not exist yet and the run stopped
+#  with MissingMethodException when it was included). Rows not about B03-B04 omitted.
+ok   bigint/b01/operations-a-later-card-owns-refuse-by-name-and-never-answer-a-number: the program answered refused,refused,refused,refused,refused,refused,refused
+FAIL bigint/b03/addition-and-subtraction-are-exact-and-signed: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/multiplication-is-exact-and-signed: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/division-and-remainder-truncate-toward-zero: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/exponentiation-is-exact-including-huge-exponents-of-trivial-bases: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/zero-divisors-negative-exponents-and-mixed-operands-are-the-specified-errors: the program answered 'TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,Type
+FAIL bigint/b03/increment-and-decrement-keep-a-bigint-a-bigint-on-every-reference-kind: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/an-update-converts-its-operand-once-with-to-numeric: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/unary-minus-is-exact-and-zero-has-one-sign: the run answered ProfileFault/ProfileFaultUnspecified
+ok   bigint/b03/number-arithmetic-and-updates-are-unchanged-under-the-gate: the program answered true,1,5,number,6,1,2.5,NaN,3,0,1024,1,-3.5
+FAIL bigint/b03/a-string-operand-still-concatenates: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/computed-bigints-are-equal-to-constants-by-value-not-identity: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/compound-assignment-is-exact: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/results-wider-than-the-ceiling-are-range-errors: the program answered 'TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError' and 'RangeError,315653,RangeError,RangeError,RangeError,bigint,RangeErro
+FAIL bigint/b04/bitwise-operations-are-twos-complement-at-any-width: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b04/shifts-sign-extend-and-a-negative-count-reverses-the-direction: the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b04/unsigned-shift-and-mixed-operands-are-type-errors: the program answered 'TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError' and 'TypeError,TypeError,TypeError,TypeE
+ok   bigint/b04/number-bitwise-operations-are-unchanged-under-the-gate: the program answered 1,-5,6,-6,2,-3,15,6,2
+FAIL bigint/b04/an-oversized-shift-is-refused-before-it-allocates: the program answered 'TypeError,TypeError,TypeError,TypeError,TypeError' and 'RangeError,RangeError,true,0,1' was expected
+FAIL bigint/b03/a-wide-multiplication-is-charged-for-its-size: narrow answered the run answered ProfileFault/ProfileFaultUnspecified; wide answered the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/formatting-the-widest-value-is-charged-for-its-square: under 5000000 fuel it answered the run answered ProfileFault/ProfileFaultUnspecified; under the default allowance the run answered ProfileFault/ProfileFaultUnspecified
+FAIL bigint/b03/cancellation-stops-a-long-formatting: the run answered the run answered ProfileFault/ProfileFaultUnspecified
+broiler-js-slice-compiler: 19 of 348 checks FAILED, 2 not run on this machine and claimed by nothing

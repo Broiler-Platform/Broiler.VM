@@ -1,0 +1,93 @@
+# Pinned Test262 test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e, bytecode form, --shards 1 --jobs 1, 2026-09-22.
+# before = base-vm-w6 build (second detached worktree); after = this change. Every variant whose status moved.
+# selection 1 (6,181 files): Object/prototype/toString, Array/prototype, TypedArray, TypedArrayConstructors, WeakMap, WeakSet, WeakRef, FinalizationRegistry, ArrayBuffer, DataView, Symbol/toStringTag, BigInt
+# totals|files|variants|passed|failed|unsupported|exhausted|skipped
+before total|6181|12243|9848|2362|0|0|33
+after  total|6181|12243|9912|2298|0|0|33
+Failed -> Passed test/built-ins/Array/prototype/toString/non-callable-join-string-tag.js sloppy
+Failed -> Passed test/built-ins/Array/prototype/toString/non-callable-join-string-tag.js strict
+Failed -> Passed test/built-ins/ArrayBuffer/prototype/Symbol.toStringTag.js sloppy
+Failed -> Passed test/built-ins/ArrayBuffer/prototype/Symbol.toStringTag.js strict
+Failed -> Passed test/built-ins/DataView/prototype/Symbol.toStringTag.js sloppy
+Failed -> Passed test/built-ins/DataView/prototype/Symbol.toStringTag.js strict
+Failed -> Passed test/built-ins/FinalizationRegistry/prototype/Symbol.toStringTag.js sloppy
+Failed -> Passed test/built-ins/FinalizationRegistry/prototype/Symbol.toStringTag.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/proxy-revoked-during-get-call.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/proxy-revoked-during-get-call.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-array-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-array-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-generators-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-generators-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-map-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-map-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-non-str-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-non-str-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-promise-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-promise-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-set-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-set-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-string-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-string-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-weakmap-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-weakmap-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-weakset-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-weakset-builtin.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/invoked-as-func.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/invoked-as-func.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/length.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/length.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/name.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/name.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/prop-desc.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/prop-desc.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/this-has-no-typedarrayname-internal.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/this-has-no-typedarrayname-internal.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/this-is-not-object.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/BigInt/this-is-not-object.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/detached-buffer.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/detached-buffer.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/invoked-as-func.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/invoked-as-func.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/length.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/length.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/name.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/name.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/prop-desc.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/prop-desc.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/return-typedarrayname.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/return-typedarrayname.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/this-has-no-typedarrayname-internal.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/this-has-no-typedarrayname-internal.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/this-is-not-object.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/Symbol.toStringTag/this-is-not-object.js strict
+Failed -> Passed test/built-ins/TypedArray/prototype/toString.js sloppy
+Failed -> Passed test/built-ins/TypedArray/prototype/toString.js strict
+Failed -> Passed test/built-ins/WeakMap/prototype/Symbol.toStringTag.js sloppy
+Failed -> Passed test/built-ins/WeakMap/prototype/Symbol.toStringTag.js strict
+Failed -> Passed test/built-ins/WeakRef/prototype/Symbol.toStringTag.js sloppy
+Failed -> Passed test/built-ins/WeakRef/prototype/Symbol.toStringTag.js strict
+Failed -> Passed test/built-ins/WeakSet/prototype/Symbol.toStringTag.js sloppy
+Failed -> Passed test/built-ins/WeakSet/prototype/Symbol.toStringTag.js strict
+# selection 2 (8,964 files): Object, Function, Error, NativeErrors, Symbol, Proxy, Map, Set, Promise, Iterator, JSON, Math, Reflect, RegExp/prototype, String/prototype, language/arguments-object, annexB/built-ins
+before total|8964|17537|16575|812|0|4|146
+after  total|8964|17537|16595|792|0|4|146
+Failed -> Passed test/built-ins/Object/prototype/toString/proxy-revoked-during-get-call.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/proxy-revoked-during-get-call.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-array-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-array-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-generators-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-generators-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-map-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-map-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-non-str-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-non-str-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-promise-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-promise-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-set-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-set-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-string-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-string-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-weakmap-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-weakmap-builtin.js strict
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-weakset-builtin.js sloppy
+Failed -> Passed test/built-ins/Object/prototype/toString/symbol-tag-weakset-builtin.js strict

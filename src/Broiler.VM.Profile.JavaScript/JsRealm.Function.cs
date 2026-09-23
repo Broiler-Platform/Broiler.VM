@@ -36,7 +36,7 @@ internal sealed partial class JsRealm
         "at run time";
 
     /// <summary>Builds <c>Function.prototype</c>'s members and the refused <c>Function</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EE532A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7F9B73
     // Broiler-Human:        PENDING
     private void SetupFunction()
     {
@@ -60,15 +60,9 @@ internal sealed partial class JsRealm
         // strict function READING one gets the refusal rather than `undefined`. Leaving them out
         // entirely answers `undefined`, which is not the same answer and is the one thirty-four
         // variants of the pinned suite look at.
-        var restricted = Native("", 0, static (engine, thisValue, arguments) =>
-        {
-            _ = thisValue;
-            _ = arguments;
-
-            return engine.ThrowTypeError(
-                "'caller', 'callee', and 'arguments' properties may not be accessed on strict mode " +
-                "functions or the arguments objects for calls to them");
-        });
+        // Both halves of both are the realm's one %ThrowTypeError%, which an unmapped
+        // `arguments` object's `callee` shares.
+        var restricted = ThrowTypeErrorFunction;
 
         functionPrototype.SetOwnProperty(
             "caller",

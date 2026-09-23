@@ -60,6 +60,57 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// </remarks>
 internal static class Program
 {
+    /// <summary>
+    /// Installs the native page mapper before anything in this process can ask for a native run.
+    /// </summary>
+    /// <remarks>
+    /// A static constructor rather than a line in <see cref="Main"/>, because the type initializer
+    /// runs before any member of this type does - including an entry point a future host, a test
+    /// harness or a trimmed shim reaches by some other route. An install that lived in
+    /// <c>Main</c> alone would be an install that a second entry point silently does without, and
+    /// the failure it produces is a refusal by name rather than a crash, which is exactly the
+    /// shape that survives a gate.
+    /// </remarks>
+    static Program()
+    {
+        InitializeNativeMapping();
+    }
+
+    /// <summary>
+    /// Fills <see cref="JsNativePage.Mapper"/> with the arming path this image links.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the whole of what makes <c>--form native</c> a run rather than a refusal in this
+    /// process.</b> The profile assembly declares no platform invoke and maps nothing; it asks the
+    /// composition for a page through this hook, and <c>JsExecution</c> refuses to instantiate a
+    /// native artifact when the hook answers null - deliberately, at instantiation, so a process
+    /// that may not make memory executable says so by name instead of faulting its first call.
+    /// With the hook unfilled every variant of a native run scored a refused instantiation.
+    /// </para>
+    /// <para>
+    /// <b>Copied from the slice-compiler root rather than shared.</b> Four lines of delegate
+    /// plumbing in each root that links the arming path is the cost of the rule that keeps
+    /// <c>Broiler.VM.Profile.MachineCode</c> out of the profile assembly's own reference set; a
+    /// shared helper would have to live somewhere both roots can see, and the only such place is
+    /// a product assembly, which is the edge this arrangement exists to avoid.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal static unsafe void InitializeNativeMapping()
+    {
+        JsNativePage.Mapper = static code =>
+        {
+            var page = Broiler.VM.Profile.MachineCode.VmNativePage.TryMap(code);
+            return page is null ? null : new JsNativePage(
+                page,
+                () => page.Arm(),
+                offset => page.At(offset),
+                offset => (nint)page.Entry(offset));
+        };
+    }
+
     /// <summary>Where a suite keeps the tests that are scored.</summary>
     private const string TestDirectory = "test";
 
@@ -79,6 +130,8 @@ internal static class Program
 
     private static int Main(string[] args)
     {
+        InitializeNativeMapping();
+
         try
         {
             var verbose = args.Contains("--verbose", StringComparer.Ordinal);

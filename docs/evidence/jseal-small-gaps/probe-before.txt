@@ -1,0 +1,27 @@
+# the-small-correctness-gaps.js on the base build (base-vm-w5, Release, bytecode form).
+# As a whole it does not parse there:
+broiler-js: src/tests/differential/the-small-correctness-gaps.js: 2101:UnexpectedToken at 65:24: Invalid capture group name
+# Cases 1-11, the file with its RegExp cases removed:
+1 next,body,done 42/true
+2 next,fin,fin2,done 7/true
+3 next,done 1/true
+4 next,done 1/true
+5 next,done 3/true
+6 got 9,done 2/true
+7 next,next,done 4/true
+8 next,done 6/true,done undefined/true
+9 "SyntaxError"
+10 "SyntaxError"
+11 "null"
+# Cases 12-22, each source evaluated on its own with indirect eval:
+12 throws SyntaxError
+13 throws SyntaxError
+14 throws SyntaxError
+15 throws SyntaxError
+16 throws SyntaxError
+17 throws SyntaxError
+18 throws SyntaxError
+19 throws SyntaxError
+20 throws SyntaxError
+21 throws SyntaxError
+22 throws SyntaxError

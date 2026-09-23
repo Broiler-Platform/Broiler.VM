@@ -1,0 +1,31 @@
+1 "a@1,a@8"
+2 "a@0,.@1,b@2,.@3,c@4"
+3 0
+4 [object RegExp String Iterator]
+5 TypeError
+6 TypeError
+7 TypeError
+8 "lastIndex=b@1,c@2"
+9 "a@0,a@1,a@2"
+10 "a@2,a@3;2"
+11 "a@0,a@1,a@2,a@3;0"
+12 "a@0,a@2"
+13 [object Object]
+14 "@0,@2"
+15 "[object RegExp String Iterator],function"
+16 false
+17 "/[object Object]/"
+18 "/[object Object]/"
+19 "/[object Object]/m"
+20 true
+21 true
+22 true
+23 "=/[object Object]/"
+24 "c"
+25 "called"
+26 "called"
+27 TypeError
+28 "X/X/gb"
+29 "a|b/|/c"
+30 
+31 "\"\":0"

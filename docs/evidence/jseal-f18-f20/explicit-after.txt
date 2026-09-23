@@ -1,0 +1,30 @@
+files 240 variants 480 pass 458 fail 22
+test/built-ins/SuppressedError: 42/44
+test/built-ins/DisposableStack: 184/186
+test/built-ins/AsyncDisposableStack: 206/208
+test/built-ins/Symbol/dispose: 4/6
+test/built-ins/Symbol/asyncDispose: 4/6
+test/built-ins/Iterator/prototype/Symbol.dispose: 0/12
+test/built-ins/AsyncIteratorPrototype/Symbol.asyncDispose: 18/18
+FAIL test/built-ins/AsyncDisposableStack/proto-from-ctor-realm.js [sloppy] :: 'broiler-js: <case>: uncaught TypeError: $262.createRealm: this profile creates no nested realm'
+FAIL test/built-ins/AsyncDisposableStack/proto-from-ctor-realm.js [strict] :: 'broiler-js: <case>: uncaught TypeError: $262.createRealm: this profile creates no nested realm'
+FAIL test/built-ins/DisposableStack/proto-from-ctor-realm.js [sloppy] :: 'broiler-js: <case>: uncaught TypeError: $262.createRealm: this profile creates no nested realm'
+FAIL test/built-ins/DisposableStack/proto-from-ctor-realm.js [strict] :: 'broiler-js: <case>: uncaught TypeError: $262.createRealm: this profile creates no nested realm'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/invokes-return.js [sloppy] :: 'broiler-js: <case>: uncaught TypeError: undefined is not a function'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/invokes-return.js [strict] :: 'broiler-js: <case>: uncaught TypeError: undefined is not a function'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/is-function.js [sloppy] :: 'broiler-js: <case>: uncaught Error: Expected SameValue("undefined", "function") to be true'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/is-function.js [strict] :: 'broiler-js: <case>: uncaught Error: Expected SameValue("undefined", "function") to be true'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/length.js [sloppy] :: 'broiler-js: <case>: uncaught TypeError: Cannot convert undefined or null to object'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/length.js [strict] :: 'broiler-js: <case>: uncaught TypeError: Cannot convert undefined or null to object'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/name.js [sloppy] :: 'broiler-js: <case>: uncaught TypeError: Cannot convert undefined or null to object'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/name.js [strict] :: 'broiler-js: <case>: uncaught TypeError: Cannot convert undefined or null to object'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/prop-desc.js [sloppy] :: 'broiler-js: <case>: uncaught Error: Symbol(Symbol.dispose) should be an own property'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/prop-desc.js [strict] :: 'broiler-js: <case>: uncaught Error: Symbol(Symbol.dispose) should be an own property'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/return-val.js [sloppy] :: 'broiler-js: <case>: uncaught TypeError: undefined is not a function'
+FAIL test/built-ins/Iterator/prototype/Symbol.dispose/return-val.js [strict] :: 'broiler-js: <case>: uncaught TypeError: undefined is not a function'
+FAIL test/built-ins/SuppressedError/proto-from-ctor-realm.js [sloppy] :: 'broiler-js: <case>: uncaught TypeError: $262.createRealm: this profile creates no nested realm'
+FAIL test/built-ins/SuppressedError/proto-from-ctor-realm.js [strict] :: 'broiler-js: <case>: uncaught TypeError: $262.createRealm: this profile creates no nested realm'
+FAIL test/built-ins/Symbol/asyncDispose/cross-realm.js [sloppy] :: 'broiler-js: <case>: uncaught TypeError: $262.createRealm: this profile creates no nested realm'
+FAIL test/built-ins/Symbol/asyncDispose/cross-realm.js [strict] :: 'broiler-js: <case>: uncaught TypeError: $262.createRealm: this profile creates no nested realm'
+FAIL test/built-ins/Symbol/dispose/cross-realm.js [sloppy] :: 'broiler-js: <case>: uncaught TypeError: $262.createRealm: this profile creates no nested realm'
+FAIL test/built-ins/Symbol/dispose/cross-realm.js [strict] :: 'broiler-js: <case>: uncaught TypeError: $262.createRealm: this profile creates no nested realm'

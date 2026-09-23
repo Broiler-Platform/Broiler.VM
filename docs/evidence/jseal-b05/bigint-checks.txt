@@ -1,0 +1,73 @@
+# BigInt rows of `Broiler.VM.Composition.JavaScript.SliceCompiler.exe --checks --verbose`, 2026-09-21, this slice's build
+# summary line of the same run:
+broiler-js-slice-compiler: 363 checks passed, 2 not run on this machine and claimed by nothing
+ok   bigint/b02/a-value-past-two-to-the-53-survives-compile-verify-execute: the program answered 9007199254740993|18446744073709551617
+ok   bigint/b02/every-radix-and-separators-are-exact: the program answered 2305843009213693951,144115188075855871,36028797018963967,1000000000000000000001,...
+ok   bigint/b02/a-two-hundred-bit-literal-is-exact: the program answered 1606938044258990275541962092341162602522202993782792835301376
+ok   bigint/b02/the-widest-constant-the-format-carries-survives: the program answered 19729
+ok   bigint/b01/typeof-and-truthiness: the program answered bigint,bigint,f,t,true,false,true
+ok   bigint/b01/strict-equality-is-mathematical: the program answered true,true,false,false,true,true,false,false,true,false
+ok   bigint/b01/same-value-zero-keys-are-mathematical: the program answered true,0,2,two,false
+ok   bigint/b02/a-bigint-property-key-is-its-exact-decimal-spelling: the program answered 1|16|9007199254740993:khone
+ok   bigint/b01/string-conversion-is-exact-everywhere-it-is-reached: the program answered 12345678901234567890,12345678901234567890,0+7,127
+ok   bigint/b05/the-operations-b01-refused-by-name-answer-as-the-language-does: the program answered true,true,1,TypeError,1,object,TypeError
+ok   bigint/b03/addition-and-subtraction-are-exact-and-signed: the program answered 9007199254740995,18446744073709551616,-2,-3,-18446744073709551617,0,184467440737...
+ok   bigint/b03/multiplication-is-exact-and-signed: the program answered 121932631137021795226185032733622923332237463801111263526900,-12,12,0,1844674407...
+ok   bigint/b03/division-and-remainder-truncate-toward-zero: the program answered 3,-3,-3,3,1,-1,1,-1,0,0,1000000000000000,1
+ok   bigint/b03/exponentiation-is-exact-including-huge-exponents-of-trivial-bases: the program answered 1267650600228229401496703205376,-27,18446744073709551616,1,1,1,-1,0,100000000000...
+ok   bigint/b03/zero-divisors-negative-exponents-and-mixed-operands-are-the-specified-errors: the program answered RangeError,RangeError,RangeError,RangeError,RangeError,TypeError,TypeError,TypeE...
+ok   bigint/b03/increment-and-decrement-keep-a-bigint-a-bigint-on-every-reference-kind: the program answered 5,5,7,7,5,9007199254740995,9007199254740993,-1,0,bigint
+ok   bigint/b03/an-update-converts-its-operand-once-with-to-numeric: the program answered bigint,10,11,6,3,5,5,5,5,6
+ok   bigint/b03/unary-minus-is-exact-and-zero-has-one-sign: the program answered -5,5,0,bigint,-18446744073709551616,9007199254740993
+ok   bigint/b03/number-arithmetic-and-updates-are-unchanged-under-the-gate: the program answered true,1,5,number,6,1,2.5,NaN,3,0,1024,1,-3.5
+ok   bigint/b03/a-string-operand-still-concatenates: the program answered 1x,a2,-34,105,3
+ok   bigint/b03/computed-bigints-are-equal-to-constants-by-value-not-identity: the program answered true,true,1,t,true,0,true,true,false,true
+ok   bigint/b03/compound-assignment-is-exact: the program answered 42,27,-3,-1
+ok   bigint/b03/results-wider-than-the-ceiling-are-range-errors: the program answered RangeError,RangeError,RangeError,RangeError,bigint,RangeError,RangeError,bigint,...
+ok   bigint/b04/bitwise-operations-are-twos-complement-at-any-width: the program answered 1,7,6,3,-5,-8,-7,-1,6,-6,4,-1,0,18446744069414584320,1180591620717411303425,1180...
+ok   bigint/b04/shifts-sign-extend-and-a-negative-count-reverses-the-direction: the program answered 18446744073709551616,-18446744073709551616,5,2,2,-3,-1,0,20,-1,2,-2,-3,0,0,-1,0
+ok   bigint/b04/unsigned-shift-and-mixed-operands-are-type-errors: the program answered TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,...
+ok   bigint/b04/number-bitwise-operations-are-unchanged-under-the-gate: the program answered 1,-5,6,-6,2,-3,15,6,2
+ok   bigint/b04/an-oversized-shift-is-refused-before-it-allocates: the program answered RangeError,RangeError,true,0,1
+ok   bigint/b05/the-bigint-function-converts-parses-and-refuses-as-specified: the program answered 0,0,1152921504606846976,-1000000000000000000000,1,16,-7,3,0,RangeError,RangeErro...
+ok   bigint/b05/as-int-n-and-as-uint-n-take-to-index-and-to-bigint: the program answered -1,255,-9223372036854775808,0,RangeError,RangeError,TypeError,255,RangeError,-3
+ok   bigint/b05/to-string-is-exact-in-every-radix-and-checks-its-receiver: the program answered bnklg118comha6gqury14067gur54n8won6guf3,201,141246066533632643213232344050606053...
+ok   bigint/b05/loose-equality-with-numbers-strings-and-objects-is-exact: the program answered true,true,false,false,true,false,false,true,true,false,true,false,true,true,fals...
+ok   bigint/b05/relational-comparison-with-numbers-and-strings-is-exact: the program answered true,true,true,true,true,true,true,true,false,false,true,true,true,false,false,t...
+ok   bigint/b05/wrappers-reach-the-prototype-and-unwrap-exactly: the program answered object,true,8,true,false,42,[object BigInt],BigInt,7,bigint,1,BigInt
+ok   bigint/b05/json-refuses-a-bigint-after-consulting-to-json: the program answered TypeError|TypeError|{"a":"1n","b":["2n"]}
+ok   bigint/b05/number-of-a-bigint-rounds-to-nearest-even-and-to-number-refuses: the program answered 9007199254740992,9007199254740996,-9007199254740992,Infinity,Infinity,true,1.234...
+ok   bigint/b02/wide/a-fraction-is-malformed: 1.5n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/numeric/a-fraction-is-malformed: 1.5n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/wide/an-exponent-is-malformed: 1e3n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/numeric/an-exponent-is-malformed: 1e3n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/wide/a-legacy-octal-is-malformed: 01n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal with a leading zero
+ok   bigint/b02/numeric/a-legacy-octal-is-malformed: 01n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal with a leading zero
+ok   bigint/b02/wide/a-leading-zero-is-malformed: 08n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal with a leading zero
+ok   bigint/b02/numeric/a-leading-zero-is-malformed: 08n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal with a leading zero
+ok   bigint/b02/wide/a-leading-point-is-malformed: .5n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/numeric/a-leading-point-is-malformed: .5n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/wide/a-trailing-separator-is-malformed: 1_n: 2003:MalformedNumericLiteral at 2:9: a numeric separator that is not between two digits
+ok   bigint/b02/numeric/a-trailing-separator-is-malformed: 1_n: 2003:MalformedNumericLiteral at 2:9: a numeric separator that is not between two digits
+ok   bigint/b02/wide/a-leading-separator-is-malformed: 0x_1n: 2003:MalformedNumericLiteral at 2:9: a numeric separator that is not between two digits
+ok   bigint/b02/numeric/a-leading-separator-is-malformed: 0x_1n: 2003:MalformedNumericLiteral at 2:9: a numeric separator that is not between two digits
+ok   bigint/b02/wide/a-second-suffix-is-malformed: 1nn: 2003:MalformedNumericLiteral at 2:9: a numeric literal touching an identifier
+ok   bigint/b02/numeric/a-second-suffix-is-malformed: 1nn: 2003:MalformedNumericLiteral at 2:9: a numeric literal touching an identifier
+ok   bigint/b02/wide/a-digit-after-the-suffix-is-malformed: 1n0: 2003:MalformedNumericLiteral at 2:9: a numeric literal touching an identifier
+ok   bigint/b02/numeric/a-digit-after-the-suffix-is-malformed: 1n0: 2003:MalformedNumericLiteral at 2:9: a numeric literal touching an identifier
+ok   bigint/b02/wide/a-digit-outside-the-radix-is-malformed: 0b2n: 2003:MalformedNumericLiteral at 2:9: a radix prefix with no digits
+ok   bigint/b02/numeric/a-digit-outside-the-radix-is-malformed: 0b2n: 2003:MalformedNumericLiteral at 2:9: a radix prefix with no digits
+ok   bigint/b02/the-numeric-manifest-keeps-the-named-refusal: 2104:ConstructOutsideManifest at 2:9: a BigInt literal is not admitted by the declared feature manifest
+ok   bigint/b02/a-decimal-literal-wider-than-the-ceiling-is-refused: 2104:ConstructOutsideManifest at 1:9: a BigInt literal wider than 65536 bits is not admitted by the declared feature manifest
+ok   bigint/b02/a-hexadecimal-literal-wider-than-the-ceiling-is-refused: 2104:ConstructOutsideManifest at 1:9: a BigInt literal wider than 65536 bits is not admitted by the declared feature manifest
+ok   bigint/b05/a-composition-declining-the-surface-refuses-every-way-in: the compositions answered 1608,1608,admitted,admitted,undefined,function
+ok   bigint/b05/a-declining-composition-refuses-bigint-through-eval: declining answered threw:EvalError:manifest,threw:EvalError:manifest,threw:EvalError:manifest,threw:EvalError:manifest; admitting answered bigint:1,bigint:1,bigint:2,bigint:3
+ok   bigint/b05/every-public-descriptor-door-admits-the-surface-when-named: the doors answered 18446744073709551616,18446744073709551616,18446744073709551616
+ok   bigint/b05/an-update-expression-declares-nothing-and-steps-a-number: the program answered true,1,6,1,NaN,2.5,number
+ok   bigint/b01/a-thrown-bigint-reaches-the-host-as-a-host-throw: the program answered host-throw:TypeError|host-throw:2
+ok   bigint/b02/a-bigint-property-key-is-exact-and-declares-nothing: the program answered 9007199254740993
+ok   bigint/b05/a-long-decimal-text-is-charged-for-its-square: under 5000000 fuel it answered ResourceExhaustion/AllowanceExhausted; under the default allowance 863531764|true
+ok   bigint/b03/a-wide-multiplication-is-charged-for-its-size: narrow answered done; wide answered ResourceExhaustion/AllowanceExhausted
+ok   bigint/b03/formatting-the-widest-value-is-charged-for-its-square: under 5000000 fuel it answered ResourceExhaustion/AllowanceExhausted; under the default allowance 315653
+ok   bigint/b03/cancellation-stops-a-long-formatting: the run answered Cancellation/Cancelled after 54 ms
+ok   bigint/b04/as-int-n-and-as-uint-n-wrap-at-their-width: every width answered as specified, charging 16462

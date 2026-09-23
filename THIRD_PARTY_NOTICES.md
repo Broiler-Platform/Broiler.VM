@@ -96,6 +96,16 @@ check rather than take:
    **rule A6** independently asserts that exactly three projects in the whole repository declare a
    `PackageId`. Packaging the profile is milestone JS-10's decision and needs its own revision of
    ADR 0001.
+   **CORRECTED 2026-09-22: this reason is no longer true of the checkout, and it is corrected here
+   rather than left for a reader to discover.** Since commit `d16a6aa` (2026-09-19, "Packable =
+   true for nuget") all three JavaScript profile projects carry `<IsPackable>true</IsPackable>`,
+   and the N4 sweep in `ProjectFileRuleTests.cs` is commented out, so rule N4 no longer asserts the
+   half this sentence leans on. The profile's packages are therefore outside the opening sentence
+   for a different reason: the sentence names the **three core packages**, and the profile's
+   packages are separate packages. They are not free of third-party material. From 2026-09-22 two of
+   them carry tables derived from the Unicode Character Database, which the section
+   [Unicode data, and the tables derived from it](#unicode-data-and-the-tables-derived-from-it)
+   below records. Reasons 2 and 3 are unaffected.
 2. **The dependency runs one way.** A profile references the core; no core package references a
    profile assembly. **Rule A11** permits a reference to a profile assembly only from a
    composition root or a sibling in the same profile family, and the three packable projects are
@@ -119,14 +129,26 @@ was confirmed.
 
 | Component | What it ingests | Confirmed |
 |---|---|---|
-| `Broiler.VM.Profile.JavaScript` | **The ECMAScript Language Specification, ECMA-262, 17th edition (ES2026)**, one file, retained at [`src/Broiler.VM.Profile.JavaScript/docs/specification/`](src/Broiler.VM.Profile.JavaScript/docs/specification/README.md) | 2026-09-03 |
+| `Broiler.VM.Profile.JavaScript` | **The ECMAScript Language Specification, ECMA-262, 17th edition (ES2026)**, four files - the edition and, since 2026-09-22, the three property tables it imports - retained at [`src/Broiler.VM.Profile.JavaScript/docs/specification/`](src/Broiler.VM.Profile.JavaScript/docs/specification/README.md) | 2026-09-03; the three tables not yet confirmed |
 | `Broiler.VM.Composition.JavaScript.Conformance` | **test262**, the ECMAScript conformance suite, at `tc39/test262` commit `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` — archived as the retrieved archive at [`src/tests/conformance/pins/`](src/tests/conformance/pins/README.md), with its licence beside it | 2026-09-03 |
+| `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.JavaScript.Format` | **The Unicode Character Database 17.0.0** - thirteen UCD files and the Unicode licence text, archived at [`src/tests/unicode/pins/`](src/tests/unicode/pins/README.md) - and **tables derived from it that are compiled into both assemblies**; see [below](#unicode-data-and-the-tables-derived-from-it) | **not yet confirmed** |
 | `Broiler.VM.Composition.JavaScript.Cli` | **Octane**, the retired JavaScript benchmark suite, at `chromium/octane` commit `570ad1ccfe86e3eecba0636c8f932ac08edec517` — archived as the retrieved archive at [`src/tests/octane/pins/`](src/tests/octane/pins/README.md), BSD 3-Clause, with its licence beside it as that licence requires | **not yet confirmed** |
 
 **What that entry is and what it is not.** It is a **normative reference document**, archived
 because roadmap section 24 asks for the pinned edition to be retrieved, hashed **and archived**,
 and because a digest is only checkable by a reader who has the bytes. It is **not code**, nothing
 is derived from it, no line of it is copied into any assembly, and it compiles into nothing.
+
+**CORRECTED 2026-09-22, and the correction is the whole of what changed.** The sentence above holds
+of `spec.html` and no longer of the whole row. The three property tables archived beside it that day -
+`table-nonbinary-unicode-properties.html`, `table-binary-unicode-properties.html` and
+`table-binary-unicode-properties-of-strings.html`, the files the edition imports rather than spells out -
+are read by the Unicode table generator for **the set of property names ECMAScript admits**, and those
+names are encoded into `JsUnicodeProperties.g.cs`, which compiles into
+`Broiler.VM.Profile.JavaScript.Format` and ships in that assembly's package and in every composition
+image carrying it. So material from this entry **is** derived from and does compile into an assembly,
+and the row's confirmation covers the edition alone until the release owner confirms the three tables.
+What is derived is a list of names the specification fixes, not its prose.
 
 **The opening sentence of this file is unaffected, and here is the mechanism rather than the
 assertion.** The claim is scoped to the three packable assemblies. The archived document is under
@@ -207,3 +229,119 @@ each - so the list is empty today and the sentence is unamended.
 **The co-signature is not independent.** Every owner and co-signer role this repository names is
 currently held by one person, and this notice records that rather than resolving it by
 assertion.
+
+## Unicode data, and the tables derived from it
+
+**Added 2026-09-22 (JSeal F07, slices U1 and U2; decision
+[JSD-0031](src/Broiler.VM.Profile.JavaScript/docs/decisions/0031-unicode-data-source-and-build-boundary.md)).
+This is the first entry in this file whose material is compiled into a shipped assembly.**
+
+This repository contains data files published by the Unicode Consortium and tables generated from
+them. **Those data files and the tables derived from them remain subject to the
+[Unicode Terms of Use](https://www.unicode.org/terms_of_use.html), which apply the Unicode License
+v3 (SPDX `Unicode-3.0`) to data files. The Apache License 2.0 in [`LICENSE`](LICENSE) applies to
+Broiler's source code, the generator and the lookup code included, and does not replace the Unicode
+terms for Unicode-provided data.** The pattern is the one `Broiler.Unicode`'s own
+`THIRD_PARTY_NOTICES.md` uses; the repository owner chose it in conversation on 2026-09-22.
+
+**What was ingested.** From `https://www.unicode.org/Public/17.0.0/ucd/`, Unicode 17.0.0:
+`UnicodeData.txt`, `DerivedNormalizationProps.txt`, `NormalizationTest.txt` (test input only),
+`PropertyAliases.txt`, `PropertyValueAliases.txt`, `extracted/DerivedGeneralCategory.txt`,
+`extracted/DerivedBinaryProperties.txt`, `Scripts.txt`, `ScriptExtensions.txt`, `PropList.txt`,
+`DerivedCoreProperties.txt`, `emoji/emoji-data.txt` and `CaseFolding.txt`; and the licence text from
+`https://www.unicode.org/license.txt`. They are archived unmodified at
+[`src/tests/unicode/pins/`](src/tests/unicode/pins/README.md), where `unicode.pin` records each
+file's length and SHA-256 and rule **N22** hashes them on every run of the architecture suite.
+Retrieved twice on 2026-09-22 by Claude with the owner's permission given in conversation; the two
+retrievals were byte-identical.
+
+**What is derived, and where it ships.** `UnicodeTableGenerator` (architecture test project, not
+shipped) writes three source files of tables from those files:
+`src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs` and
+`src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs`, compiled into
+**`Broiler.VM.Profile.JavaScript.Format.dll`**, and
+`src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs`, compiled into
+**`Broiler.VM.Profile.JavaScript.dll`**. The derived tables therefore ship in:
+
+- **the packages** `Broiler.VM.Profile.JavaScript.Format` and `Broiler.VM.Profile.JavaScript`
+  (both packable since `d16a6aa`; `Broiler.VM.Profile.JavaScript.Compiler` carries no table and
+  depends on the Format package);
+- **every composition image that carries the realm**: the published outputs of
+  `Broiler.VM.Composition.JavaScript.Cli`, `.Conformance`, `.ExecutionOnly`, `.SliceCompiler` and
+  `Broiler.VM.Composition.PolyglotCli`, and the **Android** application
+  `Broiler.VM.Composition.JavaScript.Android`, which is not packable but carries both assemblies in
+  its image with trimming off.
+
+The same generator also writes the conformance probes `src/tests/differential/the-unicode-normalization-*.js`,
+which carry the vectors of `NormalizationTest.txt` (Unicode data) as JavaScript string literals.
+They are test files: no package or composition image contains them. Each names the Unicode License
+v3 in its header and points at the text below.
+
+The three ECMAScript property tables the generator also reads are Ecma material, archived beside
+the edition under the Ecma notice in the first row above; nothing Unicode-licensed is in them.
+
+**How the notice travels.** The licence permits copying and redistribution "provided that either
+(a) this copyright and permission notice appear with all copies of the Data Files or Software, or
+(b) this copyright and permission notice appear in associated Documentation" - which JSD-0031
+section 8 asked to be checked against the retrieved text, and which the text below states. The
+mechanism chosen is (a) for the packages: **this file is packed into every package this repository
+produces** (`eng/Broiler.Packaging.props` packs `THIRD_PARTY_NOTICES.md` at the package root), and
+**the full licence text is reproduced verbatim below**, so each package that carries derived tables
+carries the notice with them. Rule N22 asserts that the text below is the archived licence text,
+character for character. Each generated file also names the licence in a comment below its
+generated header. **For the composition images the notice is not yet carried**: a published host
+directory does not contain this file today, and whether it should carry a notices file beside the
+host or a constant the host can print is a release-owner decision JSD-0031 leaves open. That is
+recorded as owed rather than treated as met.
+
+**Owner decisions, as given in conversation on 2026-09-22, and what is not given.** The licence
+entry follows the pattern above, names the files, the version and the assemblies, packages and
+composition images that carry derived tables, and ships the licence text; the size budget is about
+200 KB with a hard cap of 300 KB of table data, checked by rule N22 (measured on 2026-09-22 in
+[`docs/evidence/jseal-f07-u2/`](docs/evidence/jseal-f07-u2/README.md)). **Nobody has signed
+either decision, and the release owner's co-signature this file requires for ingested material is
+not given**: the row above says `not yet confirmed` because that is true.
+
+The Unicode licence text, as archived at `src/tests/unicode/pins/unicode-LICENSE.txt`:
+
+```text
+UNICODE LICENSE V3
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright © 1991-2026 Unicode, Inc.
+
+NOTICE TO USER: Carefully read the following legal agreement. BY
+DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING DATA FILES, AND/OR
+SOFTWARE, YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE
+TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT
+DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of data files and any associated documentation (the "Data Files") or
+software and any associated documentation (the "Software") to deal in the
+Data Files or Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, and/or sell
+copies of the Data Files or Software, and to permit persons to whom the
+Data Files or Software are furnished to do so, provided that either (a)
+this copyright and permission notice appear with all copies of the Data
+Files or Software, or (b) this copyright and permission notice appear in
+associated Documentation.
+
+THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
+THIRD PARTY RIGHTS.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE
+BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES,
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA
+FILES OR SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall
+not be used in advertising or otherwise to promote the sale, use or other
+dealings in these Data Files or Software without prior written
+authorization of the copyright holder.
+```

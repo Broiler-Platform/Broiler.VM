@@ -1,0 +1,25 @@
+ok   a host method answers an object, and the guest reads a string off it
+ok   wrapper identity survives the crossing in both directions
+ok   an accessor the host installed runs host code on every read
+ok   a host method calls back into the guest, synchronously, before it returns
+ok   a listener's throw reaches the host and is re-raised into the guest
+ok   an error the host raises is a real guest error the guest can catch
+ok   an exotic object answers a name it was never given, and enumerates it
+ok   an exotic object answers an index, and enumerates its elements before its names
+ok   an exotic object takes the name it claims and lets every other assignment through
+ok   the host links a wrapper to a prototype the guest can see
+ok   a realm in a composition that registered no permission has no host object
+ok   the host queues a job beside the guest's own, and a drain runs both in order
+ok   an embedder reaches its realm between invocations, and only by asking
+FAIL a deleting exotic takes a claimed name away, and the ordinary deletion runs after it: line 3 was 'after=written,undefined,stored' and 'after=undefined,undefined,' was expected
+FAIL an index key and a symbol are never offered to the deletion hook, and 007 is a name: line 2 was 'gone=,padded,max,:false' and 'gone=,,,:false' was expected
+FAIL Reflect, a trapless Proxy and the host's own delete each offer a name exactly once: line 4 was 'left=one,two,three:3' and 'left=,,:0' was expected
+FAIL a declined name keeps answering, and a non-configurable ordinary property stays: line 4 was 'offered=' and 'offered=constant,fixed,fixed' was expected
+FAIL a deletion hook that throws ends the deletion, and the property is left in place: line 1 was 'no-throw' and 'caught=true:the host refused the deletion' was expected
+FAIL a host promise settles through the job queue and never synchronously: the run answered ProfileFault/ProfileContractViolation
+FAIL the first settlement of a host promise wins, and a late one is reported as such: the run answered ProfileFault/ProfileContractViolation
+FAIL a thenable is adopted the way the engine's own resolve procedure adopts one: the run answered ProfileFault/ProfileContractViolation
+FAIL a guest replacing Promise changes nothing about how the host builds one: the run answered ProfileFault/ProfileContractViolation
+FAIL a host promise settled from another CLR thread is refused, and the promise stays pending: the run answered ProfileFault/ProfileContractViolation
+FAIL a host promise settles only in a turn of its own realm, late is reported, disposed is refused: the minting turn: invoking '#host-turn' answered ProfileFault/ProfileContractViolation
+host-surface: 11 check(s) failed

@@ -12,6 +12,14 @@
          package and in no advertised composition's closure. Rule N13 is that assertion. -->
     <IsPackable>false</IsPackable>
 
+    <!-- POINTER TYPES, BECAUSE THE MAPPER INSTALL NAMES ONE. The hook this root fills is
+         `JsNativePage.Mapper`, and the page it hands back carries a function pointer to the
+         entry of the mapped region. Converting that pointer to an `nint` is a pointer
+         conversion, so the file holding the install needs unsafe blocks admitted. The
+         slice-compiler root says the same thing about the same install; this root needs it for
+         no other reason, and no other file here takes an address. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
     <InvariantGlobalization>true</InvariantGlobalization>
@@ -42,6 +50,15 @@
     <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" />
+
+    <!-- THE ARMING PATH, RESTORED TO THIS ROOT ON 2026-09-23. The harness scores this profile in
+         two forms, and the native form is one of them. The arming path left the profile assembly
+         on 2026-09-18 and was rearmed for the slice-compiler root alone, which left every native
+         run here refusing instantiation by name - the form was still asked for, still reported as
+         `form|native`, and scored nothing. Naming the assembly here is what puts it back in this
+         image's closure; the install that fills `JsNativePage.Mapper` is in Program.cs, and
+         docs/compositions.md's native-execution cell for this row moves with both. -->
+    <ProjectReference Include="..\..\Broiler.VM.Profile.MachineCode\Broiler.VM.Profile.MachineCode.csproj" />
   </ItemGroup>
 
 </Project>

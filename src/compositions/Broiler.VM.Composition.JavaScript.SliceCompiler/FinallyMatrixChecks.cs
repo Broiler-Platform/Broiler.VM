@@ -42,6 +42,19 @@ internal static class FinallyMatrixChecks
         Language("a finally that returns replaces the return", ReplacesReturnRow, "outer"),
         Language("a finally that returns replaces the throw", ReplacesThrowRow, "replaced"),
         Language("nested handlers unwind innermost first", NestedRow, "inner,outer,caught"),
+        Language("a finally that throws on the way out runs once", ThrowingFinallyRow, "fin,caught t"),
+        Language(
+            "a throw on the way out runs each finally it passes once",
+            ThrowingInnerFinallyRow,
+            "in,out,caught t"),
+        Language(
+            "a disposer that throws after a passed finally runs it once",
+            ThrowingDisposerRow,
+            "fin,a,caught a"),
+        Language(
+            "a catch does not see the iterator close of the jump that left it",
+            ThrowingCloseRow,
+            "ret,caught c"),
         AnUncaughtThrowIsATypedPayload(),
         AHostFailureCrossesTheProfilesFrames(),
     ];
@@ -80,6 +93,33 @@ internal static class FinallyMatrixChecks
         "  } finally { log.push('outer'); }" +
         "} catch (e) { log.push('caught'); }" +
         "log.join(',');";
+
+    // THE FOUR ROWS BELOW ARE JSeal F21's: the unwinding a jump inlines ran inside the protected
+    // range of the statement it had already left, so what that code threw re-entered the same
+    // statement's handler and ran its `finally` a second time, or its `catch` at all.
+    private const string ThrowingFinallyRow =
+        "var log = [];" +
+        "function f() { try { return 1; } finally { log.push('fin'); throw 't'; } }" +
+        "try { f(); } catch (e) { log.push('caught ' + e); } log.join(',');";
+
+    private const string ThrowingInnerFinallyRow =
+        "var log = [];" +
+        "function f() { try { try { return 1; } finally { log.push('in'); throw 't'; } }" +
+        "  finally { log.push('out'); } }" +
+        "try { f(); } catch (e) { log.push('caught ' + e); } log.join(',');";
+
+    private const string ThrowingDisposerRow =
+        "var log = [];" +
+        "function f() { using a = { [Symbol.dispose]() { log.push('a'); throw 'a'; } };" +
+        "  try { return 1; } finally { log.push('fin'); } }" +
+        "try { f(); } catch (e) { log.push('caught ' + e); } log.join(',');";
+
+    private const string ThrowingCloseRow =
+        "var log = [];" +
+        "var it = { [Symbol.iterator]() { return this; }, next() { return { done: false }; }," +
+        "  return() { log.push('ret'); throw 'c'; } };" +
+        "function f() { for (var x of it) { try { return 1; } catch (e) { log.push('wrong'); } } }" +
+        "try { f(); } catch (e) { log.push('caught ' + e); } log.join(',');";
 
     /// <summary>One language row: run the program and compare what it recorded.</summary>
     private static (string, bool, string) Language(string name, string source, string expected)

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
-// Exempt:           30
-// Human-reviewed:   0/27
+// Relevant units:   29
+// Annotated:        29/29
+// Exempt:           35
+// Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         1/1
+// Criteria:         3/3
 // Resource impact:  2/10 max
-// Unverified:       27
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -65,6 +65,25 @@ internal sealed class JsEnvironment
         Binding = binding;
     }
 
+    /// <summary>
+    /// Creates the boundary record an evaluated program is entered with, under its caller's record.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is a declarative record like any other</b> - the evaluated program's own lexical
+    /// declarations, and a strict one's <c>var</c>s, are its slots - with one addition: the view it
+    /// was entered with, which is what the eval name instructions read when they reach it. A global
+    /// evaluation's boundary (JSeal V15) has no parent at all: nothing lies between it and the
+    /// global scope, which its view says.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F9EB3D
+    // Broiler-Falsified-If: a boundary record is created with a parent other than the calling frame's current record
+    // Broiler-Human:        PENDING
+    internal JsEnvironment(int slots, JsEnvironment? parent, JsEvalView view)
+        : this(slots, parent)
+    {
+        EvalView = view;
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7EE350
     // Broiler-Human:        PENDING
     private JsEnvironment(JsValue[] slots, JsEnvironment? parent, JsObject? binding)
@@ -73,6 +92,46 @@ internal sealed class JsEnvironment
         Parent = parent;
         Binding = binding;
     }
+
+    /// <summary>
+    /// The view an evaluated program's boundary record was entered with, or <see langword="null"/>
+    /// on every other record.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is not a way to search a declarative record by name.</b> What a name resolved through it
+    /// reaches is decided by the caller's verified scope map, which names exactly the slots the
+    /// caller's own instructions could address - so the property this class's falsifier states still
+    /// holds of every lookup this record takes part in: nothing is found by comparing a name against
+    /// a declarative record, because a declarative record still has no names in it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3D0B82
+    // Broiler-Human:        PENDING
+    internal JsEvalView? EvalView { get; }
+
+    /// <summary>
+    /// The bindings direct evaluations introduced into this record, when it is a function's and
+    /// one has (JSeal V15, JSD-0026 step 6); <see langword="null"/> everywhere else.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the eval-variables record of the design, held by the function record rather than
+    /// placed beside it.</b> A name is resolved in the record's slots first and here second, which is
+    /// the order an outer record would give, because an evaluation never introduces a name the
+    /// function record already binds - its declaration instantiation writes that slot instead - and
+    /// holding it here moves no record, so no <c>(depth, slot)</c> pair compiled in or under the
+    /// function changes.
+    /// </para>
+    /// <para>
+    /// <b>It is created by the first evaluation that declares something here</b>, so a call of a
+    /// function whose evaluations declare nothing allocates nothing for it. The lowering marks every
+    /// function that may carry one, and searches it by name exactly as it searches a <c>with</c>
+    /// object: this is the second, and only other, record content a lookup by name can reach.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=FF611F
+    // Broiler-Falsified-If: a lookup by name reaches a slot of this record rather than a binding an evaluation introduced
+    // Broiler-Human:        PENDING
+    internal JsEvalVariables? EvalVariables { get; set; }
 
     /// <summary>The slots this record holds.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C8800E
@@ -223,6 +282,31 @@ internal sealed class JsNativeFunction : JsFunction
     // Broiler-Human:        PENDING
     internal override bool IsConstructor => construct is not null;
 
+    /// <summary>
+    /// Whether the construct body builds its instance from <c>new.target</c>'s prototype itself,
+    /// so the engine must not read that prototype again after the body returns.
+    /// </summary>
+    /// <remarks>
+    /// <b>The specification reads the prototype part-way through a constructor, not after it.</b>
+    /// <c>DataView</c> and the nine typed arrays read it between converting their arguments and
+    /// asking whether the buffer is still attached, and a <c>prototype</c> getter can detach the
+    /// buffer in between; a constructor that says so here reads it at that point, and the engine's
+    /// re-pointing after the body - which would run the getter a second time - is skipped.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=461CA5
+    // Broiler-Human:        PENDING
+    internal bool BuildsFromNewTarget { get; set; }
+
+    /// <summary>Whether this built-in carries an <c>[[IsHTMLDDA]]</c> slot; set only by the host surface.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3C7479
+    // Broiler-Human:        PENDING
+    internal bool EmulatesUndefined { get; init; }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B27714
+    // Broiler-Human:        PENDING
+    internal override bool IsHtmlDda => EmulatesUndefined;
+
     /// <summary>Runs the built-in as a call.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=73DC8E
     // Broiler-Human:        PENDING
@@ -286,6 +370,22 @@ internal sealed class JsScriptFunction : JsFunction
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8B56F2
     // Broiler-Human:        PENDING
     internal JsEnvironment? Environment { get; }
+
+    /// <summary>
+    /// The function's <c>[[ScriptOrModule]]</c>, as the referrer a host resolves against: the key of
+    /// the module, or the referrer of the script, that was running when the function was created,
+    /// or empty for none (JSeal I12-upstream, JSD-0024 section 20).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is fixed at creation, which is the language's rule</b> (<c>OrdinaryFunctionCreate</c>
+    /// sets it from <c>GetActiveScriptOrModule()</c>): a function a module's code made with the
+    /// <c>Function</c> constructor keeps that module however it is later called, and a frame of this
+    /// function answers it to eval code, to a <c>Function</c> body and to an <c>import()</c> with no
+    /// referrer of its own.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F2A0FC
+    // Broiler-Human:        PENDING
+    internal string ScriptOrModule { get; init; } = string.Empty;
 
     /// <summary>The <c>this</c> an arrow function inherited, when it is one.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D1A641

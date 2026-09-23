@@ -1,0 +1,101 @@
+# src/tests/differential/the-unicode-lexical-grammar.js, 2026-09-22, case by case:
+# base build (Broiler.VM HEAD + base-vm-w10.patch) | this change | Node v24.17.0 (node wrapper defining print)
+# a leading * marks a case where the base answered differently from this change (failing first)
+* 1 undefined | 1 SyntaxError | 1 SyntaxError
+* 2 undefined | 2 SyntaxError | 2 SyntaxError
+* 3 undefined | 3 SyntaxError | 3 SyntaxError
+* 4 undefined | 4 SyntaxError | 4 SyntaxError
+  5 7 | 5 7 | 5 7
+* 6 undefined | 6 SyntaxError | 6 SyntaxError
+* 7 undefined | 7 SyntaxError | 7 SyntaxError
+* 8 undefined | 8 SyntaxError | 8 SyntaxError
+  9 3 | 9 3 | 9 3
+  10 4 | 10 4 | 10 4
+  11 8 | 11 8 | 11 8
+* 12 undefined | 12 SyntaxError | 12 SyntaxError
+* 13 undefined | 13 SyntaxError | 13 SyntaxError
+  14 6 | 14 6 | 14 6
+  15 6 | 15 6 | 15 6
+* 16 undefined | 16 SyntaxError | 16 SyntaxError
+  17 9 | 17 9 | 17 9
+  18 1 | 18 1 | 18 1
+  19 SyntaxError | 19 SyntaxError | 19 SyntaxError
+  20 SyntaxError | 20 SyntaxError | 20 SyntaxError
+  21 1 | 21 1 | 21 1
+  22 2 | 22 2 | 22 2
+  23 SyntaxError | 23 SyntaxError | 23 SyntaxError
+  24 5 | 24 5 | 24 5
+  25 SyntaxError | 25 SyntaxError | 25 SyntaxError
+  26 SyntaxError | 26 SyntaxError | 26 SyntaxError
+  27 1 | 27 1 | 27 1
+* 28 undefined | 28 SyntaxError | 28 SyntaxError
+* 29 undefined | 29 SyntaxError | 29 SyntaxError
+* 30 SyntaxError | 30 1 | 30 1
+* 31 SyntaxError | 31 7 | 31 7
+* 32 SyntaxError | 32 8 | 32 8
+  33 SyntaxError | 33 SyntaxError | 33 SyntaxError
+  34 SyntaxError | 34 SyntaxError | 34 SyntaxError
+* 35 SyntaxError | 35 9 | 35 9
+* 36 SyntaxError | 36 6 | 36 6
+* 37 SyntaxError | 37 6 | 37 6
+* 38 SyntaxError | 38 1 | 38 1
+  39 SyntaxError | 39 SyntaxError | 39 SyntaxError
+  40 SyntaxError | 40 SyntaxError | 40 SyntaxError
+* 41 "2172 1 members" | 41 "2172 0" | 41 "2172 0"
+* 42 "2226 1 members" | 42 "2226 0" | 42 "2226 0"
+* 43 2 | 43 SyntaxError | 43 SyntaxError
+  44 SyntaxError | 44 SyntaxError | 44 SyntaxError
+  45 SyntaxError | 45 SyntaxError | 45 SyntaxError
+  46 SyntaxError | 46 SyntaxError | 46 SyntaxError
+  47 2 | 47 2 | 47 2
+  48 2 | 48 2 | 48 2
+  49 2 | 49 2 | 49 2
+  50 2 | 50 2 | 50 2
+  51 1 | 51 1 | 51 1
+  52 SyntaxError | 52 SyntaxError | 52 SyntaxError
+* 53 "9 A B C D 20 85 A0 1680 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 200A 2028 2029 202F 205F 3000 FEFF" | 53 "9 A B C D 20 A0 1680 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 200A 2028 2029 202F 205F 3000 FEFF" | 53 "9 A B C D 20 A0 1680 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 200A 2028 2029 202F 205F 3000 FEFF"
+  54 SyntaxError | 54 SyntaxError | 54 "v"
+* 55 true | 55 false | 55 true
+* 56 true | 56 false | 56 false
+* 57 true | 57 false | 57 false
+* 58 true | 58 false | 58 false
+  59 "dgimsuy" | 59 "dgimsuy" | 59 "dgimsuy"
+  60 false | 60 false | 60 false
+  61 SyntaxError | 61 SyntaxError | 61 "v"
+  62 "a" | 62 "a" | 62 "a"
+  63 "a" | 63 "a" | 63 "a"
+  64 "a" | 64 "a" | 64 "a"
+  65 "a" | 65 "a" | 65 "a"
+  66 "a" | 66 "a" | 66 "a"
+  67 "a" | 67 "a" | 67 "a"
+  68 "a" | 68 "a" | 68 "a"
+* 69 SyntaxError | 69 "a" | 69 "a"
+* 70 SyntaxError | 70 "a" | 70 "a"
+  71 SyntaxError | 71 SyntaxError | 71 SyntaxError
+  72 SyntaxError | 72 SyntaxError | 72 SyntaxError
+  73 "a" | 73 "a" | 73 "a"
+  74 SyntaxError | 74 SyntaxError | 74 SyntaxError
+* 75 SyntaxError | 75 "a" | 75 "a"
+* 76 false | 76 true | 76 true
+* 77 false | 77 true | 77 true
+* 78 false | 78 true | 78 true
+* 79 false | 79 true | 79 true
+  80 false | 80 false | 80 false
+  81 false | 81 false | 81 false
+  82 true | 82 true | 82 true
+  83 false | 83 false | 83 false
+  84 true | 84 true | 84 true
+  85 true | 85 true | 85 false
+  86 false | 86 false | 86 false
+* 87 true | 87 false | 87 false
+* 88 "1169 3 A7CF A7D3 A7D5" | 88 "1169 0" | 88 "1169 0"
+* 89 "1169 3 A7CF A7D3 A7D5" | 89 "1169 0" | 89 "1169 0"
+* 90 "1 1 2" | 90 "0 2 2" | 90 "0 2 2"
+* 91 "1 1 2" | 91 "0 2 2" | 91 "0 2 2"
+* 92 "1 1 2" | 92 "null 0" | 92 "null 0"
+* 93 "1 0 1" | 93 "0 0 0" | 93 "0 0 0"
+* 94 "null 0" | 94 "1 2 3" | 94 "1 2 3"
+  95 "1 1 2" | 95 "1 1 2" | 95 "1 1 2"
+#
+# base cases differing from this change: 42 of 95
+# cases where this change differs from Node: 4 (54, 55, 61, 85; declared in the retained answers)

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           67
+// Exempt:           72
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=29486F
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9C4802
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -112,6 +112,16 @@ public enum JavaScriptDiagnosticCode
     /// The pool carries an interned name, which this format reserves and no manifest admits.
     /// </summary>
     InternedNameOutsideManifest = 1304,
+
+    /// <summary>
+    /// A BigInt constant's payload is not canonical: a sign byte that is neither 0 nor 1, a
+    /// magnitude whose most significant byte is zero, or a negative zero.
+    /// </summary>
+    /// <remarks>
+    /// A payload WIDER than the format's ceiling is <see cref="DeclaredMaximumTooLarge"/> and not
+    /// this, because its declared length is refused before a byte of it is read (decision JSD-0033).
+    /// </remarks>
+    MalformedBigIntConstant = 1305,
 
     // ---- 1400: the code section -----------------------------------------------------------
 
@@ -469,6 +479,72 @@ public enum JavaScriptDiagnosticCode
     /// </para>
     /// </remarks>
     NativePayloadNotTemplateClosed = 1625,
+
+    /// <summary>
+    /// The artifact carries an eval scope map, or an eval name instruction, and declared no dynamic
+    /// surface.
+    /// </summary>
+    /// <remarks>
+    /// <b>A scope map is only ever read by a direct <c>eval</c></b>, and a direct <c>eval</c> is on
+    /// the dynamic surface, so an artifact that carries one without declaring the surface is
+    /// declaring - by omission - that a composition which declined evaluation should run a program
+    /// built for it. It is the same shape and the same reason as
+    /// <see cref="ModuleSectionOutsideManifest"/> and <see cref="NativeSectionOutsideManifest"/>
+    /// (JSeal V14, JSD-0026 step 2).
+    /// </remarks>
+    EvalScopesOutsideManifest = 1626,
+
+    /// <summary>
+    /// The eval scope map disagrees with itself, with the code section or with the function table.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>One code for every structural disagreement the bytes can show</b> (JSD-0026 section 4): a
+    /// shape of a kind this build does not define, a root with a parent or a non-root without one,
+    /// a parent that is not an earlier row, a name that is not an interned name, a binding or
+    /// request flag this build does not define; a site outside its unit, not on an instruction
+    /// boundary, not on a <see cref="Format.JsOpcode.CallEval"/> or
+    /// <see cref="Format.JsOpcode.CallEvalSpread"/>, named twice, whose chain does not reach its
+    /// unit's own root in exactly its declared depth, whose depth is not the one the abstract pass
+    /// computes there, or whose strictness is not its unit's; a declaration row for a unit that is
+    /// not eval code, or an eval-code unit with no row or two; and an eval name instruction in an
+    /// artifact with no eval-code unit.
+    /// </para>
+    /// <para>
+    /// <b>WHAT IT CANNOT SAY IS THAT THE MAP IS RIGHT.</b> A slot a row names belongs to a record
+    /// that may be a closure's, outside the unit, so its bound is the executor's to check - which it
+    /// does, aborting with an internal defect rather than reading a slot that does not exist. A
+    /// wrong map is therefore a wrong answer or a defect, and never an unowned read.
+    /// </para>
+    /// </remarks>
+    MalformedEvalScopes = 1627,
+
+    /// <summary>
+    /// The script-declarations section disagrees with itself or with the function table.
+    /// </summary>
+    /// <remarks>
+    /// <b>One code for every structural disagreement the bytes can show</b> (JSeal V15-host): a row
+    /// for a unit past the table, for a unit that is not a script body - eval code, a function, or a
+    /// module's body or initialiser - or for a unit named twice; a name that is not an interned
+    /// name; a run longer than a record can hold; and Annex B candidates on a strict body, which
+    /// hoists none. What it cannot say is that the row is complete: a row that omits a name the body
+    /// declares loses that name's checks, and the body's own instructions still create it, which is
+    /// the lenient instantiation an artifact with no row gets.
+    /// </remarks>
+    MalformedScriptDeclarations = 1631,
+
+    /// <summary>
+    /// The script-referrers section disagrees with itself or with the function table.
+    /// </summary>
+    /// <remarks>
+    /// <b>One code for every structural disagreement the bytes can show</b> (JSeal I12-upstream,
+    /// JSD-0024 section 20): a row for a unit past the table, for a unit that is not a script body -
+    /// eval code, a function, or a module's body or initialiser - or for a unit named twice; and a
+    /// referrer that is not an interned name, or is the empty one, which places nothing and is
+    /// said by writing no row. What it cannot say is that the referrer is the one the host meant: it
+    /// is a name a resolver reads, and it grants nothing.
+    /// </remarks>
+    MalformedScriptReferrers = 1632,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

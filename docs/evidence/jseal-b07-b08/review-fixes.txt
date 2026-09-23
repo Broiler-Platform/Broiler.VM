@@ -1,0 +1,28 @@
+JSeal B07-B08 review fixes, 2026-09-22 (local implementation validation, not accepted milestone evidence).
+
+== Probe the-bigint-typed-arrays (cases 61-63 added) BEFORE the JSON.parse fix
+   python eng/run-differential.py --only the-bigint-typed-arrays --against node --timeout 20
+   --- the-bigint-typed-arrays.js
+       FAIL: broiler-vm exited 7: 'broiler-js: src/tests/differential/the-bigint-typed-arrays.js: the invocation answered ProfileFault/ProfileContractViolation and carried no payload\r\n'
+   Report: artifacts\differential\report.json
+
+== Same command AFTER the fix
+   --- the-bigint-typed-arrays.js
+       declared 27: %TypedArray%.prototype.subarray goes through TypedArraySpeciesCreate, whose content-type check (ES2026) makes a Float64Array species of a BigInt64Array a TypeError; V8 answers the Float64Array
+   Report: artifacts\differential\report.json
+
+== Mutation runs (each applied alone, Release rebuild, SliceCompiler --checks, reverted)
+   M1: ToElementValue's Charge(LinearCost) removed
+   FAIL bigint/b07/a-wide-element-write-is-charged-for-its-narrowing: narrow answered done; wide answered done
+   broiler-js-slice-compiler: 1 of 366 checks FAILED, 2 not run on this machine and claimed by nothing
+   M2: DeclareSurfaceOf no longer declares the BigInt surface for a BigInt typed array
+   FAIL bigint/b07/the-bigint-typed-arrays-need-both-surfaces: the compositions answered admitted|admitted|1608|admitted|admitted|undefined,undefined,undefined,undefined,function|function,function,function,function,function|18446744073709551615
+   broiler-js-slice-compiler: 1 of 366 checks FAILED, 2 not run on this machine and claimed by nothing
+
+== Test262 re-run after the fix (--jobs 4) over built-ins/{JSON,TypedArrayConstructors,TypedArray,DataView}
+   # test262 tc39/test262 at ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+   # test262 2902 files, 5745 variants: pass 5462, fail 270, unsupported 0, exhausted 0, skipped 13
+   Per-variant against the earlier after-runs (after, after-extra) for the same subtrees:
+   0 variants newly failing; 4 newly passing:
+     test/built-ins/JSON/parse/reviver-array-non-configurable-prop-create.js (sloppy, strict)
+     test/built-ins/JSON/parse/reviver-object-non-configurable-prop-create.js (sloppy, strict)

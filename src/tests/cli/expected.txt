@@ -149,6 +149,13 @@ encoding/with-a-byte-order-mark.js|0|7
 # contains is worse than one that declines.
 encoding/not-utf8.js|6|not valid UTF-8
 
+# WHAT THIS HOST WRITES IS UTF-8 AS WELL, on standard output and standard error alike, and not
+# whatever code page the console that started it happens to use. A host whose output bytes depend
+# on the machine's console settings cannot be compared against a retained answer at all.
+encoding/non-ascii-output.js|0|café ∛8=2 😀|out
+encoding/non-ascii-output.js|0|naïve ü|out
+encoding/non-ascii-in-an-uncaught-error.js|1|größer als ∞|err
+
 # The command line itself is checked: a path that is not there, and an option this host has not.
 missing/nothing-here.js|6|no file or directory at
 --nonsense runs/a-product.js|2|is not an option this host has
@@ -256,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 88
+runs|0|# Completed: 90
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -398,10 +405,23 @@ limits/a-delegation-chain-with-no-bottom.js|1|uncaught RangeError: Maximum call 
 --runtime --check runs/a-product.js|0|tiered-pgo-config=|err
 --runtime --check runs/a-product.js|0|dynamic-code=|err
 
+# AND THE ONE FIELD ON THAT LINE WHOSE VALUE IS NOT THE MACHINE'S, so this row reads the VALUE
+# where every row above reads only the key. Whether this image filled the profile's page-mapping
+# hook is a property of what was composed into it: the same answer on every platform, under every
+# publish mode, on a machine that arms nothing of its own. THIS ROW IS WHAT HOLDS THE REGISTER'S
+# NATIVE-EXECUTION CELL FOR THIS ROOT. Between 2026-09-18 and 2026-09-23 the cell read `none` and
+# was true, because a refactor moved the arming path into an assembly this root stopped linking;
+# every `--native` run this host was asked for in that interval verified its artifact and then
+# refused to instantiate it, and nothing in this suite said so, because no row here has ever named
+# `--native`. Reverting either half of the wiring - the project reference, or the four lines that
+# fill the hook - puts this row's answer back to `none` and fails it.
+--runtime --check runs/a-product.js|0|native-arming=installed|err
+
 # `--runtime` is not a mode: the file still runs and still answers its value, on standard output,
 # with the configuration line nowhere in it.
 --runtime runs/a-product.js|0|42|out
 --runtime runs/a-product.js|0|!runtime-identifier=|out
+--runtime runs/a-product.js|0|!native-arming=|out
 
 # THE TWO DEFECTS THE OCTANE WORKLOADS FOUND, pinned as programs this repository holds rather than
 # as a benchmark it does not. Neither fixture needs a third-party file, and each row is the ANSWER
@@ -428,13 +448,15 @@ runs/a-parameter-named-arguments.js|0|captured
 runs/a-typed-array-over-a-buffer.js|0|typed-array-over-a-buffer ok
 runs/a-typed-array-over-a-buffer.js|0|undefined:false
 runs/a-typed-array-over-a-buffer.js|0|0,2,2,255
-runs/a-typed-array-over-a-buffer.js|0|undefined:undefined:undefined
+runs/a-typed-array-over-a-buffer.js|0|undefined:undefined:function
 
-# THE DYNAMIC SURFACE. This host registers an artifact provider, so `eval` can answer; the two rows
-# below it are the published exclusion - a direct `eval` inside a function is refused by name rather
-# than answered with a global's value, and the same source through an indirect call is admitted.
+# THE DYNAMIC SURFACE. This host registers an artifact provider, so `eval` can answer; a direct
+# `eval` inside a function reads and writes the caller's locals (JSeal V14) and introduces its sloppy
+# `var` into the caller's function as a deletable binding (JSeal V15), and the same source through
+# an indirect call never sees a local.
 runs/an-indirect-eval.js|0|indirect-eval ok
-runs/an-indirect-eval.js|0|EvalError:true
+runs/an-indirect-eval.js|0|local:2
+runs/an-indirect-eval.js|0|introduced:1:true:undefined
 runs/an-indirect-eval.js|0|5:2:function
 
 # THE DEPTH A RECURSING PROGRAM IS REFUSED AT, AND THE THREE DIFFERENT ANSWERS IT CAN GET.
@@ -612,6 +634,7 @@ refused/a-parameter-the-body-declares-again.js|3|2201:DuplicateLexicalDeclaratio
 refused/a-name-bound-twice-by-one-parameter-list.js|3|2201:DuplicateLexicalDeclaration
 refused/a-declaration-as-the-body-of-an-if.js|3|2101:UnexpectedToken
 refused/an-escaped-reserved-word-as-a-name.js|3|2209:ReservedWordAsBinding
+refused/a-using-await-in-a-static-block.js|3|2209:ReservedWordAsBinding
 
 # AND THE ONE ROW THAT MOVED RATHER THAN ARRIVED. `return` outside a function was refused as a
 # construct outside the manifest, which said this profile had not built it; it is an early error the
@@ -668,3 +691,31 @@ runs/the-keys-an-object-literal-still-admits.js|0|set:12 1 2 4 5 6 7 8 function 
 # runs, and the second without the first leaves the closure resolving the block's own `let` to a
 # global. Every value in the file was taken from the comparison engine.
 runs/a-function-a-block-declares.js|0|2 first second switch try undefined aliased undefined clause undefined undefined undefined undefined
+
+# J17 (JSeal source identity, upstream half): LINE TERMINATORS INSIDE LITERALS. A continuation in a
+# template or `String.raw` ends a line, and U+2028 inside a string literal is a string character
+# (ES2019) that still ends a line, so each error below is named on the line it stands on. The line
+# numbers and the `runs/` value were taken from the comparison engine.
+refused/a-syntax-error-after-a-template-line-continuation.js|3|2101:UnexpectedToken at 4:9
+refused/a-syntax-error-after-a-raw-template-line-continuation.js|3|2101:UnexpectedToken at 4:9
+refused/a-syntax-error-after-a-line-separator-in-a-string.js|3|2101:UnexpectedToken at 4:9
+runs/a-line-separator-in-a-string.js|0|5 2028 2029 4 2
+
+# VM-FIX-D: A COMPLETION VALUE THAT IS A SYMBOL. ToString of a Symbol is a TypeError, and the host
+# reported the program as having thrown one when its last statement merely produced a Symbol. It
+# is printed the way String(symbol) prints it, which is what the comparison engine's `node -p`
+# prints for the same file.
+runs/a-symbol-completion-value.js|0|Symbol(x)|out
+runs/a-symbol-completion-value.js|0|!TypeError
+
+# GLOBAL DECLARATION INSTANTIATION ACROSS THE SCRIPTS OF ONE REALM (JSeal V15-host, JSD-0024 section 15).
+# A script's `let` persists for the scripts after it and is no property of the global object; a
+# second lexical declaration of the name is the SyntaxError the checks raise before the second
+# script's first statement, so it prints nothing; and a lexical declaration of a non-configurable
+# global property is the same SyntaxError. The files sort in the order they run, and none of the
+# pairs' second files is a program by itself, which is why they sit in a directory no row sweeps.
+global-declarations/a-first-script-declares-a-let.js global-declarations/a-second-script-reads-it.js|0|from-the-first-script,undefined
+global-declarations/b-first-script-declares-a-let.js global-declarations/b-second-script-declares-it-again.js|1|SyntaxError
+global-declarations/b-first-script-declares-a-let.js global-declarations/b-second-script-declares-it-again.js|1|!ran|out
+global-declarations/c-a-let-over-a-restricted-global.js|1|SyntaxError
+global-declarations/c-a-let-over-a-restricted-global.js|1|!ran|out

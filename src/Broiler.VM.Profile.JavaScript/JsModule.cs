@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           27
-// Human-reviewed:   0/13
+// Relevant units:   15
+// Annotated:        15/15
+// Exempt:           36
+// Human-reviewed:   0/15
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       13
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -115,23 +115,12 @@ internal sealed class JsModuleRecord(
 }
 
 /// <summary>Where one module of one instance has got to.</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=951220
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9B665D
 // Broiler-Human:        PENDING
 internal enum JsModuleState
 {
     /// <summary>Its environment exists and holds nothing.</summary>
     Created = 0,
-
-    /// <summary>
-    /// It has been put into an evaluation order and its body has not been entered.
-    /// </summary>
-    /// <remarks>
-    /// A state of its own rather than a second use of <see cref="Evaluating"/>, because the walk
-    /// that builds the order runs before any body does: a module marked as under way by the
-    /// ORDERING walk would be indistinguishable from one whose body had actually started, and the
-    /// difference is what a cyclic graph is decided on.
-    /// </remarks>
-    Ordered = 4,
 
     /// <summary>Its declarations are in place and its body has not run.</summary>
     Initialised = 1,
@@ -139,15 +128,45 @@ internal enum JsModuleState
     /// <summary>Its body is running, which a module of a cycle observes about another.</summary>
     Evaluating = 2,
 
-    /// <summary>Its body has run.</summary>
+    /// <summary>
+    /// It, or a module it waits on, has a top-level <c>await</c> that has not finished: the
+    /// specification's <c>~evaluating-async~</c> (JSeal I11-async).
+    /// </summary>
+    /// <remarks>
+    /// A state of its own because a module that has left the walk and is still awaiting is neither
+    /// under way on the walk nor finished: a later evaluation that meets it depends on its cycle
+    /// root's completion, and must not read its bindings as if its body had run.
+    /// </remarks>
+    EvaluatingAsync = 4,
+
+    /// <summary>Its body has run, or its evaluation has failed.</summary>
     Evaluated = 3,
 }
 
 /// <summary>One module of one instance: its environment, its namespace and its state.</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C800DB
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9866BE
 // Broiler-Human:        PENDING
-internal sealed class JsModuleInstance(JsEnvironment environment)
+internal sealed class JsModuleInstance(JsEnvironment environment, JsProgram program, int index)
 {
+    /// <summary>
+    /// The artifact that created this instance, whose record, body and requests are the ones every
+    /// evaluation uses (JSeal I11-async).
+    /// </summary>
+    /// <remarks>
+    /// An instance is shared by every artifact that carries its module, and each of those numbers
+    /// the module differently; the evaluation follows one module's requests from one place, so it
+    /// reads them where the instance was made, and the modules they name are the realm's instances
+    /// of the same keys.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D89DD8
+    // Broiler-Human:        PENDING
+    internal JsProgram Program { get; } = program;
+
+    /// <summary>The module's index among <see cref="Program"/>'s records.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7F4989
+    // Broiler-Human:        PENDING
+    internal int Index { get; } = index;
+
     /// <summary>
     /// The module's own environment, which outlives its evaluation.
     /// </summary>
@@ -175,20 +194,100 @@ internal sealed class JsModuleInstance(JsEnvironment environment)
     internal JsValue Completion { get; set; } = JsValue.Undefined;
 
     /// <summary>
-    /// The promise a module with a top-level <c>await</c> settles when its body finishes.
+    /// What the module's evaluation threw, or <see langword="null"/> while it has thrown nothing.
     /// </summary>
     /// <remarks>
-    /// <b>A SUSPENDED MODULE READS AS EVALUATED AND IS NOT FINISHED, and this is what tells the two
-    /// apart.</b> The state goes to <see cref="JsModuleState.Evaluated"/> the moment an async body
-    /// is entered, because the walk that entered it must not enter it again; but a second walk that
-    /// arrives while it is still awaiting would then be told the module is done, and would hand its
-    /// namespace to somebody who is about to read a binding the module has not reached. Only a walk
-    /// somebody is waiting on — a dynamic import's — asks this, because only that walk has a
-    /// promise to hold open.
+    /// <b>An evaluation that threw is FINISHED, and every later request for the module answers the
+    /// same thrown value.</b> That is the language's <c>[[EvaluationError]]</c>: the body is not run
+    /// a second time, and a second <c>import()</c> rejects with the identical value rather than
+    /// resolving to a namespace whose bindings are still in their dead zone. A module that depends
+    /// on one that threw is given the same value, because its body cannot run either.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=416FCB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1E9BEE
     // Broiler-Human:        PENDING
-    internal JsPromiseObject? Evaluation { get; set; }
+    internal JsValue? EvaluationError { get; set; }
+
+    /// <summary>
+    /// The specification's <c>[[DFSIndex]]</c>: the order in which the evaluation walk reached the
+    /// module.
+    /// </summary>
+    /// <remarks>
+    /// Kept on the instance, as the specification keeps it on the record, because only one
+    /// evaluation walk is ever under way in a realm: an evaluation asked for while one runs is
+    /// deferred to a job (see <c>JsEngine.EvaluateInto</c>).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=61B180
+    // Broiler-Human:        PENDING
+    internal int DfsIndex { get; set; }
+
+    /// <summary>
+    /// The specification's <c>[[DFSAncestorIndex]]</c>: the lowest walk index the module reaches
+    /// through modules still on the walk's stack.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A6AFBF
+    // Broiler-Human:        PENDING
+    internal int DfsAncestorIndex { get; set; }
+
+    /// <summary>
+    /// The specification's <c>[[PendingAsyncDependencies]]</c>: how many async dependencies the
+    /// module still waits on before its body may run.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=372302
+    // Broiler-Human:        PENDING
+    internal int PendingAsyncDependencies { get; set; }
+
+    /// <summary>
+    /// The specification's <c>[[AsyncEvaluationOrder]]</c>: 0 while unset, the realm's count at
+    /// the moment the module became async, or <see cref="AsyncEvaluationDone"/>.
+    /// </summary>
+    /// <remarks>
+    /// <b>The modules one completion releases run in this order</b>, which is the order the walk
+    /// first reached them; sorting by it is what makes two parents of one async module run in the
+    /// order they were imported, whichever of them the completion happens to list first.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=77AD24
+    // Broiler-Human:        PENDING
+    internal long AsyncEvaluationOrder { get; set; }
+
+    /// <summary>The <see cref="AsyncEvaluationOrder"/> of a module whose async evaluation ended.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=62FFF1
+    // Broiler-Human:        PENDING
+    internal const long AsyncEvaluationDone = -1;
+
+    /// <summary>
+    /// The specification's <c>[[AsyncParentModules]]</c>: the modules waiting on this one's async
+    /// evaluation, or <see langword="null"/> while none is, and again once it has ended.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=37A066
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.List<JsModuleInstance>? AsyncParentModules { get; set; }
+
+    /// <summary>
+    /// The specification's <c>[[TopLevelCapability]]</c>: the promise an evaluation that began at
+    /// this module answers, which every later evaluation of its component answers too.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=329C96
+    // Broiler-Human:        PENDING
+    internal JsPromiseObject? TopLevelCapability { get; set; }
+
+    /// <summary>Whether the module's body has a top-level <c>await</c> (<c>[[HasTLA]]</c>).</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=453146
+    // Broiler-Human:        PENDING
+    internal bool HasTla => Program.Functions[(int)Program.Modules[Index].BodyUnit].IsAsync;
+
+    /// <summary>
+    /// The root of the strongly connected component this module was evaluated in, or
+    /// <see langword="null"/> for a module whose evaluation has not left the walk (or failed on it).
+    /// </summary>
+    /// <remarks>
+    /// <b>A MEMBER OF A CYCLE IS FINISHED ONLY WHEN ITS ROOT IS</b> (the specification's
+    /// <c>[[CycleRoot]]</c>, ES2026 <c>Evaluate</c> step 3). A member whose own body ran reads as
+    /// evaluated while the root it cycles with is still awaiting; a later evaluation of the member,
+    /// and every module that depends on it, is sent to the root instead.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A51F5A
+    // Broiler-Human:        PENDING
+    internal JsModuleInstance? CycleRoot { get; set; }
 
     /// <summary>The module's <c>import.meta</c> object, built the first time it is asked for.</summary>
     /// <remarks>

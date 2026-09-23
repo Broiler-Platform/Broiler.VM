@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
-// Exempt:           15
-// Human-reviewed:   0/25
+// Relevant units:   33
+// Annotated:        33/33
+// Exempt:           17
+// Human-reviewed:   0/33
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       25
+// Unverified:       33
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -57,8 +57,40 @@ internal sealed partial class JsRealm
         Pair = 2,
     }
 
+    /// <summary>
+    /// The intrinsic <c>%Object.prototype.toString%</c>: the function object this realm installed,
+    /// whatever a program has since done to <c>Object.prototype</c>.
+    /// </summary>
+    /// <remarks>
+    /// The specification names it where a built-in falls back to it -
+    /// <c>Array.prototype.toString</c> with a <c>join</c> that is not callable - and a fallback that
+    /// read the property instead would answer "undefined is not a function" once a program deleted
+    /// it (Test262 <c>built-ins/Array/prototype/toString/non-callable-join-string-tag.js</c>).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D89AD6
+    // Broiler-Human:        PENDING
+    internal JsValue IntrinsicObjectToString { get; private set; }
+
+    /// <summary>
+    /// <c>Object.prototype.toString</c>'s <c>builtinTag</c>: <c>Array</c> (through <c>IsArray</c>,
+    /// which a proxy derives and may throw), <c>Arguments</c>, <c>Function</c> for anything callable,
+    /// the six slot-bearing kinds, and <c>Object</c> for everything else.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3349AA
+    // Broiler-Human:        PENDING
+    private static string BuiltinTag(JsObject host)
+    {
+        var className = host.ClassName;
+
+        return className switch
+        {
+            "Array" or "Arguments" or "Error" or "Boolean" or "Number" or "String" or "Date" or "RegExp" => className,
+            _ => host.IsCallable ? "Function" : "Object",
+        };
+    }
+
     /// <summary>Builds <c>Object</c>, <c>Object.prototype</c> and the statics on the constructor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EA7390
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=56DB5F
     // Broiler-Human:        PENDING
     private void SetupObject()
     {
@@ -81,6 +113,15 @@ internal sealed partial class JsRealm
 
             var host = engine.ToObject(thisValue);
 
+            // THE BUILT-IN TAG FIRST, AND ONLY THE SPECIFICATION'S TEN OF THEM (JSeal B06). Steps
+            // 4-14 derive it before the `Symbol.toStringTag` read, and the order is observable: a
+            // proxy's IsArray throws once it is revoked, and a getter on the tag can revoke it. The
+            // class name of every other kind - Map, Set, Symbol, Generator, the global object - is
+            // not a builtin tag, so an object of that kind whose tag was deleted answers
+            // `[object Object]`, as Test262's `symbol-tag-*-builtin` tests and
+            // `Array/prototype/toString/non-callable-join-string-tag.js` require.
+            var builtinTag = BuiltinTag(host);
+
             // `Symbol.toStringTag` OVERRIDES THE CLASS AND IS WHAT MAKES THIS EXTENSIBLE. A guest
             // object carrying one reports it — which is how `[object Generator]`, `[object Map]`
             // and every tag a program sets on a class of its own are produced. A tag that is not a
@@ -89,8 +130,11 @@ internal sealed partial class JsRealm
             var tagged = engine.GetSymbol(thisValue, engine.Realm.ToStringTagSymbol);
 
             return JsValue.String(
-                "[object " + (tagged.Type == JsType.String ? tagged.AsString() : host.ClassName) + "]");
+                "[object " + (tagged.Type == JsType.String ? tagged.AsString() : builtinTag) + "]");
         });
+
+        _ = ObjectPrototype.TryGetOwnProperty("toString", out var installed);
+        IntrinsicObjectToString = installed.Value;
 
         Method(ObjectPrototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
         {
@@ -471,24 +515,13 @@ internal sealed partial class JsRealm
             var requested = ArgOfObject(arguments, 1);
             var fields = ObjectToDescriptorFields(engine, ArgOfObject(arguments, 2));
 
+            // A SYMBOL KEY IS VALIDATED EXACTLY AS A STRING KEY IS. It used to be written straight
+            // into the Symbol table, so `Object.preventExtensions(o)` did not stop
+            // `Object.defineProperty(o, sym, ...)` and a frozen Symbol-keyed value could be replaced.
+            // A proxy is still asked through its trap, with the fields the caller actually wrote.
             if (requested.IsSymbol)
             {
-                // A PROXY IS ASKED THROUGH ITS TRAP, with the fields the caller actually wrote:
-                // an unchecked `SetOwnSymbol` would reach the same trap but with a descriptor
-                // completed to four keys, and the trap is entitled to see the one it was given.
-                if (target.AsObject() is JsProxy proxy)
-                {
-                    ObjectDefinedOrThrow(engine, proxy, requested, fields);
-                    return target;
-                }
-
-                // THE SYMBOL TABLE HAS NO REDEFINITION RULES OF ITS OWN YET, so this defines
-                // rather than validating against a current descriptor the way the String path does.
-                // A Symbol-keyed property is either absent or defined by the code that owns the
-                // Symbol, and nothing in this surface can redefine one it did not create.
-                target.AsObject().SetOwnSymbol(
-                    requested.AsSymbol(), ObjectPropertyFromFields(engine, target.AsObject(), fields));
-
+                ObjectApplySymbolDescriptor(engine, target.AsObject(), requested.AsSymbol(), fields);
                 return target;
             }
 
@@ -655,13 +688,26 @@ internal sealed partial class JsRealm
 
         Method(constructor, "preventExtensions", 1, static (engine, thisValue, arguments) =>
         {
-            _ = engine;
             _ = thisValue;
             var value = ArgOfObject(arguments, 0);
 
             if (value.IsObject)
             {
-                value.AsObject().Extensible = false;
+                // The one object besides a Proxy whose `[[PreventExtensions]]` can refuse: a typed
+                // array over a resizable buffer (JSeal F05-F06). A Proxy's refusal throws in its
+                // setter below.
+                if (value.AsObject() is JsTypedArray view)
+                {
+                    if (!view.PreventExtensions())
+                    {
+                        return engine.ThrowTypeError(
+                            "Cannot prevent extensions on a TypedArray backed by a resizable buffer");
+                    }
+                }
+                else
+                {
+                    value.AsObject().Extensible = false;
+                }
             }
 
             return value;
@@ -686,36 +732,41 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Defines one half of an accessor, leaving the other half as it stands.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=595FB1
+    /// <remarks>
+    /// <b>It is <c>DefinePropertyOrThrow</c> with a partial descriptor</b>, which is what the
+    /// language says and what keeps the other half: the merge in
+    /// <see cref="ObjectValidateAndMerge"/> leaves an absent <c>get</c> or <c>set</c> as it stands.
+    /// Going through the checked form is also what makes a non-extensible object refuse a new key
+    /// and a non-configurable property refuse the conversion, under either kind of key.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B62C5C
     // Broiler-Human:        PENDING
     private static void ObjectDefineAccessorHalf(
         JsEngine engine, JsObject host, JsValue key, JsValue accessor, bool getter)
     {
         var function = accessor.AsObject();
 
-        if (key.IsSymbol)
+        var fields = new ObjectDescriptorFields
         {
-            host.TryGetOwnSymbol(key.AsSymbol(), out var held);
+            HasEnumerable = true,
+            Enumerable = true,
+            HasConfigurable = true,
+            Configurable = true,
+        };
 
-            host.SetOwnSymbol(
-                key.AsSymbol(),
-                JsProperty.Accessor(
-                    getter ? function : held.Getter,
-                    getter ? held.Setter : function,
-                    JsPropertyAttributes.Enumerable | JsPropertyAttributes.Configurable));
-
-            return;
+        if (getter)
+        {
+            fields.HasGet = true;
+            fields.Getter = function;
+        }
+        else
+        {
+            fields.HasSet = true;
+            fields.Setter = function;
         }
 
-        var name = engine.ToPropertyKey(key);
-        host.TryGetOwnProperty(name, out var existing);
-
-        host.SetOwnProperty(
-            name,
-            JsProperty.Accessor(
-                getter ? function : existing.Getter,
-                getter ? existing.Setter : function,
-                JsPropertyAttributes.Enumerable | JsPropertyAttributes.Configurable));
+        ObjectApplyDescriptorAt(
+            engine, host, key.IsSymbol ? key : JsValue.String(engine.ToPropertyKey(key)), fields);
     }
 
     /// <summary>Finds one half of the accessor a read of <paramref name="key"/> would reach.</summary>
@@ -932,85 +983,294 @@ internal sealed partial class JsRealm
         return fields;
     }
 
-    /// <summary>The property a descriptor's fields describe, with nothing to redefine.</summary>
-    /// <remarks>
-    /// The Symbol-keyed path uses it: there is no current descriptor to validate against, so the
-    /// fields are read straight into a property. Absent attribute fields default to false, which is
-    /// what <c>DefinePropertyOrThrow</c> says for a property that did not exist.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BFF4D5
+    /// <summary>
+    /// <c>DefinePropertyOrThrow</c> under a String key: the object's own <c>[[DefineOwnProperty]]</c>,
+    /// with its refusal thrown as the <c>TypeError</c> the <c>Object</c> statics owe.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=37D984
     // Broiler-Human:        PENDING
-    private static JsProperty ObjectPropertyFromFields(
-        JsEngine engine, JsObject target, ObjectDescriptorFields fields)
+    private static void ObjectApplyDescriptor(
+        JsEngine engine, JsObject target, string key, ObjectDescriptorFields fields) =>
+        ObjectApplyDescriptorAt(engine, target, JsValue.String(key), fields);
+
+    /// <summary>
+    /// <see cref="ObjectApplyDescriptor"/> for a Symbol key: the same validation, the other table.
+    /// </summary>
+    /// <remarks>
+    /// <b>The two key kinds share one validation and differ only in where the answer is stored.</b>
+    /// The Symbol table once had no redefinition rules at all, so a Symbol-keyed property could be
+    /// added to a non-extensible object and a frozen one could be rewritten; routing both through
+    /// <see cref="ObjectValidateAndMerge"/> is what keeps the two from drifting apart again.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8D0956
+    // Broiler-Human:        PENDING
+    private static void ObjectApplySymbolDescriptor(
+        JsEngine engine, JsObject target, JsSymbol key, ObjectDescriptorFields fields) =>
+        ObjectApplyDescriptorAt(engine, target, JsValue.Symbol(key), fields);
+
+    /// <summary>
+    /// <c>DefinePropertyOrThrow</c> under a property key of either kind, already converted.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6B40F8
+    // Broiler-Human:        PENDING
+    private static void ObjectApplyDescriptorAt(
+        JsEngine engine, JsObject target, JsValue key, ObjectDescriptorFields fields)
     {
-        _ = engine;
-        _ = target;
-        var attributes = JsPropertyAttributes.None;
+        var refusal = ObjectDefineRefusal(engine, target, key, fields);
 
-        if (fields.HasEnumerable && fields.Enumerable)
+        if (refusal is not null)
         {
-            attributes |= JsPropertyAttributes.Enumerable;
+            throw engine.Error("TypeError", refusal);
         }
-
-        if (fields.HasConfigurable && fields.Configurable)
-        {
-            attributes |= JsPropertyAttributes.Configurable;
-        }
-
-        if (fields.HasGet || fields.HasSet)
-        {
-            return JsProperty.Accessor(fields.Getter, fields.Setter, attributes);
-        }
-
-        if (fields.HasWritable && fields.Writable)
-        {
-            attributes |= JsPropertyAttributes.Writable;
-        }
-
-        return JsProperty.Data(fields.HasValue ? fields.Value : JsValue.Undefined, attributes);
     }
 
     /// <summary>
-    /// The specification's <c>ValidateAndApplyPropertyDescriptor</c>: refuse what the existing
-    /// property forbids, then write the merge of the two.
+    /// The <c>[[DefineOwnProperty]]</c> of every object this profile has, answering the boolean the
+    /// specification gives it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7CC38E
+    /// <remarks>
+    /// <b>A refusal is <see langword="false"/> and nothing else is.</b> An exception the definition
+    /// meets on the way - a guest <c>valueOf</c> run by an Array's <c>length</c> or a typed array's
+    /// element conversion, the <c>RangeError</c> of an invalid length, a Proxy trap's own throw or
+    /// its invariant check - propagates, which is what <c>Reflect.defineProperty</c>,
+    /// <c>CreateDataProperty</c> and the receiver half of <c>OrdinarySet</c> each owe. Turning the
+    /// refusal into a thrown exception and back, as this profile used to, reported those as
+    /// <see langword="false"/> too.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E878DF
     // Broiler-Human:        PENDING
-    private static void ObjectApplyDescriptor(
-        JsEngine engine, JsObject target, string key, ObjectDescriptorFields fields)
+    internal static bool ObjectDefineOwn(
+        JsEngine engine, JsObject target, JsValue key, ObjectDescriptorFields fields) =>
+        ObjectDefineRefusal(engine, target, key, fields) is null;
+
+    /// <summary>
+    /// <see cref="ObjectDefineOwn"/>, answering why the definition was refused rather than whether:
+    /// <see langword="null"/> when it took.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The exotic objects decide before the ordinary validation runs.</b> A Proxy asks its trap
+    /// with the fields as the caller wrote them; an Array refuses an index at or past a length that
+    /// has been closed - an ARRAY INDEX, below 2^32-1, and not any numeric key - and coerces a new
+    /// <c>length</c> before defining it; and a typed array answers for every canonical numeric key
+    /// itself, never letting one reach the ordinary map.
+    /// </para>
+    /// <para>
+    /// Everything else is <c>ValidateAndApplyPropertyDescriptor</c> against the property the object
+    /// reports, which is the ordinary object's <c>[[DefineOwnProperty]]</c>.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=53C6D2
+    // Broiler-Human:        PENDING
+    private static string? ObjectDefineRefusal(
+        JsEngine engine, JsObject target, JsValue key, ObjectDescriptorFields fields)
     {
-        // A PROXY DEFINES THROUGH ITS TRAP AND NONE OF THIS FUNCTION APPLIES TO IT. Everything
-        // below is `ValidateAndApplyPropertyDescriptor`, which is what an ORDINARY object's
-        // `[[DefineOwnProperty]]` is; an exotic object may define its own, and this one does. The
-        // validation would also read the proxy's current descriptor and extensibility through two
-        // traps the language never says to call here, before reaching the trap that decides.
+        // A PROXY DEFINES THROUGH ITS TRAP AND NONE OF THE VALIDATION BELOW APPLIES TO IT. It would
+        // also read the proxy's current descriptor and extensibility through two traps the language
+        // never says to call here, before reaching the trap that decides.
         if (target is JsProxy proxy)
         {
-            ObjectDefinedOrThrow(engine, proxy, JsValue.String(key), fields);
-            return;
+            return proxy.ProxyDefineOwnProperty(key, fields)
+                ? null
+                : "the 'defineProperty' trap refused the definition";
         }
 
+        if (key.IsSymbol)
+        {
+            var symbol = key.AsSymbol();
+            var heldSymbol = target.TryGetOwnSymbol(symbol, out var currentSymbol);
+
+            var symbolRefusal = ObjectValidateAndMerge(
+                target, heldSymbol, currentSymbol, symbol.Rendered, fields, out var mergedSymbol, out var writeSymbol);
+
+            if (symbolRefusal is null && writeSymbol)
+            {
+                target.SetOwnSymbol(symbol, mergedSymbol);
+            }
+
+            return symbolRefusal;
+        }
+
+        var name = key.AsString();
+
+        if (target is JsModuleNamespace names)
+        {
+            return ObjectDefineExport(names, name, fields);
+        }
+
+        if (target is JsTypedArray view && ObjectIsCanonicalNumeric(name, out var numeric))
+        {
+            return ObjectDefineElement(engine, view, name, numeric, fields);
+        }
+
+        if (target is JsArray sized)
+        {
+            // AN ARRAY'S `length` IS CHECKED AND COERCED BEFORE IT IS DEFINED, exactly as an
+            // assignment to it is: a definition is the other way a program reaches it, and the two
+            // may not disagree about which values are lengths.
+            if (fields.HasValue && string.Equals(name, "length", System.StringComparison.Ordinal))
+            {
+                var wanted = engine.ArrayLengthOrRefuse(fields.Value);
+                fields.Value = JsValue.Number(wanted);
+                return ObjectApplyLength(sized, wanted, fields);
+            }
+
+            // AN INDEX PAST A CLOSED LENGTH IS REFUSED, because defining it would move a length that
+            // was made immovable. Only an ARRAY INDEX can move it: "4294967295" and beyond are
+            // ordinary keys on an Array and are defined whatever its length says.
+            if (!sized.LengthWritable && JsObject.IsArrayIndex(name, out var index) &&
+                index >= sized.Length)
+            {
+                return "Cannot define property " + name + " past the Array's non-writable length";
+            }
+        }
+
+        var held = target.TryGetOwnProperty(name, out var current);
+        var refusal = ObjectValidateAndMerge(target, held, current, name, fields, out var merged, out var write);
+
+        if (refusal is null && write)
+        {
+            ObjectWriteOwn(engine, target, name, merged);
+        }
+
+        return refusal;
+    }
+
+    /// <summary>
+    /// A module namespace's <c>[[DefineOwnProperty]]</c> for a String key: agreement with the
+    /// export as it stands, or a refusal.
+    /// </summary>
+    /// <remarks>
+    /// <b>Nothing is ever written, and the answer is whether the descriptor already describes the
+    /// export.</b> An export reads back writable, enumerable and non-configurable with the binding's
+    /// current value, so a descriptor that asks for anything else - configurable, non-enumerable,
+    /// non-writable, an accessor, or a different value - is refused, and one that asks for nothing
+    /// new is a success. A name the module does not export is refused, and reading an export whose
+    /// binding is not yet initialised is the <c>ReferenceError</c> its <c>[[GetOwnProperty]]</c>
+    /// owes. The ordinary validation would instead have accepted a new value into a write that the
+    /// namespace then silently dropped.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3E5418
+    // Broiler-Human:        PENDING
+    private static string? ObjectDefineExport(
+        JsModuleNamespace names, string name, ObjectDescriptorFields fields)
+    {
+        if (!names.TryGetOwnProperty(name, out var current))
+        {
+            return "Cannot define property " + name + ": the module does not export it";
+        }
+
+        if ((fields.HasConfigurable && fields.Configurable) ||
+            (fields.HasEnumerable && !fields.Enumerable) ||
+            fields.HasGet || fields.HasSet ||
+            (fields.HasWritable && !fields.Writable) ||
+            (fields.HasValue && !ObjectSameValue(fields.Value, current.Value)))
+        {
+            return "Cannot redefine property: " + name;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// A typed array's <c>[[DefineOwnProperty]]</c> for a canonical numeric key: the element's, or
+    /// a refusal, and never an ordinary property.
+    /// </summary>
+    /// <remarks>
+    /// <b>Only a plain writable, enumerable, configurable data element can be described</b>, and it
+    /// can be described only at a valid integer index. Anything else - an out-of-range, fractional or
+    /// negative-zero index, an accessor, or a field that closes the element - is refused. The value
+    /// is converted with <c>ToNumber</c> - <c>ToBigInt</c> for a BigInt kind, since JSeal B07 -
+    /// after those checks and written only if the index is still valid once the conversion's guest
+    /// code has run.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FAE15D
+    // Broiler-Human:        PENDING
+    private static string? ObjectDefineElement(
+        JsEngine engine, JsTypedArray view, string name, double index, ObjectDescriptorFields fields)
+    {
+        if (!ObjectIsValidElementIndex(view, index))
+        {
+            return "Cannot define property " + name + ": the typed array has no element there";
+        }
+
+        if ((fields.HasConfigurable && !fields.Configurable) ||
+            (fields.HasEnumerable && !fields.Enumerable) ||
+            fields.HasGet || fields.HasSet ||
+            (fields.HasWritable && !fields.Writable))
+        {
+            return "Cannot redefine property: " + name;
+        }
+
+        if (fields.HasValue)
+        {
+            var element = engine.ToElementValue(view.Kind, fields.Value);
+
+            if (ObjectIsValidElementIndex(view, index))
+            {
+                _ = view.TryWriteAt((int)index, element);
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>The specification's <c>CanonicalNumericIndexString</c>, as a test.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DDAFD4
+    // Broiler-Human:        PENDING
+    private static bool ObjectIsCanonicalNumeric(string key, out double numeric)
+    {
+        if (string.Equals(key, "-0", System.StringComparison.Ordinal))
+        {
+            numeric = -0.0;
+            return true;
+        }
+
+        numeric = JsNumberFormat.ToNumber(key);
+        return string.Equals(JsNumberFormat.ToJsString(numeric), key, System.StringComparison.Ordinal);
+    }
+
+    /// <summary>The specification's <c>IsValidIntegerIndex</c> for a fixed-length view.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0E3441
+    // Broiler-Human:        PENDING
+    private static bool ObjectIsValidElementIndex(JsTypedArray view, double index) =>
+        !view.IsDetached &&
+        index == System.Math.Floor(index) &&
+        !(index == 0 && double.IsNegative(index)) &&
+        index >= 0 &&
+        index < view.Length;
+
+    /// <summary>
+    /// The key-independent half of <c>ValidateAndApplyPropertyDescriptor</c>: refuse what the
+    /// current property or the object's extensibility forbids, and compute the merge.
+    /// </summary>
+    /// <remarks>
+    /// It answers the refusal, or <see langword="null"/> when the definition is allowed; then
+    /// <paramref name="write"/> says whether there is anything to store - an empty descriptor against
+    /// an existing property has nothing. The caller stores <paramref name="merged"/> in whichever
+    /// table its key belongs to; <paramref name="key"/> is only the rendering the refusal names.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0AE7B4
+    // Broiler-Human:        PENDING
+    private static string? ObjectValidateAndMerge(
+        JsObject target,
+        bool held,
+        JsProperty current,
+        string key,
+        ObjectDescriptorFields fields,
+        out JsProperty merged,
+        out bool write)
+    {
         var wantsAccessor = fields.HasGet || fields.HasSet;
         var wantsData = fields.HasValue || fields.HasWritable;
+        merged = default;
+        write = false;
 
-        // AN ARRAY'S `length` IS CHECKED AND COERCED BEFORE IT IS DEFINED, exactly as an assignment
-        // to it is: a definition is the other way a program reaches it, and the two may not
-        // disagree about which values are lengths.
-        if (target is JsArray sized && fields.HasValue &&
-            string.Equals(key, "length", System.StringComparison.Ordinal))
-        {
-            var wanted = engine.ArrayLengthOrRefuse(fields.Value);
-            fields.Value = JsValue.Number(wanted);
-            ObjectApplyLength(engine, sized, wanted, fields);
-            return;
-        }
-
-        if (!target.TryGetOwnProperty(key, out var current))
+        if (!held)
         {
             if (!target.Extensible)
             {
-                throw engine.Error(
-                    "TypeError", "Cannot define property " + key + ", object is not extensible");
+                return "Cannot define property " + key + ", object is not extensible";
             }
 
             var fresh = JsPropertyAttributes.None;
@@ -1025,12 +1285,12 @@ internal sealed partial class JsRealm
                 fresh |= JsPropertyAttributes.Configurable;
             }
 
+            write = true;
+
             if (wantsAccessor)
             {
-                ObjectWriteOwn(
-                    engine, target, key, JsProperty.Accessor(fields.Getter, fields.Setter, fresh));
-
-                return;
+                merged = JsProperty.Accessor(fields.Getter, fields.Setter, fresh);
+                return null;
             }
 
             if (fields.HasWritable && fields.Writable)
@@ -1038,18 +1298,13 @@ internal sealed partial class JsRealm
                 fresh |= JsPropertyAttributes.Writable;
             }
 
-            ObjectWriteOwn(
-                engine,
-                target,
-                key,
-                JsProperty.Data(fields.HasValue ? fields.Value : JsValue.Undefined, fresh));
-
-            return;
+            merged = JsProperty.Data(fields.HasValue ? fields.Value : JsValue.Undefined, fresh);
+            return null;
         }
 
         if (!fields.HasEnumerable && !fields.HasConfigurable && !wantsAccessor && !wantsData)
         {
-            return;
+            return null;
         }
 
         // A NON-CONFIGURABLE PROPERTY IS THE WHOLE POINT OF THE VALIDATION. Everything below is a
@@ -1057,43 +1312,45 @@ internal sealed partial class JsRealm
         // suggestion rather than a guarantee.
         if (!current.Configurable)
         {
+            var redefine = "Cannot redefine property: " + key;
+
             if (fields.HasConfigurable && fields.Configurable)
             {
-                throw engine.Error("TypeError", "Cannot redefine property: " + key);
+                return redefine;
             }
 
             if (fields.HasEnumerable && fields.Enumerable != current.Enumerable)
             {
-                throw engine.Error("TypeError", "Cannot redefine property: " + key);
+                return redefine;
             }
 
             if ((wantsAccessor && !current.IsAccessor) || (wantsData && current.IsAccessor))
             {
-                throw engine.Error("TypeError", "Cannot redefine property: " + key);
+                return redefine;
             }
 
             if (current.IsAccessor)
             {
                 if (fields.HasGet && !ReferenceEquals(fields.Getter, current.Getter))
                 {
-                    throw engine.Error("TypeError", "Cannot redefine property: " + key);
+                    return redefine;
                 }
 
                 if (fields.HasSet && !ReferenceEquals(fields.Setter, current.Setter))
                 {
-                    throw engine.Error("TypeError", "Cannot redefine property: " + key);
+                    return redefine;
                 }
             }
             else if (!current.Writable)
             {
                 if (fields.HasWritable && fields.Writable)
                 {
-                    throw engine.Error("TypeError", "Cannot redefine property: " + key);
+                    return redefine;
                 }
 
                 if (fields.HasValue && !ObjectSameValue(fields.Value, current.Value))
                 {
-                    throw engine.Error("TypeError", "Cannot redefine property: " + key);
+                    return redefine;
                 }
             }
         }
@@ -1114,21 +1371,19 @@ internal sealed partial class JsRealm
                 : attributes & ~JsPropertyAttributes.Configurable;
         }
 
+        write = true;
+
         if (wantsAccessor)
         {
             var getter = fields.HasGet ? fields.Getter : current.IsAccessor ? current.Getter : null;
             var setter = fields.HasSet ? fields.Setter : current.IsAccessor ? current.Setter : null;
 
-            ObjectWriteOwn(
-                engine,
-                target,
-                key,
-                JsProperty.Accessor(
-                    getter,
-                    setter,
-                    attributes & ~(JsPropertyAttributes.Writable | JsPropertyAttributes.Accessor)));
+            merged = JsProperty.Accessor(
+                getter,
+                setter,
+                attributes & ~(JsPropertyAttributes.Writable | JsPropertyAttributes.Accessor));
 
-            return;
+            return null;
         }
 
         if (wantsData || !current.IsAccessor)
@@ -1148,17 +1403,15 @@ internal sealed partial class JsRealm
                 attributes |= JsPropertyAttributes.Writable;
             }
 
-            ObjectWriteOwn(engine, target, key, JsProperty.Data(value, attributes));
-            return;
+            merged = JsProperty.Data(value, attributes);
+            return null;
         }
 
         // An accessor whose only change was `enumerable` or `configurable`.
-        ObjectWriteOwn(
-            engine,
-            target,
-            key,
-            JsProperty.Accessor(
-                current.Getter, current.Setter, attributes & ~JsPropertyAttributes.Accessor));
+        merged = JsProperty.Accessor(
+            current.Getter, current.Setter, attributes & ~JsPropertyAttributes.Accessor);
+
+        return null;
     }
 
     /// <summary>Writes a validated descriptor, refusing the one shape the object model cannot hold.</summary>
@@ -1185,7 +1438,7 @@ internal sealed partial class JsRealm
     /// Both passes are the specification's: every descriptor is read and validated before any of
     /// them is written, so a malformed later descriptor leaves none of the earlier ones applied.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=58216D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=23963A
     // Broiler-Human:        PENDING
     private static void ObjectDefineFromProperties(
         JsEngine engine, JsObject target, JsValue properties)
@@ -1228,15 +1481,7 @@ internal sealed partial class JsRealm
                 continue;
             }
 
-            if (key.IsSymbol)
-            {
-                target.SetOwnSymbol(
-                    key.AsSymbol(), ObjectPropertyFromFields(engine, target, descriptors[at]));
-
-                continue;
-            }
-
-            ObjectApplyDescriptor(engine, target, key.AsString(), descriptors[at]);
+            ObjectApplyDescriptorAt(engine, target, key, descriptors[at]);
         }
     }
 
@@ -1269,35 +1514,21 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>
-    /// <c>OrdinaryDefineOwnProperty</c>, answering the boolean rather than throwing the refusal.
+    /// The target's <c>[[DefineOwnProperty]]</c>, answering the boolean rather than throwing the
+    /// refusal.
     /// </summary>
     /// <remarks>
     /// <b>It exists because a missing Proxy trap forwards the INTERNAL METHOD.</b> A proxy with no
     /// <c>defineProperty</c> trap must do to its target exactly what <c>Reflect.defineProperty</c>
     /// would — validate, and answer whether it took — and an unchecked write instead of this is how
-    /// a proxy over a frozen object would have let a redefinition through.
+    /// a proxy over a frozen object would have let a redefinition through. An exception the
+    /// definition meets is the guest's and propagates; only a refusal is <see langword="false"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BE8B4A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=31ABC4
     // Broiler-Human:        PENDING
     internal static bool ObjectDefineOrdinary(
-        JsEngine engine, JsObject target, JsValue key, ObjectDescriptorFields fields)
-    {
-        try
-        {
-            if (key.IsSymbol)
-            {
-                target.SetOwnSymbol(key.AsSymbol(), ObjectPropertyFromFields(engine, target, fields));
-                return true;
-            }
-
-            ObjectApplyDescriptor(engine, target, key.AsString(), fields);
-            return true;
-        }
-        catch (JsThrow)
-        {
-            return false;
-        }
-    }
+        JsEngine engine, JsObject target, JsValue key, ObjectDescriptorFields fields) =>
+        ObjectDefineOwn(engine, target, key, fields);
 
     /// <summary><c>OrdinaryPreventExtensions</c>, which cannot fail and says so.</summary>
     /// <remarks>
@@ -1422,16 +1653,74 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Applies <c>Object.freeze</c> or <c>Object.seal</c> to every own property.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=AC3A6B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DD1673
     // Broiler-Human:        PENDING
-    private static void ObjectSetIntegrity(JsEngine engine, JsObject target, bool freeze)
+    internal static void ObjectSetIntegrity(JsEngine engine, JsObject target, bool freeze)
     {
-        target.Extensible = false;
+        // `SetIntegrityLevel` step 3: a refused `[[PreventExtensions]]` is a TypeError before any
+        // property is touched, which a typed array over a resizable buffer answers (JSeal F05-F06).
+        if (target is JsTypedArray view)
+        {
+            if (!view.PreventExtensions())
+            {
+                throw engine.Error(
+                    "TypeError",
+                    (freeze ? "Cannot freeze" : "Cannot seal") +
+                    " a TypedArray backed by a resizable buffer");
+            }
+        }
+        else
+        {
+            target.Extensible = false;
+        }
+
+        // A PROXY IS HANDED THE PARTIAL DESCRIPTOR THE LANGUAGE NAMES, through its trap. Re-stating
+        // the whole property, as the ordinary branch below does, would show a `defineProperty`
+        // trap a `value` and an `enumerable` that `SetIntegrityLevel` never passes - and the trap's
+        // invariant checks still run on what it answers, under either kind of key.
+        if (target is JsProxy proxy)
+        {
+            foreach (var key in proxy.OwnKeys())
+            {
+                engine.Charge(1);
+
+                var fields = new ObjectDescriptorFields
+                {
+                    HasConfigurable = true,
+                    Configurable = false,
+                };
+
+                if (freeze)
+                {
+                    if (!ObjectOwnAt(proxy, key, out var current))
+                    {
+                        continue;
+                    }
+
+                    if (!current.IsAccessor)
+                    {
+                        fields.HasWritable = true;
+                        fields.Writable = false;
+                    }
+                }
+
+                ObjectDefinedOrThrow(engine, proxy, key, fields);
+            }
+
+            return;
+        }
 
         // IT WALKS BOTH KEY TABLES, and it walked only the String one until 2026-09-05. A
         // Symbol-keyed property survived `Object.freeze` writable and configurable, and
         // `Object.isFrozen` agreed the object was frozen because it asked the same half-question -
         // so a class keeping state under a Symbol was never actually frozen by either.
+        //
+        // EACH KEY GOES THROUGH THE OBJECT'S OWN [[DefineOwnProperty]], as `DefinePropertyOrThrow`
+        // with the partial descriptor, and not through a patch of the stored attributes. The
+        // patch was right for an ordinary object and wrong for every exotic one: a typed array's
+        // element cannot be made non-configurable, so freezing or sealing a non-empty one is a
+        // `TypeError`, and a namespace refuses a non-writable export - neither of which a
+        // rewritten attribute byte could report.
         foreach (var key in target.OwnKeys())
         {
             engine.Charge(1);
@@ -1441,20 +1730,19 @@ internal sealed partial class JsRealm
                 continue;
             }
 
-            var attributes = property.Attributes & ~JsPropertyAttributes.Configurable;
+            var fields = new ObjectDescriptorFields
+            {
+                HasConfigurable = true,
+                Configurable = false,
+            };
 
             if (freeze && !property.IsAccessor)
             {
-                attributes &= ~JsPropertyAttributes.Writable;
+                fields.HasWritable = true;
+                fields.Writable = false;
             }
 
-            if (attributes == property.Attributes)
-            {
-                continue;
-            }
-
-            property.Attributes = attributes;
-            ObjectSetOwnAt(target, key, property);
+            ObjectApplyDescriptorAt(engine, target, key, fields);
         }
     }
 
@@ -1506,24 +1794,25 @@ internal sealed partial class JsRealm
     /// <c>TypeError</c> says the definition did not take. Reporting success would tell a program the
     /// length is what it asked for when it is not.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=794CB0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CBB1BE
     // Broiler-Human:        PENDING
-    private static void ObjectApplyLength(
-        JsEngine engine, JsArray target, uint wanted, ObjectDescriptorFields fields)
+    private static string? ObjectApplyLength(
+        JsArray target, uint wanted, ObjectDescriptorFields fields)
     {
-        if (fields.HasEnumerable && fields.Enumerable)
+        // `length` is a non-configurable data property, so `OrdinaryDefineOwnProperty` refuses an
+        // accessor and, once it is closed, a request to open it again - whatever the value, and
+        // after the value's two conversions have run.
+        if ((fields.HasEnumerable && fields.Enumerable) ||
+            (fields.HasConfigurable && fields.Configurable) ||
+            fields.HasGet || fields.HasSet ||
+            (!target.LengthWritable && fields.HasWritable && fields.Writable))
         {
-            throw engine.Error("TypeError", "Cannot redefine property: length");
-        }
-
-        if (fields.HasConfigurable && fields.Configurable)
-        {
-            throw engine.Error("TypeError", "Cannot redefine property: length");
+            return "Cannot redefine property: length";
         }
 
         if (!target.LengthWritable && wanted != target.Length)
         {
-            throw engine.Error("TypeError", "Cannot assign to read only property 'length'");
+            return "Cannot assign to read only property 'length'";
         }
 
         var applied = target.TrySetLength(wanted);
@@ -1535,10 +1824,7 @@ internal sealed partial class JsRealm
             target.SetOwnProperty("length", held);
         }
 
-        if (!applied)
-        {
-            throw engine.Error("TypeError", "Cannot redefine property: length");
-        }
+        return applied ? null : "Cannot redefine property: length";
     }
 
     /// <summary>Which fields a descriptor object actually carried, and what they said.</summary>

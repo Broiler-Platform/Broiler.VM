@@ -1,0 +1,40 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 24 the pinned language asks only an Object pattern for Symbol.match (Test262 match/cstm-matcher-on-number-primitive); the comparison engine still consults Number.prototype
+#diverges node 25 the same for Symbol.search (Test262 search/cstm-search-on-string-primitive)
+#diverges node 26 the same for Symbol.replace (Test262 replace/cstm-replace-on-boolean-primitive)
+#diverges node 27 the same for Symbol.split (Test262 split/cstm-split-on-number-primitive)
+1 "/a/g@0,/a/g@7"
+2 "a@0,.@1,b@2,.@3,c@4"
+3 14
+4 "invoked:b+:g:abc"
+5 TypeError
+6 TypeError
+7 "b@1,b@3"
+8 "species,flags,lastIndex=b@1,c@2"
+9 "a@0"
+10 "a@2,a@3;2"
+11 "z@1,z@2;3"
+12 "A@0,A@2"
+13 TypeError
+14 "@0,@2"
+15 "[object RegExp String Iterator],function"
+16 true
+17 "/b+/gi"
+18 "/b+/gi"
+19 "/b+/m"
+20 false
+21 true
+22 false
+23 "match,source,flags=/q/y"
+24 "1"
+25 1
+26 "T!"
+27 "a|b"
+28 "aXb"
+29 "a,b|c"
+30 RangeError
+31 "\"\":1"
+32 "{\"done\":true}:2"
+33 "q,false,{\"done\":true}:2"
+34 "{\"done\":true},false,{\"done\":true}:2"
+35 "RangeError,a:2"

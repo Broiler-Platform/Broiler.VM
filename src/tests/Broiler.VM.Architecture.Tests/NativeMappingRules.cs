@@ -48,6 +48,30 @@ internal static class NativeMappingRules
     internal const string ArmingAssembly = "Broiler.VM.Profile.MachineCode";
 
     /// <summary>
+    /// The public type of the arming assembly a composition root has to reach by name before its
+    /// image can arm anything.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Named because a reference is not a capability.</b> The profile assembly declares no
+    /// platform invoke and maps nothing: it asks the composition for a page through a static hook,
+    /// and a root that links the arming assembly without ever filling that hook produces an image
+    /// which verifies a native artifact and then refuses to instantiate it. That is the state two
+    /// roots were left in between 2026-09-18 and 2026-09-23, with the register cell reading `none`
+    /// the whole time - which is why the register was consistent and the capability was gone.
+    /// </para>
+    /// <para>
+    /// <b>This reading is coarse and says so.</b> It asks whether the root's own source names the
+    /// arming assembly's page type at all; it cannot tell an install from a mention, and a root
+    /// that put the assignment behind a condition nothing satisfies would still pass. What it
+    /// catches is the shape that actually happened - a root that names the assembly nowhere - and
+    /// the finer question is answered by running the host, which
+    /// <c>src/tests/cli/expected.txt</c> does for the end-user root.
+    /// </para>
+    /// </remarks>
+    internal const string ArmingPageType = "VmNativePage";
+
+    /// <summary>
     /// The files that make up the arming path: one type in three parts.
     /// </summary>
     /// <remarks>
@@ -310,9 +334,22 @@ internal static class NativeMappingRules
     /// exercise, which reads to anyone auditing the table as a capability this composition has -
     /// and a register that overstates is the failure this component treats as a stop condition.
     /// </para>
+    /// <para>
+    /// <b>EXTENDED 2026-09-23, and the reason is a regression this rule watched happen.</b> The
+    /// second direction asked only whether the image LINKS an assembly that can map memory. Linking
+    /// it is not arming: the profile asks the composition for a page through a static hook, and a
+    /// root that links the arming assembly and never fills that hook verifies a native artifact and
+    /// then refuses to instantiate it, by name, in every publish mode. Two roots spent five days
+    /// linking neither - their cells read <c>none</c>, so this rule was green over a capability that
+    /// had been withdrawn - and when the reference was put back, nothing in this suite would have
+    /// noticed the install being left out. So a row naming an architecture now owes BOTH: the
+    /// assembly in its closure, and its own source reaching that assembly's page type.
+    /// </para>
     /// </remarks>
     internal static IEnumerable<string> K5(
-        CompositionRules.Row row, IReadOnlyList<string> assembliesThatMapMemory)
+        CompositionRules.Row row,
+        IReadOnlyList<string> assembliesThatMapMemory,
+        IReadOnlyList<string> rootsThatReachTheArmingPath)
     {
         var declared = row.NativeExecution
             .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
@@ -365,7 +402,41 @@ internal static class NativeMappingRules
                 "that can map memory executable, so the row states a permission nothing in the " +
                 "image can exercise";
         }
+
+        if (!armsNothing
+            && mapping.Length > 0
+            && !rootsThatReachTheArmingPath.Contains(row.Composition, StringComparer.Ordinal))
+        {
+            yield return
+                $"{row.Composition} declares [{string.Join(", ", declared)}] and links " +
+                $"[{string.Join(", ", mapping)}], but no source file of the root itself names " +
+                $"`{ArmingPageType}`, so nothing in the image fills the profile's mapper hook and " +
+                "every native artifact this composition verifies refuses to instantiate. Linking " +
+                "the arming path is not arming, and the row states a permission nothing in the " +
+                "image can exercise";
+        }
     }
+
+    /// <summary>
+    /// Every composition root whose own source reaches the arming assembly's page type.
+    /// </summary>
+    /// <remarks>
+    /// Read off the same tree rule K5's assembly set is read off, and for the same reason: a rule
+    /// that took the register's word for which roots install the hook would be a rule checking the
+    /// register against itself. Only the root's OWN source counts - the hook has to be filled by
+    /// something in the process, and a mention of the type in a profile assembly the root happens
+    /// to link is not that.
+    /// </remarks>
+    internal static IReadOnlyList<string> RootsThatReachTheArmingPath(
+        IReadOnlyList<SourceUnit> tree) =>
+        tree
+            .Where(static unit => unit.Assembly.StartsWith(
+                "Broiler.VM.Composition.", StringComparison.Ordinal))
+            .Where(static unit => Names(unit.Text, ArmingPageType))
+            .Select(static unit => unit.Assembly)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(static name => name, StringComparer.Ordinal)
+            .ToArray();
 
     /// <summary>Every assembly one composition's image contains, as its register row declares it.</summary>
     /// <remarks>

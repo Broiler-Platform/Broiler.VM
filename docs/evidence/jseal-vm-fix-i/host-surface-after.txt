@@ -1,0 +1,6 @@
+ok   an exotic hook that throws, is refused, or answers a foreign value gives the guest a catchable error
+ok   an exotic hook that throws while the object is enumerated gives the guest the thrown value
+ok   an exotic hook whose guest callback exhausts the allowance ends the run, uncatchably
+ok   a BigInt a host body throws or an exotic hook answers reaches the guest as itself
+ok   a BigInt a host body returns or throws, or an exotic hook answers, is a TypeError in a realm that declined BigInt
+host-surface: every check passed

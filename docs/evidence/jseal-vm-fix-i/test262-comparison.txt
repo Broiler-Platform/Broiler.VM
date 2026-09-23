@@ -1,0 +1,47 @@
+# Pinned Test262 (ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e), bytecode form, base build vs this change
+## Selection 1: built-ins/{Array,JSON,Error,Date,Object/prototype/toString,TypedArray,TypedArrayConstructors,ArrayBuffer,Proxy,NativeErrors}
+before passed 12865 of 13326
+after passed 12899 of 13326
+passing->not passing 0
+not passing->passing 34
+  FIX test/built-ins/Array/of/construct-this-with-the-number-of-arguments.js sloppy
+  FIX test/built-ins/Array/of/construct-this-with-the-number-of-arguments.js strict
+  FIX test/built-ins/Array/of/return-a-custom-instance.js sloppy
+  FIX test/built-ins/Array/of/return-a-custom-instance.js strict
+  FIX test/built-ins/Array/of/return-abrupt-from-contructor.js sloppy
+  FIX test/built-ins/Array/of/return-abrupt-from-contructor.js strict
+  FIX test/built-ins/Array/of/return-abrupt-from-data-property-using-proxy.js sloppy
+  FIX test/built-ins/Array/of/return-abrupt-from-data-property-using-proxy.js strict
+  FIX test/built-ins/Array/of/return-abrupt-from-data-property.js sloppy
+  FIX test/built-ins/Array/of/return-abrupt-from-data-property.js strict
+  FIX test/built-ins/Array/of/return-abrupt-from-setting-length.js sloppy
+  FIX test/built-ins/Array/of/return-abrupt-from-setting-length.js strict
+  FIX test/built-ins/Array/of/sets-length.js sloppy
+  FIX test/built-ins/Array/of/sets-length.js strict
+  FIX test/built-ins/ArrayBuffer/data-allocation-after-object-creation.js sloppy
+  FIX test/built-ins/ArrayBuffer/data-allocation-after-object-creation.js strict
+  FIX test/built-ins/Error/prototype/S15.11.4_A2.js sloppy
+  FIX test/built-ins/Error/prototype/S15.11.4_A2.js strict
+  FIX test/built-ins/Error/prototype/no-error-data.js sloppy
+  FIX test/built-ins/Error/prototype/no-error-data.js strict
+  FIX test/built-ins/NativeErrors/EvalError/prototype/not-error-object.js sloppy
+  FIX test/built-ins/NativeErrors/EvalError/prototype/not-error-object.js strict
+  FIX test/built-ins/NativeErrors/RangeError/prototype/not-error-object.js sloppy
+  FIX test/built-ins/NativeErrors/RangeError/prototype/not-error-object.js strict
+  FIX test/built-ins/NativeErrors/ReferenceError/prototype/not-error-object.js sloppy
+  FIX test/built-ins/NativeErrors/ReferenceError/prototype/not-error-object.js strict
+  FIX test/built-ins/NativeErrors/SyntaxError/prototype/not-error-object.js sloppy
+  FIX test/built-ins/NativeErrors/SyntaxError/prototype/not-error-object.js strict
+  FIX test/built-ins/NativeErrors/TypeError/prototype/not-error-object.js sloppy
+  FIX test/built-ins/NativeErrors/TypeError/prototype/not-error-object.js strict
+  FIX test/built-ins/NativeErrors/URIError/prototype/not-error-object.js sloppy
+  FIX test/built-ins/NativeErrors/URIError/prototype/not-error-object.js strict
+  FIX test/built-ins/TypedArrayConstructors/ctors/object-arg/iterated-array-with-modified-array-iterator.js sloppy
+  FIX test/built-ins/TypedArrayConstructors/ctors/object-arg/iterated-array-with-modified-array-iterator.js strict
+## Selection 2: built-ins/RegExp, built-ins/Function/prototype/toString, annexB/built-ins/RegExp
+before passed 2460 of 4000
+after passed 2462 of 4000
+passing->not passing 0
+not passing->passing 2
+  FIX test/built-ins/RegExp/prototype/15.10.6.js sloppy
+  FIX test/built-ins/RegExp/prototype/15.10.6.js strict

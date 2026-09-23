@@ -1,0 +1,56 @@
+# Probe and check transcripts for JSeal F09 (2026-09-22)
+
+## The 1,414 \p{Lu} pairs under iu without property escapes, base build then this change
+## (cases 65 and 66 of the-unicode-property-escapes.js: /X/iu and /[X]/iu)
+1 "1414 pairs, 28 missed: A7CE A7D2 A7D4 16EA0 16EA1 16EA2 16EA3 16EA4 16EA5 16EA6 16EA7 16EA8"
+2 "1414 pairs, 28 missed: A7CE A7D2 A7D4 16EA0 16EA1 16EA2 16EA3 16EA4 16EA5 16EA6 16EA7 16EA8"
+1 "1414 pairs, 0 missed"
+2 "1414 pairs, 0 missed"
+
+## The new probe on the base build (the whole file is refused at parse)
+broiler-js: src/tests/differential/the-unicode-property-escapes.js: 2101:UnexpectedToken at 101:24: Unicode property escapes are not supported by this matcher
+
+## Compile cost of large property classes (big.js below), this change
+class of 60000 escapes compiled in 42 ms; 50000 lone escapes in 27 ms; source lengths 560002 / 250000
+true true
+true 223 ms for a 2,000,000-character run
+false 60 ms for a failing 200,000-character run with backtracking
+
+## Metering: 60,000 property escapes in one class scanned over 100,000 characters (metered.js below)
+broiler-js: metered.js: the program did not settle within its allowance: AllowanceExhausted on Fuel
+exit 5
+
+## The matcher fuzzer (ExecutionOnly --fuzz-regexp --seed 1 --iterations 20000), this change
+broiler-js-regexp-fuzz: guidance - 25 answers reached by the seeds alone, 1877 by the end of the session, 463 mutants kept as further seeds, 20000 offered, and the pool reached its ceiling of 512, after which a mutant with a new answer grew the answer set and was not kept. Guidance is by PUBLISHED ANSWER and is not edge coverage.
+broiler-js-regexp-fuzz: no counterexample in 20000 iterations.
+
+## big.js
+var t0 = Date.now();
+var inClass = "[" + "\\p{L}\\P{Script=Greek}\\p{Any}".repeat(20000) + "]";
+var r1 = new RegExp(inClass, "u");
+var t1 = Date.now();
+var alone = "\\p{L}".repeat(50000);
+var r2 = new RegExp(alone, "u");
+var t2 = Date.now();
+print("class of 60000 escapes compiled in " + (t1 - t0) + " ms; 50000 lone escapes in " + (t2 - t1) + " ms; source lengths " + inClass.length + " / " + alone.length);
+print(r1.test("a") + " " + r2.test("a".repeat(50000)));
+var t3 = Date.now();
+print(/^\p{L}+$/u.test("a".repeat(2000000)) + " " + (Date.now() - t3) + " ms for a 2,000,000-character run");
+var t4 = Date.now();
+print(/^[\p{L}\p{N}]+x/iu.test("a".repeat(200000)) + " " + (Date.now() - t4) + " ms for a failing 200,000-character run with backtracking");
+
+## metered.js
+// A class naming 60,000 property escapes, scanned over 100,000 characters none of which it admits:
+// 6,000,000,000 table lookups, which the meter must see rather than run.
+var heavy = new RegExp("[" + "\\p{Lu}".repeat(60000) + "]", "u");
+var t0 = Date.now();
+try {
+  print(heavy.test("a".repeat(100000)));
+} finally {
+  print("ended after " + (Date.now() - t0) + " ms");
+}
+
+## A greedy class run over 2,000,000 characters without u: base build, then this change
+## (run2m.js: try { print(/^[a-z]+$/.test("a".repeat(2000000))); } catch (e) { print(e.name + ": " + e.message); })
+broiler-js: run2m.js: the invocation answered ProfileFault/AllowanceExhausted and carried no payload
+true

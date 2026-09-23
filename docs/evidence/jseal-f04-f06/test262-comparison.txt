@@ -1,0 +1,27 @@
+# Pinned Test262 ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e, bytecode form, --shards 1 --jobs 1, 2026-09-21.
+# 'feature' = the test claims resizable-arraybuffer or arraybuffer-transfer. Before = base tree build; after = this slice.
+
+## run 1: test/built-ins/{ArrayBuffer,DataView,TypedArray,TypedArrayConstructors}
+# area | variants | pass before | pass after | pass->not-pass | feature variants | feature pass before | feature pass after
+test/built-ins/ArrayBuffer | 404 | 184 | 352 | 0 | 223 | 28 | 196
+test/built-ins/DataView | 1111 | 862 | 914 | 0 | 60 | 0 | 52
+test/built-ins/TypedArray | 2860 | 1516 | 1682 | 0 | 416 | 16 | 168
+test/built-ins/TypedArrayConstructors | 1444 | 705 | 715 | 0 | 16 | 4 | 14
+TOTAL | 5819 | 3267 | 3663 | 0 | 715 | 48 | 430
+
+## run 2: Array/prototype, ArrayIteratorPrototype, Object, Function, for-of, for-in, destructuring/binding, staging/built-ins
+# area | variants | pass before | pass after | pass->not-pass | feature variants | feature pass before | feature pass after
+test/built-ins/Array | 5581 | 5371 | 5395 | 0 | 164 | 8 | 32
+test/built-ins/ArrayIteratorPrototype | 46 | 44 | 46 | 0 | 0 | 0 | 0
+test/built-ins/Function | 893 | 799 | 799 | 0 | 2 | 0 | 0
+test/built-ins/Object | 6802 | 6686 | 6686 | 0 | 10 | 0 | 0
+test/language/destructuring | 37 | 34 | 34 | 0 | 2 | 0 | 0
+test/language/statements | 1634 | 1580 | 1580 | 0 | 12 | 2 | 2
+test/staging/built-ins | 13 | 2 | 2 | 0 | 6 | 0 | 0
+TOTAL | 15006 | 14516 | 14542 | 0 | 196 | 10 | 34
+
+## review re-run (after-review): run 1 unchanged; run 2 plus test/built-ins/{Reflect,Proxy}
+# run 1: 5819 variants, pass 3663, per variant identical to the first after run.
+# run 2 original selection: 15006 variants, pass 14516 (base) -> 14542 (first after) -> 14544 (after review), 0 pass->not-pass;
+#   new: Object/freeze/typedarray-backed-by-resizable-buffer.js [sloppy, strict].
+# Reflect + Proxy: 913 variants, pass 840 (base build) -> 840 (after review), per variant identical.

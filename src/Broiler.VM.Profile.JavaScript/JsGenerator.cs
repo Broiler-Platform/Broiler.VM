@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   17
 // Annotated:        17/17
-// Exempt:           51
+// Exempt:           52
 // Human-reviewed:   0/17
 // IP risk:          None
 // Security risk:    High
@@ -525,6 +525,20 @@ internal sealed class JsAsyncCall
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=832C69
     // Broiler-Human:        PENDING
     internal bool Running { get; set; }
+
+    /// <summary>
+    /// Whether the body's completion value is dropped, so the promise is fulfilled with
+    /// <c>undefined</c>: true for a module body, whose evaluation promise the language resolves with
+    /// nothing.
+    /// </summary>
+    /// <remarks>
+    /// A module body's completion is the value of its last expression statement, and resolving the
+    /// evaluation promise WITH it adopted a thenable: a module ending in
+    /// <c>import('./self.mjs').then(f)</c> waited on its own import and never finished (VM-FIX-D).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=731148
+    // Broiler-Human:        PENDING
+    internal bool DiscardsCompletion { get; init; }
 }
 
 /// <summary>Which of the five things an async generator object is doing right now.</summary>

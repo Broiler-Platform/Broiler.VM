@@ -3,17 +3,19 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   40
-// Annotated:        40/40
+// Relevant units:   42
+// Annotated:        42/42
 // Exempt:           100
-// Human-reviewed:   0/40
-// IP risk:          None
+// Human-reviewed:   0/42
+// IP risk:          Low
 // Security risk:    High
 // Criteria:         22/18
 // Resource impact:  2/10 max
-// Unverified:       40
+// Unverified:       42
 //
 // GENERATED - DO NOT EDIT MANUALLY
+
+using Broiler.VM.Profile.JavaScript.Format;
 
 namespace Broiler.VM.Profile.JavaScript.Compiler;
 
@@ -607,7 +609,7 @@ public sealed class SliceTokenizer
         return sawNewline;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9013CA
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=415EF1
     // Broiler-Falsified-If: a character that starts an identifier is read as a punctuator, or a numeric literal is read as an identifier
     // Broiler-Human:        PENDING
     private SliceToken ReadToken(int startLine, int startColumn, bool sawNewline)
@@ -617,7 +619,7 @@ public sealed class SliceTokenizer
         // `#` opens a private name and `\` opens an escaped one. The census found these two
         // characters refusing 5,034 of test262's files between them, which is most of everything
         // this tokenizer could not read.
-        if (IsIdentifierStart(c) || c == '#' || c == '\\')
+        if (IsIdentifierStartAt(index) || c == '#' || c == '\\')
         {
             return ReadIdentifierOrKeyword(startLine, startColumn, sawNewline);
         }
@@ -645,7 +647,7 @@ public sealed class SliceTokenizer
         return ReadPunctuator(startLine, startColumn, sawNewline);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=101E97
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=09869F
     // Broiler-Human:        PENDING
     private SliceToken ReadIdentifierOrKeyword(int startLine, int startColumn, bool sawNewline)
     {
@@ -661,9 +663,14 @@ public sealed class SliceTokenizer
 
         while (index < source.Length)
         {
+            // THE FIRST CHARACTER OF THE NAME IS HELD TO ID_Start AND THE REST TO ID_Continue, and a
+            // private name's first character is the one after its `#`. A literal or escaped first
+            // character is tested here like every other.
+            var first = name.Length == (isPrivate ? 1 : 0);
+
             if (source[index] == '\\')
             {
-                if (!ReadIdentifierEscape(name, startLine, startColumn))
+                if (!ReadIdentifierEscape(name, first, startLine, startColumn))
                 {
                     return new SliceToken(
                         SliceTokenKind.Identifier, source[start..index], 0, string.Empty,
@@ -673,13 +680,15 @@ public sealed class SliceTokenizer
                 continue;
             }
 
-            if (!IsIdentifierPart(source[index]))
+            var width = first ? IdentifierStartWidth(index) : IdentifierPartWidth(index);
+
+            if (width == 0)
             {
                 break;
             }
 
-            name.Append(source[index]);
-            index++;
+            name.Append(source, index, width);
+            index += width;
         }
 
         var text = name.ToString();
@@ -710,14 +719,26 @@ public sealed class SliceTokenizer
 
     /// <summary>Reads one <c>\uXXXX</c> or <c>\u{…}</c> escape inside an identifier.</summary>
     /// <remarks>
+    /// <para>
     /// The value is the character the escape names, because that is what the identifier IS:
     /// <c>\u0061bc</c> and <c>abc</c> are one name and must resolve to one binding. A tokenizer
     /// that kept the escape text would make them two.
+    /// </para>
+    /// <para>
+    /// <b>The escaped code point is held to the same sets as a literal one</b>, which is the
+    /// language's early error: <c>ID_Start</c>, <c>$</c> or <c>_</c> in first position, and
+    /// <c>ID_Continue</c>, <c>$</c> or a joiner after it. Until JSeal slice JSD-0031-later nothing
+    /// classified it, so <c>var \u0021 = 1</c> and <c>var \u{1F600} = 1</c> declared bindings no
+    /// literal spelling could name. Each <c>\uXXXX</c> is one code point on its own, so an escaped
+    /// surrogate - a pair spelled as two escapes included - is not an identifier character.
+    /// Whether the name then spells a reserved word is the parser's question, because only it knows
+    /// the position (<see cref="SliceToken.IsEscaped"/>).
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=380942
-    // Broiler-Falsified-If: an escaped identifier and its unescaped spelling are different names
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=91F171
+    // Broiler-Falsified-If: an escaped identifier and its unescaped spelling are different names, or an escape naming a code point the literal spelling would refuse is admitted
     // Broiler-Human:        PENDING
-    private bool ReadIdentifierEscape(System.Text.StringBuilder name, int startLine, int startColumn)
+    private bool ReadIdentifierEscape(System.Text.StringBuilder name, bool first, int startLine, int startColumn)
     {
         if (index + 1 >= source.Length || source[index + 1] != 'u')
         {
@@ -737,6 +758,19 @@ public sealed class SliceTokenizer
             Refuse(
                 SliceSourceDiagnosticCode.UnknownEscapeSequence,
                 "a unicode escape in an identifier that names no code point",
+                startLine,
+                startColumn);
+
+            return false;
+        }
+
+        if (first ? !JsUnicodeLexical.IsIdentifierStart(scalar) : !JsUnicodeLexical.IsIdentifierPart(scalar))
+        {
+            Refuse(
+                SliceSourceDiagnosticCode.UnexpectedCharacter,
+                "a unicode escape in an identifier names U+" +
+                    scalar.ToString("X4", System.Globalization.CultureInfo.InvariantCulture) +
+                    (first ? ", which may not start an identifier" : ", which may not continue an identifier"),
                 startLine,
                 startColumn);
 
@@ -1085,7 +1119,7 @@ public sealed class SliceTokenizer
         return FinishNumeric(start, value, legacyOctal, startLine, startColumn, sawNewline);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=2E3750
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A1592E
     // Broiler-Human:        PENDING
     private SliceToken FinishNumeric(
         int start, double value, bool legacyOctal, int startLine, int startColumn, bool sawNewline)
@@ -1095,7 +1129,25 @@ public sealed class SliceTokenizer
         // the token's raw text; the parser turns it into a construct and the census counts it.
         if (index < source.Length && source[index] == 'n')
         {
+            // ONLY AN INTEGER SPELLING TAKES THE SUFFIX, and the rest are syntax errors of the
+            // language rather than BigInts nobody implemented (JSeal B02): `1.5n` and `1e3n` are
+            // not integers by spelling, and `01n` and `08n` begin with the zero a BigInt may not
+            // have. They are refused here, at the literal, whichever manifest is asked for - a
+            // malformed literal is malformed with or without the BigInt gate.
+            var shape = BigIntShapeRefusal(start);
+
+            if (shape is not null)
+            {
+                index++;
+                return RefuseNumeric(start, startLine, startColumn, shape);
+            }
+
             index++;
+
+            if (index < source.Length && (IsIdentifierStartAt(index) || char.IsAsciiDigit(source[index])))
+            {
+                return RefuseNumeric(start, startLine, startColumn, "a numeric literal touching an identifier");
+            }
 
             return new SliceToken(
                 SliceTokenKind.NumericLiteral, source[start..index], value, string.Empty,
@@ -1105,7 +1157,7 @@ public sealed class SliceTokenizer
         // A numeric literal may not be followed immediately by an identifier start: `3in` is not
         // `3 in`, it is an error, and a tokenizer that split it would hand the parser a program
         // the language does not have.
-        if (index < source.Length && (IsIdentifierStart(source[index]) || char.IsAsciiDigit(source[index])))
+        if (index < source.Length && (IsIdentifierStartAt(index) || char.IsAsciiDigit(source[index])))
         {
             return RefuseNumeric(start, startLine, startColumn, "a numeric literal touching an identifier");
         }
@@ -1119,6 +1171,38 @@ public sealed class SliceTokenizer
             startColumn,
             sawNewline,
             legacyOctal);
+    }
+
+    /// <summary>
+    /// Why the numeric text from <paramref name="start"/> cannot take a BigInt suffix, or null when
+    /// it can.
+    /// </summary>
+    /// <remarks>
+    /// The grammar's BigIntLiteralSuffix follows a NonDecimalIntegerLiteral or a
+    /// DecimalIntegerLiteral, and a DecimalIntegerLiteral is <c>0</c> or begins with a non-zero
+    /// digit. Everything else - a fraction, an exponent, a legacy octal, a leading zero - is
+    /// refused.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6C9D06
+    // Broiler-Human:        PENDING
+    private string? BigIntShapeRefusal(int start)
+    {
+        if (index - start > 1 && source[start] == '0' && source[start + 1] is 'x' or 'X' or 'o' or 'O' or 'b' or 'B')
+        {
+            return null;
+        }
+
+        for (var at = start; at < index; at++)
+        {
+            if (source[at] is '.' or 'e' or 'E')
+            {
+                return "a BigInt literal that is not an integer";
+            }
+        }
+
+        return index - start > 1 && source[start] == '0'
+            ? "a BigInt literal with a leading zero"
+            : null;
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=62A2FD
@@ -1141,7 +1225,7 @@ public sealed class SliceTokenizer
     /// this by re-tokenizing the source at validation time; carrying the raw text on the token is
     /// what deletes that scan.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=872F0C
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B80E71
     // Broiler-Falsified-If: a directive is recognised from the string's value rather than from its raw text
     // Broiler-Human:        PENDING
     private SliceToken ReadStringLiteral(int startLine, int startColumn, bool sawNewline)
@@ -1153,7 +1237,7 @@ public sealed class SliceTokenizer
 
         while (true)
         {
-            if (index >= source.Length || IsLineTerminator(source[index]))
+            if (index >= source.Length || source[index] is '\n' or '\r')
             {
                 Refuse(
                     SliceSourceDiagnosticCode.UnterminatedStringLiteral,
@@ -1172,6 +1256,17 @@ public sealed class SliceTokenizer
             {
                 index++;
                 break;
+            }
+
+            // U+2028 AND U+2029 ARE STRING CHARACTERS SINCE ES2019 AND STILL LINE TERMINATORS.
+            // The JSON superset admits them in a string literal, so they are part of the value;
+            // they end a line everywhere else, so the line count moves past them here as well,
+            // or every position after one names the line above it.
+            if (c is '\u2028' or '\u2029')
+            {
+                value.Append(c);
+                AdvanceLine(c);
+                continue;
             }
 
             if (c != '\\')
@@ -1408,7 +1503,7 @@ public sealed class SliceTokenizer
     /// Scans from just past a backtick to just past the backtick that closes it, answering whether
     /// one was found.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BB535C
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0FABF8
     // Broiler-Falsified-If: a substitution consumes the backtick that closes the template it belongs to
     // Broiler-Human:        PENDING
     private bool ScanTemplateBody()
@@ -1419,7 +1514,7 @@ public sealed class SliceTokenizer
 
             if (c == '\\')
             {
-                index += 2;
+                SkipEscape();
                 continue;
             }
 
@@ -1559,7 +1654,7 @@ public sealed class SliceTokenizer
     }
 
     /// <summary>Skips a string literal from its opening quote to just past its closing one.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=98CF66
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6DD49B
     // Broiler-Falsified-If: an escaped quote ends the string, or an unterminated one swallows the rest of the source
     // Broiler-Human:        PENDING
     private void ScanStringBody(char quote)
@@ -1572,7 +1667,7 @@ public sealed class SliceTokenizer
 
             if (c == '\\')
             {
-                index += 2;
+                SkipEscape();
                 continue;
             }
 
@@ -1580,6 +1675,12 @@ public sealed class SliceTokenizer
             {
                 index++;
                 return;
+            }
+
+            if (c is '\u2028' or '\u2029')
+            {
+                AdvanceLine(c);
+                continue;
             }
 
             if (IsLineTerminator(c))
@@ -1597,7 +1698,7 @@ public sealed class SliceTokenizer
     /// Scans a regular-expression literal from its opening slash past its flags, answering whether
     /// it closed on the same line.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=EB5032
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=685B24
     // Broiler-Falsified-If: a slash inside a character class ends the literal
     // Broiler-Human:        PENDING
     private bool ScanRegularExpressionBody()
@@ -1616,6 +1717,15 @@ public sealed class SliceTokenizer
 
             if (c == '\\')
             {
+                // A backslash before a line terminator does not continue a regular expression:
+                // the literal ends unterminated here, and the terminator is left for the caller
+                // to count.
+                if (index + 1 < source.Length && IsLineTerminator(source[index + 1]))
+                {
+                    index++;
+                    return false;
+                }
+
                 index += 2;
                 continue;
             }
@@ -1632,9 +1742,9 @@ public sealed class SliceTokenizer
             {
                 index++;
 
-                while (index < source.Length && IsIdentifierPart(source[index]))
+                while (index < source.Length && IdentifierPartWidth(index) is var width && width > 0)
                 {
-                    index++;
+                    index += width;
                 }
 
                 return true;
@@ -1802,6 +1912,36 @@ public sealed class SliceTokenizer
         lineStart = index;
     }
 
+    /// <summary>
+    /// Steps over a backslash and the character it escapes, counting that character as a line
+    /// when it is a line terminator.
+    /// </summary>
+    /// <remarks>
+    /// <b>A line continuation is still a line.</b> Skipping the pair by index alone lost the
+    /// terminator of every continuation in a template, and in a string inside a substitution, so
+    /// every diagnostic after one named the line above the one it was on. CRLF after the
+    /// backslash is one terminator, as it is anywhere else.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7D37DA
+    // Broiler-Human:        PENDING
+    private void SkipEscape()
+    {
+        index++;
+
+        if (index >= source.Length)
+        {
+            return;
+        }
+
+        if (IsLineTerminator(source[index]))
+        {
+            AdvanceLine(source[index]);
+            return;
+        }
+
+        index++;
+    }
+
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=846430
     // Broiler-Human:        PENDING
     private void Refuse(SliceSourceDiagnosticCode code, string message, int atLine, int atColumn) =>
@@ -1811,97 +1951,97 @@ public sealed class SliceTokenizer
     // Broiler-Human:        PENDING
     private static bool IsLineTerminator(char c) => c is '\n' or '\r' or '\u2028' or '\u2029';
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=C49F38
+    /// <summary>Whether <paramref name="c"/> is the language's <c>WhiteSpace</c>.</summary>
+    /// <remarks>
+    /// TAB, VT, FF, ZWNBSP and <c>Space_Separator</c>, from the pinned Unicode 17.0.0 table
+    /// (<see cref="JsUnicodeLexical.IsWhiteSpace"/>). This read <c>char.IsWhiteSpace</c>, which
+    /// also admits U+0085 and U+001C to U+001F, so <c>1</c> U+0085 <c>+1</c> ran and answered 2.
+    /// Every <c>WhiteSpace</c> code point is in the Basic Multilingual Plane, so one code unit is
+    /// the whole question; the line terminators are asked about first, by
+    /// <see cref="IsLineTerminator"/>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=F7C40B
     // Broiler-Human:        PENDING
-    private static bool IsWhiteSpace(char c) =>
-        c is ' ' or '\t' or '\v' or '\f' or '\u00a0' or '\ufeff' || char.IsWhiteSpace(c);
+    private static bool IsWhiteSpace(char c) => JsUnicodeLexical.IsWhiteSpace(c);
 
     /// <summary>
-    /// Whether <paramref name="c"/> may start an identifier.
+    /// Whether the code point at <paramref name="at"/> may start an identifier.
     /// </summary>
     /// <remarks>
     /// <para>
     /// <b>It is <c>ID_Start</c> and not "a letter", and the difference is a thousand refusals.</b>
     /// This predicate read <c>char.IsLetter</c>, whose answer is the general categories
     /// <c>Lu Ll Lt Lm Lo</c>; the language's answer adds <c>Nl</c> - a Roman numeral is an
-    /// identifier - and the six characters Unicode lists as <c>Other_ID_Start</c>, of which
+    /// identifier - and the characters Unicode lists as <c>Other_ID_Start</c>, of which
     /// <c>U+2118</c> is the one a conformance suite reaches for. A valid identifier was refused as
     /// <b>an unexpected character</b>, which is the one refusal this front end may not make about a
-    /// construct the language admits: a reader is sent looking for a typo, and the harness scores it
-    /// a failure rather than an unsupported construct.
+    /// construct the language admits.
     /// </para>
     /// <para>
-    /// <b>The remark this replaces said ASCII only, and the code had not agreed with it for some
-    /// time.</b> It described the Unicode data as an open dependency and the exclusion as
-    /// deliberate. What that dependency is actually needed for is case folding, normalisation and
-    /// the property escapes in a pattern - none of which is this, because the identifier properties
-    /// are derivable from the general categories the platform already carries plus two small
-    /// literal sets.
-    /// </para>
-    /// <para>
-    /// <b>What is still excluded is stated rather than implied</b>: an identifier character outside
-    /// the basic plane, which needs a surrogate pair and therefore a predicate over code points
-    /// rather than over UTF-16 units.
+    /// <b>The set is the pinned one and the question is asked of a code point.</b> Since JSeal slice
+    /// JSD-0031-later the answer is <see cref="JsUnicodeLexical.IsIdentifierStart"/>, the Unicode
+    /// 17.0.0 <c>ID_Start</c> the matcher's group names also read, instead of the platform's
+    /// Unicode 16 categories with a hand-written <c>Other_ID_Start</c> list. A surrogate pair is
+    /// one code point, so <c>var</c> U+1D400 <c>= 1</c> - which refused as two unexpected
+    /// surrogates - is a declaration, and a lone surrogate is not an identifier character.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7A9065
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=76C70D
     // Broiler-Falsified-If: a character the language admits to start an identifier is refused as an unexpected character
     // Broiler-Human:        PENDING
-    private static bool IsIdentifierStart(char c) =>
-        char.IsAsciiLetter(c) || c is '$' or '_' ||
-        (c > '\u007f' &&
+    private bool IsIdentifierStartAt(int at) => IdentifierStartWidth(at) > 0;
 
-            // U+2E2F IS THE ONE SUBTRACTION, and it is a subtraction rather than an omission.
-            // `ID_Start` is the letter categories MINUS `Pattern_Syntax`, and the vertical tilde is
-            // the only character in both: a modifier letter that Unicode reserves for pattern
-            // syntax. Every other character the subtraction would remove is put back by
-            // `Other_ID_Start`, which is why that set exists and why this is a single test rather
-            // than a second table.
-            c != '\u2e2f' &&
-            (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) is
-                System.Globalization.UnicodeCategory.UppercaseLetter or
-                System.Globalization.UnicodeCategory.LowercaseLetter or
-                System.Globalization.UnicodeCategory.TitlecaseLetter or
-                System.Globalization.UnicodeCategory.ModifierLetter or
-                System.Globalization.UnicodeCategory.OtherLetter or
-                System.Globalization.UnicodeCategory.LetterNumber ||
-             IsOtherIdentifierStart(c)));
-
-    /// <summary>The six characters Unicode carries as <c>Other_ID_Start</c>.</summary>
-    /// <remarks>
-    /// They are a literal list because Unicode publishes them as one: they are the characters kept
-    /// startable for stability after their general category changed, so no category test can find
-    /// them and no future one will.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DCA0EA
+    /// <summary>
+    /// The code units of the identifier-start code point at <paramref name="at"/>: 1 or 2, or 0
+    /// when the code point there may not start an identifier.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=FD9372
     // Broiler-Human:        PENDING
-    private static bool IsOtherIdentifierStart(char c) =>
-        c is '\u1885' or '\u1886' or '\u2118' or '\u212e' or '\u309b' or '\u309c';
+    private int IdentifierStartWidth(int at)
+    {
+        var codePoint = CodePointAt(at, out var width);
 
-    /// <summary>Whether <paramref name="c"/> may continue an identifier.</summary>
+        return JsUnicodeLexical.IsIdentifierStart(codePoint) ? width : 0;
+    }
+
+    /// <summary>
+    /// The code units of the identifier-part code point at <paramref name="at"/>: 1 or 2, or 0
+    /// when the code point there may not continue an identifier.
+    /// </summary>
     /// <remarks>
     /// <b>A zero-width joiner and non-joiner are identifier characters</b>, which is the clause most
-    /// often missed: the grammar names them in <c>IdentifierPart</c> outright rather than reaching
-    /// them through a property, because they are format characters and every category test says so.
+    /// often missed: the grammar names them in <c>IdentifierPartChar</c> outright rather than
+    /// reaching them through a property, because they are format characters.
+    /// <see cref="JsUnicodeLexical.IsIdentifierPart"/> names them with <c>$</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7886AC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=ED8314
     // Broiler-Human:        PENDING
-    private static bool IsIdentifierPart(char c) =>
-        IsIdentifierStart(c) || char.IsAsciiDigit(c) ||
-        (c > '\u007f' &&
-            (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) is
-                System.Globalization.UnicodeCategory.NonSpacingMark or
-                System.Globalization.UnicodeCategory.SpacingCombiningMark or
-                System.Globalization.UnicodeCategory.DecimalDigitNumber or
-                System.Globalization.UnicodeCategory.ConnectorPunctuation ||
-             c is '\u200c' or '\u200d' ||
-             IsOtherIdentifierContinue(c)));
+    private int IdentifierPartWidth(int at)
+    {
+        var codePoint = CodePointAt(at, out var width);
 
-    /// <summary>The characters Unicode carries as <c>Other_ID_Continue</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=90CBE1
+        return JsUnicodeLexical.IsIdentifierPart(codePoint) ? width : 0;
+    }
+
+    /// <summary>
+    /// The code point at <paramref name="at"/>, which must be inside the source: a surrogate pair
+    /// is read whole and anything else, a lone surrogate included, is the code unit it is.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=F6671D
     // Broiler-Human:        PENDING
-    private static bool IsOtherIdentifierContinue(char c) =>
-        c is '\u00b7' or '\u0387' or '\u19da' || (c >= '\u1369' && c <= '\u1371');
+    private int CodePointAt(int at, out int width)
+    {
+        var unit = source[at];
+
+        if (char.IsHighSurrogate(unit) && at + 1 < source.Length && char.IsLowSurrogate(source[at + 1]))
+        {
+            width = 2;
+            return char.ConvertToUtf32(unit, source[at + 1]);
+        }
+
+        width = 1;
+        return unit;
+    }
 
     /// <summary>Whether every separator in a numeric literal sits between two digits.</summary>
     /// <remarks>

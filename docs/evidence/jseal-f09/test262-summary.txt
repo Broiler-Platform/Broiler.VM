@@ -1,0 +1,19 @@
+# Test262 ccaac100, bytecode form, --shards 1 --jobs 1, 100000000 fuel and 5000 ms per variant
+# --dir test/built-ins/RegExp --dir test/language/literals/regexp; before = base (w7 + U2), after = this change
+before total|files|variants|passed|failed|unsupported|exhausted|skipped = 2117|4219|2760|1438|0|8|13
+after total|files|variants|passed|failed|unsupported|exhausted|skipped = 2117|4219|3648|550|0|8|13
+
+area | variants | passed before | passed after
+built-ins/RegExp (the rest) | 2517 | 1970 | 1972
+built-ins/RegExp/property-escapes (grammar) | 288 | 284 | 288
+built-ins/RegExp/property-escapes/generated | 882 | 0 | 882
+built-ins/RegExp/property-escapes/generated/strings | 56 | 42 | 42
+language/literals/regexp | 476 | 464 | 464
+
+verdict changes (area, before, after, variants):
+  built-ins/RegExp (the rest) | Failed -> Passed | 2
+  built-ins/RegExp/property-escapes (grammar) | Failed -> Passed | 4
+  built-ins/RegExp/property-escapes/generated | Failed -> Passed | 882
+  outside property-escapes: test/built-ins/RegExp/unicode_full_case_folding.js
+variants passing before and not after: 0
+after, re-run on the final build (prefilter charge under i made consistent with the class charge): identical verdict for every variant

@@ -1,0 +1,25 @@
+# Slice-compiler --checks --verbose, final build: the B03-B04 rows, the amended B01 row, and the summary line.
+ok   bigint/b01/operations-a-later-card-owns-refuse-by-name-and-never-answer-a-number: the program answered refused,refused,refused,refused,refused,refused,refused
+ok   bigint/b03/addition-and-subtraction-are-exact-and-signed: the program answered 9007199254740995,18446744073709551616,-2,-3,-18446744073709551617,0,184467440737...
+ok   bigint/b03/multiplication-is-exact-and-signed: the program answered 121932631137021795226185032733622923332237463801111263526900,-12,12,0,1844674407...
+ok   bigint/b03/division-and-remainder-truncate-toward-zero: the program answered 3,-3,-3,3,1,-1,1,-1,0,0,1000000000000000,1
+ok   bigint/b03/exponentiation-is-exact-including-huge-exponents-of-trivial-bases: the program answered 1267650600228229401496703205376,-27,18446744073709551616,1,1,1,-1,0,100000000000...
+ok   bigint/b03/zero-divisors-negative-exponents-and-mixed-operands-are-the-specified-errors: the program answered RangeError,RangeError,RangeError,RangeError,RangeError,TypeError,TypeError,TypeE...
+ok   bigint/b03/increment-and-decrement-keep-a-bigint-a-bigint-on-every-reference-kind: the program answered 5,5,7,7,5,9007199254740995,9007199254740993,-1,0,bigint
+ok   bigint/b03/an-update-converts-its-operand-once-with-to-numeric: the program answered bigint,10,11,6,3,5,5,5,5,6
+ok   bigint/b03/unary-minus-is-exact-and-zero-has-one-sign: the program answered -5,5,0,bigint,-18446744073709551616,9007199254740993
+ok   bigint/b03/number-arithmetic-and-updates-are-unchanged-under-the-gate: the program answered true,1,5,number,6,1,2.5,NaN,3,0,1024,1,-3.5
+ok   bigint/b03/a-string-operand-still-concatenates: the program answered 1x,a2,-34,105,3
+ok   bigint/b03/computed-bigints-are-equal-to-constants-by-value-not-identity: the program answered true,true,1,t,true,0,true,true,false,true
+ok   bigint/b03/compound-assignment-is-exact: the program answered 42,27,-3,-1
+ok   bigint/b03/results-wider-than-the-ceiling-are-range-errors: the program answered RangeError,RangeError,RangeError,RangeError,bigint,RangeError,RangeError,bigint,...
+ok   bigint/b04/bitwise-operations-are-twos-complement-at-any-width: the program answered 1,7,6,3,-5,-8,-7,-1,6,-6,4,-1,0,18446744069414584320,1180591620717411303425,1180...
+ok   bigint/b04/shifts-sign-extend-and-a-negative-count-reverses-the-direction: the program answered 18446744073709551616,-18446744073709551616,5,2,2,-3,-1,0,20,-1,2,-2,-3,0,0,-1,0
+ok   bigint/b04/unsigned-shift-and-mixed-operands-are-type-errors: the program answered TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,TypeError,...
+ok   bigint/b04/number-bitwise-operations-are-unchanged-under-the-gate: the program answered 1,-5,6,-6,2,-3,15,6,2
+ok   bigint/b04/an-oversized-shift-is-refused-before-it-allocates: the program answered RangeError,RangeError,true,0,1
+ok   bigint/b03/a-wide-multiplication-is-charged-for-its-size: narrow answered done; wide answered ResourceExhaustion/AllowanceExhausted
+ok   bigint/b03/formatting-the-widest-value-is-charged-for-its-square: under 5000000 fuel it answered ResourceExhaustion/AllowanceExhausted; under the default allowance 315653
+ok   bigint/b03/cancellation-stops-a-long-formatting: the run answered Cancellation/Cancelled after 183 ms
+ok   bigint/b04/as-int-n-and-as-uint-n-wrap-at-their-width: every width answered as specified, charging 16462
+broiler-js-slice-compiler: 349 checks passed, 2 not run on this machine and claimed by nothing

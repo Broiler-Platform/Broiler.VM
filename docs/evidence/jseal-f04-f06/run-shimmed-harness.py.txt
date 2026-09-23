@@ -1,0 +1,40 @@
+# Diagnostic only: runs pinned Test262 files whose harness reaches BigInt64Array, with a patched
+# copy of resizableArrayBufferUtils.js that does not, and dummy BigInt64Array/BigUint64Array
+# functions nothing is an instance of. Not a conformance figure.
+import os, re, subprocess, sys, tempfile
+SUITE = 'D:/test262-pinned/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e'
+CLI = sys.argv[1]
+tests = [l.strip() for l in open(sys.argv[2]) if l.strip()]
+def harness(name):
+    t = open(os.path.join(SUITE, 'harness', name), encoding='utf-8').read()
+    if name == 'resizableArrayBufferUtils.js':
+        t = t.replace("const MyBigInt64Array = subClass('BigInt64Array');", "const MyBigInt64Array = undefined;")
+        t = re.sub(r"if \(typeof BigUint64Array !== 'undefined'\) \{\s*builtinCtors.push\(BigUint64Array\);\s*\}", "", t)
+        t = re.sub(r"if \(typeof BigInt64Array !== 'undefined'\) \{\s*builtinCtors.push\(BigInt64Array\);\s*\}", "", t)
+    return t
+SHIM = "function BigInt64Array() { throw new Error('shim'); }\nfunction BigUint64Array() { throw new Error('shim'); }\n"
+ok = bad = 0
+for rel in tests:
+    src = open(os.path.join(os.environ.get('TESTS_FROM', SUITE), rel), encoding='utf-8').read()
+    meta = re.search(r'/\*---(.*?)---\*/', src, re.S).group(1)
+    inc = re.search(r'includes:\s*\[(.*?)\]', meta)
+    includes = [s.strip() for s in inc.group(1).split(',')] if inc else []
+    m = re.search(r'includes:\s*\n((?:\s*-.*\n)+)', meta)
+    if m: includes += [x.strip()[1:].strip() for x in m.group(1).splitlines() if x.strip()]
+    flags = re.search(r'flags:\s*\[(.*?)\]', meta)
+    flags = [s.strip() for s in flags.group(1).split(',')] if flags else []
+    parts = [SHIM, harness('assert.js'), harness('sta.js')]
+    if 'async' in flags: parts.append(harness('doneprintHandle.js'))
+    parts += [harness(i) for i in includes]
+    body = '\n'.join(parts) + '\n' + src
+    if 'onlyStrict' in flags or (len(sys.argv) > 3 and 'noStrict' not in flags and 'raw' not in flags): body = '"use strict";\n' + body
+    fd, path = tempfile.mkstemp(suffix='.js'); os.close(fd)
+    open(path, 'w', encoding='utf-8').write(body)
+    r = subprocess.run([CLI, '--quiet', path], capture_output=True, text=True, timeout=60, encoding='utf-8', errors='replace')
+    os.unlink(path)
+    out = (r.stdout + r.stderr).strip()
+    passed = r.returncode == 0 and ('async' not in flags or 'Test262:AsyncTestComplete' in out) and 'Test262:AsyncTestFailure' not in out
+    if passed: ok += 1
+    else:
+        bad += 1; print('FAIL', rel, '|', out.replace('\n', ' ')[:300])
+print('shim-run: passed', ok, 'failed', bad)

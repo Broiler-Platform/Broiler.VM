@@ -1,0 +1,17 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 2 the comparison engine runs a .js file as CommonJS, whose top-level declarations are a function's locals, so no global property exists; a Script's function declaration is a non-configurable global property (GlobalDeclarationInstantiation, CreateGlobalFunctionBinding)
+#diverges node 3 the comparison engine runs a .js file as CommonJS, whose top-level declarations are a function's locals, so no global property exists; a Script's var declaration is a non-configurable global property (CreateGlobalVarBinding)
+#diverges node 7 the comparison engine runs a .js file as CommonJS, whose top-level declarations are a function's locals, so the const is no global lexical declaration and the indirect eval's var is admitted; in a Script it is the SyntaxError EvalDeclarationInstantiation throws
+#diverges node 12 the comparison engine runs a .js file as CommonJS, whose top-level declarations are a function's locals, so the indirect eval creates a new configurable property; over a Script's non-configurable function binding CreateGlobalFunctionBinding changes only the value
+1 ReferenceError
+2 "function/true/true/false"
+3 "number/true/true/false"
+4 "undefined/undefined/undefined"
+5 "3/4/function"
+6 SyntaxError
+7 SyntaxError
+8 "undefined"
+9 30
+10 3
+11 10
+12 "function/true/true/false"

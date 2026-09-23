@@ -1,0 +1,6 @@
+command: python eng/run-test262.py --suite D:/test262-pinned/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e --dir test/built-ins/ArrayBuffer --shards 1 --jobs 1 --digest-cache D:/test262-pinned/digest.cache --out D:/wt/t262/vm-i16/<run>
+before (product changes reverse-applied, rebuilt):
+# test262 212 files, 404 variants: pass 184, fail 192, unsupported 8, exhausted 0, skipped 20
+after:
+# test262 212 files, 404 variants: pass 184, fail 192, unsupported 8, exhausted 0, skipped 20
+failing (path, variant) sets identical: True (192 = 192)

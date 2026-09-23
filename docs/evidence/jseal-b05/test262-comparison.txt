@@ -1,0 +1,86 @@
+# Pinned Test262 (tc39/test262@ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e), wide manifest, bytecode form, 2026-09-21.
+# before: base build (HEAD + base-vm-w5.patch) copied to D:/wt/vm-b05-basebin/conformance; after: this slice's build.
+# command (both): python eng/run-test262.py --suite D:/test262-pinned/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e [--binary-directory D:/wt/vm-b05-basebin/conformance] --shards 4 --jobs 4 --digest-cache D:/test262-pinned/digest.cache --out <dir> (after: also --floor src/tests/conformance/floors/test262-wide.floor, the floor as it was before this slice)
+#
+# whole suite, merged over 4 shards:
+# before: test262 53469 files, 95009 variants: pass 77215, fail 7911, unsupported 1970, exhausted 44, skipped 7869
+# after:  test262 53469 files, 95009 variants: pass 77971, fail 9125, unsupported 0, exhausted 44, skipped 7869
+# before: unsupported families: 1 distinct, 1970 variants - a BigInt literal; after: none
+# the re-based floor (atMost unsupported 0): the after report holds; the before report crosses it (`unsupported` is 1970 and the floor is at most 0)
+#
+# The BigInt-feature selection: the 1,501 files whose Test262 metadata declares the BigInt feature, per-variant verdicts read from the two whole runs' shard reports; categories by path.
+== before-whole2 
+  B07 typed arrays                 Passed 2, Failed 840, Unsupported 751
+  B08 DataView                     Passed 30, Failed 44, Unsupported 48
+  Temporal/Intl (absent)           Failed 10, Unsupported 20, Skipped 186
+  built-ins/BigInt                 Failed 68, Unsupported 84
+  expressions/equality             Unsupported 64
+  expressions/other operators      Passed 4, Failed 2, Unsupported 174
+  expressions/relational           Unsupported 56
+  expressions/typeof               Unsupported 2
+  language/literals/bigint         Passed 78, Unsupported 40
+  other                            Failed 8, Unsupported 68, Skipped 4
+  shared memory (JSD-0028)         Failed 46, Unsupported 160, Skipped 1
+  ALL BigInt-feature variants      Passed 114, Failed 1018, Unsupported 1467, Skipped 191
+== after-whole 
+  B07 typed arrays                 Passed 4, Failed 1589
+  B08 DataView                     Passed 34, Failed 88
+  Temporal/Intl (absent)           Passed 10, Failed 20, Skipped 186
+  built-ins/BigInt                 Passed 150, Failed 2
+  expressions/equality             Passed 64
+  expressions/other operators      Passed 178, Failed 2
+  expressions/relational           Passed 56
+  expressions/typeof               Passed 2
+  language/literals/bigint         Passed 118
+  other                            Passed 62, Failed 14, Skipped 4
+  shared memory (JSD-0028)         Failed 206, Skipped 1
+  ALL BigInt-feature variants      Passed 678, Failed 1921, Skipped 191
+== whole directory test/built-ins/BigInt (every file, not only those declaring the BigInt feature)
+  before-whole2                    Failed 68, Unsupported 86
+  after-whole                      Passed 152, Failed 2 (valueOf/cross-realm.js: $262.createRealm)
+== moved verdicts (before -> after), every variant of the whole suite
+  Failed -> Passed: 93
+  Unsupported -> Failed: 1307
+  Unsupported -> Passed: 663
+== variants of the whole suite that passed before and do not now: 0
+== the 1,970 variants unsupported before ("a BigInt literal"), by where they are, and what they answer now
+  B07 typed arrays                 Passed 8, Failed 757
+  B08 DataView                     Passed 4, Failed 52
+  Temporal/Intl (absent)           Passed 2, Failed 318
+  built-ins/BigInt                 Passed 84, Failed 2
+  expressions/equality             Passed 64
+  expressions/other operators      Passed 178
+  expressions/relational           Passed 56
+  expressions/typeof               Passed 2
+  language/literals/bigint         Passed 40
+  other                            Passed 225, Failed 16
+  shared memory (JSD-0028)         Failed 162
+  total                            Passed 663, Failed 1307
+== variants failing before and passing now, by area
+    68  built-ins/BigInt
+     8  Temporal/Intl (absent)
+     4  other
+     4  test/built-ins/Array/prototype/toLocaleString
+     4  test/built-ins/TypedArray/prototype/toLocaleString
+     2  test/built-ins/Symbol/prototype/Symbol.toPrimitive
+     2  test/language/expressions/equals
+     1  test/staging/sm/Symbol
+== after: the BigInt-feature variants still failing outside B07, B08, shared memory, Intl and Temporal, with why
+   test/built-ins/Array/prototype/toString/non-callable-join-string-tag.js sloppy | uncaught TypeError: undefined is not a function
+   test/built-ins/Array/prototype/toString/non-callable-join-string-tag.js strict | uncaught TypeError: undefined is not a function
+   test/built-ins/BigInt/prototype/valueOf/cross-realm.js sloppy | uncaught TypeError: $262.createRealm: this profile creates no nested realm
+   test/built-ins/BigInt/prototype/valueOf/cross-realm.js strict | uncaught TypeError: $262.createRealm: this profile creates no nested realm
+   test/built-ins/Error/isError/bigints.js sloppy | uncaught TypeError: undefined is not a function
+   test/built-ins/Error/isError/bigints.js strict | uncaught TypeError: undefined is not a function
+   test/built-ins/JSON/rawJSON/bigint-raw-json-can-be-stringified.js sloppy | uncaught TypeError: Cannot destructure property 'source' of undefined
+   test/built-ins/JSON/rawJSON/bigint-raw-json-can-be-stringified.js strict | uncaught TypeError: Cannot destructure property 'source' of undefined
+   test/built-ins/JSON/stringify/value-bigint-cross-realm.js sloppy | uncaught TypeError: $262.createRealm: this profile creates no nested realm
+   test/built-ins/JSON/stringify/value-bigint-cross-realm.js strict | uncaught TypeError: $262.createRealm: this profile creates no nested realm
+   test/built-ins/Map/valid-keys.js sloppy | uncaught ReferenceError: BigInt64Array is not defined
+   test/built-ins/Map/valid-keys.js strict | uncaught ReferenceError: BigInt64Array is not defined
+   test/built-ins/Set/valid-values.js sloppy | uncaught ReferenceError: BigInt64Array is not defined
+   test/built-ins/Set/valid-values.js strict | uncaught ReferenceError: BigInt64Array is not defined
+   test/language/expressions/class/subclass-builtins/subclass-BigUint64Array.js sloppy | uncaught ReferenceError: BigUint64Array is not defined
+   test/language/expressions/class/subclass-builtins/subclass-BigUint64Array.js strict | uncaught ReferenceError: BigUint64Array is not defined
+   test/language/statements/class/subclass-builtins/subclass-BigUint64Array.js sloppy | uncaught ReferenceError: BigUint64Array is not defined
+   test/language/statements/class/subclass-builtins/subclass-BigUint64Array.js strict | uncaught ReferenceError: BigUint64Array is not defined

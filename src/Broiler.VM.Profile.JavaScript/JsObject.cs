@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   31
-// Annotated:        31/31
-// Exempt:           28
-// Human-reviewed:   0/31
+// Relevant units:   38
+// Annotated:        38/38
+// Exempt:           31
+// Human-reviewed:   0/38
 // IP risk:          Low
-// Security risk:    Medium
-// Criteria:         0/0
+// Security risk:    High
+// Criteria:         1/1
 // Resource impact:  2/10 max
-// Unverified:       31
+// Unverified:       38
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -229,6 +229,19 @@ internal class JsObject
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F70761
     // Broiler-Human:        PENDING
     internal virtual bool IsConstructor => false;
+
+    /// <summary>
+    /// Whether this object has an <c>[[IsHTMLDDA]]</c> internal slot (ECMA-262 Annex B.3.6).
+    /// </summary>
+    /// <remarks>
+    /// <b>No guest can make one.</b> Only <see cref="JsHostRealm.NewHtmlDdaObject"/> does, so an
+    /// object answers true only where an embedder put one in the realm: the conformance harness's
+    /// <c>$262.IsHTMLDDA</c>. <c>ToBoolean</c>, <c>typeof</c> and <c>==</c> against <c>null</c> or
+    /// <c>undefined</c> read it, and nothing else does, which is all the annex changes.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=40F698
+    // Broiler-Human:        PENDING
+    internal virtual bool IsHtmlDda => false;
 
     /// <summary>How many own properties this object has, indexed elements included.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=27D959
@@ -667,5 +680,161 @@ internal class JsObject
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0D40F9
         // Broiler-Human:        PENDING
         internal bool Live { get; } = live;
+    }
+}
+
+/// <summary>
+/// The mapped <c>arguments</c> object of a sloppy-mode function with a simple parameter list: the
+/// specification's arguments exotic object.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>The parameter map is a row of flags over the frame's own slots, not a second copy of the
+/// values.</b> A simple parameter list binds parameter <c>i</c> in slot <c>i</c> of the function's
+/// environment record - the frame's copy loop and the compiler's declarations both hold to that -
+/// so index <c>i</c> of this object, while it is mapped, IS that slot. A closure that captured the
+/// parameter reads the same slot, so both directions of the alias, and every function that reaches
+/// either side later, see one value without anything being synchronised.
+/// </para>
+/// <para>
+/// <b>Only the four own-property methods are overridden, and that is the whole exotic object.</b>
+/// The engine's <c>[[Get]]</c>, <c>[[Set]]</c> and <c>Object.defineProperty</c> all reach own
+/// properties through them, so: a read answers the slot; a write of a data property writes the slot
+/// and then disconnects the index if the property is no longer writable; an accessor disconnects it
+/// without touching the slot; and a successful delete disconnects it. A descriptor the validation
+/// refuses never reaches <see cref="SetOwnProperty"/>, so a refused define leaves the map exactly as
+/// it was. The stored value of a mapped index goes stale while it is mapped and is never read.
+/// </para>
+/// <para>
+/// <b>Nothing outside this type can see the map.</b> It has no accessor and no host conversion
+/// looks for it; to every other part of the profile this is an object whose class is
+/// <c>Arguments</c>.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=0C7FAE
+// Broiler-Falsified-If: a mapped index answers a value other than its parameter's current binding, or a deleted, accessor-replaced or non-writable index still writes or reads the parameter
+// Broiler-Human:        PENDING
+internal sealed class JsMappedArguments : JsObject
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6AC377
+    // Broiler-Human:        PENDING
+    private readonly JsEnvironment parameters;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C028E0
+    // Broiler-Human:        PENDING
+    private readonly bool[] mapped;
+
+    /// <summary>Creates an arguments object whose map is still empty.</summary>
+    /// <param name="prototype">The realm's <c>%Object.prototype%</c>.</param>
+    /// <param name="parameters">The environment record the parameters are bound in.</param>
+    /// <param name="count">How many indices may be mapped: the lesser of the two counts.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=561D49
+    // Broiler-Human:        PENDING
+    internal JsMappedArguments(JsObject? prototype, JsEnvironment parameters, int count)
+        : base(prototype, "Arguments")
+    {
+        this.parameters = parameters;
+        mapped = count <= 0 ? System.Array.Empty<bool>() : new bool[count];
+    }
+
+    /// <summary>
+    /// Connects every index below the mappable count to its parameter, once the indices exist.
+    /// </summary>
+    /// <remarks>
+    /// It is a separate step so the construction's own writes of the actual arguments are ordinary
+    /// writes, and cannot touch a slot the frame has already filled with the same value.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=81C8DD
+    // Broiler-Human:        PENDING
+    internal void Connect()
+    {
+        for (var at = 0; at < mapped.Length && at < parameters.Slots.Length; at++)
+        {
+            mapped[at] = true;
+        }
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=41ED81
+    // Broiler-Human:        PENDING
+    internal override bool TryGetOwnProperty(string key, out JsProperty property)
+    {
+        if (!base.TryGetOwnProperty(key, out property))
+        {
+            return false;
+        }
+
+        if (IsMapped(key, out var at))
+        {
+            property.Value = parameters.Slots[at];
+        }
+
+        return true;
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=31184C
+    // Broiler-Human:        PENDING
+    internal override void SetOwnProperty(string key, JsProperty property)
+    {
+        base.SetOwnProperty(key, property);
+
+        if (!IsMapped(key, out var at))
+        {
+            return;
+        }
+
+        // AN ACCESSOR DISCONNECTS WITHOUT WRITING, and a data property writes FIRST and
+        // disconnects SECOND when it is no longer writable. That order is the specification's:
+        // `Object.defineProperty(arguments, "0", { value: 2, writable: false })` leaves the
+        // parameter holding 2, and a later write to either side is seen by that side alone. A
+        // descriptor with no value arrives here carrying the live value the validation read, so
+        // writing it back is a no-op rather than a reset.
+        if (property.IsAccessor)
+        {
+            mapped[at] = false;
+            return;
+        }
+
+        parameters.Slots[at] = property.Value;
+
+        if (!property.Writable)
+        {
+            mapped[at] = false;
+        }
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DF170B
+    // Broiler-Human:        PENDING
+    internal override bool DeleteOwnProperty(string key)
+    {
+        if (!base.DeleteOwnProperty(key))
+        {
+            return false;
+        }
+
+        if (IsMapped(key, out var at))
+        {
+            mapped[at] = false;
+        }
+
+        return true;
+    }
+
+    /// <summary>Whether <paramref name="key"/> is an index still connected to its parameter.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5DDB01
+    // Broiler-Human:        PENDING
+    private bool IsMapped(string key, out int at)
+    {
+        if (mapped.Length != 0 && IsArrayIndex(key, out var index) && index < (uint)mapped.Length &&
+            mapped[index])
+        {
+            at = (int)index;
+            return true;
+        }
+
+        at = 0;
+        return false;
     }
 }

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   48
-// Annotated:        48/48
-// Exempt:           38
-// Human-reviewed:   0/48
+// Relevant units:   61
+// Annotated:        61/61
+// Exempt:           46
+// Human-reviewed:   0/61
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         7/7
+// Criteria:         14/14
 // Resource impact:  3/10 max
-// Unverified:       48
+// Unverified:       61
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -238,7 +238,7 @@ internal sealed class JsVerifier
         return VmVerifierOutcome.Verified(EmptyState.Instance, VmArtifactSharing.Shareable);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=95A818
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=EE5705
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadSection(
         ref VmBoundedReader reader,
@@ -259,7 +259,7 @@ internal sealed class JsVerifier
             return FromReader(ref reader, reader.Position);
         }
 
-        if (kind is < 1 or > 12)
+        if (kind is < 1 or > 15)
         {
             return Invalid(
                 VmReason.UnknownFeature, JavaScriptDiagnosticCode.UnknownSectionKind, at);
@@ -290,6 +290,9 @@ internal sealed class JsVerifier
             JsFormat.SectionKind.Modules => ReadModules(ref reader, adapter, state),
             JsFormat.SectionKind.NativeCode => ReadNativeCode(ref reader, length, state),
             JsFormat.SectionKind.NativeSymbols => ReadNativeSymbols(ref reader, state),
+            JsFormat.SectionKind.EvalScopes => ReadEvalScopes(ref reader, adapter, state),
+            JsFormat.SectionKind.ScriptDeclarations => ReadScriptDeclarations(ref reader, state),
+            JsFormat.SectionKind.ScriptReferrers => ReadScriptReferrers(ref reader, state),
             _ => Invalid(
                 VmReason.UnknownFeature,
                 JavaScriptDiagnosticCode.SuspensionTargetOutsideManifest,
@@ -343,7 +346,7 @@ internal sealed class JsVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=58E734
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CF70E7
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadConstants(
         ref VmBoundedReader reader, JavaScriptReadAdapter adapter, Sections state)
@@ -431,6 +434,18 @@ internal sealed class JsVerifier
                     values[index] = JsValue.String(names[index]);
                     break;
 
+                case JsFormat.ConstantTag.BigInt:
+                {
+                    var outcome = ReadBigInt(ref reader, state, out values[index]);
+
+                    if (outcome.Category != VmOutcome.Normal)
+                    {
+                        return outcome;
+                    }
+
+                    break;
+                }
+
                 default:
                     return Invalid(
                         VmReason.UnknownFeature,
@@ -442,6 +457,70 @@ internal sealed class JsVerifier
         state.Constants = values;
         state.Names = names;
         state.SawConstants = true;
+        return Ok;
+    }
+
+    /// <summary>Reads one BigInt constant's payload, after its tag.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The numeric manifest refuses the tag outright</b>, as the unknown tag it has always been
+    /// there: that manifest is Number values only, and its native form reads a constant as a double.
+    /// Under the wide manifest the tag's admission depends on the surfaces, which are a later
+    /// section, so the first BigInt constant's position is recorded and the link rules on it
+    /// (decision JSD-0033).
+    /// </para>
+    /// <para>
+    /// <b>The width is refused before the bytes are read</b>, and the encoding must be canonical, so
+    /// one integer has one spelling and the decoding is linear in a payload the format bounds.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=07C246
+    // Broiler-Falsified-If: a BigInt constant wider than the format ceiling, or spelled non-canonically, is admitted
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadBigInt(ref VmBoundedReader reader, Sections state, out JsValue value)
+    {
+        value = JsValue.Undefined;
+        var at = reader.Position;
+
+        if (state.ManifestId == JsNumericManifest.ManifestId)
+        {
+            return Invalid(VmReason.UnknownFeature, JavaScriptDiagnosticCode.UnknownConstantTag, at);
+        }
+
+        if (!reader.TryReadByte(out var sign) || !reader.TryReadVarUInt32(out var length))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (length > JsFormat.CeilingBigIntConstantBytes)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.DeclaredMaximumTooLarge,
+                reader.Position);
+        }
+
+        if (!ReadRun(ref reader, length, out var magnitude))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        // ONE INTEGER, ONE SPELLING: the sign is a flag, the most significant byte is not zero, and
+        // zero is the empty magnitude with a clear sign - so `-0n`, which the language does not
+        // have, cannot be written either.
+        if (sign > 1 ||
+            (magnitude.Length != 0 && magnitude[^1] == 0) ||
+            (magnitude.Length == 0 && sign != 0))
+        {
+            return Invalid(
+                VmReason.MalformedEncoding,
+                JavaScriptDiagnosticCode.MalformedBigIntConstant,
+                reader.Position);
+        }
+
+        state.BigIntConstantAt ??= at;
+
+        value = JsValue.BigInt(JsBigInt.FromConstant(sign == 1, magnitude));
         return Ok;
     }
 
@@ -1142,6 +1221,275 @@ internal sealed class JsVerifier
         return true;
     }
 
+    /// <summary>Reads the eval scope map's three tables exactly as the payload declares them.</summary>
+    /// <remarks>
+    /// <b>Only the encoding is judged here</b>: counts within the ceiling, a kind, a flag byte and a
+    /// refusal this build defines. What a row NAMES - a constant, a code unit, an offset, another
+    /// row - is judged by <see cref="LinkEvalScopes"/>, after every table it could name has been
+    /// read (JSeal V14, JSD-0026 step 2).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=D1DE97
+    // Broiler-Falsified-If: a row of a kind, flag or refusal this build does not define is read as one it does
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadEvalScopes(
+        ref VmBoundedReader reader, JavaScriptReadAdapter adapter, Sections state)
+    {
+        if (!reader.TryReadDeclaredCount(out var shapeCount))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (shapeCount > JsFormat.CeilingEvalScopeRows)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedEvalScopes,
+                reader.Position);
+        }
+
+        var shapes = new JsEvalScopeRow[shapeCount];
+
+        for (var index = 0u; index < shapeCount; index++)
+        {
+            if (!adapter.Poll())
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.ReaderStopped,
+                    reader.Position);
+            }
+
+            if (!reader.TryReadByte(out var kind) ||
+                !reader.TryReadVarUInt32(out var parent) ||
+                !reader.TryReadDeclaredCount(out var nameCount))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            if (kind is < (byte)JsFormat.EvalScopeKind.Function or > (byte)JsFormat.EvalScopeKind.Module ||
+                nameCount > JsFormat.CeilingScopeSlots)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedEvalScopes,
+                    reader.Position);
+            }
+
+            var names = new JsEvalNameRow[nameCount];
+
+            for (var name = 0u; name < nameCount; name++)
+            {
+                if (!reader.TryReadVarUInt32(out var constant) ||
+                    !reader.TryReadVarUInt32(out var slot) ||
+                    !reader.TryReadByte(out var flags))
+                {
+                    return FromReader(ref reader, reader.Position);
+                }
+
+                // AN IMPORT IS IMMUTABLE AND BELONGS TO A MODULE'S ROW ALONE (JSeal V15-module): its
+                // slot is an import entry, which means nothing in any other kind of record.
+                if ((flags & ~JsFormat.EvalBindingFlagBits) != 0 ||
+                    ((flags & JsFormat.EvalBindingFunctionName) != 0 &&
+                     (flags & JsFormat.EvalBindingImmutable) == 0) ||
+                    ((flags & JsFormat.EvalBindingImport) != 0 &&
+                     (kind != (byte)JsFormat.EvalScopeKind.Module ||
+                      (flags & JsFormat.EvalBindingImmutable) == 0)))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedEvalScopes,
+                        reader.Position);
+                }
+
+                names[name] = new JsEvalNameRow(constant, slot, flags);
+            }
+
+            shapes[index] = new JsEvalScopeRow((JsFormat.EvalScopeKind)kind, parent, names);
+        }
+
+        if (!reader.TryReadDeclaredCount(out var siteCount))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (siteCount > JsFormat.CeilingEvalScopeRows)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedEvalScopes,
+                reader.Position);
+        }
+
+        var sites = new JsEvalSiteRow[siteCount];
+
+        for (var index = 0u; index < siteCount; index++)
+        {
+            if (!reader.TryReadVarUInt32(out var unit) ||
+                !reader.TryReadVarUInt32(out var offset) ||
+                !reader.TryReadVarUInt32(out var scope) ||
+                !reader.TryReadVarUInt32(out var depth) ||
+                !reader.TryReadByte(out var flags))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            if ((flags & ~(byte)JsFormat.EvalRequestFlagBits) != 0)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedEvalScopes,
+                    reader.Position);
+            }
+
+            sites[index] = new JsEvalSiteRow(
+                unit, offset, scope, depth, (JsFormat.EvalRequestFlags)flags);
+        }
+
+        if (!reader.TryReadDeclaredCount(out var declarationCount))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (declarationCount > JsFormat.CeilingEvalScopeRows)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedEvalScopes,
+                reader.Position);
+        }
+
+        var declarations = new JsEvalDeclarationRow[declarationCount];
+
+        for (var index = 0u; index < declarationCount; index++)
+        {
+            if (!reader.TryReadVarUInt32(out var unit) ||
+                !reader.TryReadByte(out var flags) ||
+                !reader.TryReadByte(out var refusal))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            if ((flags & ~(byte)JsFormat.EvalRequestFlagBits) != 0 ||
+                refusal > (byte)JsFormat.EvalRefusal.PrivateName)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedEvalScopes,
+                    reader.Position);
+            }
+
+            // A NULL RUN IS A READER FAILURE AND AN EMPTY ONE A COUNT PAST THE CEILING, which is how
+            // TryReadKeys tells the two apart for every caller.
+            if (!TryReadKeys(ref reader, JsFormat.CeilingScopeSlots, out var varNames))
+            {
+                return varNames is null
+                    ? FromReader(ref reader, reader.Position)
+                    : Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedEvalScopes,
+                        reader.Position);
+            }
+
+            if (!TryReadKeys(ref reader, JsFormat.CeilingScopeSlots, out var lexicalNames))
+            {
+                return lexicalNames is null
+                    ? FromReader(ref reader, reader.Position)
+                    : Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedEvalScopes,
+                        reader.Position);
+            }
+
+            if (!TryReadKeys(ref reader, JsFormat.CeilingScopeSlots, out var functionNames))
+            {
+                return functionNames is null
+                    ? FromReader(ref reader, reader.Position)
+                    : Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedEvalScopes,
+                        reader.Position);
+            }
+
+            if (!TryReadKeys(ref reader, JsFormat.CeilingScopeSlots, out var annexBNames))
+            {
+                return annexBNames is null
+                    ? FromReader(ref reader, reader.Position)
+                    : Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedEvalScopes,
+                        reader.Position);
+            }
+
+            if (!TryReadKeys(ref reader, JsFormat.CeilingScopeSlots, out var privateNames))
+            {
+                return privateNames is null
+                    ? FromReader(ref reader, reader.Position)
+                    : Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedEvalScopes,
+                        reader.Position);
+            }
+
+            declarations[index] = new JsEvalDeclarationRow(
+                unit,
+                (JsFormat.EvalRequestFlags)flags,
+                (JsFormat.EvalRefusal)refusal,
+                varNames!,
+                lexicalNames!,
+                functionNames!,
+                annexBNames!,
+                privateNames!);
+        }
+
+        state.EvalScopeRows = shapes;
+        state.EvalSiteRows = sites;
+        state.EvalDeclarationRows = declarations;
+        return Ok;
+    }
+
+    /// <summary>Whether constant <paramref name="constant"/> exists and spells a non-empty name.</summary>
+    /// <remarks>
+    /// Stricter than an instruction's name operand, which may also be the empty String: a scope map
+    /// row spells a binding, and no binding is spelled with nothing.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=865AE1
+    // Broiler-Human:        PENDING
+    private static bool IsInternedName(Sections state, uint constant) =>
+        constant < state.Constants!.Length && state.Names![constant].Length != 0;
+
+    /// <summary>
+    /// Whether <paramref name="offset"/> is an instruction boundary of <paramref name="unit"/> that
+    /// holds a direct-eval call.
+    /// </summary>
+    /// <remarks>
+    /// <b>A decode from the unit's first byte, not a reachability walk</b>: the lowering may leave a
+    /// site behind a <c>return</c>, where the abstract pass never goes, and the question here is
+    /// only whether the row names an instruction at all. Every instruction has a width its opcode
+    /// alone decides, so the decode is exact; each step is charged.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D3432C
+    // Broiler-Falsified-If: it answers true for an offset inside an instruction, past the unit, or holding anything but CallEval or CallEvalSpread
+    // Broiler-Human:        PENDING
+    private static bool IsEvalCall(
+        byte[] code, JsCodeUnit unit, uint offset, JavaScriptReadAdapter adapter)
+    {
+        var at = unit.CodeOffset;
+        var end = unit.CodeOffset + unit.CodeLength;
+
+        while (at < offset && at < end)
+        {
+            if (!adapter.TryChargeWork(1) || !JsOpcodes.IsDefined(code[at]))
+            {
+                return false;
+            }
+
+            at += (uint)JsOpcodes.InstructionWidth((JsOpcode)code[at]);
+        }
+
+        return at == offset && at < end &&
+            (JsOpcode)code[at] is JsOpcode.CallEval or JsOpcode.CallEvalSpread;
+    }
+
     /// <summary>Reads a counted run of unsigned integers, refusing one past a ceiling.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=38BC95
     // Broiler-Human:        PENDING
@@ -1174,7 +1522,7 @@ internal sealed class JsVerifier
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2672BD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C9FF72
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
@@ -1189,6 +1537,18 @@ internal sealed class JsVerifier
         {
             return Invalid(
                 VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MissingSection, 0);
+        }
+
+        // A BIGINT CONSTANT IS ADMITTED ONLY BESIDE THE BIGINT SURFACE, and without it the answer
+        // is the one every build before the tag gave: an unknown constant tag, at the constant. The
+        // surfaces section follows the constants, which is why this is ruled on here and not there;
+        // the composition's own admission of the surface was ruled on when that section was read.
+        if (state.BigIntConstantAt is { } bigIntAt && !state.DeclaresBigInt())
+        {
+            return Invalid(
+                VmReason.UnknownFeature,
+                JavaScriptDiagnosticCode.UnknownConstantTag,
+                bigIntAt);
         }
 
         var rows = state.FunctionRows!;
@@ -1276,6 +1636,28 @@ internal sealed class JsVerifier
                     (ulong)index);
             }
 
+            // AN EVAL-CODE UNIT IS AN EVALUATED PROGRAM'S ENTRY AND NOTHING ELSE. It is entered by
+            // a direct evaluation with its caller's eval view and no arguments, so every flag that
+            // would send it through another driver, give it parameters or make it a script or module
+            // body contradicts the one bit that says what it is (JSeal V14).
+            if ((unitFlags & JsFormat.FunctionFlags.EvalCode) != 0 &&
+                ((unitFlags & (JsFormat.FunctionFlags.ProgramBody |
+                    JsFormat.FunctionFlags.Arrow |
+                    JsFormat.FunctionFlags.Constructible |
+                    JsFormat.FunctionFlags.ClassConstructor |
+                    JsFormat.FunctionFlags.DerivedConstructor |
+                    JsFormat.FunctionFlags.BindsParameters |
+                    JsFormat.FunctionFlags.UsesArguments |
+                    JsFormat.FunctionFlags.Generator |
+                    JsFormat.FunctionFlags.Async)) != 0 ||
+                    row.ParameterCount != 0))
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedFunctionRow,
+                    (ulong)index);
+            }
+
             // DISJOINT AND ASCENDING, both. Two units whose ranges overlapped would let a branch
             // verified against one unit's range land inside the other's instruction stream, and
             // every check downstream of that is checking the wrong thing.
@@ -1346,6 +1728,27 @@ internal sealed class JsVerifier
                     JavaScriptDiagnosticCode.MalformedExceptionRegion,
                     region.Handler);
             }
+        }
+
+        var evalMap = LinkEvalScopes(state, units, adapter, out var linkedEvalMap);
+
+        if (evalMap.Category != VmOutcome.Normal)
+        {
+            return evalMap;
+        }
+
+        var scriptDeclarations = LinkScriptDeclarations(state, units, adapter, out var linkedScripts);
+
+        if (scriptDeclarations.Category != VmOutcome.Normal)
+        {
+            return scriptDeclarations;
+        }
+
+        var scriptReferrers = LinkScriptReferrers(state, units, adapter, out var linkedReferrers);
+
+        if (scriptReferrers.Category != VmOutcome.Normal)
+        {
+            return scriptReferrers;
         }
 
         var walker = new Walker(state, units, adapter);
@@ -1419,9 +1822,547 @@ internal sealed class JsVerifier
             state.NativeBackendVersion,
             state.NativeCodeAlignment,
             state.NativeCode ?? [],
-            state.NativeSymbols ?? []);
+            state.NativeSymbols ?? [],
+            linkedEvalMap,
+            linkedScripts,
+            linkedReferrers);
 
         return VmVerifierOutcome.Verified(program, VmArtifactSharing.Shareable);
+    }
+
+    /// <summary>
+    /// Holds the eval scope map to the code, the function table and itself, and builds what the
+    /// executor reads (JSeal V14, JSD-0026 section 4).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>What the bytes can show is checked, and nothing else is claimed.</b> Every shape is a kind
+    /// this build defines, a root has no parent and every other row has an EARLIER one, and every
+    /// name is an interned name bound once per row. Every site is in its unit, on an instruction
+    /// boundary holding a <see cref="JsOpcode.CallEval"/> or <see cref="JsOpcode.CallEvalSpread"/>,
+    /// named once, strict exactly when its unit is, and its chain reaches its unit's own root - a
+    /// function row for a function, a program row for a script body, an eval row for eval code - in
+    /// exactly its declared depth, through rows that are blocks, catch clauses and <c>with</c>s. The
+    /// depth itself is held to the abstract pass's by <see cref="Walker"/>. Every declaration row
+    /// belongs to an eval-code unit, and every eval-code unit has exactly one.
+    /// </para>
+    /// <para>
+    /// <b>A slot is not bounded here</b>, because the record a row describes may be a closure's
+    /// outside the unit; the executor bounds it where it reads one. So a wrong map is a wrong answer
+    /// or an internal defect, and never an unowned read.
+    /// </para>
+    /// <para>
+    /// <b>Every unit of work is charged</b>: one per row and one per name, and one per instruction
+    /// the boundary decode walks, so a map the size of the ceiling is paid for by the artifact that
+    /// carries it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=BF07DB
+    // Broiler-Falsified-If: an eval scope map row that names a non-name constant, a unit, an offset or a row it may not name reaches the executor
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome LinkEvalScopes(
+        Sections state, JsCodeUnit[] units, JavaScriptReadAdapter adapter, out JsEvalMap? map)
+    {
+        map = null;
+
+        foreach (var unit in units)
+        {
+            if ((unit.Flags & JsFormat.FunctionFlags.EvalCode) != 0)
+            {
+                state.HasEvalCode = true;
+            }
+        }
+
+        if (state.EvalScopeRows is not { } rows)
+        {
+            // NO MAP AND AN EVAL-CODE UNIT is an evaluated program with no declaration row, which
+            // the executor could not bind an answer to.
+            return state.HasEvalCode
+                ? Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedEvalScopes,
+                    0)
+                : Ok;
+        }
+
+        if (!state.DeclaresDynamic())
+        {
+            return Invalid(
+                VmReason.UnknownFeature,
+                JavaScriptDiagnosticCode.EvalScopesOutsideManifest,
+                0);
+        }
+
+        var shapes = new JsEvalShape[rows.Length];
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var row = rows[index];
+            var root = row.Kind is JsFormat.EvalScopeKind.Program or JsFormat.EvalScopeKind.Eval or
+                JsFormat.EvalScopeKind.Module;
+
+            if (!adapter.TryChargeWork(1 + (ulong)row.Names.Length))
+            {
+                return VmVerifierOutcome.ResourceExhaustion(
+                    VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact);
+            }
+
+            if (root != (row.Parent == 0) || (row.Parent != 0 && row.Parent - 1 >= (uint)index) ||
+                (row.Kind == JsFormat.EvalScopeKind.With && row.Names.Length != 0))
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedEvalScopes,
+                    (ulong)index);
+            }
+
+            var names = new System.Collections.Generic.Dictionary<
+                string, (int Slot, bool Immutable, bool Lexical, bool Hidden, bool FunctionName, bool Import)>(
+                row.Names.Length, System.StringComparer.Ordinal);
+
+            foreach (var name in row.Names)
+            {
+                // AN IMPORT'S SLOT IS AN ENTRY OF THE ARTIFACT'S IMPORT TABLE, and it is bounded by
+                // that table here, exactly as a `LoadImport` operand is (JSeal V15-module); every
+                // other slot is the executor's to bound, since the record may be a closure's.
+                var import = (name.Flags & JsFormat.EvalBindingImport) != 0;
+
+                if (!IsInternedName(state, name.NameConstant) ||
+                    (import ? name.Slot >= (uint)state.ImportCount : name.Slot > JsFormat.CeilingScopeSlots) ||
+                    !names.TryAdd(
+                        state.Names![name.NameConstant],
+                        (
+                            (int)name.Slot,
+                            (name.Flags & JsFormat.EvalBindingImmutable) != 0,
+                            (name.Flags & JsFormat.EvalBindingLexical) != 0,
+                            (name.Flags & JsFormat.EvalBindingHidden) != 0,
+                            (name.Flags & JsFormat.EvalBindingFunctionName) != 0,
+                            import)))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedEvalScopes,
+                        (ulong)index);
+                }
+            }
+
+            shapes[index] = new JsEvalShape(row.Kind, (int)row.Parent - 1, names);
+        }
+
+        var sites = new System.Collections.Generic.Dictionary<uint, JsEvalSite>(
+            state.EvalSiteRows!.Length);
+
+        var previous = -1L;
+
+        foreach (var site in state.EvalSiteRows)
+        {
+            if (!adapter.TryChargeWork(1 + site.Depth))
+            {
+                return VmVerifierOutcome.ResourceExhaustion(
+                    VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact);
+            }
+
+            if (site.Offset <= previous || site.FunctionIndex >= units.Length ||
+                site.Scope >= shapes.Length || site.Depth > MaxScopeDepth)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedEvalScopes,
+                    site.Offset);
+            }
+
+            previous = site.Offset;
+            var unit = units[site.FunctionIndex];
+            var strict = (site.Flags & JsFormat.EvalRequestFlags.Strict) != 0;
+
+            if (site.Offset < unit.CodeOffset ||
+                site.Offset >= unit.CodeOffset + unit.CodeLength ||
+                strict != unit.IsStrict ||
+                !ReachesRoot(state, shapes, site, unit) ||
+                !IsEvalCall(state.Code!, unit, site.Offset, adapter))
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedEvalScopes,
+                    site.Offset);
+            }
+
+            sites.Add(site.Offset, new JsEvalSite((int)site.Scope, site.Flags));
+            state.EvalSiteDepths[site.Offset] = site.Depth;
+        }
+
+        var declarations = new System.Collections.Generic.Dictionary<int, JsEvalDeclaration>(
+            state.EvalDeclarationRows!.Length);
+
+        foreach (var declaration in state.EvalDeclarationRows)
+        {
+            if (!adapter.TryChargeWork(
+                    1 + (ulong)declaration.VarNameConstants.Length +
+                    (ulong)declaration.LexicalNameConstants.Length +
+                    (ulong)declaration.FunctionNameConstants.Length +
+                    (ulong)declaration.AnnexBNameConstants.Length +
+                    (ulong)declaration.PrivateNameConstants.Length))
+            {
+                return VmVerifierOutcome.ResourceExhaustion(
+                    VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact);
+            }
+
+            var named = System.Array.TrueForAll(
+                    declaration.VarNameConstants, constant => IsInternedName(state, constant)) &&
+                System.Array.TrueForAll(
+                    declaration.LexicalNameConstants, constant => IsInternedName(state, constant)) &&
+                System.Array.TrueForAll(
+                    declaration.FunctionNameConstants, constant => IsInternedName(state, constant)) &&
+                System.Array.TrueForAll(
+                    declaration.AnnexBNameConstants, constant => IsInternedName(state, constant)) &&
+                // A PRIVATE NAME IS SPELLED AS ITS SLOT, `##` and then the name, which no source can
+                // write as an identifier - so a row cannot use this list to look up an ordinary
+                // binding of its caller (JSeal V15-finish).
+                System.Array.TrueForAll(
+                    declaration.PrivateNameConstants,
+                    constant => IsInternedName(state, constant) &&
+                        state.Names![constant].Length > 2 &&
+                        state.Names![constant].StartsWith("##", System.StringComparison.Ordinal));
+
+            // A STRICT PROGRAM DECLARES NOTHING OUTSIDE ITSELF: its `var`s and functions are slots of
+            // its own record, so a strict unit whose row names any is a row the executor would
+            // instantiate into its caller's scope for code the language isolates (JSeal V15).
+            var introduces = declaration.VarNameConstants.Length != 0 ||
+                declaration.FunctionNameConstants.Length != 0 ||
+                declaration.AnnexBNameConstants.Length != 0;
+
+            if (declaration.FunctionIndex >= units.Length ||
+                (units[declaration.FunctionIndex].Flags & JsFormat.FunctionFlags.EvalCode) == 0 ||
+                // A STRICT REQUEST MAKES STRICT CODE, AND A SLOPPY ONE MAY STILL: the evaluated
+                // source's own directive prologue can make it strict whatever its caller is.
+                ((declaration.Flags & JsFormat.EvalRequestFlags.Strict) != 0 &&
+                    !units[declaration.FunctionIndex].IsStrict) ||
+                (introduces && units[declaration.FunctionIndex].IsStrict) ||
+                !named ||
+                !declarations.TryAdd(
+                    (int)declaration.FunctionIndex,
+                    new JsEvalDeclaration(
+                        declaration.Flags,
+                        declaration.Refusal,
+                        Spelled(state, declaration.VarNameConstants),
+                        Spelled(state, declaration.FunctionNameConstants),
+                        Spelled(state, declaration.AnnexBNameConstants),
+                        Spelled(state, declaration.PrivateNameConstants))))
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedEvalScopes,
+                    declaration.FunctionIndex);
+            }
+        }
+
+        for (var index = 0; index < units.Length; index++)
+        {
+            if ((units[index].Flags & JsFormat.FunctionFlags.EvalCode) != 0 &&
+                !declarations.ContainsKey(index))
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedEvalScopes,
+                    (ulong)index);
+            }
+        }
+
+        map = new JsEvalMap(shapes, sites, declarations);
+        return Ok;
+    }
+
+    /// <summary>Reads the script-declarations section (JSeal V15-host) into its rows.</summary>
+    /// <remarks>
+    /// Only the framing is judged here - counts within their ceilings, integers that decode; what a
+    /// row may name is judged by <see cref="LinkScriptDeclarations"/>, once the function table and the
+    /// pool exist.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CA920C
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadScriptDeclarations(ref VmBoundedReader reader, Sections state)
+    {
+        if (!reader.TryReadDeclaredCount(out var rowCount))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (rowCount > JsFormat.CeilingFunctions)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedScriptDeclarations,
+                reader.Position);
+        }
+
+        var rows = new JsScriptDeclarationRow[rowCount];
+
+        for (var index = 0u; index < rowCount; index++)
+        {
+            if (!reader.TryReadVarUInt32(out var unit))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var runs = new uint[4][];
+
+            for (var run = 0; run < runs.Length; run++)
+            {
+                // A NULL RUN IS A READER FAILURE AND AN EMPTY ONE A COUNT PAST THE CEILING, which is
+                // how TryReadKeys tells the two apart for every caller.
+                if (!TryReadKeys(ref reader, JsFormat.CeilingScopeSlots, out var names))
+                {
+                    return names is null
+                        ? FromReader(ref reader, reader.Position)
+                        : Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.MalformedScriptDeclarations,
+                            reader.Position);
+                }
+
+                runs[run] = names!;
+            }
+
+            rows[index] = new JsScriptDeclarationRow(unit, runs[0], runs[1], runs[2], runs[3]);
+        }
+
+        state.ScriptDeclarationRows = rows;
+        return Ok;
+    }
+
+    /// <summary>
+    /// Holds the script-declarations rows to the function table and the pool, and builds what the
+    /// executor's global instantiation reads.
+    /// </summary>
+    /// <remarks>
+    /// <b>A row belongs to a script body and to nothing else</b>: a program-body unit that is not
+    /// eval code and is neither a module's body nor its initialiser, named once. Every name is an
+    /// interned name, and a strict body carries no Annex B candidate. Each row is charged by the
+    /// names it carries, so the link is metered like the rest of the pass.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=A345C7
+    // Broiler-Falsified-If: a script-declarations row that names a unit other than a script body, or a constant that is not an interned name, reaches the executor
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome LinkScriptDeclarations(
+        Sections state,
+        JsCodeUnit[] units,
+        JavaScriptReadAdapter adapter,
+        out System.Collections.Generic.Dictionary<int, JsScriptDeclaration>? scripts)
+    {
+        scripts = null;
+
+        if (state.ScriptDeclarationRows is not { } rows)
+        {
+            return Ok;
+        }
+
+        var linked = new System.Collections.Generic.Dictionary<int, JsScriptDeclaration>(rows.Length);
+
+        foreach (var row in rows)
+        {
+            if (!adapter.TryChargeWork(
+                    1 + (ulong)row.LexicalNameConstants.Length + (ulong)row.VarNameConstants.Length +
+                    (ulong)row.FunctionNameConstants.Length + (ulong)row.AnnexBNameConstants.Length))
+            {
+                return VmVerifierOutcome.ResourceExhaustion(
+                    VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact);
+            }
+
+            var named = System.Array.TrueForAll(
+                    row.LexicalNameConstants, constant => IsInternedName(state, constant)) &&
+                System.Array.TrueForAll(row.VarNameConstants, constant => IsInternedName(state, constant)) &&
+                System.Array.TrueForAll(
+                    row.FunctionNameConstants, constant => IsInternedName(state, constant)) &&
+                System.Array.TrueForAll(
+                    row.AnnexBNameConstants, constant => IsInternedName(state, constant));
+
+            if (row.FunctionIndex >= units.Length ||
+                (units[row.FunctionIndex].Flags &
+                    (JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.EvalCode)) !=
+                    JsFormat.FunctionFlags.ProgramBody ||
+                IsModuleUnit(state, row.FunctionIndex) ||
+                (row.AnnexBNameConstants.Length != 0 && units[row.FunctionIndex].IsStrict) ||
+                !named ||
+                !linked.TryAdd(
+                    (int)row.FunctionIndex,
+                    new JsScriptDeclaration(
+                        Spelled(state, row.LexicalNameConstants),
+                        Spelled(state, row.VarNameConstants),
+                        Spelled(state, row.FunctionNameConstants),
+                        Spelled(state, row.AnnexBNameConstants))))
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedScriptDeclarations,
+                    row.FunctionIndex);
+            }
+        }
+
+        scripts = linked;
+        return Ok;
+    }
+
+    /// <summary>Reads the script-referrers section (JSeal I12-upstream) into its rows.</summary>
+    /// <remarks>
+    /// Only the framing is judged here; what a row may name is judged by
+    /// <see cref="LinkScriptReferrers"/>, once the function table and the pool exist.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D92BAD
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadScriptReferrers(ref VmBoundedReader reader, Sections state)
+    {
+        if (!reader.TryReadDeclaredCount(out var rowCount))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (rowCount > JsFormat.CeilingFunctions)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedScriptReferrers,
+                reader.Position);
+        }
+
+        var rows = new (uint FunctionIndex, uint ReferrerConstant)[rowCount];
+
+        for (var index = 0u; index < rowCount; index++)
+        {
+            if (!reader.TryReadVarUInt32(out var unit) || !reader.TryReadVarUInt32(out var referrer))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            rows[index] = (unit, referrer);
+        }
+
+        state.ScriptReferrerRows = rows;
+        return Ok;
+    }
+
+    /// <summary>
+    /// Holds the script-referrers rows to the function table and the pool, and builds what the
+    /// executor reads when code with no referrer of its own asks for the running script's.
+    /// </summary>
+    /// <remarks>
+    /// <b>A row belongs to a script body and to nothing else</b>, as a script-declarations row does:
+    /// a program-body unit that is not eval code and is neither a module's body nor its initialiser,
+    /// named once, placed at a non-empty interned name. Each row is charged one unit of work.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=806351
+    // Broiler-Falsified-If: a script-referrers row that names a unit other than a script body, or a constant that is not a non-empty interned name, reaches the executor
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome LinkScriptReferrers(
+        Sections state,
+        JsCodeUnit[] units,
+        JavaScriptReadAdapter adapter,
+        out System.Collections.Generic.Dictionary<int, string>? referrers)
+    {
+        referrers = null;
+
+        if (state.ScriptReferrerRows is not { } rows)
+        {
+            return Ok;
+        }
+
+        var linked = new System.Collections.Generic.Dictionary<int, string>(rows.Length);
+
+        foreach (var (function, referrer) in rows)
+        {
+            if (!adapter.TryChargeWork(1))
+            {
+                return VmVerifierOutcome.ResourceExhaustion(
+                    VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact);
+            }
+
+            if (function >= units.Length ||
+                (units[function].Flags &
+                    (JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.EvalCode)) !=
+                    JsFormat.FunctionFlags.ProgramBody ||
+                IsModuleUnit(state, function) ||
+                !IsInternedName(state, referrer) ||
+                state.Names![referrer].Length == 0 ||
+                !linked.TryAdd((int)function, state.Names![referrer]))
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedScriptReferrers,
+                    function);
+            }
+        }
+
+        referrers = linked;
+        return Ok;
+    }
+
+    /// <summary>Whether a module record names <paramref name="unit"/> as its body or its initialiser.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1741A3
+    // Broiler-Human:        PENDING
+    private static bool IsModuleUnit(Sections state, uint unit)
+    {
+        if (state.ModuleRows is not { } modules)
+        {
+            return false;
+        }
+
+        foreach (var module in modules)
+        {
+            if (module.UnitIndex == unit || module.InitialiserUnitIndex == unit)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>The names a run of interned-name constants spells, in order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FC066D
+    // Broiler-Human:        PENDING
+    private static string[] Spelled(Sections state, uint[] constants) =>
+        constants.Length == 0
+            ? []
+            : System.Array.ConvertAll(constants, constant => state.Names![constant]);
+
+    /// <summary>
+    /// Whether a site's chain reaches its unit's own root in exactly its declared depth, through
+    /// rows that a code unit pushes itself.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=0AFF44
+    // Broiler-Falsified-If: it answers true for a chain whose row at the declared depth is not the root kind the unit's flags call for
+    // Broiler-Human:        PENDING
+    private static bool ReachesRoot(
+        Sections state, JsEvalShape[] shapes, JsEvalSiteRow site, JsCodeUnit unit)
+    {
+        var row = (int)site.Scope;
+
+        // A MODULE BODY'S SITE ENDS AT ITS MODULE'S ROW (JSeal V15-module), and a script body's at
+        // a program row: the two roots end in the global scope through different records.
+        var expected = (unit.Flags & JsFormat.FunctionFlags.EvalCode) != 0
+            ? JsFormat.EvalScopeKind.Eval
+            : (unit.Flags & JsFormat.FunctionFlags.ProgramBody) != 0
+                ? IsModuleBody(state, site.FunctionIndex)
+                    ? JsFormat.EvalScopeKind.Module
+                    : JsFormat.EvalScopeKind.Program
+                : JsFormat.EvalScopeKind.Function;
+
+        for (var step = 0u; step < site.Depth; step++)
+        {
+            // A FUNCTION BODY'S OWN VARIABLE ENVIRONMENT is a record the unit pushes, and only ever
+            // the outermost one, directly inside a function's own record (JSeal V15-finish).
+            var body = shapes[row].Kind == JsFormat.EvalScopeKind.FunctionBody &&
+                step == site.Depth - 1 && expected == JsFormat.EvalScopeKind.Function;
+
+            if (!body && shapes[row].Kind is not (JsFormat.EvalScopeKind.Block or
+                JsFormat.EvalScopeKind.Catch or JsFormat.EvalScopeKind.With))
+            {
+                return false;
+            }
+
+            row = shapes[row].Parent;
+        }
+
+        return shapes[row].Kind == expected;
     }
 
     /// <summary>
@@ -2487,6 +3428,29 @@ internal sealed class JsVerifier
             return false;
         }
 
+        /// <summary>
+        /// Where the first BigInt constant's payload begins, or null when the pool holds none.
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F363E6
+        // Broiler-Human:        PENDING
+        internal ulong? BigIntConstantAt { get; set; }
+
+        /// <summary>Whether the artifact declared the BigInt surface beside its manifest.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=357946
+        // Broiler-Human:        PENDING
+        internal bool DeclaresBigInt()
+        {
+            foreach (var surface in Surfaces)
+            {
+                if (string.Equals(surface, JsSurfaces.BigInt, System.StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>Whether the artifact declared the native surface beside its manifest.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0F78ED
         // Broiler-Human:        PENDING
@@ -2522,6 +3486,41 @@ internal sealed class JsVerifier
 
             return false;
         }
+
+        /// <summary>The eval scope map's shapes as the payload declares them, or null without the section.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A77652
+        // Broiler-Human:        PENDING
+        internal JsEvalScopeRow[]? EvalScopeRows { get; set; }
+
+        /// <summary>The eval scope map's sites as the payload declares them.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5AA912
+        // Broiler-Human:        PENDING
+        internal JsEvalSiteRow[]? EvalSiteRows { get; set; }
+
+        /// <summary>The eval scope map's declaration rows as the payload declares them.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C379BF
+        // Broiler-Human:        PENDING
+        internal JsEvalDeclarationRow[]? EvalDeclarationRows { get; set; }
+
+        /// <summary>Each admitted site's declared depth, by code offset, for the abstract pass to hold.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4C367F
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.Dictionary<uint, uint> EvalSiteDepths { get; } = [];
+
+        /// <summary>The script-declarations rows as the payload declares them, or null without the section.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A662B1
+        // Broiler-Human:        PENDING
+        internal JsScriptDeclarationRow[]? ScriptDeclarationRows { get; set; }
+
+        /// <summary>The script-referrers rows as the payload declares them, or null without the section.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=06A473
+        // Broiler-Human:        PENDING
+        internal (uint FunctionIndex, uint ReferrerConstant)[]? ScriptReferrerRows { get; set; }
+
+        /// <summary>Whether any code unit is flagged as eval code.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5C5485
+        // Broiler-Human:        PENDING
+        internal bool HasEvalCode { get; set; }
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4F7CE5
         // Broiler-Human:        PENDING
@@ -2563,7 +3562,7 @@ internal sealed class JsVerifier
         // Broiler-Human:        PENDING
         private int[] depths = [];
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D37B36
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FB800A
         // Broiler-Human:        PENDING
         internal VmVerifierOutcome Walk(int index)
         {
@@ -2704,6 +3703,19 @@ internal sealed class JsVerifier
                             (ulong)offset);
                     }
 
+                    // A SITE'S DECLARED DEPTH IS THE DEPTH THIS PASS COMPUTES THERE, which is what ties
+                    // the map's chain to the records the frame actually holds at the call: the rows
+                    // inside the unit are the records the unit pushed, one each.
+                    if (opcode is JsOpcode.CallEval or JsOpcode.CallEvalSpread &&
+                        state.EvalSiteDepths.TryGetValue((uint)offset, out var declaredDepth) &&
+                        declaredDepth != (uint)depth)
+                    {
+                        return Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.MalformedEvalScopes,
+                            (ulong)offset);
+                    }
+
                     var afterDepth = depth;
 
                     switch (opcode)
@@ -2755,7 +3767,7 @@ internal sealed class JsVerifier
                         var targetHeight = opcode switch
                         {
                             JsOpcode.ForInNext or JsOpcode.IterateNext or
-                                JsOpcode.IterateCloseAsync => height - 1,
+                                JsOpcode.IterateCloseAsync or JsOpcode.DisposeStep => height - 1,
                             JsOpcode.IterateAwaitStep => height - 2,
                             _ => after,
                         };
@@ -2880,7 +3892,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1B0374
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=73F7C0
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -3096,6 +4108,31 @@ internal sealed class JsVerifier
                             JavaScriptDiagnosticCode.AwaitOutsideAsync,
                             (ulong)offset);
 
+                // A DISPOSAL STEP IS THE FIRST HALF OF AN AWAIT, and it is refused where the await
+                // would be, with the await's own code: its fall-through leaves the value an `Await`
+                // is about to suspend on, and a unit that may not await has no driver to resume
+                // the frame that reached it (JSD-0034).
+                case JsOpcode.DisposeStep:
+                    return (unit.Flags & JsFormat.FunctionFlags.Async) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.AwaitOutsideAsync,
+                            (ulong)offset);
+
+                // A HINT OR A MODE THIS VERSION DOES NOT DEFINE IS AN UNKNOWN FEATURE, answered as
+                // an undefined `NewClass` bit is: the byte names an instruction this reader knows
+                // and asks it for behaviour it does not have - and `DisposeEnd`'s stack effect is
+                // decided by the operand, so an undefined one has an effect nothing agreed on.
+                case JsOpcode.DisposeAdd:
+                case JsOpcode.DisposeEnd:
+                    return operand <= 1
+                        ? Ok
+                        : Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.UnknownOpcode,
+                            (ulong)offset);
+
                 case JsOpcode.PushScope:
                 case JsOpcode.CopyScope:
                     return operand <= JsFormat.CeilingScopeSlots
@@ -3199,6 +4236,40 @@ internal sealed class JsVerifier
                 // binding, which is a wrong ANSWER and never a reachable slot, because the search
                 // reads object records and a declarative record has no names in it to match.
                 case JsOpcode.ResolveName:
+                    return NamesAName(operand & 0xFFFF)
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+
+                // AN EVAL NAME INSTRUCTION BELONGS TO AN EVALUATED PROGRAM, and it is refused in any
+                // artifact that is not one. Its high half is a count of records to the boundary, which
+                // one byte bounds as the scope ceiling does; what the bytes cannot show is that the
+                // record it reaches IS a boundary, which the executor checks and answers as an internal
+                // defect rather than as a lookup (JSeal V14).
+                case JsOpcode.LoadEvalName:
+                case JsOpcode.LoadEvalNameOrUndefined:
+                case JsOpcode.StoreEvalName:
+                case JsOpcode.LoadEvalNameWithBase:
+                case JsOpcode.DeleteEvalName:
+                case JsOpcode.StoreEvalVariable:
+                    if (!state.DeclaresDynamic())
+                    {
+                        return Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.EvalScopesOutsideManifest,
+                            (ulong)offset);
+                    }
+
+                    if (!state.HasEvalCode)
+                    {
+                        return Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.MalformedEvalScopes,
+                            (ulong)offset);
+                    }
+
                     return NamesAName(operand & 0xFFFF)
                         ? Ok
                         : Invalid(

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   31
-// Annotated:        31/31
-// Exempt:           33
-// Human-reviewed:   0/31
+// Relevant units:   52
+// Annotated:        52/52
+// Exempt:           59
+// Human-reviewed:   0/52
 // IP risk:          None
-// Security risk:    Medium
-// Criteria:         0/0
+// Security risk:    High
+// Criteria:         1/1
 // Resource impact:  1/10 max
-// Unverified:       31
+// Unverified:       52
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -63,7 +63,7 @@ public static class JsFormat
     /// version-1 meanings; their bodies are read under version 2's rules where those differ, and
     /// the two places they differ - the limits body and the exception-region body - say so.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=96DA0B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9D29BE
     // Broiler-Human:        PENDING
     public enum SectionKind : uint
     {
@@ -148,6 +148,80 @@ public static class JsFormat
         /// handful would be a field readers learn to skip.
         /// </remarks>
         NativeSymbols = 12,
+
+        /// <summary>
+        /// The eval scope map: what each direct-<c>eval</c> site can see, and what each evaluated
+        /// program declares.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>Three tables: scope shapes, sites and eval declarations</b> (JSD-0026 section 4). A
+        /// scope shape is one compile-time scope that is visible from at least one site - its kind,
+        /// its parent and the names it binds, each with a slot and binding flags. A site row names a
+        /// <see cref="JsOpcode.CallEval"/> or <see cref="JsOpcode.CallEvalSpread"/> by its code
+        /// offset, the innermost shape it sees, how many of those shapes lie inside its own code unit,
+        /// and the <see cref="EvalRequestFlags"/> an evaluation from it is asked under. An eval
+        /// declaration row belongs to a unit flagged <see cref="FunctionFlags.EvalCode"/> and says
+        /// what the evaluated program declares and whether this build refuses to run it.
+        /// </para>
+        /// <para>
+        /// <b>It is optional, and its absence means "no site sees anything"</b>, which is what every
+        /// artifact written before the kind existed says: a direct <c>eval</c> in a function unit with
+        /// no row keeps the explicit refusal it always had. It is admitted only beside the
+        /// <see cref="JsSurfaces.Dynamic"/> surface, because a map nobody can evaluate against is a
+        /// declaration of a surface the artifact does not reach. <b>It grants nothing</b>: it names
+        /// slots the caller's own instructions could already reach, and contains no code.
+        /// </para>
+        /// </remarks>
+        EvalScopes = 13,
+
+        /// <summary>
+        /// The script declarations: what each script body declares at the global scope, so the
+        /// executor can run <c>GlobalDeclarationInstantiation</c>'s checks before its first
+        /// instruction.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>One row per script body that declares anything</b> (JSeal V15-host, JSD-0024 section
+        /// 15): its unit, then four runs of interned names - its top-level <c>let</c>, <c>const</c> and
+        /// <c>class</c> declarations, its <c>var</c> names that are no top-level function's, its
+        /// top-level function names (one per name), and the block-level functions Annex B may hoist
+        /// (sloppy only). The instructions that CREATE the bindings are unchanged; the row is what
+        /// lets every conflict and definability check run first, so a script that fails one creates
+        /// nothing.
+        /// </para>
+        /// <para>
+        /// <b>It is optional, and its absence means "no checks"</b>, which is what every artifact
+        /// written before the kind existed says: such a script keeps the lenient instantiation it
+        /// always had. It is admitted beside every manifest, because every manifest has scripts, and
+        /// <b>it grants nothing</b>: it names globals the body's own instructions create anyway.
+        /// </para>
+        /// </remarks>
+        ScriptDeclarations = 14,
+
+        /// <summary>
+        /// The script referrers: what each script body is placed at, so a dynamic <c>import()</c> in
+        /// eval code or in a <c>Function</c> body it creates carries it (JSeal I12-upstream).
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>One row per script body a host placed</b> (JSD-0024 section 20): its unit and an
+        /// interned name, the referrer the compilation was given for it (<c>JsScriptUnit.Referrer</c>).
+        /// A dynamic <c>import()</c> written in the script itself already carries that referrer as
+        /// its operand; what the row adds is the script's identity at run time, which is what the
+        /// language's <c>GetActiveScriptOrModule</c> answers for code that has no referrer of its own -
+        /// eval code the script evaluates, and a function the <c>Function</c> constructor makes while
+        /// the script is running.
+        /// </para>
+        /// <para>
+        /// <b>It is optional, and its absence means "placed nowhere"</b>, which is what every artifact
+        /// written before the kind existed says and what a script compiled with no referrer says:
+        /// such code offers its embedder an empty referrer, as before. It is admitted beside every
+        /// manifest and <b>it grants nothing</b>: it is a name a resolver reads, and no module reaches
+        /// a realm by it.
+        /// </para>
+        /// </remarks>
+        ScriptReferrers = 15,
     }
 
     /// <summary>What one import entry binds its local name to.</summary>
@@ -169,7 +243,7 @@ public static class JsFormat
     /// by no manifest there - is admitted here. The two are distinct because a property name is
     /// interned once per program and compared by reference, and a String value is a value.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=146A71
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=FD3A5D
     // Broiler-Human:        PENDING
     public enum ConstantTag : byte
     {
@@ -190,10 +264,32 @@ public static class JsFormat
 
         /// <summary>The one value <c>null</c>. No payload.</summary>
         Null = 6,
+
+        /// <summary>
+        /// A BigInt: one sign byte (0 or 1), a variable-length byte count, then the magnitude's
+        /// bytes least significant first.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>It is admitted only beside <see cref="JsSurfaces.BigInt"/></b>, which no composition
+        /// shipped at this build admits (decision JSD-0033). A well-formed one in an otherwise valid
+        /// artifact without that declaration is refused with the code a build without the tag
+        /// answered - an unknown constant tag - so every artifact written before the tag existed
+        /// keeps its meaning and every older reader refuses the new bytes by name rather than
+        /// misreading them. (The payload is decoded first, so a malformed one is refused as
+        /// malformed, and the refusal is issued once every section has been read.)
+        /// </para>
+        /// <para>
+        /// <b>The encoding is canonical</b>: zero is sign 0 with no bytes, and otherwise the last
+        /// byte is not zero. A payload wider than <see cref="CeilingBigIntConstantBytes"/> is refused
+        /// before a byte of it is read.
+        /// </para>
+        /// </remarks>
+        BigInt = 7,
     }
 
     /// <summary>The flag bits a code-unit row carries.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=5140F2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EEC5BA
     // Broiler-Human:        PENDING
     [System.Flags]
     public enum FunctionFlags : uint
@@ -292,6 +388,264 @@ public static class JsFormat
         /// </para>
         /// </remarks>
         Async = 512,
+
+        /// <summary>
+        /// The unit is the entry of an evaluated program: <c>eval</c> code, compiled for one direct
+        /// evaluation.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>Its free names are resolved through the caller, not through the global object.</b> The
+        /// unit's own record is the eval boundary: its <c>let</c>, <c>const</c> and <c>class</c>
+        /// declarations, and in strict code its <c>var</c> and function declarations, are slots of
+        /// that record, and every name it does not bind is reached by the eval name instructions,
+        /// which walk to the boundary and ask the scope map the caller's site row names (JSD-0026
+        /// section 5).
+        /// </para>
+        /// <para>
+        /// <b>A unit carrying it carries an eval declaration row</b>, is not a program body, and is
+        /// none of the function kinds: the verifier refuses the flag beside
+        /// <see cref="ProgramBody"/>, <see cref="Arrow"/>, <see cref="Constructible"/>,
+        /// <see cref="ClassConstructor"/>, <see cref="DerivedConstructor"/>,
+        /// <see cref="BindsParameters"/>, <see cref="UsesArguments"/>, <see cref="Generator"/> or
+        /// <see cref="Async"/>.
+        /// </para>
+        /// </remarks>
+        EvalCode = 1024,
+    }
+
+    /// <summary>What kind of record one row of the eval scope map describes.</summary>
+    /// <remarks>
+    /// <b>The two roots are the ends of every chain.</b> A <see cref="Program"/> row is a script
+    /// body's entry record, and past it the chain continues in the realm's global scope; an
+    /// <see cref="Eval"/> row is the boundary record of an evaluated program, and past it the chain
+    /// continues in whatever its own caller's site saw. Every other kind has a parent. A
+    /// <see cref="With"/> row names nothing: its names are whatever its object has when it is asked.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=38A7BA
+    // Broiler-Human:        PENDING
+    public enum EvalScopeKind : byte
+    {
+        /// <summary>A function's own record: parameters, <c>var</c>s, functions and <c>arguments</c>.</summary>
+        Function = 1,
+
+        /// <summary>A block, loop head, <c>switch</c> body or class record.</summary>
+        Block = 2,
+
+        /// <summary>A <c>catch</c> clause's record, which Annex B.3.4 treats differently (V15).</summary>
+        Catch = 3,
+
+        /// <summary>The object environment record a <c>with</c> statement pushes.</summary>
+        With = 4,
+
+        /// <summary>A script body's entry record: the root of a chain that ends in the global scope.</summary>
+        Program = 5,
+
+        /// <summary>An evaluated program's boundary record: the root of a chain that ends in its caller's.</summary>
+        Eval = 6,
+
+        /// <summary>
+        /// A function body's own variable environment, which the unit pushes inside its parameters'
+        /// record when the parameter list has expressions (JSeal V15-finish): the variable
+        /// environment of a direct eval in the body.
+        /// </summary>
+        FunctionBody = 7,
+
+        /// <summary>
+        /// A module's own environment: the root of a chain that ends in the global scope, whose
+        /// names are the module's slots and its imports (JSeal V15-module).
+        /// </summary>
+        /// <remarks>
+        /// An import is listed with <see cref="EvalBindingImport"/>, and its slot is then its entry
+        /// in the artifact's import table: an evaluation reads it through the exporting module's
+        /// environment every time, as <see cref="JsOpcode.LoadImport"/> does.
+        /// </remarks>
+        Module = 8,
+    }
+
+    /// <summary>The binding flag that makes a write through the eval scope map a <c>TypeError</c>.</summary>
+    /// <remarks>
+    /// It is the same fact the lowering's own <c>constant</c> answer carries, and a store through the
+    /// map throws where <see cref="JsOpcode.ThrowImmutable"/> would have thrown for the same name.
+    /// <see cref="EvalBindingFunctionName"/> is admitted only together with this one;
+    /// <see cref="EvalBindingFlagBits"/> lists every bit a name's flags byte may carry.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A80A45
+    // Broiler-Human:        PENDING
+    public const byte EvalBindingImmutable = 1;
+
+    /// <summary>
+    /// The binding flag that marks a named function expression's own name, which is immutable but
+    /// not strict: a write through the map is ignored by sloppy eval code and a <c>TypeError</c> in
+    /// strict eval code.
+    /// </summary>
+    /// <remarks>
+    /// It is the same fact the lowering answers with for a static store to that name, and it is
+    /// only admitted together with <see cref="EvalBindingImmutable"/>, so a reader that knows only
+    /// that bit still refuses the write rather than performing it (VM-FIX-D).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1F4DBD
+    // Broiler-Human:        PENDING
+    public const byte EvalBindingFunctionName = 8;
+
+    /// <summary>
+    /// The binding flag that makes a name a lexical declaration a sloppy evaluation's <c>var</c> of
+    /// the same name collides with (JSeal V15).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is what <c>EvalDeclarationInstantiation</c>'s conflict walk asks each record</b>: a name
+    /// flagged with it between a direct-<c>eval</c> site and the variable environment makes an
+    /// evaluation that declares the same name as a <c>var</c> or a function a <c>SyntaxError</c>
+    /// before anything is created, and keeps an Annex B block function of that name from being
+    /// hoisted. A name without it is a <c>var</c>, a parameter, a function, <c>arguments</c> or a
+    /// catch clause's parameter - which the walk passes, the last because Annex B.3.4 exempts the
+    /// record of a catch clause whatever the form of its parameter.
+    /// </para>
+    /// <para>
+    /// <b>A function row needs it and the others merely carry it.</b> This lowering keeps a
+    /// function's top-level <c>let</c>, <c>const</c> and <c>class</c> in the function's own record
+    /// beside its <c>var</c>s, where the specification has two records; the flag is what tells the
+    /// two halves apart. A map written before the flag existed carries none, and an evaluation
+    /// against it finds no conflict a lexical declaration of its caller's should have raised - nor
+    /// do that artifact's closures search the names the evaluation introduces. No revision marker
+    /// tells such a map apart: the JSeal V14 lowering that wrote them was never an accepted format,
+    /// the retained corpus was rewritten with JSeal V15, and an artifact a V14 build wrote has to be
+    /// compiled again rather than run under this executor.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=906733
+    // Broiler-Human:        PENDING
+    public const byte EvalBindingLexical = 2;
+
+    /// <summary>
+    /// The binding flag that makes a name of a function's record invisible from a site in the
+    /// function's own parameter list (JSeal V15, JSD-0026 step 9).
+    /// </summary>
+    /// <remarks>
+    /// <b>This lowering keeps a function's parameters and its body's declarations in one record</b>,
+    /// where the specification evaluates the parameter list before the body's variable environment
+    /// exists. A row describing the function as a parameter-initialiser site sees it carries the
+    /// parameters with <see cref="EvalBindingLexical"/> - a <c>var</c> the evaluation declares of the
+    /// same name collides with them - and every name the body declares with this flag: a name
+    /// resolved through the row passes it by, and an evaluation that declares one gets a binding of
+    /// the function's eval-variables set, which the parameter list's later code finds and which the
+    /// body's own declaration of the name - a slot, found first - shadows for the body, as the
+    /// specification's separate variable environment does.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=17E7F0
+    // Broiler-Human:        PENDING
+    public const byte EvalBindingHidden = 4;
+
+    /// <summary>
+    /// The binding flag that makes a name of a module row an import: its slot is an entry of the
+    /// artifact's import table, not a slot of the module's record (JSeal V15-module).
+    /// </summary>
+    /// <remarks>
+    /// <b>An imported binding is an indirection and never a copy</b>, so a read through the map goes
+    /// to the exporting module's environment on every access - its dead zone included - and a write
+    /// is the <c>TypeError</c> every assignment to an import is. The flag is admitted only on a
+    /// <see cref="EvalScopeKind.Module"/> row and only together with <see cref="EvalBindingImmutable"/>,
+    /// so a reader that knows only that bit still refuses the write.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A95AA7
+    // Broiler-Human:        PENDING
+    public const byte EvalBindingImport = 16;
+
+    /// <summary>Every binding flag an eval scope map row may carry.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A87556
+    // Broiler-Human:        PENDING
+    public const byte EvalBindingFlagBits =
+        EvalBindingImmutable | EvalBindingLexical | EvalBindingHidden | EvalBindingFunctionName |
+        EvalBindingImport;
+
+    /// <summary>
+    /// What a direct-<c>eval</c> site tells the compiler of the evaluated source, before it is parsed.
+    /// </summary>
+    /// <remarks>
+    /// <b>These are exactly the facts the specification's <c>PerformEval</c> reads from the calling
+    /// context</b>: whether the caller is strict, whether it is inside a function (so
+    /// <c>new.target</c> parses), a method (so a <c>super</c> property does), a derived constructor
+    /// (so <c>super()</c> does) or a class field initialiser (so <c>arguments</c> does not), plus
+    /// one fact of this profile's: whether an enclosing class declares private names, which the
+    /// scope map does not describe and an evaluation that names one is therefore refused by name
+    /// rather than parsed as an error it is not.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8F2E16
+    // Broiler-Human:        PENDING
+    [System.Flags]
+    public enum EvalRequestFlags : byte
+    {
+        /// <summary>A sloppy caller at a script's top level.</summary>
+        None = 0,
+
+        /// <summary>The caller is strict code, so the evaluated source is too.</summary>
+        Strict = 1,
+
+        /// <summary>The caller is inside a non-arrow function, so <c>new.target</c> is admitted.</summary>
+        InFunction = 2,
+
+        /// <summary>The caller is inside a method, so a <c>super</c> property parses.</summary>
+        InMethod = 4,
+
+        /// <summary>The caller is inside a derived constructor, so <c>super()</c> parses.</summary>
+        InDerivedConstructor = 8,
+
+        /// <summary>The caller is a class field initialiser, so <c>arguments</c> is a syntax error.</summary>
+        InClassFieldInitializer = 16,
+
+        /// <summary>An enclosing class declares private names the scope map does not describe.</summary>
+        InClassBody = 32,
+    }
+
+    /// <summary>Every bit <see cref="EvalRequestFlags"/> defines.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=BB6DCA
+    // Broiler-Human:        PENDING
+    public const EvalRequestFlags EvalRequestFlagBits =
+        EvalRequestFlags.Strict | EvalRequestFlags.InFunction | EvalRequestFlags.InMethod |
+        EvalRequestFlags.InDerivedConstructor | EvalRequestFlags.InClassFieldInitializer |
+        EvalRequestFlags.InClassBody;
+
+    /// <summary>Why this build refuses to run an evaluated program that compiled.</summary>
+    /// <remarks>
+    /// <b>A refusal is data in the evaluated artifact and not a compile failure</b>, because a
+    /// compile failure is what the guest sees as a <c>SyntaxError</c> and none of these is one: each
+    /// is a program the language admits whose semantics this build does not yet implement, and the
+    /// executor answers it with an explicit <c>EvalError</c> before the first instruction runs.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=193C09
+    // Broiler-Human:        PENDING
+    public enum EvalRefusal : byte
+    {
+        /// <summary>Nothing is refused.</summary>
+        None = 0,
+
+        /// <summary>
+        /// A sloppy evaluation declares a <c>var</c> or a function in its caller's variable scope.
+        /// </summary>
+        /// <remarks>
+        /// JSeal V14 wrote it for every such evaluation; since JSeal V15 (JSD-0026 steps 6-8) the
+        /// lowering writes it for none, because the executor instantiates the declarations, and the
+        /// value stays defined so that an evaluated artifact carrying it is still refused by name.
+        /// </remarks>
+        VarDeclarations = 1,
+
+        /// <summary>The evaluated source refers to its caller's <c>super</c>.</summary>
+        /// <remarks>
+        /// JSeal V14 and V15 wrote it; since JSeal V15-finish the lowering writes it for none, because
+        /// the eval frame answers <c>super</c> through its caller's method, and the value stays
+        /// defined so that an evaluated artifact carrying it is still refused by name.
+        /// </remarks>
+        SuperReference = 2,
+
+        /// <summary>The evaluated source names a private name its caller's class may declare.</summary>
+        /// <remarks>
+        /// JSeal V14 and V15 wrote it; since JSeal V15-finish the lowering writes it for none, because
+        /// the caller's map carries its classes' private names and the declaration row lists the ones
+        /// the program uses, and the value stays defined so that an evaluated artifact carrying it is
+        /// still refused by name.
+        /// </remarks>
+        PrivateName = 3,
     }
 
     /// <summary>What an exception region does when control reaches its handler.</summary>
@@ -357,6 +711,17 @@ public static class JsFormat
     // Broiler-Human:        PENDING
     public const uint CeilingScopeDepth = 255;
 
+    /// <summary>The most rows of each of the eval scope map's three tables one artifact may declare.</summary>
+    /// <remarks>
+    /// A site row names an instruction and a shape row a scope that contains one, so neither can
+    /// outnumber the code units' instructions; the bound is the function ceiling because it is the
+    /// nearest bound a reader already trusts, and a bound that happens to equal another is stated
+    /// anyway.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=AD7A91
+    // Broiler-Human:        PENDING
+    public const uint CeilingEvalScopeRows = CeilingFunctions;
+
     /// <summary>The most arguments one call instruction may pass.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=05BEFD
     // Broiler-Human:        PENDING
@@ -376,6 +741,17 @@ public static class JsFormat
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6A8F76
     // Broiler-Human:        PENDING
     public const uint CeilingSurfaces = 16;
+
+    /// <summary>The most magnitude bytes one BigInt constant may carry: 65,536 bits.</summary>
+    /// <remarks>
+    /// <b>It bounds what a constant costs to decode and what a literal costs to parse</b>, and it is
+    /// the front end's bound as well: a literal wider than this is refused at its source position
+    /// rather than written. It is a format ceiling and not the realm's ceiling on a BigInt value,
+    /// which arithmetic (JSeal B03) will need to state separately (decision JSD-0033).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1BB4FD
+    // Broiler-Human:        PENDING
+    public const uint CeilingBigIntConstantBytes = 8192;
 
     /// <summary>The most module records one artifact may declare.</summary>
     /// <remarks>
@@ -668,6 +1044,198 @@ public static class JsFormat
 
         referrer = text[..separator];
         specifier = text[(separator + 1)..];
+        return true;
+    }
+
+    /// <summary>
+    /// The first byte of a guest-initiated load that asks for the program a String is, compiled as
+    /// DIRECT <c>eval</c> code for one call site.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The third question through the same door, marked the way the second one is</b> (JSD-0026
+    /// section 5). A direct evaluation needs the source compiled under the eval goal - its free names
+    /// resolved through the caller rather than the global object, its lexical declarations kept in
+    /// its own record - and under the caller's strictness and syntactic permissions, which the one
+    /// <see cref="EvalRequestFlags"/> byte after the mark carries. The source follows, encoded as
+    /// <see cref="EncodeText"/> encodes it.
+    /// </para>
+    /// <para>
+    /// <b>U+0001 begins no program</b>, exactly as U+0000 begins none, so a provider written before
+    /// this byte existed refuses a marked payload as source it cannot parse rather than compiling it
+    /// as something else - and the executor binds every answer to the request besides, refusing an
+    /// artifact whose entry is not eval code compiled under the flags it asked for.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=984BF7
+    // Broiler-Human:        PENDING
+    public const byte EvalRequestMark = 0x01;
+
+    /// <summary>
+    /// The request payload that asks a provider for <paramref name="source"/> compiled as direct
+    /// <c>eval</c> code under <paramref name="flags"/>.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6AB473
+    // Broiler-Human:        PENDING
+    public static byte[] EvalRequest(EvalRequestFlags flags, string source)
+    {
+        var body = EncodeText(source);
+        var payload = new byte[body.Length + 2];
+        payload[0] = EvalRequestMark;
+        payload[1] = (byte)flags;
+        System.Array.Copy(body, 0, payload, 2, body.Length);
+        return payload;
+    }
+
+    /// <summary>Reads what <see cref="EvalRequest"/> wrote, or answers false.</summary>
+    /// <remarks>
+    /// A flags byte naming a bit <see cref="EvalRequestFlagBits"/> does not define is not a request
+    /// this build wrote, and it is answered false rather than read with the bit dropped: a provider
+    /// that compiled it would be compiling under a permission nobody granted.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=F267FC
+    // Broiler-Human:        PENDING
+    public static bool TryReadEvalRequest(
+        System.ReadOnlySpan<byte> payload, out EvalRequestFlags flags, out string source)
+    {
+        flags = EvalRequestFlags.None;
+        source = string.Empty;
+
+        if (payload.Length < 2 || payload[0] != EvalRequestMark ||
+            (payload[1] & ~(byte)EvalRequestFlagBits) != 0)
+        {
+            return false;
+        }
+
+        flags = (EvalRequestFlags)payload[1];
+        source = DecodeText(payload[2..]);
+        return true;
+    }
+
+    /// <summary>
+    /// Whether a payload begins with a control byte this format reserves for a request mark and
+    /// does not define, which a source provider refuses as a malformed encoding.
+    /// </summary>
+    /// <remarks>
+    /// <b>No program begins with any of these characters</b>: U+0000 to U+0008 and U+000E to U+001F
+    /// are neither white space nor a line terminator and begin no token. So a payload that begins
+    /// with one is either a request vocabulary a later build defines or a source every front end
+    /// refuses, and a provider that compiled it as source would be answering a question it cannot
+    /// have understood. The three marks this build defines are not reserved: they are read.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=53A2BE
+    // Broiler-Human:        PENDING
+    public static bool StartsWithReservedMark(System.ReadOnlySpan<byte> payload) =>
+        payload.Length != 0 &&
+        payload[0] != ModuleRequestMark &&
+        payload[0] != EvalRequestMark &&
+        payload[0] != ScriptRequestMark &&
+        (payload[0] <= 0x08 || payload[0] is >= 0x0E and <= 0x1F);
+
+    /// <summary>
+    /// The first byte of a load that asks for a String compiled as a SCRIPT an embedder is running
+    /// in an existing realm (JSeal V15-host, JSD-0024 section 15).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A fourth question through the same door, and the only one no guest can ask.</b> The
+    /// profile writes this mark from exactly one place, <c>JsHostRealm.EvaluateScript</c>, which an
+    /// embedder calls; a guest's <c>eval</c> sends <see cref="EvalRequestMark"/>, a dynamic
+    /// <c>import()</c> sends <see cref="ModuleRequestMark"/>, the <c>Function</c> constructor sends
+    /// source that begins with <c>(</c>, and a guest String that begins with a control byte is
+    /// answered as a <c>SyntaxError</c> before anything is sent. So a provider may treat the mark as
+    /// the embedder's authorisation - which is what lets it answer a host script under a policy that
+    /// refuses guest evaluation.
+    /// </para>
+    /// <para>
+    /// <b>The flags byte and the source name travel with the source</b>, because a provider compiles
+    /// the script and only it can attribute a refusal's position to a name: the name decides nothing
+    /// about the bytes. A provider that does not speak this mark refuses it as a reserved one, which
+    /// the embedder is told as the <c>SyntaxError</c> every refusal becomes.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=F9CFC2
+    // Broiler-Falsified-If: a guest-initiated load can send a payload that begins with this byte
+    // Broiler-Human:        PENDING
+    public const byte ScriptRequestMark = 0x02;
+
+    /// <summary>What an embedder asks of the script it hands a provider.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=147F0A
+    // Broiler-Human:        PENDING
+    [System.Flags]
+    public enum ScriptRequestFlags : byte
+    {
+        /// <summary>The script is strict only if its own directive prologue says so.</summary>
+        None = 0,
+
+        /// <summary>The script is strict code whatever its directive prologue says.</summary>
+        Strict = 1,
+    }
+
+    /// <summary>Every bit <see cref="ScriptRequestFlags"/> defines.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1BFB36
+    // Broiler-Human:        PENDING
+    public const ScriptRequestFlags ScriptRequestFlagBits = ScriptRequestFlags.Strict;
+
+    /// <summary>
+    /// The request payload that asks a provider for <paramref name="source"/> compiled as a script
+    /// named <paramref name="sourceName"/> under <paramref name="flags"/>.
+    /// </summary>
+    /// <remarks>
+    /// The mark, the flags byte, then the name and the source as <see cref="EncodeText"/> encodes
+    /// them, separated by one NUL - so a name may not contain one, and this refuses it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=2F3E86
+    // Broiler-Human:        PENDING
+    public static byte[] ScriptRequest(ScriptRequestFlags flags, string sourceName, string source)
+    {
+        if (sourceName.Contains('\0'))
+        {
+            throw new System.ArgumentException("a source name may not contain U+0000", nameof(sourceName));
+        }
+
+        var body = EncodeText(sourceName + "\0" + source);
+        var payload = new byte[body.Length + 2];
+        payload[0] = ScriptRequestMark;
+        payload[1] = (byte)flags;
+        System.Array.Copy(body, 0, payload, 2, body.Length);
+        return payload;
+    }
+
+    /// <summary>Reads what <see cref="ScriptRequest"/> wrote, or answers false.</summary>
+    /// <remarks>
+    /// A flags byte naming a bit <see cref="ScriptRequestFlagBits"/> does not define, or a body with
+    /// no separator, is not a request this build wrote and is answered false.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=40BE27
+    // Broiler-Human:        PENDING
+    public static bool TryReadScriptRequest(
+        System.ReadOnlySpan<byte> payload,
+        out ScriptRequestFlags flags,
+        out string sourceName,
+        out string source)
+    {
+        flags = ScriptRequestFlags.None;
+        sourceName = string.Empty;
+        source = string.Empty;
+
+        if (payload.Length < 2 || payload[0] != ScriptRequestMark ||
+            (payload[1] & ~(byte)ScriptRequestFlagBits) != 0)
+        {
+            return false;
+        }
+
+        var text = DecodeText(payload[2..]);
+        var separator = text.IndexOf('\0');
+
+        if (separator < 0)
+        {
+            return false;
+        }
+
+        flags = (ScriptRequestFlags)payload[1];
+        sourceName = text[..separator];
+        source = text[(separator + 1)..];
         return true;
     }
 }

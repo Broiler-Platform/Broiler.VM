@@ -1,0 +1,9 @@
+# Retained host answers; not a conformance oracle.
+1 undefined
+2 SyntaxError
+3 undefined
+4 1
+5 number
+6 ReferenceError
+7 3
+8 SyntaxError

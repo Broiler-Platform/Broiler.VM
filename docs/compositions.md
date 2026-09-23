@@ -156,13 +156,97 @@ the exact closure this register exists to describe.
 | `Broiler.VM.Composition.JavaScript.ExecutionOnly` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` | none |
 | `Broiler.VM.Composition.JavaScript.SliceCompiler` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler`, `Broiler.VM.Profile.MachineCode` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` | `x86-64` |
 | `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` | none |
-| `Broiler.VM.Composition.JavaScript.Conformance` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write` (optional import of `broiler.javascript`) | `broiler.javascript.write` | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3a-004` | none |
-| `Broiler.VM.Composition.JavaScript.Cli` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write`, `broiler.javascript.source-provider`, `broiler.javascript.host-surface` (all optional imports of `broiler.javascript`; the third is registered only by the `--host-surface` lane, and is a permission this root never invokes) | `broiler.javascript.source-provider`, answered by this root's own compiler | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3b-001` | none |
+| `Broiler.VM.Composition.JavaScript.Conformance` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler`, `Broiler.VM.Profile.MachineCode` | `broiler.javascript.write` (optional import of `broiler.javascript`) | `broiler.javascript.write` | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3a-004` | `x86-64` |
+| `Broiler.VM.Composition.JavaScript.Cli` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler`, `Broiler.VM.Profile.MachineCode` | `broiler.javascript.write`, `broiler.javascript.source-provider`, `broiler.javascript.host-surface` (all optional imports of `broiler.javascript`; the third is registered only by the `--host-surface` lane, and is a permission this root never invokes) | `broiler.javascript.source-provider`, answered by this root's own compiler | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3b-001` | `x86-64` |
 | `Broiler.VM.Composition.WebAssembly.Execution` | demonstration | `broiler.webassembly` | `Broiler.VM.Profile.WebAssembly` | none | none registered | none registered | `src/Broiler.VM.Profile.WebAssembly/docs/evidence/wa-0-001` | none |
 | `Broiler.VM.Composition.WebAssembly.Harness` | demonstration | `broiler.webassembly` | `Broiler.VM.Profile.WebAssembly` | none | none registered | none registered | `src/Broiler.VM.Profile.WebAssembly/docs/evidence/wa-0-001` | none |
 | `Broiler.VM.Composition.PolyglotCli` | demonstration | `broiler.javascript`, `broiler.webassembly` | `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.WebAssembly` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write`, `broiler.javascript.resolve`, `broiler.javascript.source-provider` (all optional imports of `broiler.javascript`; the WebAssembly profile imports nothing, and the three are registered only for a JavaScript run) | `broiler.javascript.source-provider`, answered by this root's own compiler | `docs/evidence/vm-7-cli-001` | none |
 
-**SliceCompiler declares `x86-64` and the others read `none`** *(updated 2026-09-18: native execution is delegated to the standalone MachineCode profile, linked as a sibling by SliceCompiler)*.
+**Three rows declare `x86-64` and the rest read `none`** *(corrected 2026-09-23,
+and the sentence this replaces is quoted below because it is the finding)*.
+
+**What stood here, and why it was not a decision.** From 2026-09-18 this line
+read: *"SliceCompiler declares `x86-64` and the others read `none` (updated
+2026-09-18: native execution is delegated to the standalone MachineCode profile,
+linked as a sibling by SliceCompiler)"*. Read as a description of the cells it
+was accurate. Read as an account of why they said what they said - which is what
+a parenthesis beginning "native execution is delegated" asks to be read as - it
+was not. **Nothing delegated anything to SliceCompiler.** A refactor on
+2026-09-18 moved the arming path out of `Broiler.VM.Profile.JavaScript` into
+`Broiler.VM.Profile.MachineCode`, which is a good shape and is not what is
+corrected here; it then restored the reference to ONE root, and the other roots'
+cells went to `none` because nobody put the assembly back, not because anybody
+decided they should not have it. **No decision record in this repository explains
+the extraction or names the roots it was meant to leave behind**, and this
+paragraph does not supply one: what is recorded is what happened.
+
+**Six cells read `x86-64` the day before, and five of them moved.** The day before that refactor this
+column read `x86-64` for every row naming `Broiler.VM.Profile.JavaScript` -
+`ExecutionOnly`, `SliceCompiler`, `Android`, `Conformance`, `Cli` and
+`PolyglotCli` - because the arming type lived in the profile assembly, so a root
+linking the profile was a root that could arm. Five went to `none` and one was
+restored. **Every one of the five is a restoration case, and the three still
+reading `none` below are not a different kind of row.** The paragraphs further
+down this section describe the register as it stood before that day and have not
+been rewritten; read them as history from here on, because two of them say that
+every JavaScript root declares `x86-64` and the table above now says otherwise.
+
+**What the `none` cells cost in the interval.** They were true - the images
+really could not arm a page - and that is the whole of the damage. Two of these
+roots are hosts whose published behaviour includes a native form.
+`Broiler.VM.Composition.JavaScript.Conformance` scores the profile in two forms
+and one of them is native; for five days every native run it was asked for
+verified its artifact and then refused to instantiate it,
+`ProfileFault/UnsatisfiedHostAssumption` - a run that still said `form|native` in
+its own report header and measured nothing. That refusal was reproduced on
+`win-x64` under the JIT and on no other platform and in no other publish mode;
+it follows in all of them, because a static hook nobody fills is unfilled
+wherever the image runs, and that is an inference from the shape of the wiring
+rather than a run anybody took. `Broiler.VM.Composition.JavaScript.Cli` prints a `--native`
+entry in its `--help` that promises a program compiled for this process's own
+calling convention "is armed and executed here", and it refused every such
+program with the same sentence it prints for an artifact emitted for somewhere
+else. Retained evidence from 2026-09-15 -
+`src/Broiler.VM.Profile.JavaScript/docs/evidence/jsb-11-001/test262-native-wide.report.gz`,
+bundle JSB-11-001 - holds a native run over the wide manifest passing 70,834 of
+94,545 variants of the whole pinned suite, so what changed on 2026-09-18 was the
+wiring and not the profile.
+
+**What this change does.** It restores the pre-2026-09-18 state for those two
+roots and for no others: each names
+`Broiler.VM.Profile.MachineCode` in its own project file and installs the mapper
+hook in its own `Program.cs`, so the arming path is in both closures and both
+cells read `x86-64`. `Broiler.VM.Composition.JavaScript.ExecutionOnly`,
+`Broiler.VM.Composition.JavaScript.Android` and
+`Broiler.VM.Composition.PolyglotCli` keep `none`. **All three lost the same
+capability on the same day for the same reason**, and none of them is being
+refused it here: they are left because the owner named two roots and nobody
+asked for the other three, and a row corrected on nobody's request is the quiet
+edit this column can no longer receive.
+
+**This is a correction an editor made and the rule did not catch, which is the
+part worth weighing.** Rule K5 holds a cell against the image in both
+directions, and both roots were consistent the whole time: the cell said `none`
+and the image really could arm nothing, so the rule was green over a capability
+that had been withdrawn. **K5 checks that the register does not lie about the
+image; it cannot check that the image is what anybody meant it to be.** That
+gap closed here by somebody running the native form and reading the refusals,
+which is the same way the gap this column was added for was closed.
+
+**And the cells now read `x86-64`, which is the direction that needs holding.**
+A cell claiming a capability is worse than a cell withdrawing one, and on the
+day these two moved, nothing in the gate would have failed had the wiring been
+half done: rule A7 and the graph manifest hold the project reference, and
+nothing held the four lines that fill the profile's mapper hook. Two checks were
+added with the cells. K5 gained a clause - a row naming an architecture over an
+image that links the arming path and whose root names its page type nowhere is
+the same overstatement as one that links nothing, and it now fails. That reading
+is coarse and cannot tell an install from a mention, so the end-user root is
+also held by running it: its `--runtime` line reports `native-arming=installed`
+or `none`, `src/tests/cli/expected.txt` reads the value, and that row fails if
+either half of the wiring is taken away. The conformance root has the first
+check and not the second, which is stated here rather than left to be
+discovered.
 
 **What the cells said.** All nine read `none`, and the paragraph that stood here
 said that none of them was arrived at by inspection: no project in either
@@ -394,12 +478,18 @@ file, and it now runs several of them and prints a score.
 
 **The Kind column did not change, and that is the part worth reading rather than
 skimming.** **A tool advertised as a JavaScript host has to be able to run
-JavaScript**, and this one runs a great deal of it. **BigInt is the only
-construct this paragraph denies of the default manifest
-`broiler.javascript.wide`**, and the qualifier is meant: a BigInt literal is
-refused at compile time, by name, as
-`2104:ConstructOutsideManifest at 1:14: a BigInt literal is not admitted by the
-declared feature manifest`, and the value kind is implemented nowhere. Class,
+JavaScript**, and this one runs a great deal of it. **BigInt is admitted by the
+default manifest `broiler.javascript.wide` from 2026-09-21**, through its own
+optional surface `broiler.javascript.bigint` (JSeal B05, decision JSD-0033
+section 7): `1n` is an exact integer and the `BigInt` global is bound. What this
+paragraph still denies of that manifest is narrower and named:
+`--numeric` still refuses a BigInt literal by name as
+`2104:ConstructOutsideManifest ... a BigInt literal is not admitted by the
+declared feature manifest`. *(2026-09-22, JSeal B07-B08: `BigInt64Array`, `BigUint64Array` and the DataView
+BigInt accessors exist wherever the BigInt surface is admitted, and naming either
+constructor declares both the binary and the BigInt surface. An earlier draft of
+this paragraph, written within the same unpublished change and never released,
+named them as absences.)* Class,
 generator, `async` function, module, destructuring, spread, template literal,
 `for … of`, Proxy, Symbol, typed array, `eval` and the `Function` constructor
 **all run to completion on this root's built binary**, and a reader should point
@@ -412,6 +502,23 @@ enumerated against a comparison engine. Nothing in it has been
 read by a human, and it has no conformance run of its own over the pinned suite.
 Advertising it would be the untruthful support claim the core roadmap makes a
 stop condition, and section 1's advertised set stays empty.
+
+**Corrected 2026-09-21, because the value kind this paragraph called
+unimplemented was implemented and admitted.** The BigInt sentence above read,
+until this date:
+
+> **BigInt is the only construct this paragraph denies of the default manifest
+> `broiler.javascript.wide`**, and the qualifier is meant: a BigInt literal is
+> refused at compile time, by name, as `2104:ConstructOutsideManifest at 1:14: a
+> BigInt literal is not admitted by the declared feature manifest`, and the value
+> kind is implemented nowhere.
+
+JSeal cards B01-B04 implemented the value kind behind a gate no shipped
+composition opened, and card B05 admitted it: the wide manifest lowers a BigInt
+literal, and the full descriptor this root composes admits the surface. Point
+this root at `1n + 2n` and at `--numeric` with the same file and read both
+answers rather than taking them from here. The Kind column does not move: a
+wider surface is not a review.
 
 **Corrected 2026-09-08, and the correction is of an UNDERSTATEMENT, which this
 register treats as exactly the same defect as an overstatement.** The paragraph
@@ -655,12 +762,11 @@ realm and every module its own instance. It has a subcommand grammar - `run`,
 cannot be told apart by a flat option list, and bare `broiler <file>` still runs the
 file. **The Kind column is `demonstration` for the reason the JavaScript host's row
 gives and for one more.** A tool advertised as a polyglot host claims both surfaces,
-and neither claim is available: **BigInt is the only construct this sentence denies
-of that JavaScript surface** — a BigInt literal is refused at compile time by name,
-with the same `2104:ConstructOutsideManifest` diagnostic the JavaScript host's row
-quotes, because both hosts compose the same profile at the same default manifest,
-and that row is also where the library surfaces the wide realm merely lacks are
-pointed at — and this
+and neither claim is available: the JavaScript surface is the one the JavaScript
+host's row describes, BigInt included from 2026-09-21, because both hosts compose
+the same profile at the same default manifest, and that row is where its remaining
+named absences — the 64-bit typed arrays and the DataView BigInt accessors — and
+the library surfaces the wide realm merely lacks are pointed at — and this
 WebAssembly surface admits no import, no text format, no vector instruction, no
 garbage collection, no exception handling, no thread and no memory64. A module that
 declares an import is refused rather than linked. Advertising either would be the
@@ -685,6 +791,20 @@ and it survives as a refusal rather than as an absence**: until 2026-09-08 the w
 front end admitted a BigInt literal and evaluated it as a Number, so a program doing
 big-integer arithmetic here got a silently wrong number instead of meeting a
 denial. The JavaScript host's row records that finding, its source and its repair.
+
+**Corrected 2026-09-21, and the refusal the paragraph above says survives did not.**
+The JavaScript clause of this row read, until this date:
+
+> **BigInt is the only construct this sentence denies of that JavaScript surface** —
+> a BigInt literal is refused at compile time by name, with the same
+> `2104:ConstructOutsideManifest` diagnostic the JavaScript host's row quotes
+
+JSeal card B05 admitted the value kind under the default manifest, and this root's
+built binary now prints `3` for `print(1n + 2n)` and `function` for
+`print(typeof BigInt)`; `--numeric` still refuses the literal with that diagnostic, and
+`typeof BigInt64Array` still answered `undefined` at B05; since JSeal B07 (2026-09-22) it
+answers `function`. The paragraph above is kept as it stands because it records what was true on
+2026-09-08.
 
 **Correcting an understatement is not an argument for advertising, and neither
 column of this row moves.** This root reads `demonstration` because nothing here has

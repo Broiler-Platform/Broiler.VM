@@ -271,7 +271,7 @@ internal sealed class JsArray : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B28009
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1DF589
     // Broiler-Human:        PENDING
     internal override void SetOwnProperty(string key, JsProperty property)
     {
@@ -306,6 +306,15 @@ internal sealed class JsArray : JsObject
         if (IsArrayIndex(key, out var at) && !property.IsAccessor &&
             property.Attributes == JsPropertyAttributes.Default)
         {
+            // AN ELEMENT THE ORDINARY MAP HOLDS IS RETIRED BEFORE THE DENSE SLOT IS WRITTEN. A
+            // definition that turns a read-only or accessor element back into a plain one arrives
+            // here, and without this the old entry survived beside the new slot and went on
+            // answering for the index once the slot was deleted.
+            if (base.TryGetOwnProperty(key, out _))
+            {
+                _ = base.DeleteOwnProperty(key);
+            }
+
             SetIndex(at, property.Value);
             return;
         }

@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-09-21T17:20:43.054955+00:00",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9",
+  "driver": {
+    "path": "D:\\wt\\vm-fixes-b\\eng\\run-differential.py",
+    "sha256": "69a422a84335a4e4f9c1eb9573242a2f48fe615c626921e2a233e8e9017dfa4c"
+  },
+  "environment": {
+    "TZ": "UTC",
+    "PYTHONIOENCODING": "utf-8",
+    "DOTNET_CLI_UI_LANGUAGE": "en-US"
+  },
+  "engines": [
+    {
+      "name": "broiler-vm",
+      "executable": "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "scriptArgs": [
+        "--quiet",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--quiet",
+        "--module",
+        "{probe}"
+      ],
+      "sourceRoot": "D:\\wt\\vm-fixes-b",
+      "resolvedExecutable": "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "binaries": [
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Abstractions.dll",
+          "sha256": "5c20dca3ff57a240cc63caca5beaa396f905ca12f146c45b6b7cee3074fed47e"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Binary.dll",
+          "sha256": "2d2dfabdedf6b1b1083379a040abebd2396135f1e92e361f4d137580ad21afed"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.dll",
+          "sha256": "d10416f98fa22077d1931566ccd70c414f13351d6822342ef5d331396fd74ec2"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+          "sha256": "55a32f3fd9d1622b9c8b3f44e37e917eb8bd21edc8fb7d7e6fa3cae09f979611"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Compiler.dll",
+          "sha256": "24fb3e81f08e873ac88268cfc841f7a9c953fe141c755350189268881d602f48"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.dll",
+          "sha256": "5d4ea9af3f1c4dc66d8fcaa155081a511f1cc1c72022ed36456541ee189e39f8"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Format.dll",
+          "sha256": "798304f165efb1f2174325d2d88a7e273d6289ca84bc35e2411f7740c577e9af"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Runtime.dll",
+          "sha256": "55f15fd3c1871de88181e6642270db8b0e6fe230c4e9929fad4340a33488addf"
+        }
+      ],
+      "source": {
+        "revision": "484f389f0dda0e0a15da5b111a64389d0ec14a59",
+        "workingTree": "M  CODE-ASSURANCE.md\nM  HUMAN_REVIEW.md\nM  assurance.manifest.json\nA  docs/evidence/jseal-v01/README.md\nA  docs/evidence/jseal-v01/test262-comparison.txt\nA  docs/evidence/jseal-v01/windows-node.json\nA  docs/evidence/jseal-v04/README.md\nA  docs/evidence/jseal-v04/probe-before.txt\nA  docs/evidence/jseal-v10-v12/README.md\nA  docs/evidence/jseal-v10-v12/binary-species-node.json\nA  docs/evidence/jseal-v10-v12/test262-comparison.txt\nA  docs/evidence/jseal-v13/README.md\nA  docs/evidence/jseal-vm-fixes-b/README.md\nA  docs/evidence/jseal-vm-fixes-b/test262-comparison.txt\nAM docs/evidence/jseal-vm-fixes-b/windows-node.json\nM  src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs\nM  src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs\nM  src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs\nM  src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs\nM  src/Broiler.VM.Profile.JavaScript/JsBinary.cs\nM  src/Broiler.VM.Profile.JavaScript/JsEngine.cs\nM  src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs\nM  src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs\nM  src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs\nM  src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs\nM  src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs\nM  src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0026-the-direct-eval-environment-boundary.md\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0027-intl-scope-and-data-strategy.md\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0028-shared-memory-and-atomics.md\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0029-finalization-registry-cleanup-model.md\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0030-shadowrealm-support-boundary.md\nA  src/Broiler.VM.Profile.JavaScript/docs/decisions/0031-unicode-data-source-and-build-boundary.md\nM  src/Broiler.VM.Profile.JavaScript/docs/decisions/README.md\nM  src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/NativeTemplateScanChecks.cs\nA  src/tests/differential/the-binary-species.expected.txt\nA  src/tests/differential/the-binary-species.js\nA  src/tests/differential/the-numeric-operand-order.expected.txt\nA  src/tests/differential/the-numeric-operand-order.js\nAM src/tests/differential/the-reference-key-and-exponent-edges.expected.txt\nAM src/tests/differential/the-reference-key-and-exponent-edges.js\nA  src/tests/differential/the-regexp-guards-in-string-search.expected.txt\nA  src/tests/differential/the-regexp-guards-in-string-search.js"
+      }
+    },
+    {
+      "name": "node",
+      "executable": "node",
+      "scriptArgs": [
+        "--require",
+        "{shim}",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--require",
+        "{shim}",
+        "{probe}"
+      ],
+      "resolvedExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "binaries": [
+        {
+          "path": "C:\\Program Files\\nodejs\\node.exe",
+          "sha256": "c6335d08331c23d68b9f2b18adb102002d76ef150b47248e954c507e0d033664"
+        }
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "name": "the-reference-key-and-exponent-edges.js",
+      "input": {
+        "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\the-reference-key-and-exponent-edges.js",
+        "sha256": "e9af7ed52fd5a27216a7f4ce332e60eef3dce9b041d2a145c9df35cdc94cc1db"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\wt\\vm-fixes-b\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\the-reference-key-and-exponent-edges.js"
+          ],
+          "cwd": "D:\\wt\\vm-fixes-b\\src\\tests\\differential",
+          "timeoutSeconds": 20.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 NaN\r\n2 NaN\r\n3 NaN\r\n4 NaN\r\n5 1\r\n6 1\r\n7 NaN\r\n8 \"true -Infinity Infinity\"\r\n9 \"-Infinity true Infinity\"\r\n10 \"0 Infinity 0\"\r\n11 NaN\r\n12 \"NaN NaN 1\"\r\n13 \"k:1:1\"\r\n14 \"k:0:0\"\r\n15 \"k:0:1\"\r\n16 \"k:-1:-1\"\r\n17 \"k:7:7\"\r\n18 \"k:7:0\"\r\n19 \"k:9:9\"\r\n20 \"k:5,12\"\r\n21 \"TypeError:\"\r\n22 \"k:2\"\r\n23 \"kv:0\"\r\n24 \"12,13,14\"\r\n25 \"S:axc\"\r\n26 10\r\n27 \"3:false\"\r\n28 \"11:10\"\r\n29 \"got\"\r\n30 \"true 0 toLocaleString\"\r\n31 \"1,,,L\"\r\n32 3\r\n33 \"a,b\"\r\n34 TypeError\r\n35 \"b,b:boolean,boolean\"\r\n36 \"1,2,3 \"\r\n37 TypeError\r\n38 \"<1.5>,<-2>,<0>:0,0,0\"\r\n39 \"1,2,3||1\"\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.516
+        },
+        {
+          "engine": "node",
+          "goal": "script",
+          "argv": [
+            "C:\\Program Files\\nodejs\\node.exe",
+            "--require",
+            "C:\\Users\\proof\\AppData\\Local\\Temp\\broiler-differential-hdqruvjs\\print.cjs",
+            "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\the-reference-key-and-exponent-edges.js"
+          ],
+          "cwd": "D:\\wt\\vm-fixes-b\\src\\tests\\differential",
+          "timeoutSeconds": 20.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 NaN\n2 NaN\n3 NaN\n4 NaN\n5 1\n6 1\n7 NaN\n8 \"true -Infinity Infinity\"\n9 \"-Infinity true Infinity\"\n10 \"0 Infinity 0\"\n11 NaN\n12 \"NaN NaN 1\"\n13 \"kk:1:1\"\n14 \"kk:0:0\"\n15 \"kk:0:1\"\n16 \"kk:-1:-1\"\n17 \"kk:7:7\"\n18 \"kk:7:0\"\n19 \"kk:9:9\"\n20 \"kk:5,12\"\n21 \"TypeError:\"\n22 \"kk:2\"\n23 \"kvk:0\"\n24 \"12,13,14\"\n25 \"S:axc\"\n26 10\n27 \"3:false\"\n28 \"11:10\"\n29 \"got\"\n30 \"true 0 toLocaleString\"\n31 \"1,,,L\"\n32 3\n33 \"a,b\"\n34 TypeError\n35 \"b,b:boolean,boolean\"\n36 \"1,2,3 \"\n37 TypeError\n38 \"<1.5>,<-2>,<0>:2,2,2\"\n39 \"1,2,3||1\"\n",
+          "stderr": "",
+          "elapsedSeconds": 0.094
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [
+        {
+          "case": "13",
+          "reason": "node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k",
+          "host": "\"k:1:1\"",
+          "comparison": "\"kk:1:1\""
+        },
+        {
+          "case": "14",
+          "reason": "node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k",
+          "host": "\"k:0:0\"",
+          "comparison": "\"kk:0:0\""
+        },
+        {
+          "case": "15",
+          "reason": "node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k",
+          "host": "\"k:0:1\"",
+          "comparison": "\"kk:0:1\""
+        },
+        {
+          "case": "16",
+          "reason": "node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k",
+          "host": "\"k:-1:-1\"",
+          "comparison": "\"kk:-1:-1\""
+        },
+        {
+          "case": "17",
+          "reason": "node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k",
+          "host": "\"k:7:7\"",
+          "comparison": "\"kk:7:7\""
+        },
+        {
+          "case": "18",
+          "reason": "node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k",
+          "host": "\"k:7:0\"",
+          "comparison": "\"kk:7:0\""
+        },
+        {
+          "case": "19",
+          "reason": "node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k",
+          "host": "\"k:9:9\"",
+          "comparison": "\"kk:9:9\""
+        },
+        {
+          "case": "20",
+          "reason": "node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k",
+          "host": "\"k:5,12\"",
+          "comparison": "\"kk:5,12\""
+        },
+        {
+          "case": "22",
+          "reason": "node converts the computed key with ToPropertyKey twice, once for the read and once for the write; GetValue keeps the key it converted (ES2026 GetValue and PutValue, Test262 S11.13.2_A7.*_T4), so the pinned answer has one k",
+          "host": "\"k:2\"",
+          "comparison": "\"kk:2\""
+        },
+        {
+          "case": "23",
+          "reason": "the same double conversion; the key converts once, before the right-hand side runs, so the pinned answer is kv",
+          "host": "\"kv:0\"",
+          "comparison": "\"kvk:0\""
+        },
+        {
+          "case": "38",
+          "reason": "node implements ECMA-402, whose %TypedArray%.prototype.toLocaleString passes the locales and options arguments to each element's toLocaleString; without ECMA-402 the ES2026 algorithm (Array.prototype.toLocaleString, which %TypedArray%.prototype.toLocaleString reuses) invokes it with no arguments, so the pinned answer records 0 arguments",
+          "host": "\"<1.5>,<-2>,<0>:0,0,0\"",
+          "comparison": "\"<1.5>,<-2>,<0>:2,2,2\""
+        }
+      ],
+      "retainedInput": {
+        "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\the-reference-key-and-exponent-edges.expected.txt",
+        "sha256": "a31898500f495cbca3c5b1eb50d1efd5aa53ef6d7cf0d06d915b1652bcb05760"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\wt\\vm-fixes-b\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "ok": true
+}

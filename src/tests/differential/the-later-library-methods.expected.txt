@@ -4,8 +4,6 @@
 #diverges node 201 the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
 #diverges node 202 the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
 #diverges node 203 the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
-#diverges node 254 `Math.f16round` is ES2026 and the comparison engine predates it: this build has the member and that engine answers a TypeError about calling `undefined`
-#diverges node 255 the same: this build has the member and that engine answers a TypeError about calling `undefined`
 #diverges node 256 `Math.sumPrecise` is ES2026 and the comparison engine predates it: this build has the member and that engine answers a TypeError about calling `undefined`
 #diverges node 257 the same: this build has the member and that engine answers a TypeError about calling `undefined`
 #diverges node 258 the same: this build has the member and that engine answers a TypeError about calling `undefined`

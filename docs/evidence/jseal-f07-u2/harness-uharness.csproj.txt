@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <NoWarn>CS1591;CS8981</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="D:/wt/vm-unicode-u2/src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.cs" />
+    <Compile Include="D:/wt/vm-unicode-u2/src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs" />
+    <Compile Include="D:/wt/vm-unicode-u2/src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.cs" />
+    <Compile Include="D:/wt/vm-unicode-u2/src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs" />
+    <Compile Include="D:/wt/vm-unicode-u2/src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.cs" />
+    <Compile Include="D:/wt/vm-unicode-u2/src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs" />
+    <Compile Include="D:/Broiler.Unicode/src/UnicodeProperties/Generated/*.g.cs" />
+  </ItemGroup>
+</Project>

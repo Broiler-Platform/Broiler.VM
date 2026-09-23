@@ -1,0 +1,88 @@
+ok   a host method answers an object, and the guest reads a string off it
+ok   wrapper identity survives the crossing in both directions
+ok   an accessor the host installed runs host code on every read
+ok   a host method calls back into the guest, synchronously, before it returns
+ok   a listener's throw reaches the host and is re-raised into the guest
+ok   an error the host raises is a real guest error the guest can catch
+ok   an exotic object answers a name it was never given, and enumerates it
+ok   an exotic object answers an index, and enumerates its elements before its names
+ok   an exotic object takes the name it claims and lets every other assignment through
+ok   the host links a wrapper to a prototype the guest can see
+ok   a buffer the host filled reads as half precision in the guest, and back as bytes
+ok   a realm in a composition that registered no permission has no host object
+ok   the host queues a job beside the guest's own, and a drain runs both in order
+ok   the host detaches a buffer the guest handed it, and only an ArrayBuffer
+ok   a buffer from another realm is refused rather than detached
+ok   an embedder reaches its realm between invocations, and only by asking
+ok   the host reads an ArrayBuffer's exact bytes: empty, short and multi-chunk
+ok   the host reads into a span it owns, and a short span is written nothing
+ok   only the realm's own ArrayBuffer brand is read; a subclass instance is one
+ok   a detached buffer answers Detached, and the buffer it moved to answers its bytes
+ok   a resizable buffer is read at its current length after it grows, shrinks and moves
+ok   replaced globals, prototypes, species and join change nothing either member does
+ok   the host makes an ArrayBuffer from its bytes: empty, short and multi-chunk, and a copy
+ok   a resize is charged past its high-water mark, and one the live-bytes ceiling refuses ends the run
+ok   a read the fuel allowance refuses ends the operation and copies nothing (ResourceExhaustion/AllowanceExhausted)
+ok   a cancelled read ends the operation and copies nothing (Cancellation/Cancelled)
+ok   a buffer the live-bytes ceiling refuses is never made, after one it admits (ResourceExhaustion/CeilingReached)
+ok   a buffer the fuel allowance refuses is never made (ResourceExhaustion/AllowanceExhausted)
+ok   a cancelled construction is never made (Cancellation/Cancelled)
+ok   a deleting exotic takes a claimed name away, and the ordinary deletion runs after it
+ok   an index key and a symbol are never offered to the deletion hook, and 007 is a name
+ok   Reflect, a trapless Proxy and the host's own delete each offer a name exactly once
+ok   a declined name keeps answering, and a non-configurable ordinary property stays
+ok   a deletion hook that throws ends the deletion, and the property is left in place
+ok   a deletion hook refused at the seam gives the guest a TypeError and keeps the property
+ok   a deletion hook whose guest callback exhausts the allowance ends the run, uncatchably
+ok   an exotic hook that throws, is refused, or answers a foreign value gives the guest a catchable error
+ok   an exotic hook that throws while the object is enumerated gives the guest the thrown value
+ok   an exotic hook whose guest callback exhausts the allowance ends the run, uncatchably
+ok   a host promise settles through the job queue and never synchronously
+ok   the first settlement of a host promise wins, and a late one is reported as such
+ok   a thenable is adopted the way the engine's own resolve procedure adopts one
+ok   a guest replacing Promise changes nothing about how the host builds one
+ok   a host promise settled from another CLR thread is refused, and the promise stays pending
+ok   Missing is refused as a settlement value, and the promise stays open for a real one
+ok   an [[IsHTMLDDA]] object is typeof undefined, falsy and == null, and an object to everything else
+ok   a host promise settles only in a turn of its own realm, late is reported, disposed is refused
+ok   a host links a two-module graph, evaluates it once, and reads live bindings
+ok   a host-linked cycle meets the cross-module dead zone and then the live binding
+ok   a load that fails is a guest error of the right kind, is not cached, and links nothing
+ok   top-level await settles a host evaluation only through the queue, and only when finished
+ok   an errored module stays errored, and a cycle member waits for its awaiting root, whoever started them
+ok   a deferred import stays pending until a turn completes it, once, through the queue
+ok   a loader may not complete the request it is offered, and a Now answer loads in the step
+ok   a loader that throws rejects the import and settles the request, so no later turn completes it
+ok   a deferred request is refused in another realm and after its realm is released
+ok   a host script's let persists into the next one, and each answers its completion value
+ok   a conflicting host script is refused before it creates anything
+ok   a guest eval inside a host script still meets the realm's guest-eval policy
+ok   a guest cannot send the script mark, whatever its source begins with
+ok   a host script that does not parse is a SyntaxError naming its source, and the provider holds the position
+ok   the embedder's strictness option makes a sloppy source strict, and only when asked
+ok   a host script that spends the allowance ends the run, uncatchably
+ok   an embedder runs scripts from a turn, and a later program sees what they declared
+ok   a clone detached on one thread is adopted on two others after its source is disposed, realm-locally, repeatably
+ok   a carrier with transferred bytes detaches its source at once and is adopted exactly once across racing threads
+ok   a foreign carrier is refused, and a crossing outside the realm's step or thread claims nothing
+ok   the sender's live bytes pay for a carrier, the receiver's for what it rebuilds, and a carrier the ceiling refuses ends the turn
+ok   a BigInt crosses to the host and back exactly: zero, negative, wide, and the widest admitted
+ok   a BigInt the host builds reaches the guest exactly, and one past the ceiling is a RangeError
+ok   ToBoolean, ToJsString and ToNumber answer the language's answers for a BigInt
+ok   a BigInt equals another of the same value, however each crossed, and never a Number
+ok   properties, calls and constructs carry a BigInt both ways
+ok   a BigInt the guest throws reaches the host carrying it, and a host re-raise throws the same value
+ok   a BigInt and a BigInt object clone through DetachClone and AdoptClone
+ok   a BigInt a host body throws or an exotic hook answers reaches the guest as itself
+ok   a realm that declined BigInt refuses a BigInt from the host and a carrier holding one, and claims nothing
+ok   a BigInt a host body returns or throws, or an exotic hook answers, is a TypeError in a realm that declined BigInt
+ok   Missing is refused where a host member requires a value, and nothing is written
+ok   Missing a host answers the guest is undefined: a receiver, a body's return and a hook's answer
+ok   import() in eval and Function code carries the key of the module whose code created it
+ok   import() in eval and Function code inside a host script carries the script's referrer
+ok   import() in eval and Function code a promise job runs carries the referrer that queued the job
+ok   a host reads each module's status and top-level await across a walk, an await and a drain
+ok   a throw inside a cycle errors the modules on the walk with one value and leaves an unreached one linked
+ok   a graph a host callback evaluates stays linked until a drain runs it, then carries its error
+ok   equal primitive errors are told apart by module, and a cycle member finishes before its awaiting root
+host-surface: every check passed

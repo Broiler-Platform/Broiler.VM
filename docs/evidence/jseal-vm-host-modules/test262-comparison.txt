@@ -1,0 +1,10 @@
+# Pinned Test262 ccaac100, bytecode form, 2026-09-22. Dirs: language/expressions/dynamic-import, language/module-code,
+# language/eval-code, built-ins/Function. Before = base build, after = this change; --shards 1 --jobs 1.
+before: # test262 2601 files, 3619 variants: pass 2941, fail 126, unsupported 0, exhausted 0, skipped 552
+after:  # test262 2601 files, 3619 variants: pass 2943, fail 124, unsupported 0, exhausted 0, skipped 552
+# every variant whose verdict changed:
+< test/language/expressions/dynamic-import/usage-from-eval.js|sloppy|Failed
+< test/language/expressions/dynamic-import/usage-from-eval.js|strict|Failed
+> test/language/expressions/dynamic-import/usage-from-eval.js|sloppy|Passed
+> test/language/expressions/dynamic-import/usage-from-eval.js|strict|Passed
+after-review (after the review fixes): # test262 2601 files, 3619 variants: pass 2943, fail 124, unsupported 0, exhausted 0, skipped 552; failure list identical to after

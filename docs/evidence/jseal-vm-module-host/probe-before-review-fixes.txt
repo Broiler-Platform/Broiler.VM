@@ -1,0 +1,6 @@
+12 "false:true:false:sync-boom:1"
+13 "true:false:true"
+14 "true:true:true:true"
+15 TypeError
+16 "false:true:false:1"
+17 "B run,A start,B settled,releasing,A end"

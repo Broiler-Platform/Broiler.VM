@@ -55,7 +55,7 @@ internal sealed partial class JsRealm
     private ulong mathRandomState = 0x2545F4914F6CDD1DUL;
 
     /// <summary>Builds <c>Math</c> and defines it on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BC62C1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F8EBF6
     // Broiler-Human:        PENDING
     private void SetupMath()
     {
@@ -146,10 +146,11 @@ internal sealed partial class JsRealm
 
         // HALF PRECISION, WHICH THE LANGUAGE ADDED FOR THE SAME REASON IT ADDED `fround`: a program
         // that stores numbers in a Float16Array wants to know what a value will become before it
-        // stores it. The platform has the type, so the rounding is its own rather than a
-        // reimplementation of the format's rules.
+        // stores it. So it is the SAME conversion the Float16Array and the DataView accessors
+        // store through - `JsFloat16`, whose remarks record why the platform's rounding is the
+        // language's - and a value this answers is exactly the value a store would keep.
         Method(math, "f16round", 1, static (engine, _, arguments) =>
-            JsValue.Number((double)(System.Half)MathNumberAt(engine, arguments, 0)));
+            JsValue.Number(JsFloat16.Round(MathNumberAt(engine, arguments, 0))));
 
         // AN EXACTLY ROUNDED SUM, which is not what a loop of additions gives: adding left to right
         // rounds at every step and the errors accumulate, so `0.1 + 0.2 + 0.3` and
@@ -472,7 +473,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>
-    /// The specification's <c>Math.pow</c>, which differs from IEEE 754 in four places.
+    /// The specification's <c>Number::exponentiate</c>, which differs from IEEE 754 in four places.
     /// </summary>
     /// <remarks>
     /// IEEE 754 - and therefore <c>System.Math.Pow</c> - answers <c>1</c> for <c>pow(1, &#8734;)</c>
@@ -480,10 +481,16 @@ internal sealed partial class JsRealm
     /// answers <c>NaN</c> whenever the exponent is <c>NaN</c> or the base has magnitude <c>1</c> and
     /// the exponent is infinite, and answers <c>1</c> for a zero exponent even over a <c>NaN</c>
     /// base. Those four cases are taken first and everything else is the platform's.
+    /// <para>
+    /// <b>It is <c>Math.pow</c> AND the <c>**</c> operator</b>, because the specification defines
+    /// both as this one operation. The operator used to call <c>System.Math.Pow</c> directly, so
+    /// <c>(-1) ** Infinity</c> answered <c>1</c> while <c>Math.pow(-1, Infinity)</c> answered
+    /// <c>NaN</c>. No front end folds <c>**</c> over constants, so these two are the only callers.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=CFC17F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=576001
     // Broiler-Human:        PENDING
-    private static double MathPower(double baseValue, double exponent)
+    internal static double MathPower(double baseValue, double exponent)
     {
         if (double.IsNaN(exponent))
         {

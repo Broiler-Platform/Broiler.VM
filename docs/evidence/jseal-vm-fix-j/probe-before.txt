@@ -1,0 +1,56 @@
+# The base build's answers (HEAD + base-vm-w10.patch) to src/tests/differential/the-generic-to-json-and-array-search.js; cases 4-13, 18, 20, 22-25, 30-33, 51, 52 and 54 differ from the retained answers.
+1 "1970-01-01T00:00:00.000Z"
+2 null
+3 1
+4 TypeError
+5 TypeError
+6 TypeError
+7 TypeError
+8 TypeError
+9 TypeError
+10 TypeError
+11 TypeError
+12 "TypeError this is not a Date object"
+13 "TypeError this is not a Date object"
+14 TypeError
+15 TypeError
+16 TypeError
+17 TypeError
+18 TypeError
+19 TypeError
+20 TypeError
+21 "[null]"
+22 [object Array Iterator]
+23 [object Array Iterator]
+24 [object Array Iterator]
+25 [object Array Iterator]
+26 "a,b"
+27 0
+28 true
+29 "[[0,\"a\"],[1,\"b\"]]"
+30 -Infinity
+31 -Infinity
+32 -Infinity
+33 -Infinity
+34 -1
+35 0
+36 2
+37 -1
+38 2
+39 0
+40 0
+41 2
+42 0
+43 0
+44 -1
+45 2
+46 0
+47 "2,0"
+48 TypeError
+49 TypeError
+50 true
+51 "a,b,c"
+52 "0,1,2"
+53 0
+54 1
+55 "[[0,\"z\"],[1,null]] 1"

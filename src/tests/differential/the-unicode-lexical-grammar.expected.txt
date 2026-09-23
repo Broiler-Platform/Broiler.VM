@@ -1,0 +1,100 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 54 this realm refuses the v flag (JSD-0031 section 7); a literal carrying it is an early SyntaxError naming the flag, and V8 implements it
+#diverges node 55 the same refusal is early, so a v literal behind a false branch does not compile; V8 implements the flag
+#diverges node 61 new RegExp with the v flag is refused because this realm does not implement it; V8 does
+#diverges node 85 the pinned non-u Canonicalize reads UnicodeData.txt's simple upper case; the specification's toUppercase is the full one, under which U+1F80 upper-cases to two code points and stays itself, and SpecialCasing.txt is not archived (JSD-0031 section 12)
+1 SyntaxError
+2 SyntaxError
+3 SyntaxError
+4 SyntaxError
+5 7
+6 SyntaxError
+7 SyntaxError
+8 SyntaxError
+9 3
+10 4
+11 8
+12 SyntaxError
+13 SyntaxError
+14 6
+15 6
+16 SyntaxError
+17 9
+18 1
+19 SyntaxError
+20 SyntaxError
+21 1
+22 2
+23 SyntaxError
+24 5
+25 SyntaxError
+26 SyntaxError
+27 1
+28 SyntaxError
+29 SyntaxError
+30 1
+31 7
+32 8
+33 SyntaxError
+34 SyntaxError
+35 9
+36 6
+37 6
+38 1
+39 SyntaxError
+40 SyntaxError
+41 "2172 0"
+42 "2226 0"
+43 SyntaxError
+44 SyntaxError
+45 SyntaxError
+46 SyntaxError
+47 2
+48 2
+49 2
+50 2
+51 1
+52 SyntaxError
+53 "9 A B C D 20 A0 1680 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 200A 2028 2029 202F 205F 3000 FEFF"
+54 SyntaxError
+55 false
+56 false
+57 false
+58 false
+59 "dgimsuy"
+60 false
+61 SyntaxError
+62 "a"
+63 "a"
+64 "a"
+65 "a"
+66 "a"
+67 "a"
+68 "a"
+69 "a"
+70 "a"
+71 SyntaxError
+72 SyntaxError
+73 "a"
+74 SyntaxError
+75 "a"
+76 true
+77 true
+78 true
+79 true
+80 false
+81 false
+82 true
+83 false
+84 true
+85 true
+86 false
+87 false
+88 "1169 0"
+89 "1169 0"
+90 "0 2 2"
+91 "0 2 2"
+92 "null 0"
+93 "0 0 0"
+94 "1 2 3"
+95 "1 1 2"

@@ -1,0 +1,22 @@
+# Retained host answers; not a conformance oracle.
+1 "1 2"
+2 "5 3 6 7"
+3 8
+4 TypeError
+5 boom runs=1 dependentRan=undefined
+6 true runs=1
+7 true dependentRan=undefined
+8 true siblingRuns=undefined
+9 2 siblingRuns=1
+10 RangeError late runs=1
+11 true runs=1
+12 SyntaxError early runs=1
+13 true runs=1
+14 rejected rejected true runs=1
+15 second 1
+16 first 1
+17 cycle
+18 true
+19 dependent 11
+20 self 2
+21 self-then settled

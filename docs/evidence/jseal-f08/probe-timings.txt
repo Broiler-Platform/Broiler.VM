@@ -1,0 +1,22 @@
+# Per-probe wall-clock times from the full differential run after the change (2026-09-22),
+# python eng/run-differential.py --against node, CLI host with its default limits, driver timeout 30 s.
+# Columns: probe, CLI host seconds, Node seconds, verdict against retained answers and Node, case 1.
+the-string-normalization.js                      vm  0.69 s  node  0.66 s  ok  1 "function"
+the-unicode-normalization-invariants-000000.js   vm  1.16 s  node  0.08 s  ok  1 U+0000 to U+1FFFF: 114528 code points checked in four forms, 16544 left to part 1, 0 failing
+the-unicode-normalization-invariants-020000.js   vm  1.22 s  node  0.08 s  ok  1 U+20000 to U+3FFFF: 130530 code points checked in four forms, 542 left to part 1, 0 failing
+the-unicode-normalization-invariants-040000.js   vm  1.17 s  node  0.08 s  ok  1 U+40000 to U+5FFFF: 131072 code points checked in four forms, 0 left to part 1, 0 failing
+the-unicode-normalization-invariants-060000.js   vm  1.19 s  node  0.08 s  ok  1 U+60000 to U+7FFFF: 131072 code points checked in four forms, 0 left to part 1, 0 failing
+the-unicode-normalization-invariants-080000.js   vm  1.30 s  node  0.09 s  ok  1 U+80000 to U+9FFFF: 131072 code points checked in four forms, 0 left to part 1, 0 failing
+the-unicode-normalization-invariants-0A0000.js   vm  1.25 s  node  0.09 s  ok  1 U+A0000 to U+BFFFF: 131072 code points checked in four forms, 0 left to part 1, 0 failing
+the-unicode-normalization-invariants-0C0000.js   vm  1.33 s  node  0.09 s  ok  1 U+C0000 to U+DFFFF: 131072 code points checked in four forms, 0 left to part 1, 0 failing
+the-unicode-normalization-invariants-0E0000.js   vm  1.17 s  node  0.08 s  ok  1 U+E0000 to U+FFFFF: 131072 code points checked in four forms, 0 left to part 1, 0 failing
+the-unicode-normalization-invariants-100000.js   vm  0.84 s  node  0.06 s  ok  1 U+100000 to U+10FFFF: 65536 code points checked in four forms, 0 left to part 1, 0 failing
+the-unicode-normalization-part0.js               vm  0.33 s  node  0.05 s  ok  1 part 0, file lines 44 to 88: 45 vectors, 900 checks, 0 failing
+the-unicode-normalization-part1-1-of-4.js        vm  0.88 s  node  0.06 s  ok  1 part 1, file lines 93 to 4364: 4272 vectors, 85440 checks, 0 failing
+the-unicode-normalization-part1-2-of-4.js        vm  0.80 s  node  0.08 s  ok  1 part 1, file lines 4365 to 8636: 4272 vectors, 85440 checks, 0 failing
+the-unicode-normalization-part1-3-of-4.js        vm  0.81 s  node  0.06 s  ok  1 part 1, file lines 8637 to 12908: 4272 vectors, 85440 checks, 0 failing
+the-unicode-normalization-part1-4-of-4.js        vm  1.17 s  node  0.19 s  ok  1 part 1, file lines 12909 to 17178: 4270 vectors, 85400 checks, 0 failing
+the-unicode-normalization-part2.js               vm  1.12 s  node  0.12 s  ok  1 part 2, file lines 17182 to 19117: 1936 vectors, 38720 checks, 0 failing
+the-unicode-normalization-part3.js               vm  1.20 s  node  0.42 s  ok  1 part 3, file lines 19121 to 19314: 194 vectors, 3880 checks, 0 failing
+the-unicode-normalization-part4.js               vm  1.25 s  node  0.17 s  ok  1 part 4, file lines 19318 to 20052: 735 vectors, 14700 checks, 0 failing
+the-unicode-normalization-part5.js               vm  0.95 s  node  0.22 s  ok  1 part 5, file lines 20056 to 20093: 38 vectors, 760 checks, 0 failing

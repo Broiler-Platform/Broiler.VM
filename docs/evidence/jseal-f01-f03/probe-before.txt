@@ -1,0 +1,12 @@
+# Base build (HEAD + wave-1 patch), before any change of this slice. Windows, 2026-09-21.
+# $ Broiler.VM.Composition.JavaScript.Cli.exe --quiet src/tests/differential/the-float16-surface.js
+broiler-js: the-float16-surface.js: uncaught ReferenceError: Float16Array is not defined
+# $ Broiler.VM.Composition.JavaScript.Cli.exe --quiet base-iter.js   (script below; Node 24.17 answers on the right)
+#   print([Int8Array, Uint8Array, Float64Array].map(function (C) { return "[" + new C(new Set([1, 300, -1.5])).join(":") + "]"; }).join(" "));
+#   function* g() { yield 1; yield 2; } print("[" + new Uint8Array(g()).join() + "]");
+#   var o = { length: 2, 0: 1, 1: 2 }; o[Symbol.iterator] = function () { var i = 0; return { next: function () { return i < 3 ? { value: 10 + i++, done: false } : { done: true }; } }; }; print(new Int16Array(o).join());
+#   print(typeof DataView.prototype.getFloat16, typeof Float16Array, Math.f16round(1 + Math.pow(2, -11) + Math.pow(2, -40)));
+[] [] []            # node: [1:44:-1] [1:44:255] [1:300:-1.5]
+[]                  # node: [1,2]
+1,2                 # node: 10,11,12
+undefined undefined 1.0009765625   # node: function function 1.0009765625

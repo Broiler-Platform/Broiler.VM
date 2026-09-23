@@ -1,0 +1,126 @@
+# Pinned Test262 (ccaac100) BigInt-feature files of the B03-B04 operator directories, run through the internal
+# gate by gated262-runner.cs.txt: harness assert.js + sta.js + includes prepended, strict and sloppy variants,
+# a variant passes when the gated program completes normally. The public harness scores all of these
+# unsupported (the wide manifest refuses the literal), so this is the only run that executes them.
+# Every failing file builds a wrapper with Object(<bigint>), whose ToObject is card B05's named refusal.
+# Files:
+#   test/language/expressions/addition/bigint-and-number.js
+#   test/language/expressions/addition/bigint-arithmetic.js
+#   test/language/expressions/addition/bigint-errors.js
+#   test/language/expressions/addition/bigint-toprimitive.js
+#   test/language/expressions/addition/bigint-wrapped-values.js
+#   test/language/expressions/addition/coerce-bigint-to-string.js
+#   test/language/expressions/bitwise-and/bigint-and-number.js
+#   test/language/expressions/bitwise-and/bigint-errors.js
+#   test/language/expressions/bitwise-and/bigint-non-primitive.js
+#   test/language/expressions/bitwise-and/bigint-toprimitive.js
+#   test/language/expressions/bitwise-and/bigint-wrapped-values.js
+#   test/language/expressions/bitwise-and/bigint.js
+#   test/language/expressions/bitwise-not/bigint-non-primitive.js
+#   test/language/expressions/bitwise-not/bigint.js
+#   test/language/expressions/bitwise-or/bigint-and-number.js
+#   test/language/expressions/bitwise-or/bigint-errors.js
+#   test/language/expressions/bitwise-or/bigint-non-primitive.js
+#   test/language/expressions/bitwise-or/bigint-toprimitive.js
+#   test/language/expressions/bitwise-or/bigint-wrapped-values.js
+#   test/language/expressions/bitwise-or/bigint.js
+#   test/language/expressions/bitwise-xor/bigint-and-number.js
+#   test/language/expressions/bitwise-xor/bigint-errors.js
+#   test/language/expressions/bitwise-xor/bigint-non-primitive.js
+#   test/language/expressions/bitwise-xor/bigint-toprimitive.js
+#   test/language/expressions/bitwise-xor/bigint-wrapped-values.js
+#   test/language/expressions/bitwise-xor/bigint.js
+#   test/language/expressions/division/bigint-and-number.js
+#   test/language/expressions/division/bigint-arithmetic.js
+#   test/language/expressions/division/bigint-complex-infinity.js
+#   test/language/expressions/division/bigint-errors.js
+#   test/language/expressions/division/bigint-toprimitive.js
+#   test/language/expressions/division/bigint-wrapped-values.js
+#   test/language/expressions/exponentiation/bigint-and-number.js
+#   test/language/expressions/exponentiation/bigint-arithmetic.js
+#   test/language/expressions/exponentiation/bigint-errors.js
+#   test/language/expressions/exponentiation/bigint-negative-exponent-throws.js
+#   test/language/expressions/exponentiation/bigint-toprimitive.js
+#   test/language/expressions/exponentiation/bigint-wrapped-values.js
+#   test/language/expressions/exponentiation/bigint-zero-base-zero-exponent.js
+#   test/language/expressions/left-shift/bigint-and-number.js
+#   test/language/expressions/left-shift/bigint-errors.js
+#   test/language/expressions/left-shift/bigint-non-primitive.js
+#   test/language/expressions/left-shift/bigint-toprimitive.js
+#   test/language/expressions/left-shift/bigint-wrapped-values.js
+#   test/language/expressions/left-shift/bigint.js
+#   test/language/expressions/logical-assignment/lgcl-and-assignment-operator-bigint.js
+#   test/language/expressions/logical-assignment/lgcl-nullish-assignment-operator-bigint.js
+#   test/language/expressions/logical-assignment/lgcl-or-assignment-operator-bigint.js
+#   test/language/expressions/modulus/bigint-and-number.js
+#   test/language/expressions/modulus/bigint-arithmetic.js
+#   test/language/expressions/modulus/bigint-errors.js
+#   test/language/expressions/modulus/bigint-modulo-zero.js
+#   test/language/expressions/modulus/bigint-toprimitive.js
+#   test/language/expressions/modulus/bigint-wrapped-values.js
+#   test/language/expressions/multiplication/bigint-and-number.js
+#   test/language/expressions/multiplication/bigint-arithmetic.js
+#   test/language/expressions/multiplication/bigint-errors.js
+#   test/language/expressions/multiplication/bigint-toprimitive.js
+#   test/language/expressions/multiplication/bigint-wrapped-values.js
+#   test/language/expressions/postfix-decrement/bigint.js
+#   test/language/expressions/postfix-increment/bigint.js
+#   test/language/expressions/prefix-decrement/bigint.js
+#   test/language/expressions/prefix-increment/bigint.js
+#   test/language/expressions/right-shift/bigint-and-number.js
+#   test/language/expressions/right-shift/bigint-errors.js
+#   test/language/expressions/right-shift/bigint-non-primitive.js
+#   test/language/expressions/right-shift/bigint-toprimitive.js
+#   test/language/expressions/right-shift/bigint-wrapped-values.js
+#   test/language/expressions/right-shift/bigint.js
+#   test/language/expressions/subtraction/bigint-and-number.js
+#   test/language/expressions/subtraction/bigint-arithmetic.js
+#   test/language/expressions/subtraction/bigint-errors.js
+#   test/language/expressions/subtraction/bigint-toprimitive.js
+#   test/language/expressions/subtraction/bigint-wrapped-values.js
+#   test/language/expressions/unary-minus/bigint-non-primitive.js
+#   test/language/expressions/unary-minus/bigint.js
+#   test/language/expressions/unary-plus/bigint-throws.js
+#   test/language/expressions/unsigned-right-shift/bigint-and-number.js
+#   test/language/expressions/unsigned-right-shift/bigint-errors.js
+#   test/language/expressions/unsigned-right-shift/bigint-non-primitive.js
+#   test/language/expressions/unsigned-right-shift/bigint-toprimitive.js
+#   test/language/expressions/unsigned-right-shift/bigint-wrapped-values.js
+#   test/language/expressions/unsigned-right-shift/bigint.js
+FAIL test/language/expressions/addition/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/addition/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-and/bigint-non-primitive.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-and/bigint-non-primitive.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-and/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-and/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-not/bigint-non-primitive.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-not/bigint-non-primitive.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-or/bigint-non-primitive.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-or/bigint-non-primitive.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-or/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-or/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-xor/bigint-non-primitive.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-xor/bigint-non-primitive.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-xor/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/bitwise-xor/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/division/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/division/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/exponentiation/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/exponentiation/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/left-shift/bigint-non-primitive.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/left-shift/bigint-non-primitive.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/left-shift/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/left-shift/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/modulus/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/modulus/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/multiplication/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/multiplication/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/right-shift/bigint-non-primitive.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/right-shift/bigint-non-primitive.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/right-shift/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/right-shift/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/subtraction/bigint-wrapped-values.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/subtraction/bigint-wrapped-values.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/unary-minus/bigint-non-primitive.js [strict]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+FAIL test/language/expressions/unary-minus/bigint-non-primitive.js [sloppy]: ProfileFault/ProfileFaultUnspecified 0 Broiler.VM.VmDiagnostics
+summary: 130 variants passed, 36 failed, 0 files skipped

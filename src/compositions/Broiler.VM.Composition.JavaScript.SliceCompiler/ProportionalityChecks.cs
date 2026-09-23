@@ -46,7 +46,9 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// <para>
 /// <b>Structured cloning is the seventh family and it does not ship</b>, so it has no fixture here
 /// and needs none: there is no <c>structuredClone</c> in this realm, and the rule is that a family
-/// without a fixture does not ship rather than that every named family must have one.
+/// without a fixture does not ship rather than that every named family must have one. The internal
+/// carrier decision JSD-0032 describes is measured the same way, by bisection against a control,
+/// in <see cref="CloneChecks"/>; it is still not shipped.
 /// </para>
 /// </remarks>
 internal static class ProportionalityChecks

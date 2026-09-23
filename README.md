@@ -161,6 +161,15 @@ working. A floor that had to be lowered by hand, with its old rows retired in wr
 reason, is a **weaker** claim than a floor that never moved, and it is recorded here in that
 direction.
 
+*(Recorded 2026-09-21, and it reverses the fact above without withdrawing it.)* JSeal card B05
+admitted BigInt under the wide manifest (the profile's decision JSD-0033 section 7), so the BigInt
+literal no longer meets a refusal there, and **the wide run's whole-suite `unsupported` column is
+empty again from 2026-09-21**: the sentence above, that a record calling it empty is false, held
+from 2026-09-08 until this date and no longer does. The ratchet was re-based by hand in the same
+direction as before, tightened this time rather than lowered, with the retired row and its reason
+written beside it. That was measured in a working tree and not collected into any bundle, so it is
+a name and not a figure here, and no ledger row reaches `Accepted` on it.
+
 **No figure from any of those runs is printed here, and that is a rule rather than an omission.** A
 conformance total, a benchmark score or a differential transcript collected by a profile is evidence
 about that profile, belongs to that profile's bundles, and may not appear in a core document at all

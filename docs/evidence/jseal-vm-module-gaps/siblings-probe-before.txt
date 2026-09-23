@@ -1,0 +1,11 @@
+1 true
+2 ok;a start,a end,b start,b end,s,root
+3 ok;t start,t end,x,y,root
+4 ok;slow start,slow end,p,fast start,fast end,q,root
+5 ok;t start,t end,m1 start,m1 end,m2,root
+6 RangeError:bad;good start,good end,bad start
+7 TypeError:sync;tla start,tla end,bad
+8 SyntaxError:early;tla start,tla end,bad
+9 B,A start,releasing,A end,C,A settled,C settled
+10 again start,again end,first,second
+11 B run,releasing,slow end,A run,C run,slow settled,A settled,B settled,C settled

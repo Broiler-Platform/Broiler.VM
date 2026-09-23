@@ -1,0 +1,18 @@
+# The new host-surface checks on the base engine (base-vm-w5 with only HostSurfaceChecks.Clone.cs and
+# HostSurfaceChecks.Modules.cs changed), non-ok lines of 'Cli.exe --host-surface':
+FAIL a loader that throws rejects the import and settles the request, so no later turn completes it: line 3 was 'complete=Accepted' and 'complete=AlreadyResolved' was expected
+FAIL a foreign carrier is refused, and a crossing outside the realm's step or thread claims nothing: line 3 was 'missing=not refused' and 'missing=ArgumentException:value' was expected
+host-surface: 2 check(s) failed
+# The IsHTMLDDA check on the work tree before ?? and ?. stopped being lowered as '== null':
+FAIL an [[IsHTMLDDA]] object is typeof undefined, falsy and == null, and an object to everything else: line 6 was 'object=false,undefined,true,false' and 'object=true,undefined,true,false' was expected
+host-surface: 1 check(s) failed
+# The two using/static-block Test262 tests (explicit-resource-management is a proposed feature the
+# harness skips) run with assert.js and sta.js prepended, work tree then base:
+using/static-init-await-binding-invalid @ vm-small-gaps: broiler-js: t262-using-static-init-await-binding-invalid.js: 2209:ReservedWordAsBinding at 222:11: `await` is not a binding name
+using/static-init-await-binding-invalid @ vm-small-gaps-basebin: broiler-js: t262-using-static-init-await-binding-invalid.js: 2102:ExpectedToken at 222:11: `;` was expected and `await` was found
+using/static-init-await-binding-valid @ vm-small-gaps: 
+using/static-init-await-binding-valid @ vm-small-gaps-basebin: 
+class/static-init-await-binding-invalid @ vm-small-gaps: broiler-js: t262-class-static-init-await-binding-invalid.js: 2209:ReservedWordAsBinding at 221:11: `await` is not a binding name
+class/static-init-await-binding-invalid @ vm-small-gaps-basebin: broiler-js: t262-class-static-init-await-binding-invalid.js: 2209:ReservedWordAsBinding at 221:11: `await` is not a binding name
+class/static-init-await-binding-valid @ vm-small-gaps: 
+class/static-init-await-binding-valid @ vm-small-gaps-basebin: 

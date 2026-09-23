@@ -1,0 +1,17 @@
+# --host-surface lane, B06 rows only, after B06 (2026-09-22). The whole lane: 65 rows before, 73 after, every check passed.
+ok   a declined name keeps answering, and a non-configurable ordinary property stays
+ok   a BigInt crosses to the host and back exactly: zero, negative, wide, and the widest admitted
+ok   a BigInt the host builds reaches the guest exactly, and one past the ceiling is a RangeError
+ok   ToBoolean, ToJsString and ToNumber answer the language's answers for a BigInt
+ok   a BigInt equals another of the same value, however each crossed, and never a Number
+ok   properties, calls and constructs carry a BigInt both ways
+ok   a BigInt the guest throws reaches the host carrying it, and a host re-raise throws the same value
+ok   a BigInt and a BigInt object clone through DetachClone and AdoptClone
+ok   a realm that declined BigInt refuses a BigInt from the host and a carrier holding one, and claims nothing
+# slice-compiler rows added or amended by B06 (--checks --verbose)
+ok   clone/b06/a-bigint-and-a-bigint-object-clone-by-value: the program answered bigint,true,object,true,true,[object BigInt],true,true
+ok   clone/b06/a-shared-bigint-object-stays-shared-and-keys-survive: the program answered true,true,true,1,true
+ok   clone/b06/a-bigint-counts-its-words-against-the-byte-bound: the program answered cloned,refused,cloned,refused,cloned,refused
+ok   bigint/b01/a-thrown-bigint-reaches-the-host-as-a-host-throw: the program answered host-throw:1|host-throw:2
+ok   bigint/b06/a-declining-realm-refuses-a-host-bigint: declining answered TypeError; admitting answered bigint
+ok   bigint/b06/a-host-crossing-is-charged-per-word: the wide crossings cost 40960 units more than the narrow ones (floor 40960)

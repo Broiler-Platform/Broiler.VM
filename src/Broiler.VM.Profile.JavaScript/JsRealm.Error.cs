@@ -3,22 +3,23 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   6
-// Annotated:        6/6
-// Exempt:           0
-// Human-reviewed:   0/6
+// Relevant units:   8
+// Annotated:        8/8
+// Exempt:           1
+// Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       6
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
-/// The Error intrinsics: <c>Error</c>, <c>Error.prototype</c> and the six native subtypes.
+/// The Error intrinsics: <c>Error</c>, <c>Error.prototype</c>, the six native subtypes,
+/// <c>AggregateError</c> and <c>SuppressedError</c>.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -43,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds the Error constructor, its prototype and the six native subtypes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=295840
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7C4D41
     // Broiler-Human:        PENDING
     private void SetupError()
     {
@@ -103,6 +104,69 @@ internal sealed partial class JsRealm
         ErrorIntrinsicInstall("TypeError", baseConstructor);
         ErrorIntrinsicInstall("URIError", baseConstructor);
         ErrorIntrinsicInstallAggregate(baseConstructor);
+        ErrorIntrinsicInstallSuppressed(baseConstructor);
+    }
+
+    /// <summary><c>SuppressedError.prototype</c>, which disposal builds its combined errors on.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AB9227
+    // Broiler-Human:        PENDING
+    internal JsObject SuppressedErrorPrototype { get; private set; } = null!;
+
+    /// <summary>Builds <c>SuppressedError</c>, the other subtype with a shape of its own.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Its arguments are the error, the error it suppressed, and only then the message</b>, and
+    /// there is no options bag: a disposal that fails while another failure is already in flight has
+    /// two reasons and no one to prefer, so both are kept as payload and the message is an
+    /// afterthought. The message is converted FIRST and the two payloads are defined after it, which
+    /// is the own-key order a program walking the object sees.
+    /// </para>
+    /// <para>
+    /// <b>The payloads are stored exactly as given.</b> Neither is converted, wrapped or required to
+    /// be an Error, so a thrown string or a thrown <c>undefined</c> comes back out of a disposal
+    /// chain as itself.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=48386B
+    // Broiler-Human:        PENDING
+    private void ErrorIntrinsicInstallSuppressed(JsNativeFunction baseConstructor)
+    {
+        var prototype = new JsObject(ErrorPrototype);
+
+        prototype.DefineBuiltIn("name", JsValue.String("SuppressedError"));
+        prototype.DefineBuiltIn("message", JsValue.String(string.Empty));
+
+        JsNativeBody body = (engine, _, arguments) =>
+        {
+            var error = ErrorIntrinsicCreate(
+                engine, prototype, ErrorIntrinsicArg(arguments, 2), JsValue.Undefined);
+
+            error.DefineBuiltIn("error", ErrorIntrinsicArg(arguments, 0));
+            error.DefineBuiltIn("suppressed", ErrorIntrinsicArg(arguments, 1));
+            return JsValue.Object(error);
+        };
+
+        var constructor = Constructor("SuppressedError", 3, prototype, body, body);
+        constructor.Prototype = baseConstructor;
+        ErrorConstructors["SuppressedError"] = constructor;
+        SuppressedErrorPrototype = prototype;
+    }
+
+    /// <summary>
+    /// The specification's "newly created SuppressedError object" that disposal combines two throws
+    /// into: no message, the new throw as <c>error</c> and the one already in flight as
+    /// <c>suppressed</c>.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=593B85
+    // Broiler-Human:        PENDING
+    internal JsValue NewSuppressedError(JsEngine engine, JsValue error, JsValue suppressed)
+    {
+        engine.Charge(4);
+
+        var made = new JsObject(SuppressedErrorPrototype, "Error");
+        made.DefineBuiltIn("error", error);
+        made.DefineBuiltIn("suppressed", suppressed);
+        return JsValue.Object(made);
     }
 
     /// <summary>Builds <c>AggregateError</c>, which is the one subtype with a different shape.</summary>
@@ -120,11 +184,11 @@ internal sealed partial class JsRealm
     /// program that walks the object sees and what one that reassigns it may do.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=196B4E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A9A485
     // Broiler-Human:        PENDING
     private void ErrorIntrinsicInstallAggregate(JsNativeFunction baseConstructor)
     {
-        var prototype = new JsObject(ErrorPrototype, "Error");
+        var prototype = new JsObject(ErrorPrototype);
 
         prototype.DefineBuiltIn("name", JsValue.String("AggregateError"));
         prototype.DefineBuiltIn("message", JsValue.String(string.Empty));
@@ -192,11 +256,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds one native subtype: its prototype, its constructor and its registration.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5161C6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EB3C11
     // Broiler-Human:        PENDING
     private void ErrorIntrinsicInstall(string name, JsNativeFunction baseConstructor)
     {
-        var prototype = new JsObject(ErrorPrototype, "Error");
+        var prototype = new JsObject(ErrorPrototype);
 
         prototype.DefineBuiltIn("name", JsValue.String(name));
         prototype.DefineBuiltIn("message", JsValue.String(string.Empty));

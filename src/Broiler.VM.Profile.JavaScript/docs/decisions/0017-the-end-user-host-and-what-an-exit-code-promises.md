@@ -97,6 +97,23 @@ different program than the file contains is worse than one that declines, so the
 **Rejected: a `--encoding` option.** It would be a way to ask this host to guess, and the guess
 would be wrong silently.
 
+**What it writes to a pipe or a file is UTF-8 as well, on both streams.** *(Added 2026-09-21,
+JSeal follow-up VM-FIX-A.)* The runtime's default console writer encodes with the console's output code page, so on
+a machine whose console used code page 850 a guest's `"é"` left as a different byte and `"∛"` as
+`?`: the same program printed different bytes on different machines, and the differential lane
+could not compare it against a retained answer. The host now replaces each standard writer **whose stream
+is redirected** with a UTF-8 writer carrying no byte-order mark, rather than setting the console's
+output encoding, which would change the code page of the console window itself after this process
+exits. The acceptance table pins it with three rows under `encoding/`, which run over pipes.
+
+**A stream that is a console window keeps the runtime's writer.** That is a trade, and it is taken
+deliberately: the raw stream under a console window is decoded with the window's code page, so UTF-8
+written there showed `"é"` as `"├®"` on a code page 850 console that had displayed it correctly
+before. An interactive console is read by a person rather than compared against a retained answer,
+so it keeps what that console can display - on code page 850, `"é"` correctly and `"∛"` still as
+`?` - and every byte a caller can capture is deterministic UTF-8. The same rejection applies in this direction: an
+option choosing the output encoding would make an answer depend on who ran it.
+
 ---
 
 ## 4. It states no ceiling of its own, and registers nothing

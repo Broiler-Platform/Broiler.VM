@@ -1,0 +1,12 @@
+# CaseFolding-16.0.0.txt
+# Date: 2024-04-30, 21:48:17 GMT
+# © 2024 Unicode®, Inc.
+# Unicode and the Unicode Logo are registered trademarks of Unicode, Inc. in the U.S. and other countries.
+# For terms of use and license, see https://www.unicode.org/terms_of_use.html
+#
+# A WITNESS FOR RULE N22, not a Unicode data file. It is the opening of a CaseFolding.txt from the
+# release before the pinned one, and the rule's header clause has to refuse it even when a pin
+# records exactly these bytes: a hash says the file has not changed since it was recorded, and
+# only the header says which release was recorded. The witness test builds such a pin in memory.
+#
+0041; C; 0061; # LATIN CAPITAL LETTER A

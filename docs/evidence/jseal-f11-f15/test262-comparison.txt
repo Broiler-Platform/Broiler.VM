@@ -1,0 +1,33 @@
+# pinned Test262 ccaac100, bytecode form, --shards 1 --jobs 1, Windows 11, 2026-09-21
+# before = base tree (HEAD + wave-1 patch); after = this patch (final build)
+== test/built-ins/Iterator
+before {'files': 510, 'variants': 936, 'passed': 14, 'failed': 818, 'unsupported': 20, 'skipped': 84}
+after  {'files': 510, 'variants': 936, 'passed': 830, 'failed': 2, 'unsupported': 20, 'skipped': 84}
+newly failing variants: 0  newly passing variants: 816
+  still failing: test/built-ins/Iterator/proto-from-ctor-realm.js sloppy
+  still failing: test/built-ins/Iterator/proto-from-ctor-realm.js strict
+== iterator prototype spot-check (Array/Map/Set/String/Generator/RegExpString)
+before {'files': 134, 'variants': 260, 'passed': 198, 'failed': 62, 'unsupported': 0, 'skipped': 0}
+after  {'files': 134, 'variants': 260, 'passed': 244, 'failed': 16, 'unsupported': 0, 'skipped': 0}
+newly failing variants: 0  newly passing variants: 46
+  still failing: test/built-ins/ArrayIteratorPrototype/next/detach-typedarray-in-progress.js sloppy
+  still failing: test/built-ins/ArrayIteratorPrototype/next/detach-typedarray-in-progress.js strict
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec-call-throws.js sloppy
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec-call-throws.js strict
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec-get-throws.js sloppy
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec-get-throws.js strict
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec-match-get-0-throws.js sloppy
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec-match-get-0-throws.js strict
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec-match-get-0-tostring-throws.js sloppy
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec-match-get-0-tostring-throws.js strict
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec-match-get-0-tostring.js sloppy
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec-match-get-0-tostring.js strict
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec.js sloppy
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/custom-regexpexec.js strict
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/regexp-tolength-lastindex-throws.js sloppy
+  still failing: test/built-ins/RegExpStringIteratorPrototype/next/regexp-tolength-lastindex-throws.js strict
+== wider regression selection (see README)
+before {'files': 1811, 'variants': 3543, 'passed': 3266, 'failed': 197, 'unsupported': 70, 'skipped': 10}
+after  {'files': 1811, 'variants': 3543, 'passed': 3272, 'failed': 191, 'unsupported': 70, 'skipped': 10}
+newly failing variants: 0  newly passing variants: 6
+  (the 191 still-failing variants of the wider selection are unchanged from the base run and not listed)

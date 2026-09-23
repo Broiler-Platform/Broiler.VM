@@ -1,0 +1,28 @@
+ok   a host method answers an object, and the guest reads a string off it
+ok   wrapper identity survives the crossing in both directions
+ok   an accessor the host installed runs host code on every read
+ok   a host method calls back into the guest, synchronously, before it returns
+ok   a listener's throw reaches the host and is re-raised into the guest
+ok   an error the host raises is a real guest error the guest can catch
+ok   an exotic object answers a name it was never given, and enumerates it
+ok   an exotic object answers an index, and enumerates its elements before its names
+ok   an exotic object takes the name it claims and lets every other assignment through
+ok   the host links a wrapper to a prototype the guest can see
+ok   a realm in a composition that registered no permission has no host object
+ok   the host queues a job beside the guest's own, and a drain runs both in order
+ok   an embedder reaches its realm between invocations, and only by asking
+ok   a deleting exotic takes a claimed name away, and the ordinary deletion runs after it
+ok   an index key and a symbol are never offered to the deletion hook, and 007 is a name
+ok   Reflect, a trapless Proxy and the host's own delete each offer a name exactly once
+ok   a declined name keeps answering, and a non-configurable ordinary property stays
+ok   a deletion hook that throws ends the deletion, and the property is left in place
+ok   a deletion hook refused at the seam gives the guest a TypeError and keeps the property
+ok   a deletion hook whose guest callback exhausts the allowance ends the run, uncatchably
+ok   a host promise settles through the job queue and never synchronously
+ok   the first settlement of a host promise wins, and a late one is reported as such
+ok   a thenable is adopted the way the engine's own resolve procedure adopts one
+ok   a guest replacing Promise changes nothing about how the host builds one
+ok   a host promise settled from another CLR thread is refused, and the promise stays pending
+FAIL Missing is refused as a settlement value, and the promise stays open for a real one: line 1 was 'missing=not refused: Accepted' and 'missing=ArgumentException:value' was expected
+ok   a host promise settles only in a turn of its own realm, late is reported, disposed is refused
+host-surface: 1 check(s) failed

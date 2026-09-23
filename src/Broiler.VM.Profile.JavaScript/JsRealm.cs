@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
-// Exempt:           19
-// Human-reviewed:   0/18
+// Relevant units:   19
+// Annotated:        19/19
+// Exempt:           20
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       18
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -150,7 +150,7 @@ internal sealed partial class JsRealm
     private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0DE3DE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=261AFE
     // Broiler-Human:        PENDING
     internal JsRealm(JsEngine owner)
     {
@@ -160,15 +160,22 @@ internal sealed partial class JsRealm
         FunctionPrototype = new JsNativeFunction(
             ObjectPrototype, string.Empty, 0, static (_, _, _) => JsValue.Undefined);
 
+        ThrowTypeErrorFunction = CreateThrowTypeError();
+
         GlobalObject = new JsObject(ObjectPrototype, "global");
 
         ArrayPrototype = new JsArray(ObjectPrototype);
         StringPrototype = new JsPrimitiveWrapper(ObjectPrototype, "String", JsValue.String(string.Empty));
         NumberPrototype = new JsPrimitiveWrapper(ObjectPrototype, "Number", JsValue.Number(0));
         BooleanPrototype = new JsPrimitiveWrapper(ObjectPrototype, "Boolean", JsValue.False);
-        ErrorPrototype = new JsObject(ObjectPrototype, "Error");
-        DatePrototype = new JsObject(ObjectPrototype, "Date");
-        RegExpPrototype = new JsObject(ObjectPrototype, "RegExp");
+
+        // THESE THREE ARE ORDINARY OBJECTS, NOT INSTANCES (ES2026 20.5.3, 21.4.4, 22.2.6): none has
+        // an [[ErrorData]], [[DateValue]] or [[RegExpMatcher]] slot, so `Object.prototype.toString`
+        // reports each as `[object Object]` and a brand check refuses it. The String, Number and
+        // Boolean prototypes above are the ones the language does make instances of their kind.
+        ErrorPrototype = new JsObject(ObjectPrototype);
+        DatePrototype = new JsObject(ObjectPrototype);
+        RegExpPrototype = new JsObject(ObjectPrototype);
 
         SetupObject();
         SetupReflect();
@@ -199,9 +206,15 @@ internal sealed partial class JsRealm
             SetupDynamic();
         }
 
+        if (owner.Admits(Format.JsSurfaces.BigInt))
+        {
+            SetupBigInt();
+        }
+
         SetupSymbol();
         SetupCollections();
         SetupCollectionIterators();
+        SetupIterator();
         SetupPromise();
         SetupGlobal();
 
@@ -209,6 +222,10 @@ internal sealed partial class JsRealm
         // from the `Function` constructor the way the specification says it does, and that
         // constructor is published by SetupFunction into the global object above.
         SetupGenerator();
+
+        // AFTER THE PROMISE AND THE ASYNC-ITERATOR INTRINSICS, because the asynchronous stack
+        // settles through the first and `%AsyncIteratorPrototype%` is where one disposer goes.
+        SetupDisposal();
     }
 
     /// <summary>The realm's global object.</summary>
@@ -225,6 +242,20 @@ internal sealed partial class JsRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=83CBFF
     // Broiler-Human:        PENDING
     internal JsObject FunctionPrototype { get; }
+
+    /// <summary>
+    /// The realm's one <c>%ThrowTypeError%</c>: both halves of every restricted accessor - an
+    /// unmapped <c>arguments</c> object's <c>callee</c>, and <c>caller</c> and <c>arguments</c> on
+    /// <c>Function.prototype</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is one object and not one per property</b>, because the language makes it an intrinsic
+    /// and a program can see the difference: the getter of one strict <c>arguments.callee</c> is
+    /// the same function as the setter of another and as <c>Function.prototype.caller</c>'s.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A1061D
+    // Broiler-Human:        PENDING
+    internal JsNativeFunction ThrowTypeErrorFunction { get; }
 
     /// <summary><c>Array.prototype</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=09FBFD
@@ -386,18 +417,68 @@ internal sealed partial class JsRealm
     internal JsObject WrapString(string value) =>
         new JsPrimitiveWrapper(StringPrototype, "String", JsValue.String(value));
 
-    /// <summary>Builds the <c>arguments</c> object of a frame.</summary>
+    /// <summary>Builds <see cref="ThrowTypeErrorFunction"/>.</summary>
     /// <remarks>
-    /// It is UNMAPPED: writing <c>arguments[0]</c> does not write the first parameter. The mapped
-    /// form is observable and this is a declared deviation rather than an oversight - the mapping
-    /// only exists in sloppy-mode functions with simple parameter lists, and nothing this profile
-    /// is built to run depends on it.
+    /// Its <c>length</c> and <c>name</c> are neither writable nor configurable and the function is
+    /// not extensible, which is what the specification gives this one intrinsic and no other: a
+    /// program that could redefine or extend it would be changing every restricted accessor at once.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=410437
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=76049C
     // Broiler-Human:        PENDING
-    internal JsObject CreateArguments(JsValue[] arguments, JsScriptFunction? callee, bool strict)
+    private JsNativeFunction CreateThrowTypeError()
     {
-        var value = new JsObject(ObjectPrototype, "Arguments");
+        var thrower = Native(string.Empty, 0, static (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            _ = arguments;
+
+            return engine.ThrowTypeError(
+                "'caller', 'callee', and 'arguments' properties may not be accessed on strict " +
+                "mode functions or the arguments objects for calls to them");
+        });
+
+        thrower.SetOwnProperty(
+            "length", JsProperty.Data(JsValue.Number(0), JsPropertyAttributes.None));
+
+        thrower.SetOwnProperty(
+            "name", JsProperty.Data(JsValue.String(string.Empty), JsPropertyAttributes.None));
+
+        thrower.Extensible = false;
+        return thrower;
+    }
+
+    /// <summary>Builds the <c>arguments</c> object of a frame.</summary>
+    /// <param name="arguments">The actual arguments.</param>
+    /// <param name="callee">The function the frame is running, when it has one.</param>
+    /// <param name="strict">Whether the function is strict-mode code.</param>
+    /// <param name="parameters">
+    /// The environment record a simple parameter list is bound in, which makes the object MAPPED;
+    /// or <see langword="null"/> for the unmapped object.
+    /// </param>
+    /// <param name="parameterCount">How many formal parameters the simple list has.</param>
+    /// <remarks>
+    /// <b>The caller decides which of the two objects this is</b>, because only the caller knows
+    /// the unit: the specification maps exactly the sloppy-mode functions whose parameter list is
+    /// simple, and a strict function, an arrow (which has none) or a list with a default, a rest
+    /// element or a pattern gets the unmapped object. The first <c>min(actuals, formals)</c>
+    /// indices are mapped; an index past either count is an ordinary property from the start
+    /// *(corrected: JSeal V05)*.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=606E6E
+    // Broiler-Human:        PENDING
+    internal JsObject CreateArguments(
+        JsValue[] arguments,
+        JsScriptFunction? callee,
+        bool strict,
+        JsEnvironment? parameters = null,
+        int parameterCount = 0)
+    {
+        var mappedArguments = !strict && parameters is not null
+            ? new JsMappedArguments(
+                ObjectPrototype, parameters, System.Math.Min(arguments.Length, parameterCount))
+            : null;
+
+        var value = mappedArguments ?? new JsObject(ObjectPrototype, "Arguments");
 
         for (var at = 0; at < arguments.Length; at++)
         {
@@ -410,26 +491,18 @@ internal sealed partial class JsRealm
             "length",
             JsProperty.Data(JsValue.Number(arguments.Length), JsPropertyAttributes.BuiltIn));
 
-        // STRICT CODE MAY NOT ASK WHICH FUNCTION IT IS IN, and the refusal is a property rather
-        // than an absence: `callee` is an accessor pair whose halves both throw, so
-        // `arguments.callee` is a TypeError and `"callee" in arguments` is still true. Leaving the
-        // property out would have made the second one false, and a program that tests for the
-        // feature before using it would have taken the wrong branch.
-        if (strict)
+        // AN UNMAPPED OBJECT MAY NOT SAY WHICH FUNCTION IT BELONGS TO, and the refusal is a
+        // property rather than an absence: `callee` is a non-enumerable, non-configurable accessor
+        // whose halves are both the realm's %ThrowTypeError%, so `arguments.callee` is a TypeError,
+        // `"callee" in arguments` is still true and `delete arguments.callee` fails. The rule
+        // follows the KIND of object and not the mode: a sloppy function whose parameter list has a
+        // default, a rest element or a pattern gets the unmapped object and so the accessor too.
+        if (mappedArguments is null)
         {
-            var poison = Native("callee", 0, static (engine, thisValue, arguments) =>
-            {
-                _ = thisValue;
-                _ = arguments;
-
-                return engine.ThrowTypeError(
-                    "'caller', 'callee', and 'arguments' properties may not be accessed on strict " +
-                    "mode functions or the arguments objects for calls to them");
-            });
-
             value.SetOwnProperty(
                 "callee",
-                JsProperty.Accessor(poison, poison, JsPropertyAttributes.Configurable));
+                JsProperty.Accessor(
+                    ThrowTypeErrorFunction, ThrowTypeErrorFunction, JsPropertyAttributes.None));
         }
         else if (callee is not null)
         {
@@ -444,6 +517,7 @@ internal sealed partial class JsRealm
         value.SetOwnSymbol(
             IteratorSymbol, JsProperty.Data(arrayIterator, JsPropertyAttributes.BuiltIn));
 
+        mappedArguments?.Connect();
         return value;
     }
 
@@ -455,6 +529,10 @@ internal sealed partial class JsRealm
     /// <param name="lexicalThisBinding">The creating frame's <c>this</c> box, when it has one.</param>
     /// <param name="lexicalNewTarget">The creating frame's <c>new.target</c>.</param>
     /// <param name="lexicalActive">The creating frame's active function.</param>
+    /// <param name="scriptOrModule">
+    /// The creating frame's script or module, as its referrer: the new function's
+    /// <c>[[ScriptOrModule]]</c> (JSD-0024 section 20).
+    /// </param>
     /// <remarks>
     /// <b>The four lexical values are recorded only for an arrow</b>, because an arrow is the one
     /// unit that has none of them of its own: <c>this</c>, <c>new.target</c> and both halves of
@@ -462,7 +540,7 @@ internal sealed partial class JsRealm
     /// them on every closure would cost nothing and mean nothing, and it would make a reader think
     /// an ordinary function consults them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4F06CE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3C004C
     // Broiler-Human:        PENDING
     internal JsObject CreateClosure(
         JsProgram program,
@@ -471,7 +549,8 @@ internal sealed partial class JsRealm
         JsValue lexicalThis,
         JsCell? lexicalThisBinding,
         JsValue lexicalNewTarget,
-        JsScriptFunction? lexicalActive)
+        JsScriptFunction? lexicalActive,
+        string scriptOrModule)
     {
         // A GENERATOR FUNCTION INHERITS FROM `%GeneratorFunction.prototype%` AND NOT FROM
         // `Function.prototype`, and it is two hops rather than one to the latter. That is what
@@ -500,7 +579,10 @@ internal sealed partial class JsRealm
                 : FunctionPrototype,
             program,
             unit,
-            environment);
+            environment)
+        {
+            ScriptOrModule = scriptOrModule,
+        };
 
         if (program.Functions[unit].IsArrow)
         {

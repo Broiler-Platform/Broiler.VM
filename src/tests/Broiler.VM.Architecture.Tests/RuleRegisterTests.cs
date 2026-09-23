@@ -350,10 +350,19 @@ public sealed class RuleRegisterTests
         // text, the names they are read by are held to the declarations they mean, and the table's static
         // constructor is read whole, so no write beside a slot assignment goes unread. Neither the Vacuous
         // nor the Deferred count moves.
-        Assert.Equal(94, byStatus["Active"]);
+        // The Unicode tables add N22 and N23 (JSeal F07 U2, decision JSD-0031). N22 holds the
+        // generated tables to what the generator writes from the pinned UCD archive, and the archive
+        // to its pin - hashes, version headers, and the cross-check between the specification's
+        // property tables and PropertyAliases.txt - because a few hundred kilobytes of numbers are
+        // read by nobody and the mechanical statement is the only one worth having about them. N23
+        // forbids the platform's normalizer in the profile's product source, as N18 forbids the
+        // platform's regular expressions: its answer depends on the host's globalization mode, and
+        // the one call that would silence normalize's refusal would leave every other test green.
+        // Neither the Vacuous nor the Deferred count moves.
+        Assert.Equal(96, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(96, Loaded.Rules.Count);
+        Assert.Equal(98, Loaded.Rules.Count);
     }
 
     private static Register Load()

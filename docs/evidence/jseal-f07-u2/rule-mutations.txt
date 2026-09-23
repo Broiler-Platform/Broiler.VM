@@ -1,0 +1,20 @@
+Rule mutations, 2026-09-22, each made in the worktree, run, and reverted by restoring the file.
+1. src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs: the first FoldData entry's
+   target byte 97 (U+0041 -> U+0061) hand-edited to 98.
+2. src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.cs: ReadInt24 given a call
+   "x".Normalize().
+Command: dotnet test src/tests/Broiler.VM.Architecture.Tests -c Release --no-build
+  --filter "FullyQualifiedName~N22_The_Generated|FullyQualifiedName~N23_No_Product"
+Output (German console, "Fehler" = failed):
+
+  Fehler Broiler.VM.Architecture.Tests.N23PlatformNormalizerRuleTests.N23_No_Product_Source_Of_This_Profile_Reaches_The_Platform_Normalizer [2 s]
+  Fehlermeldung:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Profile.JavaScript/JsUnicodeNormali"···]
+--
+  Fehler Broiler.VM.Architecture.Tests.UnicodePinRuleTests.N22_The_Generated_Tables_Are_What_The_Pinned_Archive_Generates [3 s]
+  Fehlermeldung:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Profile.JavaScript.Format/JsUnicode"···]
+--
+Fehler!      : Fehler:     2, erfolgreich:     0, übersprungen:     0, gesamt:     2, Dauer: 3 s - Broiler.VM.Architecture.Tests.dll (net10.0)

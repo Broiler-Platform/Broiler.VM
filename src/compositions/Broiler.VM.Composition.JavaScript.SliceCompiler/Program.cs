@@ -449,6 +449,8 @@ internal static class Program
             .Concat(NativeAbiChecks.Run())
             .Concat(JsArm64GoldenChecks.Run())
             .Concat(NativeTemplateScanChecks.Run())
+            .Concat(CloneChecks.Run())
+            .Concat(BigIntChecks.Run())
             .ToArray();
         var failed = 0;
         var notRun = 0;

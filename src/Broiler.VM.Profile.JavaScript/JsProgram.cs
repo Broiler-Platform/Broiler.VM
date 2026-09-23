@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   16
-// Annotated:        16/16
-// Exempt:           35
-// Human-reviewed:   0/16
+// Relevant units:   17
+// Annotated:        17/17
+// Exempt:           42
+// Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         1/1
 // Resource impact:  2/10 max
-// Unverified:       16
+// Unverified:       17
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -224,7 +224,7 @@ internal readonly struct JsEntry(string name, uint unit)
 internal sealed class JsProgram : IVmVerifiedState
 {
     /// <summary>Creates a verified program.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E3F2C3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D6A0E0
     // Broiler-Human:        PENDING
     internal JsProgram(
         JsValue[] constants,
@@ -242,7 +242,10 @@ internal sealed class JsProgram : IVmVerifiedState
         uint nativeBackendVersion = 0,
         uint nativeCodeAlignment = 0,
         byte[]? nativeCode = null,
-        Format.JsNativeSymbolRow[]? nativeSymbols = null)
+        Format.JsNativeSymbolRow[]? nativeSymbols = null,
+        JsEvalMap? evalMap = null,
+        System.Collections.Generic.Dictionary<int, JsScriptDeclaration>? scriptDeclarations = null,
+        System.Collections.Generic.Dictionary<int, string>? scriptReferrers = null)
     {
         Constants = constants;
         Names = names;
@@ -261,7 +264,40 @@ internal sealed class JsProgram : IVmVerifiedState
         NativeCodeAlignment = nativeCodeAlignment;
         NativeCode = nativeCode ?? [];
         NativeSymbols = nativeSymbols ?? [];
+        EvalMap = evalMap;
+        ScriptDeclarations = scriptDeclarations;
+        ScriptReferrers = scriptReferrers;
     }
+
+    /// <summary>The eval scope map the artifact carries, or nothing.</summary>
+    /// <remarks>
+    /// <b>Its absence is what every artifact written before the section existed says</b>: no
+    /// direct-<c>eval</c> site of this program sees anything, so each keeps the explicit refusal it
+    /// always had, and no unit of it is eval code.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=522B94
+    // Broiler-Human:        PENDING
+    internal JsEvalMap? EvalMap { get; }
+
+    /// <summary>What each script body declares at the global scope, by unit, or nothing.</summary>
+    /// <remarks>
+    /// <b>Its absence is what every artifact written before the section existed says</b> (JSeal
+    /// V15-host): its scripts keep the lenient instantiation they always had, and a script body with
+    /// no row declares nothing a check could refuse.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A1A60F
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.Dictionary<int, JsScriptDeclaration>? ScriptDeclarations { get; }
+
+    /// <summary>The referrer each placed script body carries, by unit, or nothing.</summary>
+    /// <remarks>
+    /// <b>Its absence is what every artifact written before the section existed says</b> (JSeal
+    /// I12-upstream): its scripts are placed nowhere, so eval code and <c>Function</c> bodies they
+    /// create offer an embedder the empty referrer they always did.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=01008F
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.Dictionary<int, string>? ScriptReferrers { get; }
 
     /// <summary>The feature manifest the artifact named in its header.</summary>
     /// <remarks>
@@ -433,4 +469,37 @@ internal sealed class JsProgram : IVmVerifiedState
         unit = 0;
         return false;
     }
+}
+
+/// <summary>What one script body declares at the global scope (JSeal V15-host).</summary>
+/// <remarks>
+/// <b>These are the specification's lists for <c>GlobalDeclarationInstantiation</c></b>: the
+/// lexically declared names, the <c>var</c> names that are no function's, the functions one per name,
+/// and the block-level functions Annex B may hoist. The body's own instructions create the bindings;
+/// the executor reads this to run every check before the first of them.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8F4420
+// Broiler-Human:        PENDING
+internal sealed class JsScriptDeclaration(
+    string[] lexicalNames, string[] varNames, string[] functionNames, string[] annexBNames)
+{
+    /// <summary>The top-level <c>let</c>, <c>const</c> and <c>class</c> names.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=20F5C1
+    // Broiler-Human:        PENDING
+    internal string[] LexicalNames { get; } = lexicalNames;
+
+    /// <summary>The <c>var</c> names, none of which is also a top-level function's.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DBEF61
+    // Broiler-Human:        PENDING
+    internal string[] VarNames { get; } = varNames;
+
+    /// <summary>The top-level function names, one per name.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=48F7EA
+    // Broiler-Human:        PENDING
+    internal string[] FunctionNames { get; } = functionNames;
+
+    /// <summary>The block-level functions Annex B may hoist to the global object.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=380361
+    // Broiler-Human:        PENDING
+    internal string[] AnnexBNames { get; } = annexBNames;
 }

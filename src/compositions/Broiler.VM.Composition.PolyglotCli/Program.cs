@@ -53,9 +53,10 @@ namespace Broiler.VM.Composition.PolyglotCli;
 /// <para>
 /// <b>It is a demonstration and it is not advertised.</b> A tool advertised as a polyglot host
 /// would be claiming both surfaces, and neither claim is one this checkout can make: the
-/// JavaScript surface has no BigInt - the <c>BigInt</c> global is unbound so <c>typeof BigInt</c>
-/// answers <c>undefined</c>, and a BigInt literal is refused by name at compile time with
-/// <c>2104:ConstructOutsideManifest</c> - and the WebAssembly surface admits no import, no text
+/// JavaScript surface is unreviewed - it admits BigInt from 2026-09-21 (JSeal B05, decision
+/// JSD-0033 section 7), with <c>BigInt64Array</c>, <c>BigUint64Array</c> and the DataView BigInt
+/// accessors since 2026-09-22 (JSeal B07-B08), while <c>--numeric</c> still refuses a BigInt literal
+/// by name with <c>2104:ConstructOutsideManifest</c> - and the WebAssembly surface admits no import, no text
 /// format, no vector, no GC, no exception, no thread and no memory64. Nothing here has been
 /// reviewed by a person, and <c>docs/compositions.md</c> section 1's advertised set stays empty.
 /// <i>(Corrected 2026-09-08. The JavaScript clause read "the JavaScript surface admits no async
@@ -83,6 +84,13 @@ namespace Broiler.VM.Composition.PolyglotCli;
 /// widening nothing has scheduled. So the clause above is true from 2026-09-08 because the parser
 /// changed, not because the claim was ever checked, and what a reader gets from today is a
 /// refusal naming the construct rather than an absence taken on trust.
+/// </para>
+/// <para>
+/// <i>(Corrected 2026-09-21.)</i> The first paragraph's JavaScript clause read "the JavaScript
+/// surface has no BigInt - the <c>BigInt</c> global is unbound so <c>typeof BigInt</c> answers
+/// <c>undefined</c>, and a BigInt literal is refused by name at compile time". Cards B01-B04
+/// implemented the value kind behind a gate and card B05 admitted it under the wide manifest, so
+/// both halves stopped being true; the note above records what was true on 2026-09-08 and is kept.
 /// </para>
 /// </remarks>
 internal static class Program
@@ -756,13 +764,26 @@ internal static class Program
         Console.WriteLine("static blocks and generator members - Proxy, `with`, modules, and a standard");
         Console.WriteLine("library.");
         Console.WriteLine();
-        Console.WriteLine("BIGINT IS ABSENT IN THREE PLACES AND ALL THREE ANSWER IF YOU ASK THEM. The");
-        Console.WriteLine("`BigInt` global is not bound, so `typeof BigInt` answers `undefined`, and");
-        Console.WriteLine("`BigInt64Array` and `BigUint64Array` are absent beside it. AND A BIGINT");
-        Console.WriteLine("LITERAL IS REFUSED BY NAME AT COMPILE TIME: `1n` answers");
-        Console.WriteLine("2104:ConstructOutsideManifest, `a BigInt literal is not admitted by the");
-        Console.WriteLine("declared feature manifest`, under every manifest this host selects. Point this");
-        Console.WriteLine("host at it and read the code rather than taking it from here.");
+        Console.WriteLine("BIGINT IS ADMITTED BY THE DEFAULT MANIFEST, THROUGH ITS OWN SURFACE. `1n` is an");
+        Console.WriteLine("exact integer, the `BigInt` global and `BigInt.prototype` are bound, and the");
+        Console.WriteLine("operators, conversions and comparisons are the language's (JSeal B01-B05,");
+        Console.WriteLine("decision JSD-0033). A program holding a BigInt literal or naming `BigInt`");
+        Console.WriteLine("declares broiler.javascript.bigint, which a composition may decline.");
+        Console.WriteLine("`BigInt64Array`, `BigUint64Array` and the DataView BigInt accessors exist");
+        Console.WriteLine("wherever that surface is admitted (JSeal B07-B08); naming either constructor");
+        Console.WriteLine("declares it beside broiler.javascript.binary. --numeric still refuses a");
+        Console.WriteLine("BigInt literal by name, 2104:ConstructOutsideManifest.");
+        Console.WriteLine();
+        Console.WriteLine("(Corrected 2026-09-22. This paragraph said the BigInt typed arrays and the");
+        Console.WriteLine("DataView BigInt accessors were \"STILL ABSENT (cards B07-B08)\"; they were");
+        Console.WriteLine("added by those cards.)");
+        Console.WriteLine();
+        Console.WriteLine("(Corrected 2026-09-21. This paragraph read \"BIGINT IS ABSENT IN THREE PLACES");
+        Console.WriteLine("AND ALL THREE ANSWER IF YOU ASK THEM\": the global unbound and a literal refused");
+        Console.WriteLine("by name under every manifest this host selects. Both stopped being true when");
+        Console.WriteLine("card B05 admitted the surface; the typed arrays are the one place of the three");
+        Console.WriteLine("that still answers `undefined`. The two notes below record what was true on");
+        Console.WriteLine("2026-09-08 and are kept as they were written.)");
         Console.WriteLine();
         Console.WriteLine("(Corrected 2026-09-08. This paragraph read \"It admits no async function, class");
         Console.WriteLine("field, private name, class static block, generator member of a class body,");

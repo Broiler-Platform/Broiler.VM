@@ -1,0 +1,40 @@
+# Pinned Test262 (tc39/test262 ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e), bytecode form,
+# --shards 1 --jobs 1, manifest broiler.javascript.wide admitting every surface. 2026-09-22.
+# base = HEAD + base-vm-w6 (binaries copied before any change); after = this slice.
+# Counts are variants (a file runs sloppy and strict unless flagged).
+
+## Run 1: --dir test/built-ins/{TypedArrayConstructors,TypedArray,DataView,Map,Set,Array/prototype/map,ArrayBuffer,Atomics}
+base   8173 variants: passed 5297, failed 2835, skipped 41
+after  8173 variants: passed 7100, failed 1032, skipped 41
+passing -> not passing: 0; not passing -> passing: 1803
+
+selection                                                     variants  base (pass/fail/skip)  after
+TypedArray/**/BigInt/                                              958  2/956/0                952/6/0
+TypedArrayConstructors BigInt/, ctors-bigint, Big(U)Int64Array     573  2/571/0                497/76/0
+DataView/prototype/{get,set}Big{Int,Uint}64                        136  34/100/2               134/0/2
+Map/valid-keys.js, Set/valid-values.js                               4  0/4/0                  4/0/0
+Array/prototype/map/resizable-buffer*.js                             6  0/6/0                  6/0/0
+TypedArray/prototype/map/resizable-buffer*.js                        6  0/6/0                  6/0/0
+TypedArray (all)                                                  2860  1716/1144/0            2844/16/0
+TypedArrayConstructors (all)                                      1444  723/719/2              1288/154/2
+DataView (all)                                                    1111  918/182/11             1018/82/11
+
+Still failing after, run 1 (1032): Atomics 748 and SharedArrayBuffer 212 (absent, JSD-0028);
+$262.createRealm (no nested realm) in the *-realm.js variants, 62; and five pre-existing files, two
+variants each, none of them this slice's: ArrayBuffer/prototype/Symbol.toStringTag.js,
+DataView/prototype/Symbol.toStringTag.js, ArrayBuffer/data-allocation-after-object-creation.js,
+TypedArray/prototype/toString.js, TypedArrayConstructors/ctors/object-arg/
+iterated-array-with-modified-array-iterator.js (all five also fail on the base build).
+Every BigInt typed-array or DataView BigInt variant
+still failing names createRealm or a SharedArrayBuffer. Skipped BigInt variants: setBigInt64/
+immutable-buffer.js (claims the proposed immutable-arraybuffer), Atomics/wait/bigint/cannot-suspend.
+
+## Run 2: --dir test/built-ins/{Array,Function/prototype/apply,Object,BigInt,Reflect,JSON}
+##        --dir test/language/{destructuring/binding,statements/for-of,statements/class/subclass-builtins,expressions/class/subclass-builtins}
+base   15418 variants: passed 15067, failed 351
+after  15418 variants: passed 15229, failed 189
+passing -> not passing: 0; not passing -> passing: 162
+
+## The F04-F06 shimmed-harness list (docs/evidence/jseal-f04-f06/shimmed-harness-files.txt)
+149 files, 298 variants, all inside runs 1 and 2, now run UNSHIMMED through the pinned harness:
+base 0/298 passing (a ReferenceError for BigInt64Array from resizableArrayBufferUtils.js), after 298/298.

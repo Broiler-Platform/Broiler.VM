@@ -1,0 +1,39 @@
+ok   bigint/b02/a-value-past-two-to-the-53-survives-compile-verify-execute: the program answered 9007199254740993|18446744073709551617
+ok   bigint/b02/every-radix-and-separators-are-exact: the program answered 2305843009213693951,144115188075855871,36028797018963967,1000000000000000000001,...
+ok   bigint/b02/a-two-hundred-bit-literal-is-exact: the program answered 1606938044258990275541962092341162602522202993782792835301376
+ok   bigint/b02/the-widest-constant-the-format-carries-survives: the program answered 19729
+ok   bigint/b01/typeof-and-truthiness: the program answered bigint,bigint,f,t,true,false,true
+ok   bigint/b01/strict-equality-is-mathematical: the program answered true,true,false,false,true,true,false,false,true,false
+ok   bigint/b01/same-value-zero-keys-are-mathematical: the program answered true,0,2,two,false
+ok   bigint/b02/a-bigint-property-key-is-its-exact-decimal-spelling: the program answered 1|16|9007199254740993:khone
+ok   bigint/b01/string-conversion-is-exact-everywhere-it-is-reached: the program answered 12345678901234567890,12345678901234567890,0+7,127
+ok   bigint/b01/operations-a-later-card-owns-refuse-by-name-and-never-answer-a-number: the program answered refused,refused,refused,refused,refused,refused,refused,refused,refused,refused,...
+ok   bigint/b02/ungated/a-fraction-is-malformed: 1.5n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/gated/a-fraction-is-malformed: 1.5n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/ungated/an-exponent-is-malformed: 1e3n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/gated/an-exponent-is-malformed: 1e3n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/ungated/a-legacy-octal-is-malformed: 01n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal with a leading zero
+ok   bigint/b02/gated/a-legacy-octal-is-malformed: 01n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal with a leading zero
+ok   bigint/b02/ungated/a-leading-zero-is-malformed: 08n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal with a leading zero
+ok   bigint/b02/gated/a-leading-zero-is-malformed: 08n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal with a leading zero
+ok   bigint/b02/ungated/a-leading-point-is-malformed: .5n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/gated/a-leading-point-is-malformed: .5n: 2003:MalformedNumericLiteral at 2:9: a BigInt literal that is not an integer
+ok   bigint/b02/ungated/a-trailing-separator-is-malformed: 1_n: 2003:MalformedNumericLiteral at 2:9: a numeric separator that is not between two digits
+ok   bigint/b02/gated/a-trailing-separator-is-malformed: 1_n: 2003:MalformedNumericLiteral at 2:9: a numeric separator that is not between two digits
+ok   bigint/b02/ungated/a-leading-separator-is-malformed: 0x_1n: 2003:MalformedNumericLiteral at 2:9: a numeric separator that is not between two digits
+ok   bigint/b02/gated/a-leading-separator-is-malformed: 0x_1n: 2003:MalformedNumericLiteral at 2:9: a numeric separator that is not between two digits
+ok   bigint/b02/ungated/a-second-suffix-is-malformed: 1nn: 2003:MalformedNumericLiteral at 2:9: a numeric literal touching an identifier
+ok   bigint/b02/gated/a-second-suffix-is-malformed: 1nn: 2003:MalformedNumericLiteral at 2:9: a numeric literal touching an identifier
+ok   bigint/b02/ungated/a-digit-after-the-suffix-is-malformed: 1n0: 2003:MalformedNumericLiteral at 2:9: a numeric literal touching an identifier
+ok   bigint/b02/gated/a-digit-after-the-suffix-is-malformed: 1n0: 2003:MalformedNumericLiteral at 2:9: a numeric literal touching an identifier
+ok   bigint/b02/ungated/a-digit-outside-the-radix-is-malformed: 0b2n: 2003:MalformedNumericLiteral at 2:9: a radix prefix with no digits
+ok   bigint/b02/gated/a-digit-outside-the-radix-is-malformed: 0b2n: 2003:MalformedNumericLiteral at 2:9: a radix prefix with no digits
+ok   bigint/b02/an-ungated-compilation-keeps-the-named-refusal: 2104:ConstructOutsideManifest at 2:9: a BigInt literal is not admitted by the declared feature manifest
+ok   bigint/b02/a-decimal-literal-wider-than-the-ceiling-is-refused: 2104:ConstructOutsideManifest at 1:9: a BigInt literal wider than 65536 bits is not admitted by the declared feature manifest
+ok   bigint/b02/a-hexadecimal-literal-wider-than-the-ceiling-is-refused: 2104:ConstructOutsideManifest at 1:9: a BigInt literal wider than 65536 bits is not admitted by the declared feature manifest
+ok   bigint/b02/the-numeric-manifest-refuses-a-gated-literal: 2104:ConstructOutsideManifest at 1:9: this expression is not admitted by the declared feature manifest
+ok   bigint/b02/the-descriptor-admitting-every-surface-declines-the-gate: InvalidArtifact/UnsupportedFeatureManifest/1608
+ok   bigint/b01/every-public-descriptor-door-refuses-the-gate: the doors answered refused,refused,refused,refused
+ok   bigint/b01/a-thrown-bigint-reaches-the-host-as-a-host-throw: the program answered host-throw:TypeError|host-throw:2
+ok   bigint/b02/an-ungated-bigint-property-key-is-exact: the program answered 9007199254740993
+broiler-js-slice-compiler: 320 checks passed, 2 not run on this machine and claimed by nothing

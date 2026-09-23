@@ -1,0 +1,2 @@
+# Retained host answers; not a conformance oracle.
+1 part 4, file lines 19318 to 20052: 735 vectors, 14700 checks, 0 failing

@@ -1,0 +1,74 @@
+# Retained host answers; not a conformance oracle.
+#diverges node 41 the SuppressedError that disposal combines two throws into is created with no own message, as the proposal's DisposeResources says; V8 gives it an implementation-chosen message
+1 "symbol symbol"
+2 "Symbol.dispose Symbol.asyncDispose"
+3 "false/false/false false/false/false"
+4 true
+5 true
+6 "symbol"
+7 "function 3 SuppressedError"
+8 true
+9 true
+10 "SuppressedError||true/false/true"
+11 true
+12 "message,error,suppressed"
+13 "false true/false/true true/false/true"
+14 true
+15 "SuppressedError: boom"
+16 "[object Error]"
+17 false
+18 "true undefined undefined"
+19 true
+20 false
+21 "function 0"
+22 throws TypeError
+23 "adopt,constructor,defer,dispose,disposed,move,use"
+24 true
+25 "DisposableStack [object DisposableStack]"
+26 "function undefined get disposed"
+27 "1,2,1,0,0"
+28 throws TypeError
+29 throws TypeError
+30 false
+31 "cvba undefined true"
+32 1
+33 "throws ReferenceError throws ReferenceError throws ReferenceError throws ReferenceError"
+34 "throws TypeError throws TypeError throws TypeError throws TypeError"
+35 throws TypeError
+36 "1 11"
+37 "orig"
+38 true
+39 "0:true"
+40 true
+41 "321 SuppressedError first last false"
+42 "a(b(c))"
+43 "true false 0 true"
+44 "0 1"
+45 "true false true"
+46 "2 true"
+47 "throws ReferenceError"
+48 "true true"
+49 true
+50 "43210"
+51 "function [Symbol.dispose] 0 true/false/true"
+52 "undefined 1"
+53 undefined
+54 "function 0"
+55 throws TypeError
+56 "adopt,constructor,defer,disposeAsync,disposed,move,use"
+57 true
+58 "[object AsyncDisposableStack] false"
+59 "throws TypeError throws TypeError throws TypeError throws TypeError"
+60 true
+61 dv|dvcba undefined true true
+62 rejected TypeError
+63 1 true
+64 SuppressedError r1(t2(r3))
+65 j1,dispose,j2
+66 j1,dispose
+67 0 1 true true
+68 inner undefined
+69 throws ReferenceError throws ReferenceError
+70 function [Symbol.asyncDispose] 0 undefined 1:undefined
+71 rejected RangeError
+72 rejected RangeError

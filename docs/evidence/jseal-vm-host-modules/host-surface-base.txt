@@ -1,0 +1,11 @@
+# --host-surface lane: the base build (HEAD + base-vm-w10.patch) with only the new rows added
+# (HostSurfaceChecks.Missing.cs, .Referrers.cs, the ModuleLane AnswerPrograms switch), 2026-09-22;
+# re-run after the review with the promise-job referrer row added to .Referrers.cs.
+# The module-state rows name the new member and cannot be compiled against the base.
+FAIL Missing is refused where a host member requires a value, and nothing is written: invoking '#host-turn' answered ProfileFault/ProfileContractViolation | so far: 
+FAIL Missing a host answers the guest is undefined: a receiver, a body's return and a hook's answer: invoking 'read' answered ProfileFault/ProfileContractViolation | so far: receiver=False
+FAIL import() in eval and Function code carries the key of the module whose code created it: line 1 was 'offered=|./b' and 'offered=mem:/dir/m|./b' was expected
+FAIL import() in eval and Function code inside a host script carries the script's referrer: line 2 was 'offered=|./b' and 'offered=script:dir/page.js|./b' was expected
+FAIL import() in eval and Function code a promise job runs carries the referrer that queued the job: line 1 was 'offered=|./b' and 'offered=mem:/dir/j|./b' was expected
+host-surface: 5 check(s) failed
+# rows that passed on the base: 78

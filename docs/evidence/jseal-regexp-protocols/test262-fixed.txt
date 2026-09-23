@@ -1,0 +1,24 @@
+newly failing 0
+fixed 104
+   2 RegExp/call_with_non_regexp_same_constructor.js
+   2 RegExp/call_with_regexp_match_falsy.js
+   2 RegExp/call_with_regexp_not_same_constructor.js
+   2 RegExp/from-regexp-like-flag-override.js
+   2 RegExp/from-regexp-like-get-ctor-err.js
+   2 RegExp/from-regexp-like-get-flags-err.js
+   2 RegExp/from-regexp-like-get-source-err.js
+   2 RegExp/from-regexp-like-short-circuit.js
+   2 RegExp/from-regexp-like.js
+   26 RegExp/prototype/Symbol.matchAll
+   2 RegExpStringIteratorPrototype/next/custom-regexpexec-call-throws.js
+   2 RegExpStringIteratorPrototype/next/custom-regexpexec-get-throws.js
+   2 RegExpStringIteratorPrototype/next/custom-regexpexec-match-get-0-throws.js
+   2 RegExpStringIteratorPrototype/next/custom-regexpexec-match-get-0-tostring-throws.js
+   2 RegExpStringIteratorPrototype/next/custom-regexpexec-match-get-0-tostring.js
+   2 RegExpStringIteratorPrototype/next/custom-regexpexec.js
+   2 RegExpStringIteratorPrototype/next/regexp-tolength-lastindex-throws.js
+   8 String/prototype/match
+   10 String/prototype/matchAll
+   10 String/prototype/replace
+   10 String/prototype/search
+   8 String/prototype/split

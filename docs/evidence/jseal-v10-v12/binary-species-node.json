@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-09-21T16:13:43.642509+00:00",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9",
+  "driver": {
+    "path": "D:\\wt\\vm-v10-v12\\eng\\run-differential.py",
+    "sha256": "69a422a84335a4e4f9c1eb9573242a2f48fe615c626921e2a233e8e9017dfa4c"
+  },
+  "environment": {
+    "TZ": "UTC",
+    "PYTHONIOENCODING": "utf-8",
+    "DOTNET_CLI_UI_LANGUAGE": "en-US"
+  },
+  "engines": [
+    {
+      "name": "broiler-vm",
+      "executable": "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "scriptArgs": [
+        "--quiet",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--quiet",
+        "--module",
+        "{probe}"
+      ],
+      "sourceRoot": "D:\\wt\\vm-v10-v12",
+      "resolvedExecutable": "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+      "binaries": [
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Abstractions.dll",
+          "sha256": "2d1529cf7f44a281e6756c7039331be68bb9136f5a8c9e74aa3724b9778a1701"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Binary.dll",
+          "sha256": "2a5ffd6a146a773c2791052e9a9a6d179f88091f17c23e5ef48d51573cd7abba"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.dll",
+          "sha256": "ff82e9c779871fc94a732590cd93e808589bf488de851f27332bb325edec5745"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+          "sha256": "55a32f3fd9d1622b9c8b3f44e37e917eb8bd21edc8fb7d7e6fa3cae09f979611"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Compiler.dll",
+          "sha256": "1e28e4d4e961ed9f98bcc64db2db53f1f8661e7a8033dfb32edcad2d29f999a3"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.dll",
+          "sha256": "7d344db37e1ef39690f730a0c377817436be74e7012dc21b58d49ba7438722a9"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Profile.JavaScript.Format.dll",
+          "sha256": "e71d0211613cb7dbfefe311f78f445918a13eef47bc7221f1b1ea62061f974c9"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Runtime.dll",
+          "sha256": "8c794440b1f0fa20b6379735a95ed038750497bcd5ca524bada602ebf34234ec"
+        }
+      ],
+      "source": {
+        "revision": "484f389f0dda0e0a15da5b111a64389d0ec14a59",
+        "workingTree": "M CODE-ASSURANCE.md\n M HUMAN_REVIEW.md\n M assurance.manifest.json\n M src/Broiler.VM.Profile.JavaScript/JsBinary.cs\n M src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs\n?? src/tests/differential/the-binary-species.expected.txt\n?? src/tests/differential/the-binary-species.js"
+      }
+    },
+    {
+      "name": "node",
+      "executable": "node",
+      "scriptArgs": [
+        "--require",
+        "{shim}",
+        "{probe}"
+      ],
+      "moduleArgs": [
+        "--require",
+        "{shim}",
+        "{probe}"
+      ],
+      "resolvedExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "binaries": [
+        {
+          "path": "C:\\Program Files\\nodejs\\node.exe",
+          "sha256": "c6335d08331c23d68b9f2b18adb102002d76ef150b47248e954c507e0d033664"
+        }
+      ]
+    }
+  ],
+  "probes": [
+    {
+      "name": "the-binary-species.js",
+      "input": {
+        "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\the-binary-species.js",
+        "sha256": "d22c973548c0575558a34fd9010af0554ba8c90cbea6f4f9492321454b5a8b52"
+      },
+      "runs": [
+        {
+          "engine": "broiler-vm",
+          "goal": "script",
+          "argv": [
+            "D:\\wt\\vm-v10-v12\\src\\compositions\\Broiler.VM.Composition.JavaScript.Cli\\bin\\Release\\net10.0\\Broiler.VM.Composition.JavaScript.Cli.exe",
+            "--quiet",
+            "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\the-binary-species.js"
+          ],
+          "cwd": "D:\\wt\\vm-v10-v12\\src\\tests\\differential",
+          "timeoutSeconds": 20.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 \"true 2,4,6\"\r\n2 \"Float64Array 1.5,2.5\"\r\n3 true\r\n4 TypeError\r\n5 true\r\n6 TypeError\r\n7 TypeError\r\n8 TypeError\r\n9 \"2,3,0,0,0\"\r\n10 Boom\r\n11 Boom\r\n12 \"ctor(2) cb1 cb2\"\r\n13 \"3,4.25\"\r\n14 \"Uint8ClampedArray 255,0\"\r\n15 \"44\"\r\n16 \"1,NaN,NaN\"\r\n17 \"TypeError\"\r\n18 TypeError\r\n19 TypeError\r\n20 \"1 number 3\"\r\n21 \"cb1 cb2 cb3 get\"\r\n22 \"2 Int16Array 2,4\"\r\n23 \"true 1.5,3.5\"\r\n24 TypeError\r\n25 TypeError\r\n26 \"1,NaN,NaN\"\r\n27 \"255,5\"\r\n28 \"1 2\"\r\n29 \"true 2,3\"\r\n30 \"Uint8Array 255,2\"\r\n31 \"1,-2\"\r\n32 \"-56,5\"\r\n33 \"Uint8ClampedArray 1,2\"\r\n34 \"1,2,3 9,3 false\"\r\n35 \"20,20,20,60\"\r\n36 TypeError\r\n37 \"1,2,0,0\"\r\n38 TypeError\r\n39 0\r\n40 TypeError\r\n41 \"start end get\"\r\n42 TypeError\r\n43 \"3 true 4 3\"\r\n44 \"1,9,8,4 9,8 true\"\r\n45 \"true 2,3\"\r\n46 \"4 2\"\r\n47 TypeError\r\n48 1\r\n49 RangeError\r\n50 \"Uint16Array 1 2\"\r\n51 TypeError\r\n52 \"begin end get\"\r\n53 \"104,105,33\"\r\n54 \"true 3\"\r\n55 TypeError\r\n56 TypeError\r\n57 TypeError\r\n58 TypeError\r\n59 TypeError\r\n60 TypeError\r\n61 TypeError\r\n62 \"4 2,3,0,0\"\r\n63 TypeError\r\n64 TypeError\r\n65 \"1,2,3 9,2,3\"\r\n66 \"1 5 5\"\r\n67 \"start end get\"\r\n68 Boom\r\n69 \"TypeError 7,0\"\r\n70 3\r\n",
+          "stderr": "",
+          "elapsedSeconds": 0.484
+        },
+        {
+          "engine": "node",
+          "goal": "script",
+          "argv": [
+            "C:\\Program Files\\nodejs\\node.exe",
+            "--require",
+            "C:\\Users\\proof\\AppData\\Local\\Temp\\broiler-differential-kxrcmfoa\\print.cjs",
+            "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\the-binary-species.js"
+          ],
+          "cwd": "D:\\wt\\vm-v10-v12\\src\\tests\\differential",
+          "timeoutSeconds": 20.0,
+          "exitCode": 0,
+          "timedOut": false,
+          "stdout": "1 \"true 2,4,6\"\n2 \"Float64Array 1.5,2.5\"\n3 true\n4 TypeError\n5 true\n6 TypeError\n7 TypeError\n8 TypeError\n9 \"2,3,0,0,0\"\n10 Boom\n11 Boom\n12 \"ctor(2) cb1 cb2\"\n13 \"3,4.25\"\n14 \"Uint8ClampedArray 255,0\"\n15 \"44\"\n16 \"1,NaN,NaN\"\n17 \"TypeError\"\n18 TypeError\n19 TypeError\n20 \"1 number 3\"\n21 \"cb1 cb2 cb3 get\"\n22 \"2 Int16Array 2,4\"\n23 \"true 1.5,3.5\"\n24 TypeError\n25 TypeError\n26 \"1,NaN,NaN\"\n27 \"255,5\"\n28 \"1 2\"\n29 \"true 2,3\"\n30 \"Uint8Array 255,2\"\n31 \"1,-2\"\n32 \"-56,5\"\n33 \"Uint8ClampedArray 1,2\"\n34 \"1,2,3 9,3 false\"\n35 \"20,20,20,60\"\n36 TypeError\n37 \"1,2,0,0\"\n38 TypeError\n39 0\n40 TypeError\n41 \"start end get\"\n42 TypeError\n43 \"3 true 4 3\"\n44 \"1,9,8,4 9,8 true\"\n45 \"true 2,3\"\n46 \"4 2\"\n47 TypeError\n48 1\n49 RangeError\n50 \"Uint16Array 1 2\"\n51 TypeError\n52 \"begin end get\"\n53 \"104,105,33\"\n54 \"true 3\"\n55 TypeError\n56 TypeError\n57 TypeError\n58 TypeError\n59 TypeError\n60 TypeError\n61 TypeError\n62 \"4 2,3,0,0\"\n63 TypeError\n64 TypeError\n65 \"1,2,3 9,2,3\"\n66 \"1 5 5\"\n67 \"start end get\"\n68 Boom\n69 \"TypeError 7,0\"\n70 3\n",
+          "stderr": "",
+          "elapsedSeconds": 0.094
+        }
+      ],
+      "failures": [],
+      "declaredDivergences": [],
+      "retainedInput": {
+        "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\the-binary-species.expected.txt",
+        "sha256": "bae365a32bc601a03f1f4ee40a742f672415f83bbe28c33494d2130bbe7a299a"
+      },
+      "dependencies": [
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\modules\\async-generators.mjs",
+          "sha256": "f30c550120ae0b8d5104920f83773e54786815d42ed114d01e23f354d84f4bdb"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\modules\\awaits.mjs",
+          "sha256": "2f910d5721c44d16e8f3fe144d7734a6c44dcc180148034fa3a8d0d3918d29ed"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\modules\\counter.mjs",
+          "sha256": "ad17d3788ad8221e85a1e2f7d12b4d5540e8d5343190bbf29b63fca083ee419c"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\modules\\cycle-first.mjs",
+          "sha256": "ad2c9da277c75c5a98b616f66f3e13a85220e0b8d8f9c6d1fffe1a52586860c9"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\modules\\cycle-second.mjs",
+          "sha256": "0eb60f5c2acc88abff37a7663b1267cfef625448612c1006c0e33a83245044ff"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\modules\\late.mjs",
+          "sha256": "adbfb6a404a458870e77200703c153c4aae47ea814b7cfdd3eca33b894905ecd"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\modules\\no-such-export.mjs",
+          "sha256": "3a7d13d160b168947f5c9bae7d1d143a4550a78d64d2dd28ff8f35f2b78c745c"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\modules\\re-exports.mjs",
+          "sha256": "565eea8d1ef2a4ff3129908a42c8e955b55030b5be84952dcc2e13dae9fc91b0"
+        },
+        {
+          "path": "D:\\wt\\vm-v10-v12\\src\\tests\\differential\\modules\\unparsable.mjs",
+          "sha256": "46db89bb35397883bf58d53ff2fc77bc5947ebf800b6f39f11e4b4f452ded75e"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "ok": true
+}

@@ -1,0 +1,44 @@
+using System;
+// Reference: exact binary16 rounding from double, roundTiesToEven, via integer arithmetic.
+static ushort Ref(double d)
+{
+    ulong bits = (ulong)BitConverter.DoubleToInt64Bits(d);
+    ushort sign = (ushort)((bits >> 48) & 0x8000);
+    if (double.IsNaN(d)) return (ushort)(sign | 0x7E00);
+    double a = Math.Abs(d);
+    if (double.IsInfinity(a)) return (ushort)(sign | 0x7C00);
+    // scale: value = a; binary16 min subnormal 2^-24. Compute q = a / 2^-24 for subnormal range, otherwise per exponent.
+    int e = Math.ILogB(a); // floor(log2 a)
+    if (a == 0) return sign;
+    int qexp = Math.Max(e, -14) - 10; // ulp exponent
+    double scaled = Math.ScaleB(a, -qexp); // exact (power of two scaling), in [0, 2048)
+    double fl = Math.Floor(scaled);
+    double frac = scaled - fl; // exact
+    ulong m = (ulong)fl;
+    if (frac > 0.5 || (frac == 0.5 && (m & 1) == 1)) m++;
+    long enc = ((long)(qexp + 25) << 10) + (long)m - 1024;
+    if (enc >= 0x7C00) return (ushort)(sign | 0x7C00);
+    return (ushort)(sign | (int)enc);
+}
+int bad = 0; var rng = new Random(12345);
+void Check(double d) {
+    ushort want = Ref(d); ushort got = BitConverter.HalfToUInt16Bits((Half)d);
+    if (double.IsNaN(d)) { if (!Half.IsNaN((Half)d)) bad++; return; }
+    if (want != got) { if (bad++ < 10) Console.WriteLine($"MISMATCH {d:R} bits {BitConverter.DoubleToInt64Bits(d):X16} want {want:X4} got {got:X4}"); }
+}
+// all halves, midpoints, and neighbours of midpoints
+for (int h = 0; h < 0x10000; h++) {
+    Half hv = BitConverter.UInt16BitsToHalf((ushort)h); double v = (double)hv;
+    if (double.IsNaN(v) || double.IsInfinity(v)) continue;
+    Check(v);
+    Half nx = BitConverter.UInt16BitsToHalf((ushort)(h+1)); double w = (double)nx;
+    if ((h & 0x7FFF) == 0x7BFF) { w = 65536.0 * Math.Sign(v); }
+    if (double.IsNaN(w) || double.IsInfinity(w) || (h&0x7FFF)==0x7FFF) continue;
+    if ((h & 0x8000) != ((h+1)&0x8000)) continue;
+    double mid = (v + w) / 2; Check(mid); Check(Math.BitIncrement(mid)); Check(Math.BitDecrement(mid));
+    for (int k = 0; k < 4; k++) Check(v + (w - v) * rng.NextDouble());
+}
+Check(65520); Check(65519.99999); Check(-65520); Check(1e300); Check(5.960464477539063e-8/2); Check(Math.BitIncrement(5.960464477539063e-8/2));
+Check(1 + Math.Pow(2,-11) + Math.Pow(2,-40));
+Console.WriteLine($"f16 check mismatches: {bad}");
+Console.WriteLine($"double-rounding witness: (Half)(1+2^-11+2^-40)={(double)(Half)(1 + Math.Pow(2,-11) + Math.Pow(2,-40))} via float={(double)(Half)(float)(1 + Math.Pow(2,-11) + Math.Pow(2,-40))}");

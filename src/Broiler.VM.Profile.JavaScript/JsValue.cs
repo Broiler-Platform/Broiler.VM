@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   29
-// Annotated:        29/29
-// Exempt:           20
-// Human-reviewed:   0/29
+// Relevant units:   32
+// Annotated:        32/32
+// Exempt:           21
+// Human-reviewed:   0/32
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       29
+// Unverified:       32
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -19,13 +19,16 @@ namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>The value kinds the <c>broiler.javascript.wide</c> surface has.</summary>
 /// <remarks>
-/// Six of the language's seven primitive types were here at first and Symbol has since joined them;
-/// BigInt has not, so a value of that kind is unreachable rather than unhandled.
+/// Six of the language's seven primitive types were here at first and Symbol has since joined them.
+/// <i>(Amended 2026-09-21.)</i> BigInt is here too (decision JSD-0033): only an artifact declaring
+/// the BigInt surface can hold one - unadvertised until card B05, admitted by the wide manifest's
+/// descriptor since - and every switch over this enum answers it or refuses it by name rather than
+/// reading it as another kind.
 /// <see cref="Empty"/> is not a language value at all - it is the marker a binding holds before it
 /// is initialised, and reading it is what makes the temporal dead zone a throw rather than an
 /// <c>undefined</c>.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2B2B1B
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=750BAE
 // Broiler-Human:        PENDING
 internal enum JsType : byte
 {
@@ -55,8 +58,21 @@ internal enum JsType : byte
     /// It arrived after the other six and the enum says so by its number rather than by a comment
     /// somewhere else. BigInt is still absent: a value of that kind is unreachable rather than
     /// unhandled, and the seventh primitive type this surface has is this one.
+    /// <i>(Amended 2026-09-21. BigInt has since arrived, as <see cref="BigInt"/>: behind a gate for
+    /// cards B01-B04, and admitted with card B05.)</i>
     /// </remarks>
     Symbol = 7,
+
+    /// <summary>A BigInt: an exact signed integer, held as a <see cref="JsBigInt"/>.</summary>
+    /// <remarks>
+    /// <b>Admitted through its own surface</b> (decision JSD-0033, JSeal cards B01-B05). A value
+    /// of this kind exists only in a realm whose composition admits the BigInt surface, which the
+    /// descriptor admitting every surface does since card B05. Every language operation answers it
+    /// as the specification does; the host crossing and the structured clone carry it exactly since
+    /// card B06 (they refused it by name until then), and no operation reads it as a Number except
+    /// <c>Number(x)</c>, which rounds it as the language says.
+    /// </remarks>
+    BigInt = 8,
 }
 
 /// <summary>
@@ -154,6 +170,21 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
     // Broiler-Human:        PENDING
     internal static JsValue Symbol(JsSymbol value) => new(JsType.Symbol, 0, value);
 
+    /// <summary>A BigInt.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=465216
+    // Broiler-Human:        PENDING
+    internal static JsValue BigInt(JsBigInt value) => new(JsType.BigInt, 0, value);
+
+    /// <summary>Whether this is a BigInt.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F70D20
+    // Broiler-Human:        PENDING
+    internal bool IsBigInt => Type == JsType.BigInt;
+
+    /// <summary>The BigInt this holds.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DE2B92
+    // Broiler-Human:        PENDING
+    internal JsBigInt AsBigInt() => (JsBigInt)reference!;
+
     /// <summary>Whether this is a Symbol.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5719D9
     // Broiler-Human:        PENDING
@@ -215,15 +246,17 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
     internal JsObject? AsObjectOrNull() => Type == JsType.Object ? (JsObject)reference! : null;
 
     /// <summary>The abstract operation <c>ToBoolean</c>, which calls nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8A68D4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=326E45
     // Broiler-Human:        PENDING
     internal bool ToBooleanValue() => Type switch
     {
         JsType.Boolean => number != 0,
         JsType.Number => number != 0 && !double.IsNaN(number),
         JsType.String => ((string)reference!).Length != 0,
-        JsType.Object => true,
+        // An object is true unless it has an [[IsHTMLDDA]] slot (Annex B.3.6.1).
+        JsType.Object => !((JsObject)reference!).IsHtmlDda,
         JsType.Symbol => true,
+        JsType.BigInt => !((JsBigInt)reference!).IsZero,
         _ => false,
     };
 
@@ -232,7 +265,7 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
     /// <c>typeof null</c> is <c>"object"</c>. It is a defect of the language that every
     /// implementation reproduces, and reproducing it is the whole job.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C41635
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E380C7
     // Broiler-Human:        PENDING
     internal string TypeOf() => Type switch
     {
@@ -242,7 +275,10 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
         JsType.Number => "number",
         JsType.String => "string",
         JsType.Symbol => "symbol",
-        _ => ((JsObject)reference!).IsCallable ? "function" : "object",
+        JsType.BigInt => "bigint",
+        // An [[IsHTMLDDA]] object is "undefined", callable or not (Annex B.3.6.3).
+        _ => ((JsObject)reference!) is { IsHtmlDda: true } ? "undefined"
+            : ((JsObject)reference!).IsCallable ? "function" : "object",
     };
 
     /// <summary>
@@ -253,7 +289,7 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
     /// equal when they are the same object and never otherwise; two Strings are equal when their
     /// code-unit sequences are.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E7A4CA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5A6C21
     // Broiler-Human:        PENDING
     internal bool StrictlyEquals(JsValue other)
     {
@@ -269,6 +305,11 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
             JsType.Number => number == other.number,
             JsType.String => System.String.Equals((string)reference!, (string)other.reference!, System.StringComparison.Ordinal),
             JsType.Object or JsType.Symbol => ReferenceEquals(reference, other.reference),
+
+            // TWO BIGINTS ARE EQUAL WHEN THEIR INTEGERS ARE, whatever instances hold them: a BigInt
+            // is a primitive and its identity means nothing. Reference equality here would make
+            // `1n === 1n` false for two constants, which is a plausible wrong answer.
+            JsType.BigInt => ((JsBigInt)reference!).Equals((JsBigInt)other.reference!),
             _ => true,
         };
     }
@@ -337,7 +378,7 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
     }
 
     /// <summary>The abstract operation <c>ToIntegerOrInfinity</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1769F6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4EA1A2
     // Broiler-Human:        PENDING
     internal static double ToInteger(double value)
     {
@@ -346,6 +387,9 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
             return 0;
         }
 
-        return double.IsInfinity(value) ? value : System.Math.Truncate(value);
+        // NEVER -0 (since 2026-09-22, JSeal VM-FIX-J): the operation answers a mathematical
+        // integer, which has no sign of zero, so -0 and every value truncating to it are +0. Adding
+        // +0 is the IEEE spelling of that; `[true].indexOf(true, -0)` answered -0 without it.
+        return double.IsInfinity(value) ? value : System.Math.Truncate(value) + 0.0;
     }
 }

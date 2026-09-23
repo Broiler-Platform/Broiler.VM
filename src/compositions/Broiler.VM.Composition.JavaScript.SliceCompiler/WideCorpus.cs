@@ -101,6 +101,28 @@ internal static class WideCorpus
             "-",
             Artifact(surfaces: [JsSurfaces.Binary])),
 
+        // ---- three rows about the BigInt constant (JSeal B02, decision JSD-0033) ------------------
+        //
+        // The tag is admitted only beside the unadvertised BigInt gate, which no mode of this corpus
+        // admits. Without the gate the answer is the one every build before the tag gave - an
+        // unknown constant tag - and a payload that is not canonical, or declares a width past the
+        // format's ceiling, is refused before any surface is consulted.
+        Entry(
+            "wide-a-bigint-constant-no-surface-declares",
+            Artifact(constant: JsArtifactWriter.BigIntConstant(false, [0x01])),
+            "UnknownFeature",
+            JavaScriptDiagnosticCodes.UnknownConstantTag),
+        Entry(
+            "wide-a-bigint-constant-that-is-not-canonical",
+            Artifact(constant: JsArtifactWriter.BigIntConstant(false, [0x01, 0x00]), surfaces: [JsSurfaces.BigInt]),
+            "MalformedEncoding",
+            JavaScriptDiagnosticCodes.MalformedBigIntConstant),
+        Entry(
+            "wide-a-bigint-constant-wider-than-the-format-admits",
+            Artifact(constant: [(byte)JsFormat.ConstantTag.BigInt, 0x00, 0x81, 0x40], surfaces: [JsSurfaces.BigInt]),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.DeclaredMaximumTooLarge),
+
         // ---- four rows about the two unit kinds that may suspend --------------------------------
         //
         // A suspendable invocation's frame is put on the heap by the EXECUTOR, from the unit's own
@@ -494,6 +516,46 @@ internal static class WideCorpus
                 nativeSymbolOffset: 0,
                 nativeArchitecture: JsNativeArchitecture.Arm64)),
 
+        // ---- three rows about resource scopes (JSeal F21-F22, JSD-0034) ------------------------
+        //
+        // A DISPOSAL STEP IS THE FIRST HALF OF AN AWAIT and is refused where the await would be,
+        // with the await's code: its fall-through leaves the value an `Await` suspends on, and a
+        // unit that may not await has no driver to resume it. The stack is left valid on purpose -
+        // the branch and the fall-through agree at the join - so the row reaches the flag check.
+        Entry(
+            "wide-a-disposal-step-outside-an-async-function",
+            Artifact(code: [
+                (byte)JsOpcode.DisposeScope,
+                (byte)JsOpcode.DisposeStep, 0x07, 0x00, 0x00, 0x00,
+                (byte)JsOpcode.Pop,
+                (byte)JsOpcode.LoadUndefined,
+                (byte)JsOpcode.Return,
+            ]),
+            "SemanticValidationFailed",
+            JavaScriptDiagnosticCodes.AwaitOutsideAsync),
+
+        // A SETTLING MODE THIS VERSION DOES NOT DEFINE: `DisposeEnd`'s stack effect is decided by
+        // its operand, so an undefined one is an effect nothing agreed on.
+        Entry(
+            "wide-a-disposal-end-whose-mode-is-undefined",
+            Artifact(code: [
+                (byte)JsOpcode.DisposeScope,
+                (byte)JsOpcode.DisposeEnd, 0x02,
+                (byte)JsOpcode.Return,
+            ]),
+            "UnknownFeature",
+            JavaScriptDiagnosticCodes.UnknownOpcode),
+
+        // AND ONE THAT RUNS: a block's resource is disposed as the block ends, before the next
+        // statement reads what the disposer wrote.
+        Ok(
+            "wide-a-block-disposes-its-resource",
+            Compiled(
+                "var n = 1;\n" +
+                "{ using r = { [Symbol.dispose]() { n = n * 10; } }; n = n + 1; }\n" +
+                "n;\n"),
+            "20"),
+
         // ---- two rows that were unreachable while one version was registered ------------------
         //
         // Both are the CALLER mislabelling the bytes, and neither could happen while the profile
@@ -543,6 +605,22 @@ internal static class WideCorpus
         {
             throw new System.InvalidOperationException(
                 "the retained version-2 control did not compile: " +
+                (compiled.Diagnostics.Count == 0 ? "no diagnostic" : compiled.Diagnostics[0].ToString()));
+        }
+
+        return compiled.Artifact;
+    }
+
+    /// <summary>A version-2 program compiled from <paramref name="source"/>, script goal.</summary>
+    private static byte[] Compiled(string source)
+    {
+        var compiled = Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.Compile(
+            source, Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.Script);
+
+        if (!compiled.Succeeded || compiled.Artifact is null)
+        {
+            throw new System.InvalidOperationException(
+                "a retained version-2 control did not compile: " +
                 (compiled.Diagnostics.Count == 0 ? "no diagnostic" : compiled.Diagnostics[0].ToString()));
         }
 
@@ -789,7 +867,8 @@ internal static class WideCorpus
         byte[]? nativeCode = null,
         uint? nativeSymbolOffset = null,
         uint? nativeDeclaredLength = null,
-        JsNativeArchitecture nativeArchitecture = JsNativeArchitecture.Arm64)
+        JsNativeArchitecture nativeArchitecture = JsNativeArchitecture.Arm64,
+        byte[]? constant = null)
     {
         var body = code ?? [(byte)JsOpcode.LoadConstant, 0x00, 0x00, (byte)JsOpcode.Return];
 
@@ -800,7 +879,7 @@ internal static class WideCorpus
                 JsArtifactWriter.Limits(16, 16, 4, 4)),
             new(
                 (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Constants,
-                JsArtifactWriter.Constants([JsArtifactWriter.NumberConstant(1)])),
+                JsArtifactWriter.Constants([constant ?? JsArtifactWriter.NumberConstant(1)])),
             new((JavaScriptFormat.SectionKind)JsFormat.SectionKind.Code, body),
             new(
                 (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Entries,
