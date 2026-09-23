@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
+// Relevant units:   11
+// Annotated:        11/11
 // Exempt:           1
-// Human-reviewed:   0/10
+// Human-reviewed:   0/11
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         11/11
+// Criteria:         12/12
 // Resource impact:  4/10 max
-// Unverified:       10
+// Unverified:       11
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -51,7 +51,7 @@ public sealed unsafe partial class VmNativePage
     /// on macOS as an unsatisfied host assumption - the sentence this host prints for an artifact
     /// emitted for another machine. Private is <c>0x02</c> on all three.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=60B009
     // Broiler-Falsified-If: this names a shared or a file-backed mapping on the systems it is chosen for
     // Broiler-Human:        PENDING
     private const int MapPrivateAnonymousBsd = 0x02 | 0x1000;
@@ -63,7 +63,7 @@ public sealed unsafe partial class VmNativePage
     private static readonly void* MapFailed = (void*)(-1);
 
     /// <summary>Maps a writable, non-executable region.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=31576D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=61768A
     // Broiler-Falsified-If: this passes any protection other than the readable-and-writable one
     // Broiler-Human:        PENDING
     private static byte* MapUnix(nuint bytes)

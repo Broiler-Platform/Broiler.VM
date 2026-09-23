@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 4505 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 4507 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 200 |
-| Code units | 7937 |
-| Relevant | 4505 |
+| Code units | 7939 |
+| Relevant | 4507 |
 | Exempt | 3432 |
-| Assessed | 4505 of 4505 (100%) |
-| Human reviewed | 0 of 4505 (0%) |
-| Unverified | 4505 |
+| Assessed | 4507 of 4507 (100%) |
+| Human reviewed | 0 of 4507 (0%) |
+| Unverified | 4507 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 4505 |
+| HUMAN_PENDING | 4507 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -217,7 +217,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 51 | 15 | 36 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` | 4 | 4 | 0 | 4 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` | 26 | 4 | 22 | 4 | None | Critical | 14/14 |
-| `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` | 22 | 13 | 9 | 13 | Low | Critical | 17/17 |
+| `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` | 23 | 14 | 9 | 14 | Low | Critical | 18/18 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` | 12 | 4 | 8 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 69 | 38 | 31 | 38 | Low | High | 1/1 |
@@ -268,7 +268,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.MachineCode/MachineCodeReadAdapter.cs` | 8 | 5 | 3 | 5 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.MachineCode/MachineCodeVerifier.cs` | 8 | 3 | 5 | 3 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.MachineCode/VmNativeFrame.cs` | 17 | 3 | 14 | 3 | Low | Low | 0/0 |
-| `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` | 11 | 10 | 1 | 10 | Low | Critical | 11/11 |
+| `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` | 12 | 11 | 1 | 11 | Low | Critical | 12/12 |
 | `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` | 13 | 13 | 0 | 13 | Low | Critical | 13/13 |
 | `src/Broiler.VM.Profile.MachineCode/VmNativePage.cs` | 22 | 12 | 10 | 12 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.WebAssembly/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
@@ -1818,6 +1818,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: anything reachable from this instance holds a managed reference emitted code can dereference
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.OperandSlabSlots` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `A12001`, PENDING
   - Falsified if: an emitted unit can be entered when fewer slots remain than its region needs
+- `Broiler.VM.Profile.JavaScript.JsNativeInstance.OutgoingArgumentHeadroom` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `9C90B6`, PENDING
+  - Falsified if: a call's argument store reaches past the end of the operand slab's array
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.FuelPerInvocation` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `5FA9CD`, PENDING
   - Falsified if: an invocation runs past this many charged events without the meter being consulted
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.JsNativeInstance(JsProgram, IVmExecutionEnvironment, JsNativePage, double[], double[], double[], long[])` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `361FFF`, PENDING
@@ -1828,7 +1830,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this slab is not pinned, or a slot of it is readable by emitted code before an initialiser stored to it
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.Fuel` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `5C814B`, PENDING
   - Falsified if: this slab is not pinned, so the collector can move it while emitted code is decrementing it
-- `Broiler.VM.Profile.JavaScript.JsNativeInstance.TryCreate(JsProgram, IVmExecutionEnvironment)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `9F87C8`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeInstance.TryCreate(JsProgram, IVmExecutionEnvironment)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `030FF4`, PENDING
   - Falsified if: an instance is produced whose mapping is not armed
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.Dispose()` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `4FEDBC`, PENDING
   - Falsified if: a mapping outlives the instance that owns it, or is released while an invocation is still inside it
@@ -1840,7 +1842,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this names a convention other than the one this process actually uses
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.Instantiate(JsProgram, IVmExecutionEnvironment)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `DC113E`, PENDING
   - Falsified if: an artifact emitted for another architecture is instantiated
-- `Broiler.VM.Profile.JavaScript.JsNativeExecution.Invoke(VmProfileId, JsNativeInstance, in VmInvocationRequest)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `09609E`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeExecution.Invoke(VmProfileId, JsNativeInstance, in VmInvocationRequest)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, Spec=none cited, `660C65`, PENDING
   - Falsified if: a value is reported that the emitted code did not leave in the frame's first operand slot
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.TryFindSymbol(JsProgram, uint, out uint)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, Spec=none cited, `B97A49`, PENDING
   - Falsified if: an offset is returned for a unit the symbol table does not name
@@ -1968,9 +1970,11 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a protection value naming both write and execute permission appears in any source file this component compiles, or outside the stored witness inputs rule X1's negative controls are made of
 - `Broiler.VM.Profile.MachineCode.VmNativePage.MapPrivateAnonymous` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `913A18`, PENDING
   - Falsified if: this names a shared or a file-backed mapping
+- `Broiler.VM.Profile.MachineCode.VmNativePage.MapPrivateAnonymousBsd` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `60B009`, PENDING
+  - Falsified if: this names a shared or a file-backed mapping on the systems it is chosen for
 - `Broiler.VM.Profile.MachineCode.VmNativePage.MapFailed` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `BAFAB4`, PENDING
   - Falsified if: this differs from the value the platform answers a failed mapping with, so a failure is read as an address
-- `Broiler.VM.Profile.MachineCode.VmNativePage.MapUnix(nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `31576D`, PENDING
+- `Broiler.VM.Profile.MachineCode.VmNativePage.MapUnix(nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `61768A`, PENDING
   - Falsified if: this passes any protection other than the readable-and-writable one
 - `Broiler.VM.Profile.MachineCode.VmNativePage.ArmUnix(byte*, nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `7C06EF`, PENDING
   - Falsified if: this passes any protection that admits a write
@@ -2378,7 +2382,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 4388 of the 4505 assessed units declare
+That is not a figure of speech. 4390 of the 4507 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

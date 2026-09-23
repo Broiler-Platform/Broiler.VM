@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
+// Relevant units:   14
+// Annotated:        14/14
 // Exempt:           9
-// Human-reviewed:   0/13
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         17/17
+// Criteria:         18/18
 // Resource impact:  4/10 max
-// Unverified:       13
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -83,7 +83,7 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
     /// headroom is the format's ceiling on arguments, so every such store lands in slots this
     /// instance owns, and the callee's prologue still refuses exactly where it did.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=9C90B6
     // Broiler-Falsified-If: a call's argument store reaches past the end of the operand slab's array
     // Broiler-Human:        PENDING
     internal const int OutgoingArgumentHeadroom = (int)JsFormat.CeilingCallArguments;
@@ -177,7 +177,7 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
     internal int InvocationCount { get; set; }
 
     /// <summary>Maps and arms the artifact's code, and builds the slabs it reads.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=9F87C8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=030FF4
     // Broiler-Falsified-If: an instance is produced whose mapping is not armed
     // Broiler-Human:        PENDING
     internal static JsNativeInstance? TryCreate(
@@ -341,7 +341,7 @@ internal static unsafe class JsNativeExecution
     /// pretending to be.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=09609E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=660C65
     // Broiler-Falsified-If: a value is reported that the emitted code did not leave in the frame's first operand slot
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Invoke(

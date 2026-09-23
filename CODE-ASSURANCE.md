@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 200 |
 | Files carrying an annotation | 200 |
-| Code units | 7937 |
-| Relevant | 4505 |
+| Code units | 7939 |
+| Relevant | 4507 |
 | Exempt by predicate | 3432 |
-| Annotated | 4505 of 4505 (100%) |
-| Human reviewed | 0 of 4505 (0%) |
-| Unverified | 4505 |
+| Annotated | 4507 of 4507 (100%) |
+| Human reviewed | 0 of 4507 (0%) |
+| Unverified | 4507 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 4505 |
+| HUMAN_PENDING | 4507 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -39,7 +39,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 1538 |
-| Low | 4083 |
+| Low | 4085 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -52,8 +52,8 @@ figures below are the measurement of how far from that claim the component is.
 | None | 7 |
 | Low | 730 |
 | Medium | 3952 |
-| High | 904 |
-| Critical | 109 |
+| High | 905 |
+| Critical | 110 |
 | *not annotated* | 0 |
 
 ## Resource impact
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 9 / 10 |
 | Average over annotated units | 1.9 / 10 |
-| Units scored | 4505 |
+| Units scored | 4507 |
 
 ## High-security review areas
 
@@ -810,6 +810,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Step<TMode>(JsBaselineFrame*, int, JsOpcode)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.OperandSlabSlots` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeInstance.OutgoingArgumentHeadroom` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.FuelPerInvocation` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.JsNativeInstance(JsProgram, IVmExecutionEnvironment, JsNativePage, double[], double[], double[], long[])` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.Operands` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, human line PENDING
@@ -885,6 +886,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.MachineCode.VmNativePage.ProtReadWrite` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.ProtReadExecute` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.MapPrivateAnonymous` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.MachineCode.VmNativePage.MapPrivateAnonymousBsd` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.MapFailed` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.MapUnix(nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.ArmUnix(byte*, nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
@@ -1084,8 +1086,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1090 |
-| Units required to carry one | 1013 |
+| Units carrying a criterion | 1092 |
+| Units required to carry one | 1015 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1169,7 +1171,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-7937 of them, exempt and relevant alike - with the fingerprint of its declaration.
+7939 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
