@@ -179,8 +179,11 @@ jobs:
           nupkg=$(ls artifacts/ci-pack/*.nupkg | wc -l)
           snupkg=$(ls artifacts/ci-pack/*.snupkg | wc -l)
           echo "nupkg=$nupkg snupkg=$snupkg"
-          test "$nupkg" -eq 3
-          test "$snupkg" -eq 3
+          # Eight since d16a6aa (2026-09-19) made the three JavaScript profile projects,
+          # Profile.MachineCode and Profile.WebAssembly packable; it was three before that
+          # and this number was not moved with them, so every push has failed here since.
+          test "$nupkg" -eq 8
+          test "$snupkg" -eq 8
 
       # The one check that cannot be done from inside the solution: a consumer with no project
       # reference, restoring from a feed whose only source is the packages just built.
