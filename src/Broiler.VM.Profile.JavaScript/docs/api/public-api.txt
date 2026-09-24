@@ -369,6 +369,8 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsUncaught.ErrorName : System.String { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsUncaught.Identity : Broiler.VM.VmPayloadIdentity { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsUncaught.Message : System.String { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsWordChecks.Fuzz(System.Int32 seed, System.Int32 iterations, System.Boolean stress) : static System.ValueTuple<System.String, System.Boolean, System.String>
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsWordChecks.Run() : static System.ValueTuple<System.String, System.Boolean, System.String>[]
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.IJsNativeBackend.Architecture : abstract Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture { get; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.IJsNativeBackend.Name : abstract System.String { get; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.IJsNativeBackend.SemanticVersion : abstract System.UInt32 { get; }
@@ -2258,6 +2260,37 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical.IsIdentifierPart(System.Int32 codePoint) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical.IsIdentifierStart(System.Int32 codePoint) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical.IsWhiteSpace(System.Int32 codePoint) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.BigIntTag : const System.UInt16 = 65533
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.CanonicalNaN : const System.UInt64 = 9221120237041090560
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Empty : const System.UInt64 = 18444773748872577028
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.False : const System.UInt64 = 18444773748872577026
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.FirstTag : const System.UInt16 = 65529
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.FromNumber(System.Double value) : static System.UInt64
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.GenerationShift : const System.Int32 = 32
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Handle(System.UInt16 tag, System.UInt16 generation, System.UInt32 index) : static System.UInt64
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.HandleGeneration(System.UInt64 word) : static System.UInt16
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.HandleIndex(System.UInt64 word) : static System.UInt32
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Header(System.Int32 region, System.Int32 live) : static System.UInt64
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.HeaderLive(System.UInt64 word) : static System.Int32
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.HeaderRegion(System.UInt64 word) : static System.Int32
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.HeaderTag : const System.UInt16 = 65534
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.IsHandle(System.UInt64 word) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.IsHeader(System.UInt64 word) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.IsNumber(System.UInt64 word) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.MaximumFrameLength : const System.Int32 = 16777215
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Null : const System.UInt64 = 18444773748872577025
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.ObjectTag : const System.UInt16 = 65531
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.PayloadMask : const System.UInt64 = 281474976710655
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.ReservedTag : const System.UInt16 = 65535
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.SpecialCount : const System.UInt64 = 5
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.SpecialTag : const System.UInt16 = 65529
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.StringTag : const System.UInt16 = 65530
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.SymbolTag : const System.UInt16 = 65532
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Tag(System.UInt64 word) : static System.UInt16
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.TagShift : const System.Int32 = 48
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.ToNumber(System.UInt64 word) : static System.Double
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.True : const System.UInt64 = 18444773748872577027
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Undefined : const System.UInt64 = 18444773748872577024
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExotic : interface
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExoticDeletion : interface
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostModuleLoader : interface
@@ -2303,6 +2336,7 @@ type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativeAbiObse
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsNativePage : sealed class System.IDisposable
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsPause : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsUncaught : sealed class Broiler.VM.IVmProfilePayload
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsWordChecks : static class
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.IJsNativeBackend : interface
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsArm64Assembler : sealed class
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsArm64Backend : sealed class Broiler.VM.Profile.JavaScript.Compiler.IJsNativeBackend
@@ -2449,3 +2483,4 @@ type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.J
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsScriptDeclarationRow : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Format.JsScriptDeclarationRow>
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces : static class
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical : static class
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord : static class

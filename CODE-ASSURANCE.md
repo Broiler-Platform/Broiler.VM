@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 200 |
-| Files carrying an annotation | 200 |
-| Code units | 7939 |
-| Relevant | 4507 |
-| Exempt by predicate | 3432 |
-| Annotated | 4507 of 4507 (100%) |
-| Human reviewed | 0 of 4507 (0%) |
-| Unverified | 4507 |
+| Files scanned | 205 |
+| Files carrying an annotation | 205 |
+| Code units | 8068 |
+| Relevant | 4608 |
+| Exempt by predicate | 3460 |
+| Annotated | 4608 of 4608 (100%) |
+| Human reviewed | 0 of 4608 (0%) |
+| Unverified | 4608 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 4507 |
+| HUMAN_PENDING | 4608 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 3432 |
+| EXEMPT | 3460 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1538 |
-| Low | 4085 |
+| Low | 4186 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,10 +50,10 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 7 |
-| Low | 730 |
-| Medium | 3952 |
-| High | 905 |
-| Critical | 110 |
+| Low | 736 |
+| Medium | 3994 |
+| High | 938 |
+| Critical | 130 |
 | *not annotated* | 0 |
 
 ## Resource impact
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 9 / 10 |
 | Average over annotated units | 1.9 / 10 |
-| Units scored | 4507 |
+| Units scored | 4608 |
 
 ## High-security review areas
 
@@ -360,6 +360,15 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.windowsBaseline` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.systemVBaseline` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.X64Baseline(JsNativeArchitecture)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.FirstTag` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.Empty` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.CanonicalNaN` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.IsNumber(ulong)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.IsHandle(ulong)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.FromNumber(double)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.Handle(ushort, ushort, uint)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.Header(int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptReadAdapter` in `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptInstance` in `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptContinuation` in `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` - Security=High, human line PENDING
@@ -735,6 +744,19 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsGenerator` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsAsyncCall` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsAsyncGenerator` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Free` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Live` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Permanent` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Retired` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.JsHandleTable(JsValueSlab, bool, int)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.HandleFor(object, ushort, bool)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.TryResolve(ulong, out object?)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Safepoint()` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Compact()` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.MarkRoot(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Allocate()` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Release(int)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostObject` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostObject.TryGetOwnProperty(string, out JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostObject.SetOwnProperty(string, JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, human line PENDING
@@ -868,6 +890,13 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsRealm.NewHostPromise(JsEngine)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.AwaitOn(JsEngine, JsValue, System.Action<JsEngine, JsValue, bool>)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.NormalizeText(JsEngine, string, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.Headroom` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.TryPushFrame(int, out int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.Publish(int, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.PopFrame(int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.Scan(JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.HeaderAt(int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadManifest(in VmArtifactDescriptor, ref VmBoundedReader, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadBigInt(ref VmBoundedReader, Sections, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadNativeCode(ref VmBoundedReader, ulong, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
@@ -882,6 +911,30 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsVerifier.NativeImage(Sections, JsNativeTier)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReEmit(Sections, byte[], JsNativeSymbolRow[], IJsNativeEmitter?, JsNativeProgramImage)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.LinkModules(Sections, JsCodeUnit[], IVmVerificationContext, JavaScriptReadAdapter, out JsModuleRecord[], out JsBinding[])` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.Fuzz(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryTagPrefixHasExactlyOneClass()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.TheHardwareNaNsAreNumbers()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryNaNPayloadEncodesCanonically()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryKindRoundTrips()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.OneObjectHasOneWord()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.WordsThatNameNoValueAreRefused()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AWrappingSlotIsRetired()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.PermanentAndNurseryEntriesSurvive()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AnAllocationCompactionKeepsTheNursery()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.OnlyPublishedWordsAreRoots()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.HandleStressRefusesAnUnrootedWord()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AReleasedLiveWordStopsTheScan()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AMalformedFrameChainStopsTheScan()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FramesCloseInOrderAndRefuseToOverflow()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel.Run(int)` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel.CheckLive(int)` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel.CheckDropped()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordCodec` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.Encode(in JsValue, JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.TryDecode(ulong, JsHandleTable, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.Decode(ulong, JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.TryDecodeSpecial(ulong, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.ProtReadWrite` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.ProtReadExecute` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
@@ -1086,8 +1139,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1092 |
-| Units required to carry one | 1015 |
+| Units carrying a criterion | 1145 |
+| Units required to carry one | 1068 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1114,13 +1167,13 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1044 |
+| TrivialPropertyOrAccessor | 1050 |
 | ParameterAssigningConstructor | 113 |
 | TrivialExpressionBodiedMember | 53 |
 | CompilerSuppliedRecordOrEnumMember | 10 |
 | DelegatingOverrideOrOperator | 106 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 633 |
+| FieldDeclaringStorage | 655 |
 | EnumMemberOfADeclaredVocabulary | 1442 |
 | DeclaredInSource | 31 |
 
@@ -1171,7 +1224,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-7939 of them, exempt and relevant alike - with the fingerprint of its declaration.
+8068 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -1179,7 +1232,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 200 of them - with a
+Beside the units it lists **every covered file** - 205 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

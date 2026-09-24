@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 4507 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 4608 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 200 |
-| Code units | 7939 |
-| Relevant | 4507 |
-| Exempt | 3432 |
-| Assessed | 4507 of 4507 (100%) |
-| Human reviewed | 0 of 4507 (0%) |
-| Unverified | 4507 |
+| Files scanned | 205 |
+| Code units | 8068 |
+| Relevant | 4608 |
+| Exempt | 3460 |
+| Assessed | 4608 of 4608 (100%) |
+| Human reviewed | 0 of 4608 (0%) |
+| Unverified | 4608 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 4507 |
+| HUMAN_PENDING | 4608 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 3432 |
+| EXEMPT | 3460 |
 
 ## 5. Aliases In The Tree
 
@@ -191,6 +191,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeLexical.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.cs` | 17 | 15 | 2 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs` | 18 | 1 | 17 | 1 | Low | Low | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` | 32 | 32 | 0 | 32 | Low | High | 9/9 |
 | `src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 80 | 8 | 72 | 8 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` | 36 | 18 | 18 | 18 | Low | High | 6/6 |
@@ -211,6 +212,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 44 | 26 | 18 | 26 | Low | High | 12/12 |
 | `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 64 | 29 | 35 | 29 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 69 | 17 | 52 | 17 | None | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` | 32 | 17 | 15 | 17 | Low | Critical | 13/13 |
 | `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` | 14 | 10 | 4 | 10 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` | 92 | 80 | 12 | 80 | Low | High | 41/41 |
 | `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` | 133 | 55 | 78 | 55 | Low | High | 9/9 |
@@ -258,7 +260,10 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.cs` | 27 | 18 | 9 | 18 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` | 9 | 1 | 8 | 1 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsValue.cs` | 53 | 32 | 21 | 32 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` | 14 | 11 | 3 | 11 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` | 107 | 61 | 46 | 61 | Low | High | 14/14 |
+| `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` | 46 | 36 | 10 | 36 | Low | Critical | 19/19 |
+| `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` | 5 | 5 | 0 | 5 | Low | Critical | 5/5 |
 | `src/Broiler.VM.Profile.MachineCode/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.MachineCode/MachineCodeArtifactWriter.cs` | 2 | 2 | 0 | 2 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.MachineCode/MachineCodeExecutor.cs` | 19 | 9 | 10 | 9 | Low | Medium | 0/0 |
@@ -918,6 +923,24 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an entry of this table differs from the bytes the baseline emitter writes for System V
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.X64Baseline(JsNativeArchitecture)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=Critical, Spec=none cited, `4BCDE9`, PENDING
   - Falsified if: a template here admits an indirect transfer other than the handler-table call, a memory write, or a byte sequence the baseline emitter does not write
+- `Broiler.VM.Profile.JavaScript.Format.JsWord` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `D89940`, PENDING
+  - Falsified if: a word this type classifies as a Number is also classified as a tagged value, or a tagged word can be produced by IEEE-754 arithmetic on two Numbers
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.FirstTag` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `B77857`, PENDING
+  - Falsified if: the default NaN of an SSE2 operation, or its sign flip, has top sixteen bits at or above this value
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.Empty` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `398351`, PENDING
+  - Falsified if: an empty slot and undefined decode to the same value, so a read in the temporal dead zone is not refused
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.CanonicalNaN` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `D48E42`, PENDING
+  - Falsified if: FromNumber answers a NaN word other than this one, or this word is not a quiet NaN
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.IsNumber(ulong)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `A20747`, PENDING
+  - Falsified if: this answers true for a word carrying any tag from FirstTag upwards, or false for a word below it
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.IsHandle(ulong)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `5FE785`, PENDING
+  - Falsified if: this answers true for a special constant, a frame header, a reserved word or a Number
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.FromNumber(double)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `F2600F`, PENDING
+  - Falsified if: some double answers a word IsNumber rejects, or a non-NaN double does not answer its own bit pattern
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.Handle(ushort, ushort, uint)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `205016`, PENDING
+  - Falsified if: the word answered does not carry the tag, the generation and the index it was given, or carries a tag outside the four handle tags
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.Header(int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `BC255B`, PENDING
+  - Falsified if: a header answers a region or live length other than the ones it was built from, or is built with more live words than its region holds
 - `Broiler.VM.Profile.JavaScript.JavaScriptReadAdapter` in `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` - Security=High, Spec=none cited, `1DD7A4`, PENDING
   - Falsified if: a charge made through this adapter reaches a dimension other than the one named, or a released byte count is charged rather than released
 - `Broiler.VM.Profile.JavaScript.JavaScriptInstance` in `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` - Security=High, Spec=none cited, `E818FA`, PENDING
@@ -1668,6 +1691,32 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an async call whose body is on the interpreter's stack is resumed again, or a suspended async call is reachable from anything the allowance is not already counting
 - `Broiler.VM.Profile.JavaScript.JsAsyncGenerator` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, Spec=none cited, `F8D803`, PENDING
   - Falsified if: two requests made before the first settles are answered out of order, or a request reaches a body that is already on the interpreter's stack
+- `Broiler.VM.Profile.JavaScript.JsHandleTable` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, Spec=none cited, `1FF218`, PENDING
+  - Falsified if: TryResolve answers an object for a word whose entry was released since the word was issued, or a compaction releases an entry some live slab word, permanent entry or nursery handle names
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Free` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, Spec=none cited, `560BED`, PENDING
+  - Falsified if: a slot in this state holds a value or is reissued while another slot answers its generation
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Live` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, Spec=none cited, `008B26`, PENDING
+  - Falsified if: a slot in this state is released while a root names it
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Permanent` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, Spec=none cited, `4F1233`, PENDING
+  - Falsified if: a slot in this state is released before the table is
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Retired` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, Spec=none cited, `08FF61`, PENDING
+  - Falsified if: a slot in this state is reissued
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.JsHandleTable(JsValueSlab, bool, int)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, Spec=none cited, `073EA0`, PENDING
+  - Falsified if: a table is created whose compactions scan any slab other than its own instance's
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.HandleFor(object, ushort, bool)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, Spec=none cited, `48DA47`, PENDING
+  - Falsified if: two live entries hold the same object, or the word answered is released by a compaction before the next safepoint
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.TryResolve(ulong, out object?)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, Spec=none cited, `6E1598`, PENDING
+  - Falsified if: this answers true for a word whose index, generation or tag differs from a holding entry's, or answers an object other than the one the word was issued for
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Safepoint()` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, Spec=none cited, `32CA5F`, PENDING
+  - Falsified if: under handle-stress a safepoint returns without a compaction having run
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Compact()` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, Spec=none cited, `A9A332`, PENDING
+  - Falsified if: an entry named by a live slab word, a nursery handle or a permanent entry is released, or an entry named by none of them survives
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.MarkRoot(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, Spec=none cited, `0860FA`, PENDING
+  - Falsified if: a live handle word whose entry does not hold a value is passed over without a defect
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Allocate()` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, Spec=none cited, `767A29`, PENDING
+  - Falsified if: a slot is answered that is live, permanent or retired
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Release(int)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, Spec=none cited, `68B984`, PENDING
+  - Falsified if: a released slot keeps its generation, keeps its reference, or is reissued after its generation wrapped to zero
 - `Broiler.VM.Profile.JavaScript.JsHostObject` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `5BF8DC`, PENDING
   - Falsified if: a handler is consulted for a name this object's own storage already holds
 - `Broiler.VM.Profile.JavaScript.JsHostObject.TryGetOwnProperty(string, out JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, Spec=none cited, `0A2ACE`, PENDING
@@ -1934,6 +1983,20 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an `await` of a value that is not a promise continues without yielding to the job queue
 - `Broiler.VM.Profile.JavaScript.JsRealm.NormalizeText(JsEngine, string, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` - Security=High, Spec=none cited, `E5D2CC`, PENDING
   - Falsified if: a guest string makes normalize allocate or loop over an expansion it was not charged for, or answer other than the pinned NormalizationTest.txt vectors
+- `Broiler.VM.Profile.JavaScript.JsValueSlab` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, Spec=none cited, `C1745F`, PENDING
+  - Falsified if: a live word of some frame is not visited by Scan, or a word past a frame's published live length or past the top is visited
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.Headroom` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, Spec=none cited, `02A8CF`, PENDING
+  - Falsified if: a call's argument stores for a region that does not fit can reach past the end of the array
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.TryPushFrame(int, out int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, Spec=none cited, `408AE9`, PENDING
+  - Falsified if: a frame is opened whose header and region together reach past the advertised capacity
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.Publish(int, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, Spec=none cited, `276FB2`, PENDING
+  - Falsified if: a live length larger than the frame's region is published
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.PopFrame(int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, Spec=none cited, `F0AF85`, PENDING
+  - Falsified if: a frame other than the innermost one is closed, or the top moves anywhere but to that frame's header
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.Scan(JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=Critical, Spec=none cited, `C003DF`, PENDING
+  - Falsified if: a scan completes over a slab whose frame chain does not end exactly at the top, or skips a published live word of any frame
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.HeaderAt(int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, Spec=none cited, `CC2D9B`, PENDING
+  - Falsified if: a word that is not a frame header is answered as one
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadManifest(in VmArtifactDescriptor, ref VmBoundedReader, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `7CFF0B`, PENDING
   - Falsified if: an artifact naming a manifest this build does not accept is admitted, or the descriptor and the payload are allowed to name different ones
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadBigInt(ref VmBoundedReader, Sections, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `07C246`, PENDING
@@ -1962,6 +2025,54 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an artifact whose emitted bytes differ from this image's own emission of its bytecode is admitted while an emitter is present
 - `Broiler.VM.Profile.JavaScript.JsVerifier.LinkModules(Sections, JsCodeUnit[], IVmVerificationContext, JavaScriptReadAdapter, out JsModuleRecord[], out JsBinding[])` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, Spec=none cited, `8255D8`, PENDING
   - Falsified if: linking recurses to a depth the payload chooses, or a cyclic export resolution is answered by spending an allowance
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.Fuzz(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `628167`, PENDING
+  - Falsified if: a run passes in which a live word decoded to a value other than its shadow's, a retired word decoded to a different object, or an entry survived the final compaction
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryTagPrefixHasExactlyOneClass()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `0B402D`, PENDING
+  - Falsified if: this passes while some top sixteen bits classify as two classes, as none, or as a class other than JSD-0035's table gives
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.TheHardwareNaNsAreNumbers()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `733DE9`, PENDING
+  - Falsified if: this passes while a NaN the hardware computes is classified as a tagged word
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryNaNPayloadEncodesCanonically()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `2B2BF5`, PENDING
+  - Falsified if: this passes while some NaN, including one whose bits carry a tag, encodes as anything but the canonical NaN or decodes as a non-NaN
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryKindRoundTrips()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `7E78F8`, PENDING
+  - Falsified if: this passes while a value of some kind decodes to another kind, another reference or other Number bits
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.OneObjectHasOneWord()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `174F1F`, PENDING
+  - Falsified if: this passes while one object is answered two words, or two objects one
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.WordsThatNameNoValueAreRefused()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, Spec=none cited, `9A83D0`, PENDING
+  - Falsified if: this passes while a header, a reserved word, an undefined special, a handle with a foreign index, generation or tag, or a released handle decodes to a value
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AWrappingSlotIsRetired()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, Spec=none cited, `5234F5`, PENDING
+  - Falsified if: this passes while generation zero is issued, a slot is reissued after its generation wrapped, or a word from an earlier generation of a reissued slot decodes
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.PermanentAndNurseryEntriesSurvive()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, Spec=none cited, `71804B`, PENDING
+  - Falsified if: this passes while a permanent entry or a handle answered since the last safepoint is released, or a nursery handle survives once the safepoint has passed
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AnAllocationCompactionKeepsTheNursery()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, Spec=none cited, `BC0C53`, PENDING
+  - Falsified if: this passes while a compaction an allocation triggers releases a handle answered since the last safepoint
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.OnlyPublishedWordsAreRoots()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, Spec=none cited, `60AB8E`, PENDING
+  - Falsified if: this passes while a published live word's entry is released, or a word past the published length or past the top roots its entry
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.HandleStressRefusesAnUnrootedWord()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, Spec=none cited, `190D9D`, PENDING
+  - Falsified if: this passes while handle-stress lets a stored but unpublished word decode after its safepoint
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AReleasedLiveWordStopsTheScan()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, Spec=none cited, `0B4BDC`, PENDING
+  - Falsified if: this passes while a compaction completes over a live word that names a released handle
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AMalformedFrameChainStopsTheScan()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, Spec=none cited, `6EF373`, PENDING
+  - Falsified if: this passes while a scan completes over a frame chain with a missing header or a header stating more live words than its region
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FramesCloseInOrderAndRefuseToOverflow()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `286879`, PENDING
+  - Falsified if: this passes while an outer frame closes over an open inner one, or a frame past the advertised capacity opens
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `A69F70`, PENDING
+  - Falsified if: the model's shadow of a live slot differs from the value last stored there
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel.Run(int)` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `E24C01`, PENDING
+  - Falsified if: an operation breaks an invariant and the run still answers null
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel.CheckLive(int)` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `04318B`, PENDING
+  - Falsified if: a live word that does not decode to its shadow value is passed
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel.CheckDropped()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, Spec=none cited, `DCE26B`, PENDING
+  - Falsified if: a word that fell out of use decodes to an object other than the one it was issued for and the check passes
+- `Broiler.VM.Profile.JavaScript.JsWordCodec` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=Critical, Spec=none cited, `3AF53F`, PENDING
+  - Falsified if: decoding the encoding of a value answers a value of another kind, another reference, or a Number whose bits differ other than by a NaN's payload
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.Encode(in JsValue, JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=Critical, Spec=none cited, `C0F227`, PENDING
+  - Falsified if: a value of some kind is encoded under another kind's tag, or a referenced value is encoded without a handle the table holds
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.TryDecode(ulong, JsHandleTable, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=Critical, Spec=none cited, `B6DDAF`, PENDING
+  - Falsified if: this answers true for a frame header, a reserved word, an undefined special payload or a handle the table refuses, or answers a referenced value of a kind other than the word's tag
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.Decode(ulong, JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=High, Spec=none cited, `708398`, PENDING
+  - Falsified if: a word TryDecode refuses answers a value here rather than a defect
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.TryDecodeSpecial(ulong, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=High, Spec=none cited, `D684DB`, PENDING
+  - Falsified if: a payload at or past SpecialCount answers a value
 - `Broiler.VM.Profile.MachineCode.VmNativePage` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `BDA384`, PENDING
   - Falsified if: this half is reached on a system it was not written for
 - `Broiler.VM.Profile.MachineCode.VmNativePage.ProtReadWrite` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, Spec=none cited, `A3E0E6`, PENDING
@@ -2382,7 +2493,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 4390 of the 4507 assessed units declare
+That is not a figure of speech. 4491 of the 4608 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

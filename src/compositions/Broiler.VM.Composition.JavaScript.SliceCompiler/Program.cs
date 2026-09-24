@@ -89,11 +89,26 @@ internal static class Program
                     (int)Unsigned(Argument(args, "--iterations"), 2000));
             }
 
+            // THE VALUE FORM'S WORD, TABLE AND SCAN, UNDER A LONGER SEEDED RUN THAN --checks TAKES
+            // (JSD-0035 stage JSV-0). The checks lane runs three fixed seeds; this is how a reader
+            // runs the same model for as long as they like, with or without handle-stress.
+            if (args.Contains("--fuzz-words", StringComparer.Ordinal))
+            {
+                var (name, passed, detail) = JsWordChecks.Fuzz(
+                    (int)Unsigned(Argument(args, "--seed"), 1),
+                    (int)Unsigned(Argument(args, "--iterations"), 200_000),
+                    args.Contains("--stress", StringComparer.Ordinal));
+
+                Console.WriteLine($"{(passed ? "ok  " : "FAIL")} {name}: {detail}");
+                return passed ? 0 : 1;
+            }
+
             Console.WriteLine(
                 "usage: --write <directory> | --checks [--verbose] | --closure | --globals " +
                 "[--write <file>] | " +
                 "--census <directory> [<directory> ...] | " +
-                "--fuzz <source directory> [--seed <n>] [--iterations <n>]");
+                "--fuzz <source directory> [--seed <n>] [--iterations <n>] | " +
+                "--fuzz-words [--seed <n>] [--iterations <n>] [--stress]");
 
             return 2;
         }
@@ -451,6 +466,7 @@ internal static class Program
             .Concat(NativeTemplateScanChecks.Run())
             .Concat(CloneChecks.Run())
             .Concat(BigIntChecks.Run())
+            .Concat(JsWordChecks.Run())
             .ToArray();
         var failed = 0;
         var notRun = 0;

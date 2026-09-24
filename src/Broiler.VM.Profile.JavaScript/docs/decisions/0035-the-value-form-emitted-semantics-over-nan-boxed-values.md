@@ -3,9 +3,12 @@
 
 # JSD-0035 - The value form: emitted instruction semantics over NaN-boxed values and a per-instance handle table
 
-**Status:** Proposed, design only. 2026-09-24. **Nothing described here is implemented**, no measurement
-of it exists, and no bundle retains one. Nobody has signed the record, so it claims no approval.
-Approvals are deferred under the MVP terms.
+**Status:** Proposed. 2026-09-24. **Stage JSV-0 is implemented in the tree and nothing after it is**:
+the word layout, the codec, the handle table, the slab scan and handle-stress exist as managed code
+that only the slice compiler's `--checks` lane and its `--fuzz-words` mode reach. No execution path
+reaches a value word, no emitted code exists for the form, no measurement of it exists, and no bundle
+retains one. Nobody has signed the record, so it claims no approval. Approvals are deferred under the
+MVP terms.
 
 **Owner:** JavaScript profile owner. **Co-signer:** the core's security owner, because the design adds
 a rooting mechanism and a new class of emitted template. **Both roles are held by one person**, and
@@ -71,7 +74,7 @@ managed array of `JsValue`, and JSD-0025 is not amended for the form it decides.
 | Bits 63-48 | Meaning | Payload (bits 47-0) |
 |---|---|---|
 | anything below `0xFFF9` | a Number: the word *is* the IEEE-754 binary64 | the rest of the double |
-| `0xFFF9` | a special constant | `0` undefined, `1` null, `2` false, `3` true, `4` empty (an uninitialised binding), `5` hole |
+| `0xFFF9` | a special constant | `0` undefined, `1` null, `2` false, `3` true, `4` empty: an uninitialised binding, and an array hole, which the interpreter represents by the same empty value. Every other payload is refused |
 | `0xFFFA` | a String handle | generation (16 bits) and index (32 bits) |
 | `0xFFFB` | an Object handle, every function and array included | generation and index |
 | `0xFFFC` | a Symbol handle | generation and index |
@@ -97,8 +100,11 @@ managed array of `JsValue`, and JSD-0025 is not amended for the form it decides.
 operand slab: a pinned array that holds no managed reference and never moves. Every activation of
 value-form code takes a region of it, and a region is laid out as:
 
-1. one **frame header** word, tagged `0xFFFE`: the unit index and the operand height the frame last
-   published;
+1. one **frame header** word, tagged `0xFFFE`: the region's length and how many of its words, from
+   the first, the frame last published as live. The length is in the header so that a scan walks
+   frame by frame from the slab's base and never searches for the next header by its tag, which would
+   find a stale header a deeper frame left in a caller's dead words (JSV-0 settled this; the unit
+   index this line named until then is not needed by the scan);
 2. the **arguments**;
 3. the **resident bindings** (below);
 4. the **operand stack**.
@@ -312,7 +318,7 @@ arming path, W^X, rule X1 and rule B5c are untouched.
 
 | Stage | Delivers | Exit gate |
 |---|---|---|
-| **JSV-0** | `JsWord`, its codec, `JsHandleTable`, the scan and handle-stress, managed only | Codec round-trip over every kind and every NaN payload; scan and generation checks under a fuzz target; no emitted code |
+| **JSV-0** *(in the tree, 2026-09-24)* | `JsWord`, its codec, `JsHandleTable`, the scan and handle-stress, managed only: `JsWord.cs` in the format assembly; `JsWordCodec.cs`, `JsHandleTable.cs`, `JsValueSlab.cs` and `JsWordChecks.cs` in the profile | Codec round-trip over every kind and every NaN payload; scan and generation checks under a fuzz target; no emitted code. Held by the `value-word/*` rows of the slice compiler's `--checks`, three of them fixed-seed fuzz runs (two under handle-stress), and by `--fuzz-words` for longer runs. Two rows are negative controls - an unpublished word that handle-stress refuses and the plain table does not, and a released handle in a live word that stops the scan - and a mutant scan that skipped each frame's last live word was watched failing five rows before the rows were committed |
 | **JSV-1** | The value form with **every** instruction a helper, except the control flow, which is emitted | The whole pinned suite in the value form gives the same verdict per variant as bytecode, outside the admitted classes, with and without handle-stress; all fifteen Octane benchmarks report a score |
 | **JSV-2** | Residency analysis, the pure inline set and fuel debt | JSV-1's gate again, plus the fuel-parity twins giving the same verdict at every ceiling, plus a differential run of every inline template against its arm |
 | **JSV-3** | Direct calls and the stack limit | JSV-2's gate, plus recursion answering the interpreter's `RangeError` rather than exhausting the machine stack |
@@ -392,5 +398,12 @@ passes.
   form.
 - Inline caches, shapes or any other per-instance optimisation state.
 - Any change to the numeric form, the baseline form, the arm64 backend or the core contract.
-- The settlement threshold, the table's growth factor, the slab's size and the generation width. The
-  JSV-0 and JSV-2 records fix those against the stress and fuel-parity gates, not against speed.
+- The settlement threshold and the slab's size, which JSV-2 fixes against the fuel-parity gate, not
+  against speed. JSV-0 fixed three parameters, without a measurement:
+  - **the generation width is sixteen bits**, and a slot whose generation would wrap is retired rather
+    than reused, so no word is ever reissued;
+  - **a full table compacts once it holds twice the entries** its last compaction left live, and never
+    below sixty-four, and grows otherwise;
+  - **the table holds one live handle per object**, keyed by reference, so two words naming one object
+    are equal. Two strings with the same text are still two words, and string equality stays a
+    helper's to answer.
