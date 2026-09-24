@@ -129,6 +129,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorAdmitting(Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorHostingRealms(Broiler.VM.Profile.JavaScript.IJsHostSurface surface, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorReEmittingWith(Broiler.VM.Profile.JavaScript.Format.IJsNativeEmitter emitter, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorUnderHandleStress(Broiler.VM.Profile.JavaScript.IJsHostSurface surface, Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DrainEntryPoint : const System.String = "#drain-jobs"
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DynamicManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.FaultKindId : const System.Int32 = 1002
@@ -462,6 +463,7 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsAssembledProgram.MaximumOperandStack : System.UInt32 { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsAssembledProgram.MaximumScopeSlots : System.UInt32 { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsAssembledProgram.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsAssembledProgram.ValueForm : System.Boolean { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsAssembledProgram.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.JsAssembledProgram left, Broiler.VM.Profile.JavaScript.Compiler.JsAssembledProgram right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsAssembledProgram.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.JsAssembledProgram left, Broiler.VM.Profile.JavaScript.Compiler.JsAssembledProgram right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsCompilation..ctor(System.Boolean Succeeded, System.Byte[] Artifact, System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic> Diagnostics) : void
@@ -547,10 +549,12 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission.GetHashCode() : virtual System.Int32
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission.Symbols : Broiler.VM.Profile.JavaScript.Format.JsNativeSymbolRow[] { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission.ValueForm : System.Boolean { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission left, Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission left, Broiler.VM.Profile.JavaScript.Compiler.JsNativeEmission right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsOutputForm.Bytecode : const Broiler.VM.Profile.JavaScript.Compiler.JsOutputForm = 0
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsOutputForm.Native : const Broiler.VM.Profile.JavaScript.Compiler.JsOutputForm = 1
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsOutputForm.Value : const Broiler.VM.Profile.JavaScript.Compiler.JsOutputForm = 2
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsOutputForm.value__ : System.Int32
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsResolvedRequest..ctor(System.String Specifier, System.String Key) : void
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsResolvedRequest.<Clone>$() : Broiler.VM.Profile.JavaScript.Compiler.JsResolvedRequest
@@ -1597,6 +1601,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.RunsAlone(Broiler.VM.Profile.JavaScript.Format.JsOpcode opcode) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.StopsAfter(System.Byte[] code, System.Int32 current, System.Int32 pc, System.Int32 unitEnd) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.TryPlan(Broiler.VM.Profile.JavaScript.Format.JsNativeProgramImage image, System.Int32 unitIndex, System.ReadOnlySpan<System.UInt32> handlerOffsets, out Broiler.VM.Profile.JavaScript.Format.JsBaselineUnitPlan plan, out System.String refusal) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.TryPlanEachInstruction(Broiler.VM.Profile.JavaScript.Format.JsNativeProgramImage image, System.Int32 unitIndex, System.ReadOnlySpan<System.UInt32> handlerOffsets, out Broiler.VM.Profile.JavaScript.Format.JsBaselineUnitPlan plan, out System.String refusal) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsBaselineFrame.Cookie : System.Int64
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsBaselineFrame.Handlers : System.IntPtr
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsBaselineHandlerOffsets.Of(System.Int32 unitIndex) : System.ReadOnlySpan<System.UInt32>
@@ -1909,6 +1914,9 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture.X64SystemV : const Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture = 1
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture.X64Windows : const Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture.value__ : System.UInt32
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader.FormShift : const System.Int32 = 8
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader.Pack(Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture architecture, System.Boolean valueForm) : static System.UInt32
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader.TryUnpack(System.UInt32 field, out Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture architecture, out System.Boolean valueForm) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeFieldKind.Arm64Condition : const Broiler.VM.Profile.JavaScript.Format.JsNativeFieldKind = 9
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeFieldKind.Arm64InvertedCondition : const Broiler.VM.Profile.JavaScript.Format.JsNativeFieldKind = 10
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeFieldKind.BaselineStatusValue : const Broiler.VM.Profile.JavaScript.Format.JsNativeFieldKind = 15
@@ -2032,6 +2040,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.X64PaddingByte : const System.Byte = 144
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeTier.Baseline : const Broiler.VM.Profile.JavaScript.Format.JsNativeTier = 1
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeTier.Numeric : const Broiler.VM.Profile.JavaScript.Format.JsNativeTier = 0
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeTier.Value : const Broiler.VM.Profile.JavaScript.Format.JsNativeTier = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeTier.value__ : System.Byte
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeValues.Bits(System.Double value) : static System.Int64
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeValues.FromBits(System.Int64 bits) : static System.Double
@@ -2260,6 +2269,12 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical.IsIdentifierPart(System.Int32 codePoint) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical.IsIdentifierStart(System.Int32 codePoint) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical.IsWhiteSpace(System.Int32 codePoint) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueAbi.CookieOffset : const System.Int32 = 8
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueAbi.FrameSize : const System.Int32 = 16
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueAbi.HelperSlots : const System.Int32 = 256
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueAbi.HelpersOffset : const System.Int32 = 0
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueFrame.Cookie : System.Int64
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueFrame.Helpers : System.IntPtr
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.BigIntTag : const System.UInt16 = 65533
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.CanonicalNaN : const System.UInt64 = 9221120237041090560
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Empty : const System.UInt64 = 18444773748872577028
@@ -2458,6 +2473,7 @@ type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.J
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeAbiProbe.<Saved>e__FixedBuffer : struct
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeAbiProbeLayout : static class
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeArchitecture : enum
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader : static class
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeFieldKind : enum
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeFrame : struct
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsNativeProgramImage : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Format.JsNativeProgramImage>
@@ -2483,4 +2499,6 @@ type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.J
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsScriptDeclarationRow : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Format.JsScriptDeclarationRow>
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces : static class
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical : static class
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueAbi : static class
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueFrame : struct
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord : static class

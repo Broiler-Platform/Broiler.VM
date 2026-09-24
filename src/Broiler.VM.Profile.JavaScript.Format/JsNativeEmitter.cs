@@ -136,14 +136,15 @@ public sealed record JsNativeProgramImage(
     bool[] ConstantIsNumber,
     uint MaximumOperandStack)
 {
-    /// <summary>Which of the two native forms the image is to be emitted as.</summary>
+    /// <summary>Which of the three native forms the image is to be emitted as.</summary>
     /// <remarks>
-    /// <b>Both parties that build an image read it off the same fact - the artifact's manifest -
-    /// and neither may choose it.</b> The lowering knows the manifest it compiled under and the
-    /// verifier knows the manifest the artifact declares; an image whose tier came from anywhere
-    /// else would be a re-emission of a different form from the one the payload was written in,
-    /// and equality would fail for a correct artifact. It defaults to the numeric form, so every
-    /// image built before the baseline form existed means what it meant.
+    /// <b>Both parties that build an image read it off the same facts - the artifact's manifest and
+    /// its emitted-code header's form byte - and neither may choose it.</b> The lowering knows the
+    /// manifest it compiled under and the form its caller asked for, and the verifier knows the
+    /// manifest the artifact declares and the form byte it carries (JSD-0035 section 9); an image
+    /// whose tier came from anywhere else would be a re-emission of a different form from the one the
+    /// payload was written in, and equality would fail for a correct artifact. It defaults to the
+    /// numeric form, so every image built before the baseline form existed means what it meant.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6AB00A
     // Broiler-Falsified-If: the compiler and the verifier build images of one artifact with different tiers
@@ -152,7 +153,7 @@ public sealed record JsNativeProgramImage(
 
     /// <summary>Every exception region of the artifact, in the order the artifact carries them.</summary>
     /// <remarks>
-    /// <b>The baseline form reads them for one thing: where a landing can put the program
+    /// <b>The baseline and the value forms read them for one thing: where a landing can put the program
     /// counter.</b> A handler that catches answers the region's handler offset, and the emitted
     /// unit has to be able to dispatch to it, so each handler offset is a landing the unit's
     /// compare tree names. The numeric form admits no region and reads none, which is why the

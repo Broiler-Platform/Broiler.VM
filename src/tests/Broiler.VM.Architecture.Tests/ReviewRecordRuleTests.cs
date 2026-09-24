@@ -1123,7 +1123,17 @@ public sealed class ReviewRecordRuleTests
         // everywhere else, so a record that did not cover it would cover everything but the part a
         // reader would most want read. No execution path reaches any of them yet. They are covered on
         // the same terms as every other product file, and nothing in them has been read by a human.
-        Assert.Equal(205, AssuranceSources.Files.Count);
+        //
+        // AND THE FOUR OF STAGE JSV-1 (the proposed JSD-0035, section 10), which put the value form on
+        // an execution path: the frame context its emitted code is entered with, JsValueFrame.cs, in
+        // the format assembly beside the baseline frame, with the emitted-code header's form byte; and
+        // in the profile the chain of pinned slabs a value-form instance's frames live in,
+        // JsValueStack.cs, the helper table native code calls one helper per instruction through,
+        // JsValueHelpers.cs - the second file rule X3 lets carry an unmanaged entry point - and the
+        // decoding and encoding of each instruction's words around the interpreter's arm,
+        // JsValueWindows.cs. They are covered on the same terms as every other product file, and
+        // nothing in them has been read by a human.
+        Assert.Equal(209, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

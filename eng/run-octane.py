@@ -69,6 +69,10 @@
 # on Windows - and a backend this machine does not arm is the host's refusal to print, not this
 # script's. The form is written into the report, because a bytecode score and a native score of the
 # same benchmark are two numbers about two configurations and a reader must never have to guess which.
+#
+# `--value <backend>` RUNS IT IN THE WIDE MANIFEST'S VALUE FORM (JSD-0035), added 2026-09-24, and
+# `--handle-stress` runs that form with its handle table compacting at every helper call. The two are
+# passed to the host unchanged and written into the report's `form`, for the reason above.
 
 import argparse
 import hashlib
@@ -251,7 +255,15 @@ def whole_or_partial(wanted, skipped, missing):
     return "whole" if not reasons else "partial|" + "; ".join(reasons)
 
 
-def run(binary, checkout, name, fuel, wall, live_bytes, max_depth, native):
+def form_name(arguments):
+    """The form a run is written into its report as."""
+    if arguments.value:
+        return "value-stress" if arguments.handle_stress else "value"
+
+    return "native" if arguments.native else "bytecode"
+
+
+def run(binary, checkout, name, fuel, wall, live_bytes, max_depth, native, value=None, stress=False):
     """One benchmark, one process, through the ordinary command line."""
     files = [str(checkout / "base.js")]
     files += [str(checkout / f) for f in COMPANIONS.get(name, [f"{name}.js"])]
@@ -266,6 +278,12 @@ def run(binary, checkout, name, fuel, wall, live_bytes, max_depth, native):
 
     if native:
         command += ["--native", native]
+
+    if value:
+        command += ["--value", value]
+
+    if stress:
+        command += ["--handle-stress"]
 
     # WHAT THE BENCHMARK COST, WHICH THIS SCRIPT DID NOT REPORT AND SHOULD HAVE. The `--wall`
     # above is an allowance a caller states in milliseconds, and a caller with no per-benchmark
@@ -331,8 +349,8 @@ def report(path, fields, binary, rows, components, total, coverage, skipped, spe
         },
         "host": host(binary),
         "form": {
-            "form": "native" if arguments.native else "bytecode",
-            "backend": arguments.native,
+            "form": form_name(arguments),
+            "backend": arguments.native or arguments.value,
         },
         "allowances": {
             "fuel": arguments.fuel,
@@ -425,6 +443,8 @@ def main():
 
     # THE OUTPUT FORM, passed to the host unchanged. See the header for why it exists.
     parser.add_argument("--native", default=None, metavar="BACKEND")
+    parser.add_argument("--value", default=None, metavar="BACKEND")
+    parser.add_argument("--handle-stress", action="store_true")
 
     # `--report` IS OPT-IN AND WRITES OUTSIDE THE DOCUMENTS. Scores have only ever existed as
     # `score <n>` lines in a transcript, which means every reader of a run has been a person and
@@ -434,6 +454,12 @@ def main():
     # away from a scored file the tree retains, and roadmap section 17 is about exactly that step.
     parser.add_argument("--report", default=None, metavar="PATH")
     arguments = parser.parse_args()
+
+    if arguments.native and arguments.value:
+        raise SystemExit("# --native and --value name two forms, and a run has one")
+
+    if arguments.handle_stress and not arguments.value:
+        raise SystemExit("# --handle-stress applies to the value form alone, and this run names no --value")
 
     # A NAME THAT IS NOT A BENCHMARK IS REFUSED HERE, before the archive is even read. A lane
     # passes this selection through a shell, and a typo in one that ran what it could and said
@@ -486,7 +512,8 @@ def main():
         print(f"# octane {fields['upstream']} at {fields['revision']}")
         print(f"# {fields['files']} files, content {fields['content-sha256']}")
         print(f"# judging {binary}")
-        print("# form " + (f"native ({arguments.native})" if arguments.native else "bytecode"))
+        backend = arguments.native or arguments.value
+        print("# form " + (f"{form_name(arguments)} ({backend})" if backend else "bytecode"))
 
         # THE SKIPS ARE PRINTED BEFORE ANYTHING RUNS, and that placement is the point: a reader who
         # sees only the summary at the end still meets the exclusion at the top of the transcript,
@@ -505,7 +532,7 @@ def main():
         for name in wanted:
             code, output, seconds = run(
                 binary, checkout, name, arguments.fuel, arguments.wall, arguments.live_bytes,
-                arguments.max_depth, arguments.native)
+                arguments.max_depth, arguments.native, arguments.value, arguments.handle_stress)
             spent += seconds
             print(f"--- {name} (exit {code}, {seconds:.0f}s)")
 

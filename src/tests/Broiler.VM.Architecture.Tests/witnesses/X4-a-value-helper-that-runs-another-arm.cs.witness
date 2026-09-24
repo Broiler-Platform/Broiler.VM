@@ -1,0 +1,32 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no
+// compilation includes it, and rule X4's test puts its members into the real JsValueHelpers.cs in
+// place of the members of the same name, so that clause (e) reads the real value table with exactly
+// this edit made.
+//
+// THIS IS THE SHAPE THE DEFECT TAKES IN THE VALUE FORM. The helper for Nop runs Call's arm while still
+// passing Nop as the opcode StepValue expects, so StepValue's opcode check passes, the table's own
+// check sees distinct entry points, and the dispatch loop runs Call's arm - it takes a per-opcode
+// step's opcode from the mode and never compares it with the byte - over a Nop. And ArmConstruct
+// answers Call, the second half of the same defect: a helper that names the right arm whose arm names
+// another opcode runs that opcode's semantics over the instruction it was handed.
+//
+// Both are written here, because each is a name that stopped matching the name beside it.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal static unsafe class JsValueHelpers
+{
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int Nop(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.StepValue<ArmCall>(frame, pc, JsOpcode.Nop);
+
+    internal readonly struct ArmConstruct : IJsExecutionMode
+    {
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.Call;
+        }
+    }
+}

@@ -160,7 +160,7 @@ internal static class JsX64BaselineEmitter
     /// ceiling before it allocates any of them.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=FF794B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=F5A5EF
     // Broiler-Falsified-If: a unit's call for a block head names a slot other than eight times that head's opcode or passes a program counter other than the head's offset, the unit's body is not one template per entry of JsBaselineBlocks.Layout in its order, or a branch site is left unpatched or patched to a position other than that of the entry its target names
     // Broiler-Human:        PENDING
     private static bool EmitUnit(
@@ -171,7 +171,14 @@ internal static class JsX64BaselineEmitter
         JsX64Abi abi,
         out string refusal)
     {
-        if (!JsBaselineBlocks.TryPlan(image, index, handlerOffsets, out var plan, out refusal))
+        // THE VALUE FORM IS THIS LAYOUT OVER THE PARTITION IN WHICH EVERY INSTRUCTION IS A BLOCK
+        // (JSD-0035 stage JSV-1), so its units call one helper per instruction through the value
+        // form's table and follow each answer exactly as a baseline unit follows a block's.
+        var planned = image.Tier == JsNativeTier.Value
+            ? JsBaselineBlocks.TryPlanEachInstruction(image, index, handlerOffsets, out var plan, out refusal)
+            : JsBaselineBlocks.TryPlan(image, index, handlerOffsets, out plan, out refusal);
+
+        if (!planned)
         {
             return false;
         }

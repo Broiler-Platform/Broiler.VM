@@ -57,6 +57,20 @@ internal sealed class Test262Manifest
     /// <summary>The output form whose artifact carries emitted machine code beside its bytecode.</summary>
     internal const string Native = "native";
 
+    /// <summary>The output form whose artifact carries the wide manifest's value form (JSD-0035).</summary>
+    internal const string Value = "value";
+
+    /// <summary>
+    /// The value form, run under handle-stress: every helper call compacts the instance's handle table
+    /// and every decoded word is compared with the interpreter's value (JSD-0035 section 4).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is named as a form of its own because a report has to say it</b>: a stress run's totals and
+    /// a plain run's are two runs, the merge refuses shards that disagree about the form, and the stage's
+    /// exit gate compares each against bytecode separately.
+    /// </remarks>
+    internal const string ValueStress = "value-stress";
+
     private Test262Manifest(
         VmFeatureManifestId id,
         uint formatVersion,
@@ -87,9 +101,12 @@ internal sealed class Test262Manifest
         // and the profile installs it only where both are present. A run admitting no optional
         // surface at all keeps the plain descriptor, because the hosting door reads an empty list
         // as "every surface" and would widen what that run declined.
-        var descriptor = loadsHarness && surfaces.Length != 0
-            ? JavaScriptProfile.DescriptorHostingRealms(Test262Host.Instance, surfaces)
-            : JavaScriptProfile.DescriptorAdmitting(surfaces);
+        var descriptor = string.Equals(form, ValueStress, StringComparison.Ordinal)
+            ? JavaScriptProfile.DescriptorUnderHandleStress(
+                loadsHarness && surfaces.Length != 0 ? Test262Host.Instance : null, surfaces)
+            : loadsHarness && surfaces.Length != 0
+                ? JavaScriptProfile.DescriptorHostingRealms(Test262Host.Instance, surfaces)
+                : JavaScriptProfile.DescriptorAdmitting(surfaces);
 
         Catalog = VmCatalog.CreateBuilder()
             .Add(descriptor)
@@ -151,6 +168,14 @@ internal sealed class Test262Manifest
 
     internal bool IsNative => string.Equals(Form, Native, StringComparison.Ordinal);
 
+    /// <summary>Whether the run compiles every variant in the value form, under handle-stress or not.</summary>
+    internal bool IsValue => IsValueForm(Form);
+
+    /// <summary>Whether a form name is one of the two value-form runs.</summary>
+    internal static bool IsValueForm(string form) =>
+        string.Equals(form, Value, StringComparison.Ordinal) ||
+        string.Equals(form, ValueStress, StringComparison.Ordinal);
+
     internal bool IsNumeric => Id == JavaScriptProfile.NumericManifest;
 
     /// <summary>
@@ -163,7 +188,7 @@ internal sealed class Test262Manifest
     /// <summary>What the compiler is asked for, which is the only place a form is ever chosen.</summary>
     internal JsCompileRequest CompileRequest => new(
         IsNumeric ? JsFeatureManifest.Numeric : JsFeatureManifest.Wide,
-        IsNative ? JsOutputForm.Native : JsOutputForm.Bytecode,
+        IsNative ? JsOutputForm.Native : IsValue ? JsOutputForm.Value : JsOutputForm.Bytecode,
         Backend);
 
     /// <summary>
@@ -235,13 +260,17 @@ internal sealed class Test262Manifest
         var chosenForm = form ?? Bytecode;
 
         if (!string.Equals(chosenForm, Bytecode, StringComparison.Ordinal) &&
-            !string.Equals(chosenForm, Native, StringComparison.Ordinal))
+            !string.Equals(chosenForm, Native, StringComparison.Ordinal) &&
+            !IsValueForm(chosenForm))
         {
-            failure = $"`{chosenForm}` is not an output form; --form takes `{Bytecode}` or `{Native}`";
+            failure =
+                $"`{chosenForm}` is not an output form; --form takes `{Bytecode}`, `{Native}`, " +
+                $"`{Value}` or `{ValueStress}`";
+
             return false;
         }
 
-        var native = string.Equals(chosenForm, Native, StringComparison.Ordinal);
+        var native = !string.Equals(chosenForm, Bytecode, StringComparison.Ordinal);
         var chosenBackend = string.Empty;
 
         if (!native && backend is not null)
@@ -251,6 +280,16 @@ internal sealed class Test262Manifest
         }
 
         var name = named ?? Default;
+
+        if (IsValueForm(chosenForm) &&
+            !string.Equals(name, JavaScriptProfile.WideManifest.ToString(), StringComparison.Ordinal))
+        {
+            failure =
+                $"the value output form is admitted by {JavaScriptProfile.WideManifest} alone, and this " +
+                $"run names `{name}`";
+
+            return false;
+        }
 
         if (native)
         {

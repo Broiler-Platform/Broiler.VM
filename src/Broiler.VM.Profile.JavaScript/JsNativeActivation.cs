@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   4
-// Annotated:        4/4
-// Exempt:           22
-// Human-reviewed:   0/4
-// IP risk:          None
+// Relevant units:   5
+// Annotated:        5/5
+// Exempt:           25
+// Human-reviewed:   0/5
+// IP risk:          Low
 // Security risk:    Critical
-// Criteria:         14/14
+// Criteria:         18/18
 // Resource impact:  5/10 max
-// Unverified:       4
+// Unverified:       5
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -201,6 +201,34 @@ internal sealed unsafe class JsNativeActivation
     // Broiler-Human:        PENDING
     internal JsValue Result;
 
+    /// <summary>The value-form segment this activation's region is in, or nothing outside the value form.</summary>
+    /// <remarks>
+    /// <b>Set by the value form's entry for exactly the life of its region</b>, and cleared when the region
+    /// is closed, so a value step of an activation whose region is gone runs nothing.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=61730A
+    // Broiler-Falsified-If: a value step reads or writes words of a segment other than the one the activation's region was opened in, or runs after the region was closed
+    // Broiler-Human:        PENDING
+    internal JsValueSlab? Segment;
+
+    /// <summary>The index of the activation's frame header in <see cref="Segment"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=A73741
+    // Broiler-Falsified-If: this names any header other than the one the entry opened for this activation
+    // Broiler-Human:        PENDING
+    internal int SlabFrame;
+
+    /// <summary>Whether the last step ended at a landing: a caught throw or a caught forced return.</summary>
+    /// <remarks>
+    /// <b>The dispatch loop sets it where it lands, and only outside the interpreter's own
+    /// instantiation.</b> A landing truncates the operand stack to the region's height and pushes one
+    /// value there, which may be below the instruction's own inputs, so a value step reads it to know
+    /// which words the step wrote.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=3B3559
+    // Broiler-Falsified-If: a step that landed leaves this false, or one that did not land leaves it true
+    // Broiler-Human:        PENDING
+    internal bool Landed;
+
     /// <summary>The exception a step caught at the wrapper, for the entering frame to raise.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=AE8477
     // Broiler-Falsified-If: an exception a step caught is dropped rather than raised by the managed frame that entered the emitted code
@@ -301,6 +329,83 @@ internal sealed unsafe class JsNativeActivation
                 act);
 
             return act.Exited ? (int)JsBaselineStatus.Exit : act.Pc;
+        }
+        catch (System.Exception escaped)
+        {
+            act.Pending = escaped;
+            return (int)JsBaselineStatus.Threw;
+        }
+    }
+
+    /// <summary>
+    /// Runs one instruction for value-form emitted code, over the decoding of its input words, after the
+    /// same checks <see cref="Step{TMode}"/> makes (JSD-0035 section 5).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE CHECKS ARE STEP'S, AND A VALUE STEP ALSO REFUSES AN ACTIVATION WITH NO REGION.</b> The
+    /// frame's cookie must be the activation's, the offset must be the one the previous step or the entry
+    /// computed, the byte there must be this helper's opcode, and the activation must hold an open region;
+    /// any one of them failing runs nothing and answers a defect.
+    /// </para>
+    /// <para>
+    /// <b>A HELPER IS THE INTERPRETER'S ARM, NOT A SECOND COPY OF IT.</b> The safepoint runs first, then
+    /// the instruction's input words are decoded into the activation's stack, then the per-opcode
+    /// instantiation of the dispatch loop runs the one instruction exactly as the interpreter would, and
+    /// then what the arm left on the stack is encoded back and published (<see cref="JsValueWindows"/>).
+    /// A unit that returned or suspended is not encoded: its region closes when the emitted code leaves.
+    /// </para>
+    /// <para>
+    /// <b>NOTHING CROSSES BACK INTO THE EMITTED CODE AS AN EXCEPTION</b>, for Step's reason: a defect the
+    /// codec reports, a guest throw no region covers and an exhausted allowance are all parked on the
+    /// activation and raised by the managed frame that entered the emitted code.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=8D4CCF
+    // Broiler-Falsified-If: a value step starts at an offset, with an opcode or for an activation other than what the managed side computed, runs with no open region, leaves a word the arm wrote unencoded or unpublished, or lets an exception escape into emitted code
+    // Broiler-Human:        PENDING
+    internal static int StepValue<TMode>(JsValueFrame* frame, int pc, JsOpcode expected)
+        where TMode : struct, IJsExecutionMode
+    {
+        var act = current;
+
+        if (act is null ||
+            frame is null ||
+            act.Cookie != frame->Cookie ||
+            act.Exited ||
+            act.Pc != pc ||
+            (uint)pc >= (uint)act.Code.Length ||
+            act.Code[pc] != (byte)expected ||
+            act.Segment is null)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        try
+        {
+            var height = act.Sp;
+            var pops = JsValueWindows.Enter(act, pc, height);
+            act.Landed = false;
+
+            _ = act.Engine.ExecuteCore<TMode>(
+                act.Program,
+                act.UnitIndex,
+                act.Environment,
+                act.ThisValue,
+                act.Arguments,
+                act.Self,
+                act.NewTarget,
+                act.ThisBinding,
+                act.Frame,
+                act);
+
+            if (act.Exited)
+            {
+                return (int)JsBaselineStatus.Exit;
+            }
+
+            JsValueWindows.Leave(act, height, pops);
+            return act.Pc;
         }
         catch (System.Exception escaped)
         {

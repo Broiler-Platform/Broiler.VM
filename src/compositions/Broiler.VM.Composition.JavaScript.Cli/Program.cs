@@ -227,6 +227,10 @@ internal static class Program
         var forceStrict = args.Contains("--strict", StringComparer.Ordinal);
         var sweep = args.Contains("--sweep", StringComparer.Ordinal);
 
+        // HANDLE-STRESS IS A PROPERTY OF THE RUNTIME THIS HOST BUILDS, not of the artifact: it changes
+        // nothing but how often a value-form instance's handle table compacts (JSD-0035 section 4).
+        var handleStress = args.Contains("--handle-stress", StringComparer.Ordinal);
+
         if (!Form(args, out var request, out var formComplaint))
         {
             Console.Error.WriteLine("broiler-js: " + formComplaint);
@@ -269,6 +273,7 @@ internal static class Program
         {
             if (string.Equals(args[index], "--fuel", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--native", StringComparison.Ordinal) ||
+                string.Equals(args[index], "--value", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--wall", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--max-depth", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--call-depth", StringComparison.Ordinal) ||
@@ -343,14 +348,15 @@ internal static class Program
                 depth,
                 callDepth,
                 liveBytes,
-                request);
+                request,
+                handleStress);
             Report(string.Join(' ', files), joined, single: true, all, quiet);
             return ExitCodes.For(joined.Status);
         }
 
         return Run(
             files, module, checkOnly, all, quiet, fuel, wall, depth, callDepth, liveBytes,
-            missing.Count, slice, forceStrict, request);
+            missing.Count, slice, forceStrict, request, handleStress);
     }
 
     /// <summary>Reads the feature manifest and output form the arguments ask for.</summary>
@@ -413,7 +419,16 @@ internal static class Program
 
         for (var index = 0; index < args.Length; index++)
         {
-            if (!string.Equals(args[index], "--native", StringComparison.Ordinal))
+            // `--value` ASKS FOR THE WIDE MANIFEST'S VALUE FORM (JSD-0035), named by backend exactly as
+            // `--native` names the baseline form's; the compiler refuses it beside `--numeric`.
+            var form = args[index] switch
+            {
+                "--native" => JsOutputForm.Native,
+                "--value" => JsOutputForm.Value,
+                _ => JsOutputForm.Bytecode,
+            };
+
+            if (form == JsOutputForm.Bytecode)
             {
                 continue;
             }
@@ -421,13 +436,13 @@ internal static class Program
             if (index + 1 >= args.Length)
             {
                 complaint =
-                    "--native wants the name of a backend; this build names " +
+                    args[index] + " wants the name of a backend; this build names " +
                     string.Join(", ", JsNativeBackends.Names);
 
                 return false;
             }
 
-            request = new JsCompileRequest(manifest, JsOutputForm.Native, args[index + 1]);
+            request = new JsCompileRequest(manifest, form, args[index + 1]);
             return true;
         }
 
@@ -449,7 +464,8 @@ internal static class Program
         int missing,
         bool slice,
         bool forceStrict,
-        JsCompileRequest request)
+        JsCompileRequest request,
+        bool handleStress)
     {
         // ONE FILE AND MANY FILES ARE REPORTED DIFFERENTLY, on purpose. Asked to run one program a
         // host should print what the program produced and nothing else, so its output can be piped.
@@ -473,7 +489,7 @@ internal static class Program
                 ? Host.Run(source, asModule, checkOnly, fuel, depth)
                 : WideHost.Run(
                     [source], asModule, checkOnly, forceStrict, fuel, wall, depth, callDepth,
-                    liveBytes, request);
+                    liveBytes, request, handleStress);
 
             counts[result.Status] = counts.TryGetValue(result.Status, out var seen) ? seen + 1 : 1;
 
@@ -740,7 +756,8 @@ internal static class Program
     [
         "--module", "--check", "--all", "--quiet", "--fuel", "--max-depth", "--closure",
         "--slice", "--strict", "--sweep", "--wall", "--call-depth", "--live-bytes", "--help",
-        "--version", "--numeric", "--native", "--host-surface", "--runtime",
+        "--version", "--numeric", "--native", "--host-surface", "--runtime", "--value",
+        "--handle-stress",
     ];
 
     /// <summary>

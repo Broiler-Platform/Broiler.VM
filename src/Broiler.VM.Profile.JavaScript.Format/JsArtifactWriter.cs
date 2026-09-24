@@ -668,6 +668,14 @@ public static class JsArtifactWriter
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=B2E43D
     // Broiler-Human:        PENDING
+    /// <param name="architecture">
+    /// The header's first field: an architecture, with the form byte <see cref="JsNativeCodeHeader.Pack"/>
+    /// writes above it for a value-form section and zero there for every other.
+    /// </param>
+    /// <param name="backendSemanticVersion">The emitting backend's version.</param>
+    /// <param name="codeAlignment">The alignment every unit's entry point is written at.</param>
+    /// <param name="code">The emitted bytes.</param>
+    /// <param name="declaredByteLength">The length to declare, when a check writes a wrong one.</param>
     public static byte[] NativeCode(
         uint architecture,
         uint backendSemanticVersion,

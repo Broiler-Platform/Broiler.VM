@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   18
 // Annotated:        18/18
-// Exempt:           18
+// Exempt:           19
 // Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         6/6
+// Criteria:         7/6
 // Resource impact:  5/10 max
 // Unverified:       18
 //
@@ -244,16 +244,24 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     // Broiler-Human:        PENDING
     private readonly IJsHostSurface? hostSurface;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9DB2F2
+    /// <summary>Whether a value-form instance's handle table compacts at every safepoint.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A942D9
+    // Broiler-Falsified-If: an instance of this executor runs with a stress setting other than the one its descriptor was built with
+    // Broiler-Human:        PENDING
+    private readonly bool handleStress;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E10F7D
     // Broiler-Human:        PENDING
     internal JavaScriptExecutor(
         VmProfileId profileId,
         IVmExecutionEnvironment executionEnvironment,
-        IJsHostSurface? surface = null)
+        IJsHostSurface? surface = null,
+        bool stress = false)
     {
         ProfileId = profileId;
         environment = executionEnvironment;
         hostSurface = surface;
+        handleStress = stress;
     }
 
     /// <inheritdoc/>
@@ -262,7 +270,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     public VmProfileId ProfileId { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=1A8791
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=C59E32
     // Broiler-Falsified-If: a handle this profile did not verify produces an instance
     // Broiler-Human:        PENDING
     public VmExecutionStep Instantiate(
@@ -290,7 +298,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
                     wideProgram.ManifestId, JsNumericManifest.ManifestId, System.StringComparison.Ordinal)
                 ? JsNativeExecution.Instantiate(wideProgram, environment)
                 : JsExecution.Instantiate(
-                    wideProgram, environment, hostSurface, cancellationToken);
+                    wideProgram, environment, hostSurface, cancellationToken, handleStress);
         }
 
         if (!artifact.TryGetState(out var state) || state is not JavaScriptProgram program)

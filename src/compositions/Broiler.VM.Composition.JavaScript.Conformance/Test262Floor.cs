@@ -291,7 +291,8 @@ internal sealed record Test262Floor(
                 // exists to prevent.
                 case "form" when parts.Length == 3 &&
                     (string.Equals(parts[1], Test262Manifest.Bytecode, StringComparison.Ordinal) ||
-                        string.Equals(parts[1], Test262Manifest.Native, StringComparison.Ordinal)):
+                        string.Equals(parts[1], Test262Manifest.Native, StringComparison.Ordinal) ||
+                        Test262Manifest.IsValueForm(parts[1])):
                     form = parts[1];
                     backend = string.Equals(parts[2], "-", StringComparison.Ordinal) ? string.Empty : parts[2];
                     break;

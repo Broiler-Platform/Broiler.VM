@@ -410,7 +410,7 @@ public static class JsNativeScan
     /// sentence. No verified program reaches one.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=892601
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=CAD4CC
     // Broiler-Falsified-If: it accepts a payload with no program, with a program whose unit count or order is not the symbols', or with a unit body that is not, instruction for instruction, the layout of that unit's plan with the unit's own handler offsets - or it refuses a body that is
     // Broiler-Human:        PENDING
     private static JsNativeScanResult BlockLayout(
@@ -461,7 +461,14 @@ public static class JsNativeScan
         {
             var start = symbols[unit].Offset;
 
-            if (!JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out var plan, out var refusal))
+            // THE VALUE TABLE IS HELD TO THE PARTITION IN WHICH EVERY INSTRUCTION IS A BLOCK, and the
+            // baseline table to the block partition; the layout grammar and every clause below are the
+            // same for both.
+            var planned = JsNativeTemplates.IsX64Value(templates)
+                ? JsBaselineBlocks.TryPlanEachInstruction(image, unit, grouped.Of(unit), out var plan, out var refusal)
+                : JsBaselineBlocks.TryPlan(image, unit, grouped.Of(unit), out plan, out refusal);
+
+            if (!planned)
             {
                 return new JsNativeScanResult(
                     JsNativeScanOutcome.CallsNotTheBlockHeads,

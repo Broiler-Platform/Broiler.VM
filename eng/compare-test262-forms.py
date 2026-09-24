@@ -362,7 +362,10 @@ def main():
         print("# NOTE the two reports were taken under different manifests, so their verdicts answer two "
               "questions and most differences below are that and not the form")
 
-    native = reference_header["name"] == "native" and candidate_header["name"] == "native"
+    # THE VALUE FORM IS A NATIVE FORM for every class below: its emitted code has the baseline form's
+    # ceiling refusal and its guest loads are native payloads too (JSD-0035).
+    native_forms = ("native", "value", "value-stress")
+    native = reference_header["name"] in native_forms and candidate_header["name"] in native_forms
 
     # Class (c)'s gate, which only the two-forms reading consults: `--same-form` admits (c') at any
     # allowance, so it leaves this where a deterministic run would put it and never asks.
@@ -380,7 +383,7 @@ def main():
               + "; class (b) is "
               + ("admitted" if arguments.exempt_guest_loads else "not admitted without --exempt-guest-loads"))
     else:
-        if not reference_header["form"].startswith("bytecode") or not candidate_header["form"].startswith("native"):
+        if not reference_header["form"].startswith("bytecode") or candidate_header["name"] not in native_forms:
             print("# NOTE this is not a bytecode reference against a native candidate; the classes below "
                   "describe that comparison")
 

@@ -51,6 +51,16 @@ internal static class NativeLifecycle
                 (compiled.Diagnostics.Count == 0 ? "no diagnostic" : compiled.Diagnostics[0].ToString());
         }
 
+        return Run(compiled.Artifact, form, backend);
+    }
+
+    /// <summary>Verifies, instantiates and invokes an already-compiled numeric artifact, and says what came back.</summary>
+    /// <remarks>
+    /// Separate so that a row can hand it bytes no compilation wrote - a header patched to name a form its
+    /// manifest has none of - and read the verifier's answer to exactly those bytes.
+    /// </remarks>
+    internal static string Run(byte[] artifact, JsOutputForm form, string backend)
+    {
         var descriptor = form == JsOutputForm.Native && JsNativeBackends.TryFind(backend, out var found)
             ? JavaScriptProfile.DescriptorReEmittingWith(
                 (IJsNativeEmitter)found, JavaScriptProfile.NativeManifest)
@@ -90,7 +100,7 @@ internal static class NativeLifecycle
                 VmCallerIdentity.FromCanonicalIdentity(Caller));
 
             var verified = runtime.Verify(
-                in artifactDescriptor, compiled.Artifact, CancellationToken.None);
+                in artifactDescriptor, artifact, CancellationToken.None);
 
             if (!verified.TryGetArtifact(out var handle))
             {
@@ -176,7 +186,7 @@ internal static class NativeLifecycle
     /// <remarks>
     /// <para>
     /// <b>THE NATIVE FORM IS VERIFIED BY RE-EMISSION AND THE BYTECODE FORM BY THE ADMITTING DOOR</b>,
-    /// for the reason <see cref="Run"/> gives: this root carries the backend, so the stronger
+    /// for the reason <see cref="Run(string, JsOutputForm, string)"/> gives: this root carries the backend, so the stronger
     /// verification is the one it takes. Every surface this build implements is admitted, because a
     /// program that reaches <c>eval</c> or a module graph declares the surface and this row is about
     /// the form rather than about which surfaces a composition declined.
@@ -194,7 +204,8 @@ internal static class NativeLifecycle
         string backend,
         ulong fuel,
         string? library = null,
-        Action? everyThousandPrints = null)
+        Action? everyThousandPrints = null,
+        bool handleStress = false)
     {
         var compiled = CompileWide(text, form, backend, library);
 
@@ -210,9 +221,10 @@ internal static class NativeLifecycle
             form,
             backend,
             fuel,
-            reEmit: form == JsOutputForm.Native,
+            reEmit: IsNativeForm(form) && !handleStress,
             module: library is not null,
-            everyThousandPrints);
+            everyThousandPrints,
+            handleStress);
     }
 
     /// <summary>Compiles one wide source, or a two-module graph whose main module imports <c>lib</c>.</summary>
@@ -220,7 +232,7 @@ internal static class NativeLifecycle
         string text, JsOutputForm form, string backend, string? library = null)
     {
         var request = new JsCompileRequest(
-            JsFeatureManifest.Wide, form, form == JsOutputForm.Native ? backend : string.Empty);
+            JsFeatureManifest.Wide, form, IsNativeForm(form) ? backend : string.Empty);
 
         return library is null
             ? JsCompiler.Compile([new JsScriptUnit("script0", text, SliceParseOptions.Script)], [], request)
@@ -246,7 +258,8 @@ internal static class NativeLifecycle
         ulong fuel,
         bool reEmit,
         bool module,
-        Action? everyThousandPrints = null)
+        Action? everyThousandPrints = null,
+        bool handleStress = false)
     {
         JsX64Abi? abi = null;
 
@@ -258,17 +271,21 @@ internal static class NativeLifecycle
             }
         }
 
-        if (form == JsOutputForm.Native && reEmit && abi is null)
+        if (IsNativeForm(form) && reEmit && abi is null)
         {
             return Refusal("no x86-64 backend is named " + backend);
         }
 
-        var descriptor = form == JsOutputForm.Native && reEmit
-            ? JavaScriptProfile.DescriptorReEmittingWith(new JsX64Backend(abi!), EverySurface())
-            : JavaScriptProfile.DescriptorAdmitting(EverySurface());
+        // A RUN UNDER HANDLE-STRESS TAKES THE STRESS DOOR, which does not re-emit: the stress rows ask
+        // about the value form's rooting, and the re-emitting rows about its bytes.
+        var descriptor = handleStress
+            ? JavaScriptProfile.DescriptorUnderHandleStress(null, EverySurface())
+            : IsNativeForm(form) && reEmit
+                ? JavaScriptProfile.DescriptorReEmittingWith(new JsX64Backend(abi!), EverySurface())
+                : JavaScriptProfile.DescriptorAdmitting(EverySurface());
 
         var request = new JsCompileRequest(
-            JsFeatureManifest.Wide, form, form == JsOutputForm.Native ? backend : string.Empty);
+            JsFeatureManifest.Wide, form, IsNativeForm(form) ? backend : string.Empty);
 
         var printed = new List<string>();
         var collections = 0;
@@ -407,6 +424,54 @@ internal static class NativeLifecycle
     /// never the reason two answers differ.
     /// </summary>
     private const ulong WideWallClockMilliseconds = 60_000;
+
+    /// <summary>
+    /// Verifies a wide artifact through a door that re-emits with one x86-64 backend, and answers the
+    /// verifier's refusal or nothing.
+    /// </summary>
+    /// <remarks>
+    /// It runs the artifact through <see cref="RunWideArtifact"/>, so an artifact emitted for the
+    /// convention this machine does not arm is verified and then refused at instantiation, which is not
+    /// what this answers: only a refusal by the verifier is.
+    /// </remarks>
+    internal static string VerifiesWithReEmission(byte[] artifact, JsX64Abi abi, bool module)
+    {
+        var answer = RunWideArtifact(
+            artifact, JsOutputForm.Value, abi.Name, 50_000_000, reEmit: true, module: module);
+
+        return answer.Outcome.StartsWith("the verifier refused", StringComparison.Ordinal) ||
+            answer.Outcome.StartsWith("no x86-64 backend", StringComparison.Ordinal)
+            ? answer.Outcome
+            : string.Empty;
+    }
+
+    /// <summary>Where an artifact's emitted-code section body begins, or minus one when it has none.</summary>
+    internal static int NativeCodeBody(byte[] artifact)
+    {
+        var at = 4;
+        ReadVarUInt(artifact, ref at);
+        var manifest = ReadVarUInt(artifact, ref at);
+        at += (int)manifest;
+        var sections = ReadVarUInt(artifact, ref at);
+
+        for (var index = 0u; index < sections; index++)
+        {
+            var kind = ReadVarUInt(artifact, ref at);
+            var length = (int)ReadVarUInt(artifact, ref at);
+
+            if (kind == (uint)JsFormat.SectionKind.NativeCode)
+            {
+                return at;
+            }
+
+            at += length;
+        }
+
+        return -1;
+    }
+
+    /// <summary>Whether a form carries emitted code, which the baseline and the value form both do.</summary>
+    internal static bool IsNativeForm(JsOutputForm form) => form is JsOutputForm.Native or JsOutputForm.Value;
 
     /// <summary>An answer for a run that never reached a runtime.</summary>
     private static WideAnswer Refusal(string why) => new(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, why, 0, 0);

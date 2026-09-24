@@ -38,15 +38,16 @@ namespace Broiler.VM.Profile.JavaScript;
 /// dated 2026-09-23. This slab carries it from its first line.
 /// </para>
 /// <para>
-/// <b>Frames are pushed and popped in order, and nothing else moves the top.</b> A stage-JSV-0 slab is
-/// driven only by managed code - the checks and the fuzz target - because no emitted code exists for
-/// the value form yet.
+/// <b>Frames are pushed and popped in order, and nothing else moves the top.</b> A value-form instance
+/// holds a chain of these, <see cref="JsValueStack"/>, and a frame lives inside one of them; at stage
+/// JSV-1 only managed code pushes, pops, publishes and scans, because the emitted code reads nothing
+/// but its helper table.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=C1745F
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=778523
 // Broiler-Falsified-If: a live word of some frame is not visited by Scan, or a word past a frame's published live length or past the top is visited
 // Broiler-Human:        PENDING
-internal sealed class JsValueSlab
+internal sealed class JsValueSlab : IJsWordRoots
 {
     /// <summary>How many words the array carries past the capacity it advertises.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=02A8CF
@@ -148,10 +149,10 @@ internal sealed class JsValueSlab
     /// is an internal defect: a scan that carried on would root some set of words it could not name,
     /// and the table would then free an entry some live word still names.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=C003DF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=3A33CD
     // Broiler-Falsified-If: a scan completes over a slab whose frame chain does not end exactly at the top, or skips a published live word of any frame
     // Broiler-Human:        PENDING
-    internal void Scan(JsHandleTable table)
+    public void Scan(JsHandleTable table)
     {
         var at = 0;
 

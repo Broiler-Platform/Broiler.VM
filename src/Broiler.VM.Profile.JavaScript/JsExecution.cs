@@ -245,13 +245,14 @@ internal sealed class JsInstance : IVmInstanceState
 internal static class JsExecution
 {
     /// <summary>Builds an instance and its realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9AA3F1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5AD403
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Instantiate(
         JsProgram program,
         IVmExecutionEnvironment environment,
         IJsHostSurface? hostSurface,
-        System.Threading.CancellationToken cancellationToken)
+        System.Threading.CancellationToken cancellationToken,
+        bool handleStress = false)
     {
         // A BASELINE ARTIFACT THIS PROCESS CANNOT ENTER IS REFUSED BEFORE ANYTHING IS CHARGED, and it
         // is a refusal and not a fallback. The bytecode is in the same artifact and this arm will not
@@ -262,7 +263,7 @@ internal static class JsExecution
 
         if (native &&
             (program.NativeArchitecture != JsNativeExecution.HostArchitecture ||
-                JsBaselineHandlers.Table == 0))
+                (program.NativeValueForm ? JsValueHelpers.Table : JsBaselineHandlers.Table) == 0))
         {
             return VmExecutionStep.ContractViolation(VmReason.UnsatisfiedHostAssumption);
         }
@@ -277,7 +278,9 @@ internal static class JsExecution
             cancellationToken,
             environment.Capabilities,
             program.AdmittedSurfaces,
-            nativeForm: native);
+            nativeForm: native,
+            valueForm: native && program.NativeValueForm,
+            handleStress: handleStress);
 
         // THE PAGE IS MAPPED NOW AND NOT AT THE FIRST CALL, so a process that may not make memory
         // executable refuses the instance instead of faulting its first invocation.

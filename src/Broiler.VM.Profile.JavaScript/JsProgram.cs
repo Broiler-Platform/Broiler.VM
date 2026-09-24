@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   17
 // Annotated:        17/17
-// Exempt:           42
+// Exempt:           43
 // Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         1/1
+// Criteria:         2/2
 // Resource impact:  2/10 max
 // Unverified:       17
 //
@@ -224,7 +224,7 @@ internal readonly struct JsEntry(string name, uint unit)
 internal sealed class JsProgram : IVmVerifiedState
 {
     /// <summary>Creates a verified program.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D6A0E0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0F9573
     // Broiler-Human:        PENDING
     internal JsProgram(
         JsValue[] constants,
@@ -245,7 +245,8 @@ internal sealed class JsProgram : IVmVerifiedState
         Format.JsNativeSymbolRow[]? nativeSymbols = null,
         JsEvalMap? evalMap = null,
         System.Collections.Generic.Dictionary<int, JsScriptDeclaration>? scriptDeclarations = null,
-        System.Collections.Generic.Dictionary<int, string>? scriptReferrers = null)
+        System.Collections.Generic.Dictionary<int, string>? scriptReferrers = null,
+        bool nativeValueForm = false)
     {
         Constants = constants;
         Names = names;
@@ -267,7 +268,19 @@ internal sealed class JsProgram : IVmVerifiedState
         EvalMap = evalMap;
         ScriptDeclarations = scriptDeclarations;
         ScriptReferrers = scriptReferrers;
+        NativeValueForm = nativeValueForm;
     }
+
+    /// <summary>Whether the emitted code is the value form rather than the manifest's own native form.</summary>
+    /// <remarks>
+    /// <b>It is the emitted-code header's form byte, carried as the verifier read it</b>, so an instance
+    /// enters the value form's helpers exactly when the payload was scanned and re-emitted as the value
+    /// form (JSD-0035 section 9).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=942D8A
+    // Broiler-Falsified-If: this differs from the form byte of the emitted code section the verifier scanned
+    // Broiler-Human:        PENDING
+    internal bool NativeValueForm { get; }
 
     /// <summary>The eval scope map the artifact carries, or nothing.</summary>
     /// <remarks>

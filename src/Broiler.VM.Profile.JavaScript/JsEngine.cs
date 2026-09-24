@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   198
 // Annotated:        198/198
-// Exempt:           32
+// Exempt:           33
 // Human-reviewed:   0/198
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         73/73
+// Criteria:         74/74
 // Resource impact:  7/10 max
 // Unverified:       198
 //
@@ -83,20 +83,45 @@ internal sealed partial class JsEngine
     // Broiler-Human:        PENDING
     private readonly bool nativeForm;
 
+    /// <summary>Whether the native form every program of this engine carries is the value form.</summary>
+    /// <remarks>
+    /// <b>Fixed with <see cref="nativeForm"/> and checked where it is</b>: the value form is a native form
+    /// of its own (JSD-0035 section 1), so a baseline program reaching a value-form engine, or the reverse,
+    /// is the same defect as a bytecode program reaching a native one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=921708
+    // Broiler-Falsified-If: an engine built for the value form runs a baseline program's emitted code, or the reverse
+    // Broiler-Human:        PENDING
+    private readonly bool valueForm;
+
     /// <summary>Creates an engine over a fresh realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=67C431
+    /// <remarks>
+    /// <b>A value-form engine owns its instance's words and handles from the start</b>: one value stack
+    /// and one handle table rooted by it, the table under handle-stress when the composition asked for it
+    /// (JSD-0035 sections 3 and 4). Every other engine allocates neither.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=284CF2
     // Broiler-Human:        PENDING
     internal JsEngine(
         IVmMeter contractMeter,
         System.Threading.CancellationToken token,
         IVmHostCapabilityInvoker? invoker = null,
         System.Collections.Immutable.ImmutableArray<string> admittedSurfaces = default,
-        bool nativeForm = false)
+        bool nativeForm = false,
+        bool valueForm = false,
+        bool handleStress = false)
     {
         meter = contractMeter;
         cancellation = token;
         capabilities = invoker;
-        this.nativeForm = nativeForm;
+        this.nativeForm = nativeForm || valueForm;
+        this.valueForm = valueForm;
+
+        if (valueForm)
+        {
+            ValueStack = new JsValueStack();
+            ValueHandles = new JsHandleTable(ValueStack, handleStress);
+        }
 
         // THE SURFACE SET IS ASSIGNED BEFORE THE REALM IS BUILT AND NOT AFTER, because the realm's
         // constructor is what decides which intrinsics exist. A realm handed the set afterwards
@@ -7033,7 +7058,7 @@ internal sealed partial class JsEngine
     /// native-only branch the importer removes; the native arm is a call that is never inlined.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=28C3E3
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=5; Fingerprint=AAA100
     // Broiler-Falsified-If: a program whose form differs from the engine's reaches ExecuteCore or emitted code
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -7050,7 +7075,7 @@ internal sealed partial class JsEngine
         JsFrame? frame,
         string? referrer = null)
     {
-        if ((program.NativeCode.Length != 0) != nativeForm)
+        if ((program.NativeCode.Length != 0) != nativeForm || program.NativeValueForm != valueForm)
         {
             throw new JsAbort(
                 JsAbortKind.InternalDefect, "a program of the other output form reached this engine");
@@ -7064,9 +7089,13 @@ internal sealed partial class JsEngine
         try
         {
             return nativeForm
-                ? RunNative(
-                    program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
-                    thisBinding, frame)
+                ? valueForm
+                    ? RunValue(
+                        program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+                        thisBinding, frame)
+                    : RunNative(
+                        program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+                        thisBinding, frame)
                 : ExecuteCore<JsInterpreted>(
                     program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
                     thisBinding, frame, null);
@@ -7117,7 +7146,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=31159E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=C30BBB
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -8927,6 +8956,13 @@ internal sealed partial class JsEngine
                 sp = (int)region.StackHeight;
                 stack[sp++] = thrown.Value;
                 pc = (int)region.Handler;
+
+                // A VALUE STEP READS WHERE A LANDING WROTE, which can be below the instruction's own
+                // inputs; the comparison folds, so the interpreter's instantiation carries no write.
+                if (typeof(TMode) != typeof(JsInterpreted))
+                {
+                    act!.Landed = true;
+                }
             }
             catch (JsReturnSignal forced)
             {
@@ -8948,6 +8984,11 @@ internal sealed partial class JsEngine
                 sp = (int)finaliser.StackHeight;
                 stack[sp++] = JsValue.Object(new JsForcedReturn(forced.Value));
                 pc = (int)finaliser.Handler;
+
+                if (typeof(TMode) != typeof(JsInterpreted))
+                {
+                    act!.Landed = true;
+                }
             }
         }
     }

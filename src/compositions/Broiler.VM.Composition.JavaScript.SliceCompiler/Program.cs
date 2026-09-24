@@ -467,6 +467,7 @@ internal static class Program
             .Concat(CloneChecks.Run())
             .Concat(BigIntChecks.Run())
             .Concat(JsWordChecks.Run())
+            .Concat(ValueFormChecks.Run())
             .ToArray();
         var failed = 0;
         var notRun = 0;

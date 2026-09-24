@@ -42,7 +42,8 @@ internal static class WideHost
         int? maximumDepth,
         ulong? callDepth = null,
         ulong? liveBytes = null,
-        JsCompileRequest? request = null)
+        JsCompileRequest? request = null,
+        bool handleStress = false)
     {
         // THE FORM AND THE MANIFEST ARE INPUTS AND THEY DEFAULT TO WHAT THIS HOST ALWAYS DID.
         // A caller that names neither gets the wide surface in bytecode, byte for byte the artifact
@@ -118,7 +119,7 @@ internal static class WideHost
                 lines);
         }
 
-        var created = VmRuntime.Create(Catalog(), Options(fuel, wallClock, callDepth, liveBytes, asked));
+        var created = VmRuntime.Create(Catalog(handleStress), Options(fuel, wallClock, callDepth, liveBytes, asked));
 
         if (!created.TryGetRuntime(out var runtime))
         {
@@ -291,8 +292,8 @@ internal static class WideHost
     }
 
     /// <summary>The catalog: one profile, arriving through its own static accessor.</summary>
-    private static VmCatalog Catalog() => VmCatalog.CreateBuilder()
-        .Add(JavaScriptProfile.Descriptor)
+    private static VmCatalog Catalog(bool handleStress) => VmCatalog.CreateBuilder()
+        .Add(handleStress ? JavaScriptProfile.DescriptorUnderHandleStress(null) : JavaScriptProfile.Descriptor)
         .Build();
 
     /// <summary>

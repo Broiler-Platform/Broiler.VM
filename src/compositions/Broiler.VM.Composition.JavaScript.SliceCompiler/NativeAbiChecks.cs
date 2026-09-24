@@ -557,7 +557,7 @@ internal static class NativeAbiChecks
     /// the scan rows still scan theirs and these rows still run these, and each list names the landing
     /// or tail it exists to reach.
     /// </remarks>
-    private static readonly (string Name, string Source, string? Library)[] WidePrograms =
+    internal static readonly (string Name, string Source, string? Library)[] WidePrograms =
     [
         ("an object literal and a property read", "var o = { a: 1, b: { c: 2 } }; o.b.c + o.a;", null),
         ("string concatenation", "var s = 'a'; for (var i = 0; i < 3; i++) { s = s + i; } s + '!';", null),
@@ -606,7 +606,7 @@ internal static class NativeAbiChecks
     /// indexed getter - each re-entering guest code from an instruction that may be inside a block, rather
     /// than from a call instruction.
     /// </remarks>
-    private static readonly (string Name, string Source, bool GuestLoads, bool RecursesToRangeError)[] Probes =
+    internal static readonly (string Name, string Source, bool GuestLoads, bool RecursesToRangeError)[] Probes =
     [
         ("recursion to RangeError at the engine's maximum call depth", "var depth = 0; function down() { depth = depth + 1; down(); } var caught = 'nothing'; try { down(); } catch (e) { caught = e.name + ' at depth ' + depth; } caught;", false, true),
         ("a throw from depth 5000 caught at the top", "function sink(n) { if (n === 0) { throw new Error('from the bottom'); } return sink(n - 1) + 1; } var got = 'nothing'; try { sink(5000); } catch (e) { got = e.message; } got;", false, false),

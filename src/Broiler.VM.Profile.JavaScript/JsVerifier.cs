@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   61
 // Annotated:        61/61
-// Exempt:           46
+// Exempt:           47
 // Human-reviewed:   0/61
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         14/14
+// Criteria:         15/15
 // Resource impact:  3/10 max
 // Unverified:       61
 //
@@ -1096,7 +1096,7 @@ internal sealed class JsVerifier
     /// producer, not this method.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=FA7FCC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E63499
     // Broiler-Falsified-If: a declared length that disagrees with the bytes present is accepted, or an architecture value this build cannot name is
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadNativeCode(
@@ -1110,7 +1110,7 @@ internal sealed class JsVerifier
                 reader.Position);
         }
 
-        if (!TryReadFixedU32(ref reader, out var architecture) ||
+        if (!TryReadFixedU32(ref reader, out var field) ||
             !TryReadFixedU32(ref reader, out var backendVersion) ||
             !TryReadFixedU32(ref reader, out var alignment) ||
             !TryReadFixedU32(ref reader, out var declared))
@@ -1122,8 +1122,12 @@ internal sealed class JsVerifier
         // ALIGNMENT AT ALL. Both would be rounded silently by anything that used them, and a
         // rounding a producer did not ask for is a producer and a consumer disagreeing about where
         // a code unit begins.
-        if (architecture == (uint)JsNativeArchitecture.None ||
-            architecture > (uint)JsNativeArchitecture.Arm64 ||
+        // THE FIRST FIELD IS AN ARCHITECTURE AND A FORM BYTE ABOVE IT (JSD-0035 section 9). A field
+        // this build cannot split - a nonzero upper half, or a form byte naming neither the manifest's
+        // own form nor the value form - is refused here as the malformed header it is.
+        if (!JsNativeCodeHeader.TryUnpack(field, out var architecture, out var valueForm) ||
+            architecture == JsNativeArchitecture.None ||
+            architecture > JsNativeArchitecture.Arm64 ||
             alignment == 0 ||
             alignment > JsFormat.CeilingNativeCodeAlignment ||
             (alignment & (alignment - 1)) != 0 ||
@@ -1140,7 +1144,8 @@ internal sealed class JsVerifier
             return FromReader(ref reader, reader.Position);
         }
 
-        state.NativeArchitecture = (JsNativeArchitecture)architecture;
+        state.NativeArchitecture = architecture;
+        state.NativeValueForm = valueForm;
         state.NativeBackendVersion = backendVersion;
         state.NativeCodeAlignment = alignment;
         state.NativeCode = body;
@@ -1522,7 +1527,7 @@ internal sealed class JsVerifier
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C9FF72
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5A6EF8
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
@@ -1825,7 +1830,8 @@ internal sealed class JsVerifier
             state.NativeSymbols ?? [],
             linkedEvalMap,
             linkedScripts,
-            linkedReferrers);
+            linkedReferrers,
+            state.NativeValueForm);
 
         return VmVerifierOutcome.Verified(program, VmArtifactSharing.Shareable);
     }
@@ -2387,7 +2393,7 @@ internal sealed class JsVerifier
     /// question, and bytes with no symbols are a blob nothing can enter.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=DE9B5A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=4A67A6
     // Broiler-Falsified-If: an artifact whose symbol table names fewer units than the function table is admitted, or a symbol offset outside the emitted blob is
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome LinkNative(
@@ -2474,9 +2480,23 @@ internal sealed class JsVerifier
         // declared alignment is compared with this build's by re-emission alone. A wide artifact
         // declaring arm64 is judged against the arm64 numeric table and meets none of them; no host of
         // this build arms it.
+        // THE VALUE FORM IS THE WIDE MANIFEST'S ALONE, AND x86-64'S ALONE (JSD-0035 section 1). A form
+        // byte naming it beside the numeric manifest or an arm64 architecture declares a form no
+        // backend of any build writes, so the header is refused as malformed before any table is
+        // chosen for it.
+        if (state.NativeValueForm &&
+            (state.ManifestId == JsNumericManifest.ManifestId ||
+                state.NativeArchitecture is not (JsNativeArchitecture.X64SystemV or JsNativeArchitecture.X64Windows)))
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedNativeSection,
+                0);
+        }
+
         var tier = state.ManifestId == JsNumericManifest.ManifestId
             ? JsNativeTier.Numeric
-            : JsNativeTier.Baseline;
+            : state.NativeValueForm ? JsNativeTier.Value : JsNativeTier.Baseline;
 
         var image = NativeImage(state, tier);
 
@@ -2504,7 +2524,7 @@ internal sealed class JsVerifier
     /// artifact carries them, which is the order the lowering handed its backend. The scan's layout clauses
     /// and re-emission both read this one image.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=5F3660
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=704E67
     // Broiler-Falsified-If: the image differs from the artifact's own code, function rows, constant pool, or - for the baseline tier - exception regions in their order, or its tier differs from the one the manifest selects
     // Broiler-Human:        PENDING
     private static JsNativeProgramImage NativeImage(Sections state, JsNativeTier tier)
@@ -2522,7 +2542,7 @@ internal sealed class JsVerifier
         var image = new JsNativeProgramImage(
             state.Code!, state.FunctionRows!, values, numbers, state.DeclaredOperandStack);
 
-        if (tier != JsNativeTier.Baseline)
+        if (tier == JsNativeTier.Numeric)
         {
             return image;
         }
@@ -2543,7 +2563,7 @@ internal sealed class JsVerifier
                 region.Kind);
         }
 
-        return image with { Tier = JsNativeTier.Baseline, Regions = regions };
+        return image with { Tier = tier, Regions = regions };
     }
 
     /// <summary>
@@ -3391,6 +3411,12 @@ internal sealed class JsVerifier
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F49964
         // Broiler-Human:        PENDING
         internal uint NativeCodeAlignment { get; set; }
+
+        /// <summary>Whether the emitted code section's form byte named the value form.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=991AC8
+        // Broiler-Falsified-If: this is true for a section whose form byte was zero, or false for one whose form byte named the value form
+        // Broiler-Human:        PENDING
+        internal bool NativeValueForm { get; set; }
 
         /// <summary>The emitted machine code, or null when the artifact carries none.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4D540B

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   36
-// Annotated:        36/36
+// Relevant units:   39
+// Annotated:        39/39
 // Exempt:           10
-// Human-reviewed:   0/36
+// Human-reviewed:   0/39
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         19/19
+// Criteria:         22/22
 // Resource impact:  3/10 max
-// Unverified:       36
+// Unverified:       39
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -43,7 +43,7 @@ namespace Broiler.VM.Profile.JavaScript;
 public static class JsWordChecks
 {
     /// <summary>Every JSV-0 check, including three fixed-seed fuzz runs, as named rows.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E45B45
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E76051
     // Broiler-Human:        PENDING
     public static (string Name, bool Passed, string Detail)[] Run() =>
     [
@@ -61,6 +61,9 @@ public static class JsWordChecks
         Row("a-live-word-naming-a-released-handle-stops-the-scan", AReleasedLiveWordStopsTheScan),
         Row("a-malformed-frame-chain-stops-the-scan", AMalformedFrameChainStopsTheScan),
         Row("frames-close-in-order-and-refuse-to-overflow", FramesCloseInOrderAndRefuseToOverflow),
+        Row("the-value-stack-opens-a-segment-and-scans-every-one", TheValueStackOpensASegmentAndScansEveryOne),
+        Row("the-value-stack-closes-frames-in-call-order", TheValueStackClosesFramesInCallOrder),
+        Row("every-helper-window-is-the-verifiers-count", EveryHelperWindowIsTheVerifiersCount),
         Fuzz(1, 20_000, stress: false),
         Fuzz(2, 20_000, stress: true),
         Fuzz(3, 20_000, stress: true),
@@ -605,6 +608,142 @@ public static class JsWordChecks
         slab.PopFrame(inner);
         slab.PopFrame(outer);
         return slab.Top == 0 ? null : $"the top is {slab.Top} after every frame closed";
+    }
+
+    /// <summary>
+    /// A region too large for the first segment opens a second, a word in each is rooted by one scan, and
+    /// closing the second frame returns the chain to the first (JSV-1).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=048F07
+    // Broiler-Falsified-If: this passes while a frame spans two segments, a compaction releases a handle a published word in the second segment names, or the chain does not return to its first segment
+    // Broiler-Human:        PENDING
+    private static string? TheValueStackOpensASegmentAndScansEveryOne()
+    {
+        var stack = new JsValueStack();
+        var table = new JsHandleTable(stack, stress: false);
+
+        if (!stack.TryPush(JsValueStack.SegmentWords - 8, out var first, out var outer))
+        {
+            return "the first region did not fit its segment";
+        }
+
+        if (!stack.TryPush(64, out var second, out var inner) || ReferenceEquals(first, second) || stack.SegmentCount != 2)
+        {
+            return "a region past the first segment's end did not open a second segment";
+        }
+
+        var kept = new JsObject(null);
+        var alsoKept = new JsObject(null);
+        first.Words[JsValueSlab.FirstWord(outer)] = JsWordCodec.Encode(JsValue.Object(kept), table);
+        first.Publish(outer, 1);
+        second.Words[JsValueSlab.FirstWord(inner)] = JsWordCodec.Encode(JsValue.Object(alsoKept), table);
+        second.Publish(inner, 1);
+        table.Safepoint();
+        table.Compact();
+
+        if (!JsWordCodec.TryDecode(first.Words[JsValueSlab.FirstWord(outer)], table, out var one) ||
+            !ReferenceEquals(one.AsObject(), kept) ||
+            !JsWordCodec.TryDecode(second.Words[JsValueSlab.FirstWord(inner)], table, out var two) ||
+            !ReferenceEquals(two.AsObject(), alsoKept))
+        {
+            return "a compaction released a word published in one of the two segments";
+        }
+
+        stack.Pop(second, inner);
+
+        if (!stack.TryPush(4, out var again, out var reopened) || !ReferenceEquals(again, first))
+        {
+            return "closing the second segment's only frame did not return the chain to the first";
+        }
+
+        stack.Pop(again, reopened);
+        stack.Pop(first, outer);
+        return null;
+    }
+
+    /// <summary>A frame closed while a frame after it is open is a defect, across segments as within one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=095AB5
+    // Broiler-Falsified-If: this passes while an outer frame, in its own segment or an earlier one, closes over an open frame
+    // Broiler-Human:        PENDING
+    private static string? TheValueStackClosesFramesInCallOrder()
+    {
+        var stack = new JsValueStack();
+
+        if (!stack.TryPush(JsValueStack.SegmentWords - 8, out var first, out var outer) ||
+            !stack.TryPush(64, out _, out _))
+        {
+            return "the two frames did not open";
+        }
+
+        try
+        {
+            stack.Pop(first, outer);
+            return "a frame in the first segment closed while one in the second was open";
+        }
+        catch (JsAbort abort) when (abort.Kind == JsAbortKind.InternalDefect)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// For every defined opcode and a spread of operands, the pop count a value helper encodes from is the
+    /// verifier's, and its read window covers it (JSV-1).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=3FEEF1
+    // Broiler-Falsified-If: this passes while a helper's pop count differs from TryDescribe's for some instruction, or its read depth is below that count
+    // Broiler-Human:        PENDING
+    private static string? EveryHelperWindowIsTheVerifiersCount()
+    {
+        var code = new byte[8];
+
+        for (var value = 0; value < 256; value++)
+        {
+            if (!JsOpcodes.IsDefined((byte)value))
+            {
+                continue;
+            }
+
+            var opcode = (JsOpcode)value;
+
+            foreach (var operand in new uint[] { 0, 1, 7, 200 })
+            {
+                System.Array.Clear(code);
+                code[0] = (byte)value;
+                System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(System.MemoryExtensions.AsSpan(code, 1), operand);
+
+                var width = JsOpcodes.OperandWidth(opcode);
+                var encoded = width switch
+                {
+                    0 => 0u,
+                    1 => operand & 0xFF,
+                    2 => operand & 0xFFFF,
+                    _ => operand,
+                };
+
+                if (JsOpcodes.Shape(opcode) == JsOperandShape.U8U16)
+                {
+                    // The depth is the first byte and the slot the next two, so these bytes read as
+                    // depth `operand & 0xFF` and slot `operand >> 8`.
+                    encoded = ((operand & 0xFF) << 16) | ((operand >> 8) & 0xFFFF);
+                }
+
+                if (!JsOpcodes.TryDescribe(opcode, encoded, out var pops, out _))
+                {
+                    return $"{opcode} is defined and TryDescribe does not describe it";
+                }
+
+                var helperPops = JsValueWindows.Pops(code, 0);
+                var reads = JsValueWindows.ReadDepth(code, 0);
+
+                if (helperPops != pops || reads < pops)
+                {
+                    return $"{opcode} with operand {encoded}: the helper pops {helperPops} and reads {reads}, and the verifier counts {pops} pops";
+                }
+            }
+        }
+
+        return null;
     }
 
     /// <summary>Whether two values are the same value: kind, reference, and Number bits unless both are NaN.</summary>

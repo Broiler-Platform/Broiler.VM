@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   39
-// Annotated:        39/39
+// Relevant units:   42
+// Annotated:        42/42
 // Exempt:           22
-// Human-reviewed:   0/39
+// Human-reviewed:   0/42
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         7/7
+// Criteria:         10/10
 // Resource impact:  3/10 max
-// Unverified:       39
+// Unverified:       42
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -377,7 +377,7 @@ public static class JsNativeTemplates
     /// no host arms arm64.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=2CC6D8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=2; Fingerprint=F4C459
     // Broiler-Falsified-If: a numeric payload is judged against any table other than the one For(architecture) answers, or a baseline x86-64 payload against a table that admits a template the baseline emitter does not write
     // Broiler-Human:        PENDING
     public static JsNativeTemplate[] For(JsNativeArchitecture architecture, JsNativeTier tier) =>
@@ -387,6 +387,8 @@ public static class JsNativeTemplates
             (JsNativeArchitecture.X64Windows, JsNativeTier.Baseline) => windowsBaseline,
             (JsNativeArchitecture.X64SystemV, JsNativeTier.Baseline) => systemVBaseline,
             (JsNativeArchitecture.Arm64, JsNativeTier.Baseline) => For(architecture),
+            (JsNativeArchitecture.X64Windows, JsNativeTier.Value) => windowsValue,
+            (JsNativeArchitecture.X64SystemV, JsNativeTier.Value) => systemVValue,
             _ => [],
         };
 
@@ -398,11 +400,27 @@ public static class JsNativeTemplates
     /// <b>Identity and not contents</b>, because the clauses index the table by position: the first
     /// six entries are the prologue in order, and the last four are the epilogue in order.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8C4B1E
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1368C7
     // Broiler-Falsified-If: a baseline x86-64 table is scanned without the frame-shape clauses
     // Broiler-Human:        PENDING
     internal static bool IsX64Baseline(JsNativeTemplate[] table) =>
-        ReferenceEquals(table, windowsBaseline) || ReferenceEquals(table, systemVBaseline);
+        ReferenceEquals(table, windowsBaseline) || ReferenceEquals(table, systemVBaseline) ||
+        IsX64Value(table);
+
+    /// <summary>
+    /// Whether <paramref name="table"/> is one of the two x86-64 value tables, whose unit bodies the scan
+    /// holds to the partition in which every instruction is a block.
+    /// </summary>
+    /// <remarks>
+    /// <b>A value table is also a baseline-shaped table</b>, because at stage JSV-1 the value form's units
+    /// are the baseline layout over that partition, so the frame-shape clauses hold for both; what differs
+    /// is the partition the layout clause plans with.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=15D085
+    // Broiler-Falsified-If: a value x86-64 payload is held to the baseline partition, or a baseline payload to the value form's
+    // Broiler-Human:        PENDING
+    internal static bool IsX64Value(JsNativeTemplate[] table) =>
+        ReferenceEquals(table, windowsValue) || ReferenceEquals(table, systemVValue);
 
     /// <summary>How many templates open a baseline table, in prologue order.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=42DDC5
@@ -759,6 +777,27 @@ public static class JsNativeTemplates
     // Broiler-Falsified-If: an entry of this table differs from the bytes the baseline emitter writes for System V
     // Broiler-Human:        PENDING
     private static readonly JsNativeTemplate[] systemVBaseline =
+        X64Baseline(JsNativeArchitecture.X64SystemV);
+
+    /// <summary>The value table for x86-64 under the Windows x64 convention.</summary>
+    /// <remarks>
+    /// <b>ITS ENTRIES ARE THE BASELINE TABLE'S AT STAGE JSV-1, IN A TABLE OF ITS OWN.</b> The value form's
+    /// units call one helper per instruction and follow the answer with the baseline form's compares and
+    /// branches, so they write no template the baseline emitter does not; the table is a distinct array
+    /// because the scan chooses the partition by which table it holds, and because the inline templates
+    /// of stage JSV-2 are added to this form's table alone (JSD-0035 section 9).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=8B178A
+    // Broiler-Falsified-If: an entry of this table differs from the bytes the value emitter writes for Windows x64
+    // Broiler-Human:        PENDING
+    private static readonly JsNativeTemplate[] windowsValue =
+        X64Baseline(JsNativeArchitecture.X64Windows);
+
+    /// <summary>The value table for x86-64 under the System V AMD64 convention.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=CBAC07
+    // Broiler-Falsified-If: an entry of this table differs from the bytes the value emitter writes for System V
+    // Broiler-Human:        PENDING
+    private static readonly JsNativeTemplate[] systemVValue =
         X64Baseline(JsNativeArchitecture.X64SystemV);
 
     /// <summary>

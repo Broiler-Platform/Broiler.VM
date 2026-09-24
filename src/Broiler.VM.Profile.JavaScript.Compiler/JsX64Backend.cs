@@ -166,7 +166,7 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
     // Broiler-Human:        PENDING
     public JsNativeArchitecture Architecture => abi.Architecture;
 
-    /// <summary>Two: the version whose baseline form calls a handler at each block head.</summary>
+    /// <summary>Three: the version that also emits the value form, a helper call per instruction.</summary>
     /// <remarks>
     /// <para>
     /// <b>The version travels in every artifact this backend writes, and an image that carries this
@@ -183,11 +183,17 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
     /// not change with it, and one number covers both tables, so a numeric payload of version one is
     /// refused by an image that re-emits with this backend for no change in its bytes.
     /// </para>
+    /// <para>
+    /// <b>Three added the value form (JSD-0035 section 9)</b>, whose units are the baseline layout over
+    /// the partition in which every instruction is a block, and the form byte that records it. Neither
+    /// the numeric nor the baseline bytes changed with it; the number moved because a form is part of
+    /// what this backend writes.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=18E59B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=5ACB47
     // Broiler-Falsified-If: a template in this file, or the baseline block partition or layout the baseline emitter encodes, changes without this number changing
     // Broiler-Human:        PENDING
-    public uint SemanticVersion => 2;
+    public uint SemanticVersion => 3;
 
     /// <summary>Sixteen: the alignment every unit's entry point is written at.</summary>
     /// <remarks>
@@ -207,7 +213,7 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
     /// decoded. Two decoders would be two chances to disagree, and re-emission equality is exactly
     /// a test of whether the two projections agree.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D97A3D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AF8500
     // Broiler-Human:        PENDING
     public bool TryEmit(JsAssembledProgram program, out JsNativeEmission emission, out string refusal)
     {
@@ -249,10 +255,12 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
                 regions[index] = program.ExceptionRegions[index];
             }
 
+            // THE CALLER CHOSE BETWEEN THE TWO WIDE FORMS, and the choice travels in the image and
+            // in the emission so the artifact records the form its bytes are.
             var baseline = new JsNativeProgramImage(
                 program.Code, rows, values, numbers, program.MaximumOperandStack)
             {
-                Tier = JsNativeTier.Baseline,
+                Tier = program.ValueForm ? JsNativeTier.Value : JsNativeTier.Baseline,
                 Regions = regions,
             };
 
@@ -262,9 +270,21 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
             }
 
             emission = new JsNativeEmission(
-                Architecture, SemanticVersion, CodeAlignment, baselineCode, baselineSymbols);
+                Architecture, SemanticVersion, CodeAlignment, baselineCode, baselineSymbols)
+            {
+                ValueForm = program.ValueForm,
+            };
 
             return true;
+        }
+
+        if (program.ValueForm)
+        {
+            refusal =
+                "the value form is the `" + JsFormat.ManifestId + "` feature manifest's alone, and this " +
+                "program names `" + program.ManifestId + "`";
+
+            return false;
         }
 
         if (program.ExceptionRegions.Count != 0)
@@ -296,7 +316,7 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
     /// and those no" would be making the per-unit choice that paragraph refuses, so the only two
     /// answers here are every unit and none.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=8C91FD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7F6D28
     // Broiler-Falsified-If: an emission is produced in which some code unit has no emitted entry point
     // Broiler-Human:        PENDING
     public bool TryEmit(
@@ -308,7 +328,7 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
         // THE TIER IS READ FIRST AND THE NUMERIC BODY BELOW IS UNTOUCHED BY IT. An image of the
         // wide manifest's baseline form shares nothing with the computing form but the encoder and
         // the convention row, so it is handed to its own emitter whole.
-        if (image.Tier == JsNativeTier.Baseline)
+        if (image.Tier is JsNativeTier.Baseline or JsNativeTier.Value)
         {
             return JsX64BaselineEmitter.TryEmit(
                 image, abi, CodeAlignment, out code, out symbols, out refusal);

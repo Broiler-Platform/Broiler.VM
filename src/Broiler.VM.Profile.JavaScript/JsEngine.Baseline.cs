@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   4
-// Annotated:        4/4
-// Exempt:           0
-// Human-reviewed:   0/4
-// IP risk:          None
+// Relevant units:   5
+// Annotated:        5/5
+// Exempt:           2
+// Human-reviewed:   0/5
+// IP risk:          Low
 // Security risk:    Critical
-// Criteria:         4/4
+// Criteria:         7/7
 // Resource impact:  5/10 max
-// Unverified:       4
+// Unverified:       5
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -113,6 +113,119 @@ internal sealed partial class JsEngine
         };
     }
 
+    /// <summary>The value form's words: every value-form frame of this instance, or nothing in another form.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=431645
+    // Broiler-Falsified-If: a value-form engine has none, or two engines share one
+    // Broiler-Human:        PENDING
+    internal JsValueStack? ValueStack { get; }
+
+    /// <summary>The value form's handle table, rooted by <see cref="ValueStack"/>, or nothing in another form.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=582BBE
+    // Broiler-Falsified-If: a value-form engine has none, two engines share one, or its compactions scan any words but this engine's value stack
+    // Broiler-Human:        PENDING
+    internal JsHandleTable? ValueHandles { get; }
+
+    /// <summary>Runs one activation of a unit by entering its value-form emitted code.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>IT IS <see cref="RunNative"/> WITH A REGION.</b> The dispatch loop's own prologue runs first, in
+    /// managed code, exactly as for the baseline form - a normal resumption's push and an abrupt one's
+    /// raise and landing included - and only then is a region opened on the instance's value stack, the
+    /// activation's stack encoded into it and published, and the emitted code entered with a frame of a
+    /// helper-table address and a cookie (JSD-0035 sections 3 and 5).
+    /// </para>
+    /// <para>
+    /// <b>THE REGION CLOSES WHEN THE CALL RETURNS, WHETHER IT RETURNED OR NOT</b>, and every nested
+    /// activation's region closes in its own call before this one's does, so the stack's frames are
+    /// pushed and popped in call order. A region that cannot be opened answers the call-depth backstop:
+    /// the value stack is bounded, and past its bound the instance has recursed further than any verified
+    /// program the interpreter's call-depth ceiling admits.
+    /// </para>
+    /// <para>
+    /// <b>A caught exception is raised again with a plain throw</b>, for RunNative's reason. A throw that
+    /// crosses several value-form frames is a managed rethrow per level at this stage; the status chain
+    /// that replaces it is stage JSV-4's.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=8AA0B4
+    // Broiler-Falsified-If: emitted code runs while its activation or its page is unreachable from a managed root, runs with no region or with a region some other activation holds, a region outlives the call that opened it, or this answers a value for a status other than exit
+    // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+    private unsafe JsValue RunValue(
+        JsProgram program,
+        int unitIndex,
+        JsEnvironment? environment,
+        JsValue thisValue,
+        JsValue[] actualArguments,
+        JsScriptFunction? self,
+        JsValue newTarget,
+        JsCell? thisBinding,
+        JsFrame? frame)
+    {
+        var page = NativePageOf(program) ??
+            throw new JsAbort(JsAbortKind.InternalDefect, "emitted code could not be mapped");
+
+        var stack = ValueStack ??
+            throw new JsAbort(JsAbortKind.InternalDefect, "a value-form program reached an engine with no value stack");
+
+        var act = new JsNativeActivation(
+            this, program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+            thisBinding, frame);
+
+        _ = ExecuteCore<JsNativeEntry>(
+            program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+            thisBinding, frame, act);
+
+        if (!stack.TryPush(act.Stack.Length, out var segment, out var slabFrame))
+        {
+            throw StackBackstopReached();
+        }
+
+        act.Segment = segment;
+        act.SlabFrame = slabFrame;
+
+        try
+        {
+            JsValueWindows.Open(act, ValueHandles!);
+
+            JsValueFrame native;
+            native.Helpers = JsValueHelpers.Table;
+            native.Cookie = act.Cookie;
+
+            var previous = JsNativeActivation.Current;
+            JsNativeActivation.Current = act;
+            int status;
+
+            try
+            {
+                var entry = (delegate* unmanaged<JsValueFrame*, int, int>)page.At(
+                    program.NativeSymbols[unitIndex].Offset);
+
+                status = entry(&native, act.Pc);
+            }
+            finally
+            {
+                JsNativeActivation.Current = previous;
+                System.GC.KeepAlive(page);
+                System.GC.KeepAlive(act);
+            }
+
+            return status switch
+            {
+                (int)JsBaselineStatus.Exit => act.Result,
+                (int)JsBaselineStatus.Threw => throw act.Pending!,
+                _ => throw new JsAbort(
+                    JsAbortKind.InternalDefect, "emitted code answered status " + status),
+            };
+        }
+        finally
+        {
+            act.Segment = null;
+            stack.Pop(segment, slabFrame);
+        }
+    }
+
     /// <summary>The armed mapping of <paramref name="program"/>'s emitted code, mapped on first use.</summary>
     /// <remarks>
     /// <para>
@@ -174,12 +287,13 @@ internal sealed partial class JsEngine
     /// defect rather than a language error. The page is mapped here as well, so a program that
     /// cannot be mapped is refused where it was loaded rather than at its first call.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=08A11D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=3; Fingerprint=D4C7D8
     // Broiler-Falsified-If: a guest-loaded program of the other form, of another architecture, or of the numeric manifest runs in a baseline instance
     // Broiler-Human:        PENDING
     private void RequireInstanceForm(JsProgram loaded)
     {
         if (JsNativeExecution.CarriesEmittedCode(loaded) != nativeForm ||
+            loaded.NativeValueForm != valueForm ||
             (nativeForm &&
                 (loaded.NativeArchitecture != JsNativeExecution.HostArchitecture ||
                     string.Equals(

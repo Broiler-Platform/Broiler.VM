@@ -3,12 +3,15 @@
 
 # JSD-0035 - The value form: emitted instruction semantics over NaN-boxed values and a per-instance handle table
 
-**Status:** Proposed. 2026-09-24. **Stage JSV-0 is implemented in the tree and nothing after it is**:
-the word layout, the codec, the handle table, the slab scan and handle-stress exist as managed code
-that only the slice compiler's `--checks` lane and its `--fuzz-words` mode reach. No execution path
-reaches a value word, no emitted code exists for the form, no measurement of it exists, and no bundle
-retains one. Nobody has signed the record, so it claims no approval. Approvals are deferred under the
-MVP terms.
+**Status:** Proposed. 2026-09-24. **Stages JSV-0 and JSV-1 are implemented in the tree and nothing
+after them is.** JSV-0 is the word layout, the codec, the handle table, the slab scan and
+handle-stress. JSV-1 puts them on an execution path: a compilation can ask for the value form, the
+artifact records it, the verifier scans and re-emits it, and an instance runs it, with every
+instruction a helper and the control flow between them emitted (section 10 says what that stage is and
+is not). No pure instruction is inline, no fuel is carried as a debt, no call is direct and no
+suspension goes through a frame codec: those are JSV-2 to JSV-4. No measurement of the form exists and
+no bundle retains one, and this record makes no speed claim. Nobody has signed the record, so it
+claims no approval. Approvals are deferred under the MVP terms.
 
 **Owner:** JavaScript profile owner. **Co-signer:** the core's security owner, because the design adds
 a rooting mechanism and a new class of emitted template. **Both roles are held by one person**, and
@@ -96,9 +99,14 @@ managed array of `JsValue`, and JSD-0025 is not amended for the form it decides.
 
 ### 3. Where words live: the value slab
 
-**Each value-form instance owns one pinned slab of words**, allocated as the numeric form allocates its
-operand slab: a pinned array that holds no managed reference and never moves. Every activation of
-value-form code takes a region of it, and a region is laid out as:
+**Each value-form instance owns its words in pinned slabs**, each allocated as the numeric form allocates
+its operand slab: a pinned array that holds no managed reference and never moves. *(Settled by JSV-1:
+the instance holds a chain of such slabs, `JsValueStack`. A region lives inside one slab, a region that
+does not fit the current one opens the next, one spare slab is kept above the current one, and the chain
+is bounded - a push past the bound answers the call-depth backstop the interpreter answers when its
+machine stack runs out. A slab that grew by copying would move every word a later stage hands emitted
+code the address of, so the chain grows by adding a slab instead.)* Every activation of value-form code
+takes a region of it, and a region is laid out as:
 
 1. one **frame header** word, tagged `0xFFFE`: the region's length and how many of its words, from
    the first, the frame last published as live. The length is in the header so that a scan walks
@@ -109,8 +117,10 @@ value-form code takes a region of it, and a region is laid out as:
 3. the **resident bindings** (below);
 4. the **operand stack**.
 
-A unit's prologue checks that its region fits before it bumps the slab pointer. **A call also leaves
-the format's argument ceiling of headroom past the end of the region it checked.** The numeric form's
+A unit's prologue checks that its region fits before it bumps the slab pointer *(at JSV-1 every unit is
+entered from managed code, so the managed entry opens and closes the region; the prologue check arrives
+with JSV-3's direct calls)*. **A call also leaves the format's argument ceiling of headroom past the end
+of the region it checked.** The numeric form's
 missing headroom let argument stores run past its slab, and the correction dated 2026-09-23 fixed that
 defect in the numeric form; this form carries the headroom from its first line.
 
@@ -199,8 +209,24 @@ of every arm is a second place for evaluation order to be wrong. So a helper:
 The arm's pops, pushes, conversions and throws stay the arm's own. What the helper adds is the codec,
 and the codec is small enough to test exhaustively over the kinds.
 
+**How JSV-1 does it (`JsValueWindows`, `JsNativeActivation.StepValue`).** The mirror window is the
+activation's own operand stack, the array the interpreter's arm reads and writes. A helper runs the
+safepoint first; decodes the words of its *read window* - the instruction's pops, and every word below
+them its arm reads without popping, such as the object under a definition or what a pick copies - into
+that stack; runs the per-opcode instantiation of the dispatch loop for its one instruction; and encodes
+its *write window* - from its lowest popped slot, or from the slot a landing pushed into, up to the
+height it stopped at - back into the region and publishes that height. A `yield*` that resumes inside
+its own instruction pops and reads nothing, because its first entry already popped the iterable. At
+this stage every instruction is a helper, so the mirror and the slab hold the same values below the
+height at every boundary; handle-stress uses that to compare every decoded word with the mirror's
+value and to report a mismatch as an internal defect, so a codec or publication mistake fails the
+variant it happens in rather than hiding behind a coherent mirror.
+
 **Control is emitted.** Branches, landings, and exception-region dispatch by a compare tree over the
-unit's landings are the baseline form's machinery, and they carry over. A helper for an instruction
+unit's landings are the baseline form's machinery, and they carry over. *(At JSV-1 the value form's
+units are exactly the baseline layout over a partition in which every instruction is a block of its own,
+`JsBaselineBlocks.TryPlanEachInstruction`: one helper call per instruction, then a compare of the
+program counter it answers with the instruction's target, if any, and its successor.)* A helper for an instruction
 with a code target - `ForInNext`, `IterateNext`, `IterateAwaitStep`, `IterateCloseAsync`,
 `DisposeStep` - answers which way it went, and the branch itself is emitted. So the compare tree is
 needed only where control re-enters a unit from outside: its entry, its exception handlers and its
@@ -263,6 +289,11 @@ divergences at exhaustion**, and the verdict-equality gate compares the outcome 
 dimension, not the consumed figure or the level. A later record may narrow them only by means that do
 not read the remaining allowance, because reading it is the amendment MVP-9 says cannot be minted.
 
+**At JSV-1 there is no debt and no divergence.** Every instruction is a helper and every helper is
+charged by the interpreter's own arm, so the value form charges each instruction exactly where the
+interpreter does; its check rows compare the consumed fuel as well as the answer. The named divergences
+below arrive with JSV-2's inline set.
+
 **This needs no core amendment.** MVP-9 records that an allowance held by the profile, sized by a new
 meter member that reads remaining fuel, is a breaking amendment the procedure cannot mint. Settling
 debt after the fact uses only `TryCharge`, and it never asks for fuel it has not already spent.
@@ -272,6 +303,11 @@ twins.
 
 ### 8. Exceptions, generators and async
 
+- **At JSV-1**, a throw that no region of its own unit covers is a managed exception caught by the
+  helper, parked on the activation and raised again by the managed frame that entered the emitted code,
+  once per value-form level it crosses, as in the baseline form; and a suspended generator's frame
+  holds the activation's own stack, which the mirror keeps coherent, while a resumption encodes that
+  stack into the new region before any helper runs. The two bullets below are JSV-4's.
 - **Throw and catch.** A helper that catches a guest exception parks it in the instance context and
   answers "threw" with the program counter. Emitted code dispatches it through the unit's region table
   to a landing, or returns "threw" to its caller. **No managed exception ever crosses an emitted frame**,
@@ -300,9 +336,18 @@ must satisfy are:
 **Re-emission stays a pure function of the image**, residency analysis included, and verification
 compares the bytes where an image carries the lowering. **The form is recorded in the artifact**, as a
 one-byte tier in the emitted-code section's header. The manifest no longer fixes the tier, because the
-wide manifest now has two native forms. A manifest with only one tier must still carry that tier, so
-the byte and the manifest cannot disagree. The backend's semantic version and the format's minor
-version both move.
+wide manifest now has two native forms. *(Settled by JSV-1, `JsNativeCodeHeader`: the byte is the
+second byte of the header's first field, above the architecture. Zero means the manifest's own form,
+which is what every artifact written before the value form carries, and the value tier's number is the
+only other value a reader admits, beside the wide manifest and an x86-64 convention alone; the upper two
+bytes stay zero. So the byte and the manifest cannot disagree, and one fact has one spelling. The format
+has no minor version and its version does not move: every earlier artifact reads as it did, and a reader
+from before the form refuses the byte as an architecture it cannot name. The backend's semantic version
+moved to three.)*
+
+*(At JSV-1 the value form's table holds the baseline templates, in an array of its own that the scan
+holds to the per-instruction partition, and no inline template exists, so clauses V1 to V6 have nothing
+yet to judge; they arrive with JSV-2.)*
 
 **What emitted code may touch**, stated once for the security co-signer:
 
@@ -319,7 +364,7 @@ arming path, W^X, rule X1 and rule B5c are untouched.
 | Stage | Delivers | Exit gate |
 |---|---|---|
 | **JSV-0** *(in the tree, 2026-09-24)* | `JsWord`, its codec, `JsHandleTable`, the scan and handle-stress, managed only: `JsWord.cs` in the format assembly; `JsWordCodec.cs`, `JsHandleTable.cs`, `JsValueSlab.cs` and `JsWordChecks.cs` in the profile | Codec round-trip over every kind and every NaN payload; scan and generation checks under a fuzz target; no emitted code. Held by the `value-word/*` rows of the slice compiler's `--checks`, three of them fixed-seed fuzz runs (two under handle-stress), and by `--fuzz-words` for longer runs. Two rows are negative controls - an unpublished word that handle-stress refuses and the plain table does not, and a released handle in a live word that stops the scan - and a mutant scan that skipped each frame's last live word was watched failing five rows before the rows were committed |
-| **JSV-1** | The value form with **every** instruction a helper, except the control flow, which is emitted | The whole pinned suite in the value form gives the same verdict per variant as bytecode, outside the admitted classes, with and without handle-stress; all fifteen Octane benchmarks report a score |
+| **JSV-1** *(in the tree, 2026-09-24)* | The value form with **every** instruction a helper, except the control flow, which is emitted: `JsOutputForm.Value`, the header's form byte, the per-instruction partition and its scan, `JsValueFrame`, `JsValueStack`, the helper table `JsValueHelpers` with one per-opcode arm mode each, `JsValueWindows`, and the entry `RunValue`; handle-stress reachable as a descriptor door and as `--handle-stress` and `--form value-stress` | The whole pinned suite in the value form gives the same verdict per variant as bytecode, outside the admitted classes, with and without handle-stress; all fifteen Octane benchmarks report a score. Also held by the slice compiler's `value/*` rows - every wide program and probe answering as bytecode, fuel included, with and without handle-stress, re-emission, the scan holding each form to its own partition, the form byte and its refusals - and by rules X2, X3 and X4 (e) |
 | **JSV-2** | Residency analysis, the pure inline set and fuel debt | JSV-1's gate again, plus the fuel-parity twins giving the same verdict at every ceiling, plus a differential run of every inline template against its arm |
 | **JSV-3** | Direct calls and the stack limit | JSV-2's gate, plus recursion answering the interpreter's `RangeError` rather than exhausting the machine stack |
 | **JSV-4** | Suspension through the frame codec, and status-chain exceptions | JSV-3's gate over the generator, async and exception subtrees under handle-stress |
@@ -344,9 +389,12 @@ passes.
   to S4 continue to bind that form. The value form states its own counterparts in sections 3, 4, 7 and
   9.
 - **Architecture rules.**
-  - **X2** extends to the value frame context, which declares no reference field.
-  - **X3** extends to the one file that declares the value form's helpers.
-  - A new rule holds clauses V1 to V6 and the residency analysis's purity.
+  - **X2** extends to the value frame context, which declares no reference field *(done at JSV-1)*.
+  - **X3** extends to the one file that declares the value form's helpers *(done at JSV-1, with
+    `StepValue` as the slot's second reader)*.
+  - **X4** gains a clause (e) holding the helper table's routing and `StepValue`'s checks *(done at
+    JSV-1)*.
+  - A new rule holds clauses V1 to V6 and the residency analysis's purity *(JSV-2's)*.
   - **X1, B5c and K5** do not move: the same arming path, and the same `x86-64` register column.
 - **Invariant 7.** If a later record adds inline caches, they live in a per-instance side table and
   never on the shared handle, as the invariant requires. Nothing in this record adds one.
@@ -366,6 +414,15 @@ passes.
 | **Growing the numeric form to strings and objects** | The numeric form is exact over its manifest precisely because it has no references. Giving it references is this record's work under another name, and it would move that form's retained golden bytes |
 
 ## Risks this record names rather than resolves
+
+- **A NaN's payload does not survive a word.** A NaN read out of a typed array's bytes and written into
+  another loses its payload in the value form and keeps it in the interpreter. The language lets an
+  implementation choose the bits it stores for a NaN, so both are conforming, and the two forms differ
+  only where a program compares those bytes; it is this form's named divergence, not a verdict.
+- **Each value-form level of a recursion is deeper on the machine stack than an interpreted one** - an
+  emitted frame, a helper and an arm's frame per call - so a recursion that the interpreter ends with
+  its call-depth `RangeError` could meet the stack backstop first. JSV-3's stack limit is what closes
+  that; until then the whole-suite gate is what would show it.
 
 - **Helper-dominated code may be slower than bytecode.** Property access, calls to built-ins and
   closures over captured bindings each pay a transition and the codec. The rule in section 10 is what

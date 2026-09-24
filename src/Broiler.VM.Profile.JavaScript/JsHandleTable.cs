@@ -87,7 +87,7 @@ internal sealed class JsHandleTable
     // Broiler-Human:        PENDING
     private const byte Retired = 3;
 
-    private readonly JsValueSlab slab;
+    private readonly IJsWordRoots slab;
     private readonly System.Collections.Generic.Dictionary<object, int> byTarget =
         new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
 
@@ -102,11 +102,11 @@ internal sealed class JsHandleTable
     private int liveAfterCompaction;
     private bool[] marks = [];
 
-    /// <summary>Creates the table of the instance whose slab is <paramref name="roots"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=073EA0
+    /// <summary>Creates the table of the instance whose slab - one segment, or its chain - is <paramref name="roots"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=622C5F
     // Broiler-Falsified-If: a table is created whose compactions scan any slab other than its own instance's
     // Broiler-Human:        PENDING
-    internal JsHandleTable(JsValueSlab roots, bool stress, int initialCapacity = 16)
+    internal JsHandleTable(IJsWordRoots roots, bool stress, int initialCapacity = 16)
     {
         slab = roots;
         Stress = stress;

@@ -34,7 +34,7 @@ namespace Broiler.VM.Architecture.Tests;
 /// a violating input.
 /// </para>
 /// </remarks>
-public sealed class NativeBaselineRuleTests
+public sealed partial class NativeBaselineRuleTests
 {
     /// <summary>The assembly the baseline frame is declared in.</summary>
     internal const string FrameAssembly = "Broiler.VM.Profile.JavaScript.Format";
@@ -42,8 +42,14 @@ public sealed class NativeBaselineRuleTests
     /// <summary>The baseline frame, by its full name.</summary>
     internal const string FrameType = "Broiler.VM.Profile.JavaScript.Format.JsBaselineFrame";
 
+    /// <summary>The value form's frame context, by its full name: rule X2 holds it too (JSD-0035 section 9).</summary>
+    internal const string ValueFrameType = "Broiler.VM.Profile.JavaScript.Format.JsValueFrame";
+
     /// <summary>The one file whose methods native code may call.</summary>
     internal const string HandlerFile = "src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs";
+
+    /// <summary>The value form's helper file: the one other file whose methods native code may call.</summary>
+    internal const string ValueHelperFile = "src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs";
 
     /// <summary>The one file outside the activation that may read or write the thread slot.</summary>
     internal const string EnteringFile = "src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs";
@@ -85,6 +91,14 @@ public sealed class NativeBaselineRuleTests
         Assert.Contains("Handlers", fields);
         Assert.Contains("Cookie", fields);
         Assert.Empty(violations);
+
+        // ...and the value form's frame context, which the rule holds to the same statement.
+        var (valueViolations, valueFields) = InspectFrame(
+            context => context.LoadFromAssemblyPath(BuildOutput(FrameAssembly)), ValueFrameType);
+
+        Assert.Contains("Helpers", valueFields);
+        Assert.Contains("Cookie", valueFields);
+        Assert.Empty(valueViolations);
     }
 
     /// <summary>
@@ -1194,12 +1208,12 @@ public sealed class NativeBaselineRuleTests
     /// nothing bounds what it is instantiated with, and a value type is walked field by field.
     /// </para>
     /// </remarks>
-    internal static IEnumerable<string> X2(Type? frame)
+    internal static IEnumerable<string> X2(Type? frame, string frameType = FrameType)
     {
         if (frame is null)
         {
             yield return
-                $"the reader found no type named {FrameType}, so this rule judged no frame at all";
+                $"the reader found no type named {frameType}, so this rule judged no frame at all";
 
             yield break;
         }
@@ -1233,7 +1247,11 @@ public sealed class NativeBaselineRuleTests
 
     /// <summary>What X2 says about the built Format assembly, for the group X report.</summary>
     internal static IEnumerable<string> X2Report() =>
-        InspectFrame(static context => context.LoadFromAssemblyPath(BuildOutput(FrameAssembly))).Violations;
+    [
+        .. InspectFrame(static context => context.LoadFromAssemblyPath(BuildOutput(FrameAssembly))).Violations,
+        .. InspectFrame(
+            static context => context.LoadFromAssemblyPath(BuildOutput(FrameAssembly)), ValueFrameType).Violations,
+    ];
 
     /// <summary>
     /// X3: native code enters managed code only through the handler file, and the activation slot
@@ -1260,12 +1278,14 @@ public sealed class NativeBaselineRuleTests
             string.Equals(file.RelativePath, path, StringComparison.Ordinal));
 
         var handler = Named(HandlerFile);
+        var valueHelpers = Named(ValueHelperFile);
         var entering = Named(EnteringFile);
         var activation = Named(ActivationFile);
 
         foreach (var (path, file) in new[]
                  {
-                     (HandlerFile, handler), (EnteringFile, entering), (ActivationFile, activation),
+                     (HandlerFile, handler), (ValueHelperFile, valueHelpers), (EnteringFile, entering),
+                     (ActivationFile, activation),
                  })
         {
             if (file is null)
@@ -1278,11 +1298,12 @@ public sealed class NativeBaselineRuleTests
         foreach (var file in tree)
         {
             if (!string.Equals(file.RelativePath, HandlerFile, StringComparison.Ordinal) &&
+                !string.Equals(file.RelativePath, ValueHelperFile, StringComparison.Ordinal) &&
                 UnmanagedEntry.IsMatch(file.Text))
             {
                 yield return
-                    $"{file.RelativePath} names UnmanagedCallersOnly, and the one file whose methods " +
-                    $"native code may call is {HandlerFile}";
+                    $"{file.RelativePath} names UnmanagedCallersOnly, and the two files whose methods " +
+                    $"native code may call are {HandlerFile} and {ValueHelperFile}";
             }
 
             if (!string.Equals(file.RelativePath, EnteringFile, StringComparison.Ordinal) &&
@@ -1314,6 +1335,13 @@ public sealed class NativeBaselineRuleTests
             yield return
                 "the handler file names no UnmanagedCallersOnly, so the one place this rule pins is " +
                 "not the place native code calls";
+        }
+
+        if (valueHelpers is not null && !UnmanagedEntry.IsMatch(valueHelpers.Text))
+        {
+            yield return
+                "the value helper file names no UnmanagedCallersOnly, so the place this rule pins for the " +
+                "value form is not the place its native code calls";
         }
 
         if (entering is not null && !SlotWritten.IsMatch(entering.Text))
@@ -1414,6 +1442,7 @@ public sealed class NativeBaselineRuleTests
 
         var writes = 0;
         var stepReads = 0;
+        var valueStepReads = 0;
 
         foreach (var identifier in type.DescendantNodes().OfType<IdentifierNameSyntax>())
         {
@@ -1465,10 +1494,16 @@ public sealed class NativeBaselineRuleTests
                 continue;
             }
 
+            if (string.Equals(member.Name, "StepValue", StringComparison.Ordinal))
+            {
+                valueStepReads++;
+                continue;
+            }
+
             yield return
-                $"{activation.RelativePath} reads the thread slot {name} in {member.Name}, and the one " +
-                "reader inside the activation is Step, which runs nothing unless the frame's cookie is " +
-                "the activation's";
+                $"{activation.RelativePath} reads the thread slot {name} in {member.Name}, and the two " +
+                "readers inside the activation are Step and StepValue, which run nothing unless the frame's " +
+                "cookie is the activation's";
         }
 
         if (writes == 0)
@@ -1483,6 +1518,13 @@ public sealed class NativeBaselineRuleTests
             yield return
                 $"Step reads no {name}, so the one reader this rule allows is not the place the slot " +
                 "is read";
+        }
+
+        if (valueStepReads == 0)
+        {
+            yield return
+                $"StepValue reads no {name}, so the value form's reader this rule allows is not the place " +
+                "the slot is read";
         }
     }
 
@@ -1509,6 +1551,7 @@ public sealed class NativeBaselineRuleTests
         .. X4Checks(tree).Violations,
         .. X4Confinement(tree).Violations,
         .. X4Names(tree).Violations,
+        .. X4Value(tree).Violations,
     ];
 
     /// <summary>
@@ -2895,7 +2938,7 @@ public sealed class NativeBaselineRuleTests
     /// has no business executing the type. The answers are materialised before the context goes.
     /// </remarks>
     private static (IReadOnlyList<string> Violations, IReadOnlyList<string> Fields) InspectFrame(
-        Func<MetadataLoadContext, Assembly> load)
+        Func<MetadataLoadContext, Assembly> load, string frameType = FrameType)
     {
         var resolverPaths = new List<string>();
         var built = BuildOutput(FrameAssembly);
@@ -2912,10 +2955,10 @@ public sealed class NativeBaselineRuleTests
         using var context = new MetadataLoadContext(
             new PathAssemblyResolver(resolverPaths.Distinct(StringComparer.OrdinalIgnoreCase)));
 
-        var frame = load(context).GetType(FrameType, throwOnError: false);
+        var frame = load(context).GetType(frameType, throwOnError: false);
 
         return (
-            X2(frame).ToArray(),
+            X2(frame, frameType).ToArray(),
             frame is null ? [] : frame.GetFields(AllDeclared).Select(static field => field.Name).ToArray());
     }
 
