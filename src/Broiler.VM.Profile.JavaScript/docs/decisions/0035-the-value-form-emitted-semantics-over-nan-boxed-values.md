@@ -9,8 +9,13 @@ handle-stress. JSV-1 puts them on an execution path: a compilation can ask for t
 artifact records it, the verifier scans and re-emits it, and an instance runs it, with every
 instruction a helper and the control flow between them emitted (section 10 says what that stage is and
 is not). No pure instruction is inline, no fuel is carried as a debt, no call is direct and no
-suspension goes through a frame codec: those are JSV-2 to JSV-4. No measurement of the form exists and
-no bundle retains one, and this record makes no speed claim. Nobody has signed the record, so it
+suspension goes through a frame codec: those are JSV-2 to JSV-4. **JSV-1's exit gate is met but for
+one benchmark.** The whole pinned suite gives bytecode's verdicts outside the admitted classes, with and
+without handle-stress, and fourteen of the fifteen Octane benchmarks report a score; `zlib` runs past
+the profile's wall-clock hard maximum in this form. That is a finding of
+[JSC-182](../roadmap.corrections.md#jsc-182)'s kind rather than a bound to raise, so that half of the
+gate stays open and carries into JSV-2's, which restates it (section 10). No bundle retains a
+measurement of the form, and this record makes no speed claim. Nobody has signed the record, so it
 claims no approval. Approvals are deferred under the MVP terms.
 
 **Owner:** JavaScript profile owner. **Co-signer:** the core's security owner, because the design adds
@@ -364,7 +369,7 @@ arming path, W^X, rule X1 and rule B5c are untouched.
 | Stage | Delivers | Exit gate |
 |---|---|---|
 | **JSV-0** *(in the tree, 2026-09-24)* | `JsWord`, its codec, `JsHandleTable`, the scan and handle-stress, managed only: `JsWord.cs` in the format assembly; `JsWordCodec.cs`, `JsHandleTable.cs`, `JsValueSlab.cs` and `JsWordChecks.cs` in the profile | Codec round-trip over every kind and every NaN payload; scan and generation checks under a fuzz target; no emitted code. Held by the `value-word/*` rows of the slice compiler's `--checks`, three of them fixed-seed fuzz runs (two under handle-stress), and by `--fuzz-words` for longer runs. Two rows are negative controls - an unpublished word that handle-stress refuses and the plain table does not, and a released handle in a live word that stops the scan - and a mutant scan that skipped each frame's last live word was watched failing five rows before the rows were committed |
-| **JSV-1** *(in the tree, 2026-09-24)* | The value form with **every** instruction a helper, except the control flow, which is emitted: `JsOutputForm.Value`, the header's form byte, the per-instruction partition and its scan, `JsValueFrame`, `JsValueStack`, the helper table `JsValueHelpers` with one per-opcode arm mode each, `JsValueWindows`, and the entry `RunValue`; handle-stress reachable as a descriptor door and as `--handle-stress` and `--form value-stress` | The whole pinned suite in the value form gives the same verdict per variant as bytecode, outside the admitted classes, with and without handle-stress; all fifteen Octane benchmarks report a score. Also held by the slice compiler's `value/*` rows - every wide program and probe answering as bytecode, fuel included, with and without handle-stress, re-emission, the scan holding each form to its own partition, the form byte and its refusals - and by rules X2, X3 and X4 (e) |
+| **JSV-1** *(in the tree, 2026-09-24; its gate open on `zlib`)* | The value form with **every** instruction a helper, except the control flow, which is emitted: `JsOutputForm.Value`, the header's form byte, the per-instruction partition and its scan, `JsValueFrame`, `JsValueStack`, the helper table `JsValueHelpers` with one per-opcode arm mode each, `JsValueWindows`, and the entry `RunValue`; handle-stress reachable as a descriptor door and as `--handle-stress` and `--form value-stress` | The whole pinned suite in the value form gives the same verdict per variant as bytecode, outside the admitted classes, with and without handle-stress; all fifteen Octane benchmarks report a score. Also held by the slice compiler's `value/*` rows - every wide program and probe answering as bytecode, fuel included, with and without handle-stress, re-emission, the scan holding each form to its own partition, the form byte and its refusals - and by rules X2, X3 and X4 (e). **Open on one benchmark:** the suite half holds with and without handle-stress, and fourteen Octane benchmarks score, `mandreel` and `code-load` under stated artifact allowances; `zlib` runs past the profile's wall-clock hard maximum, which no allowance moves, and reports none |
 | **JSV-2** | Residency analysis, the pure inline set and fuel debt | JSV-1's gate again, plus the fuel-parity twins giving the same verdict at every ceiling, plus a differential run of every inline template against its arm |
 | **JSV-3** | Direct calls and the stack limit | JSV-2's gate, plus recursion answering the interpreter's `RangeError` rather than exhausting the machine stack |
 | **JSV-4** | Suspension through the frame codec, and status-chain exceptions | JSV-3's gate over the generator, async and exception subtrees under handle-stress |
@@ -433,6 +438,10 @@ passes.
 - **Helper-dominated code may be slower than bytecode.** Property access, calls to built-ins and
   closures over captured bindings each pay a transition and the codec. The rule in section 10 is what
   catches this. Inline caches in a per-instance side table are a later record's work, not this one's.
+  At JSV-1 every instruction pays them, and so does its fuel charge through the meter, and `zlib`, which
+  finishes inside the profile's wall-clock hard maximum as bytecode on the machine JSV-1 was gated on,
+  does not as this form. JSV-2's inline set and fuel debt are what take the transition, the codec and
+  the per-instruction charge off a pure instruction.
 - **Allocation-heavy loops churn the handle table.** Compaction cost scales with the live frames'
   extent, and the rule measures it rather than assumes it.
 - **The residency analysis is a new static analysis whose error is a wrong answer.** A binding wrongly
