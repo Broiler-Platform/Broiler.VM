@@ -2345,6 +2345,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueLayout.ArgumentCeiling : const System.Int32 = 256
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueLayout.CeilingRegionWords : const System.Int64 = 69889
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueLayout.DebtThreshold : const System.Int32 = 1024
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueLayout.IsSuspension(Broiler.VM.Profile.JavaScript.Format.JsOpcode opcode) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Layout(Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan plan) : static Broiler.VM.Profile.JavaScript.Format.JsValueInstruction[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueLayout.ResidentCeiling : const System.Int32 = 65536
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueLayout.StraightLineRun : const System.Int32 = 256
@@ -2441,8 +2442,8 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.ResidentSlotsOf(System.Int32 depth) : System.Int32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.ResidentWords : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.StackBase : System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.Suspends : System.Boolean { get; }
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.UnitIndex : System.Int32 { get; }
-  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.WholeStack : System.Boolean { get; }
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.BigIntTag : const System.UInt16 = 65533
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.CanonicalNaN : const System.UInt64 = 9221120237041090560
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Empty : const System.UInt64 = 18444773748872577028

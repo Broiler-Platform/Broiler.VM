@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
+// Relevant units:   14
+// Annotated:        14/14
 // Exempt:           0
-// Human-reviewed:   0/13
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         13/13
+// Criteria:         14/14
 // Resource impact:  3/10 max
-// Unverified:       13
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -59,14 +59,15 @@ internal static class JsValueWindows
     /// </summary>
     /// <remarks>
     /// <b>It runs once per entry, before any helper</b>: an ordinary call's stack is empty, and a resumed
-    /// generator's holds what it suspended with and the value the resumption sent. The function's own
-    /// environment, when it is resident, is read from the record the call filled with the parameters; every
-    /// other resident environment has not been entered yet, and its words start as the empty word a fresh
-    /// record's slots are.
+    /// generator's holds what it suspended with and the value the resumption sent. A resident environment the
+    /// activation's scope list holds is read from its record - the function's own, which the call filled with
+    /// the parameters, and on a resumption every one the frame suspended inside, which the frame codec filled
+    /// when it suspended (stage JSV-4); every other resident environment has not been entered yet, and its
+    /// words start as the empty word a fresh record's slots are.
     /// </remarks>
     /// <param name="act">The activation, whose region is open.</param>
     /// <param name="handles">The instance's handle table.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=C1E1CD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=FF1B22
     // Broiler-Falsified-If: an argument word, a resident word or a slot below the activation's height is not encoded into its region before the region is published at that height
     // Broiler-Human:        PENDING
     internal static void Open(JsNativeActivation act, JsHandleTable handles)
@@ -92,7 +93,7 @@ internal static class JsValueWindows
                 continue;
             }
 
-            var own = depth == 0 && act.Scopes.Count > 0 ? act.Scopes[0].Slots : [];
+            var own = depth < act.Scopes.Count ? act.Scopes[depth].Slots : [];
 
             for (var slot = 0; slot < plan.ResidentSlotsOf(depth); slot++)
             {
@@ -126,7 +127,7 @@ internal static class JsValueWindows
     /// <param name="act">The activation.</param>
     /// <param name="pc">The instruction's offset, a reached instruction start of the activation's unit.</param>
     /// <param name="height">The stack's height before the instruction, as the plan gives it.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=80886E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=3D076D
     // Broiler-Falsified-If: a slot of the read window is left holding anything but its word's decoding, a word is decoded before the safepoint, the height the safepoint scans is not the plan's, or the activation's program counter and height are not the instruction's when the arm starts
     // Broiler-Human:        PENDING
     internal static int Enter(JsNativeActivation act, int pc, out int height)
@@ -151,7 +152,12 @@ internal static class JsValueWindows
         handles.Safepoint();
 
         var pops = resumed ? 0 : Pops(act.Code, pc);
-        var from = plan.WholeStack ? 0 : height - (resumed ? 0 : ReadDepth(act.Code, pc));
+        // ONLY AN INSTRUCTION THAT SUSPENDS READS THE WHOLE STACK (stage JSV-4): the frame it suspends with is
+        // the activation's own stack, so every slot below the height is decoded into it; every other helper
+        // reads its own window, in a unit that can suspend as in any other.
+        var from = plan.Suspends && JsValueLayout.IsSuspension((JsOpcode)act.Code[pc])
+            ? 0
+            : height - (resumed ? 0 : ReadDepth(act.Code, pc));
 
         if (from < 0)
         {
@@ -233,6 +239,52 @@ internal static class JsValueWindows
         }
 
         segment.Publish(act.SlabFrame, plan.StackBase + after);
+    }
+
+    /// <summary>
+    /// The frame codec's suspension: every resident word of every environment the suspended frame is inside,
+    /// decoded into that environment's record, so the frame carries them to its resumption (stage JSV-4).
+    /// </summary>
+    /// <remarks>
+    /// <b>THE STACK IS ALREADY THE FRAME'S</b>: the suspending instruction's helper decoded every slot below
+    /// its height into the activation's stack, which a suspending unit's frame shares. What the region alone
+    /// holds are the resident words, and a resident environment's record is read by nothing while the frame
+    /// runs - nothing outside the activation can reach it - so writing them there is invisible until the
+    /// resumption reads them back.
+    /// </remarks>
+    /// <param name="act">The activation, whose frame has just suspended and whose region is still open.</param>
+    /// <param name="pc">The instruction that suspended.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=145CDD
+    // Broiler-Falsified-If: a resident word of an environment the frame is inside is not in that environment's record when the frame suspends, or a word of an environment it is not inside is written anywhere
+    // Broiler-Human:        PENDING
+    internal static void Suspend(JsNativeActivation act, int pc)
+    {
+        var plan = act.Plan!;
+        var handles = act.Engine.ValueHandles!;
+        var words = act.Segment!.Words;
+        var first = JsValueSlab.FirstWord(act.SlabFrame);
+
+        for (var depth = 0; depth < plan.Depths && depth < act.Scopes.Count; depth++)
+        {
+            var at = plan.ResidentBaseOf(depth);
+
+            if (at < 0)
+            {
+                continue;
+            }
+
+            var record = act.Scopes[depth].Slots;
+            var count = System.Math.Min(plan.ResidentSlotsOf(depth), record.Length);
+
+            for (var slot = 0; slot < count; slot++)
+            {
+                var word = words[first + at + slot];
+
+                record[slot] = JsWord.IsNumber(word)
+                    ? JsValue.Number(JsWord.ToNumber(word))
+                    : JsWordCodec.Decode(word, handles);
+            }
+        }
     }
 
     /// <summary>The value an inline return left in the activation's first region word (stage JSV-3).</summary>

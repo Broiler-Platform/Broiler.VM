@@ -83,6 +83,7 @@ internal static class ValueFormChecks
 
         rows.Add(TheDifferentialProgramsPlaceEveryInlineKind(JsX64Abi.Host));
         rows.Add(EveryReachedCallIsADirectCallSite(JsX64Abi.Host));
+        rows.Add(SuspendingUnitsKeepBindingsResident(JsX64Abi.Host));
 
         if (System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture !=
             System.Runtime.InteropServices.Architecture.X64)
@@ -101,6 +102,7 @@ internal static class ValueFormChecks
         rows.AddRange(TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.Value, handleStress: true));
         rows.AddRange(TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.ValueFlat, handleStress: false));
         rows.AddRange(TheDirectCallsAnswerAsBytecode(JsX64Abi.Host));
+        rows.AddRange(TheFrameCodecAnswersAsBytecode(JsX64Abi.Host));
         rows.AddRange(EveryInlineTemplateAnswersAsItsArm(JsX64Abi.Host));
         rows.AddRange(TheTwinsGiveOneVerdictAtEveryCeiling(JsX64Abi.Host));
         return rows;
@@ -729,6 +731,139 @@ internal static class ValueFormChecks
         }
 
         return (Name, sites > 0, sites + " reached Call instructions, each a direct call site");
+    }
+
+    // ---- the frame codec and the status chain (stage JSV-4) ---------------------------------------------
+
+    /// <summary>
+    /// Programs whose generators and async functions suspend with resident bindings live - in loops, in
+    /// blocks, across <c>try</c> and <c>finally</c>, under abrupt resumptions and delegation - and whose
+    /// exceptions cross direct calls, suspensions and landings.
+    /// </summary>
+    private static readonly (string Name, string Source)[] SuspendingPrograms =
+    [
+        ("generators", """
+            var out = [];
+            function* counter(n) { var total = 0; for (let i = 0; i < n; i++) { let sq = i * i; total = total + sq; yield sq + total; } return total; }
+            for (var v of counter(6)) out.push(v);
+            function* twoWay() { var a = yield 1; let b = (yield a + 1) * 2; { let c = b + a; yield c; } return a + b; }
+            var g = twoWay(); out.push(g.next().value, g.next(10).value, g.next(3).value, JSON.stringify(g.next()));
+            function* guarded() { var x = 5; try { x = x + (yield x); yield x * 2; } finally { out.push("fin" + x); } }
+            var h = guarded(); out.push(h.next().value, h.next(7).value); out.push(JSON.stringify(h.return(99)));
+            var k = guarded(); k.next(); try { k.throw(new Error("boom")); } catch (e) { out.push(e.message); }
+            function* inner() { let q = yield "i1"; yield "i2:" + q; return "ri"; }
+            function* outer() { let r = yield* inner(); yield "o:" + r; }
+            var d = outer(); out.push(d.next().value, d.next("Q").value, d.next().value);
+            function* params(a, b = a * 2, ...rest) { let s = a + b + rest.length; yield s; yield arguments.length; }
+            var p = params(1, undefined, 7, 8); out.push(p.next().value, p.next().value);
+            function* catching() { let n = 0; while (true) { try { n = n + (yield n); } catch (e) { n = n * 10; } } }
+            var c = catching(); c.next(); c.next(2); c.throw(0); out.push(c.next(1).value);
+            function* nested() { for (let i = 0; i < 3; i++) { for (let j = 0; j < 2; j++) { yield i * 10 + j; } } }
+            out.push([...nested()].join("-"));
+            out.join(",");
+            """),
+        ("async", """
+            var log = [];
+            async function waiter(n) { let acc = 0; for (let i = 0; i < n; i++) { acc = acc + await i; } return acc; }
+            async function thrower() { let z = 3; await null; throw new Error("async" + z); }
+            async function catcher() { let w = 1; try { await thrower(); } catch (e) { w = w + 1; return e.message + w; } }
+            async function* agen() { let t = 1; yield t; t = t + (await 4); yield t; }
+            waiter(5).then(function (v) { log.push("w" + v); });
+            thrower().catch(function (e) { log.push(e.message); });
+            catcher().then(function (v) { log.push(v); });
+            (async function () { for await (var x of agen()) log.push("a" + x); })();
+            var done = Promise.resolve();
+            for (var i = 0; i < 8; i++) done = done.then(function () {});
+            done.then(function () { print(log.join(",")); });
+            log.length;
+            """),
+        ("exceptions-through-the-status-chain", """
+            var r = [];
+            function thrower(i) { throw i; }
+            function relay(i) { return thrower(i) + 1; }
+            var caught = 0;
+            for (var i = 0; i < 200; i++) { try { relay(i); } catch (e) { caught = caught + e; } }
+            r.push(caught);
+            function landsHere(i) { let local = i * 2; try { thrower(local); } catch (e) { return e + local; } }
+            r.push(landsHere(4));
+            function finallyOnTheWay(i) { let f = 0; try { return relay(i); } finally { r.push("f" + i); } }
+            try { finallyOnTheWay(5); } catch (e) { r.push("c" + e); }
+            function* genThrows() { let q = 1; yield q; thrower(q + 1); }
+            var gt = genThrows(); gt.next(); try { gt.next(); } catch (e) { r.push("g" + e); }
+            r.join(",");
+            """),
+    ];
+
+    /// <summary>
+    /// Every suspending program answers in both value forms, and under handle-stress, what it answers in
+    /// bytecode, with the same fuel: the frame codec carries the resident words across every suspension, and
+    /// an exception lands through the status chain where the interpreter's would.
+    /// </summary>
+    private static List<(string, bool, string)> TheFrameCodecAnswersAsBytecode(JsX64Abi abi)
+    {
+        var rows = new List<(string, bool, string)>();
+
+        foreach (var (name, source) in SuspendingPrograms)
+        {
+            var interpreted = NativeLifecycle.RunWide(source, JsOutputForm.Bytecode, string.Empty, Fuel);
+
+            foreach (var (label, form, stress) in new[]
+                     {
+                         ("value", JsOutputForm.Value, false),
+                         ("value-flat", JsOutputForm.ValueFlat, false),
+                         ("value/under-handle-stress", JsOutputForm.Value, true),
+                     })
+            {
+                var value = NativeLifecycle.RunWide(source, form, abi.Name, Fuel, handleStress: stress);
+
+                rows.Add((
+                    label + "/frame-codec/answer-as-bytecode/" + name,
+                    SameAnswer(interpreted, value) && interpreted.Fuel == value.Fuel && interpreted.Completed,
+                    "bytecode " + interpreted.Render(withFuel: true) + "; " + label + " " + value.Render(withFuel: true)));
+            }
+        }
+
+        return rows;
+    }
+
+    /// <summary>
+    /// A generator's and an async function's units keep bindings resident (stage JSV-4), so the frame codec
+    /// the answer rows run is the one that carries them, and not a unit that kept everything in its records.
+    /// </summary>
+    private static (string, bool, string) SuspendingUnitsKeepBindingsResident(JsX64Abi abi)
+    {
+        const string Name = "value/frame-codec/suspending-units-keep-bindings-resident";
+        var resident = 0;
+        var suspending = 0;
+
+        foreach (var (name, source) in SuspendingPrograms)
+        {
+            var compiled = NativeLifecycle.CompileWide(source, JsOutputForm.Value, abi.Name);
+
+            if (compiled.Artifact is null || !NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out _))
+            {
+                return (Name, false, name + " did not compile in the value form");
+            }
+
+            var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+
+            for (var unit = 0; unit < image.Functions.Length; unit++)
+            {
+                if (!JsValueLayout.TryPlan(image, unit, grouped.Of(unit), image.ResidentBindings, out var plan, out _) ||
+                    !plan.Suspends)
+                {
+                    continue;
+                }
+
+                suspending++;
+                resident += plan.ResidentWords > 0 ? 1 : 0;
+            }
+        }
+
+        return (
+            Name,
+            suspending > 0 && resident * 2 >= suspending,
+            resident + " of " + suspending + " suspending units keep bindings resident");
     }
 
     // ---- the differential ------------------------------------------------------------------------------

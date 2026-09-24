@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   9
 // Annotated:        9/9
-// Exempt:           29
+// Exempt:           28
 // Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         25/25
+// Criteria:         24/24
 // Resource impact:  5/10 max
 // Unverified:       9
 //
@@ -262,12 +262,6 @@ internal sealed unsafe class JsNativeActivation
     // Broiler-Human:        PENDING
     internal string? CallerReferrer;
 
-    /// <summary>The exception a raise throws at this activation's instruction, and nothing between raises.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=36B35C
-    // Broiler-Falsified-If: an exception is raised at an instruction other than the call a direct call answered it at, or raised twice
-    // Broiler-Human:        PENDING
-    internal System.Exception? Raise;
-
     /// <summary>The activation whose emitted code is innermost on this thread.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=859662
     // Broiler-Falsified-If: this is written anywhere but around the one call that enters emitted code, or is not restored when that call returns
@@ -396,7 +390,7 @@ internal sealed unsafe class JsNativeActivation
     /// activation and raised by the managed frame that entered the emitted code.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=D2DBDB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=D0E8EF
     // Broiler-Falsified-If: a value step starts at an offset that is not a reached instruction start of its activation's unit, with an opcode or for an activation other than the emitted code's own, runs with no open region, runs before its debt is charged, leaves a word the arm wrote unencoded or unpublished, or lets an exception escape into emitted code
     // Broiler-Human:        PENDING
     internal static int StepValue<TMode>(JsValueFrame* frame, int pc, JsOpcode expected)
@@ -444,6 +438,13 @@ internal sealed unsafe class JsNativeActivation
 
             if (act.Exited)
             {
+                // A FRAME THAT SUSPENDED TAKES ITS RESIDENT WORDS WITH IT (stage JSV-4): its stack is already
+                // the frame's, decoded whole by the window, and the codec puts the rest into its records.
+                if (act.Frame is { Suspended: true })
+                {
+                    JsValueWindows.Suspend(act, pc);
+                }
+
                 return (int)JsBaselineStatus.Exit;
             }
 
@@ -660,44 +661,27 @@ internal sealed unsafe class JsNativeActivation
 
     /// <summary>
     /// Raises an exception at a direct call's instruction: landed in the caller's own region the interpreter's
-    /// filter would pick, through the dispatch loop's own landing, or parked for the caller's caller.
+    /// filter would pick, through the dispatch loop's own landing and with no throw, or parked for the caller's
+    /// caller as a status (JSD-0035 section 8, stage JSV-4).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=64BF48
-    // Broiler-Falsified-If: an exception lands where the interpreter's filter would not land it, one it would land is parked, or a landing's words are left unencoded or unpublished
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=8E4FA9
+    // Broiler-Falsified-If: an exception lands where the interpreter's filter would not land it, one it would land is parked, it is thrown again to land, or a landing's words are left unencoded or unpublished
     // Broiler-Human:        PENDING
     private static int RaiseAt(JsNativeActivation act, int pc, int height, int pops, System.Exception raised)
     {
-        if (height < 0 || !JsEngine.Lands(act, raised, pc))
-        {
-            act.Pending = raised;
-            return (int)JsBaselineStatus.Threw;
-        }
-
         try
         {
-            act.Raise = raised;
-            act.Landed = false;
-            act.Pc = pc;
-            act.Sp = height;
-
-            _ = act.Engine.ExecuteCore<JsRaise>(
-                act.Program,
-                act.UnitIndex,
-                act.Environment,
-                act.ThisValue,
-                act.Arguments,
-                act.Self,
-                act.NewTarget,
-                act.ThisBinding,
-                act.Frame,
-                act);
+            if (height < 0 || !JsEngine.TryLand(act, pc, raised))
+            {
+                act.Pending = raised;
+                return (int)JsBaselineStatus.Threw;
+            }
 
             JsValueWindows.Leave(act, pc, height, pops);
             return act.Pc;
         }
         catch (System.Exception escaped)
         {
-            act.Raise = null;
             act.Pending = escaped;
             return (int)JsBaselineStatus.Threw;
         }

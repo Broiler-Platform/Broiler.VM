@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   207
-// Annotated:        207/207
-// Exempt:           34
-// Human-reviewed:   0/207
+// Relevant units:   208
+// Annotated:        208/208
+// Exempt:           33
+// Human-reviewed:   0/208
 // IP risk:          Low
-// Security risk:    High
-// Criteria:         82/80
+// Security risk:    Critical
+// Criteria:         83/81
 // Resource impact:  7/10 max
-// Unverified:       207
+// Unverified:       208
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -7259,7 +7259,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=E9E0BC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=22A2EC
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -7349,7 +7349,7 @@ internal sealed partial class JsEngine
         // stops it; a step clears the boundary once and runs its first instruction, so the stop rule
         // is first asked about an instruction that has run, never about the value `current` starts
         // with.
-        var stepped = typeof(TMode) == typeof(JsNativeEntry) || typeof(TMode) == typeof(JsRaise);
+        var stepped = typeof(TMode) == typeof(JsNativeEntry);
 
         while (true)
         {
@@ -7367,17 +7367,6 @@ internal sealed partial class JsEngine
                     }
 
                     throw new JsReturnSignal(carried);
-                }
-
-                // A RAISE THROWS WHAT A DIRECT CALL ANSWERED AT THE CALL, inside this try, so the filter
-                // and the landing below are the ones the interpreter's `Call` arm would have met the same
-                // exception with (JSD-0035 section 6, stage JSV-3). It runs no instruction and charges
-                // nothing: a landing stops at the boundary as an entry does.
-                if (typeof(TMode) == typeof(JsRaise) && act!.Raise is { } raised)
-                {
-                    act.Raise = null;
-                    current = pc;
-                    throw raised;
                 }
 
                 while (true)
@@ -9072,14 +9061,7 @@ internal sealed partial class JsEngine
             // search, which is what a filter has to be.
             catch (JsThrow thrown) when (TryFindHandler(program, unitIndex, current, out region))
             {
-                while (scopes.Count > region.ScopeDepth + 1)
-                {
-                    scopes.RemoveAt(scopes.Count - 1);
-                }
-
-                sp = (int)region.StackHeight;
-                stack[sp++] = thrown.Value;
-                pc = (int)region.Handler;
+                Land(scopes, stack, ref sp, ref pc, region, thrown.Value);
 
                 // A VALUE STEP READS WHERE A LANDING WROTE, which can be below the instruction's own
                 // inputs; the comparison folds, so the interpreter's instantiation carries no write.
@@ -9142,6 +9124,64 @@ internal sealed partial class JsEngine
 
         region = default;
         return false;
+    }
+
+    /// <summary>A throw's landing in a region: the scopes the region is outside of dropped, the stack cut to its height and the value pushed there, and the region's handler next.</summary>
+    /// <remarks>
+    /// <b>ONE TEXT FOR THE TWO PLACES A THROW LANDS</b>: the dispatch loop's catch, where an instruction's own
+    /// exception meets its unit's region, and the value form's status chain, where an exception a direct call
+    /// answered meets the caller's region at the call without being thrown again (JSD-0035 section 8, stage
+    /// JSV-4).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=47E854
+    // Broiler-Falsified-If: a landing keeps a scope deeper than its region's, leaves the stack at any height but the region's plus the value, or resumes anywhere but the region's handler
+    // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private static void Land(
+        System.Collections.Generic.List<JsEnvironment> scopes,
+        JsValue[] stack,
+        ref int sp,
+        ref int pc,
+        JsRegion region,
+        JsValue value)
+    {
+        while (scopes.Count > region.ScopeDepth + 1)
+        {
+            scopes.RemoveAt(scopes.Count - 1);
+        }
+
+        sp = (int)region.StackHeight;
+        stack[sp++] = value;
+        pc = (int)region.Handler;
+    }
+
+    /// <summary>
+    /// Lands an exception at a value-form activation's instruction where the interpreter's filter would land
+    /// it, with no throw: the status chain's landing (JSD-0035 section 8, stage JSV-4).
+    /// </summary>
+    /// <remarks>
+    /// <b>THE SAME SEARCH AND THE SAME LANDING THE DISPATCH LOOP MAKES</b>: a guest exception only, the unit's
+    /// innermost region covering the instruction, and <see cref="Land"/>. An exception it answers false for
+    /// lands nowhere in the unit, and goes on as a status.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=74C4B4
+    // Broiler-Falsified-If: it lands an exception the interpreter's filter would not land at the same instruction, or lands one elsewhere than the interpreter would
+    // Broiler-Human:        PENDING
+    internal static bool TryLand(JsNativeActivation act, int pc, System.Exception raised)
+    {
+        if (raised is not JsThrow thrown || !TryFindHandler(act.Program, act.UnitIndex, pc, out var region))
+        {
+            return false;
+        }
+
+        var sp = act.Sp;
+        var landing = pc;
+        Land(act.Scopes, act.Stack, ref sp, ref landing, region, thrown.Value);
+        act.Sp = sp;
+        act.Pc = landing;
+        act.Landed = true;
+        return true;
     }
 
     /// <summary>
@@ -10644,21 +10684,6 @@ internal readonly struct JsNativeEntry : IJsExecutionMode
 {
     /// <summary>Never asked: the entry runs no instruction.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=AA45B6
-    // Broiler-Human:        PENDING
-    public static JsOpcode Opcode => default;
-}
-
-/// <summary>
-/// The value form's raise: an exception a direct call answered, thrown at the call's instruction and landed
-/// where the interpreter's own filter lands it, and nothing more.
-/// </summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=C1131D
-// Broiler-Falsified-If: the loop instantiated over this mode charges for or runs an instruction, or lands an exception anywhere the interpreter's filter and landing would not
-// Broiler-Human:        PENDING
-internal readonly struct JsRaise : IJsExecutionMode
-{
-    /// <summary>Never asked: a raise runs no instruction.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AA45B6
     // Broiler-Human:        PENDING
     public static JsOpcode Opcode => default;
 }

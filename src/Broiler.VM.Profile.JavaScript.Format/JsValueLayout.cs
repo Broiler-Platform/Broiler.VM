@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   60
-// Annotated:        60/60
+// Relevant units:   61
+// Annotated:        61/61
 // Exempt:           120
-// Human-reviewed:   0/60
+// Human-reviewed:   0/61
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         38/38
+// Criteria:         40/40
 // Resource impact:  3/10 max
-// Unverified:       60
+// Unverified:       61
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -401,7 +401,7 @@ public sealed class JsValueUnitPlan
         int residentWords,
         int[] residentBase,
         int[] residentSlots,
-        bool wholeStack)
+        bool suspends)
     {
         Blocks = blocks;
         this.heights = heights;
@@ -412,7 +412,7 @@ public sealed class JsValueUnitPlan
         ResidentWords = residentWords;
         this.residentBase = residentBase;
         this.residentSlots = residentSlots;
-        WholeStack = wholeStack;
+        Suspends = suspends;
     }
 
     /// <summary>The partition in which every instruction is a block, with its landings.</summary>
@@ -440,10 +440,19 @@ public sealed class JsValueUnitPlan
     public int StackBase => ArgumentWords + ResidentWords;
 
     /// <summary>
-    /// Whether every helper of the unit reads the whole operand stack, which is what a unit that can
-    /// suspend needs: its frame is the activation's own stack, so what it suspends with must be decoded.
+    /// Whether the unit can suspend: a generator's or an async function's, whose frame is the activation's
+    /// own stack and scope records.
     /// </summary>
-    public bool WholeStack { get; }
+    /// <remarks>
+    /// <b>ONLY AN INSTRUCTION THAT SUSPENDS READS THE WHOLE STACK</b> (stage JSV-4): the helper of a
+    /// <see cref="JsValueLayout.IsSuspension"/> instruction decodes every slot below the height into the frame,
+    /// and the frame codec writes the resident words into the frame's scope records when it suspends; every
+    /// other helper reads its own window, as in a unit that cannot suspend.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=0; Fingerprint=C89275
+    // Broiler-Falsified-If: it answers false for a generator's or an async function's unit, or true for any other
+    // Broiler-Human:        PENDING
+    public bool Suspends { get; }
 
     /// <summary>How many scope depths the plan describes: one past the deepest the unit reaches.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6CEDCA
@@ -518,9 +527,9 @@ public sealed class JsValueUnitPlan
 /// </para>
 /// <para>
 /// <b>A BINDING IS RESIDENT ONLY WHERE NOTHING OUTSIDE ITS ACTIVATION CAN REACH IT.</b> The whole unit is
-/// refused residency when it is a program body, eval code, a generator or an async body (whose frames
-/// suspend, which is stage JSV-4's), or when it holds a direct eval, a <c>with</c>, a name search or an
-/// eval name instruction. Otherwise an environment depth is resident when it is deeper than every depth
+/// refused residency when it is a program body or eval code, or when it holds a direct eval, a
+/// <c>with</c>, a name search or an eval name instruction; a generator's or an async body's frame carries
+/// its resident words across a suspension through the frame codec (stage JSV-4). Otherwise an environment depth is resident when it is deeper than every depth
 /// at which the unit creates a closure, which captures the whole chain below it, and deeper than the
 /// function's own environment when the unit reads <c>arguments</c>, which a sloppy function maps onto it.
 /// A resident environment takes the most slots any of its instances declares, and a unit whose resident
@@ -603,6 +612,17 @@ public static class JsValueLayout
     // Broiler-Human:        PENDING
     public static int TemplateCount => Names.Length;
 
+    /// <summary>
+    /// Whether an instruction can suspend its frame: <c>Yield</c>, <c>YieldDelegate</c>, <c>Await</c>, and the
+    /// <c>EnterBody</c> seam a generator's parameter prologue stops at.
+    /// </summary>
+    /// <param name="opcode">An opcode.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=0; Fingerprint=BC9016
+    // Broiler-Falsified-If: an arm of the dispatch loop can suspend its frame and its opcode is not one of these
+    // Broiler-Human:        PENDING
+    public static bool IsSuspension(JsOpcode opcode) =>
+        opcode is JsOpcode.Yield or JsOpcode.YieldDelegate or JsOpcode.Await or JsOpcode.EnterBody;
+
     /// <summary>The name of the value-table row <paramref name="template"/> is.</summary>
     /// <param name="template">A value template.</param>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=E26DA3
@@ -633,7 +653,7 @@ public static class JsValueLayout
     /// <param name="residentBindings">Whether any binding may be resident, as the artifact's form byte says.</param>
     /// <param name="plan">The plan, when the answer is <see langword="true"/>.</param>
     /// <param name="refusal">Why there is no plan, when the answer is <see langword="false"/>.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=836AAF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=73F3D8
     // Broiler-Falsified-If: a plan it answers has a height or depth other than the verifier's at some instruction, a resident depth the remark refuses, or an inline decision for an instruction whose height is not known
     // Broiler-Human:        PENDING
     public static bool TryPlan(
@@ -670,9 +690,11 @@ public static class JsValueLayout
         var suspends = (flags & (JsFormat.FunctionFlags.Generator | JsFormat.FunctionFlags.Async)) != 0;
 
         // ---- residency ---------------------------------------------------------------------------
+        // A GENERATOR'S OR AN ASYNC FUNCTION'S BINDINGS ARE AS RESIDENT AS ANY OTHER UNIT'S since stage JSV-4:
+        // the frame codec carries the resident words into the frame's scope records when the frame
+        // suspends, and back into the region when it resumes.
         var eligible = residentBindings &&
-            (flags & (JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.EvalCode |
-                JsFormat.FunctionFlags.Generator | JsFormat.FunctionFlags.Async)) == 0;
+            (flags & (JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.EvalCode)) == 0;
         var poisoned = (flags & JsFormat.FunctionFlags.UsesArguments) != 0 ? 0 : -1;
         var deepest = 0;
         var slots = new int[JsFormat.CeilingScopeDepth + 2];

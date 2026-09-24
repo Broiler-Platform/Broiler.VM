@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
+// Relevant units:   12
+// Annotated:        12/12
 // Exempt:           2
-// Human-reviewed:   0/13
+// Human-reviewed:   0/12
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         15/15
+// Criteria:         14/14
 // Resource impact:  5/10 max
-// Unverified:       13
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -508,12 +508,6 @@ internal sealed partial class JsEngine
         }
     }
 
-    /// <summary>Whether a throw at the caller's instruction lands in one of its own regions, as the interpreter's filter asks.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=FF905A
-    // Broiler-Falsified-If: it answers other than the interpreter's filter would for the same exception at the same instruction
-    // Broiler-Human:        PENDING
-    internal static bool Lands(JsNativeActivation act, System.Exception raised, int pc) =>
-        raised is JsThrow && TryFindHandler(act.Program, act.UnitIndex, pc, out _);
 
     /// <summary>The armed mapping of <paramref name="program"/>'s emitted code, mapped on first use.</summary>
     /// <remarks>
