@@ -31,10 +31,11 @@ namespace Broiler.VM.Profile.JavaScript;
 /// and why the checks drive it over every kind and every NaN payload rather than over examples.
 /// </para>
 /// <para>
-/// <b>ONE VALUE IS NOT CARRIED BIT FOR BIT: A NaN.</b> Every NaN is encoded as the canonical one, because
-/// a payload could otherwise read as a tag. JavaScript observes a NaN's payload only through typed-array
-/// bytes, which never hold a word, so the canonical NaN decodes to a value the language cannot tell
-/// from the one encoded.
+/// <b>ONE VALUE IS NOT ALWAYS CARRIED BIT FOR BIT: A NaN.</b> A NaN whose payload could carry it into a tag
+/// is encoded as the canonical one (<see cref="Format.JsWord.NaNTagReach"/>); every other NaN, every one
+/// the arithmetic unit and the runtime produce among them, is carried as it is. JavaScript observes a
+/// NaN's payload only through typed-array bytes, which never hold a word, so the canonical NaN decodes to
+/// a value the language cannot tell from the one encoded.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=3AF53F

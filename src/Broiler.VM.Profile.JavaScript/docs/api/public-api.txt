@@ -2440,6 +2440,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.IsHeader(System.UInt64 word) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.IsNumber(System.UInt64 word) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.MaximumFrameLength : const System.Int32 = 16777215
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.NaNTagReach : const System.UInt64 = 1970324836974592
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Null : const System.UInt64 = 18444773748872577025
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.ObjectTag : const System.UInt16 = 65531
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.PayloadMask : const System.UInt64 = 281474976710655

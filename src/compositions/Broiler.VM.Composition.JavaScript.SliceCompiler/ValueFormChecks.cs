@@ -514,22 +514,21 @@ internal static class ValueFormChecks
 
     /// <summary>
     /// What every differential program begins with: the edge values, and a rendering of a result that
-    /// shows a Number's bits - the sign of a zero included - and any other kind's type and text.
+    /// shows a Number's bits - the sign of a zero and a NaN's payload included - and any other kind's type
+    /// and text.
     /// </summary>
     /// <remarks>
-    /// <b>EVERY NaN IS RENDERED AS ONE VALUE.</b> A word carries no NaN's payload: the codec encodes every
-    /// NaN that enters from managed code as the canonical one (JSD-0035 section 3), so a NaN the interpreter
-    /// computes from a typed array's payload is the canonical one in this form. That is the form's named
-    /// divergence (JSD-0035's risks), which the language admits because it lets an implementation choose a
-    /// NaN's bits, and it is not what a template could get wrong; the edge values still include NaNs with
-    /// payloads, so every template runs over them.
+    /// <b>THE EDGE VALUES LEAVE OUT A NaN A WORD DOES NOT CARRY</b>: one setting a bit of
+    /// <see cref="JsWord.NaNTagReach"/>, which the codec canonicalises (JSD-0035 section 2). That is the
+    /// form's named divergence, which the language admits because it lets an implementation choose a NaN's
+    /// bits, and it is not what a template could get wrong; the quiet and signalling NaNs of both signs
+    /// with payloads are in, so every template runs over them and every result's bits are compared.
     /// </remarks>
     private const string Prelude = """
         var f64 = new Float64Array(1), u32 = new Uint32Array(f64.buffer);
         function nan(hi, lo) { u32[1] = hi; u32[0] = lo; return f64[0]; }
         function show(r) {
           if (typeof r !== "number") return typeof r + ":" + String(r);
-          if (r !== r) return "NaN";
           f64[0] = r;
           return u32[1].toString(16) + "." + u32[0].toString(16);
         }

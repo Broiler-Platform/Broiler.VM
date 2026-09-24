@@ -98,7 +98,13 @@ managed array of `JsValue`, and JSD-0025 is not amended for the form it decides.
 - **Every double that enters from managed code is canonicalised.** A typed-array read can produce a
   NaN with any payload, including one that would read as a tag. The encoder maps every NaN to
   `0x7FF8_0000_0000_0000`, and JavaScript cannot observe a NaN's payload except through typed-array
-  bytes, which never hold a `JsWord`.
+  bytes, which never hold a `JsWord`. *(Narrowed by JSV-2, `JsWord.NaNTagReach`: only a NaN that sets
+  one of the three mantissa bits below the quiet bit is canonicalised, because only such a NaN can
+  reach a tag under a sign flip or the arithmetic unit's quieting; every other NaN, every one the
+  arithmetic unit and the runtime produce among them, is carried as it is. Canonicalising every NaN
+  was inconsistent once inline code existed: a NaN inline arithmetic computed kept its bits in a word
+  and the same value copied through a helper lost them, so one value could be stored into a typed
+  array two ways, which the language forbids and the pinned suite's typed-array NaN tests observe.)*
 - **The encoding is this form's alone.** The numeric form's two reserved NaN patterns stay the numeric
   form's, and no word crosses between the two forms.
 
@@ -496,12 +502,12 @@ reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 
 
 ## Risks this record names rather than resolves
 
-- **A NaN's payload does not survive a word.** A NaN read out of a typed array's bytes and written into
-  another loses its payload in the value form and keeps it in the interpreter. The language lets an
-  implementation choose the bits it stores for a NaN, so both are conforming, and the two forms differ
-  only where a program compares those bytes; it is this form's named divergence, not a verdict. JSV-2's
-  differential rows render every NaN as one value for this reason, and compare every other result's
-  bits.
+- **A NaN's payload does not always survive a word.** A NaN read out of a typed array's bytes with one
+  of the three mantissa bits below the quiet bit set, and written into another, loses its payload in the
+  value form and keeps it in the interpreter. The language lets an implementation choose the bits it
+  stores for a NaN, so both are conforming, and the two forms differ only where a program compares
+  those bytes; it is this form's named divergence, not a verdict. JSV-2's differential rows compare
+  every result's bits, NaNs included, over edge values that leave out such a NaN for this reason.
 - **A value-form artifact is several times its bytecode's size**, because every instruction is a
   helper call and a compare at JSV-1, and larger than the baseline form's, whose calls are per block. The
   largest Octane benchmark's artifact is past the profile's default artifact ceiling in this form and

@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5155 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5156 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 211 |
-| Code units | 8763 |
-| Relevant | 5155 |
+| Code units | 8764 |
+| Relevant | 5156 |
 | Exempt | 3608 |
-| Assessed | 5155 of 5155 (100%) |
-| Human reviewed | 0 of 5155 (0%) |
-| Unverified | 5155 |
+| Assessed | 5156 of 5156 (100%) |
+| Human reviewed | 0 of 5156 (0%) |
+| Unverified | 5156 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5155 |
+| HUMAN_PENDING | 5156 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -194,7 +194,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs` | 18 | 1 | 17 | 1 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` | 19 | 15 | 4 | 15 | Low | Critical | 13/13 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` | 167 | 58 | 109 | 58 | Low | Critical | 36/36 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` | 32 | 32 | 0 | 32 | Low | High | 9/9 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` | 33 | 33 | 0 | 33 | Low | High | 10/10 |
 | `src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 80 | 8 | 72 | 8 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` | 37 | 18 | 19 | 18 | Low | High | 7/6 |
@@ -1062,13 +1062,15 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.Empty` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `398351`, PENDING
   - Falsified if: an empty slot and undefined decode to the same value, so a read in the temporal dead zone is not refused
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.CanonicalNaN` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `D48E42`, PENDING
-  - Falsified if: FromNumber answers a NaN word other than this one, or this word is not a quiet NaN
+  - Falsified if: FromNumber answers for a NaN that sets a bit of NaNTagReach a word other than this one, or this word is not a quiet NaN
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.NaNTagReach` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `A3C52F`, PENDING
+  - Falsified if: a NaN word with these bits clear reaches a tag under a sign flip, the setting of the quiet bit or both
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.IsNumber(ulong)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `A20747`, PENDING
   - Falsified if: this answers true for a word carrying any tag from FirstTag upwards, or false for a word below it
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.IsHandle(ulong)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `5FE785`, PENDING
   - Falsified if: this answers true for a special constant, a frame header, a reserved word or a Number
-- `Broiler.VM.Profile.JavaScript.Format.JsWord.FromNumber(double)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `F2600F`, PENDING
-  - Falsified if: some double answers a word IsNumber rejects, or a non-NaN double does not answer its own bit pattern
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.FromNumber(double)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `FC491C`, PENDING
+  - Falsified if: some double answers a word IsNumber rejects, a double that is not a NaN setting a bit of NaNTagReach does not answer its own bit pattern, or one that is answers other than CanonicalNaN
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.Handle(ushort, ushort, uint)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `205016`, PENDING
   - Falsified if: the word answered does not carry the tag, the generation and the index it was given, or carries a tag outside the four handle tags
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.Header(int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, Spec=none cited, `BC255B`, PENDING
@@ -3089,8 +3091,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this passes while some top sixteen bits classify as two classes, as none, or as a class other than JSD-0035's table gives
 - `Broiler.VM.Profile.JavaScript.JsWordChecks.TheHardwareNaNsAreNumbers()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `733DE9`, PENDING
   - Falsified if: this passes while a NaN the hardware computes is classified as a tagged word
-- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryNaNPayloadEncodesCanonically()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `2B2BF5`, PENDING
-  - Falsified if: this passes while some NaN, including one whose bits carry a tag, encodes as anything but the canonical NaN or decodes as a non-NaN
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryNaNPayloadEncodesCanonically()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `16554C`, PENDING
+  - Falsified if: this passes while some NaN that could reach a tag, including one whose bits carry a tag, encodes as anything but the canonical NaN, another NaN encodes as anything but itself, a word either answers reaches a tag under a sign flip or quieting, or a word decodes as a non-NaN or as other bits
 - `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryKindRoundTrips()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `7E78F8`, PENDING
   - Falsified if: this passes while a value of some kind decodes to another kind, another reference or other Number bits
 - `Broiler.VM.Profile.JavaScript.JsWordChecks.OneObjectHasOneWord()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, Spec=none cited, `174F1F`, PENDING
@@ -3557,7 +3559,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5038 of the 5155 assessed units declare
+That is not a figure of speech. 5039 of the 5156 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

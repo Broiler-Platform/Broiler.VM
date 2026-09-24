@@ -43,13 +43,13 @@ namespace Broiler.VM.Profile.JavaScript;
 public static class JsWordChecks
 {
     /// <summary>Every JSV-0 check, including three fixed-seed fuzz runs, as named rows.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E76051
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A33212
     // Broiler-Human:        PENDING
     public static (string Name, bool Passed, string Detail)[] Run() =>
     [
         Row("every-tag-prefix-has-exactly-one-class", EveryTagPrefixHasExactlyOneClass),
         Row("the-hardware-nans-are-numbers", TheHardwareNaNsAreNumbers),
-        Row("every-nan-payload-encodes-as-the-canonical-nan", EveryNaNPayloadEncodesCanonically),
+        Row("every-nan-payload-encodes-as-itself-or-the-canonical-nan", EveryNaNPayloadEncodesCanonically),
         Row("every-kind-round-trips", EveryKindRoundTrips),
         Row("one-object-has-one-word", OneObjectHasOneWord),
         Row("words-that-name-no-value-are-refused", WordsThatNameNoValueAreRefused),
@@ -193,11 +193,14 @@ public static class JsWordChecks
         return null;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=2B2BF5
-    // Broiler-Falsified-If: this passes while some NaN, including one whose bits carry a tag, encodes as anything but the canonical NaN or decodes as a non-NaN
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=16554C
+    // Broiler-Falsified-If: this passes while some NaN that could reach a tag, including one whose bits carry a tag, encodes as anything but the canonical NaN, another NaN encodes as anything but itself, a word either answers reaches a tag under a sign flip or quieting, or a word decodes as a non-NaN or as other bits
     // Broiler-Human:        PENDING
     private static string? EveryNaNPayloadEncodesCanonically()
     {
+        const ulong SignBit = 0x8000_0000_0000_0000UL;
+        const ulong QuietBit = 0x0008_0000_0000_0000UL;
+
         var table = new JsHandleTable(new JsValueSlab(8), stress: false);
         var random = new System.Random(0x5EED);
         var payloads = new System.Collections.Generic.List<ulong>
@@ -231,16 +234,28 @@ public static class JsWordChecks
                     }
 
                     var word = JsWordCodec.Encode(JsValue.Number(value), table);
+                    var expected = (bits & JsWord.NaNTagReach) != 0 ? JsWord.CanonicalNaN : bits;
 
-                    if (word != JsWord.CanonicalNaN)
+                    if (word != expected)
                     {
-                        return $"the NaN 0x{bits:X16} encodes as 0x{word:X16}";
+                        return $"the NaN 0x{bits:X16} encodes as 0x{word:X16} and not as 0x{expected:X16}";
+                    }
+
+                    // WHAT EMITTED CODE CAN DO TO A NaN WORD - flip its sign, quiet it, or both - keeps it a
+                    // Number, so no inline template can turn a NaN into a tag.
+                    foreach (var moved in new[] { word, word ^ SignBit, word | QuietBit, (word ^ SignBit) | QuietBit })
+                    {
+                        if (!JsWord.IsNumber(moved))
+                        {
+                            return $"the NaN word 0x{word:X16} reaches the tag 0x{moved:X16}";
+                        }
                     }
 
                     if (!JsWordCodec.TryDecode(word, table, out var back) || !back.IsNumber ||
-                        !double.IsNaN(back.AsNumber()))
+                        !double.IsNaN(back.AsNumber()) ||
+                        (ulong)System.BitConverter.DoubleToInt64Bits(back.AsNumber()) != word)
                     {
-                        return $"the canonical NaN does not decode to a NaN Number";
+                        return $"the NaN word 0x{word:X16} does not decode to a NaN Number of its own bits";
                     }
 
                     cases++;

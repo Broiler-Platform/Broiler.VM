@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   32
-// Annotated:        32/32
+// Relevant units:   33
+// Annotated:        33/33
 // Exempt:           0
-// Human-reviewed:   0/32
+// Human-reviewed:   0/33
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         9/9
+// Criteria:         10/10
 // Resource impact:  0/10 max
-// Unverified:       32
+// Unverified:       33
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -35,7 +35,10 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// below the first tag, and an operation on operands outside the tag space propagates one of its
 /// operands' NaNs or produces the default one, so it cannot produce a tagged word. A double that
 /// enters from managed code is a different matter - a typed-array read can hold any NaN payload -
-/// and <see cref="FromNumber"/> canonicalises every NaN for that reason.
+/// and <see cref="FromNumber"/> canonicalises every NaN that could reach a tag for that reason:
+/// one whose mantissa sets any of <see cref="NaNTagReach"/>, the three bits a sign flip and the
+/// arithmetic unit's quieting would carry into the first tag (stage JSV-2). Every other NaN is carried
+/// bit for bit, as the interpreter carries it.
 /// </para>
 /// <para>
 /// <b>This stage defines the layout and nothing reads it but managed code.</b> No emitted code
@@ -127,11 +130,26 @@ public static class JsWord
     // Broiler-Human:        PENDING
     public const ulong SpecialCount = 5;
 
-    /// <summary>The one NaN a word carries: the positive quiet NaN with a zero payload.</summary>
+    /// <summary>The NaN a word carries in place of one that could reach a tag: the positive quiet NaN with a zero payload.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=D48E42
-    // Broiler-Falsified-If: FromNumber answers a NaN word other than this one, or this word is not a quiet NaN
+    // Broiler-Falsified-If: FromNumber answers for a NaN that sets a bit of NaNTagReach a word other than this one, or this word is not a quiet NaN
     // Broiler-Human:        PENDING
     public const ulong CanonicalNaN = 0x7FF8_0000_0000_0000UL;
+
+    /// <summary>
+    /// The mantissa bits a NaN must leave clear to be carried as it is: bits 48 to 50, just below the
+    /// quiet bit.
+    /// </summary>
+    /// <remarks>
+    /// <b>WITH THEM CLEAR, NOTHING EMITTED CODE DOES TO THE WORD CAN MAKE IT A TAG.</b> Its top sixteen bits
+    /// are then <c>0x7FF0</c>, <c>0x7FF8</c>, <c>0xFFF0</c> or <c>0xFFF8</c>; a sign flip and the arithmetic
+    /// unit's quieting move it only among those four, and every one is below <see cref="FirstTag"/>. One
+    /// of them set would put a negative quiet NaN at a tag, as <c>0xFFF9</c> is <c>undefined</c>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=A3C52F
+    // Broiler-Falsified-If: a NaN word with these bits clear reaches a tag under a sign flip, the setting of the quiet bit or both
+    // Broiler-Human:        PENDING
+    public const ulong NaNTagReach = 0x0007_0000_0000_0000UL;
 
     /// <summary>The bits of a word below its tag.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6071C0
@@ -170,17 +188,29 @@ public static class JsWord
     // Broiler-Human:        PENDING
     public static bool IsHeader(ulong word) => Tag(word) == HeaderTag;
 
-    /// <summary>The word for a Number, with every NaN canonicalised.</summary>
+    /// <summary>The word for a Number, with every NaN that could reach a tag canonicalised.</summary>
     /// <remarks>
-    /// Every other double is carried bit for bit, so negative zero, the infinities and every subnormal
-    /// survive a round trip exactly. A NaN's payload is the one thing that does not, and JavaScript
+    /// <para>
+    /// Every other double is carried bit for bit, so negative zero, the infinities, every subnormal and
+    /// every NaN the arithmetic unit or the runtime produces survive a round trip exactly. The payload of
+    /// a NaN that sets a bit of <see cref="NaNTagReach"/> is the one thing that does not, and JavaScript
     /// can observe it only through typed-array bytes, which never hold a word.
+    /// </para>
+    /// <para>
+    /// <b>UNTIL STAGE JSV-2 EVERY NaN WAS CANONICALISED</b>, and that was inconsistent once inline code
+    /// existed: a NaN inline arithmetic computed kept its bits in a word, and the same value copied
+    /// through a helper lost them, so one value could be stored into a typed array two ways - which the
+    /// language forbids, and which the pinned suite's typed-array NaN tests observe.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=F2600F
-    // Broiler-Falsified-If: some double answers a word IsNumber rejects, or a non-NaN double does not answer its own bit pattern
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=FC491C
+    // Broiler-Falsified-If: some double answers a word IsNumber rejects, a double that is not a NaN setting a bit of NaNTagReach does not answer its own bit pattern, or one that is answers other than CanonicalNaN
     // Broiler-Human:        PENDING
-    public static ulong FromNumber(double value) =>
-        double.IsNaN(value) ? CanonicalNaN : (ulong)System.BitConverter.DoubleToInt64Bits(value);
+    public static ulong FromNumber(double value)
+    {
+        var bits = (ulong)System.BitConverter.DoubleToInt64Bits(value);
+        return double.IsNaN(value) && (bits & NaNTagReach) != 0 ? CanonicalNaN : bits;
+    }
 
     /// <summary>The double a Number word carries.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CDBCCB

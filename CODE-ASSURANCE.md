@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 211 |
 | Files carrying an annotation | 211 |
-| Code units | 8763 |
-| Relevant | 5155 |
+| Code units | 8764 |
+| Relevant | 5156 |
 | Exempt by predicate | 3608 |
-| Annotated | 5155 of 5155 (100%) |
-| Human reviewed | 0 of 5155 (0%) |
-| Unverified | 5155 |
+| Annotated | 5156 of 5156 (100%) |
+| Human reviewed | 0 of 5156 (0%) |
+| Unverified | 5156 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5155 |
+| HUMAN_PENDING | 5156 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -39,7 +39,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 1538 |
-| Low | 4754 |
+| Low | 4755 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -52,7 +52,7 @@ figures below are the measurement of how far from that claim the component is.
 | None | 7 |
 | Low | 747 |
 | Medium | 4022 |
-| High | 1411 |
+| High | 1412 |
 | Critical | 186 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 9 / 10 |
 | Average over annotated units | 1.9 / 10 |
-| Units scored | 5155 |
+| Units scored | 5156 |
 
 ## High-security review areas
 
@@ -427,6 +427,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.FirstTag` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.Empty` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.CanonicalNaN` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.NaNTagReach` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.IsNumber(ulong)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.IsHandle(ulong)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.FromNumber(double)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
@@ -1668,8 +1669,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1679 |
-| Units required to carry one | 1597 |
+| Units carrying a criterion | 1680 |
+| Units required to carry one | 1598 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1753,7 +1754,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-8763 of them, exempt and relevant alike - with the fingerprint of its declaration.
+8764 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
