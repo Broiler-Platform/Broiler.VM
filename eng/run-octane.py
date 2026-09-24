@@ -260,11 +260,14 @@ def form_name(arguments):
     if arguments.value:
         return "value-stress" if arguments.handle_stress else "value"
 
+    if arguments.value_flat:
+        return "value-flat-stress" if arguments.handle_stress else "value-flat"
+
     return "native" if arguments.native else "bytecode"
 
 
 def run(binary, checkout, name, fuel, wall, live_bytes, max_depth, native, value=None, stress=False,
-        artifact_bytes=None, nested_load_bytes=None):
+        artifact_bytes=None, nested_load_bytes=None, value_flat=None):
     """One benchmark, one process, through the ordinary command line."""
     files = [str(checkout / "base.js")]
     files += [str(checkout / f) for f in COMPANIONS.get(name, [f"{name}.js"])]
@@ -282,6 +285,9 @@ def run(binary, checkout, name, fuel, wall, live_bytes, max_depth, native, value
 
     if value:
         command += ["--value", value]
+
+    if value_flat:
+        command += ["--value-flat", value_flat]
 
     if stress:
         command += ["--handle-stress"]
@@ -357,7 +363,7 @@ def report(path, fields, binary, rows, components, total, coverage, skipped, spe
         "host": host(binary),
         "form": {
             "form": form_name(arguments),
-            "backend": arguments.native or arguments.value,
+            "backend": arguments.native or arguments.value or arguments.value_flat,
         },
         "allowances": {
             "fuel": arguments.fuel,
@@ -453,6 +459,7 @@ def main():
     # THE OUTPUT FORM, passed to the host unchanged. See the header for why it exists.
     parser.add_argument("--native", default=None, metavar="BACKEND")
     parser.add_argument("--value", default=None, metavar="BACKEND")
+    parser.add_argument("--value-flat", default=None, metavar="BACKEND")
     parser.add_argument("--handle-stress", action="store_true")
 
     # THE TWO ALLOWANCES AN ARTIFACT'S OWN SIZE IS CHARGED TO, passed to the host only when stated and
@@ -471,10 +478,10 @@ def main():
     parser.add_argument("--report", default=None, metavar="PATH")
     arguments = parser.parse_args()
 
-    if arguments.native and arguments.value:
-        raise SystemExit("# --native and --value name two forms, and a run has one")
+    if sum(1 for named in (arguments.native, arguments.value, arguments.value_flat) if named) > 1:
+        raise SystemExit("# --native, --value and --value-flat name three forms, and a run has one")
 
-    if arguments.handle_stress and not arguments.value:
+    if arguments.handle_stress and not (arguments.value or arguments.value_flat):
         raise SystemExit("# --handle-stress applies to the value form alone, and this run names no --value")
 
     # A NAME THAT IS NOT A BENCHMARK IS REFUSED HERE, before the archive is even read. A lane
@@ -528,7 +535,7 @@ def main():
         print(f"# octane {fields['upstream']} at {fields['revision']}")
         print(f"# {fields['files']} files, content {fields['content-sha256']}")
         print(f"# judging {binary}")
-        backend = arguments.native or arguments.value
+        backend = arguments.native or arguments.value or arguments.value_flat
         print("# form " + (f"{form_name(arguments)} ({backend})" if backend else "bytecode"))
 
         # AN ALLOWANCE THE CALLER MOVED IS PRINTED WHERE THE FORM IS, so a transcript read without its
@@ -555,7 +562,7 @@ def main():
             code, output, seconds = run(
                 binary, checkout, name, arguments.fuel, arguments.wall, arguments.live_bytes,
                 arguments.max_depth, arguments.native, arguments.value, arguments.handle_stress,
-                arguments.artifact_bytes, arguments.nested_load_bytes)
+                arguments.artifact_bytes, arguments.nested_load_bytes, arguments.value_flat)
             spent += seconds
             print(f"--- {name} (exit {code}, {seconds:.0f}s)")
 

@@ -137,6 +137,28 @@ emitted code reaches it only through a helper (section 5). The analysis generali
 backend's walk, which is sound only because its manifest admits no closure. It is a pure function of
 the image, so re-emission reproduces it.
 
+*(Settled by JSV-2, `JsValueLayout.TryPlan` in the format assembly, so that the emitter, the template
+scan and the engine read one plan and cannot disagree about which word is which. The analysis reads the
+image, not the lowering's scope tree, and it is per unit and per scope depth:*
+
+- *a unit keeps no binding resident when it is a program body, eval code, a generator or an async
+  function - the last two because a suspended frame is the interpreter's until JSV-4's frame codec - or
+  when it holds a direct `eval`, an object scope, a name resolved at run time, an eval-scoped variable
+  or a `with` base;*
+- *otherwise every depth from the function's own down to the deepest one at which a `Closure`
+  instruction runs is poisoned, because a closure captures the whole chain it is made in, and so is the
+  function's own depth when the unit makes an `arguments` object; each deeper depth that declares slots
+  is resident, with the most slots any `PushScope` or `CopyScope` gives it;*
+- *a unit whose resident words would pass a stated ceiling keeps none.*
+
+*The region is the arguments, then the resident words depth by depth, then the operand stack. A
+`PushScope` of a resident depth still runs through its helper, which empties that depth's words, so a
+block's bindings are in their dead zone again each time it is entered; the function's own depth is
+read from the record the call filled when the region is opened. **The control is a form of its own**,
+`JsOutputForm.ValueFlat`, written as the value tier with the header's flat bit and reachable as
+`--value-flat` and `--form value-flat`: the same form with every binding classed non-resident, so a
+difference only one of the two shows names the analysis rather than the templates.)*
+
 **Frame metadata that is not a value** - the return address, the saved registers and the entry
 program counter - lives on the machine stack, as the baseline form's frames do. Every prologue also
 compares the stack pointer with a limit written into the instance context at entry. A deep recursion
@@ -227,6 +249,27 @@ height at every boundary; handle-stress uses that to compare every decoded word 
 value and to report a mismatch as an internal defect, so a codec or publication mistake fails the
 variant it happens in rather than hiding behind a coherent mirror.
 
+**How JSV-2 does it (`JsValueLayout`, `JsX64ValueEmitter`).** Each instruction the plan reached is
+either inline or a helper call, decided from its opcode, its operand and the plan alone. The pure set
+is the list above with three differences, each in the helper's direction but one:
+
+- **a String constant, `TypeOf` and a handle's truthiness stay helpers.** A String constant's word is a
+  handle the instance mints when it is loaded, which the emitted bytes cannot know, and `TypeOf` of a
+  handle and the truthiness of a String need the object;
+- **`CopyScope` of a resident depth is inline and does nothing**, because its words are already the
+  region's; **`ToNumber` and `ToNumeric` of a Number are inline** and leave it as it is.
+
+Each inline template counts one instruction of debt (section 7) before it runs, and each guard that
+fails branches to a stub that takes the count back and calls the same instruction's helper, so a guarded
+instruction is charged once either way. Numbers are guarded by one compare against the first word that
+is not a Number; a bitwise operator also refuses an operand whose conversion the machine instruction
+answers with its indefinite value; a comparison reads the parity flag, so NaN compares as the language
+says. **The mirror is no longer coherent below a helper's window**, because inline code moves words no
+managed code sees: a helper decodes the words its instruction reads from the region at the height the
+plan gives, publishes that height before its safepoint, and encodes back what it wrote. Handle-stress
+therefore no longer compares decoded words with the mirror; it compacts at every helper call, so a word
+the scan failed to root still decodes to a generation mismatch and fails by name.
+
 **Control is emitted.** Branches, landings, and exception-region dispatch by a compare tree over the
 unit's landings are the baseline form's machinery, and they carry over. *(At JSV-1 the value form's
 units are exactly the baseline layout over a partition in which every instruction is a block of its own,
@@ -299,6 +342,16 @@ charged by the interpreter's own arm, so the value form charges each instruction
 interpreter does; its check rows compare the consumed fuel as well as the answer. The named divergences
 below arrive with JSV-2's inline set.
 
+*(Settled by JSV-2. The debt is a register for the length of a unit's body, spilled to the frame
+context's debt word and cleared before every helper call; the helper charges it through the engine's
+existing charge before it does anything else, so every call, return, throw and exit - each of which is a
+helper - is a settlement. A backward inline branch tests the debt before it transfers, and so does every
+run of `JsValueLayout.StraightLineRun` inline instructions; once the debt reaches
+`JsValueLayout.DebtThreshold` the test calls the settlement, `JsNativeActivation.SettleValue`, through
+the table's one slot no opcode takes, which charges it and runs nothing. A program that loads nothing
+consumes the same total in both forms, which the agreement and differential rows compare as well as the
+answers.)*
+
 **This needs no core amendment.** MVP-9 records that an allowance held by the profile, sized by a new
 meter member that reads remaining fuel, is a breaking amendment the procedure cannot mint. Settling
 debt after the fact uses only `TryCharge`, and it never asks for fuel it has not already spent.
@@ -354,6 +407,19 @@ moved to three.)*
 holds to the per-instruction partition, and no inline template exists, so clauses V1 to V6 have nothing
 yet to judge; they arrive with JSV-2.)*
 
+*(Settled by JSV-2 for V1 to V3, V5 and V6; V4 is JSV-3's. The value table gains the inline rows, with
+three field kinds of its own - a region displacement, a word a template materialises and the debt
+threshold - and a prologue that loads the region and the debt. **The scan holds every unit body to the
+layout of its own plan, entry for entry**, replanning each unit with the residency the header's form
+byte gives the image, and names the first entry that differs by its role: a guard that is not its
+instruction's is `GuardNotItsHelper` (V6), a debt entry that is not counted, spilled, tested or settled
+where the layout puts it is `DebtNotSettled` (V5), and any other inline entry is
+`InlineNotTheInstruction`. V1 to V3 hold because the table has no other row: the only stores are to a
+region displacement or to the debt word, no row takes an address from a register a word is loaded
+into, and every call is through the helper-table register, at an opcode's slot or the settlement's. The
+form byte gains a flat bit, admitted beside the value tier alone, which re-emission and the scan read as
+"no binding is resident". The backend's semantic version moved to four.)*
+
 **What emitted code may touch**, stated once for the security co-signer:
 
 - its slab region;
@@ -399,10 +465,17 @@ reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 
 - **Architecture rules.**
   - **X2** extends to the value frame context, which declares no reference field *(done at JSV-1)*.
   - **X3** extends to the one file that declares the value form's helpers *(done at JSV-1, with
-    `StepValue` as the slot's second reader)*.
+    `StepValue` as the slot's second reader; JSV-2 adds `SettleValue`, the debt settlement, as its
+    third)*.
   - **X4** gains a clause (e) holding the helper table's routing and `StepValue`'s checks *(done at
-    JSV-1)*.
-  - A new rule holds clauses V1 to V6 and the residency analysis's purity *(JSV-2's)*.
+    JSV-1; JSV-2 admits the one settlement entry at its fixed slot, and holds the offset a helper is
+    handed to the unit's plan in place of Step's check against the last step's offset, which inline
+    code makes meaningless)*.
+  - A new rule holds clauses V1 to V6 and the residency analysis's purity *(JSV-2's, and not taken as a
+    rule: the clauses are held at verification, in every image, by the scan's layout clause and the
+    closed table section 9 describes, and the analysis's purity by re-emission and by the scan
+    replanning each unit from the image alone. No architecture rule reads either; a rule that did would
+    be a second reading of what the scan already refuses)*.
   - **X1, B5c and K5** do not move: the same arming path, and the same `x86-64` register column.
 - **Invariant 7.** If a later record adds inline caches, they live in a per-instance side table and
   never on the shared handle, as the invariant requires. Nothing in this record adds one.
@@ -426,7 +499,9 @@ reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 
 - **A NaN's payload does not survive a word.** A NaN read out of a typed array's bytes and written into
   another loses its payload in the value form and keeps it in the interpreter. The language lets an
   implementation choose the bits it stores for a NaN, so both are conforming, and the two forms differ
-  only where a program compares those bytes; it is this form's named divergence, not a verdict.
+  only where a program compares those bytes; it is this form's named divergence, not a verdict. JSV-2's
+  differential rows render every NaN as one value for this reason, and compare every other result's
+  bits.
 - **A value-form artifact is several times its bytecode's size**, because every instruction is a
   helper call and a compare at JSV-1, and larger than the baseline form's, whose calls are per block. The
   largest Octane benchmark's artifact is past the profile's default artifact ceiling in this form and

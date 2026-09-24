@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
+// Relevant units:   12
+// Annotated:        12/12
 // Exempt:           0
-// Human-reviewed:   0/13
+// Human-reviewed:   0/12
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         13/13
+// Criteria:         12/12
 // Resource impact:  3/10 max
-// Unverified:       13
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -26,86 +26,132 @@ namespace Broiler.VM.Profile.JavaScript;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>THE ACTIVATION'S STACK IS THE MIRROR, AND THE SLAB IS WHERE THE WORDS LIVE.</b> An arm reads and
-/// writes <c>JsValue</c>s in the activation's own stack, exactly as the interpreter's arm does; the
-/// words it reads are decoded into that stack first, and what it leaves is encoded back, so every value
-/// that crosses an instruction goes through the codec and the handle table. At stage JSV-1 every
-/// instruction is a helper, so the mirror and the slab hold the same values below the stack's height at
-/// every step boundary, and a generator's frame, whose stack the mirror is, suspends with the right
-/// values; the frame codec that keeps that true once inline templates write words the mirror never
-/// sees is stage JSV-4's.
+/// <b>THE REGION IS WHERE THE WORDS LIVE, AND THE ACTIVATION'S STACK IS ONLY THE ARM'S WINDOW ONTO IT.</b>
+/// A region holds the activation's arguments, then its resident bindings, then its operand stack, where
+/// its unit's plan says (<see cref="Format.JsValueLayout"/>). Inline templates read and write those words
+/// directly and no managed code sees them do it, so at stage JSV-2 the activation's stack is coherent with
+/// the region only inside the window a helper decodes: an arm reads and writes <c>JsValue</c>s exactly as
+/// the interpreter's arm does, the words it reads are decoded into that stack first, and what it leaves is
+/// encoded back.
 /// </para>
 /// <para>
-/// <b>THE READ WINDOW IS THE INSTRUCTION'S POPS AND EVERY WORD BELOW THEM IT READS.</b> Most arms read
-/// exactly what they pop; the ones that read a value which stays - the object under a definition, the
-/// Array under an append, the record under an asynchronous step, the constructor and home object under a
-/// class element, and what a duplication or a pick copies - are named in <see cref="ReadDepth"/>. The
-/// write window starts at the lowest slot the instruction pops, or at the slot a landing pushed its value
-/// into, and ends at the height the step stopped at.
+/// <b>THE READ WINDOW IS THE INSTRUCTION'S POPS AND EVERY WORD BELOW THEM IT READS</b>, named in
+/// <see cref="ReadDepth"/>, and the whole operand stack in a unit that can suspend: its frame is the
+/// activation's own stack, so whatever it suspends with has to have been decoded. The write window starts
+/// at the lowest slot the instruction pops, or at the slot a landing pushed its value into, and ends at the
+/// height the step stopped at.
 /// </para>
 /// <para>
-/// <b>UNDER HANDLE-STRESS EVERY DECODED WORD IS ALSO COMPARED WITH THE MIRROR</b>, which at this stage
-/// still holds the value the word was encoded from: a word that decodes to another kind, another
-/// reference or another Number (a NaN's payload aside) is an internal defect by name. So a codec or
-/// publication mistake fails the variant it happens in rather than surviving as a wrong answer that a
-/// coherent mirror would hide.
+/// <b>THE HEIGHT A HELPER STARTS AT IS THE PLAN'S</b>, because the inline code before it moved the height
+/// without telling anybody; it is published before the safepoint, so a compaction scans every word the
+/// inline code left live. Under handle-stress the safepoint compacts and every freed entry's generation
+/// moves, so a word the scan failed to root decodes to a generation mismatch and fails by name.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=3F70A3
-// Broiler-Falsified-If: an arm reads a stack slot below its read window, a word the arm wrote is left unencoded or unpublished at the step's end, or a word outside the write window is overwritten
+// Broiler-Falsified-If: an arm reads a stack slot below its read window, a suspending unit's helper leaves a slot of its stack undecoded, a word the arm wrote is left unencoded or unpublished at the step's end, a word outside the write window is overwritten, or a height is published after a safepoint that could compact
 // Broiler-Human:        PENDING
 internal static class JsValueWindows
 {
-    /// <summary>Encodes the activation's whole stack into its newly opened region and publishes it.</summary>
+    /// <summary>
+    /// Encodes a newly opened region: the arguments, the resident bindings and the activation's stack; and
+    /// publishes it.
+    /// </summary>
     /// <remarks>
     /// <b>It runs once per entry, before any helper</b>: an ordinary call's stack is empty, and a resumed
-    /// generator's holds what it suspended with and the value the resumption sent.
+    /// generator's holds what it suspended with and the value the resumption sent. The function's own
+    /// environment, when it is resident, is read from the record the call filled with the parameters; every
+    /// other resident environment has not been entered yet, and its words start as the empty word a fresh
+    /// record's slots are.
     /// </remarks>
     /// <param name="act">The activation, whose region is open.</param>
     /// <param name="handles">The instance's handle table.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=BCC649
-    // Broiler-Falsified-If: a slot below the activation's height is not encoded into its region before the region is published at that height
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=C1E1CD
+    // Broiler-Falsified-If: an argument word, a resident word or a slot below the activation's height is not encoded into its region before the region is published at that height
     // Broiler-Human:        PENDING
     internal static void Open(JsNativeActivation act, JsHandleTable handles)
     {
+        var plan = act.Plan!;
         var segment = act.Segment!;
         var words = segment.Words;
         var first = JsValueSlab.FirstWord(act.SlabFrame);
 
-        for (var slot = 0; slot < act.Sp; slot++)
+        for (var argument = 0; argument < plan.ArgumentWords; argument++)
         {
-            words[first + slot] = JsWordCodec.Encode(act.Stack[slot], handles);
+            words[first + argument] = argument < act.Arguments.Length
+                ? JsWordCodec.Encode(act.Arguments[argument], handles)
+                : JsWord.Undefined;
         }
 
-        segment.Publish(act.SlabFrame, act.Sp);
+        for (var depth = 0; depth < plan.Depths; depth++)
+        {
+            var at = plan.ResidentBaseOf(depth);
+
+            if (at < 0)
+            {
+                continue;
+            }
+
+            var own = depth == 0 && act.Scopes.Count > 0 ? act.Scopes[0].Slots : [];
+
+            for (var slot = 0; slot < plan.ResidentSlotsOf(depth); slot++)
+            {
+                words[first + at + slot] = slot < own.Length
+                    ? JsWordCodec.Encode(own[slot], handles)
+                    : JsWord.Empty;
+            }
+        }
+
+        var stackBase = first + plan.StackBase;
+
+        for (var slot = 0; slot < act.Sp; slot++)
+        {
+            words[stackBase + slot] = JsWordCodec.Encode(act.Stack[slot], handles);
+        }
+
+        segment.Publish(act.SlabFrame, plan.StackBase + act.Sp);
     }
 
     /// <summary>
-    /// The helper's entry: the safepoint, then the instruction's input words decoded into the stack; it
-    /// answers how many of them the instruction pops, which is where <see cref="Leave"/> encodes from.
+    /// The helper's entry: the height the plan gives, published, then the safepoint, then the instruction's
+    /// input words decoded into the stack; it answers how many of them the instruction pops, which is where
+    /// <see cref="Leave"/> encodes from.
     /// </summary>
     /// <remarks>
-    /// <b>A DELEGATION THAT RESUMES INSIDE ITS OWN INSTRUCTION POPS AND READS NOTHING.</b> A
-    /// <c>yield*</c> pops its iterable when it starts and keeps the iterator in the frame, and every
-    /// resumption re-enters the same instruction at the height the first entry left, one below the
-    /// verifier's; so a frame that is delegating when the step starts is read from nowhere and written
-    /// from that height up.
+    /// <b>A DELEGATION THAT RESUMES INSIDE ITS OWN INSTRUCTION POPS AND READS NOTHING.</b> A <c>yield*</c>
+    /// pops its iterable when it starts and keeps the iterator in the frame, and every resumption re-enters
+    /// the same instruction at the height the first entry left, one below the verifier's; so a frame that is
+    /// delegating when the step starts is at that height, read from nowhere and written from there up.
     /// </remarks>
     /// <param name="act">The activation.</param>
-    /// <param name="pc">The instruction's offset.</param>
-    /// <param name="height">The stack's height before the instruction, which is its published live length.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=85C17C
-    // Broiler-Falsified-If: a slot of the read window is left holding anything but its word's decoding, a word is decoded before the safepoint, or under handle-stress a word decoding to another value than the mirror's passes
+    /// <param name="pc">The instruction's offset, a reached instruction start of the activation's unit.</param>
+    /// <param name="height">The stack's height before the instruction, as the plan gives it.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=80886E
+    // Broiler-Falsified-If: a slot of the read window is left holding anything but its word's decoding, a word is decoded before the safepoint, the height the safepoint scans is not the plan's, or the activation's program counter and height are not the instruction's when the arm starts
     // Broiler-Human:        PENDING
-    internal static int Enter(JsNativeActivation act, int pc, int height)
+    internal static int Enter(JsNativeActivation act, int pc, out int height)
     {
+        var plan = act.Plan!;
         var handles = act.Engine.ValueHandles!;
+        var resumed = act.Frame is { Delegating: true } && act.Code[pc] == (byte)JsOpcode.YieldDelegate;
+
+        height = plan.HeightAt(pc) - (resumed ? 1 : 0);
+
+        if (height < 0 || height >= act.Stack.Length)
+        {
+            throw new JsAbort(
+                JsAbortKind.InternalDefect, "a value-form instruction starts outside its frame's operand stack");
+        }
+
+        act.Pc = pc;
+        act.Sp = height;
+
+        var segment = act.Segment!;
+        segment.Publish(act.SlabFrame, plan.StackBase + height);
         handles.Safepoint();
 
-        var resumed = act.Frame is { Delegating: true } && act.Code[pc] == (byte)JsOpcode.YieldDelegate;
         var pops = resumed ? 0 : Pops(act.Code, pc);
-        var from = height - (resumed ? 0 : ReadDepth(act.Code, pc));
-        var stress = handles.Stress;
+        var from = plan.WholeStack ? 0 : height - (resumed ? 0 : ReadDepth(act.Code, pc));
 
         if (from < 0)
         {
@@ -113,43 +159,44 @@ internal static class JsValueWindows
                 JsAbortKind.InternalDefect, "a value-form instruction reads below its frame's operand stack");
         }
 
-        var words = act.Segment!.Words;
-        var first = JsValueSlab.FirstWord(act.SlabFrame);
+        var words = segment.Words;
+        var stackBase = JsValueSlab.FirstWord(act.SlabFrame) + plan.StackBase;
         var stack = act.Stack;
 
         for (var slot = from; slot < height; slot++)
         {
-            var word = words[first + slot];
+            var word = words[stackBase + slot];
 
             // A NUMBER IS DECODED HERE, WHERE IT IS ONE SHIFT AND ONE COMPARE, and every other word by the
             // codec; the two answer the same value for a Number word, which is what the codec's own
             // Number arm is.
-            var decoded = JsWord.IsNumber(word)
+            stack[slot] = JsWord.IsNumber(word)
                 ? JsValue.Number(JsWord.ToNumber(word))
                 : JsWordCodec.Decode(word, handles);
-
-            if (stress && !Same(decoded, stack[slot]))
-            {
-                throw new JsAbort(
-                    JsAbortKind.InternalDefect,
-                    "a value-form word decodes to a value other than the one the interpreter's stack holds there");
-            }
-
-            stack[slot] = decoded;
         }
 
         return pops;
     }
 
-    /// <summary>The helper's exit: every slot the step wrote encoded into the region, and the new height published.</summary>
+    /// <summary>
+    /// The helper's exit: every slot the step wrote encoded into the region, a newly pushed resident
+    /// environment's words emptied, and the new height published.
+    /// </summary>
+    /// <remarks>
+    /// <b>A <c>PushScope</c> THAT OPENS A RESIDENT ENVIRONMENT EMPTIES ITS WORDS</b>, because the record the
+    /// arm pushed starts with every slot empty and the region's words for that depth are the record's slots:
+    /// a binding the block declares is in its dead zone again every time the block is entered.
+    /// </remarks>
     /// <param name="act">The activation.</param>
+    /// <param name="pc">The instruction's offset.</param>
     /// <param name="height">The stack's height before the instruction.</param>
     /// <param name="pops">What <see cref="Enter"/> answered: how many slots the instruction popped.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=FE76D7
-    // Broiler-Falsified-If: a slot from the lowest one the step could write up to the height it stopped at is not encoded before that height is published, or a slot below that lowest one is written
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=65BD6E
+    // Broiler-Falsified-If: a slot from the lowest one the step could write up to the height it stopped at is not encoded before that height is published, a slot below that lowest one is written, or a resident environment a PushScope opened keeps a word of an earlier record
     // Broiler-Human:        PENDING
-    internal static void Leave(JsNativeActivation act, int height, int pops)
+    internal static void Leave(JsNativeActivation act, int pc, int height, int pops)
     {
+        var plan = act.Plan!;
         var handles = act.Engine.ValueHandles!;
         var after = act.Sp;
 
@@ -166,19 +213,26 @@ internal static class JsValueWindows
         var segment = act.Segment!;
         var words = segment.Words;
         var first = JsValueSlab.FirstWord(act.SlabFrame);
-
+        var stackBase = first + plan.StackBase;
         var stack = act.Stack;
 
         for (var slot = from; slot < after; slot++)
         {
-            ref readonly var value = ref stack[slot];
-
-            words[first + slot] = value.Type == JsType.Number
-                ? JsWord.FromNumber(value.AsNumber())
-                : JsWordCodec.Encode(value, handles);
+            words[stackBase + slot] = JsWordCodec.Encode(stack[slot], handles);
         }
 
-        segment.Publish(act.SlabFrame, after);
+        if (!act.Landed && act.Code[pc] == (byte)JsOpcode.PushScope)
+        {
+            var depth = plan.DepthAt(pc) + 1;
+            var at = plan.ResidentBaseOf(depth);
+
+            for (var slot = 0; at >= 0 && slot < plan.ResidentSlotsOf(depth); slot++)
+            {
+                words[first + at + slot] = JsWord.Empty;
+            }
+        }
+
+        segment.Publish(act.SlabFrame, plan.StackBase + after);
     }
 
     /// <summary>How many slots below the stack's height the instruction at <paramref name="pc"/> reads.</summary>
@@ -286,34 +340,6 @@ internal static class JsValueWindows
         }
 
         return table;
-    }
-
-    /// <summary>Whether two values are the same value, a NaN's payload aside.</summary>
-    /// <param name="left">One value.</param>
-    /// <param name="right">The other.</param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=2DA5C0
-    // Broiler-Falsified-If: it answers true for two values of different kinds, different references, different Booleans or Numbers whose bits differ and are not both NaN
-    // Broiler-Human:        PENDING
-    internal static bool Same(in JsValue left, in JsValue right)
-    {
-        if (left.Type != right.Type)
-        {
-            return false;
-        }
-
-        return left.Type switch
-        {
-            JsType.Number =>
-                System.BitConverter.DoubleToInt64Bits(left.AsNumber()) ==
-                    System.BitConverter.DoubleToInt64Bits(right.AsNumber()) ||
-                (double.IsNaN(left.AsNumber()) && double.IsNaN(right.AsNumber())),
-            JsType.Boolean => left.AsBoolean() == right.AsBoolean(),
-            JsType.String => ReferenceEquals(left.AsString(), right.AsString()),
-            JsType.Object => ReferenceEquals(left.AsObject(), right.AsObject()),
-            JsType.Symbol => ReferenceEquals(left.AsSymbol(), right.AsSymbol()),
-            JsType.BigInt => ReferenceEquals(left.AsBigInt(), right.AsBigInt()),
-            _ => true,
-        };
     }
 
     /// <summary>The verifier's pop count, which a verified instruction always has.</summary>

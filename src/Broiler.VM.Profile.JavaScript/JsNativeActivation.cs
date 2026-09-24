@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   5
-// Annotated:        5/5
-// Exempt:           25
-// Human-reviewed:   0/5
+// Relevant units:   6
+// Annotated:        6/6
+// Exempt:           26
+// Human-reviewed:   0/6
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         18/18
+// Criteria:         20/20
 // Resource impact:  5/10 max
-// Unverified:       5
+// Unverified:       6
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -217,6 +217,17 @@ internal sealed unsafe class JsNativeActivation
     // Broiler-Human:        PENDING
     internal int SlabFrame;
 
+    /// <summary>The value plan of the activation's unit, or nothing outside the value form.</summary>
+    /// <remarks>
+    /// <b>Set by the value form's entry with the region</b>: it says which region words are the arguments,
+    /// the resident bindings and the operand stack, and the operand height before every instruction, which
+    /// is how a helper knows the height inline code left, since inline code writes no managed state.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=3EC17C
+    // Broiler-Falsified-If: a value step of this activation reads a plan other than the one of its own unit the template scan held the payload to
+    // Broiler-Human:        PENDING
+    internal Format.JsValueUnitPlan? Plan;
+
     /// <summary>Whether the last step ended at a landing: a caught throw or a caught forced return.</summary>
     /// <remarks>
     /// <b>The dispatch loop sets it where it lands, and only outside the interpreter's own
@@ -339,21 +350,23 @@ internal sealed unsafe class JsNativeActivation
 
     /// <summary>
     /// Runs one instruction for value-form emitted code, over the decoding of its input words, after the
-    /// same checks <see cref="Step{TMode}"/> makes (JSD-0035 section 5).
+    /// checks <see cref="Step{TMode}"/> makes (JSD-0035 section 5).
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>THE CHECKS ARE STEP'S, AND A VALUE STEP ALSO REFUSES AN ACTIVATION WITH NO REGION.</b> The
-    /// frame's cookie must be the activation's, the offset must be the one the previous step or the entry
-    /// computed, the byte there must be this helper's opcode, and the activation must hold an open region;
-    /// any one of them failing runs nothing and answers a defect.
+    /// <b>THE PROGRAM COUNTER IS CHECKED AGAINST THE PLAN, NOT AGAINST THE LAST STEP.</b> Inline templates
+    /// run instructions no managed code sees, so the offset the emitted code passes is not the one the last
+    /// helper answered; it must be an instruction start of the activation's own unit that the plan reached,
+    /// the byte there must be this helper's opcode, and the activation must hold an open region. Any one of
+    /// them failing runs nothing and answers a defect.
     /// </para>
     /// <para>
-    /// <b>A HELPER IS THE INTERPRETER'S ARM, NOT A SECOND COPY OF IT.</b> The safepoint runs first, then
-    /// the instruction's input words are decoded into the activation's stack, then the per-opcode
-    /// instantiation of the dispatch loop runs the one instruction exactly as the interpreter would, and
-    /// then what the arm left on the stack is encoded back and published (<see cref="JsValueWindows"/>).
-    /// A unit that returned or suspended is not encoded: its region closes when the emitted code leaves.
+    /// <b>THE DEBT IS CHARGED BEFORE ANYTHING RUNS</b>: the pure instructions the emitted code ran since the
+    /// last settlement are charged to the meter with the existing charge, and an allowance that cannot take
+    /// them ends the operation here, before the helper's own instruction - which is where the interpreter
+    /// would have run out, give or take pure instructions nothing observes (JSD-0035 section 7). Then the
+    /// window is decoded from the region, the per-opcode instantiation of the dispatch loop runs the one
+    /// instruction exactly as the interpreter would, and what it left is encoded back and published.
     /// </para>
     /// <para>
     /// <b>NOTHING CROSSES BACK INTO THE EMITTED CODE AS AN EXCEPTION</b>, for Step's reason: a defect the
@@ -361,8 +374,8 @@ internal sealed unsafe class JsNativeActivation
     /// activation and raised by the managed frame that entered the emitted code.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=8D4CCF
-    // Broiler-Falsified-If: a value step starts at an offset, with an opcode or for an activation other than what the managed side computed, runs with no open region, leaves a word the arm wrote unencoded or unpublished, or lets an exception escape into emitted code
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=D2DBDB
+    // Broiler-Falsified-If: a value step starts at an offset that is not a reached instruction start of its activation's unit, with an opcode or for an activation other than the emitted code's own, runs with no open region, runs before its debt is charged, leaves a word the arm wrote unencoded or unpublished, or lets an exception escape into emitted code
     // Broiler-Human:        PENDING
     internal static int StepValue<TMode>(JsValueFrame* frame, int pc, JsOpcode expected)
         where TMode : struct, IJsExecutionMode
@@ -373,18 +386,26 @@ internal sealed unsafe class JsNativeActivation
             frame is null ||
             act.Cookie != frame->Cookie ||
             act.Exited ||
-            act.Pc != pc ||
             (uint)pc >= (uint)act.Code.Length ||
             act.Code[pc] != (byte)expected ||
-            act.Segment is null)
+            act.Segment is null ||
+            act.Plan is null)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        if (act.Plan.HeightAt(pc) < 0)
         {
             return (int)JsBaselineStatus.Defect;
         }
 
         try
         {
-            var height = act.Sp;
-            var pops = JsValueWindows.Enter(act, pc, height);
+            var debt = frame->Debt;
+            frame->Debt = 0;
+            act.Engine.ChargeDebt(debt);
+
+            var pops = JsValueWindows.Enter(act, pc, out var height);
             act.Landed = false;
 
             _ = act.Engine.ExecuteCore<TMode>(
@@ -404,8 +425,54 @@ internal sealed unsafe class JsNativeActivation
                 return (int)JsBaselineStatus.Exit;
             }
 
-            JsValueWindows.Leave(act, height, pops);
+            JsValueWindows.Leave(act, pc, height, pops);
             return act.Pc;
+        }
+        catch (System.Exception escaped)
+        {
+            act.Pending = escaped;
+            return (int)JsBaselineStatus.Threw;
+        }
+    }
+
+    /// <summary>
+    /// Charges the debt value-form emitted code carried to a debt test, and answers the offset it resumes at
+    /// (JSD-0035 section 7, clause V5).
+    /// </summary>
+    /// <remarks>
+    /// <b>IT RUNS NO INSTRUCTION AND TOUCHES NO WORD.</b> It makes the value step's checks - the cookie, a
+    /// live activation, an offset that is a reached instruction start of its unit, an open region - and then
+    /// charges the debt, which is where cancellation and the wall clock are polled on a loop of pure
+    /// instructions; an allowance that cannot take it is parked as the exhaustion it is.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=2A7F11
+    // Broiler-Falsified-If: a settlement answers an offset other than the one it was handed, runs an instruction, writes a word, or leaves a debt it was handed uncharged without parking the refusal
+    // Broiler-Human:        PENDING
+    internal static int SettleValue(JsValueFrame* frame, int pc)
+    {
+        var act = current;
+
+        if (act is null ||
+            frame is null ||
+            act.Cookie != frame->Cookie ||
+            act.Exited ||
+            act.Segment is null ||
+            act.Plan is null)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        if (act.Plan.HeightAt(pc) < 0)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        try
+        {
+            var debt = frame->Debt;
+            frame->Debt = 0;
+            act.Engine.ChargeDebt(debt);
+            return pc;
         }
         catch (System.Exception escaped)
         {

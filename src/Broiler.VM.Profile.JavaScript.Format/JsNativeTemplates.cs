@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   42
-// Annotated:        42/42
-// Exempt:           22
-// Human-reviewed:   0/42
+// Relevant units:   45
+// Annotated:        45/45
+// Exempt:           25
+// Human-reviewed:   0/45
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         10/10
+// Criteria:         11/11
 // Resource impact:  3/10 max
-// Unverified:       42
+// Unverified:       45
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -32,7 +32,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// know why a value is admitted is directed at the backend that emits it rather than at a range.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9D0532
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BCD131
 // Broiler-Human:        PENDING
 public enum JsNativeFieldKind
 {
@@ -95,6 +95,18 @@ public enum JsNativeFieldKind
 
     /// <summary>The one status a baseline unit materialises itself: <see cref="JsBaselineStatus.Defect"/>.</summary>
     BaselineStatusValue = 15,
+
+    /// <summary>
+    /// A byte displacement into a value-form region: non-negative, eight-aligned and inside
+    /// <see cref="JsValueLayout.CeilingRegionWords"/> words.
+    /// </summary>
+    RegionDisplacement = 16,
+
+    /// <summary>A word an inline template materialises: a Number, or one of the five special constants.</summary>
+    ValueWord = 17,
+
+    /// <summary>The debt a value-form debt test compares against: <see cref="JsValueLayout.DebtThreshold"/>.</summary>
+    DebtThreshold = 18,
 }
 
 /// <summary>One field of a template: where it sits, how wide it is, and what it may carry.</summary>
@@ -400,24 +412,22 @@ public static class JsNativeTemplates
     /// <b>Identity and not contents</b>, because the clauses index the table by position: the first
     /// six entries are the prologue in order, and the last four are the epilogue in order.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1368C7
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8C4B1E
     // Broiler-Falsified-If: a baseline x86-64 table is scanned without the frame-shape clauses
     // Broiler-Human:        PENDING
     internal static bool IsX64Baseline(JsNativeTemplate[] table) =>
-        ReferenceEquals(table, windowsBaseline) || ReferenceEquals(table, systemVBaseline) ||
-        IsX64Value(table);
+        ReferenceEquals(table, windowsBaseline) || ReferenceEquals(table, systemVBaseline);
 
     /// <summary>
-    /// Whether <paramref name="table"/> is one of the two x86-64 value tables, whose unit bodies the scan
-    /// holds to the partition in which every instruction is a block.
+    /// Whether <paramref name="table"/> is one of the two x86-64 value tables, whose units the scan holds to
+    /// their own frame shape and to the value layout.
     /// </summary>
     /// <remarks>
-    /// <b>A value table is also a baseline-shaped table</b>, because at stage JSV-1 the value form's units
-    /// are the baseline layout over that partition, so the frame-shape clauses hold for both; what differs
-    /// is the partition the layout clause plans with.
+    /// <b>Identity and not contents</b>, for the baseline tables' reason: the frame-shape clauses index the
+    /// table by position, and the layout clause finds its rows by name.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=15D085
-    // Broiler-Falsified-If: a value x86-64 payload is held to the baseline partition, or a baseline payload to the value form's
+    // Broiler-Falsified-If: a value x86-64 payload is held to the baseline layout, or a baseline payload to the value form's
     // Broiler-Human:        PENDING
     internal static bool IsX64Value(JsNativeTemplate[] table) =>
         ReferenceEquals(table, windowsValue) || ReferenceEquals(table, systemVValue);
@@ -441,7 +451,7 @@ public static class JsNativeTemplates
     /// sets is a value no backend of this build could have written, whatever the architecture would
     /// make of it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F6FEC3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=86C513
     // Broiler-Falsified-If: a value no backend of this build asks an encoder for is admitted by one of these arms
     // Broiler-Human:        PENDING
     public static bool Admits(JsNativeFieldKind kind, long value) => kind switch
@@ -523,6 +533,20 @@ public static class JsNativeTemplates
         // answered a program counter the unit has no landing for.
         JsNativeFieldKind.BaselineStatusValue =>
             value == (long)JsBaselineStatus.Defect,
+
+        // A REGION WORD, as an inline template addresses one from the region register: the activation's
+        // arguments, resident bindings and operand stack, which the layout ties to the unit's own plan.
+        JsNativeFieldKind.RegionDisplacement =>
+            value >= 0 && (value % 8) == 0 && value < JsValueLayout.CeilingRegionWords * 8,
+
+        // A NUMBER OR A SPECIAL CONSTANT, AND NEVER A HANDLE, A HEADER OR A RESERVED WORD. A handle is
+        // the instance's to issue and no emitted byte can know one; `undefined` is also the boundary a
+        // type test compares a word with, because it is the first word that is not a Number.
+        JsNativeFieldKind.ValueWord =>
+            JsWord.IsNumber((ulong)value) || ((ulong)value >= JsWord.Undefined && (ulong)value <= JsWord.Empty),
+
+        JsNativeFieldKind.DebtThreshold =>
+            value == JsValueLayout.DebtThreshold,
 
         _ => false,
     };
@@ -781,24 +805,190 @@ public static class JsNativeTemplates
 
     /// <summary>The value table for x86-64 under the Windows x64 convention.</summary>
     /// <remarks>
-    /// <b>ITS ENTRIES ARE THE BASELINE TABLE'S AT STAGE JSV-1, IN A TABLE OF ITS OWN.</b> The value form's
-    /// units call one helper per instruction and follow the answer with the baseline form's compares and
-    /// branches, so they write no template the baseline emitter does not; the table is a distinct array
-    /// because the scan chooses the partition by which table it holds, and because the inline templates
-    /// of stage JSV-2 are added to this form's table alone (JSD-0035 section 9).
+    /// <b>ITS OWN PROLOGUE, ITS OWN EPILOGUE AND THE INLINE TEMPLATES OF STAGE JSV-2 (JSD-0035 section 9).</b>
+    /// The value form's units keep the baseline form's dispatch, calls and tails, and add the templates
+    /// its pure instructions and its debt are made of; the scan holds a unit to the layout
+    /// <see cref="JsValueLayout"/> gives for the program, entry for entry.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=8B178A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D4D2F5
     // Broiler-Falsified-If: an entry of this table differs from the bytes the value emitter writes for Windows x64
     // Broiler-Human:        PENDING
     private static readonly JsNativeTemplate[] windowsValue =
-        X64Baseline(JsNativeArchitecture.X64Windows);
+        X64Value(JsNativeArchitecture.X64Windows);
 
     /// <summary>The value table for x86-64 under the System V AMD64 convention.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=CBAC07
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=0BB002
     // Broiler-Falsified-If: an entry of this table differs from the bytes the value emitter writes for System V
     // Broiler-Human:        PENDING
     private static readonly JsNativeTemplate[] systemVValue =
-        X64Baseline(JsNativeArchitecture.X64SystemV);
+        X64Value(JsNativeArchitecture.X64SystemV);
+
+    /// <summary>How many templates open a value table, in prologue order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D7787A
+    // Broiler-Human:        PENDING
+    internal const int X64ValuePrologue = 10;
+
+    /// <summary>How many templates close a value table, in epilogue order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CAE0F6
+    // Broiler-Human:        PENDING
+    internal const int X64ValueEpilogue = 6;
+
+    /// <summary>
+    /// Every byte sequence the x86-64 backend emits for the wide manifest's value form, for one of the two
+    /// calling conventions.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE ONLY INDIRECT TRANSFERS ARE THE TWO CALLS THROUGH THE HELPER TABLE, AND THE ONLY MEMORY WRITES
+    /// ARE TO THE REGION AND THE DEBT WORD.</b> RBX holds the table and is written once, by the prologue;
+    /// R14 holds the frame context and R15 the region, each written once, by the prologue; R12 is the
+    /// debt. Every store addresses <c>[r15+disp32]</c> with a region displacement or <c>[r14+24]</c>, the
+    /// debt word (clause V1). No template reads memory through a register that holds a word, so no handle
+    /// payload is ever an address (clause V2). A call is <c>call [rbx+slot]</c> at eight times a defined
+    /// opcode, or <c>call [rbx+settle]</c> at the settlement slot (clause V3).
+    /// </para>
+    /// <para>
+    /// <b>THE ORDER OF THE ROWS IS PART OF THE TABLE.</b> The first ten are the prologue in the order a unit
+    /// must open with and the last six the epilogue in the order it must close with.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=7A8745
+    // Broiler-Falsified-If: a template here writes memory other than a region word or the debt word, dereferences a register an inline template loads a word into, makes an indirect transfer other than through RBX at a defined opcode's slot or the settlement slot, or is a byte sequence the value emitter does not write
+    // Broiler-Human:        PENDING
+    private static JsNativeTemplate[] X64Value(JsNativeArchitecture architecture)
+    {
+        var windows = architecture == JsNativeArchitecture.X64Windows;
+        var frameBytes = (byte)JsValueAbi.FrameBytes(architecture);
+        var settle = JsValueAbi.SettleSlot * 8;
+
+        return
+        [
+            // ---- the prologue, in order -----------------------------------------------------------
+            Plain("push rbx", [0x53]),
+            Plain("push r14", [0x41, 0x56]),
+            Plain("push r15", [0x41, 0x57]),
+            Plain("push r12", [0x41, 0x54]),
+            Plain("sub rsp, frame", [0x48, 0x83, 0xEC, frameBytes]),
+            Plain("mov r14, arg0", [0x49, 0x89, windows ? (byte)0xCE : (byte)0xFE]),
+            Plain("mov rbx, [r14]", [0x49, 0x8B, 0x1E]),
+
+            // mov r15, [r14+16]: REX.WRB 8B /r, ModRM 0xBE = 0x80 | (111 << 3) | 110 - the region.
+            Plain("mov r15, [r14+region]", [0x4D, 0x8B, 0xBE, .. Int32(JsValueAbi.RegionOffset)]),
+
+            // mov r12, [r14+24]: ModRM 0xA6 = 0x80 | (100 << 3) | 110 - the debt, zero at every entry.
+            Plain("mov r12, [r14+debt]", [0x4D, 0x8B, 0xA6, .. Int32(JsValueAbi.DebtOffset)]),
+            Plain("mov eax, arg1d", [0x89, windows ? (byte)0xD0 : (byte)0xF0]),
+
+            // ---- the baseline form's dispatch, calls and tails ---------------------------------------
+            Plain("test eax, eax", [0x85, 0xC0]),
+            Field("js rel32", [0x0F, 0x88, 0, 0, 0, 0], Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
+            Field("cmp eax, pc", [0x3D, 0, 0, 0, 0], Imm32(1, JsNativeFieldKind.BytecodePc)),
+            Field("je rel32", [0x0F, 0x84, 0, 0, 0, 0], Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
+            Field("jne rel32", [0x0F, 0x85, 0, 0, 0, 0], Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
+            Field("ja rel32", [0x0F, 0x87, 0, 0, 0, 0], Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
+            Field("jmp rel32", [0xE9, 0, 0, 0, 0], Rel32(1, JsNativeFieldKind.UnitLocalBranch)),
+            Field("mov eax, status", [0xB8, 0, 0, 0, 0], Imm32(1, JsNativeFieldKind.BaselineStatusValue)),
+            Plain("mov arg0, r14", [0x4C, 0x89, windows ? (byte)0xF1 : (byte)0xF7]),
+            Field(
+                "mov arg1d, pc",
+                [windows ? (byte)0xBA : (byte)0xBE, 0, 0, 0, 0],
+                Imm32(1, JsNativeFieldKind.BytecodePc)),
+            Field("call [rbx+slot]", [0xFF, 0x93, 0, 0, 0, 0], Disp32(2, JsNativeFieldKind.HelperSlot)),
+
+            // call qword [rbx+2040]: the settlement slot, fixed, which no opcode's slot can be.
+            Plain("call [rbx+settle]", [0xFF, 0x93, .. Int32(settle)]),
+
+            // ---- the debt ----------------------------------------------------------------------------
+
+            // mov [r14+24], r12: REX.WRB 89 /r.
+            Plain("mov [r14+debt], r12", [0x4D, 0x89, 0xA6, .. Int32(JsValueAbi.DebtOffset)]),
+
+            // xor r12d, r12d: REX.RB 31 /r, a thirty-two-bit clear that zero-extends.
+            Plain("xor r12d, r12d", [0x45, 0x31, 0xE4]),
+
+            // inc r12 and dec r12: REX.WB FF /0 and FF /1.
+            Plain("inc r12", [0x49, 0xFF, 0xC4]),
+            Plain("dec r12", [0x49, 0xFF, 0xCC]),
+
+            // cmp r12, imm32: REX.WB 81 /7, against the threshold and no other value.
+            Field("cmp r12, threshold", [0x49, 0x81, 0xFC, 0, 0, 0, 0], Imm32(3, JsNativeFieldKind.DebtThreshold)),
+
+            // jae and jp rel32: 0F 83 and 0F 8A, with their conditions fixed.
+            Field("jae rel32", [0x0F, 0x83, 0, 0, 0, 0], Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
+            Field("jp rel32", [0x0F, 0x8A, 0, 0, 0, 0], Rel32(2, JsNativeFieldKind.UnitLocalBranch)),
+
+            // ---- the region's words -------------------------------------------------------------------
+
+            // mov rax, [r15+disp32]: REX.WB 8B /r, ModRM 0x87; RDX is 0x97.
+            Field("mov rax, [r15+slot]", [0x49, 0x8B, 0x87, 0, 0, 0, 0], Disp32(3, JsNativeFieldKind.RegionDisplacement)),
+            Field("mov rdx, [r15+slot]", [0x49, 0x8B, 0x97, 0, 0, 0, 0], Disp32(3, JsNativeFieldKind.RegionDisplacement)),
+            Field("mov [r15+slot], rax", [0x49, 0x89, 0x87, 0, 0, 0, 0], Disp32(3, JsNativeFieldKind.RegionDisplacement)),
+            Field("mov [r15+slot], rdx", [0x49, 0x89, 0x97, 0, 0, 0, 0], Disp32(3, JsNativeFieldKind.RegionDisplacement)),
+
+            // mov rax, imm64 and mov rcx, imm64: REX.W B8+r, a Number or a special constant.
+            Field("mov rax, word", [0x48, 0xB8, 0, 0, 0, 0, 0, 0, 0, 0], Imm64(2, JsNativeFieldKind.ValueWord)),
+            Field("mov rcx, word", [0x48, 0xB9, 0, 0, 0, 0, 0, 0, 0, 0], Imm64(2, JsNativeFieldKind.ValueWord)),
+
+            // cmp rax, rcx and cmp rdx, rcx: REX.W 39 /r - a word against a constant, unsigned.
+            Plain("cmp rax, rcx", [0x48, 0x39, 0xC8]),
+            Plain("cmp rdx, rcx", [0x48, 0x39, 0xCA]),
+
+            // ---- Numbers --------------------------------------------------------------------------------
+            Plain("movq xmm0, rax", [0x66, 0x48, 0x0F, 0x6E, 0xC0]),
+            Plain("movq xmm1, rdx", [0x66, 0x48, 0x0F, 0x6E, 0xCA]),
+            Plain("movq xmm1, rcx", [0x66, 0x48, 0x0F, 0x6E, 0xC9]),
+            Plain("movq rax, xmm0", [0x66, 0x48, 0x0F, 0x7E, 0xC0]),
+            Plain("addsd xmm0, xmm1", [0xF2, 0x0F, 0x58, 0xC1]),
+            Plain("subsd xmm0, xmm1", [0xF2, 0x0F, 0x5C, 0xC1]),
+            Plain("mulsd xmm0, xmm1", [0xF2, 0x0F, 0x59, 0xC1]),
+            Plain("divsd xmm0, xmm1", [0xF2, 0x0F, 0x5E, 0xC1]),
+            Plain("ucomisd xmm0, xmm1", [0x66, 0x0F, 0x2E, 0xC1]),
+            Plain("ucomisd xmm1, xmm0", [0x66, 0x0F, 0x2E, 0xC8]),
+            Plain("xorpd xmm1, xmm1", [0x66, 0x0F, 0x57, 0xC9]),
+            Field("setcc al", [0x0F, 0x90, 0xC0], Nibble(8, JsNativeFieldKind.X64Condition)),
+            Field("setcc dl", [0x0F, 0x90, 0xC2], Nibble(8, JsNativeFieldKind.X64Condition)),
+            Plain("and al, dl", [0x20, 0xD0]),
+            Plain("or al, dl", [0x08, 0xD0]),
+            Plain("movzx eax, al", [0x0F, 0xB6, 0xC0]),
+
+            // add rax, rcx: REX.W 01 /r - a condition's zero or one onto the false word.
+            Plain("add rax, rcx", [0x48, 0x01, 0xC8]),
+
+            // xor rax, rcx: REX.W 31 /r - the sign flip; xor rax, 1: REX.W 83 /6 ib - a Boolean's.
+            Plain("xor rax, rcx", [0x48, 0x31, 0xC8]),
+            Plain("xor rax, 1", [0x48, 0x83, 0xF0, 0x01]),
+
+            // ---- the thirty-two-bit operators ---------------------------------------------------------
+
+            // cvttsd2si r32, xmm: F2 0F 2C /r - a truncation that answers 0x80000000 out of range.
+            Plain("cvttsd2si eax, xmm0", [0xF2, 0x0F, 0x2C, 0xC0]),
+            Plain("cvttsd2si ecx, xmm1", [0xF2, 0x0F, 0x2C, 0xC9]),
+
+            // cmp r32, imm32: 81 /7 against the one value the truncation answers when it cannot.
+            Plain("cmp eax, int32min", [0x81, 0xF8, 0x00, 0x00, 0x00, 0x80]),
+            Plain("cmp ecx, int32min", [0x81, 0xF9, 0x00, 0x00, 0x00, 0x80]),
+            Plain("or eax, ecx", [0x09, 0xC8]),
+            Plain("and eax, ecx", [0x21, 0xC8]),
+            Plain("xor eax, ecx", [0x31, 0xC8]),
+
+            // shl, sar and shr eax, cl: D3 /4, /7 and /5 - the count is masked to five bits by the processor
+            // exactly as the language masks it.
+            Plain("shl eax, cl", [0xD3, 0xE0]),
+            Plain("sar eax, cl", [0xD3, 0xF8]),
+            Plain("shr eax, cl", [0xD3, 0xE8]),
+            Plain("not eax", [0xF7, 0xD0]),
+            Plain("movsxd rax, eax", [0x48, 0x63, 0xC0]),
+            Plain("cvtsi2sd xmm0, rax", [0xF2, 0x48, 0x0F, 0x2A, 0xC0]),
+
+            // ---- the epilogue, in order ---------------------------------------------------------------
+            Plain("add rsp, frame", [0x48, 0x83, 0xC4, frameBytes]),
+            Plain("pop r12", [0x41, 0x5C]),
+            Plain("pop r15", [0x41, 0x5F]),
+            Plain("pop r14", [0x41, 0x5E]),
+            Plain("pop rbx", [0x5B]),
+            Terminal("ret", [0xC3]),
+        ];
+    }
 
     /// <summary>
     /// Every byte sequence the x86-64 backend emits for the wide manifest's baseline form, for one of

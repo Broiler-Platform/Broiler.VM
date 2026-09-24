@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   12
 // Annotated:        12/12
-// Exempt:           9
+// Exempt:           11
 // Human-reviewed:   0/12
 // IP risk:          None
 // Security risk:    Medium
-// Criteria:         2/0
+// Criteria:         4/0
 // Resource impact:  2/10 max
 // Unverified:       12
 //
@@ -76,6 +76,15 @@ public sealed record JsAssembledProgram(
     // Broiler-Falsified-If: a backend emits a baseline form for a program asking for the value form, or the reverse
     // Broiler-Human:        PENDING
     public bool ValueForm { get; init; }
+
+    /// <summary>
+    /// Whether a value-form program's bindings may be resident: true for the form, false for the control
+    /// that keeps every binding in its managed environment (JSD-0035's residency risk).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A94B56
+    // Broiler-Falsified-If: a backend emits a resident binding for a program asking for none
+    // Broiler-Human:        PENDING
+    public bool ResidentBindings { get; init; } = true;
 }
 
 /// <summary>What a backend produced: the emitted bytes and the table that says which unit is where.</summary>
@@ -102,6 +111,12 @@ public sealed record JsNativeEmission(
     // Broiler-Falsified-If: an emission of the value form answers false here, or one of another form answers true
     // Broiler-Human:        PENDING
     public bool ValueForm { get; init; }
+
+    /// <summary>Whether a value-form emission's bindings may be resident, which the form byte records.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A94B56
+    // Broiler-Falsified-If: an emission planned with every binding non-resident answers true here
+    // Broiler-Human:        PENDING
+    public bool ResidentBindings { get; init; } = true;
 }
 
 /// <summary>An emitter of machine code for one architecture and calling convention.</summary>

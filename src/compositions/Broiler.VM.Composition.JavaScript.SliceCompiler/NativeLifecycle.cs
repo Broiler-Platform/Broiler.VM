@@ -434,10 +434,11 @@ internal static class NativeLifecycle
     /// convention this machine does not arm is verified and then refused at instantiation, which is not
     /// what this answers: only a refusal by the verifier is.
     /// </remarks>
-    internal static string VerifiesWithReEmission(byte[] artifact, JsX64Abi abi, bool module)
+    internal static string VerifiesWithReEmission(
+        byte[] artifact, JsX64Abi abi, bool module, JsOutputForm form = JsOutputForm.Value)
     {
         var answer = RunWideArtifact(
-            artifact, JsOutputForm.Value, abi.Name, 50_000_000, reEmit: true, module: module);
+            artifact, form, abi.Name, 50_000_000, reEmit: true, module: module);
 
         return answer.Outcome.StartsWith("the verifier refused", StringComparison.Ordinal) ||
             answer.Outcome.StartsWith("no x86-64 backend", StringComparison.Ordinal)
@@ -470,8 +471,9 @@ internal static class NativeLifecycle
         return -1;
     }
 
-    /// <summary>Whether a form carries emitted code, which the baseline and the value form both do.</summary>
-    internal static bool IsNativeForm(JsOutputForm form) => form is JsOutputForm.Native or JsOutputForm.Value;
+    /// <summary>Whether a form carries emitted code, which the baseline and both value forms do.</summary>
+    internal static bool IsNativeForm(JsOutputForm form) =>
+        form is JsOutputForm.Native or JsOutputForm.Value or JsOutputForm.ValueFlat;
 
     /// <summary>An answer for a run that never reached a runtime.</summary>
     private static WideAnswer Refusal(string why) => new(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, why, 0, 0);
@@ -553,8 +555,9 @@ internal static class NativeLifecycle
     /// <remarks>
     /// <b>IT READS THE ARTIFACT FOR THE REASON <see cref="TryReadEmitted"/> DOES</b>: a row about the program
     /// a payload was emitted from should hold what an artifact carries, not a projection the compiler never
-    /// wrote. The constant pool is not read, because the baseline form reads no constant, so the image's
-    /// constant arrays are empty; its operand-stack maximum is the deepest a function row declares.
+    /// wrote. The constant pool is read for its Numbers, which the value form's plan inlines, and the
+    /// emitted-code header for its form byte, which says whether the image is the value form and whether its
+    /// bindings may be resident; its operand-stack maximum is the deepest a function row declares.
     /// </remarks>
     internal static bool TryReadImage(byte[] artifact, out JsNativeProgramImage image, out string refusal)
     {
@@ -568,6 +571,10 @@ internal static class NativeLifecycle
         byte[]? code = null;
         JsFunctionRow[]? rows = null;
         JsExceptionRegionRow[] regions = [];
+        double[] values = [];
+        bool[] numbers = [];
+        var tier = JsNativeTier.Baseline;
+        var resident = true;
         var stack = 0u;
 
         for (var index = 0u; index < sections; index++)
@@ -599,6 +606,56 @@ internal static class NativeLifecycle
                     stack = System.Math.Max(stack, rows[row].MaxOperandStack);
                 }
             }
+            else if (kind == (uint)JsFormat.SectionKind.Constants)
+            {
+                var count = (int)ReadVarUInt(artifact, ref cursor);
+                values = new double[count];
+                numbers = new bool[count];
+
+                for (var entry = 0; entry < count; entry++)
+                {
+                    var tag = (JsFormat.ConstantTag)artifact[cursor++];
+
+                    switch (tag)
+                    {
+                        case JsFormat.ConstantTag.Boolean:
+                            cursor++;
+                            break;
+
+                        case JsFormat.ConstantTag.Number:
+                            numbers[entry] = true;
+                            values[entry] = System.Buffers.Binary.BinaryPrimitives.ReadDoubleLittleEndian(
+                                artifact.AsSpan(cursor, 8));
+                            cursor += 8;
+                            break;
+
+                        case JsFormat.ConstantTag.InternedName or JsFormat.ConstantTag.String:
+                        {
+                            var bytes = (int)ReadVarUInt(artifact, ref cursor);
+                            cursor += bytes;
+                            break;
+                        }
+
+                        case JsFormat.ConstantTag.BigInt:
+                        {
+                            cursor++;
+                            var bytes = (int)ReadVarUInt(artifact, ref cursor);
+                            cursor += bytes;
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (kind == (uint)JsFormat.SectionKind.NativeCode &&
+                JsNativeCodeHeader.TryUnpack(
+                    System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(artifact.AsSpan(cursor, 4)),
+                    out _,
+                    out var valueForm,
+                    out var residentBindings))
+            {
+                tier = valueForm ? JsNativeTier.Value : JsNativeTier.Baseline;
+                resident = residentBindings;
+            }
             else if (kind == (uint)JsFormat.SectionKind.ExceptionRegions)
             {
                 regions = new JsExceptionRegionRow[ReadVarUInt(artifact, ref cursor)];
@@ -623,10 +680,11 @@ internal static class NativeLifecycle
             return false;
         }
 
-        image = new JsNativeProgramImage(code, rows, [], [], stack)
+        image = new JsNativeProgramImage(code, rows, values, numbers, stack)
         {
-            Tier = JsNativeTier.Baseline,
+            Tier = tier,
             Regions = regions,
+            ResidentBindings = resident,
         };
 
         refusal = string.Empty;

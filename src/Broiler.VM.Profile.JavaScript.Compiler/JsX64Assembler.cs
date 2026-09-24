@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   65
 // Annotated:        65/65
-// Exempt:           30
+// Exempt:           32
 // Human-reviewed:   0/65
 // IP risk:          Low
 // Security risk:    Critical
@@ -954,13 +954,13 @@ public sealed class JsX64Assembler
     public void PatchRel32(int site, int target) => Patch(site, target - (site + 4));
 }
 
-/// <summary>The four conditional branches the baseline form emits, as the second opcode byte each carries.</summary>
+/// <summary>The conditional branches the baseline and value forms emit, as the second opcode byte each carries.</summary>
 /// <remarks>
 /// <b>A second enumeration rather than four more members of <see cref="JsX64Condition"/></b>, because
 /// that one names exactly the conditions the numeric form's template field admits, and a member added
 /// there would be spelled by the encoder and refused by the table.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4048E9
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B86410
 // Broiler-Human:        PENDING
 public enum JsX64JumpCondition
 {
@@ -975,4 +975,10 @@ public enum JsX64JumpCondition
 
     /// <summary><c>js</c>: <c>0F 88</c>.</summary>
     Sign = 0x88,
+
+    /// <summary><c>jae</c>: <c>0F 83</c>, unsigned - the value form's type tests and debt tests.</summary>
+    AboveOrEqual = 0x83,
+
+    /// <summary><c>jp</c>: <c>0F 8A</c> - the value form's unordered comparison against zero.</summary>
+    Parity = 0x8A,
 }

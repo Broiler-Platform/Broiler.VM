@@ -1133,7 +1133,14 @@ public sealed class ReviewRecordRuleTests
         // decoding and encoding of each instruction's words around the interpreter's arm,
         // JsValueWindows.cs. They are covered on the same terms as every other product file, and
         // nothing in them has been read by a human.
-        Assert.Equal(209, AssuranceSources.Files.Count);
+        //
+        // AND THE TWO OF STAGE JSV-2 (the proposed JSD-0035, section 10), which let the value form
+        // run instructions no helper sees: the plan of a unit - its operand heights, scope depths,
+        // resident bindings and inline decisions - and the layout the emitter and the template scan
+        // both derive from it, JsValueLayout.cs, in the format assembly; and the emitter that writes
+        // that layout's bytes, JsX64ValueEmitter.cs, in the compiler. Both are covered on the same
+        // terms as every other product file, and nothing in them has been read by a human.
+        Assert.Equal(211, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

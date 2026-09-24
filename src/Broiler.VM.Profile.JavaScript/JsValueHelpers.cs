@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   424
-// Annotated:        424/424
+// Relevant units:   425
+// Annotated:        425/425
 // Exempt:           1
-// Human-reviewed:   0/424
+// Human-reviewed:   0/425
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         425/425
+// Criteria:         426/426
 // Resource impact:  4/10 max
-// Unverified:       424
+// Unverified:       425
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,7 +58,7 @@ internal static unsafe class JsValueHelpers
     /// <b>A static constructor and not a module initializer</b>, so the table is built the first time a
     /// value-form instance asks for it and never in a process that runs no value form.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=E644B5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=C10422
     // Broiler-Falsified-If: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
     // Broiler-Human:        PENDING
     static JsValueHelpers()
@@ -207,6 +207,8 @@ internal static unsafe class JsValueHelpers
         slots[(int)JsOpcode.Increment] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Increment;
         slots[(int)JsOpcode.Decrement] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Decrement;
 
+        slots[JsValueAbi.SettleSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Settle;
+
         if (!Sound(slots, undefined))
         {
             Table = 0;
@@ -224,21 +226,35 @@ internal static unsafe class JsValueHelpers
         Table = (nint)table;
     }
 
-    /// <summary>Whether every defined opcode has its own entry point and every other byte the refusing one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=96ABF3
-    // Broiler-Falsified-If: this answers true for a table in which two defined opcodes share an entry point, a defined opcode has the refusing one, or an undefined byte has any other
+    /// <summary>
+    /// Whether every defined opcode has its own entry point, the settlement slot the settlement's, and every
+    /// other byte the refusing one.
+    /// </summary>
+    /// <remarks>
+    /// <b>The settlement slot must be a byte no opcode takes</b>, so a table in which an opcode came to be
+    /// defined at it is refused whole rather than handing either entry to the other's callers.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=3E0AC7
+    // Broiler-Falsified-If: this answers true for a table in which two defined opcodes share an entry point, a defined opcode has the refusing one or the settlement's, the settlement slot is a defined opcode's or holds anything but the settlement, or another undefined byte has anything but the refusing one
     // Broiler-Human:        PENDING
     private static bool Sound(nint[] slots, nint undefined)
     {
-        if (slots.Length != JsValueAbi.HelperSlots || undefined == 0)
+        if (slots.Length != JsValueAbi.HelperSlots || undefined == 0 ||
+            JsOpcodes.IsDefined((byte)JsValueAbi.SettleSlot) ||
+            slots[JsValueAbi.SettleSlot] == 0 || slots[JsValueAbi.SettleSlot] == undefined)
         {
             return false;
         }
 
-        var seen = new System.Collections.Generic.HashSet<nint>();
+        var seen = new System.Collections.Generic.HashSet<nint> { slots[JsValueAbi.SettleSlot] };
 
         for (var index = 0; index < slots.Length; index++)
         {
+            if (index == JsValueAbi.SettleSlot)
+            {
+                continue;
+            }
+
             if (!JsOpcodes.IsDefined((byte)index))
             {
                 if (slots[index] != undefined)
@@ -257,6 +273,17 @@ internal static unsafe class JsValueHelpers
 
         return true;
     }
+
+    /// <summary>
+    /// The entry point of the settlement slot: it charges the debt a debt test carried and answers the
+    /// offset it was handed (JSD-0035 section 7, clause V5).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=83F643
+    // Broiler-Falsified-If: this runs an instruction, or does anything but the checked settlement of JsNativeActivation.SettleValue
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int Settle(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.SettleValue(frame, pc);
 
     /// <summary>The entry point of every byte no opcode takes: it answers a defect and touches nothing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=91A42A

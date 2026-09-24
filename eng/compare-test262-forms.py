@@ -364,7 +364,7 @@ def main():
 
     # THE VALUE FORM IS A NATIVE FORM for every class below: its emitted code has the baseline form's
     # ceiling refusal and its guest loads are native payloads too (JSD-0035).
-    native_forms = ("native", "value", "value-stress")
+    native_forms = ("native", "value", "value-stress", "value-flat")
     native = reference_header["name"] in native_forms and candidate_header["name"] in native_forms
 
     # Class (c)'s gate, which only the two-forms reading consults: `--same-form` admits (c') at any

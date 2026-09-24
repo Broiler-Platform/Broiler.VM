@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   61
 // Annotated:        61/61
-// Exempt:           47
+// Exempt:           49
 // Human-reviewed:   0/61
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         15/15
+// Criteria:         17/17
 // Resource impact:  3/10 max
 // Unverified:       61
 //
@@ -1096,7 +1096,7 @@ internal sealed class JsVerifier
     /// producer, not this method.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E63499
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=61C027
     // Broiler-Falsified-If: a declared length that disagrees with the bytes present is accepted, or an architecture value this build cannot name is
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadNativeCode(
@@ -1125,7 +1125,7 @@ internal sealed class JsVerifier
         // THE FIRST FIELD IS AN ARCHITECTURE AND A FORM BYTE ABOVE IT (JSD-0035 section 9). A field
         // this build cannot split - a nonzero upper half, or a form byte naming neither the manifest's
         // own form nor the value form - is refused here as the malformed header it is.
-        if (!JsNativeCodeHeader.TryUnpack(field, out var architecture, out var valueForm) ||
+        if (!JsNativeCodeHeader.TryUnpack(field, out var architecture, out var valueForm, out var residentBindings) ||
             architecture == JsNativeArchitecture.None ||
             architecture > JsNativeArchitecture.Arm64 ||
             alignment == 0 ||
@@ -1146,6 +1146,7 @@ internal sealed class JsVerifier
 
         state.NativeArchitecture = architecture;
         state.NativeValueForm = valueForm;
+        state.NativeResidentBindings = residentBindings;
         state.NativeBackendVersion = backendVersion;
         state.NativeCodeAlignment = alignment;
         state.NativeCode = body;
@@ -1527,7 +1528,7 @@ internal sealed class JsVerifier
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5A6EF8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6DCE13
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
@@ -1831,7 +1832,8 @@ internal sealed class JsVerifier
             linkedEvalMap,
             linkedScripts,
             linkedReferrers,
-            state.NativeValueForm);
+            state.NativeValueForm,
+            state.NativeValueImage);
 
         return VmVerifierOutcome.Verified(program, VmArtifactSharing.Shareable);
     }
@@ -2393,7 +2395,7 @@ internal sealed class JsVerifier
     /// question, and bytes with no symbols are a blob nothing can enter.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=4A67A6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F4A6EC
     // Broiler-Falsified-If: an artifact whose symbol table names fewer units than the function table is admitted, or a symbol offset outside the emitted blob is
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome LinkNative(
@@ -2500,6 +2502,13 @@ internal sealed class JsVerifier
 
         var image = NativeImage(state, tier);
 
+        // THE VALUE FORM'S ENGINE READS THE PLAN THE SCAN HELD THE PAYLOAD TO - heights, region and
+        // residency - so the program keeps the one image both were made from.
+        if (tier == JsNativeTier.Value)
+        {
+            state.NativeValueImage = image;
+        }
+
         var scan = JsNativeScan.Scan(
             state.NativeArchitecture, tier, blob, symbols, state.NativeCodeAlignment, image);
 
@@ -2524,7 +2533,7 @@ internal sealed class JsVerifier
     /// artifact carries them, which is the order the lowering handed its backend. The scan's layout clauses
     /// and re-emission both read this one image.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=704E67
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=4CBD0B
     // Broiler-Falsified-If: the image differs from the artifact's own code, function rows, constant pool, or - for the baseline tier - exception regions in their order, or its tier differs from the one the manifest selects
     // Broiler-Human:        PENDING
     private static JsNativeProgramImage NativeImage(Sections state, JsNativeTier tier)
@@ -2563,7 +2572,7 @@ internal sealed class JsVerifier
                 region.Kind);
         }
 
-        return image with { Tier = tier, Regions = regions };
+        return image with { Tier = tier, Regions = regions, ResidentBindings = state.NativeResidentBindings };
     }
 
     /// <summary>
@@ -3417,6 +3426,18 @@ internal sealed class JsVerifier
         // Broiler-Falsified-If: this is true for a section whose form byte was zero, or false for one whose form byte named the value form
         // Broiler-Human:        PENDING
         internal bool NativeValueForm { get; set; }
+
+        /// <summary>Whether a value-form payload's bindings may be resident, as its form byte says.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=765990
+        // Broiler-Falsified-If: it differs from the residency the value-form payload's form byte states
+        // Broiler-Human:        PENDING
+        internal bool NativeResidentBindings { get; set; } = true;
+
+        /// <summary>The image a value-form payload was scanned against, which the program keeps for its engine.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=AD9182
+        // Broiler-Falsified-If: it is set for any payload but a value-form one, or to an image other than the one that payload was scanned against
+        // Broiler-Human:        PENDING
+        internal JsNativeProgramImage? NativeValueImage { get; set; }
 
         /// <summary>The emitted machine code, or null when the artifact carries none.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4D540B

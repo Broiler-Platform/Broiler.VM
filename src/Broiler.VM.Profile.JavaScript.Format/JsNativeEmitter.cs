@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   17
 // Annotated:        17/17
-// Exempt:           11
+// Exempt:           12
 // Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         5/5
+// Criteria:         6/6
 // Resource impact:  1/10 max
 // Unverified:       17
 //
@@ -162,6 +162,17 @@ public sealed record JsNativeProgramImage(
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6CF892
     // Broiler-Human:        PENDING
     public JsExceptionRegionRow[] Regions { get; init; } = [];
+
+    /// <summary>Whether a value-form image's bindings may be resident, as the artifact's form byte says.</summary>
+    /// <remarks>
+    /// <b>It changes which instructions the value form runs inline, so both parties read it off the
+    /// artifact</b> (<see cref="JsNativeCodeHeader.FlatBit"/>), for the reason <see cref="Tier"/> is. It
+    /// defaults to true, and no other form reads it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=A94B56
+    // Broiler-Falsified-If: the compiler and the verifier build images of one value-form artifact with different residency
+    // Broiler-Human:        PENDING
+    public bool ResidentBindings { get; init; } = true;
 }
 
 /// <summary>

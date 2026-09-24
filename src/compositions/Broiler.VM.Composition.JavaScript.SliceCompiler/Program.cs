@@ -60,7 +60,9 @@ internal static class Program
 
             if (args.Contains("--checks", StringComparer.Ordinal))
             {
-                return RunChecks(args.Contains("--verbose", StringComparer.Ordinal));
+                return RunChecks(
+                    args.Contains("--verbose", StringComparer.Ordinal),
+                    args.Contains("--value-only", StringComparer.Ordinal));
             }
 
             // WHAT THE REALM ADMITS, ASKED OF THE REALM. A document's list of absent globals is
@@ -451,9 +453,15 @@ internal static class Program
     }
 
     /// <summary>Runs the claims that need a neighbour profile, and the claims about the front end.</summary>
-    private static int RunChecks(bool verbose)
+    /// <remarks>
+    /// <b><c>--value-only</c> runs the value form's own rows and nothing else</b>, for a change to that form;
+    /// a green run of them is not a green run of the checks, and the summary line says which it was.
+    /// </remarks>
+    private static int RunChecks(bool verbose, bool valueOnly = false)
     {
-        var checks = CrossProfileChecks.Run()
+        var checks = valueOnly
+            ? JsWordChecks.Run().Concat(ValueFormChecks.Run()).ToArray()
+            : CrossProfileChecks.Run()
             .Concat(SourceFrontEndChecks.Run())
             .Concat(SurfaceChecks.Run())
             .Concat(IsolationChecks.Run())
@@ -511,10 +519,12 @@ internal static class Program
             ? string.Empty
             : $", {notRun} not run on this machine and claimed by nothing";
 
+        var scope = valueOnly ? " (the value form's rows only)" : string.Empty;
+
         Console.WriteLine(
             failed == 0
-                ? $"broiler-js-slice-compiler: {ran} checks passed{tail}"
-                : $"broiler-js-slice-compiler: {failed} of {ran} checks FAILED{tail}");
+                ? $"broiler-js-slice-compiler: {ran} checks passed{tail}{scope}"
+                : $"broiler-js-slice-compiler: {failed} of {ran} checks FAILED{tail}{scope}");
 
         return failed == 0 ? 0 : 1;
     }

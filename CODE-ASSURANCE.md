@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 209 |
-| Files carrying an annotation | 209 |
-| Code units | 8554 |
-| Relevant | 5075 |
-| Exempt by predicate | 3479 |
-| Annotated | 5075 of 5075 (100%) |
-| Human reviewed | 0 of 5075 (0%) |
-| Unverified | 5075 |
+| Files scanned | 211 |
+| Files carrying an annotation | 211 |
+| Code units | 8763 |
+| Relevant | 5155 |
+| Exempt by predicate | 3608 |
+| Annotated | 5155 of 5155 (100%) |
+| Human reviewed | 0 of 5155 (0%) |
+| Unverified | 5155 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5075 |
+| HUMAN_PENDING | 5155 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 3479 |
+| EXEMPT | 3608 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1538 |
-| Low | 4665 |
+| Low | 4754 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,10 +50,10 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 7 |
-| Low | 737 |
-| Medium | 3999 |
-| High | 1388 |
-| Critical | 153 |
+| Low | 747 |
+| Medium | 4022 |
+| High | 1411 |
+| Critical | 186 |
 | *not annotated* | 0 |
 
 ## Resource impact
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 9 / 10 |
 | Average over annotated units | 1.9 / 10 |
-| Units scored | 5075 |
+| Units scored | 5155 |
 
 ## High-security review areas
 
@@ -216,6 +216,10 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter.TryEmit(JsNativeProgramImage, JsX64Abi, uint, out byte[], out JsNativeSymbolRow[], out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter.EmitUnit(JsX64Assembler, JsNativeProgramImage, int, System.ReadOnlySpan<uint>, JsX64Abi, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueEmitter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64ValueEmitter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueEmitter.TryEmit(JsNativeProgramImage, JsX64Abi, uint, out byte[], out JsNativeSymbolRow[], out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64ValueEmitter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueEmitter.EmitUnit(JsX64Assembler, JsNativeProgramImage, int, System.ReadOnlySpan<uint>, JsX64Abi, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64ValueEmitter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueEmitter.Encode(JsX64Assembler, JsX64Abi, JsValueInstruction)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64ValueEmitter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueKind` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Walk` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Walk.TryResolveSlot(int, int, int, out int, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` - Security=High, human line PENDING
@@ -341,19 +345,23 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeValues` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeValues.UninitialisedBits` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeProgramImage.Tier` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeProgramImage.ResidentBindings` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeAbiProbe` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeAbiProbeLayout` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeFrame` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeFrame.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, byte[], JsNativeSymbolRow[], uint, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, JsNativeTier, byte[], JsNativeSymbolRow[], uint, JsNativeProgramImage?, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.ValueLayout(JsNativeTemplate[], byte[], JsNativeSymbolRow[], JsNativeProgramImage?, System.Collections.Generic.List<(uint At, int Index)>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.ValueRefusal(JsValueInstruction, int, uint, string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.OwnedBy(JsNativeSymbolRow[], JsNativeProgramImage?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BlockLayout(JsNativeTemplate[], byte[], JsNativeSymbolRow[], JsNativeProgramImage?, System.Collections.Generic.List<(uint At, int Index)>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BaselineTemplateIndices(JsNativeTemplate[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BaselineTemplateNames` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison.Take(int, JsBaselineInstruction)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison.Refusal(int, uint)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameShape(System.Collections.Generic.List<(uint At, int Index)>, int, int, uint, int, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameShape(System.Collections.Generic.List<(uint At, int Index)>, int, int, int, int, uint, int, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameTargets(System.Collections.Generic.List<Branch>, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.For(JsNativeArchitecture, JsNativeTier)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=Critical, human line PENDING
@@ -364,16 +372,57 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.systemVBaseline` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.windowsValue` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.systemVValue` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.X64Value(JsNativeArchitecture)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.X64Baseline(JsNativeArchitecture)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsValueFrame` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsValueAbi` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.HelpersOffset` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.CookieOffset` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.RegionOffset` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.DebtOffset` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.FrameSize` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.HelperSlots` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.SettleSlot` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.FrameBytes(JsNativeArchitecture)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader.Pack(JsNativeArchitecture, bool)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader.TryUnpack(uint, out JsNativeArchitecture, out bool)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader.Pack(JsNativeArchitecture, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader.TryUnpack(uint, out JsNativeArchitecture, out bool, out bool)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueInline` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.StackBase` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.HeightAt(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.DepthAt(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.InlineAt(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.ResidentBaseOf(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.ResidentSlotsOf(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.OperandAt(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.DebtThreshold` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.CeilingRegionWords` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Names` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.TemplateName(JsValueTemplate)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.TryPlan(JsNativeProgramImage, int, System.ReadOnlySpan<uint>, bool, out JsValueUnitPlan, out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Layout(JsValueUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Walk(JsNativeProgramImage, int, int, int, int[], int[], out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Seed(int, int, int, int, int[], int[], System.Collections.Generic.Stack<int>, out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Decide(JsNativeProgramImage, JsOpcode, uint, int, int[], int[], int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Build()` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Finish()` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Helper(JsBaselineBlock, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Slow(JsBaselineBlock, ref int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.DebtTest(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Settlement(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Transfer(int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Inline(JsBaselineBlock)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Branch(JsBaselineBlock, int, ref int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.OneNumber(JsBaselineBlock, int, ref int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.TwoNumbers(JsBaselineBlock, int, ref int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Compare(JsOpcode, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Slot(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Tree(System.ReadOnlySpan<int>, int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Guard(JsValueTemplate, int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.LabelOf(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsWord` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.FirstTag` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsWord.Empty` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
@@ -691,6 +740,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsEngine.StackBackstopReached()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ChargeText(int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ChargeHostCrossing(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.ChargeDebt(long)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.RetainOrAbort(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ToNumberFromText(string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ToNumeric(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
@@ -848,11 +898,13 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Exited` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Segment` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.SlabFrame` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.Plan` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Landed` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Pending` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Current` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Step<TMode>(JsBaselineFrame*, int, JsOpcode)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.StepValue<TMode>(JsValueFrame*, int, JsOpcode)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.SettleValue(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.OperandSlabSlots` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.OutgoingArgumentHeadroom` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
@@ -872,6 +924,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.Render(double)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.TypeOf(double)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsMappedArguments` in `src/Broiler.VM.Profile.JavaScript/JsObject.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsProgram.NativeValueImage` in `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsProgram.ValuePlan(int)` in `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsProgram.NativeValueForm` in `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsProgram.NativePage` in `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.GetAsyncIterator(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs` - Security=High, human line PENDING
@@ -918,6 +972,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.Table` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.JsValueHelpers()` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.Sound(nint[], nint)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Settle(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.Undefined(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.Nop(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadUndefined(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
@@ -1355,15 +1410,14 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsValueStack.Scan(JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsValueStack.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueWindows` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueWindows.Open(JsNativeActivation, JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsValueWindows.Enter(JsNativeActivation, int, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsValueWindows.Leave(JsNativeActivation, int, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Enter(JsNativeActivation, int, out int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Leave(JsNativeActivation, int, int, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueWindows.ReadDepth(byte[], int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueWindows.Depth(JsOpcode, uint, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueWindows.Pops(byte[], int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueWindows.FixedPops` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueWindows.FixedReads` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueWindows.BuildFixed(bool)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsValueWindows.Same(in JsValue, in JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueWindows.Pops(JsOpcode, uint)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueWindows.Operand(byte[], int, JsOpcode)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadManifest(in VmArtifactDescriptor, ref VmBoundedReader, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
@@ -1381,6 +1435,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReEmit(Sections, byte[], JsNativeSymbolRow[], IJsNativeEmitter?, JsNativeProgramImage)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.LinkModules(Sections, JsCodeUnit[], IVmVerificationContext, JavaScriptReadAdapter, out JsModuleRecord[], out JsBinding[])` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.Sections.NativeValueForm` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsVerifier.Sections.NativeResidentBindings` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsVerifier.Sections.NativeValueImage` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsWordChecks.Fuzz(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryTagPrefixHasExactlyOneClass()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsWordChecks.TheHardwareNaNsAreNumbers()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
@@ -1612,8 +1668,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1621 |
-| Units required to carry one | 1541 |
+| Units carrying a criterion | 1679 |
+| Units required to carry one | 1597 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1640,14 +1696,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1054 |
-| ParameterAssigningConstructor | 113 |
+| TrivialPropertyOrAccessor | 1064 |
+| ParameterAssigningConstructor | 114 |
 | TrivialExpressionBodiedMember | 53 |
-| CompilerSuppliedRecordOrEnumMember | 12 |
+| CompilerSuppliedRecordOrEnumMember | 15 |
 | DelegatingOverrideOrOperator | 106 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 666 |
-| EnumMemberOfADeclaredVocabulary | 1444 |
+| FieldDeclaringStorage | 683 |
+| EnumMemberOfADeclaredVocabulary | 1542 |
 | DeclaredInSource | 31 |
 
 ## Per-unit exemptions
@@ -1697,7 +1753,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-8554 of them, exempt and relevant alike - with the fingerprint of its declaration.
+8763 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -1705,7 +1761,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 209 of them - with a
+Beside the units it lists **every covered file** - 211 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

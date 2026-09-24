@@ -1443,6 +1443,7 @@ public sealed partial class NativeBaselineRuleTests
         var writes = 0;
         var stepReads = 0;
         var valueStepReads = 0;
+        var settleReads = 0;
 
         foreach (var identifier in type.DescendantNodes().OfType<IdentifierNameSyntax>())
         {
@@ -1500,10 +1501,18 @@ public sealed partial class NativeBaselineRuleTests
                 continue;
             }
 
+            // THE VALUE FORM'S SETTLEMENT IS THE THIRD READER (JSD-0035 stage JSV-2): it charges the debt a
+            // debt test carried and runs no instruction, and it makes the value step's checks first.
+            if (string.Equals(member.Name, "SettleValue", StringComparison.Ordinal))
+            {
+                settleReads++;
+                continue;
+            }
+
             yield return
-                $"{activation.RelativePath} reads the thread slot {name} in {member.Name}, and the two " +
-                "readers inside the activation are Step and StepValue, which run nothing unless the frame's " +
-                "cookie is the activation's";
+                $"{activation.RelativePath} reads the thread slot {name} in {member.Name}, and the three " +
+                "readers inside the activation are Step, StepValue and SettleValue, which run nothing unless " +
+                "the frame's cookie is the activation's";
         }
 
         if (writes == 0)
@@ -1525,6 +1534,13 @@ public sealed partial class NativeBaselineRuleTests
             yield return
                 $"StepValue reads no {name}, so the value form's reader this rule allows is not the place " +
                 "the slot is read";
+        }
+
+        if (settleReads == 0)
+        {
+            yield return
+                $"SettleValue reads no {name}, so the value form's settlement this rule allows is not the " +
+                "place the slot is read";
         }
     }
 

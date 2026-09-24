@@ -283,6 +283,7 @@ internal static class Program
             if (string.Equals(args[index], "--fuel", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--native", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--value", StringComparison.Ordinal) ||
+                string.Equals(args[index], "--value-flat", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--wall", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--max-depth", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--call-depth", StringComparison.Ordinal) ||
@@ -433,10 +434,13 @@ internal static class Program
         {
             // `--value` ASKS FOR THE WIDE MANIFEST'S VALUE FORM (JSD-0035), named by backend exactly as
             // `--native` names the baseline form's; the compiler refuses it beside `--numeric`.
+            // `--value-flat` is the same form with every binding classed non-resident, the control run
+            // stage JSV-2's residency analysis is held to.
             var form = args[index] switch
             {
                 "--native" => JsOutputForm.Native,
                 "--value" => JsOutputForm.Value,
+                "--value-flat" => JsOutputForm.ValueFlat,
                 _ => JsOutputForm.Bytecode,
             };
 
@@ -798,7 +802,7 @@ internal static class Program
     [
         "--module", "--check", "--all", "--quiet", "--fuel", "--max-depth", "--closure",
         "--slice", "--strict", "--sweep", "--wall", "--call-depth", "--live-bytes", "--help",
-        "--version", "--numeric", "--native", "--host-surface", "--runtime", "--value",
+        "--version", "--numeric", "--native", "--host-surface", "--runtime", "--value", "--value-flat",
         "--handle-stress", "--artifact-bytes", "--nested-load-bytes",
     ];
 
@@ -999,16 +1003,18 @@ internal static class Program
         Console.WriteLine("              one, so it is quoted here rather than quietly dropped.)");
         Console.WriteLine("  --value <backend>");
         Console.WriteLine("              emit the wide surface's VALUE FORM (decision JSD-0035) with the");
-        Console.WriteLine("              named x86-64 backend: every instruction one call of a helper that");
-        Console.WriteLine("              runs the interpreter's own arm over NaN-boxed words in a pinned");
-        Console.WriteLine("              slab, the control flow between them emitted, and eval and import()");
-        Console.WriteLine("              compiled the same way. Refused with --numeric and by arm64.");
-        Console.WriteLine("              It implies nothing about speed either.");
+        Console.WriteLine("              named x86-64 backend: the pure instructions - numbers, locals,");
+        Console.WriteLine("              stack shuffles, branches - emitted inline over NaN-boxed words in a");
+        Console.WriteLine("              pinned slab, every other instruction one call of a helper that runs");
+        Console.WriteLine("              the interpreter's own arm, and eval and import() compiled the same");
+        Console.WriteLine("              way. Refused with --numeric and by arm64.");
+        Console.WriteLine("  --value-flat <backend>");
+        Console.WriteLine("              the value form with every binding classed non-resident: the");
+        Console.WriteLine("              control run the residency analysis is held to");
         Console.WriteLine("  --handle-stress");
         Console.WriteLine("              run a value-form program with its handle table compacting at every");
-        Console.WriteLine("              helper call and every decoded word compared with the interpreter's");
-        Console.WriteLine("              value, so a rooting mistake is an internal defect by name; it");
-        Console.WriteLine("              changes nothing for any other form");
+        Console.WriteLine("              helper call, so a word that names a handle nothing roots is an");
+        Console.WriteLine("              internal defect by name; it changes nothing for any other form");
         Console.WriteLine("  --check     compile and verify only; do not run");
         Console.WriteLine("  --all       report every refusal in a file rather than the first");
         Console.WriteLine("  --quiet     do not print the completion value");

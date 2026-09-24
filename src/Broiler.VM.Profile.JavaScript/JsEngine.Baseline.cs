@@ -147,7 +147,7 @@ internal sealed partial class JsEngine
     /// that replaces it is stage JSV-4's.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=8AA0B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=795485
     // Broiler-Falsified-If: emitted code runs while its activation or its page is unreachable from a managed root, runs with no region or with a region some other activation holds, a region outlives the call that opened it, or this answers a value for a status other than exit
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -169,6 +169,11 @@ internal sealed partial class JsEngine
         var stack = ValueStack ??
             throw new JsAbort(JsAbortKind.InternalDefect, "a value-form program reached an engine with no value stack");
 
+        // THE PLAN IS THE ONE THE PAYLOAD WAS SCANNED AGAINST: which region words are the arguments, the
+        // resident bindings and the operand stack, and the height before every instruction.
+        var plan = program.ValuePlan(unitIndex) ??
+            throw new JsAbort(JsAbortKind.InternalDefect, "a value-form unit has no value plan");
+
         var act = new JsNativeActivation(
             this, program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
             thisBinding, frame);
@@ -177,21 +182,27 @@ internal sealed partial class JsEngine
             program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
             thisBinding, frame, act);
 
-        if (!stack.TryPush(act.Stack.Length, out var segment, out var slabFrame))
+        if (!stack.TryPush(plan.StackBase + act.Stack.Length, out var segment, out var slabFrame))
         {
             throw StackBackstopReached();
         }
 
         act.Segment = segment;
         act.SlabFrame = slabFrame;
+        act.Plan = plan;
 
         try
         {
             JsValueWindows.Open(act, ValueHandles!);
 
+            // THE REGION'S ADDRESS IS STABLE FOR THE REGION'S LIFE: the segment is a pinned array, and the
+            // region is popped in the finally below, after the emitted code has returned.
             JsValueFrame native;
             native.Helpers = JsValueHelpers.Table;
             native.Cookie = act.Cookie;
+            native.Region = (nint)System.Runtime.CompilerServices.Unsafe.AsPointer(
+                ref segment.Words[JsValueSlab.FirstWord(slabFrame)]);
+            native.Debt = 0;
 
             var previous = JsNativeActivation.Current;
             JsNativeActivation.Current = act;
@@ -222,6 +233,7 @@ internal sealed partial class JsEngine
         finally
         {
             act.Segment = null;
+            act.Plan = null;
             stack.Pop(segment, slabFrame);
         }
     }

@@ -20,16 +20,41 @@ public sealed partial class NativeBaselineRuleTests
     /// <summary>The prefix of the value table's one-instruction modes, one per opcode.</summary>
     internal const string ArmPrefix = "Arm";
 
-    /// <summary>The terms clause (e) holds <c>StepValue</c>'s check to: the baseline step's four and the region.</summary>
+    /// <summary>
+    /// The terms clause (e) holds <c>StepValue</c>'s check to: the baseline step's cookie, bounds and opcode
+    /// checks, the region and the plan.
+    /// </summary>
     /// <remarks>
+    /// <para>
     /// A property and not a field, because it reads <see cref="Comparisons"/> from the class's other file
     /// and the order two files' static initialisers run in is not one either file states.
+    /// </para>
+    /// <para>
+    /// The baseline's pc check is not among them (JSD-0035 stage JSV-2): inline templates run instructions
+    /// no managed code sees, so the offset a value helper is handed is held instead to the plan - its
+    /// operand height there must be one the walk reached, which <see cref="ReachedCheck"/> reads as the
+    /// statement after the check, because the plan's lookup is a call and the condition has none.
+    /// </para>
     /// </remarks>
     internal static (string Name, string Text)[] ValueComparisons =>
     [
-        .. Comparisons,
+        .. Comparisons.Where(static comparison => !string.Equals(comparison.Name, "pc check", StringComparison.Ordinal)),
         ("region check", "act.Segment is null"),
+        ("plan check", "act.Plan is null"),
     ];
+
+    /// <summary>The statement after <c>StepValue</c>'s check: the offset is one the plan's walk reached.</summary>
+    internal const string ReachedCheck = "if (act.Plan.HeightAt(pc) < 0) { return (int)JsBaselineStatus.Defect; }";
+
+    /// <summary>The one helper the value table holds that is named for no opcode: the debt settlement.</summary>
+    internal const string SettleEntry = "Settle";
+
+    /// <summary>The settlement's body, exactly.</summary>
+    internal const string SettleBody = "JsNativeActivation.SettleValue(frame, pc)";
+
+    /// <summary>The settlement's one slot assignment, exactly.</summary>
+    internal const string SettleAssignment =
+        "slots[JsValueAbi.SettleSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Settle;";
 
     [Fact]
     public void X4_Each_Value_Helper_Runs_Its_Own_Arm_Through_A_Checked_Step()
@@ -46,6 +71,7 @@ public sealed partial class NativeBaselineRuleTests
                  {
                      "helper Call", "helper Nop", "ArmCall.Opcode", "slot Call", "the static constructor",
                      "Sound reads the slots", "decode before the arm", "encode after the arm",
+                     "helper " + SettleEntry, "slot " + SettleEntry, "StepValue reached check",
                  })
         {
             Assert.Contains(decided, answer.Decided);
@@ -83,13 +109,35 @@ public sealed partial class NativeBaselineRuleTests
         var unchecked_ = X4Value(Replacing(activation with
         {
             Text = activation.Text.Replace(
-                "act.Code[pc] != (byte)expected ||\n            act.Segment is null)",
-                "act.Code[pc] != (byte)expected)",
+                "act.Code[pc] != (byte)expected ||\n            act.Segment is null ||",
+                "act.Code[pc] != (byte)expected ||",
                 StringComparison.Ordinal),
         })).Violations;
 
         Assert.Contains(unchecked_, static message => message.Contains(
             "(e) StepValue's condition does not join the region check", StringComparison.Ordinal));
+
+        var unreached = X4Value(Replacing(activation with
+        {
+            Text = activation.Text.Replace(
+                "if (act.Plan.HeightAt(pc) < 0)\n        {\n            return (int)JsBaselineStatus.Defect;\n        }\n\n        try\n        {\n            var debt = frame->Debt;\n            frame->Debt = 0;\n            act.Engine.ChargeDebt(debt);\n\n            var pops",
+                "try\n        {\n            var debt = frame->Debt;\n            frame->Debt = 0;\n            act.Engine.ChargeDebt(debt);\n\n            var pops",
+                StringComparison.Ordinal),
+        })).Violations;
+
+        Assert.Contains(unreached, static message => message.Contains(
+            "(e) StepValue's third statement is not", StringComparison.Ordinal));
+
+        var helperText = helpers.Text;
+        var unsettled = X4Value(Replacing(helpers with
+        {
+            Text = helperText.Replace(
+                "JsNativeActivation.SettleValue(frame, pc);", "JsNativeActivation.StepValue<ArmNop>(frame, pc, JsOpcode.Nop);",
+                StringComparison.Ordinal),
+        })).Violations;
+
+        Assert.Contains(unsettled, static message => message.Contains(
+            "(e) the value table's Settle is", StringComparison.Ordinal));
     }
 
     /// <summary>
@@ -98,7 +146,9 @@ public sealed partial class NativeBaselineRuleTests
     /// <remarks>
     /// <para>
     /// <b>Every opcode's helper runs its own arm.</b> The table declares one unmanaged entry point named
-    /// <c>Undefined</c> and one per opcode <c>JsOpcode</c> declares, each exactly
+    /// <c>Undefined</c>, one named <c>Settle</c> that is exactly <c>JsNativeActivation.SettleValue(frame, pc)</c>
+    /// and is assigned once to <c>JsValueAbi.SettleSlot</c> (stage JSV-2's debt settlement), and one per
+    /// opcode <c>JsOpcode</c> declares, each exactly
     /// <c>JsNativeActivation.StepValue&lt;Arm{Opcode}&gt;(frame, pc, JsOpcode.{Opcode})</c>, and each
     /// <c>Arm{Opcode}</c> is a member of the table whose <c>Opcode</c> answers <c>JsOpcode.{Opcode}</c>; no
     /// other product source declares a type named <c>Arm{Opcode}</c>, and the table declares nothing named
@@ -111,10 +161,12 @@ public sealed partial class NativeBaselineRuleTests
     /// only reads the slots.
     /// </para>
     /// <para>
-    /// <b>StepValue keeps Step's checks and one more.</b> It begins <c>var act = current;</c>, its next
-    /// statement is an if with no else doing exactly <c>return (int)JsBaselineStatus.Defect;</c>, whose
-    /// top-level <c>||</c> chain holds the four comparisons Step's does, the bound before the opcode, and
-    /// the region check; the condition has no effect; it declares no local function or lambda; its call of
+    /// <b>StepValue keeps Step's checks, the pc check held to the plan.</b> It begins
+    /// <c>var act = current;</c>, its next statement is an if with no else doing exactly
+    /// <c>return (int)JsBaselineStatus.Defect;</c>, whose top-level <c>||</c> chain holds the cookie, bounds
+    /// and opcode comparisons Step's does, the bound before the opcode, the region check and the plan check;
+    /// the condition has no effect; the statement after it refuses an offset the plan's walk never reached;
+    /// it declares no local function or lambda; its call of
     /// ExecuteCore is over its own mode; and the input words are decoded before that call and the outputs
     /// encoded after it.
     /// </para>
@@ -197,6 +249,18 @@ public sealed partial class NativeBaselineRuleTests
                     violations.Add("(e) the value table's Undefined does not answer exactly (int)JsBaselineStatus.Defect");
                 }
 
+                continue;
+            }
+
+            if (string.Equals(name, SettleEntry, StringComparison.Ordinal) && !opcodes.Contains(name))
+            {
+                if (!string.Equals(body, Squeezed(SettleBody), StringComparison.Ordinal))
+                {
+                    violations.Add($"(e) the value table's {SettleEntry} is `{body ?? "not expression-bodied"}`, and it is exactly `{SettleBody}`");
+                    continue;
+                }
+
+                decided.Add("helper " + SettleEntry);
                 continue;
             }
 
@@ -343,6 +407,15 @@ public sealed partial class NativeBaselineRuleTests
             violations.Add($"(e) StepValue's condition contains `{effect}`, which assigns, steps or calls");
         }
 
+        if (!string.Equals(Tokens(statements[2]), Squeezed(ReachedCheck), StringComparison.Ordinal))
+        {
+            violations.Add($"(e) StepValue's third statement is not `{ReachedCheck}`, so an offset the plan never reached could run");
+        }
+        else
+        {
+            decided.Add("StepValue reached check");
+        }
+
         foreach (var function in step.DescendantNodes().Where(static node =>
                      node is LocalFunctionStatementSyntax or AnonymousFunctionExpressionSyntax))
         {
@@ -422,11 +495,18 @@ public sealed partial class NativeBaselineRuleTests
         }
 
         var assigned = new Dictionary<string, int>(StringComparer.Ordinal);
+        var settled = 0;
 
         foreach (var statement in whole
                      ? statements.Skip(ValueTableOpening.Length).Take(statements.Count - ValueTableOpening.Length - ValueTableClosing.Length)
                      : [])
         {
+            if (string.Equals(Tokens(statement), Squeezed(SettleAssignment), StringComparison.Ordinal))
+            {
+                settled++;
+                continue;
+            }
+
             if (statement is not ExpressionStatementSyntax
                 {
                     Expression: AssignmentExpressionSyntax
@@ -483,6 +563,15 @@ public sealed partial class NativeBaselineRuleTests
         if (unassigned.Length > 0)
         {
             violations.Add($"(e) the value table assigns no slot for {string.Join(", ", unassigned)}");
+        }
+
+        if (settled != 1)
+        {
+            violations.Add($"(e) the value table makes {settled} assignments `{SettleAssignment}`, and it makes one");
+        }
+        else
+        {
+            decided.Add("slot " + SettleEntry);
         }
 
         if (opens && closes && assigned.Count > 0)

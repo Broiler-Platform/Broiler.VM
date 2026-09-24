@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   198
-// Annotated:        198/198
+// Relevant units:   199
+// Annotated:        199/199
 // Exempt:           33
-// Human-reviewed:   0/198
+// Human-reviewed:   0/199
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         74/74
+// Criteria:         75/75
 // Resource impact:  7/10 max
-// Unverified:       198
+// Unverified:       199
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -2235,6 +2235,28 @@ internal sealed partial class JsEngine
         }
 
         ChargeOnce(units);
+    }
+
+    /// <summary>Charges the debt value-form emitted code ran up in pure instructions, or nothing for none.</summary>
+    /// <remarks>
+    /// <b>It is <see cref="Charge"/>, in the poll window's steps</b>, so a debt is charged with the existing
+    /// member only and never asks for fuel nothing has spent, and a debt that crosses a poll window polls
+    /// cancellation and the wall clock where the interpreter would have (JSD-0035 section 7).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=6EA938
+    // Broiler-Falsified-If: a debt is charged other than through Charge, or a zero debt charges or polls anything
+    // Broiler-Human:        PENDING
+    internal void ChargeDebt(long debt)
+    {
+        if (debt < 0)
+        {
+            throw new JsAbort(JsAbortKind.InternalDefect, "value-form emitted code handed back a negative debt");
+        }
+
+        if (debt > 0)
+        {
+            Charge((ulong)debt);
+        }
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=8CD7C8
