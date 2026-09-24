@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   5
-// Annotated:        5/5
+// Relevant units:   13
+// Annotated:        13/13
 // Exempt:           2
-// Human-reviewed:   0/5
+// Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         7/7
+// Criteria:         15/15
 // Resource impact:  5/10 max
-// Unverified:       5
+// Unverified:       13
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -143,11 +143,11 @@ internal sealed partial class JsEngine
     /// </para>
     /// <para>
     /// <b>A caught exception is raised again with a plain throw</b>, for RunNative's reason. A throw that
-    /// crosses several value-form frames is a managed rethrow per level at this stage; the status chain
-    /// that replaces it is stage JSV-4's.
+    /// crosses several value-form frames entered here is a managed rethrow per level; one that crosses
+    /// direct calls is a status per level (stage JSV-3), and the status chain for the rest is stage JSV-4's.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=795485
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=22D6B8
     // Broiler-Falsified-If: emitted code runs while its activation or its page is unreachable from a managed root, runs with no region or with a region some other activation holds, a region outlives the call that opened it, or this answers a value for a status other than exit
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -166,43 +166,16 @@ internal sealed partial class JsEngine
         var page = NativePageOf(program) ??
             throw new JsAbort(JsAbortKind.InternalDefect, "emitted code could not be mapped");
 
-        var stack = ValueStack ??
-            throw new JsAbort(JsAbortKind.InternalDefect, "a value-form program reached an engine with no value stack");
-
-        // THE PLAN IS THE ONE THE PAYLOAD WAS SCANNED AGAINST: which region words are the arguments, the
-        // resident bindings and the operand stack, and the height before every instruction.
-        var plan = program.ValuePlan(unitIndex) ??
-            throw new JsAbort(JsAbortKind.InternalDefect, "a value-form unit has no value plan");
-
-        var act = new JsNativeActivation(
-            this, program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
-            thisBinding, frame);
-
-        _ = ExecuteCore<JsNativeEntry>(
-            program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
-            thisBinding, frame, act);
-
-        if (!stack.TryPush(plan.StackBase + act.Stack.Length, out var segment, out var slabFrame))
-        {
-            throw StackBackstopReached();
-        }
-
-        act.Segment = segment;
-        act.SlabFrame = slabFrame;
-        act.Plan = plan;
+        var act = OpenValue(
+            program, unitIndex, environment, thisValue, actualArguments, self, newTarget, thisBinding, frame);
 
         try
         {
-            JsValueWindows.Open(act, ValueHandles!);
-
-            // THE REGION'S ADDRESS IS STABLE FOR THE REGION'S LIFE: the segment is a pinned array, and the
-            // region is popped in the finally below, after the emitted code has returned.
+            // THE FRAME LIVES IN THIS METHOD'S FRAME FOR THE WHOLE EMITTED CALL, and names nothing the
+            // collector traces: the region's address is stable for the region's life, because the segment is
+            // a pinned array and the region is popped in the finally below, after the emitted code returned.
             JsValueFrame native;
-            native.Helpers = JsValueHelpers.Table;
-            native.Cookie = act.Cookie;
-            native.Region = (nint)System.Runtime.CompilerServices.Unsafe.AsPointer(
-                ref segment.Words[JsValueSlab.FirstWord(slabFrame)]);
-            native.Debt = 0;
+            Frame(act, &native);
 
             var previous = JsNativeActivation.Current;
             JsNativeActivation.Current = act;
@@ -226,17 +199,321 @@ internal sealed partial class JsEngine
             {
                 (int)JsBaselineStatus.Exit => act.Result,
                 (int)JsBaselineStatus.Threw => throw act.Pending!,
+                JsValueAbi.Returned => Returned(act, native.Debt),
                 _ => throw new JsAbort(
                     JsAbortKind.InternalDefect, "emitted code answered status " + status),
             };
         }
         finally
         {
-            act.Segment = null;
-            act.Plan = null;
-            stack.Pop(segment, slabFrame);
+            CloseValue(act);
         }
     }
+
+    /// <summary>
+    /// What an inline return left: the value in the region's first word, decoded before anything can compact,
+    /// and the debt it ran up charged; recorded on the activation as the interpreter's arm records it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=696FCF
+    // Broiler-Falsified-If: it answers any value but the decoding of the region's first word, decodes after a safepoint, or answers before the debt is charged
+    // Broiler-Human:        PENDING
+    internal JsValue Returned(JsNativeActivation act, long debt)
+    {
+        var value = JsValueWindows.Returned(act);
+        ChargeDebt(debt);
+        act.Exit(value);
+        return value;
+    }
+
+    /// <summary>
+    /// An activation of a value-form unit with its region open: the dispatch loop's prologue run, a region
+    /// pushed on the value stack, and its words encoded and published.
+    /// </summary>
+    /// <remarks>
+    /// <b>SHARED BY THE TWO WAYS A VALUE-FORM UNIT IS ENTERED</b>: from managed code, by
+    /// <see cref="RunValue"/>, and from another unit's emitted code, by a direct call (stage JSV-3). A region
+    /// that cannot be pushed is the call-depth backstop; one whose encoding fails is closed before the failure
+    /// goes on.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=FB7536
+    // Broiler-Falsified-If: it answers an activation whose region is not the top of the value stack, is not encoded and published at the activation's height, or whose plan is not its unit's; or a failure leaves a region pushed
+    // Broiler-Human:        PENDING
+    private JsNativeActivation OpenValue(
+        JsProgram program,
+        int unitIndex,
+        JsEnvironment? environment,
+        JsValue thisValue,
+        JsValue[] actualArguments,
+        JsScriptFunction? self,
+        JsValue newTarget,
+        JsCell? thisBinding,
+        JsFrame? frame)
+    {
+        var stack = ValueStack ??
+            throw new JsAbort(JsAbortKind.InternalDefect, "a value-form program reached an engine with no value stack");
+
+        // THE PLAN IS THE ONE THE PAYLOAD WAS SCANNED AGAINST: which region words are the arguments, the
+        // resident bindings and the operand stack, and the height before every instruction.
+        var plan = program.ValuePlan(unitIndex) ??
+            throw new JsAbort(JsAbortKind.InternalDefect, "a value-form unit has no value plan");
+
+        var act = new JsNativeActivation(
+            this, program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+            thisBinding, frame);
+
+        if (frame is null)
+        {
+            // AN ORDINARY ENTRY IS THE DISPATCH LOOP'S PROLOGUE FOR NO FRAME, and nothing more: a fresh operand
+            // stack of the unit's verified depth, a scope list holding the entered environment, and the unit's
+            // first instruction - which is exactly what the entry instantiation hands the activation when it
+            // is given no frame, without the loop's frame of its own around it.
+            var unit = program.Functions[unitIndex];
+            act.Stack = new JsValue[unit.MaxOperandStack + 1];
+            act.Scopes = new System.Collections.Generic.List<JsEnvironment>(4) { environment! };
+            act.Sp = 0;
+            act.Pc = (int)unit.CodeOffset;
+        }
+        else
+        {
+            _ = ExecuteCore<JsNativeEntry>(
+                program, unitIndex, environment, thisValue, actualArguments, self, newTarget,
+                thisBinding, frame, act);
+        }
+
+        if (!stack.TryPush(plan.StackBase + act.Stack.Length, out var segment, out var slabFrame))
+        {
+            throw StackBackstopReached();
+        }
+
+        act.Segment = segment;
+        act.SlabFrame = slabFrame;
+        act.Plan = plan;
+
+        try
+        {
+            JsValueWindows.Open(act, ValueHandles!);
+        }
+        catch
+        {
+            CloseValue(act);
+            throw;
+        }
+
+        return act;
+    }
+
+    /// <summary>Closes the region <see cref="OpenValue"/> opened: popped from the value stack, and forgotten by the activation.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=C5E740
+    // Broiler-Falsified-If: a region is popped other than in the reverse order regions were pushed, or an activation keeps a segment or a plan after its region is closed
+    // Broiler-Human:        PENDING
+    private void CloseValue(JsNativeActivation act)
+    {
+        var segment = act.Segment ??
+            throw new JsAbort(JsAbortKind.InternalDefect, "a value-form region was closed twice");
+
+        act.Segment = null;
+        act.Plan = null;
+        ValueStack!.Pop(segment, act.SlabFrame);
+    }
+
+    /// <summary>Fills a frame context for an activation whose region is open: the table, the cookie, the region and no debt.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=22D8FA
+    // Broiler-Falsified-If: the context names a cookie other than the activation's, a region other than its own first word, a debt other than zero, or an entry
+    // Broiler-Human:        PENDING
+    private static unsafe void Frame(JsNativeActivation act, JsValueFrame* frame)
+    {
+        frame->Helpers = JsValueHelpers.Table;
+        frame->Cookie = act.Cookie;
+        frame->Region = (nint)System.Runtime.CompilerServices.Unsafe.AsPointer(
+            ref act.Segment!.Words[JsValueSlab.FirstWord(act.SlabFrame)]);
+        frame->Debt = 0;
+        frame->Entry = 0;
+        frame->EntryPc = 0;
+    }
+
+    // ---- the direct call (JSD-0035 section 6, stage JSV-3) -------------------------------------------
+
+    /// <summary>
+    /// Whether the <c>Call</c> at <paramref name="pc"/> names a function the caller can call directly: a plain
+    /// script function - not a generator, not async, not a class constructor - of the caller's own program.
+    /// </summary>
+    /// <remarks>
+    /// <b>IT READS ONE WORD AND CHANGES NOTHING</b>, so a call it answers false for runs through the
+    /// instruction's own helper exactly as it did before direct calls existed. The same program is the same
+    /// payload, so the callee's entry is one the scan held to the same layout; a function of another program
+    /// - a nested load's, another script's - is called through the helper.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=35645C
+    // Broiler-Falsified-If: it answers true for a callee that is not a plain script function of the caller's program, or changes a word, a handle or the meter
+    // Broiler-Human:        PENDING
+    internal bool TryDirectCallee(JsNativeActivation caller, int pc, out JsScriptFunction function)
+    {
+        function = null!;
+        var plan = caller.Plan;
+        var segment = caller.Segment;
+
+        if (plan is null || segment is null || ValueHandles is not { } handles)
+        {
+            return false;
+        }
+
+        var slot = plan.HeightAt(pc) - caller.Code[pc + 1] - 2;
+
+        if (slot < 0)
+        {
+            return false;
+        }
+
+        var word = segment.Words[JsValueSlab.FirstWord(caller.SlabFrame) + plan.StackBase + slot];
+
+        if (!JsWord.IsHandle(word) ||
+            !JsWordCodec.TryDecode(word, handles, out var value) ||
+            !value.IsObject ||
+            value.AsObject() is not JsScriptFunction script ||
+            !ReferenceEquals(script.Program, caller.Program) ||
+            script.IsClassConstructor)
+        {
+            return false;
+        }
+
+        var unit = script.Program.Functions[script.Unit];
+
+        if (unit.IsGenerator || unit.IsAsync)
+        {
+            return false;
+        }
+
+        function = script;
+        return true;
+    }
+
+    /// <summary>
+    /// Everything the interpreter does for a <c>Call</c> of a plain script function before it runs the callee,
+    /// for a call the emitted code makes directly: the instruction's charge, <see cref="Call"/>'s checks,
+    /// <see cref="Invoke"/>'s record and receiver, <see cref="Execute"/>'s referrer and <see cref="RunValue"/>'s
+    /// region; the callee's context filled for the call.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>EACH STEP IS THE INTERPRETER'S OWN METHOD, IN THE INTERPRETER'S ORDER</b>, after the one charge
+    /// <see cref="DirectCallCharge"/> names, which the caller makes with its debt; so the stack
+    /// probe, the <c>RangeError</c> at the counted bound, the call-depth ceiling and the backstop are the
+    /// interpreter's, at the same point in the same call. What the interpreter's call adds on the machine
+    /// stack - the arm's frame, the call, the invocation and the entry - a direct call does not: the callee's
+    /// emitted frame is all a level costs, which is why a recursion reaches the counted bound long before the
+    /// machine stack.
+    /// </para>
+    /// <para>
+    /// <b>A FAILURE LEAVES NOTHING TAKEN</b>: the depth, the referrer and the region are given back before it
+    /// goes on, so the caller raises it at the call as the interpreter's arm would have met it.
+    /// </para>
+    /// </remarks>
+    /// <param name="caller">The activation making the call, entered at the call's instruction.</param>
+    /// <param name="pc">The call's instruction.</param>
+    /// <param name="height">The operand height before it, whose top words the window decoded.</param>
+    /// <param name="function">The callee, as <see cref="TryDirectCallee"/> answered it.</param>
+    /// <param name="context">The callee context the call site reserved.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=0002A2
+    // Broiler-Falsified-If: a direct call charges, checks, binds or opens other than the interpreter's call of the same function would, fills an entry other than the callee unit's in the caller's own payload, or a failure leaves a depth, a referrer or a region taken
+    // Broiler-Human:        PENDING
+    internal unsafe JsNativeActivation BeginDirectCall(
+        JsNativeActivation caller, int pc, int height, JsScriptFunction function, JsValueFrame* context)
+    {
+        var stack = caller.Stack;
+        var argc = caller.Code[pc + 1];
+        var sp = height;
+        var arguments = argc == 0 ? System.Array.Empty<JsValue>() : new JsValue[argc];
+
+        for (var at = argc - 1; at >= 0; at--)
+        {
+            arguments[at] = stack[--sp];
+        }
+
+        var receiver = stack[--sp];
+
+        // THE CHARGE WAS MADE BY THE CALLER, WITH ITS DEBT (DirectCallCharge); what the interpreter's call
+        // makes after its charge follows.
+        EnterDepth();
+
+        try
+        {
+            var program = function.Program;
+            var unit = program.Functions[function.Unit];
+            var environment = CallEnvironment(function, unit, arguments);
+            var thisValue = CallReceiver(function, unit, receiver);
+
+            if ((program.NativeCode.Length != 0) != nativeForm || program.NativeValueForm != valueForm)
+            {
+                throw new JsAbort(
+                    JsAbortKind.InternalDefect, "a program of the other output form reached this engine");
+            }
+
+            var page = NativePageOf(program) ??
+                throw new JsAbort(JsAbortKind.InternalDefect, "emitted code could not be mapped");
+
+            var outerReferrer = activeReferrer;
+            activeReferrer = function.ScriptOrModule ?? string.Empty;
+
+            try
+            {
+                var callee = OpenValue(
+                    program,
+                    function.Unit,
+                    environment,
+                    thisValue,
+                    arguments,
+                    function,
+                    unit.IsArrow ? function.LexicalNewTarget : JsValue.Undefined,
+                    unit.IsArrow ? function.LexicalThisBinding : null,
+                    null);
+
+                callee.Caller = caller;
+                callee.CallerReferrer = outerReferrer;
+                Frame(callee, context);
+                context->Entry = page.At(program.NativeSymbols[function.Unit].Offset);
+                context->EntryPc = callee.Pc;
+                return callee;
+            }
+            catch
+            {
+                activeReferrer = outerReferrer;
+                throw;
+            }
+        }
+        catch
+        {
+            LeaveCall();
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Everything the interpreter does after a directly called function's emitted code returned, before the
+    /// caller goes on: the region closed, the referrer restored and the depth given back.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=7C9518
+    // Broiler-Falsified-If: a direct callee's region, referrer or depth outlives its return, or is given back twice
+    // Broiler-Human:        PENDING
+    internal void EndDirectCall(JsNativeActivation callee)
+    {
+        try
+        {
+            CloseValue(callee);
+        }
+        finally
+        {
+            activeReferrer = callee.CallerReferrer ?? string.Empty;
+            callee.Caller = null;
+            LeaveCall();
+        }
+    }
+
+    /// <summary>Whether a throw at the caller's instruction lands in one of its own regions, as the interpreter's filter asks.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=FF905A
+    // Broiler-Falsified-If: it answers other than the interpreter's filter would for the same exception at the same instruction
+    // Broiler-Human:        PENDING
+    internal static bool Lands(JsNativeActivation act, System.Exception raised, int pc) =>
+        raised is JsThrow && TryFindHandler(act.Program, act.UnitIndex, pc, out _);
 
     /// <summary>The armed mapping of <paramref name="program"/>'s emitted code, mapped on first use.</summary>
     /// <remarks>

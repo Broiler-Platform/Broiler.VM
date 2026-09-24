@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   199
-// Annotated:        199/199
-// Exempt:           33
-// Human-reviewed:   0/199
+// Relevant units:   207
+// Annotated:        207/207
+// Exempt:           34
+// Human-reviewed:   0/207
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         75/75
+// Criteria:         82/80
 // Resource impact:  7/10 max
-// Unverified:       199
+// Unverified:       207
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -4172,7 +4172,7 @@ internal sealed partial class JsEngine
     // ---- calling -------------------------------------------------------------------------------
 
     /// <summary>Calls <paramref name="callee"/>, whatever kind of callable it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=40A67B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B42A80
     // Broiler-Human:        PENDING
     internal JsValue Call(JsValue callee, JsValue thisValue, JsValue[] arguments)
     {
@@ -4181,8 +4181,104 @@ internal sealed partial class JsEngine
             return ThrowTypeError(Describe(callee) + " is not a function");
         }
 
-        Charge(4);
+        EnterCall();
 
+        try
+        {
+            switch (callee.AsObject())
+            {
+                // THE PROXY CASE IS FIRST BECAUSE IT IS NOT A FUNCTION. It has no bytecode and no
+                // delegate; what it has is an `apply` trap, or a target to forward to. Reaching it
+                // through this switch rather than at the call site is what makes every route into a
+                // call - a call expression, `Function.prototype.call`, a comparator handed to
+                // `sort`, an iterator's `next` - trap alike.
+                case JsProxy proxy:
+                    return proxy.ProxyCall(thisValue, arguments);
+
+                case JsNativeFunction native:
+                    return native.Call(this, thisValue, arguments);
+
+                case JsBoundFunction bound:
+                    return Call(
+                        JsValue.Object(bound.Target),
+                        bound.BoundThis,
+                        Concat(bound.BoundArguments, arguments));
+
+                // A CLASS IS NOT CALLABLE AND THE REFUSAL BELONGS HERE. Every route into a
+                // function - a call site, `Function.prototype.call`, a comparison function handed
+                // to `sort` - arrives at this switch, and a guard inside the constructor's own
+                // code would answer for none of them because the frame is never entered.
+                case JsScriptFunction script when script.IsClassConstructor:
+                    return ThrowTypeError(
+                        "Class constructor " + script.FunctionName +
+                        " cannot be invoked without 'new'");
+
+                case JsScriptFunction script:
+                    return Invoke(script, thisValue, arguments, JsValue.Undefined, null);
+
+                default:
+                    return ThrowTypeError("value is not a function");
+            }
+        }
+        finally
+        {
+            LeaveCall();
+        }
+    }
+
+    /// <summary>
+    /// What every call does between knowing its callee is callable and entering it: its charge, the two
+    /// backstops, and the depth it takes.
+    /// </summary>
+    /// <remarks>
+    /// <b>ONE METHOD BECAUSE TWO PATHS MAKE A CALL</b>: <see cref="Call"/>, and the value form's direct call
+    /// (JSD-0035 section 6, stage JSV-3), which makes exactly this call's checks, in this order, before it
+    /// enters its callee's emitted code - so the charge, the stack probe, the <c>RangeError</c> at the
+    /// counted bound and the call-depth ceiling are one text for both, and a value-form recursion answers
+    /// the interpreter's error at the interpreter's depth.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=6C4D20
+    // Broiler-Falsified-If: a call that passes it has not been charged, has not been probed, is past the counted bound without a RangeError, or has not taken one depth that LeaveCall gives back
+    // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private void EnterCall()
+    {
+        Charge(CallCharge);
+        EnterDepth();
+    }
+
+    /// <summary>What a call is charged for itself, over the instruction that makes it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=176597
+    // Broiler-Human:        PENDING
+    private const ulong CallCharge = 4;
+
+    /// <summary>
+    /// What a value-form direct call charges before it enters its callee, in one charge: the pure instructions
+    /// before it, the <c>Call</c> instruction and the call itself.
+    /// </summary>
+    /// <remarks>
+    /// <b>One charge where the interpreter makes three, and the same verdict at every ceiling</b>: nothing
+    /// between the three is observable, and a charge is all-or-nothing, so an allowance that cannot take the
+    /// sum ends the operation before anything the interpreter would have run past its own exhaustion is seen
+    /// (JSD-0035 section 7).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=5DBA5E
+    // Broiler-Falsified-If: a direct call is charged other than the instruction's unit and the call's four over its debt
+    // Broiler-Human:        PENDING
+    internal const long DirectCallCharge = FuelPerInstruction + (long)CallCharge;
+
+    /// <summary>
+    /// The two backstops and the depth a call takes, after its charge: the stack probe, the counted bound's
+    /// <c>RangeError</c>, and the call-depth ceiling.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=19672B
+    // Broiler-Falsified-If: a call that passes it has not been probed, is past the counted bound without a RangeError, or has not taken one depth that LeaveCall gives back
+    // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private void EnterDepth()
+    {
         // THE TWO BACKSTOPS ARE DIFFERENT ANSWERS TO DIFFERENT QUESTIONS, and folding them into one
         // condition - which is what this was - cost the language its own error.
         //
@@ -4229,49 +4325,18 @@ internal sealed partial class JsEngine
         }
 
         depth++;
+    }
 
-        try
-        {
-            switch (callee.AsObject())
-            {
-                // THE PROXY CASE IS FIRST BECAUSE IT IS NOT A FUNCTION. It has no bytecode and no
-                // delegate; what it has is an `apply` trap, or a target to forward to. Reaching it
-                // through this switch rather than at the call site is what makes every route into a
-                // call - a call expression, `Function.prototype.call`, a comparator handed to
-                // `sort`, an iterator's `next` - trap alike.
-                case JsProxy proxy:
-                    return proxy.ProxyCall(thisValue, arguments);
-
-                case JsNativeFunction native:
-                    return native.Call(this, thisValue, arguments);
-
-                case JsBoundFunction bound:
-                    return Call(
-                        JsValue.Object(bound.Target),
-                        bound.BoundThis,
-                        Concat(bound.BoundArguments, arguments));
-
-                // A CLASS IS NOT CALLABLE AND THE REFUSAL BELONGS HERE. Every route into a
-                // function - a call site, `Function.prototype.call`, a comparison function handed
-                // to `sort` - arrives at this switch, and a guard inside the constructor's own
-                // code would answer for none of them because the frame is never entered.
-                case JsScriptFunction script when script.IsClassConstructor:
-                    return ThrowTypeError(
-                        "Class constructor " + script.FunctionName +
-                        " cannot be invoked without 'new'");
-
-                case JsScriptFunction script:
-                    return Invoke(script, thisValue, arguments, JsValue.Undefined, null);
-
-                default:
-                    return ThrowTypeError("value is not a function");
-            }
-        }
-        finally
-        {
-            depth--;
-            meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
-        }
+    /// <summary>Gives back the depth <see cref="EnterCall"/> took, however the call ended.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=957E56
+    // Broiler-Falsified-If: it is run other than once for each EnterCall that returned
+    // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private void LeaveCall()
+    {
+        depth--;
+        meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
     }
 
     /// <summary>Constructs with <paramref name="callee"/>, which is also the <c>new.target</c>.</summary>
@@ -6128,7 +6193,7 @@ internal sealed partial class JsEngine
     /// <param name="binding">
     /// The box a construction holds its <c>this</c> in, or <see langword="null"/> for a call.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B03C11
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C1EF9D
     // Broiler-Human:        PENDING
     private JsValue Invoke(
         JsScriptFunction function,
@@ -6139,37 +6204,8 @@ internal sealed partial class JsEngine
     {
         var program = function.Program;
         var unit = program.Functions[function.Unit];
-        var environment = new JsEnvironment((int)unit.ScopeSlots, function.Environment);
-
-        // A UNIT THAT BINDS ITS OWN PARAMETERS GETS NO COPY AT ALL, and the slots stay EMPTY. That
-        // is not an optimisation: a default that reads a later parameter has to find a binding in
-        // its temporal dead zone, and filling the slots with `undefined` here would turn that
-        // ReferenceError into a silent `undefined`. For a simple parameter list `ParameterCount` is
-        // both the arity and the copy count and this is the whole of parameter binding.
-        if (!unit.BindsParameters)
-        {
-            var count = System.Math.Min(arguments.Length, (int)unit.ParameterCount);
-
-            for (var at = 0; at < count; at++)
-            {
-                environment.Slots[at] = arguments[at];
-            }
-
-            for (var at = count; at < unit.ParameterCount; at++)
-            {
-                environment.Slots[at] = JsValue.Undefined;
-            }
-        }
-
-        var receiver = unit.IsArrow
-            ? function.LexicalThis
-            : unit.IsStrict
-                ? thisValue
-                : thisValue.IsNullish
-                    ? JsValue.Object(Realm.GlobalObject)
-                    : thisValue.IsObject
-                        ? thisValue
-                        : JsValue.Object(ToObject(thisValue));
+        var environment = CallEnvironment(function, unit, arguments);
+        var receiver = CallReceiver(function, unit, thisValue);
 
         // CALLING AN ASYNC GENERATOR FUNCTION RUNS NONE OF ITS BODY EITHER, and it is tested BEFORE
         // the two arms below because it carries both of their bits. What it answers is an async
@@ -6247,6 +6283,61 @@ internal sealed partial class JsEngine
             unit.IsArrow ? function.LexicalThisBinding : binding,
             null);
     }
+
+    /// <summary>The environment a call of <paramref name="function"/> enters with, its parameters copied in.</summary>
+    /// <remarks>
+    /// <b>SHARED WITH THE VALUE FORM'S DIRECT CALL</b> (stage JSV-3), which builds the callee's record exactly as
+    /// <see cref="Invoke"/> does before it opens the callee's region.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=940602
+    // Broiler-Falsified-If: a unit with a simple parameter list is entered with a parameter slot that is not its argument or undefined, or a unit that binds its own parameters with a slot that is not empty
+    // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private static JsEnvironment CallEnvironment(JsScriptFunction function, JsCodeUnit unit, JsValue[] arguments)
+    {
+        var environment = new JsEnvironment((int)unit.ScopeSlots, function.Environment);
+
+        // A UNIT THAT BINDS ITS OWN PARAMETERS GETS NO COPY AT ALL, and the slots stay EMPTY. That
+        // is not an optimisation: a default that reads a later parameter has to find a binding in
+        // its temporal dead zone, and filling the slots with `undefined` here would turn that
+        // ReferenceError into a silent `undefined`. For a simple parameter list `ParameterCount` is
+        // both the arity and the copy count and this is the whole of parameter binding.
+        if (!unit.BindsParameters)
+        {
+            var count = System.Math.Min(arguments.Length, (int)unit.ParameterCount);
+
+            for (var at = 0; at < count; at++)
+            {
+                environment.Slots[at] = arguments[at];
+            }
+
+            for (var at = count; at < unit.ParameterCount; at++)
+            {
+                environment.Slots[at] = JsValue.Undefined;
+            }
+        }
+
+        return environment;
+    }
+
+    /// <summary>The receiver a call of <paramref name="function"/> runs with: its own, or the lexical one of an arrow.</summary>
+    /// <remarks><b>Shared with the value form's direct call</b>, for <see cref="CallEnvironment"/>'s reason.</remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9ADE35
+    // Broiler-Falsified-If: a sloppy non-arrow function is entered with a primitive or nullish receiver, or a strict or arrow one with any receiver but the one the call supplied or the lexical one
+    // Broiler-Human:        PENDING
+    [System.Runtime.CompilerServices.MethodImpl(
+        System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private JsValue CallReceiver(JsScriptFunction function, JsCodeUnit unit, JsValue thisValue) =>
+        unit.IsArrow
+            ? function.LexicalThis
+            : unit.IsStrict
+                ? thisValue
+                : thisValue.IsNullish
+                    ? JsValue.Object(Realm.GlobalObject)
+                    : thisValue.IsObject
+                        ? thisValue
+                        : JsValue.Object(ToObject(thisValue));
 
     /// <summary>
     /// Runs a generator's parameter-binding prologue, at the call, and leaves the frame at the
@@ -7168,7 +7259,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=C30BBB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=E9E0BC
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -7258,7 +7349,7 @@ internal sealed partial class JsEngine
         // stops it; a step clears the boundary once and runs its first instruction, so the stop rule
         // is first asked about an instruction that has run, never about the value `current` starts
         // with.
-        var stepped = typeof(TMode) == typeof(JsNativeEntry);
+        var stepped = typeof(TMode) == typeof(JsNativeEntry) || typeof(TMode) == typeof(JsRaise);
 
         while (true)
         {
@@ -7276,6 +7367,17 @@ internal sealed partial class JsEngine
                     }
 
                     throw new JsReturnSignal(carried);
+                }
+
+                // A RAISE THROWS WHAT A DIRECT CALL ANSWERED AT THE CALL, inside this try, so the filter
+                // and the landing below are the ones the interpreter's `Call` arm would have met the same
+                // exception with (JSD-0035 section 6, stage JSV-3). It runs no instruction and charges
+                // nothing: a landing stops at the boundary as an entry does.
+                if (typeof(TMode) == typeof(JsRaise) && act!.Raise is { } raised)
+                {
+                    act.Raise = null;
+                    current = pc;
+                    throw raised;
                 }
 
                 while (true)
@@ -10542,6 +10644,21 @@ internal readonly struct JsNativeEntry : IJsExecutionMode
 {
     /// <summary>Never asked: the entry runs no instruction.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=AA45B6
+    // Broiler-Human:        PENDING
+    public static JsOpcode Opcode => default;
+}
+
+/// <summary>
+/// The value form's raise: an exception a direct call answered, thrown at the call's instruction and landed
+/// where the interpreter's own filter lands it, and nothing more.
+/// </summary>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=C1131D
+// Broiler-Falsified-If: the loop instantiated over this mode charges for or runs an instruction, or lands an exception anywhere the interpreter's filter and landing would not
+// Broiler-Human:        PENDING
+internal readonly struct JsRaise : IJsExecutionMode
+{
+    /// <summary>Never asked: a raise runs no instruction.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AA45B6
     // Broiler-Human:        PENDING
     public static JsOpcode Opcode => default;
 }

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   6
-// Annotated:        6/6
-// Exempt:           26
-// Human-reviewed:   0/6
+// Relevant units:   9
+// Annotated:        9/9
+// Exempt:           29
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         20/20
+// Criteria:         25/25
 // Resource impact:  5/10 max
-// Unverified:       6
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -246,6 +246,28 @@ internal sealed unsafe class JsNativeActivation
     // Broiler-Human:        PENDING
     internal System.Exception? Pending;
 
+    /// <summary>The activation whose emitted code called this one's directly, or nothing (stage JSV-3).</summary>
+    /// <remarks>
+    /// <b>IT IS WHAT ROOTS A DIRECT CALL'S CALLER</b>: the thread slot names the innermost activation, and each
+    /// directly called one names the one below it, down to the activation <c>RunValue</c> entered, which that
+    /// method's frame holds; the finish helper follows it back when the callee returns.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=275E20
+    // Broiler-Falsified-If: a direct callee runs with no caller named, or names one other than the activation whose call site entered it
+    // Broiler-Human:        PENDING
+    internal JsNativeActivation? Caller;
+
+    /// <summary>The script or module a direct call's caller was running, which its return restores.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3F30FA
+    // Broiler-Human:        PENDING
+    internal string? CallerReferrer;
+
+    /// <summary>The exception a raise throws at this activation's instruction, and nothing between raises.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=36B35C
+    // Broiler-Falsified-If: an exception is raised at an instruction other than the call a direct call answered it at, or raised twice
+    // Broiler-Human:        PENDING
+    internal System.Exception? Raise;
+
     /// <summary>The activation whose emitted code is innermost on this thread.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=859662
     // Broiler-Falsified-If: this is written anywhere but around the one call that enters emitted code, or is not restored when that call returns
@@ -476,6 +498,206 @@ internal sealed unsafe class JsNativeActivation
         }
         catch (System.Exception escaped)
         {
+            act.Pending = escaped;
+            return (int)JsBaselineStatus.Threw;
+        }
+    }
+
+    /// <summary>
+    /// The call-prepare helper's work at a direct call site: the <c>Call</c> run through its own helper, or a
+    /// direct call prepared - the callee's activation made, its region opened, its context filled - and the
+    /// thread slot moved to it (JSD-0035 section 6, stage JSV-3).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>IT MAKES <see cref="StepValue{TMode}"/>'S CHECKS FIRST</b>, and a callee that is not a plain script
+    /// function of the caller's program is the ordinary helper's to call, through <see cref="StepValue{TMode}"/>
+    /// itself, with nothing done before it. A direct call charges the debt, decodes the call's window as that
+    /// step would, and then does exactly what the interpreter's <c>Call</c> does before it runs a callee.
+    /// </para>
+    /// <para>
+    /// <b>WHAT FAILS BEFORE THE CALLEE RUNS IS RAISED AT THE CALL</b>, so the <c>RangeError</c> of a recursion
+    /// past the counted bound lands in the caller's own regions exactly as the interpreter's does, and what
+    /// lands nowhere is parked for the caller's caller.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=F68147
+    // Broiler-Falsified-If: a direct call is prepared for a call site whose checks fail, for a callee the ordinary helper should call, without its debt charged, or answers the direct call with the thread slot naming anything but the prepared callee; or anything but the direct call escapes into emitted code
+    // Broiler-Human:        PENDING
+    internal static int PrepareCall<TMode>(JsValueFrame* frame, int pc, JsValueFrame* context)
+        where TMode : struct, IJsExecutionMode
+    {
+        var act = current;
+
+        if (act is null ||
+            frame is null ||
+            context is null ||
+            act.Cookie != frame->Cookie ||
+            act.Exited ||
+            (uint)pc >= (uint)act.Code.Length ||
+            act.Code[pc] != (byte)JsOpcode.Call ||
+            act.Segment is null ||
+            act.Plan is null)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        if (act.Plan.HeightAt(pc) < 0)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        if (!act.Engine.TryDirectCallee(act, pc, out var function))
+        {
+            return StepValue<TMode>(frame, pc, JsOpcode.Call);
+        }
+
+        var height = -1;
+        var pops = 0;
+
+        try
+        {
+            var debt = frame->Debt;
+            frame->Debt = 0;
+            act.Engine.ChargeDebt(debt + JsEngine.DirectCallCharge);
+
+            pops = JsValueWindows.Enter(act, pc, out height);
+            act.Landed = false;
+
+            current = act.Engine.BeginDirectCall(act, pc, height, function, context);
+            return JsValueAbi.DirectCall;
+        }
+        catch (System.Exception escaped)
+        {
+            return RaiseAt(act, pc, height, pops, escaped);
+        }
+    }
+
+    /// <summary>
+    /// The call-finish helper's work after a directly called function's emitted code returned: the thread slot
+    /// moved back to the caller, the callee's region closed, and its answer pushed or its exception raised at
+    /// the call (stage JSV-3).
+    /// </summary>
+    /// <remarks>
+    /// <b>THE CALLEE IS THE THREAD SLOT'S, AND ITS CALLER IS THE ONE IT NAMES</b>: each must carry the cookie
+    /// of the context it was handed, and the caller must still be at the call's instruction, or nothing runs
+    /// and the answer is a defect. A returned value is written where the interpreter's arm writes it, and the
+    /// caller goes on at the instruction after the call.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=C2D3A2
+    // Broiler-Falsified-If: it acts for a callee or a caller whose cookie is not its context's, leaves the thread slot naming the callee, leaves the callee's region, depth or referrer taken, writes the answer anywhere but the call's own output slot, or lets an exception escape into emitted code
+    // Broiler-Human:        PENDING
+    internal static int FinishCall(JsValueFrame* frame, int pc, JsValueFrame* context, int status)
+    {
+        var callee = current;
+
+        if (callee is null ||
+            frame is null ||
+            context is null ||
+            callee.Cookie != context->Cookie ||
+            callee.Caller is not { } act ||
+            act.Cookie != frame->Cookie ||
+            act.Exited ||
+            act.Pc != pc ||
+            act.Plan is null ||
+            act.Segment is null)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        current = act;
+
+        var height = act.Plan.HeightAt(pc);
+        var pops = act.Code[pc + 1] + 2;
+
+        try
+        {
+            var debt = context->Debt;
+            context->Debt = 0;
+
+            try
+            {
+                // AN INLINE RETURN LEFT ITS VALUE IN THE CALLEE'S FIRST WORD, which is read before the region
+                // closes and before anything can compact, and its debt, which is charged before the caller
+                // sees the value.
+                if (status == JsValueAbi.Returned)
+                {
+                    _ = act.Engine.Returned(callee, debt);
+                    status = (int)JsBaselineStatus.Exit;
+                }
+                else
+                {
+                    act.Engine.ChargeDebt(debt);
+                }
+            }
+            finally
+            {
+                act.Engine.EndDirectCall(callee);
+            }
+
+            if (status == (int)JsBaselineStatus.Exit && callee.Exited)
+            {
+                var slot = height - pops;
+                act.Stack[slot] = callee.Result;
+                act.Sp = slot + 1;
+                act.Pc = pc + 2;
+                act.Landed = false;
+                JsValueWindows.Leave(act, pc, height, pops);
+                return act.Pc;
+            }
+
+            return status == (int)JsBaselineStatus.Threw
+                ? RaiseAt(act, pc, height, pops, callee.Pending ??
+                    new JsAbort(JsAbortKind.InternalDefect, "a direct callee threw nothing"))
+                : (int)JsBaselineStatus.Defect;
+        }
+        catch (System.Exception escaped)
+        {
+            act.Pending = escaped;
+            return (int)JsBaselineStatus.Threw;
+        }
+    }
+
+    /// <summary>
+    /// Raises an exception at a direct call's instruction: landed in the caller's own region the interpreter's
+    /// filter would pick, through the dispatch loop's own landing, or parked for the caller's caller.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=64BF48
+    // Broiler-Falsified-If: an exception lands where the interpreter's filter would not land it, one it would land is parked, or a landing's words are left unencoded or unpublished
+    // Broiler-Human:        PENDING
+    private static int RaiseAt(JsNativeActivation act, int pc, int height, int pops, System.Exception raised)
+    {
+        if (height < 0 || !JsEngine.Lands(act, raised, pc))
+        {
+            act.Pending = raised;
+            return (int)JsBaselineStatus.Threw;
+        }
+
+        try
+        {
+            act.Raise = raised;
+            act.Landed = false;
+            act.Pc = pc;
+            act.Sp = height;
+
+            _ = act.Engine.ExecuteCore<JsRaise>(
+                act.Program,
+                act.UnitIndex,
+                act.Environment,
+                act.ThisValue,
+                act.Arguments,
+                act.Self,
+                act.NewTarget,
+                act.ThisBinding,
+                act.Frame,
+                act);
+
+            JsValueWindows.Leave(act, pc, height, pops);
+            return act.Pc;
+        }
+        catch (System.Exception escaped)
+        {
+            act.Raise = null;
             act.Pending = escaped;
             return (int)JsBaselineStatus.Threw;
         }

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   25
 // Annotated:        25/25
-// Exempt:           28
+// Exempt:           29
 // Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    Critical
@@ -38,7 +38,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// one. Every other member is reached by bytes somebody could hand this build, and the composition
 /// lane beside the backends has a row for each.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9D4B39
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=4BC764
 // Broiler-Human:        PENDING
 public enum JsNativeScanOutcome
 {
@@ -125,6 +125,12 @@ public enum JsNativeScanOutcome
     /// inline branch among them (clause V5).
     /// </summary>
     DebtNotSettled = 22,
+
+    /// <summary>
+    /// A value-form direct call site is not the sequence its layout dictates: another helper slot, a call of
+    /// the callee's entry the prepare helper did not ask for, or no finish after it (clause V3, stage JSV-3).
+    /// </summary>
+    CallNotDirect = 23,
 }
 
 /// <summary>What a scan answered, and about which byte.</summary>
@@ -549,8 +555,8 @@ public static class JsNativeScan
     }
 
     /// <summary>The refusal for a value-layout entry that differed, named by its role.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=D3F8FF
-    // Broiler-Falsified-If: a differing guard answers other than GuardNotItsHelper, a differing debt entry other than DebtNotSettled, a differing inline entry other than InlineNotTheInstruction, or a differing dispatch, call or tail other than the baseline clause's outcome
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9E5B74
+    // Broiler-Falsified-If: a differing guard answers other than GuardNotItsHelper, a differing debt entry other than DebtNotSettled, a differing inline entry other than InlineNotTheInstruction, a differing direct-call entry other than CallNotDirect, or a differing dispatch, call or tail other than the baseline clause's outcome
     // Broiler-Human:        PENDING
     private static JsNativeScanResult ValueRefusal(JsValueInstruction entry, int unit, uint at, string found)
     {
@@ -562,6 +568,7 @@ public static class JsNativeScan
             JsValueRole.Inline => JsNativeScanOutcome.InlineNotTheInstruction,
             JsValueRole.Guard => JsNativeScanOutcome.GuardNotItsHelper,
             JsValueRole.Debt => JsNativeScanOutcome.DebtNotSettled,
+            JsValueRole.Call => JsNativeScanOutcome.CallNotDirect,
             _ => JsNativeScanOutcome.CallsNotTheBlockHeads,
         };
 
@@ -573,6 +580,8 @@ public static class JsNativeScan
                 ", so the debt at " + entry.Pc + " is not counted, spilled, tested or settled as the layout says (V5)",
             JsNativeScanOutcome.InlineNotTheInstruction =>
                 ", so the inline template of the instruction at " + entry.Pc + " is not the one its plan dictates",
+            JsNativeScanOutcome.CallNotDirect =>
+                ", so the direct call site at " + entry.Pc + " does not prepare, enter and finish its call as the layout says (V3)",
             JsNativeScanOutcome.DispatchNotTheLandings =>
                 ", so the unit's dispatch does not compare exactly its landings and branch each to its instruction",
             JsNativeScanOutcome.TailNotTheBlockEnd =>

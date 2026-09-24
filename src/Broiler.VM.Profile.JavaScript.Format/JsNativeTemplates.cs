@@ -839,27 +839,33 @@ public static class JsNativeTemplates
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>THE ONLY INDIRECT TRANSFERS ARE THE TWO CALLS THROUGH THE HELPER TABLE, AND THE ONLY MEMORY WRITES
-    /// ARE TO THE REGION AND THE DEBT WORD.</b> RBX holds the table and is written once, by the prologue;
-    /// R14 holds the frame context and R15 the region, each written once, by the prologue; R12 is the
-    /// debt. Every store addresses <c>[r15+disp32]</c> with a region displacement or <c>[r14+24]</c>, the
+    /// <b>THE ONLY INDIRECT TRANSFERS ARE THE CALLS THROUGH THE HELPER TABLE AND THE DIRECT CALL, AND THE ONLY
+    /// MEMORY WRITES ARE TO THE REGION AND THE DEBT WORD.</b> RBX holds the table and is written once, by the
+    /// prologue; R14 holds the frame context and R15 the region, each written once, by the prologue; R12 is
+    /// the debt. Every store addresses <c>[r15+disp32]</c> with a region displacement or <c>[r14+24]</c>, the
     /// debt word (clause V1). No template reads memory through a register that holds a word, so no handle
     /// payload is ever an address (clause V2). A call is <c>call [rbx+slot]</c> at eight times a defined
-    /// opcode, or <c>call [rbx+settle]</c> at the settlement slot (clause V3).
+    /// opcode, <c>call [rbx+settle]</c>, <c>call [rbx+prepare]</c> or <c>call [rbx+finish]</c> at the three
+    /// slots no opcode takes, or <c>call [rsp+callee+entry]</c>, the direct call, through the entry field of
+    /// the unit's own callee context, which only the prepare helper writes and which it writes with the
+    /// emitted entry of a unit of the same payload (clause V3, stage JSV-3).
     /// </para>
     /// <para>
     /// <b>THE ORDER OF THE ROWS IS PART OF THE TABLE.</b> The first ten are the prologue in the order a unit
     /// must open with and the last six the epilogue in the order it must close with.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=7A8745
-    // Broiler-Falsified-If: a template here writes memory other than a region word or the debt word, dereferences a register an inline template loads a word into, makes an indirect transfer other than through RBX at a defined opcode's slot or the settlement slot, or is a byte sequence the value emitter does not write
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=52AD49
+    // Broiler-Falsified-If: a template here writes memory other than a region word or the debt word, dereferences a register an inline template loads a word into, makes an indirect transfer other than through RBX at a defined opcode's slot or the settlement, prepare or finish slot or through the callee context's entry field, or is a byte sequence the value emitter does not write
     // Broiler-Human:        PENDING
     private static JsNativeTemplate[] X64Value(JsNativeArchitecture architecture)
     {
         var windows = architecture == JsNativeArchitecture.X64Windows;
         var frameBytes = (byte)JsValueAbi.FrameBytes(architecture);
         var settle = JsValueAbi.SettleSlot * 8;
+        var prepare = JsValueAbi.PrepareSlot * 8;
+        var finish = JsValueAbi.FinishSlot * 8;
+        var callee = JsValueAbi.CalleeOffset(architecture);
 
         return
         [
@@ -897,6 +903,45 @@ public static class JsNativeTemplates
 
             // call qword [rbx+2040]: the settlement slot, fixed, which no opcode's slot can be.
             Plain("call [rbx+settle]", [0xFF, 0x93, .. Int32(settle)]),
+
+            // ---- the direct call (stage JSV-3) -------------------------------------------------------
+
+            // The callee context's address as the third argument: mov rdx, rsp under System V, where the
+            // context is at the stack pointer (REX.W 89 /r, ModRM 0xE2); lea r8, [rsp+32] on Windows x64,
+            // past the shadow space (REX.WR 8D /r, ModRM 0x44, SIB 0x24, disp8).
+            Plain(
+                "lea arg2, [rsp+callee]",
+                windows ? [0x4C, 0x8D, 0x44, 0x24, (byte)callee] : [0x48, 0x89, 0xE2]),
+
+            // call qword [rbx+2032] and [rbx+2024]: the prepare and finish slots, fixed.
+            Plain("call [rbx+prepare]", [0xFF, 0x93, .. Int32(prepare)]),
+            Plain("call [rbx+finish]", [0xFF, 0x93, .. Int32(finish)]),
+
+            // cmp eax, imm32 against the one answer that asks for a direct call.
+            Plain("cmp eax, direct", [0x3D, .. Int32(JsValueAbi.DirectCall)]),
+
+            // mov eax, imm32: the status an inline return leaves with, its value in the region's first word.
+            Plain("mov eax, returned", [0xB8, .. Int32(JsValueAbi.Returned)]),
+
+            // The callee context's address as the first argument: mov rdi, rsp (ModRM 0xE7), or
+            // lea rcx, [rsp+32] (REX.W 8D /r, ModRM 0x4C).
+            Plain(
+                "lea arg0, [rsp+callee]",
+                windows ? [0x48, 0x8D, 0x4C, 0x24, (byte)callee] : [0x48, 0x89, 0xE7]),
+
+            // The entry offset the helper wrote, as the second argument: mov esi or mov edx, [rsp+disp8]
+            // (8B /r, ModRM 0x74 or 0x54, SIB 0x24).
+            Plain(
+                "mov arg1d, [rsp+callee+entrypc]",
+                [0x8B, windows ? (byte)0x54 : (byte)0x74, 0x24, (byte)(callee + JsValueAbi.EntryPcOffset)]),
+
+            // call qword [rsp+disp8]: the callee's entry the helper wrote (FF /2, ModRM 0x54, SIB 0x24) - the
+            // one indirect transfer that is not through the helper table, to an address only a helper writes.
+            Plain("call [rsp+callee+entry]", [0xFF, 0x54, 0x24, (byte)(callee + JsValueAbi.EntryOffset)]),
+
+            // The callee's status as the fourth argument: mov ecx, eax (89 /r, ModRM 0xC1), or mov r9d, eax
+            // (REX.B 89 /r).
+            Plain("mov arg3d, eax", windows ? [0x41, 0x89, 0xC1] : [0x89, 0xC1]),
 
             // ---- the debt ----------------------------------------------------------------------------
 

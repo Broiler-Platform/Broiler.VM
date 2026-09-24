@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   58
-// Annotated:        58/58
-// Exempt:           109
-// Human-reviewed:   0/58
+// Relevant units:   60
+// Annotated:        60/60
+// Exempt:           120
+// Human-reviewed:   0/60
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         36/36
+// Criteria:         38/38
 // Resource impact:  3/10 max
-// Unverified:       58
+// Unverified:       60
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -24,7 +24,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// where the machine instruction is exact on part of its domain only. <see cref="None"/> is a helper call,
 /// which is what every other instruction is, and what a guarded one becomes when its guard fails.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=5BEC32
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=231C64
 // Broiler-Falsified-If: a member other than None names an instruction outside the pure set, or an instruction the pure set holds has no member
 // Broiler-Human:        PENDING
 public enum JsValueInline : byte
@@ -97,6 +97,12 @@ public enum JsValueInline : byte
 
     /// <summary><c>JumpIfFalse</c> or <c>JumpIfTrue</c> on a Boolean, a Number, <c>undefined</c> or <c>null</c>.</summary>
     Branch,
+
+    /// <summary>
+    /// <c>Return</c> or <c>ReturnUndefined</c>: the value into the region's first word, the debt into the
+    /// context, and out with <see cref="JsValueAbi.Returned"/> (stage JSV-3).
+    /// </summary>
+    Return,
 }
 
 /// <summary>The templates a value-form unit's body is made of, by what they do.</summary>
@@ -104,7 +110,7 @@ public enum JsValueInline : byte
 /// <b>Each member is one row of the value table, found there by <see cref="JsValueLayout.TemplateName"/></b>;
 /// the prologue's and the epilogue's rows are fixed and a layout does not state them.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=7A6663
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B0A4AE
 // Broiler-Human:        PENDING
 public enum JsValueTemplate : byte
 {
@@ -284,10 +290,37 @@ public enum JsValueTemplate : byte
 
     /// <summary><c>cvtsi2sd xmm0, rax</c>.</summary>
     Cvtsi2sd,
+
+    /// <summary><c>lea arg2, [rsp+callee]</c>: the callee context, as a helper's third argument.</summary>
+    LeaArg2Callee,
+
+    /// <summary><c>call [rbx+prepare]</c>: the call-prepare helper.</summary>
+    CallPrepare,
+
+    /// <summary><c>call [rbx+finish]</c>: the call-finish helper.</summary>
+    CallFinish,
+
+    /// <summary><c>cmp eax, direct</c>: whether the prepare helper asked for a direct call.</summary>
+    CmpEaxDirect,
+
+    /// <summary><c>lea arg0, [rsp+callee]</c>: the callee context, as the direct callee's frame.</summary>
+    LeaArg0Callee,
+
+    /// <summary><c>mov arg1d, [rsp+callee+entrypc]</c>: the offset the direct callee is entered at.</summary>
+    MovArg1EntryPc,
+
+    /// <summary><c>call [rsp+callee+entry]</c>: the direct call itself.</summary>
+    CallEntry,
+
+    /// <summary><c>mov arg3d, eax</c>: the direct callee's status, as the finish helper's fourth argument.</summary>
+    MovArg3Status,
+
+    /// <summary><c>mov eax, returned</c>: the status an inline return leaves with.</summary>
+    MovReturned,
 }
 
 /// <summary>Which part of a value-form unit's body a layout entry belongs to, which names the clause it answers to.</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=1A39B4
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B02C0E
 // Broiler-Human:        PENDING
 public enum JsValueRole : byte
 {
@@ -311,6 +344,9 @@ public enum JsValueRole : byte
 
     /// <summary>The debt: its count, its spill, its test and its settlement (clause V5).</summary>
     Debt = 6,
+
+    /// <summary>A direct call: the prepare helper, the call of the callee's entry and the finish helper (clause V3).</summary>
+    Call = 7,
 }
 
 /// <summary>One entry of a value-form unit's layout.</summary>
@@ -541,7 +577,7 @@ public static class JsValueLayout
 
     /// <summary>The name of the value-table row each <see cref="JsValueTemplate"/> member is, by the member's value.</summary>
     /// <remarks><b>Private, and read through <see cref="TemplateName"/></b>, so no reader can edit an entry.</remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=16BD1A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=FF4199
     // Broiler-Falsified-If: an entry names a row other than the one the JsValueTemplate member of its index documents
     // Broiler-Human:        PENDING
     private static readonly string[] Names =
@@ -557,7 +593,9 @@ public static class JsValueLayout
         "movzx eax, al", "add rax, rcx", "xor rax, rcx", "xor rax, 1", "cvttsd2si eax, xmm0",
         "cvttsd2si ecx, xmm1", "cmp eax, int32min", "cmp ecx, int32min", "or eax, ecx", "and eax, ecx",
         "xor eax, ecx", "shl eax, cl", "sar eax, cl", "shr eax, cl", "not eax", "movsxd rax, eax",
-        "cvtsi2sd xmm0, rax",
+        "cvtsi2sd xmm0, rax", "lea arg2, [rsp+callee]", "call [rbx+prepare]", "call [rbx+finish]",
+        "cmp eax, direct", "lea arg0, [rsp+callee]", "mov arg1d, [rsp+callee+entrypc]", "call [rsp+callee+entry]",
+        "mov arg3d, eax", "mov eax, returned",
     ];
 
     /// <summary>How many templates a value layout names.</summary>
@@ -747,6 +785,14 @@ public static class JsValueLayout
     /// a settlement.
     /// </para>
     /// <para>
+    /// <b>A <c>Call</c> THE WALK REACHED IS A DIRECT CALL SITE (stage JSV-3).</b> After the spill it calls the
+    /// prepare helper with the callee context as a third argument; an answer other than
+    /// <see cref="JsValueAbi.DirectCall"/> is the instruction's own helper answer and goes to its tail. The
+    /// direct call enters the callee's emitted entry with the context and the offset the helper wrote, then
+    /// calls the finish helper with the callee's status as a fourth argument, whose answer goes to the same
+    /// tail.
+    /// </para>
+    /// <para>
     /// <b>A TARGET IS AN INDEX INTO THE ANSWER</b>, or <see cref="JsBaselineInstruction.Leave"/> for the
     /// epilogue's first instruction.
     /// </para>
@@ -906,7 +952,7 @@ public static class JsValueLayout
     // ---- the inline set ----------------------------------------------------------------------------
 
     /// <summary>What the emitted code does for one reached instruction, and the operand its template carries.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=E8B517
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=DF103D
     // Broiler-Falsified-If: an instruction outside the pure set is given an inline kind, or a scoped instruction is inline for a binding that is not resident
     // Broiler-Human:        PENDING
     private static (JsValueInline Kind, long Operand) Decide(
@@ -1022,6 +1068,15 @@ public static class JsValueLayout
             case JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue:
                 return (JsValueInline.Branch, 0);
 
+            // A RETURN ENDS THE ACTIVATION AND TOUCHES NOTHING ELSE: the interpreter's arm records the value
+            // and leaves, so the emitted code leaves the value in the region's first word for whoever reads
+            // the answer (JSD-0035 section 6, stage JSV-3).
+            case JsOpcode.Return:
+                return (JsValueInline.Return, 0);
+
+            case JsOpcode.ReturnUndefined:
+                return (JsValueInline.Return, unchecked((long)JsWord.Undefined));
+
             default:
                 return (JsValueInline.None, 0);
         }
@@ -1063,7 +1118,7 @@ public static class JsValueLayout
         private int defect;
 
         /// <summary>Builds the dispatch, the instructions in order, and then every stub they asked for.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=16A7C1
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=D62CB8
         // Broiler-Falsified-If: the entries it adds are not the dispatch, then one sequence per instruction in bytecode order, then the stubs those sequences asked for
         // Broiler-Human:        PENDING
         public void Build()
@@ -1096,14 +1151,22 @@ public static class JsValueLayout
 
                 if (plan.InlineAt(block.Head) == JsValueInline.None)
                 {
-                    Helper(block, stub: false, taken: false);
+                    if (block.HeadOpcode == JsOpcode.Call && plan.HeightAt(block.Head) >= 0)
+                    {
+                        DirectCall(block);
+                    }
+                    else
+                    {
+                        Helper(block, stub: false, taken: false);
+                    }
+
                     run = 0;
                     continue;
                 }
 
                 Inline(block);
 
-                if (plan.InlineAt(block.Head) is JsValueInline.Jump or JsValueInline.Branch)
+                if (plan.InlineAt(block.Head) is JsValueInline.Jump or JsValueInline.Branch or JsValueInline.Return)
                 {
                     continue;
                 }
@@ -1153,7 +1216,7 @@ public static class JsValueLayout
         /// A helper call for the block's instruction and its tail: in line, where the next instruction
         /// follows it, or as a guarded template's stub, which takes the instruction's count back first.
         /// </summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=7DD848
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=C924A8
         // Broiler-Falsified-If: a helper call passes a program counter other than its instruction's or a slot other than eight times that opcode, is not preceded by a spill and a clear of the debt, or a stub's call does not first take its instruction's count back
         // Broiler-Human:        PENDING
         private void Helper(JsBaselineBlock block, bool stub, bool taken)
@@ -1170,6 +1233,48 @@ public static class JsValueLayout
             Add(JsValueTemplate.MovArg0R14, 0, JsBaselineInstruction.None, JsValueRole.Head, pc);
             Add(JsValueTemplate.MovArg1Pc, pc, JsBaselineInstruction.None, JsValueRole.Head, pc);
             Add(JsValueTemplate.CallSlot, (long)block.HeadOpcode * 8, JsBaselineInstruction.None, JsValueRole.Slot, pc);
+            Tail(block, stub);
+        }
+
+        /// <summary>
+        /// A direct call site for the block's <c>Call</c>: the prepare helper, and when it asks for one the call
+        /// of the callee's entry and the finish helper, then the instruction's tail (JSD-0035 section 6).
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=AFB86F
+        // Broiler-Falsified-If: a direct call site passes a program counter other than its instruction's, calls anything but the prepare slot first, calls the callee's entry without the prepare helper having answered the direct call, is not followed by the finish helper with the callee's status, or is not preceded by a spill and a clear of the debt
+        // Broiler-Human:        PENDING
+        private void DirectCall(JsBaselineBlock block)
+        {
+            var pc = block.Head;
+            var tail = NewLabel();
+
+            Add(JsValueTemplate.SpillDebt, 0, JsBaselineInstruction.None, JsValueRole.Debt, pc);
+            Add(JsValueTemplate.ClearDebt, 0, JsBaselineInstruction.None, JsValueRole.Debt, pc);
+            Add(JsValueTemplate.MovArg0R14, 0, JsBaselineInstruction.None, JsValueRole.Head, pc);
+            Add(JsValueTemplate.MovArg1Pc, pc, JsBaselineInstruction.None, JsValueRole.Head, pc);
+            Add(JsValueTemplate.LeaArg2Callee, 0, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Add(JsValueTemplate.CallPrepare, 0, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Add(JsValueTemplate.CmpEaxDirect, 0, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Add(JsValueTemplate.Jne, 0, tail, JsValueRole.Call, pc);
+            Add(JsValueTemplate.LeaArg0Callee, 0, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Add(JsValueTemplate.MovArg1EntryPc, 0, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Add(JsValueTemplate.CallEntry, 0, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Add(JsValueTemplate.MovArg3Status, 0, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Add(JsValueTemplate.MovArg0R14, 0, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Add(JsValueTemplate.MovArg1Pc, pc, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Add(JsValueTemplate.LeaArg2Callee, 0, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Add(JsValueTemplate.CallFinish, 0, JsBaselineInstruction.None, JsValueRole.Call, pc);
+            Bind(tail);
+            Tail(block, stub: false);
+        }
+
+        /// <summary>What a helper's answer for the block's instruction is compared with, and where it goes.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=B410A8
+        // Broiler-Falsified-If: an answer goes anywhere but the instruction's target, its successor or the dispatch
+        // Broiler-Human:        PENDING
+        private void Tail(JsBaselineBlock block, bool stub)
+        {
+            var pc = block.Head;
 
             if (block.HasTarget)
             {
@@ -1289,7 +1394,7 @@ public static class JsValueLayout
         // ---- the inline templates ------------------------------------------------------------------
 
         /// <summary>The inline template of the block's one instruction.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=7089A9
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=FEE111
         // Broiler-Falsified-If: an inline template writes a word before its last guard, writes a word other than its arm's outputs, or computes a value other than its arm's for an operand its guards admit
         // Broiler-Human:        PENDING
         private void Inline(JsBaselineBlock block)
@@ -1482,6 +1587,22 @@ public static class JsValueLayout
 
                 case JsValueInline.Branch:
                     Branch(block, height, ref slow);
+                    break;
+
+                case JsValueInline.Return:
+                    if (opcode == JsOpcode.Return)
+                    {
+                        Op(JsValueTemplate.LoadRax, Slot(height - 1), pc);
+                    }
+                    else
+                    {
+                        Op(JsValueTemplate.MovRaxWord, operand, pc);
+                    }
+
+                    Op(JsValueTemplate.StoreRax, 0, pc);
+                    Add(JsValueTemplate.SpillDebt, 0, JsBaselineInstruction.None, JsValueRole.Debt, pc);
+                    Op(JsValueTemplate.MovReturned, 0, pc);
+                    Add(JsValueTemplate.Jmp, 0, JsBaselineInstruction.Leave, JsValueRole.Inline, pc);
                     break;
             }
         }

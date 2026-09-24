@@ -8,11 +8,12 @@ using Broiler.VM.Profile.JavaScript.Format;
 namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 
 /// <summary>
-/// The value form's rows (decision JSD-0035, stages JSV-1 and JSV-2): what the artifact records, what the
+/// The value form's rows (decision JSD-0035, stages JSV-1 to JSV-3): what the artifact records, what the
 /// verifier and the scan hold a payload to, whether a program answers in the value form what it answers
 /// in bytecode - with and without handle-stress, and with every binding non-resident - whether every
-/// inline template answers what its arm answers, and whether the fuel-parity twins give one verdict at
-/// every ceiling.
+/// inline template answers what its arm answers, whether the fuel-parity twins give one verdict at
+/// every ceiling, and whether direct calls - every reached <c>Call</c> a direct call site - answer as the
+/// interpreter's calls do, up to the counted bound's <c>RangeError</c>.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -81,6 +82,7 @@ internal static class ValueFormChecks
         }
 
         rows.Add(TheDifferentialProgramsPlaceEveryInlineKind(JsX64Abi.Host));
+        rows.Add(EveryReachedCallIsADirectCallSite(JsX64Abi.Host));
 
         if (System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture !=
             System.Runtime.InteropServices.Architecture.X64)
@@ -98,6 +100,7 @@ internal static class ValueFormChecks
         rows.AddRange(TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.Value, handleStress: false));
         rows.AddRange(TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.Value, handleStress: true));
         rows.AddRange(TheValueFormAnswersAsBytecode(JsX64Abi.Host, JsOutputForm.ValueFlat, handleStress: false));
+        rows.AddRange(TheDirectCallsAnswerAsBytecode(JsX64Abi.Host));
         rows.AddRange(EveryInlineTemplateAnswersAsItsArm(JsX64Abi.Host));
         rows.AddRange(TheTwinsGiveOneVerdictAtEveryCeiling(JsX64Abi.Host));
         return rows;
@@ -341,6 +344,44 @@ internal static class ValueFormChecks
                     : result.Outcome + " at " + result.Offset + ": " + result.Reason));
         }
 
+        // THE PROGRAM BODY CALLS f DIRECTLY, so its layout holds a direct call site (stage JSV-3): one whose
+        // prepare call is the finish helper's, and one whose answer skips the finish, are each refused by the
+        // call clause.
+        if (!JsValueLayout.TryPlan(image, 0, grouped.Of(0), true, out var bodyPlan, out _))
+        {
+            rows.Add((prefix + "call-mutations/" + abi.Name, false, "the program body has no value plan"));
+            return rows;
+        }
+
+        var bodyLayout = JsValueLayout.Layout(bodyPlan);
+        var bodyOffsets = EntryOffsets(table, symbols[0].Offset, bodyLayout);
+        var prepareAt = System.Array.FindIndex(bodyLayout, static entry => entry.Template == JsValueTemplate.CallPrepare);
+        byte[]? finishFirst = null;
+
+        if (prepareAt >= 0)
+        {
+            finishFirst = (byte[])code.Clone();
+            TemplateOf(table, JsValueTemplate.CallFinish).Fixed.CopyTo(finishFirst, bodyOffsets[prepareAt]);
+        }
+
+        foreach (var (name, mutated) in new[]
+                 {
+                     ("a-direct-call-site-that-finishes-before-it-prepares", finishFirst),
+                     ("a-direct-call-site-whose-answer-skips-the-finish", Retargeted(code, table, bodyLayout, bodyOffsets, JsValueRole.Call)),
+                 })
+        {
+            var result = mutated is null
+                ? default
+                : JsNativeScan.Scan(abi.Architecture, JsNativeTier.Value, mutated, symbols, 16, image);
+
+            rows.Add((
+                prefix + name + "/" + abi.Name,
+                mutated is not null && !result.Accepted && result.Outcome == JsNativeScanOutcome.CallNotDirect,
+                mutated is null
+                    ? "the program body's layout has no direct call site"
+                    : result.Outcome + " at " + result.Offset + ": " + result.Reason));
+        }
+
         var word = AnotherWord(code, table, layout, offsets);
         var wordResult = word is null
             ? default
@@ -509,6 +550,186 @@ internal static class ValueFormChecks
         string.Equals(left.ErrorName, right.ErrorName, StringComparison.Ordinal) &&
         string.Equals(left.ErrorMessage, right.ErrorMessage, StringComparison.Ordinal) &&
         string.Equals(left.Printed, right.Printed, StringComparison.Ordinal);
+
+    // ---- direct calls (stage JSV-3) ----------------------------------------------------------------------
+
+    /// <summary>
+    /// Programs whose calls are direct in the value form: recursion, exceptions across calls, receivers,
+    /// parameters, closures, the callees a direct call leaves to the helper, and a recursion to the counted
+    /// bound.
+    /// </summary>
+    private static readonly (string Name, string Source)[] DirectCallPrograms =
+    [
+        ("recursion", """
+            function fib(n) { return n < 2 ? n : fib(n - 1) + fib(n - 2); }
+            function even(n) { return n === 0 ? true : odd(n - 1); }
+            function odd(n) { return n === 0 ? false : even(n - 1); }
+            function ack(m, n) { return m === 0 ? n + 1 : n === 0 ? ack(m - 1, 1) : ack(m - 1, ack(m, n - 1)); }
+            function sum(a) { var s = 0; for (var i = 0; i < 3000; i++) { s = s + i * a; } return s; }
+            [fib(16), even(501), odd(300), ack(2, 3), sum(2), sum(0.5)].join();
+            """),
+        ("exceptions", """
+            var log = [];
+            function thrower(x) { if (x % 3 === 2) throw new TypeError("t" + x); return x * 2; }
+            function middle(x) { return thrower(x) + 1; }
+            function outer(x) { try { return middle(x); } catch (e) { return e.name + e.message; } finally { log.push("f" + x); } }
+            var r = [];
+            for (var i = 0; i < 9; i++) r.push(outer(i));
+            function throwsValue(v) { throw v; }
+            function catchValue(v) { try { throwsValue(v); } catch (e) { return typeof e + ":" + String(e); } }
+            r.push(catchValue(1), catchValue("s"), catchValue(null), catchValue({ toString: function () { return "o"; } }));
+            function rethrow() { try { thrower(2); } catch (e) { throw new RangeError("re:" + e.message); } }
+            try { rethrow(); } catch (e) { r.push(e.name + e.message); }
+            function deep(n) { if (n === 0) throw new Error("bottom"); return deep(n - 1); }
+            try { deep(200); } catch (e) { r.push(e.message); }
+            function badRead(n) { return n > 0 ? badRead(n - 1) : null.x; }
+            try { badRead(50); } catch (e) { r.push(e.constructor.name); }
+            function returnsInFinally() { try { return thrower(1); } finally { log.push("rf"); } }
+            r.push(returnsInFinally());
+            r.join("|") + " " + log.join(",");
+            """),
+        ("receivers-and-parameters", """
+            var obj = { v: 7, get: function () { return this.v; }, arrow: function () { var f = () => this.v * 2; return f(); } };
+            function sloppyThis() { return this === globalThis; }
+            function strictThis() { "use strict"; return this; }
+            function primitiveThis() { return typeof this; }
+            function missing(a, b, c) { return [a, b, c].map(String).join("/"); }
+            function extra() { return arguments.length + ":" + arguments[2]; }
+            function defaults(a, b = a + 1, c = b * 2) { return a + b + c; }
+            function rest(a, ...more) { return a + more.length; }
+            function destructure({ x, y = 5 }, [z]) { return x + y + z; }
+            function mapped(a) { arguments[0] = 99; return a; }
+            function strictUnmapped(a) { "use strict"; arguments[0] = 99; return a; }
+            [obj.get(), obj.arrow(), sloppyThis(), String(strictThis()), primitiveThis.call(5),
+             missing(1), extra(1, 2, 3, 4), defaults(1), rest(1, 2, 3), destructure({ x: 1 }, [2]),
+             mapped(1), strictUnmapped(1)].join();
+            """),
+        ("closures-and-helper-callees", """
+            function counter() { var c = 0; return function () { c += 1; return c; }; }
+            var k = counter(); k(); k();
+            function* gen() { yield 1; yield 2; }
+            async function asy() { return 3; }
+            class C { constructor(v) { this.v = v; } m() { return this.v; } static s(x) { return x + 1; } }
+            var bound = function (a, b) { return this.q + a + b; }.bind({ q: 1 }, 2);
+            var fromEval = eval("(function (x) { return x * 3; })");
+            var results = [k(), [...gen()].join(), typeof asy(), new C(4).m(), C.s(1), bound(3), fromEval(5),
+                Math.max(1, 9), [3, 1, 2].sort(function (a, b) { return a - b; }).join()];
+            try { C(1); } catch (e) { results.push(e.name); }
+            try { var notFn = 1; notFn(); } catch (e) { results.push(e.name); }
+            function makeObject(i) { return { i: i, s: "x" + i }; }
+            var made = [];
+            for (var j = 0; j < 50; j++) made.push(makeObject(j).s);
+            results.push(made.join(""));
+            results.join();
+            """),
+        ("the-counted-bound", """
+            var d = 0;
+            function down() { d++; down(); }
+            var name;
+            try { down(); } catch (e) { name = e.name + ":" + e.message; }
+            var d2 = 0, caughtAt = 0;
+            function downCatching() { d2++; try { downCatching(); } catch (e) { caughtAt++; } }
+            downCatching();
+            var d3 = 0;
+            function again() { d3++; again(); }
+            try { again(); } catch (e) { name += "/" + e.name; }
+            [name, d, d2, caughtAt, d3].join();
+            """),
+    ];
+
+    /// <summary>
+    /// Every direct-call program answers in both value forms, and under handle-stress, what it answers in
+    /// bytecode, with the same fuel: the direct call charges, checks, binds and lands exactly as the
+    /// interpreter's call does, up to the counted bound's <c>RangeError</c>.
+    /// </summary>
+    private static List<(string, bool, string)> TheDirectCallsAnswerAsBytecode(JsX64Abi abi)
+    {
+        var rows = new List<(string, bool, string)>();
+
+        foreach (var (name, source) in DirectCallPrograms)
+        {
+            var interpreted = NativeLifecycle.RunWide(source, JsOutputForm.Bytecode, string.Empty, Fuel);
+
+            foreach (var (label, form, stress) in new[]
+                     {
+                         ("value", JsOutputForm.Value, false),
+                         ("value-flat", JsOutputForm.ValueFlat, false),
+                         ("value/under-handle-stress", JsOutputForm.Value, true),
+                     })
+            {
+                var value = NativeLifecycle.RunWide(source, form, abi.Name, Fuel, handleStress: stress);
+
+                // A PROGRAM THAT LOADS CODE IS CHARGED FOR VERIFYING IT, and the value form's payload is larger,
+                // so its fuel is reported and not compared, as the agreement rows do for their probes.
+                var loads = source.Contains("eval(", StringComparison.Ordinal);
+
+                rows.Add((
+                    label + "/direct-calls/answer-as-bytecode/" + name,
+                    SameAnswer(interpreted, value) && (loads || interpreted.Fuel == value.Fuel) && interpreted.Completed,
+                    "bytecode " + interpreted.Render(withFuel: true) + "; " + label + " " + value.Render(withFuel: true) +
+                    (loads ? " (fuel reported, not compared: the program loads code)" : string.Empty)));
+            }
+        }
+
+        return rows;
+    }
+
+    /// <summary>
+    /// Every <c>Call</c> the plan's walk reached is laid out as a direct call site, in every unit of every
+    /// wide and direct-call program, and none is a plain helper call through the <c>Call</c> slot.
+    /// </summary>
+    private static (string, bool, string) EveryReachedCallIsADirectCallSite(JsX64Abi abi)
+    {
+        const string Name = "value/direct-calls/every-reached-call-is-a-direct-call-site";
+        var sites = 0;
+
+        var programs = NativeAbiChecks.WidePrograms.Select(static program => (program.Name, program.Source, program.Library))
+            .Concat(DirectCallPrograms.Select(static program => (program.Name, program.Source, Library: (string?)null)));
+
+        foreach (var (name, source, library) in programs)
+        {
+            var compiled = NativeLifecycle.CompileWide(source, JsOutputForm.Value, abi.Name, library);
+
+            if (compiled.Artifact is null || !NativeLifecycle.TryReadImage(compiled.Artifact, out var image, out _))
+            {
+                return (Name, false, name + " did not compile in the value form");
+            }
+
+            var grouped = JsBaselineBlocks.GroupHandlerOffsets(image);
+
+            for (var unit = 0; unit < image.Functions.Length; unit++)
+            {
+                if (!JsValueLayout.TryPlan(image, unit, grouped.Of(unit), image.ResidentBindings, out var plan, out _))
+                {
+                    continue;
+                }
+
+                var layout = JsValueLayout.Layout(plan);
+
+                for (var pc = plan.First; pc < plan.End; pc++)
+                {
+                    if (plan.HeightAt(pc) < 0 || image.Code[pc] != (byte)JsOpcode.Call)
+                    {
+                        continue;
+                    }
+
+                    var at = pc;
+                    var prepared = layout.Any(entry => entry.Pc == at && entry.Template == JsValueTemplate.CallPrepare);
+                    var plain = layout.Any(entry =>
+                        entry.Pc == at && entry.Template == JsValueTemplate.CallSlot && entry.Operand == (long)JsOpcode.Call * 8);
+
+                    if (!prepared || plain)
+                    {
+                        return (Name, false, name + ": the Call at " + pc + " of unit " + unit + " is not a direct call site");
+                    }
+
+                    sites++;
+                }
+            }
+        }
+
+        return (Name, sites > 0, sites + " reached Call instructions, each a direct call site");
+    }
 
     // ---- the differential ------------------------------------------------------------------------------
 

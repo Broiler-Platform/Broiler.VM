@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           0
-// Human-reviewed:   0/8
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Critical
 // Criteria:         4/4
 // Resource impact:  3/10 max
-// Unverified:       8
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -101,7 +101,7 @@ internal static class JsX64ValueEmitter
     }
 
     /// <summary>Emits one unit: the prologue, the unit's value layout, and the epilogue.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=0C3B77
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=859ACC
     // Broiler-Falsified-If: the unit's body is not one template per entry of JsValueLayout.Layout in its order, or a branch site is left unpatched or patched to a position other than that of the entry its target names
     // Broiler-Human:        PENDING
     private static bool EmitUnit(
@@ -136,7 +136,7 @@ internal static class JsX64ValueEmitter
         assembler.Push(JsX64Register.R14);
         assembler.Push(JsX64Register.R15);
         assembler.Push(JsX64Register.R12);
-        assembler.SubRspImm8((sbyte)abi.BaselineFrameBytes);
+        assembler.SubRspImm8((sbyte)JsValueAbi.FrameBytes(abi.Architecture));
         assembler.MovRegisterRegister(JsX64Register.R14, abi.FramePointerRegister);
         assembler.MovRbxFromR14();
         assembler.MovRegisterMemory(JsX64Register.R15, JsX64Register.R14, JsValueAbi.RegionOffset);
@@ -167,7 +167,7 @@ internal static class JsX64ValueEmitter
 
         // ---- the epilogue --------------------------------------------------------------------------
         bound[leave] = assembler.Position;
-        assembler.AddRspImm8((sbyte)abi.BaselineFrameBytes);
+        assembler.AddRspImm8((sbyte)JsValueAbi.FrameBytes(abi.Architecture));
         assembler.Pop(JsX64Register.R12);
         assembler.Pop(JsX64Register.R15);
         assembler.Pop(JsX64Register.R14);
@@ -219,7 +219,7 @@ internal static class JsX64ValueEmitter
     /// derivation beside it. The template scan's closure rows compile real programs and scan what this
     /// writes, which is what holds the two to each other.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=05B3DF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=3A42CF
     // Broiler-Falsified-If: an encoding here differs from the value-table row of the same name, or a branch answers a site that is not the first byte of its displacement
     // Broiler-Human:        PENDING
     private static int Encode(JsX64Assembler assembler, JsX64Abi abi, JsValueInstruction entry)
@@ -471,10 +471,96 @@ internal static class JsX64ValueEmitter
                 assembler.Cvtsi2sd(0, JsX64Register.Rax);
                 return NoSite;
 
+            // ---- the direct call (stage JSV-3); each is the value-table row of its name ------------------
+            case JsValueTemplate.LeaArg2Callee:
+                if (Windows(abi))
+                {
+                    // lea r8, [rsp+32]: REX.WR 8D /r, ModRM 0x44, SIB 0x24, disp8.
+                    Bytes(assembler, 0x4C, 0x8D, 0x44, 0x24, (byte)JsValueAbi.CalleeOffset(abi.Architecture));
+                }
+                else
+                {
+                    // mov rdx, rsp: REX.W 89 /r, ModRM 0xE2.
+                    Bytes(assembler, 0x48, 0x89, 0xE2);
+                }
+
+                return NoSite;
+
+            case JsValueTemplate.CallPrepare:
+                assembler.CallRbxDisp32(JsValueAbi.PrepareSlot * 8);
+                return NoSite;
+
+            case JsValueTemplate.CallFinish:
+                assembler.CallRbxDisp32(JsValueAbi.FinishSlot * 8);
+                return NoSite;
+
+            case JsValueTemplate.CmpEaxDirect:
+                assembler.CmpEaxImm32(JsValueAbi.DirectCall);
+                return NoSite;
+
+            case JsValueTemplate.LeaArg0Callee:
+                if (Windows(abi))
+                {
+                    // lea rcx, [rsp+32]: REX.W 8D /r, ModRM 0x4C, SIB 0x24, disp8.
+                    Bytes(assembler, 0x48, 0x8D, 0x4C, 0x24, (byte)JsValueAbi.CalleeOffset(abi.Architecture));
+                }
+                else
+                {
+                    // mov rdi, rsp: REX.W 89 /r, ModRM 0xE7.
+                    Bytes(assembler, 0x48, 0x89, 0xE7);
+                }
+
+                return NoSite;
+
+            case JsValueTemplate.MovArg1EntryPc:
+                // mov edx or mov esi, [rsp+disp8]: 8B /r, ModRM 0x54 or 0x74, SIB 0x24.
+                Bytes(
+                    assembler,
+                    0x8B,
+                    Windows(abi) ? (byte)0x54 : (byte)0x74,
+                    0x24,
+                    (byte)(JsValueAbi.CalleeOffset(abi.Architecture) + JsValueAbi.EntryPcOffset));
+
+                return NoSite;
+
+            case JsValueTemplate.CallEntry:
+                // call qword [rsp+disp8]: FF /2, ModRM 0x54, SIB 0x24.
+                Bytes(
+                    assembler,
+                    0xFF,
+                    0x54,
+                    0x24,
+                    (byte)(JsValueAbi.CalleeOffset(abi.Architecture) + JsValueAbi.EntryOffset));
+
+                return NoSite;
+
+            case JsValueTemplate.MovReturned:
+                assembler.MovEaxImm32(JsValueAbi.Returned);
+                return NoSite;
+
+            case JsValueTemplate.MovArg3Status:
+                if (Windows(abi))
+                {
+                    // mov r9d, eax: REX.B 89 /r, ModRM 0xC1.
+                    Bytes(assembler, 0x41, 0x89, 0xC1);
+                }
+                else
+                {
+                    // mov ecx, eax: 89 /r, ModRM 0xC1.
+                    Bytes(assembler, 0x89, 0xC1);
+                }
+
+                return NoSite;
+
             default:
                 return Unwritten;
         }
     }
+
+    /// <summary>Whether the row is Windows x64's, whose argument registers and shadow space differ.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0A6D05
+    // Broiler-Human:        PENDING
+    private static bool Windows(JsX64Abi abi) => abi.Architecture == JsNativeArchitecture.X64Windows;
 
     /// <summary>Writes a fixed encoding through the assembler's byte door.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=0C9176

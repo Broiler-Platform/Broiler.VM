@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
+// Relevant units:   13
+// Annotated:        13/13
 // Exempt:           0
-// Human-reviewed:   0/12
+// Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         12/12
+// Criteria:         13/13
 // Resource impact:  3/10 max
-// Unverified:       12
+// Unverified:       13
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -234,6 +234,14 @@ internal static class JsValueWindows
 
         segment.Publish(act.SlabFrame, plan.StackBase + after);
     }
+
+    /// <summary>The value an inline return left in the activation's first region word (stage JSV-3).</summary>
+    /// <param name="act">The activation, whose region is still open.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=F0E783
+    // Broiler-Falsified-If: it decodes any word but the region's first, or decodes after the region closed
+    // Broiler-Human:        PENDING
+    internal static JsValue Returned(JsNativeActivation act) =>
+        JsWordCodec.Decode(act.Segment!.Words[JsValueSlab.FirstWord(act.SlabFrame)], act.Engine.ValueHandles!);
 
     /// <summary>How many slots below the stack's height the instruction at <paramref name="pc"/> reads.</summary>
     /// <param name="code">The code section.</param>

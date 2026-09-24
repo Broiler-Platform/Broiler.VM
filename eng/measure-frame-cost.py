@@ -63,7 +63,10 @@
 # exist to measure that. The two forms therefore have two per-frame costs, and each is printed with
 # the form it was taken in so neither is read as the other. The backend defaults to the x86-64
 # convention this host uses, which is the only one the host arms; an artifact emitted for any other
-# refuses to instantiate and would measure nothing.
+# refuses to instantiate and would measure nothing. `--form value` hands the host `--value <backend>`
+# (JSD-0035): since stage JSV-3 a plain call there is a direct call from one emitted frame into the
+# next, whose level costs the machine stack an emitted frame and nothing else, and the other routes
+# still nest through a helper; it is the third per-frame cost, printed with its form like the others.
 #
 # AND THE SHAPE IS AN INPUT, BECAUSE THE ROUTE A LEVEL NESTS THROUGH DECIDES WHAT IT COSTS. `plain`
 # is the recursion this script began with: a call instruction, which the baseline form gives a step
@@ -569,7 +572,7 @@ def main():
     parser.add_argument("--stack-bytes", type=int, default=DEFAULT_STACK_BYTES)
     parser.add_argument("--ceiling", type=int, default=100000)
     parser.add_argument("--timeout", type=int, default=300)
-    parser.add_argument("--form", choices=("bytecode", "native"), default="bytecode")
+    parser.add_argument("--form", choices=("bytecode", "native", "value"), default="bytecode")
     parser.add_argument(
         "--backend", default=None, help="a native run's backend; defaults to this host's x86-64 convention")
     parser.add_argument(
@@ -580,7 +583,7 @@ def main():
         help="the tree the binary was built from; without it the build identity lines print unknown")
     arguments = parser.parse_args()
 
-    if arguments.backend and arguments.form != "native":
+    if arguments.backend and arguments.form == "bytecode":
         parser.error("--backend names a native backend, and this run's form is bytecode")
 
     if arguments.source_tree and not pathlib.Path(arguments.source_tree).is_dir():
@@ -589,7 +592,7 @@ def main():
     form = []
     backend = ""
 
-    if arguments.form == "native":
+    if arguments.form in ("native", "value"):
         backend = arguments.backend or host_backend() or ""
 
         if not backend:
@@ -598,7 +601,7 @@ def main():
                 file=sys.stderr)
             return 2
 
-        form = ["--native", backend]
+        form = ["--" + arguments.form, backend]
 
     binary = pathlib.Path(arguments.binary_directory) / "Broiler.VM.Composition.JavaScript.Cli"
 

@@ -194,11 +194,15 @@ public sealed class JsX64Backend : IJsNativeBackend, IJsNativeEmitter
     /// its debt and its residency, laid out by <see cref="JsValueLayout"/>. The numeric and the baseline
     /// bytes did not change with it.
     /// </para>
+    /// <para>
+    /// <b>Five is stage JSV-3</b>: the value form's direct call sites and the callee context its frame
+    /// reserves for them. The numeric and the baseline bytes did not change with it.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=6A7404
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=656FFA
     // Broiler-Falsified-If: a template in this file, or the baseline block partition or layout the baseline emitter encodes, changes without this number changing
     // Broiler-Human:        PENDING
-    public uint SemanticVersion => 4;
+    public uint SemanticVersion => 5;
 
     /// <summary>Sixteen: the alignment every unit's entry point is written at.</summary>
     /// <remarks>

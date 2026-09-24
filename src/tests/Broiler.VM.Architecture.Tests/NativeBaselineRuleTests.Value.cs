@@ -56,6 +56,24 @@ public sealed partial class NativeBaselineRuleTests
     internal const string SettleAssignment =
         "slots[JsValueAbi.SettleSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Settle;";
 
+    /// <summary>
+    /// The helpers the value table holds that are named for no opcode, each with its body and its one slot
+    /// assignment, exactly: the debt settlement (stage JSV-2) and a direct call's prepare and finish helpers
+    /// (stage JSV-3).
+    /// </summary>
+    internal static readonly (string Name, string Body, string Assignment)[] FixedEntries =
+    [
+        (SettleEntry, SettleBody, SettleAssignment),
+        (
+            "Prepare",
+            "JsNativeActivation.PrepareCall<ArmCall>(frame, pc, callee)",
+            "slots[JsValueAbi.PrepareSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, JsValueFrame*, int>)&Prepare;"),
+        (
+            "Finish",
+            "JsNativeActivation.FinishCall(frame, pc, callee, status)",
+            "slots[JsValueAbi.FinishSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, JsValueFrame*, int, int>)&Finish;"),
+    ];
+
     [Fact]
     public void X4_Each_Value_Helper_Runs_Its_Own_Arm_Through_A_Checked_Step()
     {
@@ -72,6 +90,7 @@ public sealed partial class NativeBaselineRuleTests
                      "helper Call", "helper Nop", "ArmCall.Opcode", "slot Call", "the static constructor",
                      "Sound reads the slots", "decode before the arm", "encode after the arm",
                      "helper " + SettleEntry, "slot " + SettleEntry, "StepValue reached check",
+                     "helper Prepare", "slot Prepare", "helper Finish", "slot Finish",
                  })
         {
             Assert.Contains(decided, answer.Decided);
@@ -138,6 +157,30 @@ public sealed partial class NativeBaselineRuleTests
 
         Assert.Contains(unsettled, static message => message.Contains(
             "(e) the value table's Settle is", StringComparison.Ordinal));
+
+        // A PREPARE HELPER THAT RUNS ANOTHER ARM, and a finish slot assigned twice, are each reported (stage
+        // JSV-3).
+        var misprepared = X4Value(Replacing(helpers with
+        {
+            Text = helperText.Replace(
+                "JsNativeActivation.PrepareCall<ArmCall>(frame, pc, callee);",
+                "JsNativeActivation.PrepareCall<ArmConstruct>(frame, pc, callee);",
+                StringComparison.Ordinal),
+        })).Violations;
+
+        Assert.Contains(misprepared, static message => message.Contains(
+            "(e) the value table's Prepare is", StringComparison.Ordinal));
+
+        var finishSlot =
+            "slots[JsValueAbi.FinishSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, JsValueFrame*, int, int>)&Finish;";
+
+        var twice = X4Value(Replacing(helpers with
+        {
+            Text = helperText.Replace(finishSlot, finishSlot + "\n        " + finishSlot, StringComparison.Ordinal),
+        })).Violations;
+
+        Assert.Contains(twice, static message => message.Contains(
+            "(e) the value table makes 2 assignments", StringComparison.Ordinal));
     }
 
     /// <summary>
@@ -147,8 +190,10 @@ public sealed partial class NativeBaselineRuleTests
     /// <para>
     /// <b>Every opcode's helper runs its own arm.</b> The table declares one unmanaged entry point named
     /// <c>Undefined</c>, one named <c>Settle</c> that is exactly <c>JsNativeActivation.SettleValue(frame, pc)</c>
-    /// and is assigned once to <c>JsValueAbi.SettleSlot</c> (stage JSV-2's debt settlement), and one per
-    /// opcode <c>JsOpcode</c> declares, each exactly
+    /// and is assigned once to <c>JsValueAbi.SettleSlot</c> (stage JSV-2's debt settlement), a
+    /// <c>Prepare</c> and a <c>Finish</c> exactly as <see cref="FixedEntries"/> states them and each assigned
+    /// once to its own fixed slot (stage JSV-3's direct call), and one per opcode <c>JsOpcode</c> declares,
+    /// each exactly
     /// <c>JsNativeActivation.StepValue&lt;Arm{Opcode}&gt;(frame, pc, JsOpcode.{Opcode})</c>, and each
     /// <c>Arm{Opcode}</c> is a member of the table whose <c>Opcode</c> answers <c>JsOpcode.{Opcode}</c>; no
     /// other product source declares a type named <c>Arm{Opcode}</c>, and the table declares nothing named
@@ -252,15 +297,16 @@ public sealed partial class NativeBaselineRuleTests
                 continue;
             }
 
-            if (string.Equals(name, SettleEntry, StringComparison.Ordinal) && !opcodes.Contains(name))
+            if (FixedEntries.FirstOrDefault(entry => string.Equals(entry.Name, name, StringComparison.Ordinal)) is { Name: not null } fixedEntry &&
+                !opcodes.Contains(name))
             {
-                if (!string.Equals(body, Squeezed(SettleBody), StringComparison.Ordinal))
+                if (!string.Equals(body, Squeezed(fixedEntry.Body), StringComparison.Ordinal))
                 {
-                    violations.Add($"(e) the value table's {SettleEntry} is `{body ?? "not expression-bodied"}`, and it is exactly `{SettleBody}`");
+                    violations.Add($"(e) the value table's {name} is `{body ?? "not expression-bodied"}`, and it is exactly `{fixedEntry.Body}`");
                     continue;
                 }
 
-                decided.Add("helper " + SettleEntry);
+                decided.Add("helper " + name);
                 continue;
             }
 
@@ -495,15 +541,16 @@ public sealed partial class NativeBaselineRuleTests
         }
 
         var assigned = new Dictionary<string, int>(StringComparer.Ordinal);
-        var settled = 0;
+        var fixedAssigned = FixedEntries.ToDictionary(static entry => entry.Name, static _ => 0, StringComparer.Ordinal);
 
         foreach (var statement in whole
                      ? statements.Skip(ValueTableOpening.Length).Take(statements.Count - ValueTableOpening.Length - ValueTableClosing.Length)
                      : [])
         {
-            if (string.Equals(Tokens(statement), Squeezed(SettleAssignment), StringComparison.Ordinal))
+            if (FixedEntries.FirstOrDefault(entry =>
+                    string.Equals(Tokens(statement), Squeezed(entry.Assignment), StringComparison.Ordinal)) is { Name: { } fixedName })
             {
-                settled++;
+                fixedAssigned[fixedName]++;
                 continue;
             }
 
@@ -565,13 +612,16 @@ public sealed partial class NativeBaselineRuleTests
             violations.Add($"(e) the value table assigns no slot for {string.Join(", ", unassigned)}");
         }
 
-        if (settled != 1)
+        foreach (var (fixedName, _, assignment) in FixedEntries)
         {
-            violations.Add($"(e) the value table makes {settled} assignments `{SettleAssignment}`, and it makes one");
-        }
-        else
-        {
-            decided.Add("slot " + SettleEntry);
+            if (fixedAssigned[fixedName] != 1)
+            {
+                violations.Add($"(e) the value table makes {fixedAssigned[fixedName]} assignments `{assignment}`, and it makes one");
+            }
+            else
+            {
+                decided.Add("slot " + fixedName);
+            }
         }
 
         if (opens && closes && assigned.Count > 0)

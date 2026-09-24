@@ -287,6 +287,22 @@ public sealed partial class NativeBaselineRuleTests
             Assert.Contains(stepWrite, static message => message.Contains(
                 "writes the thread slot current in Step", StringComparison.Ordinal));
         }
+
+        // A DIRECT CALL'S FINISH THAT NO LONGER MOVES THE SLOT BACK leaves it naming a returned callee, and a
+        // slot moved anywhere else but the two helpers is still a second writer (JSD-0035 stage JSV-3).
+        var unmoved = SlotViolations(activation with
+        {
+            Text = activation.Text.Replace("        current = act;\n", "\n", StringComparison.Ordinal),
+        });
+
+        Assert.Contains(unmoved, static message => message.Contains(
+            "FinishCall writes no current", StringComparison.Ordinal));
+
+        var elsewhere = SlotViolations(WithMember(
+            activation, "internal static void Pass(JsNativeActivation next) => current = next.Caller;"));
+
+        Assert.Contains(elsewhere, static message => message.Contains(
+            "writes the thread slot current in Pass", StringComparison.Ordinal));
     }
 
     /// <summary>
@@ -1444,6 +1460,8 @@ public sealed partial class NativeBaselineRuleTests
         var stepReads = 0;
         var valueStepReads = 0;
         var settleReads = 0;
+        var directReads = new Dictionary<string, int>(StringComparer.Ordinal) { ["PrepareCall"] = 0, ["FinishCall"] = 0 };
+        var directWrites = new Dictionary<string, int>(StringComparer.Ordinal) { ["PrepareCall"] = 0, ["FinishCall"] = 0 };
 
         foreach (var identifier in type.DescendantNodes().OfType<IdentifierNameSyntax>())
         {
@@ -1477,9 +1495,19 @@ public sealed partial class NativeBaselineRuleTests
                     continue;
                 }
 
+                // A DIRECT CALL MOVES THE SLOT TO ITS CALLEE AND BACK (JSD-0035 stage JSV-3): the prepare
+                // helper names the callee it just prepared, after the call site's checks, and the finish helper
+                // names the caller the callee names, after both cookies are compared. No managed frame enters
+                // the callee's emitted code, so the entering frame's setter is not where that happens.
+                if (member.Accessor is null && directWrites.ContainsKey(member.Name))
+                {
+                    directWrites[member.Name]++;
+                    continue;
+                }
+
                 yield return
                     $"{activation.RelativePath} writes the thread slot {name} in {member.Name}, and the " +
-                    "one writer inside the activation is Current's setter";
+                    "writers inside the activation are Current's setter, PrepareCall and FinishCall";
 
                 continue;
             }
@@ -1509,10 +1537,18 @@ public sealed partial class NativeBaselineRuleTests
                 continue;
             }
 
+            // THE DIRECT CALL'S TWO HELPERS ARE THE FOURTH AND FIFTH (stage JSV-3), each running nothing unless
+            // the cookie of the context it was handed is the activation's.
+            if (member.Accessor is null && directReads.ContainsKey(member.Name))
+            {
+                directReads[member.Name]++;
+                continue;
+            }
+
             yield return
-                $"{activation.RelativePath} reads the thread slot {name} in {member.Name}, and the three " +
-                "readers inside the activation are Step, StepValue and SettleValue, which run nothing unless " +
-                "the frame's cookie is the activation's";
+                $"{activation.RelativePath} reads the thread slot {name} in {member.Name}, and the five " +
+                "readers inside the activation are Step, StepValue, SettleValue, PrepareCall and FinishCall, " +
+                "which run nothing unless the frame's cookie is the activation's";
         }
 
         if (writes == 0)
@@ -1541,6 +1577,20 @@ public sealed partial class NativeBaselineRuleTests
             yield return
                 $"SettleValue reads no {name}, so the value form's settlement this rule allows is not the " +
                 "place the slot is read";
+        }
+
+        foreach (var (helper, count) in directReads.Where(static pair => pair.Value == 0))
+        {
+            yield return
+                $"{helper} reads no {name}, so the direct call's helper this rule allows is not the place the " +
+                "slot is read";
+        }
+
+        foreach (var (helper, count) in directWrites.Where(static pair => pair.Value == 0))
+        {
+            yield return
+                $"{helper} writes no {name}, so the direct call's helper this rule allows is not the place the " +
+                "slot is moved";
         }
     }
 

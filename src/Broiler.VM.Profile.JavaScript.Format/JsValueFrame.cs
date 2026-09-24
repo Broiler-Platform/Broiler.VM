@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   15
-// Annotated:        15/15
-// Exempt:           4
-// Human-reviewed:   0/15
+// Relevant units:   22
+// Annotated:        22/22
+// Exempt:           6
+// Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         13/13
+// Criteria:         20/20
 // Resource impact:  0/10 max
-// Unverified:       15
+// Unverified:       22
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -38,6 +38,14 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// stores it here before every call, and the helper that is called charges it to the meter and zeroes
 /// it (JSD-0035 section 7). The first two fields keep the offsets JSV-1 gave them.
 /// </para>
+/// <para>
+/// <b>STAGE JSV-3 ADDS THE TWO FIELDS A DIRECT CALL READS</b> (JSD-0035 section 6). A unit's frame on the
+/// machine stack holds one context of its own for the callee of a direct call, filled by the call-prepare
+/// helper: the callee's frame fields, <see cref="Entry"/>, the address of the callee unit's emitted entry in
+/// the same payload, and <see cref="EntryPc"/>, the offset it is entered at. The emitted code writes none of
+/// the context but its debt word, which is how a helper-filled entry address is the only one a direct call
+/// can go to.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=0; Fingerprint=5A1791
 // Broiler-Falsified-If: a field of this structure is, or contains, a reference the collector traces, or its offsets differ from the constants in JsValueAbi
@@ -56,6 +64,15 @@ public struct JsValueFrame
 
     /// <summary>How many pure instructions ran and have not yet been charged to the meter.</summary>
     public long Debt;
+
+    /// <summary>
+    /// For the context a direct call is made with: the address of the callee unit's emitted entry, which only
+    /// the call-prepare helper writes; nothing in any other context.
+    /// </summary>
+    public nint Entry;
+
+    /// <summary>For the context a direct call is made with: the offset the callee is entered at.</summary>
+    public long EntryPc;
 }
 
 /// <summary>The value form's frame layout, as the emitter and the runtime both read it.</summary>
@@ -98,10 +115,22 @@ public static class JsValueAbi
     public const int DebtOffset = 24;
 
     /// <summary>The size of <see cref="JsValueFrame"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9ECD81
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=D34DD6
     // Broiler-Falsified-If: the runtime gives JsValueFrame any other size
     // Broiler-Human:        PENDING
-    public const int FrameSize = 32;
+    public const int FrameSize = 48;
+
+    /// <summary>The offset of <see cref="JsValueFrame.Entry"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=232D6F
+    // Broiler-Falsified-If: the runtime places JsValueFrame.Entry at any other offset
+    // Broiler-Human:        PENDING
+    public const int EntryOffset = 32;
+
+    /// <summary>The offset of <see cref="JsValueFrame.EntryPc"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=0828B6
+    // Broiler-Falsified-If: the runtime places JsValueFrame.EntryPc at any other offset
+    // Broiler-Human:        PENDING
+    public const int EntryPcOffset = 40;
 
     /// <summary>How many slots the helper table has: one per value an opcode byte can take.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=A738D5
@@ -120,16 +149,68 @@ public static class JsValueAbi
     // Broiler-Human:        PENDING
     public const int SettleSlot = HelperSlots - 1;
 
+    /// <summary>The helper-table slot of the call-prepare helper a direct call site calls first.</summary>
+    /// <remarks>
+    /// <b>The slot below the settlement's, which no opcode byte takes either</b>, for the settlement's reason.
+    /// The helper runs the call's instruction through the interpreter's own arm, or prepares a direct call
+    /// and answers <see cref="DirectCall"/> (JSD-0035 section 6, stage JSV-3).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=96F399
+    // Broiler-Falsified-If: an opcode this format defines has this byte, or an emitted direct call site calls any other slot first
+    // Broiler-Human:        PENDING
+    public const int PrepareSlot = HelperSlots - 2;
+
+    /// <summary>The helper-table slot of the call-finish helper a direct call site calls after the callee returns.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=19C3FB
+    // Broiler-Falsified-If: an opcode this format defines has this byte, or an emitted direct call is followed by a call of any other slot
+    // Broiler-Human:        PENDING
+    public const int FinishSlot = HelperSlots - 3;
+
+    /// <summary>What the call-prepare helper answers when the call is to be made directly.</summary>
+    /// <remarks>
+    /// <b>Negative, and none of <see cref="JsBaselineStatus"/>'s</b>, so it cannot be read as an offset to
+    /// resume at or as a way to leave: the call site compares for it before its tail reads the answer.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=EAD516
+    // Broiler-Falsified-If: this equals a JsBaselineStatus or can be an instruction offset
+    // Broiler-Human:        PENDING
+    public const int DirectCall = -4;
+
+    /// <summary>What a unit answers when an inline return left its value in the region's first word.</summary>
+    /// <remarks>
+    /// <b>The callee returns its value in its region's first word and a status in the return register</b>
+    /// (JSD-0035 section 6): the word is the region's own, so nothing but a word crosses, and the debt the
+    /// return ran up is in the context's debt word, for whoever reads the answer to charge before it goes on.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=B914F5
+    // Broiler-Falsified-If: this equals a JsBaselineStatus or DirectCall, or a unit answers it with any word but its returned value in its region's first word
+    // Broiler-Human:        PENDING
+    public const int Returned = -5;
+
+    /// <summary>Where in a unit's machine-stack frame the context of its direct callees lives.</summary>
+    /// <remarks>
+    /// <b>Above Windows x64's shadow space and at the stack pointer under System V</b>: a helper the unit calls
+    /// may use the shadow space as its home area, so the context sits past it, and nothing System V calls
+    /// writes above the stack pointer.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=3500E3
+    // Broiler-Falsified-If: the context overlaps the shadow space, the saved registers or the return address, or reaches past the frame the prologue reserves
+    // Broiler-Human:        PENDING
+    public static int CalleeOffset(JsNativeArchitecture architecture) =>
+        architecture == JsNativeArchitecture.X64Windows ? 32 : 0;
+
     /// <summary>How many bytes a unit's prologue subtracts from the stack pointer after its four pushes.</summary>
     /// <remarks>
-    /// <b>Forty on Windows x64 and eight under System V, the baseline form's two numbers</b>: four pushes
-    /// leave the stack where two did, eight past a sixteen-byte boundary, so the same reservation brings
-    /// it to one, with the shadow space Windows asks for.
+    /// <b>The baseline form's reservation and one callee context.</b> The baseline's forty bytes on Windows
+    /// x64 and eight under System V bring the stack, eight past a sixteen-byte boundary after four pushes,
+    /// to one, with the shadow space Windows asks for; the context is a multiple of sixteen, so the unit
+    /// still calls every helper and every direct callee sixteen-aligned (stage JSV-3).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=33A2B3
-    // Broiler-Falsified-If: a value-form unit calls a helper with the stack pointer not sixteen-aligned or with less shadow space than the convention requires
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=90A8DF
+    // Broiler-Falsified-If: a value-form unit calls a helper or a direct callee with the stack pointer not sixteen-aligned, with less shadow space than the convention requires, or with a callee context that does not fit the frame
     // Broiler-Human:        PENDING
-    public static int FrameBytes(JsNativeArchitecture architecture) => JsBaselineAbi.FrameBytes(architecture);
+    public static int FrameBytes(JsNativeArchitecture architecture) =>
+        JsBaselineAbi.FrameBytes(architecture) + FrameSize;
 }
 
 /// <summary>
