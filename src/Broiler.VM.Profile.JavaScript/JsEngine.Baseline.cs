@@ -144,7 +144,7 @@ internal sealed partial class JsEngine
     /// <para>
     /// <b>A caught exception is raised again with a plain throw</b>, for RunNative's reason. A throw that
     /// crosses several value-form frames entered here is a managed rethrow per level; one that crosses
-    /// direct calls is a status per level (stage JSV-3), and the status chain for the rest is stage JSV-4's.
+    /// direct calls is a status per level, landed at each call without a throw (JSD-0035 section 8).
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=22D6B8

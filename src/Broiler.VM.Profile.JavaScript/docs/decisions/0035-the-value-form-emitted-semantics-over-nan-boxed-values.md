@@ -3,8 +3,8 @@
 
 # JSD-0035 - The value form: emitted instruction semantics over NaN-boxed values and a per-instance handle table
 
-**Status:** Proposed. 2026-09-24. **Stages JSV-0 to JSV-3 are implemented in the tree and nothing
-after them is.** JSV-0 is the word layout, the codec, the handle table, the slab scan and
+**Status:** Proposed. 2026-09-24. **Stages JSV-0 to JSV-4 are implemented in the tree, which is every
+stage section 10 names.** JSV-0 is the word layout, the codec, the handle table, the slab scan and
 handle-stress. JSV-1 puts them on an execution path: a compilation can ask for the value form, the
 artifact records it, the verifier scans and re-emits it, and an instance runs it, with every
 instruction a helper and the control flow between them emitted. JSV-2 runs the pure instructions
@@ -12,17 +12,20 @@ inline over the slab's words, keeps in the region the bindings nothing outside t
 reach, and carries the fuel of the pure instructions as a debt settled through the existing charge.
 JSV-3 makes a call to a plain script function of the same program a machine call from one emitted
 frame into the next, with the interpreter's own checks made by a helper before it and the value
-returned in the callee's first word (section 10 says what each stage is and is not). No suspension
-goes through a frame codec, and an exception crossing a level entered from managed code is still a
-managed rethrow: those are JSV-4's. **JSV-3's exit gate is met**, as JSV-2's was, with JSV-1's open half
-closed by JSV-2: the whole pinned suite gives bytecode's verdicts outside the admitted classes in the
-value form, under handle-stress and in the control with every binding non-resident; all fifteen Octane
-benchmarks report a score; the fuel-parity twins give one verdict at every ceiling the rows try; every
-inline kind answers as its arm, bit for bit; and a recursion answers the interpreter's `RangeError` at
-the interpreter's depth on every route family the frame-cost measurement nests through, returning and
-throwing alike, rather than meeting the machine stack. No bundle retains a measurement of the form,
-and this record makes no speed claim. Nobody has signed the record, so it claims no approval.
-Approvals are deferred under the MVP terms.
+returned in the callee's first word. JSV-4 keeps a generator's and an async function's bindings
+resident, through a frame codec that writes a suspending frame's resident words into its environments'
+records and reads them back at the resumption, and lands an exception a direct call answered at the
+call without a managed throw (section 10 says what each stage is and is not, and section 8 what is
+still a managed rethrow). **JSV-4's exit gate is met**, as JSV-2's and JSV-3's were, with JSV-1's open
+half closed by JSV-2: the whole pinned suite gives bytecode's verdicts outside the admitted classes in
+the value form, under handle-stress and in the control with every binding non-resident, the generator,
+async and exception subtrees under handle-stress among them; all fifteen Octane benchmarks report a
+score; the fuel-parity twins give one verdict at every ceiling the rows try; every inline kind answers
+as its arm, bit for bit; and a recursion answers the interpreter's `RangeError` at the interpreter's
+depth rather than meeting the machine stack. **The form is now judged, once**, by bundle `jsv-4-001`'s
+rule at the commit that completes this stage (section 10). Until that bundle's README carries the
+measurement, no bundle retains a measurement of the form, and this record makes no speed claim. Nobody
+has signed the record, so it claims no approval. Approvals are deferred under the MVP terms.
 
 **Owner:** JavaScript profile owner. **Co-signer:** the core's security owner, because the design adds
 a rooting mechanism and a new class of emitted template. **Both roles are held by one person**, and
@@ -153,10 +156,10 @@ the image, so re-emission reproduces it.
 scan and the engine read one plan and cannot disagree about which word is which. The analysis reads the
 image, not the lowering's scope tree, and it is per unit and per scope depth:*
 
-- *a unit keeps no binding resident when it is a program body, eval code, a generator or an async
-  function - the last two because a suspended frame is the interpreter's until JSV-4's frame codec - or
-  when it holds a direct `eval`, an object scope, a name resolved at run time, an eval-scoped variable
-  or a `with` base;*
+- *a unit keeps no binding resident when it is a program body or eval code, or when it holds a direct
+  `eval`, an object scope, a name resolved at run time, an eval-scoped variable or a `with` base. Until
+  JSV-4 a generator and an async function kept none either, because a suspended frame was the
+  interpreter's; JSV-4's frame codec (section 8) lifted that, and they are planned as any other unit;*
 - *otherwise every depth from the function's own down to the deepest one at which a `Closure`
   instruction runs is poisoned, because a closure captures the whole chain it is made in, and so is the
   function's own depth when the unit makes an `arguments` object; each deeper depth that declares slots
@@ -335,8 +338,9 @@ region opened and encoded. **The return is as written**: `Return` and `ReturnUnd
 the value in the region's first word and the debt in the context, and answer `JsValueAbi.Returned`, which
 the finish helper and `RunValue` read before the region closes and charge before anyone sees the value.
 A failure before the callee runs, and an exception the callee answers, is raised at the call through the
-dispatch loop's own filter and landing (a mode of its own, `JsRaise`), so it lands where the interpreter's
-would; one that lands nowhere is passed down as a status.*
+dispatch loop's own filter and landing, so it lands where the interpreter's would; one that lands nowhere
+is passed down as a status. (At JSV-3 the raise was a managed throw inside a dispatch-loop mode of its
+own, `JsRaise`; JSV-4 replaced the mode with the landing routine itself and no throw, section 8.)*
 
 *Four things are narrower than this section, and each is named:*
 
@@ -418,7 +422,8 @@ twins.
   helper, parked on the activation and raised again by the managed frame that entered the emitted code,
   once per value-form level it crosses, as in the baseline form; and a suspended generator's frame
   holds the activation's own stack, which the mirror keeps coherent, while a resumption encodes that
-  stack into the new region before any helper runs. The two bullets below are JSV-4's. *(At JSV-3 a throw
+  stack into the new region before any helper runs. The two bullets below are JSV-4's, as settled after
+  them. *(At JSV-3 a throw
   that crosses a direct call already travels as the first bullet says: the callee answers "threw" with
   the exception parked on its activation, and the caller's finish helper raises it at the call, where it
   lands in the caller's own region or goes down one more status. A throw crossing a level entered from
@@ -433,6 +438,33 @@ twins.
   its `JsFrame` and answer "suspended". Resumption re-encodes the frame and enters at the resume
   landing. Abrupt resumptions are raised by the resuming helper, so they land in regions or propagate
   exactly as the interpreter's do.
+
+*(Settled by JSV-4, and each bullet is narrower than it reads, which is named rather than hidden.)*
+
+- ***Throw and catch.** An exception an arm throws inside a helper lands where it did from JSV-1: the
+  helper runs the arm inside the interpreter's own dispatch loop, whose filter and landing catch it in
+  managed code, inside the helper, with no emitted frame between the throw and the catch. An exception a
+  direct call answered is now landed at the call by `JsEngine.TryLand`, which is the dispatch loop's
+  landing factored out as one routine, `Land`, and run with the interpreter's own filter and no managed
+  throw; one no region of the caller's unit covers goes down as a "threw" status, one status per direct
+  call. **What is still a managed rethrow is a level entered from managed code**: the first value-form
+  level of an operation, and every level a built-in, an accessor, a coercion hook or a proxy trap calls
+  back into. The managed caller on the other side of such a level is the interpreter's own code and
+  expects an exception, so the managed entry raises what the level parked, once per such level, after the
+  emitted code returned. **No managed exception crosses an emitted frame**: every throw is caught by the
+  managed code that made it, and every rethrow is made by the managed code that entered the emitted
+  frame.*
+- ***Generators and async functions.** The frame codec is the environments' own records, with no
+  encoding of its own (`JsValueWindows.Suspend` and `Open`). The helper of an instruction that can
+  suspend - `Yield`, `YieldDelegate`, `Await`, and the `EnterBody` seam, `JsValueLayout.IsSuspension` -
+  decodes the whole operand stack into the activation, where every other helper decodes only its window;
+  when the frame suspends, `Suspend` writes every resident word of every environment the frame is inside
+  into that environment's record, so the suspended `JsFrame` is the interpreter's own and complete; and a
+  resumption opens a new region whose resident words `Open` reads back from those records before it
+  enters at the resume landing. So a generator and an async function keep their bindings resident, as
+  any unit that is not a program body or eval code does (section 3). A generator or an async function is
+  still not a direct callee (section 6), and an abrupt resumption is raised by the resuming helper, as at
+  JSV-1.*
 
 ### 9. Verification
 
@@ -503,7 +535,7 @@ arming path, W^X, rule X1 and rule B5c are untouched.
 | **JSV-1** *(in the tree, 2026-09-24; its gate open on `zlib`)* | The value form with **every** instruction a helper, except the control flow, which is emitted: `JsOutputForm.Value`, the header's form byte, the per-instruction partition and its scan, `JsValueFrame`, `JsValueStack`, the helper table `JsValueHelpers` with one per-opcode arm mode each, `JsValueWindows`, and the entry `RunValue`; handle-stress reachable as a descriptor door and as `--handle-stress` and `--form value-stress` | The whole pinned suite in the value form gives the same verdict per variant as bytecode, outside the admitted classes, with and without handle-stress; all fifteen Octane benchmarks report a score. Also held by the slice compiler's `value/*` rows - every wide program and probe answering as bytecode, fuel included, with and without handle-stress, re-emission, the scan holding each form to its own partition, the form byte and its refusals - and by rules X2, X3 and X4 (e). **Open on one benchmark:** the suite half holds with and without handle-stress, and fourteen Octane benchmarks score, `mandreel` and `code-load` under stated artifact allowances; `zlib` runs past the profile's wall-clock hard maximum, which no allowance moves, and reports none |
 | **JSV-2** *(in the tree, 2026-09-24)* | Residency analysis, the pure inline set and fuel debt: `JsValueLayout` (the plan, the analysis and the layout, in the format assembly), `JsX64ValueEmitter`, the value table's inline, guard and debt rows and the scan's layout clause, the frame context's region and debt, `SettleValue`, and the flat control, `JsOutputForm.ValueFlat`, as `--value-flat` and `--form value-flat` | JSV-1's gate again, plus the fuel-parity twins giving the same verdict at every ceiling, plus a differential run of every inline template against its arm. **Met.** The whole pinned suite in the value form, under handle-stress and in the flat control gives bytecode's verdicts outside the admitted classes, and all fifteen Octane benchmarks report a score in one run that states JSV-1's two artifact allowances, which `mandreel`'s artifact still needs in this form, and `zlib` finishes inside the profile's wall-clock hard maximum, which no allowance moves. Also held by the slice compiler's rows: `value/differential/*` runs every operator, jump, binding and stack operation over edge values - both zeros, the infinities, quiet and signalling NaNs with payloads, the thirty-two-bit boundaries and every kind that is not a Number - in both value forms and compares every result's bits and the total fuel with bytecode's, beside a row requiring every inline kind to be placed; `value/fuel-parity/*` runs each twin in bytecode, the value form and the control at every ceiling from a settlement window below its total to a few above it and at a sweep below that, and compares the verdicts; and `value/scan/refuses/*` watches a moved guard, a moved debt test, another materialised word and a payload scanned under the other residency each refused by the clause it breaks. **The whole-suite run found one defect the rows had not**: JSV-0's codec canonicalised every NaN, so a NaN computed inline and the same NaN copied through a helper were stored into a typed array two ways; section 2 records the narrowing that fixed it |
 | **JSV-3** *(in the tree, 2026-09-24)* | Direct calls and the stack limit: every reached `Call` a direct call site (`JsValueLayout`'s call sequence, the value table's direct-call rows and the scan's `CallNotDirect`), the prepare and finish helpers (`JsNativeActivation.PrepareCall` and `FinishCall`) over the interpreter's own call path factored out of `Call`, `Invoke` and `RunValue`, the raise mode `JsRaise`, and the inline return with its `Returned` status; the stack limit made by the prepare helper (section 3) | JSV-2's gate, plus recursion answering the interpreter's `RangeError` rather than exhausting the machine stack. **Met.** The whole pinned suite in the value form, under handle-stress and in the flat control gives bytecode's verdicts outside the admitted classes, and all fifteen Octane benchmarks report a score under JSV-1's stated artifact allowances. `eng/measure-frame-cost.py --form value`, run over every route family it knows, finds every one stopped by the declared bound - the catchable `RangeError` - returning and throwing alike, and none by the stack or a death, but `proxyextensible`, whose shape does not recurse in this engine in either form and completes at every depth in bytecode as in the value form. Also held by the slice compiler's `value/direct-calls/*` rows - recursion, exceptions across direct calls, receivers and parameters, closures and every callee left to the helper, and the counted bound itself, each in both value forms and under handle-stress with fuel compared - by a row requiring every reached `Call` to be a direct call site, by two scan rows refusing a broken one, and by rules X3 and X4 (e) as amended |
-| **JSV-4** | Suspension through the frame codec, and status-chain exceptions | JSV-3's gate over the generator, async and exception subtrees under handle-stress |
+| **JSV-4** *(in the tree, 2026-09-24)* | Suspension through the frame codec, and status-chain exceptions: generator and async units planned with resident bindings as any other unit (section 3), the whole stack decoded only by a suspending instruction's helper (`JsValueLayout.IsSuspension`), the codec over the environments' own records (`JsValueWindows.Suspend` and `Open`), and an exception a direct call answered landed at the call by `JsEngine.TryLand`, the dispatch loop's landing as one routine, with no managed throw; `JsRaise` is retired (section 8) | JSV-3's gate over the generator, async and exception subtrees under handle-stress. **Met.** The whole pinned suite in the value form, under handle-stress and in the flat control gives bytecode's verdicts outside the admitted classes, and within it every variant of the generator, async and exception subtrees - by path and by feature: every test naming a generator or `async`, and `statements/try`, `statements/throw` and the error constructors - gives bytecode's verdict in all three, handle-stress included, with no difference even of an admitted class. All fifteen Octane benchmarks report a score under JSV-1's stated artifact allowances. Also held by the slice compiler's `value/frame-codec/*` rows - generators with bindings live across `yield` in loops, blocks and `try`/`finally`, through `yield*` and under the abrupt resumptions `return` and `throw`; async functions and an async generator awaiting across resident bindings; and exceptions landing through the status chain across direct calls, a `finally` and a generator - each in both value forms and under handle-stress with fuel compared, and by a row requiring at least half the suspending units of those programs to keep bindings resident |
 
 **Speed is judged once, by a predeclared rule, against a retained measurement**, as
 [roadmap.gates.md section 17](../roadmap.gates.md#17-measurement-discipline) requires. The rule file is
