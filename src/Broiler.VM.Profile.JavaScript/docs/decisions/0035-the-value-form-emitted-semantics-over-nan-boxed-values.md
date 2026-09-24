@@ -210,14 +210,16 @@ A call to anything else - a built-in, a host function, a proxy, a bound function
 function - goes through a helper. **So a value-form call pays no activation object, no entry step and
 no pair of collector transitions**, which are the per-call costs the baseline form carries today.
 
-### 7. Fuel: exact at the verdict, without a meter amendment
+### 7. Fuel: the same verdict at every ceiling, without a meter amendment
 
 **A pure instruction adds one to an unmanaged debt counter in the frame context, and the debt is
 charged to the meter with the existing `TryCharge` at settlement points:**
 
 - at every helper call, before the helper runs;
 - at every call and return;
-- on a back edge once the debt reaches a stated threshold;
+- on a back edge, and after every run of a stated number of straight-line pure instructions, once the
+  debt reaches a stated threshold, so the debt between two polls is bounded on straight-line code as
+  well as in loops;
 - at every exit.
 
 **Every other instruction is charged by its helper, per instruction, exactly as the interpreter charges
@@ -232,6 +234,21 @@ past the interpreter's exhaustion point are pure ones. Their effects are on the 
 operation ends in exhaustion, and they are observable by nothing: no guest code, no host capability,
 no realm state. Cancellation and wall-clock polls happen at settlements, whose spacing is bounded by
 the threshold and by the pure set's lack of calls.
+
+**What can differ at exhaustion, named rather than hidden.** `TryCharge` is all-or-nothing: a refused
+charge commits nothing and names the outermost budget level that would refuse it (`VmMeter.cs`, the
+outermost-first admission and `Refuse`). The interpreter charges one unit at a time, so it uses up
+exactly the remaining allowance and then names the level that ran out. A refused settlement of a debt
+of *k* therefore differs from the interpreter in two ways:
+
+- the fuel reported as consumed is lower, by less than *k*;
+- when two budget levels are both within *k* of their ceilings, it can name the outer level where the
+  interpreter names the inner one.
+
+Neither changes whether the operation completed. The value form states them as its **named
+divergences at exhaustion**, and the verdict-equality gate compares the outcome kind and the exhausted
+dimension, not the consumed figure or the level. A later record may narrow them only by means that do
+not read the remaining allowance, because reading it is the amendment MVP-9 says cannot be minted.
 
 **This needs no core amendment.** MVP-9 records that an allowance held by the profile, sized by a new
 meter member that reads remaining fuel, is a breaking amendment the procedure cannot mint. Settling
@@ -352,7 +369,8 @@ passes.
 ## Falsified if
 
 - A value-form artifact gives a verdict different from the interpreter's on any variant of the pinned
-  suite, outside the admitted classes, under any ceiling.
+  suite, outside the admitted classes, under any ceiling. The consumed fuel and the budget level named
+  at exhaustion are section 7's named divergences, not verdicts.
 - A handle decodes to an object other than the one it was encoded from, or an object reachable only
   from a live slab word is released.
 - An emitted template dereferences a handle payload, or writes outside its region and its context's
