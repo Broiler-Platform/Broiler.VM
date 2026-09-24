@@ -419,6 +419,12 @@ passes.
   another loses its payload in the value form and keeps it in the interpreter. The language lets an
   implementation choose the bits it stores for a NaN, so both are conforming, and the two forms differ
   only where a program compares those bytes; it is this form's named divergence, not a verdict.
+- **A value-form artifact is several times its bytecode's size**, because every instruction is a
+  helper call and a compare at JSV-1, and larger than the baseline form's, whose calls are per block. The
+  largest Octane benchmark's artifact is past the profile's default artifact ceiling in this form and
+  within it in the other two, and a benchmark that loads code in a loop meets the nested-load ceiling
+  first; an Octane run of the value form states those two allowances, which the command line now takes,
+  as it states its wall clock. JSV-2's inline templates change the size again, in whichever direction.
 - **Each value-form level of a recursion is deeper on the machine stack than an interpreted one** - an
   emitted frame, a helper and an arm's frame per call - so a recursion that the interpreter ends with
   its call-depth `RangeError` could meet the stack backstop first. JSV-3's stack limit is what closes

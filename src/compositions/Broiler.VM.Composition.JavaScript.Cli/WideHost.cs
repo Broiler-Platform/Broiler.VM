@@ -43,7 +43,8 @@ internal static class WideHost
         ulong? callDepth = null,
         ulong? liveBytes = null,
         JsCompileRequest? request = null,
-        bool handleStress = false)
+        bool handleStress = false,
+        LoadAllowances loads = default)
     {
         // THE FORM AND THE MANIFEST ARE INPUTS AND THEY DEFAULT TO WHAT THIS HOST ALWAYS DID.
         // A caller that names neither gets the wide surface in bytecode, byte for byte the artifact
@@ -119,7 +120,7 @@ internal static class WideHost
                 lines);
         }
 
-        var created = VmRuntime.Create(Catalog(handleStress), Options(fuel, wallClock, callDepth, liveBytes, asked));
+        var created = VmRuntime.Create(Catalog(handleStress), Options(fuel, wallClock, callDepth, liveBytes, asked, loads));
 
         if (!created.TryGetRuntime(out var runtime))
         {
@@ -306,7 +307,8 @@ internal static class WideHost
     /// make.
     /// </remarks>
     private static VmRuntimeCreationOptions Options(
-        ulong? fuel, ulong? wallClock, ulong? callDepth, ulong? liveBytes, JsCompileRequest request)
+        ulong? fuel, ulong? wallClock, ulong? callDepth, ulong? liveBytes, JsCompileRequest request,
+        LoadAllowances loads)
     {
         var ceilings = ImmutableArray.CreateBuilder<VmCeilingSpec>();
 
@@ -322,6 +324,10 @@ internal static class WideHost
                     VmCeilingSpec.Value(dimension, frames),
                 VmBudgetDimension.LiveBytes when liveBytes is { } bytes =>
                     VmCeilingSpec.Value(dimension, bytes),
+                VmBudgetDimension.ArtifactBytes when loads.ArtifactBytes is { } artifact =>
+                    VmCeilingSpec.Value(dimension, artifact),
+                VmBudgetDimension.NestedLoadBytes when loads.NestedLoadBytes is { } nested =>
+                    VmCeilingSpec.Value(dimension, nested),
                 _ => VmCeilingSpec.AdoptProfileDefault(dimension),
             });
         }
@@ -387,3 +393,8 @@ internal static class WideHost
         return VmHostCallOutcome.Completed;
     }
 }
+
+/// <summary>The two allowances an artifact's size is charged to, when the caller stated them.</summary>
+/// <param name="ArtifactBytes">The artifact-bytes ceiling, or the profile's default.</param>
+/// <param name="NestedLoadBytes">The nested-load-bytes ceiling, or the profile's default.</param>
+internal readonly record struct LoadAllowances(ulong? ArtifactBytes, ulong? NestedLoadBytes);

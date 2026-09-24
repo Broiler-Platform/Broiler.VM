@@ -267,6 +267,15 @@ internal static class Program
             return ExitCodes.Usage;
         }
 
+        if (!Bytes(args, "--artifact-bytes", out var artifactBytes, out var artifactComplaint) ||
+            !Bytes(args, "--nested-load-bytes", out var nestedLoadBytes, out artifactComplaint))
+        {
+            Console.Error.WriteLine("broiler-js: " + artifactComplaint);
+            return ExitCodes.Usage;
+        }
+
+        var loads = new LoadAllowances(artifactBytes, nestedLoadBytes);
+
         var paths = new List<string>();
 
         for (var index = 0; index < args.Length; index++)
@@ -277,7 +286,9 @@ internal static class Program
                 string.Equals(args[index], "--wall", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--max-depth", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--call-depth", StringComparison.Ordinal) ||
-                string.Equals(args[index], "--live-bytes", StringComparison.Ordinal))
+                string.Equals(args[index], "--live-bytes", StringComparison.Ordinal) ||
+                string.Equals(args[index], "--artifact-bytes", StringComparison.Ordinal) ||
+                string.Equals(args[index], "--nested-load-bytes", StringComparison.Ordinal))
             {
                 index++;
                 continue;
@@ -349,14 +360,15 @@ internal static class Program
                 callDepth,
                 liveBytes,
                 request,
-                handleStress);
+                handleStress,
+                loads);
             Report(string.Join(' ', files), joined, single: true, all, quiet);
             return ExitCodes.For(joined.Status);
         }
 
         return Run(
             files, module, checkOnly, all, quiet, fuel, wall, depth, callDepth, liveBytes,
-            missing.Count, slice, forceStrict, request, handleStress);
+            missing.Count, slice, forceStrict, request, handleStress, loads);
     }
 
     /// <summary>Reads the feature manifest and output form the arguments ask for.</summary>
@@ -465,7 +477,8 @@ internal static class Program
         bool slice,
         bool forceStrict,
         JsCompileRequest request,
-        bool handleStress)
+        bool handleStress,
+        LoadAllowances loads)
     {
         // ONE FILE AND MANY FILES ARE REPORTED DIFFERENTLY, on purpose. Asked to run one program a
         // host should print what the program produced and nothing else, so its output can be piped.
@@ -489,7 +502,7 @@ internal static class Program
                 ? Host.Run(source, asModule, checkOnly, fuel, depth)
                 : WideHost.Run(
                     [source], asModule, checkOnly, forceStrict, fuel, wall, depth, callDepth,
-                    liveBytes, request, handleStress);
+                    liveBytes, request, handleStress, loads);
 
             counts[result.Status] = counts.TryGetValue(result.Status, out var seen) ? seen + 1 : 1;
 
@@ -719,6 +732,35 @@ internal static class Program
         return true;
     }
 
+    /// <summary>Reads a byte allowance named by <paramref name="option"/>, when the caller stated one.</summary>
+    /// <remarks>
+    /// <b>For <c>--artifact-bytes</c> and <c>--nested-load-bytes</c>, the two allowances an artifact's own
+    /// size is charged to</b>, for <c>--live-bytes</c>'s reason: a form whose artifacts are larger than
+    /// another's - the value form calls a helper per instruction - meets these ceilings on programs the
+    /// other form runs, and moving them is the caller's decision to state rather than the profile's to
+    /// rebuild. The profile's hard maxima still bound both.
+    /// </remarks>
+    private static bool Bytes(string[] args, string option, out ulong? bytes, out string complaint)
+    {
+        bytes = null;
+        complaint = string.Empty;
+        var at = Array.IndexOf(args, option);
+
+        if (at < 0)
+        {
+            return true;
+        }
+
+        if (at == args.Length - 1 || !ulong.TryParse(args[at + 1], out var stated) || stated == 0)
+        {
+            complaint = option + " needs a positive number of bytes";
+            return false;
+        }
+
+        bytes = stated;
+        return true;
+    }
+
     private static bool Fuel(string[] args, out ulong? fuel, out string complaint)
     {
         fuel = null;
@@ -757,7 +799,7 @@ internal static class Program
         "--module", "--check", "--all", "--quiet", "--fuel", "--max-depth", "--closure",
         "--slice", "--strict", "--sweep", "--wall", "--call-depth", "--live-bytes", "--help",
         "--version", "--numeric", "--native", "--host-surface", "--runtime", "--value",
-        "--handle-stress",
+        "--handle-stress", "--artifact-bytes", "--nested-load-bytes",
     ];
 
     /// <summary>
@@ -955,6 +997,18 @@ internal static class Program
         Console.WriteLine("              remarks on 2026-09-07 without ever reaching the text a user");
         Console.WriteLine("              sees. Understating a host is the same defect as overstating");
         Console.WriteLine("              one, so it is quoted here rather than quietly dropped.)");
+        Console.WriteLine("  --value <backend>");
+        Console.WriteLine("              emit the wide surface's VALUE FORM (decision JSD-0035) with the");
+        Console.WriteLine("              named x86-64 backend: every instruction one call of a helper that");
+        Console.WriteLine("              runs the interpreter's own arm over NaN-boxed words in a pinned");
+        Console.WriteLine("              slab, the control flow between them emitted, and eval and import()");
+        Console.WriteLine("              compiled the same way. Refused with --numeric and by arm64.");
+        Console.WriteLine("              It implies nothing about speed either.");
+        Console.WriteLine("  --handle-stress");
+        Console.WriteLine("              run a value-form program with its handle table compacting at every");
+        Console.WriteLine("              helper call and every decoded word compared with the interpreter's");
+        Console.WriteLine("              value, so a rooting mistake is an internal defect by name; it");
+        Console.WriteLine("              changes nothing for any other form");
         Console.WriteLine("  --check     compile and verify only; do not run");
         Console.WriteLine("  --all       report every refusal in a file rather than the first");
         Console.WriteLine("  --quiet     do not print the completion value");
@@ -962,6 +1016,8 @@ internal static class Program
         Console.WriteLine("  --wall <ms> the wall-clock allowance per run; the profile's 10,000 ms otherwise");
         Console.WriteLine("  --live-bytes <n> the live-memory allowance per run; the profile's default otherwise");
         Console.WriteLine("  --call-depth <n> the call-depth allowance per run, in frames; the profile's default otherwise");
+        Console.WriteLine("  --artifact-bytes <n> the allowance an artifact's size is charged to; the profile's default otherwise");
+        Console.WriteLine("  --nested-load-bytes <n> the allowance guest-loaded artifacts' sizes are charged to; the profile's default otherwise");
         Console.WriteLine("  --max-depth <n>");
         Console.WriteLine("              the nesting depth the parser admits, 1 to 512; the parse options'");
         Console.WriteLine("              64 otherwise. ONE file of the Octane benchmark - earley-boyer -");

@@ -263,7 +263,8 @@ def form_name(arguments):
     return "native" if arguments.native else "bytecode"
 
 
-def run(binary, checkout, name, fuel, wall, live_bytes, max_depth, native, value=None, stress=False):
+def run(binary, checkout, name, fuel, wall, live_bytes, max_depth, native, value=None, stress=False,
+        artifact_bytes=None, nested_load_bytes=None):
     """One benchmark, one process, through the ordinary command line."""
     files = [str(checkout / "base.js")]
     files += [str(checkout / f) for f in COMPANIONS.get(name, [f"{name}.js"])]
@@ -284,6 +285,12 @@ def run(binary, checkout, name, fuel, wall, live_bytes, max_depth, native, value
 
     if stress:
         command += ["--handle-stress"]
+
+    if artifact_bytes:
+        command += ["--artifact-bytes", str(artifact_bytes)]
+
+    if nested_load_bytes:
+        command += ["--nested-load-bytes", str(nested_load_bytes)]
 
     # WHAT THE BENCHMARK COST, WHICH THIS SCRIPT DID NOT REPORT AND SHOULD HAVE. The `--wall`
     # above is an allowance a caller states in milliseconds, and a caller with no per-benchmark
@@ -356,6 +363,8 @@ def report(path, fields, binary, rows, components, total, coverage, skipped, spe
             "fuel": arguments.fuel,
             "wall-ms-requested": arguments.wall,
             "live-bytes": arguments.live_bytes,
+            "artifact-bytes": arguments.artifact_bytes,
+            "nested-load-bytes": arguments.nested_load_bytes,
             "max-depth": arguments.max_depth,
         },
         "selection": {
@@ -446,6 +455,13 @@ def main():
     parser.add_argument("--value", default=None, metavar="BACKEND")
     parser.add_argument("--handle-stress", action="store_true")
 
+    # THE TWO ALLOWANCES AN ARTIFACT'S OWN SIZE IS CHARGED TO, passed to the host only when stated and
+    # written into the report when they are. The value form calls a helper per instruction, so its
+    # artifacts are several times their bytecode's size and mandreel's meets the profile's default
+    # artifact ceiling; raising it is a stated allowance, like --wall, and not a property of the form.
+    parser.add_argument("--artifact-bytes", type=int, default=None)
+    parser.add_argument("--nested-load-bytes", type=int, default=None)
+
     # `--report` IS OPT-IN AND WRITES OUTSIDE THE DOCUMENTS. Scores have only ever existed as
     # `score <n>` lines in a transcript, which means every reader of a run has been a person and
     # every comparison between two runs has been a person's eye. A file with a schema and a version
@@ -515,6 +531,12 @@ def main():
         backend = arguments.native or arguments.value
         print("# form " + (f"{form_name(arguments)} ({backend})" if backend else "bytecode"))
 
+        # AN ALLOWANCE THE CALLER MOVED IS PRINTED WHERE THE FORM IS, so a transcript read without its
+        # report still says what the run was allowed.
+        if arguments.artifact_bytes or arguments.nested_load_bytes:
+            print(f"# allowances: artifact bytes {arguments.artifact_bytes or 'the profile default'}, "
+                  f"nested-load bytes {arguments.nested_load_bytes or 'the profile default'}")
+
         # THE SKIPS ARE PRINTED BEFORE ANYTHING RUNS, and that placement is the point: a reader who
         # sees only the summary at the end still meets the exclusion at the top of the transcript,
         # and a run that excluded something never looks like a run that did not.
@@ -532,7 +554,8 @@ def main():
         for name in wanted:
             code, output, seconds = run(
                 binary, checkout, name, arguments.fuel, arguments.wall, arguments.live_bytes,
-                arguments.max_depth, arguments.native, arguments.value, arguments.handle_stress)
+                arguments.max_depth, arguments.native, arguments.value, arguments.handle_stress,
+                arguments.artifact_bytes, arguments.nested_load_bytes)
             spent += seconds
             print(f"--- {name} (exit {code}, {seconds:.0f}s)")
 
