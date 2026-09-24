@@ -172,8 +172,11 @@ run guest code.** They are:
 - `Not`, and the conditional jumps on a Boolean, a Number, `undefined` or `null`;
 - `Jump`, `Increment` and `Decrement` on a Number, `Void`, and `TypeOf` of a non-handle word.
 
-**Each inline template is guarded by a type test.** When the guard fails, the same instruction runs
-through its helper. That is the general case of this form's own semantics, not a fallback to another
+**Each inline template is guarded by a type test, and by a range test where the machine instruction is
+exact only on part of its domain.** A bitwise operator's `ToInt32` of a double outside the 32-bit range
+and a result whose sign of zero the machine instruction would lose are such cases, and they take the
+helper; `Remainder` is left out of the pure set for the second reason. When a guard fails, the same
+instruction runs through its helper. That is the general case of this form's own semantics, not a fallback to another
 form, and it is how section 1's "one form" survives a guard. The numeric backend's SSE2 templates for
 arithmetic, comparison and NaN handling are the model, and every inline template must agree bit for bit
 with the interpreter's arm, which the differential gate in section 10 checks.
@@ -191,7 +194,11 @@ The arm's pops, pushes, conversions and throws stay the arm's own. What the help
 and the codec is small enough to test exhaustively over the kinds.
 
 **Control is emitted.** Branches, landings, and exception-region dispatch by a compare tree over the
-unit's landings are the baseline form's machinery, and they carry over.
+unit's landings are the baseline form's machinery, and they carry over. A helper for an instruction
+with a code target - `ForInNext`, `IterateNext`, `IterateAwaitStep`, `IterateCloseAsync`,
+`DisposeStep` - answers which way it went, and the branch itself is emitted. So the compare tree is
+needed only where control re-enters a unit from outside: its entry, its exception handlers and its
+resume points.
 
 ### 6. Calls
 
