@@ -463,9 +463,10 @@ def main():
     parser.add_argument("--handle-stress", action="store_true")
 
     # THE TWO ALLOWANCES AN ARTIFACT'S OWN SIZE IS CHARGED TO, passed to the host only when stated and
-    # written into the report when they are. The value form calls a helper per instruction, so its
-    # artifacts are several times their bytecode's size and mandreel's meets the profile's default
-    # artifact ceiling; raising it is a stated allowance, like --wall, and not a property of the form.
+    # written into the report when they are. The value form calls a helper for every instruction it
+    # does not run inline, so its artifacts are several times their bytecode's size and mandreel's
+    # meets the profile's default artifact ceiling; raising it is a stated allowance, like --wall, and
+    # not a property of the form.
     parser.add_argument("--artifact-bytes", type=int, default=None)
     parser.add_argument("--nested-load-bytes", type=int, default=None)
 

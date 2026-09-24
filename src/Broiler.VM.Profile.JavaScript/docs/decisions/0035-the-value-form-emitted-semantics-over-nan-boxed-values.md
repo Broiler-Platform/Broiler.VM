@@ -3,20 +3,23 @@
 
 # JSD-0035 - The value form: emitted instruction semantics over NaN-boxed values and a per-instance handle table
 
-**Status:** Proposed. 2026-09-24. **Stages JSV-0 and JSV-1 are implemented in the tree and nothing
+**Status:** Proposed. 2026-09-24. **Stages JSV-0 to JSV-2 are implemented in the tree and nothing
 after them is.** JSV-0 is the word layout, the codec, the handle table, the slab scan and
 handle-stress. JSV-1 puts them on an execution path: a compilation can ask for the value form, the
 artifact records it, the verifier scans and re-emits it, and an instance runs it, with every
-instruction a helper and the control flow between them emitted (section 10 says what that stage is and
-is not). No pure instruction is inline, no fuel is carried as a debt, no call is direct and no
-suspension goes through a frame codec: those are JSV-2 to JSV-4. **JSV-1's exit gate is met but for
-one benchmark.** The whole pinned suite gives bytecode's verdicts outside the admitted classes, with and
-without handle-stress, and fourteen of the fifteen Octane benchmarks report a score; `zlib` runs past
-the profile's wall-clock hard maximum in this form. That is a finding of
-[JSC-182](../roadmap.corrections.md#jsc-182)'s kind rather than a bound to raise, so that half of the
-gate stays open and carries into JSV-2's, which restates it (section 10). No bundle retains a
-measurement of the form, and this record makes no speed claim. Nobody has signed the record, so it
-claims no approval. Approvals are deferred under the MVP terms.
+instruction a helper and the control flow between them emitted. JSV-2 runs the pure instructions
+inline over the slab's words, keeps in the region the bindings nothing outside their activation can
+reach, and carries the fuel of the pure instructions as a debt settled through the existing charge
+(section 10 says what each stage is and is not). No call is direct and no suspension goes through a
+frame codec: those are JSV-3 and JSV-4. **JSV-2's exit gate is met, and with it the half of JSV-1's
+that stayed open.** The whole pinned suite gives bytecode's verdicts outside the admitted classes in
+the value form, under handle-stress and in the control with every binding non-resident; all fifteen
+Octane benchmarks report a score, `zlib` among them, which ran past the profile's wall-clock hard
+maximum at JSV-1 (a finding of [JSC-182](../roadmap.corrections.md#jsc-182)'s kind, which the stage
+closed without raising a bound); the fuel-parity twins give one verdict at every ceiling the rows try;
+and every inline kind answers as its arm, bit for bit. No bundle retains a measurement of the form,
+and this record makes no speed claim. Nobody has signed the record, so it claims no approval.
+Approvals are deferred under the MVP terms.
 
 **Owner:** JavaScript profile owner. **Co-signer:** the core's security owner, because the design adds
 a rooting mechanism and a new class of emitted template. **Both roles are held by one person**, and
@@ -442,7 +445,7 @@ arming path, W^X, rule X1 and rule B5c are untouched.
 |---|---|---|
 | **JSV-0** *(in the tree, 2026-09-24)* | `JsWord`, its codec, `JsHandleTable`, the scan and handle-stress, managed only: `JsWord.cs` in the format assembly; `JsWordCodec.cs`, `JsHandleTable.cs`, `JsValueSlab.cs` and `JsWordChecks.cs` in the profile | Codec round-trip over every kind and every NaN payload; scan and generation checks under a fuzz target; no emitted code. Held by the `value-word/*` rows of the slice compiler's `--checks`, three of them fixed-seed fuzz runs (two under handle-stress), and by `--fuzz-words` for longer runs. Two rows are negative controls - an unpublished word that handle-stress refuses and the plain table does not, and a released handle in a live word that stops the scan - and a mutant scan that skipped each frame's last live word was watched failing five rows before the rows were committed |
 | **JSV-1** *(in the tree, 2026-09-24; its gate open on `zlib`)* | The value form with **every** instruction a helper, except the control flow, which is emitted: `JsOutputForm.Value`, the header's form byte, the per-instruction partition and its scan, `JsValueFrame`, `JsValueStack`, the helper table `JsValueHelpers` with one per-opcode arm mode each, `JsValueWindows`, and the entry `RunValue`; handle-stress reachable as a descriptor door and as `--handle-stress` and `--form value-stress` | The whole pinned suite in the value form gives the same verdict per variant as bytecode, outside the admitted classes, with and without handle-stress; all fifteen Octane benchmarks report a score. Also held by the slice compiler's `value/*` rows - every wide program and probe answering as bytecode, fuel included, with and without handle-stress, re-emission, the scan holding each form to its own partition, the form byte and its refusals - and by rules X2, X3 and X4 (e). **Open on one benchmark:** the suite half holds with and without handle-stress, and fourteen Octane benchmarks score, `mandreel` and `code-load` under stated artifact allowances; `zlib` runs past the profile's wall-clock hard maximum, which no allowance moves, and reports none |
-| **JSV-2** | Residency analysis, the pure inline set and fuel debt | JSV-1's gate again, plus the fuel-parity twins giving the same verdict at every ceiling, plus a differential run of every inline template against its arm |
+| **JSV-2** *(in the tree, 2026-09-24)* | Residency analysis, the pure inline set and fuel debt: `JsValueLayout` (the plan, the analysis and the layout, in the format assembly), `JsX64ValueEmitter`, the value table's inline, guard and debt rows and the scan's layout clause, the frame context's region and debt, `SettleValue`, and the flat control, `JsOutputForm.ValueFlat`, as `--value-flat` and `--form value-flat` | JSV-1's gate again, plus the fuel-parity twins giving the same verdict at every ceiling, plus a differential run of every inline template against its arm. **Met.** The whole pinned suite in the value form, under handle-stress and in the flat control gives bytecode's verdicts outside the admitted classes, and all fifteen Octane benchmarks report a score in one run that states JSV-1's two artifact allowances, which `mandreel`'s artifact still needs in this form, and `zlib` finishes inside the profile's wall-clock hard maximum, which no allowance moves. Also held by the slice compiler's rows: `value/differential/*` runs every operator, jump, binding and stack operation over edge values - both zeros, the infinities, quiet and signalling NaNs with payloads, the thirty-two-bit boundaries and every kind that is not a Number - in both value forms and compares every result's bits and the total fuel with bytecode's, beside a row requiring every inline kind to be placed; `value/fuel-parity/*` runs each twin in bytecode, the value form and the control at every ceiling from a settlement window below its total to a few above it and at a sweep below that, and compares the verdicts; and `value/scan/refuses/*` watches a moved guard, a moved debt test, another materialised word and a payload scanned under the other residency each refused by the clause it breaks. **The whole-suite run found one defect the rows had not**: JSV-0's codec canonicalised every NaN, so a NaN computed inline and the same NaN copied through a helper were stored into a typed array two ways; section 2 records the narrowing that fixed it |
 | **JSV-3** | Direct calls and the stack limit | JSV-2's gate, plus recursion answering the interpreter's `RangeError` rather than exhausting the machine stack |
 | **JSV-4** | Suspension through the frame codec, and status-chain exceptions | JSV-3's gate over the generator, async and exception subtrees under handle-stress |
 
@@ -513,7 +516,9 @@ reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 
   largest Octane benchmark's artifact is past the profile's default artifact ceiling in this form and
   within it in the other two, and a benchmark that loads code in a loop meets the nested-load ceiling
   first; an Octane run of the value form states those two allowances, which the command line now takes,
-  as it states its wall clock. JSV-2's inline templates change the size again, in whichever direction.
+  as it states its wall clock. JSV-2's inline templates change the size again, and the largest
+  benchmark's artifact is still past the default ceiling in this form after them, so JSV-2's Octane run
+  states the same two allowances.
 - **Each value-form level of a recursion is deeper on the machine stack than an interpreted one** - an
   emitted frame, a helper and an arm's frame per call - so a recursion that the interpreter ends with
   its call-depth `RangeError` could meet the stack backstop first. JSV-3's stack limit is what closes
@@ -524,8 +529,9 @@ reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 
   catches this. Inline caches in a per-instance side table are a later record's work, not this one's.
   At JSV-1 every instruction pays them, and so does its fuel charge through the meter, and `zlib`, which
   finishes inside the profile's wall-clock hard maximum as bytecode on the machine JSV-1 was gated on,
-  does not as this form. JSV-2's inline set and fuel debt are what take the transition, the codec and
-  the per-instruction charge off a pure instruction.
+  did not as this form. JSV-2's inline set and fuel debt take the transition, the codec and the
+  per-instruction charge off a pure instruction, and `zlib` finishes inside that maximum again; what a
+  helper still pays is unchanged, and it is the rule's to weigh, not this record's.
 - **Allocation-heavy loops churn the handle table.** Compaction cost scales with the live frames'
   extent, and the rule measures it rather than assumes it.
 - **The residency analysis is a new static analysis whose error is a wrong answer.** A binding wrongly
