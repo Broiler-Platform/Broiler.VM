@@ -3,21 +3,24 @@
 
 # JSD-0035 - The value form: emitted instruction semantics over NaN-boxed values and a per-instance handle table
 
-**Status:** Proposed. 2026-09-24. **Stages JSV-0 to JSV-2 are implemented in the tree and nothing
+**Status:** Proposed. 2026-09-24. **Stages JSV-0 to JSV-3 are implemented in the tree and nothing
 after them is.** JSV-0 is the word layout, the codec, the handle table, the slab scan and
 handle-stress. JSV-1 puts them on an execution path: a compilation can ask for the value form, the
 artifact records it, the verifier scans and re-emits it, and an instance runs it, with every
 instruction a helper and the control flow between them emitted. JSV-2 runs the pure instructions
 inline over the slab's words, keeps in the region the bindings nothing outside their activation can
-reach, and carries the fuel of the pure instructions as a debt settled through the existing charge
-(section 10 says what each stage is and is not). No call is direct and no suspension goes through a
-frame codec: those are JSV-3 and JSV-4. **JSV-2's exit gate is met, and with it the half of JSV-1's
-that stayed open.** The whole pinned suite gives bytecode's verdicts outside the admitted classes in
-the value form, under handle-stress and in the control with every binding non-resident; all fifteen
-Octane benchmarks report a score, `zlib` among them, which ran past the profile's wall-clock hard
-maximum at JSV-1 (a finding of [JSC-182](../roadmap.corrections.md#jsc-182)'s kind, which the stage
-closed without raising a bound); the fuel-parity twins give one verdict at every ceiling the rows try;
-and every inline kind answers as its arm, bit for bit. No bundle retains a measurement of the form,
+reach, and carries the fuel of the pure instructions as a debt settled through the existing charge.
+JSV-3 makes a call to a plain script function of the same program a machine call from one emitted
+frame into the next, with the interpreter's own checks made by a helper before it and the value
+returned in the callee's first word (section 10 says what each stage is and is not). No suspension
+goes through a frame codec, and an exception crossing a level entered from managed code is still a
+managed rethrow: those are JSV-4's. **JSV-3's exit gate is met**, as JSV-2's was, with JSV-1's open half
+closed by JSV-2: the whole pinned suite gives bytecode's verdicts outside the admitted classes in the
+value form, under handle-stress and in the control with every binding non-resident; all fifteen Octane
+benchmarks report a score; the fuel-parity twins give one verdict at every ceiling the rows try; every
+inline kind answers as its arm, bit for bit; and a recursion answers the interpreter's `RangeError` at
+the interpreter's depth on every route family the frame-cost measurement nests through, returning and
+throwing alike, rather than meeting the machine stack. No bundle retains a measurement of the form,
 and this record makes no speed claim. Nobody has signed the record, so it claims no approval.
 Approvals are deferred under the MVP terms.
 
@@ -173,6 +176,19 @@ program counter - lives on the machine stack, as the baseline form's frames do. 
 compares the stack pointer with a limit written into the instance context at entry. A deep recursion
 therefore answers the same `RangeError` the interpreter gives, and never overflows the machine stack.
 
+*(Settled by JSV-3 differently, and the difference is named rather than hidden: **the region check and
+the stack limit are made by the call-prepare helper, not by the prologue.** Every entry into a value-form
+unit is made either from managed code, by the interpreter's own call path, or by a direct call, after the
+prepare helper ran - and that helper makes the interpreter's own checks, in the interpreter's order: the
+runtime's stack probe, which ends the operation at the backstop as the interpreter's does, the counted
+bound, which answers the interpreter's catchable `RangeError` at the interpreter's depth, and the
+call-depth ceiling; it then opens the callee's region on the value stack, whose bound is the backstop
+too. A prologue check would run where one of those already had, on the same stack, with no limit of its
+own the runtime would honour: .NET gives managed code a probe and no stack bound to write into a context.
+So the prologue has neither check, and each level of a direct recursion costs the machine stack one
+emitted frame - its saved registers, its reservation and its return address - which is why a recursion
+reaches the counted bound long before it could reach the stack.)*
+
 ### 4. The handle table: what makes a reference safe to hold as an integer
 
 **A handle is an index into a per-instance managed table, `JsHandleTable`, plus a generation.** Each
@@ -306,6 +322,34 @@ A call to anything else - a built-in, a host function, a proxy, a bound function
 function - goes through a helper. **So a value-form call pays no activation object, no entry step and
 no pair of collector transitions**, which are the per-call costs the baseline form carries today.
 
+*(Settled by JSV-3, `JsNativeActivation.PrepareCall` and `FinishCall`, `JsEngine.BeginDirectCall` and
+`EndDirectCall`. Every `Call` the plan's walk reached is a direct call site: the site calls the prepare
+helper with a callee context its own frame reserves, and the helper either runs the instruction through
+its ordinary helper, answering as that helper would, or prepares a direct call and answers
+`JsValueAbi.DirectCall`; the site then calls the callee's entry through the context's entry field, and
+the finish helper with the callee's status. The preparation is the interpreter's own code, factored out
+of `Call`, `Invoke` and `RunValue` so the two paths share one text: the debt, the instruction and the
+call charged as one amount, the stack probe, the counted bound's `RangeError`, the call-depth ceiling,
+the callee's record with its parameters copied, its receiver, the script or module it runs as, and its
+region opened and encoded. **The return is as written**: `Return` and `ReturnUndefined` are inline, leave
+the value in the region's first word and the debt in the context, and answer `JsValueAbi.Returned`, which
+the finish helper and `RunValue` read before the region closes and charge before anyone sees the value.
+A failure before the callee runs, and an exception the callee answers, is raised at the call through the
+dispatch loop's own filter and landing (a mode of its own, `JsRaise`), so it lands where the interpreter's
+would; one that lands nowhere is passed down as a status.*
+
+*Four things are narrower than this section, and each is named:*
+
+- *a direct call is to a plain script function - not a generator, an async function or a class
+  constructor - **of the caller's own program**, which is the payload the scan held the callee's entry to;
+  a function of another program, a nested load's or another script artifact's, is called through the
+  helper;*
+- *`Construct` is not a direct call site, and runs through its helper;*
+- *a direct call still makes an activation object and a callee record: helpers read the activation, and
+  a closure made in the callee captures the record. What it does not pay is the arm's frame, the
+  invocation, the entry instantiation and the managed-to-native transition of an entry;*
+- *a call to a function whose record would have no binding in it still makes one.)*
+
 ### 7. Fuel: the same verdict at every ceiling, without a meter amendment
 
 **A pure instruction adds one to an unmanaged debt counter in the frame context, and the debt is
@@ -374,7 +418,11 @@ twins.
   helper, parked on the activation and raised again by the managed frame that entered the emitted code,
   once per value-form level it crosses, as in the baseline form; and a suspended generator's frame
   holds the activation's own stack, which the mirror keeps coherent, while a resumption encodes that
-  stack into the new region before any helper runs. The two bullets below are JSV-4's.
+  stack into the new region before any helper runs. The two bullets below are JSV-4's. *(At JSV-3 a throw
+  that crosses a direct call already travels as the first bullet says: the callee answers "threw" with
+  the exception parked on its activation, and the caller's finish helper raises it at the call, where it
+  lands in the caller's own region or goes down one more status. A throw crossing a level entered from
+  managed code is still a managed rethrow there.)*
 - **Throw and catch.** A helper that catches a guest exception parks it in the instance context and
   answers "threw" with the program counter. Emitted code dispatches it through the unit's region table
   to a landing, or returns "threw" to its caller. **No managed exception ever crosses an emitted frame**,
@@ -416,6 +464,14 @@ moved to three.)*
 holds to the per-instruction partition, and no inline template exists, so clauses V1 to V6 have nothing
 yet to judge; they arrive with JSV-2.)*
 
+*(Settled by JSV-3 for V3 and V4. The table gains the direct call site's rows, and the one indirect
+transfer that is not through the helper table: `call [rsp+callee+entry]`, through the entry field of the
+unit's own callee context, which no emitted template writes - the only memory the emitted code writes
+there is the context's debt word - and which the prepare helper writes with the emitted entry of a unit of
+the same program, and so of the same scanned payload. The scan holds every direct call site to its layout
+and names one that differs `CallNotDirect`. V4 is held where section 3 now says it is, by the prepare
+helper, and not by the prologue.)*
+
 *(Settled by JSV-2 for V1 to V3, V5 and V6; V4 is JSV-3's. The value table gains the inline rows, with
 three field kinds of its own - a region displacement, a word a template materialises and the debt
 threshold - and a prologue that loads the region and the debt. **The scan holds every unit body to the
@@ -446,7 +502,7 @@ arming path, W^X, rule X1 and rule B5c are untouched.
 | **JSV-0** *(in the tree, 2026-09-24)* | `JsWord`, its codec, `JsHandleTable`, the scan and handle-stress, managed only: `JsWord.cs` in the format assembly; `JsWordCodec.cs`, `JsHandleTable.cs`, `JsValueSlab.cs` and `JsWordChecks.cs` in the profile | Codec round-trip over every kind and every NaN payload; scan and generation checks under a fuzz target; no emitted code. Held by the `value-word/*` rows of the slice compiler's `--checks`, three of them fixed-seed fuzz runs (two under handle-stress), and by `--fuzz-words` for longer runs. Two rows are negative controls - an unpublished word that handle-stress refuses and the plain table does not, and a released handle in a live word that stops the scan - and a mutant scan that skipped each frame's last live word was watched failing five rows before the rows were committed |
 | **JSV-1** *(in the tree, 2026-09-24; its gate open on `zlib`)* | The value form with **every** instruction a helper, except the control flow, which is emitted: `JsOutputForm.Value`, the header's form byte, the per-instruction partition and its scan, `JsValueFrame`, `JsValueStack`, the helper table `JsValueHelpers` with one per-opcode arm mode each, `JsValueWindows`, and the entry `RunValue`; handle-stress reachable as a descriptor door and as `--handle-stress` and `--form value-stress` | The whole pinned suite in the value form gives the same verdict per variant as bytecode, outside the admitted classes, with and without handle-stress; all fifteen Octane benchmarks report a score. Also held by the slice compiler's `value/*` rows - every wide program and probe answering as bytecode, fuel included, with and without handle-stress, re-emission, the scan holding each form to its own partition, the form byte and its refusals - and by rules X2, X3 and X4 (e). **Open on one benchmark:** the suite half holds with and without handle-stress, and fourteen Octane benchmarks score, `mandreel` and `code-load` under stated artifact allowances; `zlib` runs past the profile's wall-clock hard maximum, which no allowance moves, and reports none |
 | **JSV-2** *(in the tree, 2026-09-24)* | Residency analysis, the pure inline set and fuel debt: `JsValueLayout` (the plan, the analysis and the layout, in the format assembly), `JsX64ValueEmitter`, the value table's inline, guard and debt rows and the scan's layout clause, the frame context's region and debt, `SettleValue`, and the flat control, `JsOutputForm.ValueFlat`, as `--value-flat` and `--form value-flat` | JSV-1's gate again, plus the fuel-parity twins giving the same verdict at every ceiling, plus a differential run of every inline template against its arm. **Met.** The whole pinned suite in the value form, under handle-stress and in the flat control gives bytecode's verdicts outside the admitted classes, and all fifteen Octane benchmarks report a score in one run that states JSV-1's two artifact allowances, which `mandreel`'s artifact still needs in this form, and `zlib` finishes inside the profile's wall-clock hard maximum, which no allowance moves. Also held by the slice compiler's rows: `value/differential/*` runs every operator, jump, binding and stack operation over edge values - both zeros, the infinities, quiet and signalling NaNs with payloads, the thirty-two-bit boundaries and every kind that is not a Number - in both value forms and compares every result's bits and the total fuel with bytecode's, beside a row requiring every inline kind to be placed; `value/fuel-parity/*` runs each twin in bytecode, the value form and the control at every ceiling from a settlement window below its total to a few above it and at a sweep below that, and compares the verdicts; and `value/scan/refuses/*` watches a moved guard, a moved debt test, another materialised word and a payload scanned under the other residency each refused by the clause it breaks. **The whole-suite run found one defect the rows had not**: JSV-0's codec canonicalised every NaN, so a NaN computed inline and the same NaN copied through a helper were stored into a typed array two ways; section 2 records the narrowing that fixed it |
-| **JSV-3** | Direct calls and the stack limit | JSV-2's gate, plus recursion answering the interpreter's `RangeError` rather than exhausting the machine stack |
+| **JSV-3** *(in the tree, 2026-09-24)* | Direct calls and the stack limit: every reached `Call` a direct call site (`JsValueLayout`'s call sequence, the value table's direct-call rows and the scan's `CallNotDirect`), the prepare and finish helpers (`JsNativeActivation.PrepareCall` and `FinishCall`) over the interpreter's own call path factored out of `Call`, `Invoke` and `RunValue`, the raise mode `JsRaise`, and the inline return with its `Returned` status; the stack limit made by the prepare helper (section 3) | JSV-2's gate, plus recursion answering the interpreter's `RangeError` rather than exhausting the machine stack. **Met.** The whole pinned suite in the value form, under handle-stress and in the flat control gives bytecode's verdicts outside the admitted classes, and all fifteen Octane benchmarks report a score under JSV-1's stated artifact allowances. `eng/measure-frame-cost.py --form value`, run over every route family it knows, finds every one stopped by the declared bound - the catchable `RangeError` - returning and throwing alike, and none by the stack or a death, but `proxyextensible`, whose shape does not recurse in this engine in either form and completes at every depth in bytecode as in the value form. Also held by the slice compiler's `value/direct-calls/*` rows - recursion, exceptions across direct calls, receivers and parameters, closures and every callee left to the helper, and the counted bound itself, each in both value forms and under handle-stress with fuel compared - by a row requiring every reached `Call` to be a direct call site, by two scan rows refusing a broken one, and by rules X3 and X4 (e) as amended |
 | **JSV-4** | Suspension through the frame codec, and status-chain exceptions | JSV-3's gate over the generator, async and exception subtrees under handle-stress |
 
 **Speed is judged once, by a predeclared rule, against a retained measurement**, as
@@ -480,6 +536,9 @@ reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 
     JSV-1; JSV-2 admits the one settlement entry at its fixed slot, and holds the offset a helper is
     handed to the unit's plan in place of Step's check against the last step's offset, which inline
     code makes meaningless)*.
+  - **X3** and **X4 (e)** move again at JSV-3: the prepare and finish helpers are the slot's fourth and
+    fifth readers and its only writers besides `Current`'s setter, and the table's two further entries
+    at their fixed slots are admitted as the settlement's is.
   - A new rule holds clauses V1 to V6 and the residency analysis's purity *(JSV-2's, and not taken as a
     rule: the clauses are held at verification, in every image, by the scan's layout clause and the
     closed table section 9 describes, and the analysis's purity by re-emission and by the scan
@@ -519,10 +578,13 @@ reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 
   as it states its wall clock. JSV-2's inline templates change the size again, and the largest
   benchmark's artifact is still past the default ceiling in this form after them, so JSV-2's Octane run
   states the same two allowances.
-- **Each value-form level of a recursion is deeper on the machine stack than an interpreted one** - an
+- **Each value-form level of a recursion was deeper on the machine stack than an interpreted one** - an
   emitted frame, a helper and an arm's frame per call - so a recursion that the interpreter ends with
-  its call-depth `RangeError` could meet the stack backstop first. JSV-3's stack limit is what closes
-  that; until then the whole-suite gate is what would show it.
+  its call-depth `RangeError` could meet the stack backstop first. JSV-3's direct calls close that for a
+  plain call, whose level is one emitted frame. A level that nests through anything else - an accessor, a
+  coercion hook, a proxy trap, a built-in that calls back - still runs through a helper and costs its
+  frames, and `eng/measure-frame-cost.py --form value` measures each such route as it does for the other
+  two forms.
 
 - **Helper-dominated code may be slower than bytecode.** Property access, calls to built-ins and
   closures over captured bindings each pay a transition and the codec. The rule in section 10 is what
