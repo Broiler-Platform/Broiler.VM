@@ -380,7 +380,10 @@ committed before JSV-2's code exists. Its arms are bytecode as the control, the 
 form as the candidate, and an A/A lane of the candidate. Its population is the wide shapes and the
 Octane benchmarks. The owner fixes its thresholds, and figures go only in that bundle's README. **A
 REFUSE verdict ends the stage** and reverts it; it does not narrow the population until the rule
-passes.
+passes. *(Committed on 2026-09-24, before JSV-2's first commit, as bundle `jsv-4-001`'s
+[decision rule](../evidence/jsv-4-001/decision-rule.md). The owner fixed its thresholds and ruled that
+the form is judged once and whole, at the end of JSV-4, and that the rule judges the wide shapes and
+reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 to JSV-4 together.)*
 
 ## What it amends, if adopted
 
