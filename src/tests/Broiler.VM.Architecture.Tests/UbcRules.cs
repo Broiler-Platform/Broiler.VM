@@ -84,9 +84,11 @@ internal static partial class UbcRules
     /// <para>
     /// <b>So does the packability clause, for the opposite reason.</b> A text search for the element
     /// would PASS on a comment that quotes it and on a false definition a later one overrides, and
-    /// the project would pack in both cases. Every <c>IsPackable</c> definition must be unconditional
-    /// and literally <c>false</c>, which <see cref="ArchitectureRules.NotLiterallyUnpackable"/>
-    /// decides for this rule and for rule N4 alike.
+    /// the project would pack in both cases. Every <c>IsPackable</c> definition - a property group's
+    /// element outside any target and outside <c>ProjectExtensions</c> - must be unconditional and
+    /// literally <c>false</c>, and no target may set it to anything else, which
+    /// <see cref="ArchitectureRules.NotLiterallyUnpackable"/> decides for this rule and for rule N4
+    /// alike.
     /// </para>
     /// </remarks>
     internal static IEnumerable<string> U1(ComponentGraph.ProjectFile project)
@@ -1113,6 +1115,17 @@ internal static partial class UbcRules
     /// is a row.
     /// </para>
     /// <para>
+    /// <b>And even there an integer is a width only in a row that reads as one.</b> A single keyed
+    /// integer - an arm's <c>=&gt; 3</c>, a section of the one assignment <c>w = 3</c>, an indexed
+    /// element's <c>t[(int)UbcOpcode.Jump] = 3</c>, or a composite holding that one value, such as
+    /// <c>new Info { Width = 3 }</c> - is a width as it stands. Inside a composite keyed value or a
+    /// section of several assignments that state other values too, an integer literal is read as a
+    /// width only when the same row also states a shape, an effect or a slot type. An interpreter arm
+    /// that stores a value and advances its counter by a literal, or that answers its step as
+    /// <c>(true, 0)</c> or <c>new Step(1, false)</c>, states several values and no shape, effect or
+    /// slot type among them, and is not reported (<see cref="RowFacts"/>).
+    /// </para>
+    /// <para>
     /// <b>Names are followed through the file's and the project's using directives</b> - an alias of
     /// one of the four enums and a <c>using static</c> of one, the project's global ones including
     /// those its project file's <c>Using</c> items declare - and read through unicode escapes, because
@@ -1185,7 +1198,7 @@ internal static partial class UbcRules
         switch (node)
         {
             case SwitchExpressionArmSyntax arm when OpcodeKeys(arm.Pattern, scope).FirstOrDefault() is { } key:
-                foreach (var (value, kind) in Facts(arm.Expression, scope, integers: true))
+                foreach (var (value, kind) in RowFacts([arm.Expression], scope))
                 {
                     yield return ("a switch arm", key, value, kind);
                 }
@@ -1201,12 +1214,9 @@ internal static partial class UbcRules
                     break;
                 }
 
-                foreach (var stated in SectionValues(section))
+                foreach (var (value, kind) in RowFacts(SectionValues(section), scope))
                 {
-                    foreach (var (value, kind) in Facts(stated, scope, integers: true))
-                    {
-                        yield return ("a switch section", key, value, kind);
-                    }
+                    yield return ("a switch section", key, value, kind);
                 }
 
                 break;
@@ -1214,7 +1224,7 @@ internal static partial class UbcRules
 
             case AssignmentExpressionSyntax { Left: ImplicitElementAccessSyntax access } assignment
                 when access.ArgumentList.Arguments.Select(argument => scope.Member(argument.Expression, "UbcOpcode")).FirstOrDefault(static member => member is not null) is { } key:
-                foreach (var (value, kind) in Facts(assignment.Right, scope, integers: true))
+                foreach (var (value, kind) in RowFacts([assignment.Right], scope))
                 {
                     yield return ("a dictionary entry", key, value, kind);
                 }
@@ -1223,7 +1233,7 @@ internal static partial class UbcRules
 
             case AssignmentExpressionSyntax { Left: ElementAccessExpressionSyntax access } assignment
                 when access.ArgumentList.Arguments.Select(argument => scope.Member(argument.Expression, "UbcOpcode")).FirstOrDefault(static member => member is not null) is { } key:
-                foreach (var (value, kind) in Facts(assignment.Right, scope, integers: true))
+                foreach (var (value, kind) in RowFacts([assignment.Right], scope))
                 {
                     yield return ("an element indexed", key, value, kind);
                 }
@@ -1233,12 +1243,9 @@ internal static partial class UbcRules
             case InitializerExpressionSyntax initializer when initializer.IsKind(SyntaxKind.ComplexElementInitializerExpression) &&
                 initializer.Expressions.Count > 1 &&
                 scope.Member(initializer.Expressions[0], "UbcOpcode") is { } key:
-                foreach (var stated in initializer.Expressions.Skip(1))
+                foreach (var (value, kind) in RowFacts([.. initializer.Expressions.Skip(1)], scope))
                 {
-                    foreach (var (value, kind) in Facts(stated, scope, integers: true))
-                    {
-                        yield return ("a dictionary entry", key, value, kind);
-                    }
+                    yield return ("a dictionary entry", key, value, kind);
                 }
 
                 break;
@@ -1309,7 +1316,9 @@ internal static partial class UbcRules
 
     /// <summary>
     /// A list of expressions in which an opcode member is paired with a fact the table owns, the facts
-    /// inside a composite element of the list included.
+    /// inside a composite element of the list included. When the list is a keyed row - an <c>Add</c>
+    /// call's arguments - its other elements are the row's values, read as <see cref="RowFacts"/> reads
+    /// them.
     /// </summary>
     private static IEnumerable<(string Construct, string Key, ExpressionSyntax Value, string Kind)> Paired(
         string construct, IEnumerable<ExpressionSyntax> expressions, Scope scope, bool integers)
@@ -1322,18 +1331,48 @@ internal static partial class UbcRules
             yield break;
         }
 
-        foreach (var element in list)
-        {
-            if (scope.Member(element, "UbcOpcode") is not null)
-            {
-                continue;
-            }
+        var values = list.Where(element => scope.Member(element, "UbcOpcode") is null).ToArray();
 
-            foreach (var (value, kind) in Facts(element, scope, integers))
-            {
-                yield return (construct, key, value, kind);
-            }
+        var facts = integers
+            ? RowFacts(values, scope)
+            : values.SelectMany(value => Facts(value, scope, integers: false));
+
+        foreach (var (value, kind) in facts)
+        {
+            yield return (construct, key, value, kind);
         }
+    }
+
+    /// <summary>
+    /// The facts a keyed row states, given the values it states for its key: the arm's value, the
+    /// section's assigned and returned values, the entry's, the indexed element's or the call's.
+    /// </summary>
+    /// <remarks>
+    /// An integer literal is read as a width when it is the only value the row states - an arm's
+    /// <c>=&gt; 3</c>, a section of the one assignment <c>w = 3</c>, an indexed element's <c>= 3</c>, an
+    /// object initialiser of one member - or when the row also states a shape, an effect or a slot
+    /// type; otherwise it is not read. A row that states several values, none of them a shape, an
+    /// effect or a slot type, is how an interpreter arm reads: <c>stack[sp++] = operand; pc += 5;</c>,
+    /// or a step answered as <c>(true, 0)</c> or <c>new Step(1, false)</c>. Its values are counted at
+    /// any depth, as <see cref="Facts"/> reads them.
+    /// </remarks>
+    private static IEnumerable<(ExpressionSyntax Value, string Kind)> RowFacts(IReadOnlyList<ExpressionSyntax> values, Scope scope)
+    {
+        var stated = values.SelectMany(value => Stated(value, scope)).ToArray();
+        var integers = stated.Length == 1 || stated.Any(value => Fact(value, scope, integers: false) is not null);
+
+        return values.SelectMany(value => Facts(value, scope, integers));
+    }
+
+    /// <summary>
+    /// The values an expression states: itself when it is a fact or not a composite, and otherwise
+    /// the values each of its parts states.
+    /// </summary>
+    private static IEnumerable<ExpressionSyntax> Stated(ExpressionSyntax expression, Scope scope)
+    {
+        var parts = Fact(expression, scope, integers: true) is null ? Parts(expression).ToArray() : [];
+
+        return parts.Length == 0 ? [expression] : parts.SelectMany(part => Stated(part, scope));
     }
 
     /// <summary>
@@ -1342,10 +1381,12 @@ internal static partial class UbcRules
     /// </summary>
     /// <remarks>
     /// The parts are a tuple's elements, a constructor's arguments and the members its object
-    /// initialiser assigns, an anonymous object's members, and the members a <c>with</c> expression
-    /// assigns: every way to write a row whose value is several facts rather than one. A call is not
-    /// a composite - its result is what a helper returns, which the rule states it does not see - and
-    /// neither is a collection, which is read only as a slot-type list.
+    /// initialiser assigns, an anonymous object's members, the members a <c>with</c> expression
+    /// assigns, and the members a nested object initialiser assigns when it is itself the value - the
+    /// <c>[UbcOpcode.Jump] = { Width = 3 }</c> of an object's indexed member: every way to write a row
+    /// whose value is several facts rather than one. A call is not a composite - its result is what a
+    /// helper returns, which the rule states it does not see - and neither is a collection, which is
+    /// read only as a slot-type list.
     /// </remarks>
     private static IEnumerable<(ExpressionSyntax Value, string Kind)> Facts(ExpressionSyntax expression, Scope scope, bool integers)
     {
@@ -1355,18 +1396,7 @@ internal static partial class UbcRules
             yield break;
         }
 
-        IEnumerable<ExpressionSyntax> parts = Strip(expression) switch
-        {
-            TupleExpressionSyntax tuple => tuple.Arguments.Select(static argument => argument.Expression),
-            BaseObjectCreationExpressionSyntax creation =>
-                (creation.ArgumentList?.Arguments.Select(static argument => argument.Expression) ?? [])
-                    .Concat(InitialisedValues(creation.Initializer)),
-            AnonymousObjectCreationExpressionSyntax anonymous => anonymous.Initializers.Select(static member => member.Expression),
-            WithExpressionSyntax with => InitialisedValues(with.Initializer),
-            _ => [],
-        };
-
-        foreach (var part in parts)
+        foreach (var part in Parts(expression))
         {
             foreach (var fact in Facts(part, scope, integers))
             {
@@ -1374,6 +1404,19 @@ internal static partial class UbcRules
             }
         }
     }
+
+    /// <summary>The parts of a composite value, one level down; none for any other expression.</summary>
+    private static IEnumerable<ExpressionSyntax> Parts(ExpressionSyntax expression) => Strip(expression) switch
+    {
+        TupleExpressionSyntax tuple => tuple.Arguments.Select(static argument => argument.Expression),
+        BaseObjectCreationExpressionSyntax creation =>
+            (creation.ArgumentList?.Arguments.Select(static argument => argument.Expression) ?? [])
+                .Concat(InitialisedValues(creation.Initializer)),
+        AnonymousObjectCreationExpressionSyntax anonymous => anonymous.Initializers.Select(static member => member.Expression),
+        WithExpressionSyntax with => InitialisedValues(with.Initializer),
+        InitializerExpressionSyntax nested => InitialisedValues(nested),
+        _ => [],
+    };
 
     /// <summary>The values an object initialiser or a <c>with</c> initialiser assigns to named members.</summary>
     private static IEnumerable<ExpressionSyntax> InitialisedValues(InitializerExpressionSyntax? initializer) =>
@@ -1408,10 +1451,11 @@ internal static partial class UbcRules
     /// anything else.
     /// </summary>
     /// <remarks>
-    /// A body of assignments, with or without a closing return, is a row written a field at a time,
-    /// so every value in it is read. A body holding any other statement - a call, a declaration, a
-    /// branch - is behaviour, and nothing in it is read, which is how an interpreter arm stays
-    /// unreported.
+    /// A body of assignments, with or without a closing return - one that returns a value, whose
+    /// value is read, or a bare <c>return;</c>, which is skipped as a <c>break</c> is - is a row
+    /// written a field at a time, so every value in it is read. A body holding any other statement -
+    /// a call, a declaration, a branch - is behaviour, and nothing in it is read, which is how an
+    /// interpreter arm that does anything but assign stays unreported.
     /// </remarks>
     private static IReadOnlyList<ExpressionSyntax> SectionValues(SwitchSectionSyntax section)
     {
@@ -1419,7 +1463,7 @@ internal static partial class UbcRules
             .SelectMany(static statement => statement is BlockSyntax block
                 ? (IEnumerable<StatementSyntax>)block.Statements
                 : [statement])
-            .Where(static statement => statement is not BreakStatementSyntax);
+            .Where(static statement => statement is not BreakStatementSyntax and not ReturnStatementSyntax { Expression: null });
 
         var values = new List<ExpressionSyntax>();
 

@@ -88,6 +88,27 @@ public sealed class UbcRuleTests
             UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable-under-a-condition.csproj.witness")),
             message => message.Contains("sets IsPackable under a condition", StringComparison.Ordinal));
 
+        // And only a property group's element is a definition, so an element of that name that is
+        // no property - inside ProjectExtensions, which MSBuild does not evaluate, or item metadata -
+        // and a false one a target sets, which holds only once the target has run, each leave the
+        // project without one; while a target that sets anything but false is reported, because it
+        // can turn the property on for the pack that runs after it.
+        foreach (var witness in new[]
+                 {
+                     "U1-ubc-packable-only-in-project-extensions.csproj.witness",
+                     "U1-ubc-packable-only-as-item-metadata.csproj.witness",
+                     "U1-ubc-packable-only-inside-a-target.csproj.witness",
+                 })
+        {
+            Assert.Contains(
+                UbcRules.U1(ComponentGraph.Witness(witness)),
+                message => message.Contains("does not carry the literal <IsPackable>false</IsPackable>", StringComparison.Ordinal));
+        }
+
+        Assert.Contains(
+            UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable-set-by-a-target.csproj.witness")),
+            message => message.Contains("sets IsPackable to true", StringComparison.Ordinal));
+
         Assert.Contains(
             UbcRules.U1(ComponentGraph.Witness("U1-ubc-package-id.csproj.witness")),
             message => message.Contains("declares PackageId Broiler.VM.Ubc", StringComparison.Ordinal));
@@ -460,12 +481,25 @@ public sealed class UbcRuleTests
 
         // A row whose value is composite states each of its parts, so a second table written as
         // tuples, records or several assignments is reported as surely as one written a fact at a
-        // time: a tuple, a constructor, an object initialiser and a with expression as an arm's
-        // value; a section of assignments, with or without a closing return; a tuple in both
-        // dictionary spellings, in an indexed assignment and beside an opcode in a tuple; and an
-        // anonymous object and a with initialiser pairing an opcode with a shape.
+        // time: a tuple, a constructor, an object initialiser, a with expression and an anonymous
+        // object as an arm's value; a section of assignments, with a closing return of a value, with
+        // a bare closing return and with none; a tuple in both dictionary spellings, in an indexed
+        // assignment and beside an opcode in a tuple; a nested object initialiser as an indexed
+        // member's value; and an anonymous object and a with initialiser pairing an opcode with a
+        // shape. An integer is a width when it is the only value its row states - a bare arm, a
+        // section of one assignment, an interpreter arm's lone advance of its counter included, an
+        // indexed element, an object initialiser of one member - or when the row also states a shape,
+        // an effect or a slot type.
         foreach (var (row, expected) in new[]
                  {
+                     ("static int W(UbcOpcode o) => o switch { UbcOpcode.Jump => 3, _ => 0 };",
+                      "a switch arm keyed on UbcOpcode.Jump states an integer literal (3)"),
+                     ("static int W(UbcOpcode o) { var w = 0; switch (o) { case UbcOpcode.Jump: w = 3; break; } return w; }",
+                      "a switch section keyed on UbcOpcode.Jump states an integer literal (3)"),
+                     ("static int W(UbcOpcode o) { var pc = 0; switch (o) { case UbcOpcode.Nop: pc += 1; break; } return pc; }",
+                      "a switch section keyed on UbcOpcode.Nop states an integer literal (1)"),
+                     ("static void W(int[] t) { t[(int)UbcOpcode.Jump] = 3; }",
+                      "an element indexed keyed on UbcOpcode.Jump states an integer literal (3)"),
                      ("static object W(UbcOpcode o) => o switch { UbcOpcode.Jump => (3, UbcOperandShape.U32), _ => 0 };",
                       "a switch arm keyed on UbcOpcode.Jump states an integer literal (3)"),
                      ("static object W(UbcOpcode o) => o switch { UbcOpcode.Jump => (UbcOperandShape.U32, UbcCommonEffect.Jump), _ => 0 };",
@@ -480,6 +514,12 @@ public sealed class UbcRuleTests
                       "a switch section keyed on UbcOpcode.Jump states an operand shape (UbcOperandShape.U32)"),
                      ("static UbcOperandShape W(UbcOpcode o, out int w) { w = 0; switch (o) { case UbcOpcode.Jump: w = 3; return UbcOperandShape.U32; default: return default; } }",
                       "a switch section keyed on UbcOpcode.Jump states an integer literal (3)"),
+                     ("static void W(UbcOpcode o, out int w, out UbcOperandShape s) { w = 0; s = default; switch (o) { case UbcOpcode.Jump: w = 3; s = UbcOperandShape.U32; return; } }",
+                      "a switch section keyed on UbcOpcode.Jump states an operand shape (UbcOperandShape.U32)"),
+                     ("static object W(UbcOpcode o) => o switch { UbcOpcode.Jump => new { Width = 5, Shape = UbcOperandShape.U32 }, _ => 0 };",
+                      "a switch arm keyed on UbcOpcode.Jump states an integer literal (5)"),
+                     ("static object T = new Table { [UbcOpcode.Jump] = { Width = 3, Shape = UbcOperandShape.U32 } };",
+                      "a dictionary entry keyed on UbcOpcode.Jump states an integer literal (3)"),
                      ("static object T = new Dictionary<UbcOpcode, (int, UbcOperandShape)> { [UbcOpcode.Jump] = (3, UbcOperandShape.U32) };",
                       "a dictionary entry keyed on UbcOpcode.Jump states an integer literal (3)"),
                      ("static object T = new Dictionary<UbcOpcode, (int, UbcOperandShape)> { { UbcOpcode.Jump, (3, UbcOperandShape.U32) } };",
@@ -506,19 +546,35 @@ public sealed class UbcRuleTests
 
         Assert.Empty(missed);
 
-        // And the two limits the row states stay where they were: an integer beside an opcode in an
-        // argument list is how an instruction is emitted with its operand, and a section that calls
-        // anything is behaviour.
+        // And the limits the row states stay where they are: an integer beside an opcode in an
+        // argument list is how an instruction is emitted with its operand; a section that calls
+        // anything is behaviour; and an integer in a row that states other values but no shape,
+        // effect or slot type is not a width - an interpreter arm that stores a value and advances
+        // its counter, or answers a step as a tuple or a record of a flag and a count, and a second
+        // table whose rows state several integers and nothing else. Every spelling is tried and the
+        // ones reported are named together.
+        var reportedWrongly = new List<string>();
+
         foreach (var row in new[]
                  {
                      "static object T = KeyValuePair.Create(UbcOpcode.Jump, 3);",
                      "static int W(UbcOpcode o, Stack<int> s) { var pc = 0; switch (o) { case UbcOpcode.Jump: s.Push(3); pc += 5; break; } return pc; }",
+                     "static int W(UbcOpcode o, long[] stack, long operand) { var sp = 0; var pc = 0; switch (o) { case UbcOpcode.ConstI32: stack[sp++] = operand; pc += 5; break; } return pc; }",
+                     "static int W(UbcOpcode o, long[] words, Ins ins) { var wordTop = 0; var index = 0; switch (o) { case UbcOpcode.Nop: words[wordTop] = 0; index = ins.Next; break; } return index; }",
+                     "static (bool, int) W(UbcOpcode o) => o switch { UbcOpcode.Nop => (true, 0), _ => (false, 1) };",
+                     "static Step W(UbcOpcode o) => o switch { UbcOpcode.Nop => new Step(1, false), _ => new Step(0, true) };",
+                     "static void W((int, int)[] t) { t[(int)UbcOpcode.Jump] = (5, 1); }",
                  })
         {
-            Assert.Empty(UbcRules.U4SecondTables(
-                [new UbcRules.UbcSource("src/tests/Broiler.VM.Contract.Tests/C.cs", Project, "using Broiler.VM.Ubc; static class C { " + row + " }")],
-                enums));
+            if (UbcRules.U4SecondTables(
+                    [new UbcRules.UbcSource("src/tests/Broiler.VM.Contract.Tests/C.cs", Project, "using Broiler.VM.Ubc; static class C { " + row + " }")],
+                    enums).Any())
+            {
+                reportedWrongly.Add(row);
+            }
         }
+
+        Assert.Empty(reportedWrongly);
     }
 
     [Fact]

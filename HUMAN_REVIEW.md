@@ -3802,13 +3802,13 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the stages run in another order than the concept's, or a program is answered after any stage refused
 - `Broiler.VM.Ubc.UbcWalk.CheckHeader()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `C8E773`, PENDING
   - Falsified if: a header naming another profile, another manifest or a form the image does not compose passes
-- `Broiler.VM.Ubc.UbcWalk.CheckFamilies()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `F059FA`, PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckFamilies()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `CF7046`, PENDING
   - Falsified if: an artifact declaring a family the image does not compose, a family twice, or FamilyData for an undeclared slot passes
 - `Broiler.VM.Ubc.UbcWalk.CheckTypesAndUnits()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `B5AE0C`, PENDING
   - Falsified if: a unit naming a missing signature or an undeclared family, setting a reserved flag, declaring more locals or height than the format admits, or leaving a gap in the code is admitted
 - `Broiler.VM.Ubc.UbcWalk.CheckJumpTables()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `F2B8DD`, PENDING
   - Falsified if: a jump table of a missing unit, with no target, or beyond the count an operand can name is admitted
-- `Broiler.VM.Ubc.UbcWalk.CheckRegionRows()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `4D34DD`, PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckRegionRows()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `D98742`, PENDING
   - Falsified if: a region of a missing unit, with an empty or out-of-unit range, of a unit without a family, or of a kind the table does not define is admitted
 - `Broiler.VM.Ubc.UbcWalk.CheckEntries(out ImmutableArray<int>)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `03DE23`, PENDING
   - Falsified if: two entries with one name, or an entry of a missing unit or of a unit not flagged as an entry, pass
@@ -3820,7 +3820,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: two regions that overlap without nesting, or an enclosing region listed before one it encloses, are admitted, or a search runs before it is charged
 - `Broiler.VM.Ubc.UbcWalk.Arrive(WalkState, int, UbcStackNode?, int, UbcUnit, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=none cited, `8BCDD6`, PENDING
   - Falsified if: a second arrival with a different typed stack is accepted, or an arrival above the unit's declared heights is admitted
-- `Broiler.VM.Ubc.UbcWalk.EnterRegions(WalkState, int, int[], int[], ImmutableArray<UbcDecodedRegion>, int, UbcUnit, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `4AFD75`, PENDING
+- `Broiler.VM.Ubc.UbcWalk.EnterRegions(WalkState, int, int[], int[], ImmutableArray<UbcDecodedRegion>, int, UbcUnit, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `E1C58D`, PENDING
   - Falsified if: a handler is reached with a state other than the region's prefix and its kind's landing pushes
 - `Broiler.VM.Ubc.UbcWalk.CheckRegionPrefixes(WalkState, ImmutableArray<UbcDecodedRegion>, int, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `53792D`, PENDING
   - Falsified if: a covered instruction whose bottom slots differ from its region's prefix passes
@@ -3830,9 +3830,9 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a unit whose landings omit a resume point or a handler, or name any other offset, passes, or a search runs before it is charged
 - `Broiler.VM.Ubc.UbcWalk.Require(ImmutableArray<uint>, bool[], ulong, uint, int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `A88DBE`, PENDING
   - Falsified if: an offset the landings do not list is marked, or the search runs before it is charged
-- `Broiler.VM.Ubc.UbcWalk.Step(WalkState, int, int, UbcUnit, UbcSignature, LocalLayout, Raw[], UbcInstruction[], ImmutableArray<int>[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `4A7F1C`, PENDING
+- `Broiler.VM.Ubc.UbcWalk.Step(WalkState, int, int, UbcUnit, UbcSignature, LocalLayout, Raw[], UbcInstruction[], ImmutableArray<int>[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `0AD4AD`, PENDING
   - Falsified if: an instruction reaches a successor with a stack other than its effect applied, or is recorded with counts that differ from that effect
-- `Broiler.VM.Ubc.UbcWalk.StepFamily(WalkState, int, int, UbcUnit, Raw[], UbcInstruction[], UbcInstructionRow, UbcStackNode?, VmSourcePosition, int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `08DCB4`, PENDING
+- `Broiler.VM.Ubc.UbcWalk.StepFamily(WalkState, int, int, UbcUnit, Raw[], UbcInstruction[], UbcInstructionRow, UbcStackNode?, VmSourcePosition, int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `F6611C`, PENDING
   - Falsified if: a family row is applied with other pops than its effect names for its operand, a suspending row passes outside a suspendable unit, or a branch's taken edge carries the fall-through's pushes when the row names its own
 - `Broiler.VM.Ubc.UbcWalk.Pop(UbcStackNode?, ImmutableArray<UbcSlotType>, VmSourcePosition, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=none cited, `8BD449`, PENDING
   - Falsified if: a slot of another type than the list names is popped, or a pop past the bottom answers true
@@ -3840,8 +3840,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a run holding a slot of another type is popped
 - `Broiler.VM.Ubc.UbcWalk.Take(UbcStackNode?, int, VmSourcePosition, out ImmutableArray<UbcSlotType>, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `C8FF1A`, PENDING
   - Falsified if: the slots answered are not the stack's top slots bottom to top, or a take past the bottom answers true
-- `Broiler.VM.Ubc.UbcWalk.Push(UbcStackNode?, ImmutableArray<UbcSlotType>, UbcUnit, VmSourcePosition, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `2257D0`, PENDING
-  - Falsified if: a slot is created before its work and bytes are charged, or a push past a declared height builds a stack
+- `Broiler.VM.Ubc.UbcWalk.Push(UbcStackNode?, ImmutableArray<UbcSlotType>, UbcUnit, VmSourcePosition, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `96C9B4`, PENDING
+  - Falsified if: the slots are counted before that pass is charged, a slot is created before its work and bytes are charged, or a push past a declared height builds a stack or reserves its bytes
 - `Broiler.VM.Ubc.UbcWalk.Same(UbcStackNode?, UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=none cited, `0D6F45`, PENDING
   - Falsified if: two stacks differing in any slot's type or in height compare equal
 - `Broiler.VM.Ubc.UbcWalk.Target(Raw[], ulong, VmSourcePosition, out int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `60AF70`, PENDING

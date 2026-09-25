@@ -746,8 +746,9 @@ internal static class ArchitectureRules
     }
 
     /// <summary>
-    /// What stops a project file showing it does not pack: no <c>IsPackable</c> element at all, or
-    /// one that is conditional or whose value is not literally <c>false</c>.
+    /// What stops a project file showing it does not pack: no <c>IsPackable</c> definition at all, one
+    /// that is conditional or whose value is not literally <c>false</c>, or a target that sets it to
+    /// anything but <c>false</c>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -759,6 +760,15 @@ internal static class ArchitectureRules
     /// definition is unconditional and literally false.
     /// </para>
     /// <para>
+    /// <b>Only a property group's element is a definition.</b> An element of that name that is not a
+    /// property group's child - item metadata - or that sits inside <c>ProjectExtensions</c>, whose
+    /// content MSBuild does not evaluate, sets no property, so it neither shows the property is off
+    /// nor is reported. A property group inside a <c>Target</c> sets the property only if the target
+    /// runs and only for what runs after it, so a false one there is not the definition either; one
+    /// that sets anything but false is reported, because it can turn the property on for the pack
+    /// that follows it.
+    /// </para>
+    /// <para>
     /// A value set by an import - <c>Directory.Build.props</c> or the vendored packaging props - is
     /// not seen, because the rule reads the project file's own elements. Rules N4 and U1 read this;
     /// rule A5 still reads the text.
@@ -766,10 +776,15 @@ internal static class ArchitectureRules
     /// </remarks>
     internal static IEnumerable<string> NotLiterallyUnpackable(ComponentGraph.ProjectFile project, string decision)
     {
-        var definitions = XDocument.Parse(project.RawText)
+        var properties = XDocument.Parse(project.RawText)
             .Descendants()
-            .Where(static element => element.Name.LocalName == "IsPackable")
+            .Where(static element =>
+                element.Name.LocalName == "IsPackable" &&
+                element.Parent?.Name.LocalName == "PropertyGroup" &&
+                !element.Ancestors().Any(static ancestor => ancestor.Name.LocalName == "ProjectExtensions"))
             .ToArray();
+
+        var definitions = properties.Where(static element => !InsideTarget(element)).ToArray();
 
         if (definitions.Length == 0)
         {
@@ -792,6 +807,19 @@ internal static class ArchitectureRules
                 yield return $"{project.RelativePath} sets IsPackable to {value}, and {decision}";
             }
         }
+
+        foreach (var scoped in properties.Where(InsideTarget))
+        {
+            var value = scoped.Value.Trim();
+
+            if (!string.Equals(value, "false", StringComparison.Ordinal))
+            {
+                yield return $"{project.RelativePath} sets IsPackable to {value}, and {decision}";
+            }
+        }
+
+        static bool InsideTarget(XElement element) =>
+            element.Ancestors().Any(static ancestor => ancestor.Name.LocalName == "Target");
     }
 
     // ---- Group N, second half: the published diagnostic registry ------------------------------

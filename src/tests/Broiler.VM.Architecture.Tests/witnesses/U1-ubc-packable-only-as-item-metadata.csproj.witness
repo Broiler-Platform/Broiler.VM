@@ -1,0 +1,15 @@
+<!-- Violates U1: the universal bytecode whose only IsPackable false is metadata of an item. Item
+     metadata is not a property, so the vendored packaging props' default of true stands and the
+     project packs, while a reader that counts every element of that name finds a definition. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <None Include="README.md">
+      <IsPackable>false</IsPackable>
+    </None>
+  </ItemGroup>
+</Project>

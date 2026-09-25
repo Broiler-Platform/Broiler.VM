@@ -171,7 +171,8 @@ internal sealed class UbcStackNode
 /// </para>
 /// <para>
 /// <b>What it charges</b>, each before the work is done: one unit per row, instruction or target for
-/// every pass it makes over them, one per slot it pushes, pops, takes, walks past or compares, twice the
+/// every pass it makes over them, one per slot it counts, pushes, pops, takes, walks past or compares,
+/// one per row of the family's table for every scan of its region kinds or its traps, twice the
 /// comparisons an introspective sort can make for every sort, and every binary search at the depth of
 /// what it searches - the unit's instructions for a code target, a jump-table target and a region's
 /// start, end and handler, the longest unit's instructions for a position, the unit's local runs for a
@@ -260,6 +261,7 @@ internal sealed class UbcWalk
         }
 
         // At most one FamilyData section passed the Families check: the one of the one declared slot.
+        // The pass that finds it was paid for with that check's.
         var familyData = System.ReadOnlyMemory<byte>.Empty;
 
         foreach (var data in artifact.FamilyData)
@@ -376,12 +378,20 @@ internal sealed class UbcWalk
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=F059FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=CF7046
     // Broiler-Falsified-If: an artifact declaring a family the image does not compose, a family twice, or FamilyData for an undeclared slot passes
     // Broiler-Human:        PENDING
     private bool CheckFamilies()
     {
         var families = artifact.Families;
+
+        // The pass over the family rows and the two over the FamilyData sections - this check's, and
+        // the run's, which takes the body of the one section this check leaves - paid for before any
+        // runs.
+        if (!Work((ulong)families.Length + (2 * (ulong)artifact.FamilyData.Length)))
+        {
+            return false;
+        }
 
         for (var index = 0; index < families.Length; index++)
         {
@@ -530,14 +540,16 @@ internal sealed class UbcWalk
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=4D34DD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=D98742
     // Broiler-Falsified-If: a region of a missing unit, with an empty or out-of-unit range, of a unit without a family, or of a kind the table does not define is admitted
     // Broiler-Human:        PENDING
     private bool CheckRegionRows()
     {
         var regions = artifact.Regions;
 
-        if (!Work((ulong)regions.Length))
+        // The pass over the rows, and for each the scan of the family table's region kinds its kind is
+        // looked up in, at the table's length: paid for before any runs.
+        if (!Work((ulong)regions.Length * (1 + (ulong)table.RegionKinds.Length)))
         {
             return false;
         }
@@ -1122,7 +1134,7 @@ internal sealed class UbcWalk
     /// instruction's state and reaches the handler. Enclosing regions are fixed with the innermost, so
     /// the chain stops at the first region already fixed.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=4AFD75
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=E1C58D
     // Broiler-Falsified-If: a handler is reached with a state other than the region's prefix and its kind's landing pushes
     // Broiler-Human:        PENDING
     private bool EnterRegions(WalkState state, int index, int[] innermost, int[] parents, ImmutableArray<UbcDecodedRegion> regions, int unitIndex, UbcUnit unit, Raw[] decoded)
@@ -1141,6 +1153,13 @@ internal sealed class UbcWalk
 
             state.PrefixSet[region] = true;
             state.Prefixes[region] = prefix;
+
+            // The scan of the family table's region kinds, at the table's length, before it runs.
+            if (!Work((ulong)table.RegionKinds.Length))
+            {
+                return false;
+            }
+
             table.TryGetRegionKind(regions[region].Kind, out var kind);
 
             var handlerAt = UbcRefusal.InCode(unitIndex, decoded[regions[region].Handler].Pc);
@@ -1285,7 +1304,7 @@ internal sealed class UbcWalk
     }
 
     /// <summary>Applies one instruction to the typed stack, records what the walk proved, and reaches its successors.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=4A7F1C
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=0AD4AD
     // Broiler-Falsified-If: an instruction reaches a successor with a stack other than its effect applied, or is recorded with counts that differ from that effect
     // Broiler-Human:        PENDING
     private bool Step(
@@ -1326,7 +1345,9 @@ internal sealed class UbcWalk
         {
             case UbcCommonEffect.Listed:
             {
-                if (!Pop(before, common.Pops, at, out var rest) || !Push(rest, common.Pushes, unit, at, out after))
+                // The two passes that count the row's pops and pushes, paid for before either runs.
+                if (!Pop(before, common.Pops, at, out var rest) || !Push(rest, common.Pushes, unit, at, out after) ||
+                    !Work((ulong)common.Pops.Length + (ulong)common.Pushes.Length))
                 {
                     return false;
                 }
@@ -1346,7 +1367,16 @@ internal sealed class UbcWalk
             {
                 var trapSlot = UbcOperandShapes.First(common.Shape, operand);
                 var trapCode = (ushort)UbcOperandShapes.Second(common.Shape, operand);
-                var defined = trapSlot == 0 ? trapCode == 0 : trapSlot == slot && slot != 0 && table.DefinesTrap(trapCode);
+                var scanned = trapSlot != 0 && trapSlot == slot;
+
+                // A family trap is found by a scan of the family's trap vocabulary, charged at its
+                // length before it runs.
+                if (scanned && !Work((ulong)table.Traps.Length))
+                {
+                    return false;
+                }
+
+                var defined = trapSlot == 0 ? trapCode == 0 : scanned && table.DefinesTrap(trapCode);
 
                 if (!defined)
                 {
@@ -1368,7 +1398,8 @@ internal sealed class UbcWalk
 
             case UbcCommonEffect.JumpTable:
             {
-                if (!Pop(before, common.Pops, at, out after))
+                // The pass that counts the row's pops, paid for before it runs.
+                if (!Pop(before, common.Pops, at, out after) || !Work((ulong)common.Pops.Length))
                 {
                     return false;
                 }
@@ -1399,7 +1430,8 @@ internal sealed class UbcWalk
             }
 
             case UbcCommonEffect.Return:
-                if (!Pop(before, signature.Results, at, out after))
+                // The pass that counts the results, paid for before it runs.
+                if (!Pop(before, signature.Results, at, out after) || !Work((ulong)signature.Results.Length))
                 {
                     return false;
                 }
@@ -1416,7 +1448,10 @@ internal sealed class UbcWalk
 
                 var callee = artifact.Types[(int)artifact.Units[(int)operand].TypeIndex];
 
-                if (!Pop(before, callee.Parameters, at, out var rest) || !Push(rest, callee.Results, unit, at, out after))
+                // The two passes that count the callee's parameters and results, paid for before either
+                // runs.
+                if (!Pop(before, callee.Parameters, at, out var rest) || !Push(rest, callee.Results, unit, at, out after) ||
+                    !Work((ulong)callee.Parameters.Length + (ulong)callee.Results.Length))
                 {
                     return false;
                 }
@@ -1630,7 +1665,7 @@ internal sealed class UbcWalk
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=08DCB4
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=F6611C
     // Broiler-Falsified-If: a family row is applied with other pops than its effect names for its operand, a suspending row passes outside a suspendable unit, or a branch's taken edge carries the fall-through's pushes when the row names its own
     // Broiler-Human:        PENDING
     private bool StepFamily(
@@ -1679,6 +1714,13 @@ internal sealed class UbcWalk
 
         var wordPops = (before?.Words ?? 0) - (rest?.Words ?? 0);
         var valuePops = (before?.Values ?? 0) - (rest?.Values ?? 0);
+
+        // The pass that counts the row's pushes, paid for before it runs.
+        if (!Work((ulong)effect.Pushes.Length))
+        {
+            return false;
+        }
+
         Count(effect.Pushes, out var wordPushes, out var valuePushes);
 
         if (!Push(rest, effect.Pushes, unit, at, out var after))
@@ -1697,6 +1739,13 @@ internal sealed class UbcWalk
             }
 
             var taken = row.Target.HasDistinctTakenEdge ? row.Target.TakenPushes : effect.Pushes;
+
+            // And the one that counts the taken edge's pushes.
+            if (!Work((ulong)taken.Length))
+            {
+                return false;
+            }
+
             Count(taken, out takenWords, out takenValues);
 
             if (!Push(rest, taken, unit, at, out var landed) || !Arrive(state, target, landed, unitIndex, unit, decoded))
@@ -1822,10 +1871,11 @@ internal sealed class UbcWalk
     /// <summary>
     /// Pushes <paramref name="types"/>, the last the top, refusing first when either plane would rise
     /// above the unit's declared height, so a signature with many results cannot spend memory to be
-    /// refused; each slot is charged as work and as retained bytes before it is built.
+    /// refused. The pass that counts the slots for that check is charged before it runs, and each slot
+    /// as work and as retained bytes before it is built.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=2257D0
-    // Broiler-Falsified-If: a slot is created before its work and bytes are charged, or a push past a declared height builds a stack
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=96C9B4
+    // Broiler-Falsified-If: the slots are counted before that pass is charged, a slot is created before its work and bytes are charged, or a push past a declared height builds a stack or reserves its bytes
     // Broiler-Human:        PENDING
     private bool Push(UbcStackNode? stack, ImmutableArray<UbcSlotType> types, UbcUnit unit, VmSourcePosition at, out UbcStackNode? after)
     {
@@ -1834,6 +1884,11 @@ internal sealed class UbcWalk
         if (types.Length == 0)
         {
             return true;
+        }
+
+        if (!Work((ulong)types.Length))
+        {
+            return false;
         }
 
         Count(types, out var words, out var values);

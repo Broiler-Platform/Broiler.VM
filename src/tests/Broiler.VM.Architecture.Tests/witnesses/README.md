@@ -95,9 +95,13 @@ before it reads the two reports.
 as a name, a line opening with `#` included, so a comment explaining the file would be scanned as an
 identifier and would change what the script reports. The explanation lives here instead: of its five
 names, `WasmModule` and `JsValue` are reported by rule U2 and by the script alike, and `UbcOpcode`,
-`JsonReader` and `UbcInstructionTable` are near misses neither reports. The six `U1-*` project files each
-break one clause of the universal bytecode's project shape. `U2-a-static-family-table.txt.witness` is
-four lines in the API describer's format, two of them static family rows that must be reported and two
+`JsonReader` and `UbcInstructionTable` are near misses neither reports. The thirteen `U1-*` project files
+each break one clause of the universal bytecode's project shape, the packability clause in eight ways: the
+element set to true, quoted only in a comment, overridden, held under a condition, present only as item
+metadata, only inside `ProjectExtensions` or only inside a target, and set to true by a target after an
+unconditional false. The item metadata, `ProjectExtensions` and target ones - the places a reader counting
+every element of that name would find a definition the evaluated property does not come from - have `N4-*`
+twins. `U2-a-static-family-table.txt.witness` is four lines in the API describer's format, two of them static family rows that must be reported and two
 of them - an instance property and a static method - that must not.
 `U4-an-appendix-that-disagrees-with-the-table.md.witness` is a copy of the concept's Appendix A with four
 perturbations, one per direction clause (a) decides, and

@@ -452,6 +452,20 @@ public sealed class ProjectFileRuleTests
         Assert.Contains(
             ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-overrides-ispackable.csproj.witness")),
             message => message.Contains("sets IsPackable under a condition", StringComparison.Ordinal));
+
+        // And only a property group's element is a definition: the element inside ProjectExtensions,
+        // as item metadata and inside a target each leave the project without one.
+        foreach (var witness in new[]
+                 {
+                     "N4-family-project-packable-only-in-project-extensions.csproj.witness",
+                     "N4-family-project-packable-only-as-item-metadata.csproj.witness",
+                     "N4-family-project-packable-only-inside-a-target.csproj.witness",
+                 })
+        {
+            Assert.Contains(
+                ArchitectureRules.N4(ComponentGraph.Witness(witness)),
+                message => message.Contains("does not carry the literal <IsPackable>false</IsPackable>", StringComparison.Ordinal));
+        }
     }
 
     [Fact]

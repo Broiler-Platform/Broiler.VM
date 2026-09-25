@@ -10,7 +10,8 @@ namespace Broiler.VM.Contract.Tests;
 /// <summary>
 /// The walk's charging promises, held against a meter that refuses at a chosen point: the work of a pass
 /// or a search is paid before it runs, the work a family hook charges is counted toward the poll bound
-/// with the walk's own, and what the walk keeps per jump table is reserved before it is allocated.
+/// with the walk's own and stops the walk when the meter refuses it, whatever the hook answers, and what
+/// the walk keeps per jump table is reserved before it is allocated.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -69,12 +70,16 @@ public sealed class UbcVerifierChargingTests
     [Fact]
     public void A_Hook_Charge_Of_Fuel_Past_Its_Allowance_Is_Refused_As_A_Fuel_Exhaustion()
     {
+        // The hook charges more fuel at Begin than the allowance holds and admits whatever the meter
+        // answers, so the refusal the verification reports is the walk's own: a hook that ignores a
+        // refused charge does not get the program admitted by admitting it.
         var bound = UbcCorpusFamily.MaxUnchargedWork;
-        var hook = new ChargingHook(new UbcCorpusHook(), VmBudgetDimension.Fuel, bound);
+        var hook = new IgnoringHook(new UbcCorpusHook(), VmBudgetDimension.Fuel, bound);
         var meter = new RecordingMeter(fuelAllowance: bound - 1, pollBound: bound);
 
         var outcome = Verify(Profile(hook, bound), UbcCorpus.SmallestWithFamily().Bytes(), meter);
 
+        Assert.True(hook.Refused, "the meter admitted the hook's whole charge, so the hook had no refusal to ignore");
         Assert.Equal(VmOutcome.ResourceExhaustion, outcome.Category);
         Assert.Equal(VmBudgetDimension.Fuel, outcome.ExhaustedDimension);
         Assert.False(meter.PollBoundExceeded);
@@ -292,6 +297,77 @@ public sealed class UbcVerifierChargingTests
         Assert.Equal((int)UbcDiagnosticCode.LandingsInvalid, unbounded.ProfileDiagnosticCode);
         Assert.Equal(VmOutcome.ResourceExhaustion, oneShort.Category);
         Assert.Equal(Depth(2), refused);
+    }
+
+    // ---- the passes that count slots, paid before they run -------------------------------------------
+
+    [Fact]
+    public void A_Push_Pays_For_Counting_Its_Slots_Before_The_Height_Check_Reads_The_Count()
+    {
+        // A call to a unit with many results, from a unit that declares no height for them. The height
+        // check reads how many words and values the results hold, which is a pass over them; paid for
+        // before it runs, it is the charge a one-short allowance refuses, one unit per result, and the
+        // height refusal is never reached.
+        const int Results = 40;
+        var spec = new UbcCorpusSpec();
+        var caller = spec.AddType([], []);
+        var callee = spec.AddType([], Enumerable.Repeat(UbcSlotType.I64, Results).ToArray());
+        var main = spec.AddUnit(caller, 0, 0, 0, UbcUnitFlags.Entry, b =>
+        {
+            b.Emit(O.Call, 1).Emit(O.Return);
+            return [];
+        });
+        spec.AddUnit(callee, 0, 0, 0, UbcUnitFlags.None, b =>
+        {
+            b.Emit(O.Return);
+            return [];
+        });
+        spec.AddEntry("main", main);
+
+        var (unbounded, oneShort, refused) = OneShort(UbcCorpusFamily.Descriptor(maxUnchargedWork: Unsplit), spec.Bytes());
+
+        Assert.Equal(VmOutcome.InvalidArtifact, unbounded.Category);
+        Assert.Equal((int)UbcDiagnosticCode.HeightAboveDeclared, unbounded.ProfileDiagnosticCode);
+        Assert.Equal(VmOutcome.ResourceExhaustion, oneShort.Category);
+        Assert.Equal((ulong)Results, refused);
+    }
+
+    [Fact]
+    public void A_Call_Pays_For_Counting_The_Callee_Parameters_And_Results_Before_The_Passes_Run()
+    {
+        // A call that is the unit's last instruction, so the walk refuses it for falling off the end
+        // straight after applying its effect. Applying it counts the words and values of the callee's
+        // parameters and results, one pass over each; paid for before they run, they are the charge a
+        // one-short allowance refuses - one unit per parameter and per result - and not the push of
+        // the results before them.
+        const int Parameters = 3;
+        const int Results = 40;
+        var spec = new UbcCorpusSpec();
+        var caller = spec.AddType([], []);
+        var callee = spec.AddType(Enumerable.Repeat(UbcSlotType.I32, Parameters).ToArray(), Enumerable.Repeat(UbcSlotType.I64, Results).ToArray());
+        var main = spec.AddUnit(caller, 0, Results, 0, UbcUnitFlags.Entry, b =>
+        {
+            for (var index = 0; index < Parameters; index++)
+            {
+                b.Emit(O.ConstI32, (ulong)index);
+            }
+
+            b.Emit(O.Call, 1);
+            return [];
+        });
+        spec.AddUnit(callee, 0, 0, 0, UbcUnitFlags.None, b =>
+        {
+            b.Emit(O.Return);
+            return [];
+        });
+        spec.AddEntry("main", main);
+
+        var (unbounded, oneShort, refused) = OneShort(UbcCorpusFamily.Descriptor(maxUnchargedWork: Unsplit), spec.Bytes());
+
+        Assert.Equal(VmOutcome.InvalidArtifact, unbounded.Category);
+        Assert.Equal((int)UbcDiagnosticCode.FallsOffTheEnd, unbounded.ProfileDiagnosticCode);
+        Assert.Equal(VmOutcome.ResourceExhaustion, oneShort.Category);
+        Assert.Equal((ulong)(Parameters + Results), refused);
     }
 
     // ---- what the walk keeps per jump table (finding 3) ---------------------------------------------
@@ -527,6 +603,22 @@ public sealed class UbcVerifierChargingTests
 
         public UbcHookAnswer CheckInstruction(object? familyState, in UbcHookInstruction instruction) =>
             meter!.TryCharge(dimension, amount) ? inner.CheckInstruction(familyState, in instruction) : UbcHookAnswer.Exhaust(dimension);
+
+        public UbcHookAnswer End(object? familyState) => inner.End(familyState);
+    }
+
+    /// <summary>The corpus hook, charging a fixed amount of one dimension at Begin and admitting whatever the meter answers.</summary>
+    private sealed class IgnoringHook(IUbcFamilyVerifier inner, VmBudgetDimension dimension, ulong amount) : IUbcFamilyVerifier
+    {
+        internal bool Refused { get; private set; }
+
+        public UbcHookAnswer Begin(UbcHookArtifact artifact, out object? familyState)
+        {
+            Refused = !artifact.Meter.TryCharge(dimension, amount);
+            return inner.Begin(artifact, out familyState);
+        }
+
+        public UbcHookAnswer CheckInstruction(object? familyState, in UbcHookInstruction instruction) => inner.CheckInstruction(familyState, in instruction);
 
         public UbcHookAnswer End(object? familyState) => inner.End(familyState);
     }
