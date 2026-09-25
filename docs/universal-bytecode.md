@@ -1120,6 +1120,82 @@ one form per handle and per instance — restated as a property of a factory.
 | E8 | The template-closure scan accepts everything the emitter emits and every template is reached by the corpus; byte strings that are legal machine code the emitter never emits are refused by name. | the checks lane, both directions |
 | E9 | An emitter never names a family, a language or an opcode of either: its source is scanned for the banned vocabulary. | rule U3 (stage UBC-1) |
 
+### 7.6 The path from bytecode to executable memory, step by step
+
+**A reader who wants to know whether an emitter may take a run of bytecode instructions, translate
+it into a run of native instructions and put that run into executable memory should read this
+subsection: the answer is yes, under three conditions, and every step below names where each
+condition is enforced.** The subsection restates what sections 5.1, 6.3, 7.1, 7.3 and 7.5 already say,
+in the order the bytes travel, because a reader who assembled it from those five places could
+reasonably have concluded either more or less than the concept allows.
+
+```text
+  a verified universal bytecode program              every unit of the artifact, and the family
+        │                                             registrations it names
+        ▼
+  1. the emitting half translates every unit,        Broiler.VM.Profile.MachineCode.X64 or .Arm64:
+     or refuses the whole artifact naming a row       references Broiler.VM.Ubc and the pivot only;
+        │                                             it has no path to a memory-mapping call
+        ▼
+  2. the emission is written into the SAME           the Emission section of the container (5.2),
+     artifact, beside the bytecode                    form identity and emitter version in the header
+        │
+        ▼
+  3. the artifact is verified as a whole             Broiler.VM.Ubc: the walk and the family hook,
+     (walk, hook, structural, template-closure        then the form layers of 6.3; the scan runs in
+      scan, re-emission)                              every image, re-emission where the encoder is in it
+        │
+        ▼
+  4. the executing half maps a page writable,        Broiler.VM.Profile.MachineCode: VmNativePage,
+     copies the bytes, arms it read-execute           the one arming path, W^X, declared in the
+        │                                             composition register and read by rule K5
+        ▼
+  5. an entry is called through an unmanaged         the handler table, the activation and the cookie
+     function pointer; a Dynamic row re-enters        of 7.3; a Primitive or common row runs without
+     managed code through its handler                 leaving emitted code
+```
+
+**Condition 1 — the run is the whole artifact.** An emitter's two answers are the emission of every
+unit and a refusal naming the row it cannot emit (principle 5 of section 5.1, obligation E4). It may
+not compile the units it likes and leave the rest to the interpreter, and no image executes one
+artifact in two forms (7.1). The reason is VM-7's "no tiering" rule and the JavaScript profile's amended
+non-goal, both kept: the form is a property of the artifact, fixed when it is compiled and pinned when it
+is verified, and nothing observes a running program to decide what to compile.
+
+**Condition 2 — the bytes reach executable memory only as a verified artifact, and only through the
+arming path.** The encoder writes bytes into a container and nothing else; the assembly that holds it
+does not reference the assembly that holds the arming path, so it cannot map a page by construction
+rather than by discipline (the graph in section 4). The core's invariant 3 — verification produces the
+only executable input — applies to a native form exactly as to bytecode, which is why the template-closure
+scan runs in every image and not only where re-emission is possible. Arming is one type in one assembly,
+written readable-writable and executed read-execute and never both at once, allowlisted by rules B5c and
+X1, and permitted only in a composition whose register row declares the architecture. **No byte is
+executed that the verifier has not admitted, and no emitter has the means to arrange otherwise.**
+
+**Condition 3 — the translation is a function of the tables and of nothing observed at run time.**
+Within a unit an emitter translates runs of common and primitive-classified rows into straight-line
+native code with no callback, and it may translate several bytecode instructions into one native
+sequence — but only as a template its pivot's table registers, because the scan refuses a byte
+sequence that matches no template (6.3, obligation E8), and re-emission must reproduce it byte for byte
+(obligation E3). A `Dynamic` row is one handler call, at the granularity route UBC-R6 records and no
+measurement has weighed. What an emitter may not do is fuse, reorder or specialise on the strength of a
+profile, a counter, a type observed at run time or an earlier execution of the same artifact: a form
+carries no warmed state (invariant 5) and is the same bytes on every machine that compiles it.
+
+**When this may happen.** At compile time, into an artifact a host stores or hands to a verifier
+later; or at run time, in one process, in a composition that declares both the compiler and the
+architecture — which is what the JavaScript end-user command line does today with its native option,
+and what happens for every program a guest loads with `eval`, the `Function` constructor or an import
+inside a native-form instance, since such a program is compiled in its instance's form (5.13). It may
+never happen in an execution-only image, which holds no encoder and whose register row declares `none`,
+and it may never happen as a response to something the running program did.
+
+**What this path is not.** It is not a just-in-time tier. The difference is not whether an encoder is
+in the running image — a compiler-bearing composition declares one, as VM-7 admits — but whether
+anything chooses *what* to compile from a running program: nothing does, and section 14's falsifiers
+name the observations that would show otherwise, a code path selecting a form from run-time observation
+and an artifact executable in two forms among them.
+
 ---
 
 ## 8. The language profiles after the refactoring
