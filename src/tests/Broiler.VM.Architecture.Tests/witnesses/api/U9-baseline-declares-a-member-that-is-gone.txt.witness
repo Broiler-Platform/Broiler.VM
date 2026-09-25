@@ -1,0 +1,815 @@
+# Witness: a universal bytecode baseline declaring a member that is gone
+#
+# UbcOpcodes.OperandWidth is declared here and is exported by nothing - the roadmap's work package
+# UBC-1.4 names it, and the assembly states an operand's width through UbcOperandShapes.Width instead.
+# A baseline that outlived its member is a support claim for something a family cannot bind to, and
+# it is the direction a rule comparing only one way would miss.
+#
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcExecutorFactory.Create<TFamily>(UbcFamilyRegistration<TFamily> family, Broiler.VM.Ubc.UbcFamilyDeclaration declaration, Broiler.VM.IVmExecutionEnvironment environment) : abstract Broiler.VM.IVmProfileExecutor
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.BindParameters(ref Broiler.VM.Ubc.UbcActivation activation, System.ReadOnlySpan<System.Byte> entryName) : static abstract System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.CaptureValues(Broiler.VM.Ubc.IUbcValuePlane plane, System.Int32 start, System.Int32 count) : static abstract System.Object
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Completion(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.IVmProfilePayload
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.CreateInstance(Broiler.VM.Ubc.UbcInstanceContext context) : static abstract System.Object
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.CreateValuePlane(System.Int32 capacity) : static abstract Broiler.VM.Ubc.IUbcValuePlane
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.EntryRefused(System.Object instanceState, System.ReadOnlySpan<System.Byte> entryName) : static abstract Broiler.VM.IVmProfilePayload
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Fault(ref Broiler.VM.Ubc.UbcActivation activation, System.Byte familySlot, System.UInt16 code) : static abstract Broiler.VM.IVmProfilePayload
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Handle(ref Broiler.VM.Ubc.UbcActivation activation, System.Byte familyOpcode, System.UInt64 operand) : static abstract Broiler.VM.Ubc.UbcStatus
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.OnLand(ref Broiler.VM.Ubc.UbcActivation activation, System.Byte regionKind) : static abstract System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.OnResume(ref Broiler.VM.Ubc.UbcActivation activation, System.Object reason) : static abstract System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.RestoreValues(Broiler.VM.Ubc.IUbcValuePlane plane, System.Int32 start, System.Object captured) : static abstract System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.SuspendProjection(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.IVmProfilePayload
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Uncaught(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.IVmProfilePayload
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamilyVerifier.Begin(Broiler.VM.Ubc.UbcHookArtifact artifact, out System.Object familyState) : abstract Broiler.VM.Ubc.UbcHookAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamilyVerifier.CheckInstruction(System.Object familyState, in Broiler.VM.Ubc.UbcHookInstruction instruction) : abstract Broiler.VM.Ubc.UbcHookAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamilyVerifier.End(System.Object familyState) : abstract Broiler.VM.Ubc.UbcHookAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcValuePlane.Capacity : abstract System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcValuePlane.Clear(System.Int32 start, System.Int32 count) : abstract System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcValuePlane.Copy(System.Int32 from, System.Int32 to) : abstract System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcValuePlane.Resize(System.Int32 capacity) : abstract System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcValuePlane.ValueBytes : abstract System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.CallRequest : Broiler.VM.Ubc.UbcCallRequest
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Capabilities : Broiler.VM.IVmHostCapabilityInvoker
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.InstanceState : System.Object
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Meter : Broiler.VM.IVmMeter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Pc : System.UInt32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Pending : System.Object
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Unit : System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.ValueArgs : System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.ValueBase : System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Values : Broiler.VM.Ubc.IUbcValuePlane
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.WordArgs : System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.WordBase : System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Words : System.UInt64[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact..ctor(Broiler.VM.Ubc.UbcHeader header, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcFamilyEntry> families, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSignature> types, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcUnit> units, System.Collections.Immutable.ImmutableArray<System.Byte> code, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcJumpTable> jumpTables, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcRegion> regions, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcEntry> entries, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcPosition> positions, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcFamilyData> familyData, Broiler.VM.Ubc.UbcEmission emission, System.UInt32 presentSections) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Code : System.Collections.Immutable.ImmutableArray<System.Byte> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Emission : Broiler.VM.Ubc.UbcEmission { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Entries : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcEntry> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Families : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcFamilyEntry> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.FamilyData : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcFamilyData> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.HasSection(Broiler.VM.Ubc.UbcSectionKind kind) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Header : Broiler.VM.Ubc.UbcHeader { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.JumpTables : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcJumpTable> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Positions : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcPosition> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.PresentSections : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Regions : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcRegion> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Types : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSignature> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact.Units : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcUnit> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactReader.TryRead(System.ReadOnlySpan<System.Byte> payload, in Broiler.VM.VmReadBounds bounds, Broiler.VM.IVmBoundedAllocationMeter meter, System.UInt64 pollGranularity, System.Nullable<System.UInt32> descriptorFormatVersion, out Broiler.VM.Ubc.UbcArtifact artifact, out Broiler.VM.Ubc.UbcRefusal refusal) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter..ctor(Broiler.VM.Ubc.UbcHeader header) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Code(System.ReadOnlySpan<System.Byte> code) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Emission(Broiler.VM.Ubc.UbcEmission emission) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Entries(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcEntry> rows) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Families(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcFamilyEntry> rows) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.FamilyData(System.Byte slot, System.ReadOnlySpan<System.Byte> body) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.JumpTables(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcJumpTable> rows) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Positions(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcPosition> rows) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.RawSection(System.UInt32 kind, System.ReadOnlySpan<System.Byte> body) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.RawSectionWithLength(System.UInt32 kind, System.UInt64 statedLength, System.ReadOnlySpan<System.Byte> body) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Regions(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcRegion> rows) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.ToArray() : System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Types(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcSignature> rows) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Units(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcUnit> rows) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.WithMagic(System.ReadOnlySpan<System.Byte> bytes) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.WithSectionCount(System.UInt32 count) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.WithTrailing(System.ReadOnlySpan<System.Byte> bytes) : Broiler.VM.Ubc.UbcArtifactWriter
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Write(Broiler.VM.Ubc.UbcArtifact artifact) : static System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest..ctor(System.Int32 unit) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.Equals(Broiler.VM.Ubc.UbcCallRequest other) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.GetHashCode() : virtual System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.Unit : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.op_Equality(Broiler.VM.Ubc.UbcCallRequest left, Broiler.VM.Ubc.UbcCallRequest right) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.op_Inequality(Broiler.VM.Ubc.UbcCallRequest left, Broiler.VM.Ubc.UbcCallRequest right) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder..ctor(System.UInt32 baseOffset) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder.BaseOffset : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder.Emit(Broiler.VM.Ubc.UbcOpcode opcode, System.UInt64 operand) : Broiler.VM.Ubc.UbcCodeBuilder
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder.EmitFamily(System.Byte slot, System.Byte opcode, Broiler.VM.Ubc.UbcOperandShape shape, System.UInt64 operand) : Broiler.VM.Ubc.UbcCodeBuilder
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder.EmitFamilyTo(System.Byte slot, System.Byte opcode, System.Int32 label) : Broiler.VM.Ubc.UbcCodeBuilder
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder.EmitTo(Broiler.VM.Ubc.UbcOpcode opcode, System.Int32 label) : Broiler.VM.Ubc.UbcCodeBuilder
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder.Mark(System.Int32 label) : Broiler.VM.Ubc.UbcCodeBuilder
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder.NewLabel() : System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder.Offset : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder.Raw(System.Byte[] raw) : Broiler.VM.Ubc.UbcCodeBuilder
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder.ToArray() : System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Call : const Broiler.VM.Ubc.UbcCommonEffect = 5
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Drop : const Broiler.VM.Ubc.UbcCommonEffect = 6
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Dup : const Broiler.VM.Ubc.UbcCommonEffect = 7
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Dup2 : const Broiler.VM.Ubc.UbcCommonEffect = 8
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Jump : const Broiler.VM.Ubc.UbcCommonEffect = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.JumpTable : const Broiler.VM.Ubc.UbcCommonEffect = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Listed : const Broiler.VM.Ubc.UbcCommonEffect = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.LocalGet : const Broiler.VM.Ubc.UbcCommonEffect = 13
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.LocalSet : const Broiler.VM.Ubc.UbcCommonEffect = 14
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.LocalTee : const Broiler.VM.Ubc.UbcCommonEffect = 15
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Pick : const Broiler.VM.Ubc.UbcCommonEffect = 10
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Return : const Broiler.VM.Ubc.UbcCommonEffect = 4
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Select : const Broiler.VM.Ubc.UbcCommonEffect = 11
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Squash : const Broiler.VM.Ubc.UbcCommonEffect = 12
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Swap : const Broiler.VM.Ubc.UbcCommonEffect = 9
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.Trap : const Broiler.VM.Ubc.UbcCommonEffect = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow.Cost : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow.Effect : Broiler.VM.Ubc.UbcCommonEffect { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow.HasCodeTarget : System.Boolean { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow.InstructionWidth : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow.IsTerminal : System.Boolean { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow.Mnemonic : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow.Opcode : Broiler.VM.Ubc.UbcOpcode { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow.Pops : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow.Pushes : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow.Shape : Broiler.VM.Ubc.UbcOperandShape { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionException..ctor(Broiler.VM.Ubc.UbcCompositionFault fault, System.String message) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionException.Fault : Broiler.VM.Ubc.UbcCompositionFault { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault.ContractVersionMismatch : const Broiler.VM.Ubc.UbcCompositionFault = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault.DuplicateForm : const Broiler.VM.Ubc.UbcCompositionFault = 4
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault.FormNotAdmitted : const Broiler.VM.Ubc.UbcCompositionFault = 5
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault.IdentityMismatch : const Broiler.VM.Ubc.UbcCompositionFault = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault.NoForm : const Broiler.VM.Ubc.UbcCompositionFault = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault.TooManyTables : const Broiler.VM.Ubc.UbcCompositionFault = 6
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault.value__ : System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcContract.Version : const System.Int32 = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.Covers(System.Int32 index) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.End : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.Handler : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.Kind : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.Start : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.ValueEntryHeight : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.WordEntryHeight : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDescriptors.Build<TFamily>(UbcFamilyRegistration<TFamily> family, Broiler.VM.Ubc.UbcFamilyDeclaration declaration, Broiler.VM.Ubc.UbcEmitterSet forms) : static Broiler.VM.VmProfileDescriptor
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.CallTargetOutOfRange : const Broiler.VM.Ubc.UbcDiagnosticCode = 3413
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.CodeNotTiled : const Broiler.VM.Ubc.UbcDiagnosticCode = 3305
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.CountedOperandTooLarge : const Broiler.VM.Ubc.UbcDiagnosticCode = 3417
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.DescriptorFormatVersionMismatch : const Broiler.VM.Ubc.UbcDiagnosticCode = 3002
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.DescriptorManifestMismatch : const Broiler.VM.Ubc.UbcDiagnosticCode = 3006
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.DescriptorProfileMismatch : const Broiler.VM.Ubc.UbcDiagnosticCode = 3005
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.DuplicateFamily : const Broiler.VM.Ubc.UbcDiagnosticCode = 3206
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.EmissionUnexpected : const Broiler.VM.Ubc.UbcDiagnosticCode = 3701
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.EntryNameInvalid : const Broiler.VM.Ubc.UbcDiagnosticCode = 3602
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.EntryUnitInvalid : const Broiler.VM.Ubc.UbcDiagnosticCode = 3603
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.FallsOffTheEnd : const Broiler.VM.Ubc.UbcDiagnosticCode = 3410
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.FamilyDataForUndeclaredSlot : const Broiler.VM.Ubc.UbcDiagnosticCode = 3205
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.FamilyManifestMismatch : const Broiler.VM.Ubc.UbcDiagnosticCode = 3204
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.FamilyNotComposed : const Broiler.VM.Ubc.UbcDiagnosticCode = 3202
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.FamilySlotInvalid : const Broiler.VM.Ubc.UbcDiagnosticCode = 3201
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.FamilyTableVersionMismatch : const Broiler.VM.Ubc.UbcDiagnosticCode = 3203
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.ForeignFamilyInstruction : const Broiler.VM.Ubc.UbcDiagnosticCode = 3403
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.FormNotComposed : const Broiler.VM.Ubc.UbcDiagnosticCode = 3008
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.HeightAboveDeclared : const Broiler.VM.Ubc.UbcDiagnosticCode = 3409
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.JoinMismatch : const Broiler.VM.Ubc.UbcDiagnosticCode = 3408
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.JumpTableInvalid : const Broiler.VM.Ubc.UbcDiagnosticCode = 3414
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.JumpTableMalformed : const Broiler.VM.Ubc.UbcDiagnosticCode = 3601
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.LandingsInvalid : const Broiler.VM.Ubc.UbcDiagnosticCode = 3307
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.LocalIndexOutOfRange : const Broiler.VM.Ubc.UbcDiagnosticCode = 3412
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.MalformedEncoding : const Broiler.VM.Ubc.UbcDiagnosticCode = 3902
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.MalformedIdentity : const Broiler.VM.Ubc.UbcDiagnosticCode = 3004
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.ManifestNotComposed : const Broiler.VM.Ubc.UbcDiagnosticCode = 3007
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.MissingSection : const Broiler.VM.Ubc.UbcDiagnosticCode = 3103
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.NotAnInstructionBoundary : const Broiler.VM.Ubc.UbcDiagnosticCode = 3405
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.PositionInvalid : const Broiler.VM.Ubc.UbcDiagnosticCode = 3604
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.ReaderStopped : const Broiler.VM.Ubc.UbcDiagnosticCode = 3903
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.RegionEntryInconsistent : const Broiler.VM.Ubc.UbcDiagnosticCode = 3503
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.RegionKindUndefined : const Broiler.VM.Ubc.UbcDiagnosticCode = 3504
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.RegionNesting : const Broiler.VM.Ubc.UbcDiagnosticCode = 3502
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.RegionRangeInvalid : const Broiler.VM.Ubc.UbcDiagnosticCode = 3501
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.ReservedPrefix : const Broiler.VM.Ubc.UbcDiagnosticCode = 3402
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.ReservedUnitFlag : const Broiler.VM.Ubc.UbcDiagnosticCode = 3304
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.SectionLengthMismatch : const Broiler.VM.Ubc.UbcDiagnosticCode = 3105
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.SectionOrder : const Broiler.VM.Ubc.UbcDiagnosticCode = 3102
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.StackTypeMismatch : const Broiler.VM.Ubc.UbcDiagnosticCode = 3407
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.StackUnderflow : const Broiler.VM.Ubc.UbcDiagnosticCode = 3406
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.SuspendOutsideSuspendableUnit : const Broiler.VM.Ubc.UbcDiagnosticCode = 3415
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.TrailingBytes : const Broiler.VM.Ubc.UbcDiagnosticCode = 3104
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.TrapUndefined : const Broiler.VM.Ubc.UbcDiagnosticCode = 3416
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.Truncated : const Broiler.VM.Ubc.UbcDiagnosticCode = 3901
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.TruncatedInstruction : const Broiler.VM.Ubc.UbcDiagnosticCode = 3404
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.TypeIndexOutOfRange : const Broiler.VM.Ubc.UbcDiagnosticCode = 3302
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.UnitDeclarationTooLarge : const Broiler.VM.Ubc.UbcDiagnosticCode = 3306
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.UnitFamilyUndeclared : const Broiler.VM.Ubc.UbcDiagnosticCode = 3303
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.UnknownOpcode : const Broiler.VM.Ubc.UbcDiagnosticCode = 3401
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.UnknownSectionKind : const Broiler.VM.Ubc.UbcDiagnosticCode = 3101
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.UnknownSlotType : const Broiler.VM.Ubc.UbcDiagnosticCode = 3301
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.UnreachableInstruction : const Broiler.VM.Ubc.UbcDiagnosticCode = 3411
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.UnsupportedFormatVersion : const Broiler.VM.Ubc.UbcDiagnosticCode = 3003
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.VerifierDefect : const Broiler.VM.Ubc.UbcDiagnosticCode = 3904
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.WrongMagic : const Broiler.VM.Ubc.UbcDiagnosticCode = 3001
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.value__ : System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Counted(System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> fixedPops, Broiler.VM.Ubc.UbcSlotType repeated, System.Byte multiplier, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> pushes) : static Broiler.VM.Ubc.UbcEffect
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Form : Broiler.VM.Ubc.UbcEffectForm { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Listed(System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> pops, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> pushes) : static Broiler.VM.Ubc.UbcEffect
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Multiplier : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Pops : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Pushes : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Repeated : Broiler.VM.Ubc.UbcSlotType { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.TryGetPopCount(System.UInt64 operand, out System.Int32 count) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffectForm.Counted : const Broiler.VM.Ubc.UbcEffectForm = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffectForm.Listed : const Broiler.VM.Ubc.UbcEffectForm = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffectForm.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission..ctor(System.String form, System.UInt32 emitterVersion, System.UInt32 alignment, System.UInt64 shapeHash, System.Collections.Immutable.ImmutableArray<System.Byte> bytes, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSymbol> symbols) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission.Alignment : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission.Bytes : System.Collections.Immutable.ImmutableArray<System.Byte> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission.EmitterVersion : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission.Form : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission.ShapeHash : System.UInt64 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission.Symbols : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSymbol> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmitterSet.Create(Broiler.VM.Ubc.UbcForm[] forms) : static Broiler.VM.Ubc.UbcEmitterSet
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmitterSet.Forms : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcForm> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmitterSet.TryGetForm(System.String identity, out Broiler.VM.Ubc.UbcForm form) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry..ctor(System.Collections.Immutable.ImmutableArray<System.Byte> name, System.UInt32 unit) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry.Name : System.Collections.Immutable.ImmutableArray<System.Byte> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry.Unit : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData..ctor(System.Byte slot, System.Collections.Immutable.ImmutableArray<System.Byte> body) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData.Body : System.Collections.Immutable.ImmutableArray<System.Byte> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData.Slot : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration..ctor(Broiler.VM.VmProfileId profileId, System.String displayName, System.Int32 descriptorRevision, Broiler.VM.VmArtifactRepresentationKind artifactRepresentationKind, Broiler.VM.VmArtifactLifetimeKind artifactLifetimeKind, System.Boolean supportsConcurrentVerification, Broiler.VM.VmThreadAffinity threadAffinity, System.UInt64 cancellationPollBound, System.UInt64 abandonBudget, Broiler.VM.VmLimitVector limitDefaults, Broiler.VM.VmLimitVector profileHardMaxima, Broiler.VM.VmBudgetDeclarationMatrix budgetDeclarationMatrix, System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCapabilityImport> hostCapabilityDescriptors, Broiler.VM.VmGuestLoadDeclaration guestInitiatedLoads, Broiler.VM.VmDeclaration asynchronousInstantiation, Broiler.VM.VmDeclaration externalSuspension, Broiler.VM.VmPayloadKindIdRange payloadKindIdRange, System.Int32 authoredCoreContractVersion, Broiler.VM.VmConformanceManifestId conformanceManifestId, System.Int32 conformanceManifestVersion, Broiler.VM.VmDiagnosticsIdentity diagnosticsIdentity, Broiler.VM.VmPackageIdentity packageIdentity, Broiler.VM.VmFaultRecovery faultRecovery, System.UInt32 maxUnchargedWork, System.UInt32 chargingGranularity, Broiler.VM.VmArtifactSharing artifactSharing, System.Int32 builtAgainstCoreContractVersion) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.AbandonBudget : System.UInt64 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ArtifactLifetimeKind : Broiler.VM.VmArtifactLifetimeKind { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ArtifactRepresentationKind : Broiler.VM.VmArtifactRepresentationKind { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ArtifactSharing : Broiler.VM.VmArtifactSharing { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.AsynchronousInstantiation : Broiler.VM.VmDeclaration { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.AuthoredCoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.BudgetDeclarationMatrix : Broiler.VM.VmBudgetDeclarationMatrix { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.BuiltAgainstCoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.CancellationPollBound : System.UInt64 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ChargingGranularity : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ConformanceManifestId : Broiler.VM.VmConformanceManifestId { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ConformanceManifestVersion : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.DescriptorRevision : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.DiagnosticsIdentity : Broiler.VM.VmDiagnosticsIdentity { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.DisplayName : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ExternalSuspension : Broiler.VM.VmDeclaration { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.FaultRecovery : Broiler.VM.VmFaultRecovery { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.GuestInitiatedLoads : Broiler.VM.VmGuestLoadDeclaration { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.HostCapabilityDescriptors : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCapabilityImport> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.LimitDefaults : Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.MaxUnchargedWork : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.PackageIdentity : Broiler.VM.VmPackageIdentity { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.PayloadKindIdRange : Broiler.VM.VmPayloadKindIdRange { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ProfileHardMaxima : Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.SupportsConcurrentVerification : System.Boolean { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration.ThreadAffinity : Broiler.VM.VmThreadAffinity { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyEntry..ctor(System.Byte slot, System.String identity, System.UInt32 tableVersion, System.String manifest) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyEntry.Identity : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyEntry.Manifest : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyEntry.Slot : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyEntry.TableVersion : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.AuthoredUbcContractVersion : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.BuiltAgainstUbcContractVersion : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.Identity : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.Tables : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcInstructionTable> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.TryGetTable(Broiler.VM.VmFeatureManifestId manifest, out Broiler.VM.Ubc.UbcInstructionTable table) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration.Verifier : Broiler.VM.Ubc.IUbcFamilyVerifier { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration<TFamily>..ctor(System.String identity, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcInstructionTable> tables, Broiler.VM.Ubc.IUbcFamilyVerifier verifier, System.Int32 authoredUbcContractVersion, System.Int32 builtAgainstUbcContractVersion) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyTrap..ctor(System.UInt16 code, System.String name) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyTrap.Code : System.UInt16 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyTrap.Name : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm..ctor(System.String identity, System.Int32 semanticVersion, Broiler.VM.Ubc.IUbcExecutorFactory executorFactory) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm.ExecutorFactory : Broiler.VM.Ubc.IUbcExecutorFactory { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm.Identity : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm.SemanticVersion : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.BytecodeForm : const System.String = "bytecode"
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.ExtendedPrefix : const System.Byte = 255
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.FamilyDataKind(System.Byte slot) : static System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.FamilyPrefixBase : const System.Byte = 240
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.FormatVersion : const System.UInt32 = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.Magic : static System.ReadOnlySpan<System.Byte> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.MaxAlignment : const System.UInt32 = 4096
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.MaxEntryNameBytes : const System.Int32 = 1024
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.MaxFamilySlot : const System.Byte = 14
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.MaxHeight : const System.Int32 = 65535
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.MaxIdentityBytes : const System.Int32 = 128
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.MaxJumpTables : const System.Int32 = 65536
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat.MaxLocals : const System.Int32 = 65536
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader..ctor(System.UInt32 formatVersion, System.String profileIdentity, System.String manifestIdentity, System.String formIdentity, System.String translatorIdentity, System.UInt32 translatorVersion) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader.FormIdentity : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader.FormatVersion : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader.ManifestIdentity : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader.ProfileIdentity : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader.TranslatorIdentity : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader.TranslatorVersion : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Admit : static Broiler.VM.Ubc.UbcHookAnswer { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Exhaust(Broiler.VM.VmBudgetDimension dimension) : static Broiler.VM.Ubc.UbcHookAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Exhausted : System.Nullable<Broiler.VM.VmBudgetDimension> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.FamilyCode : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Refuse(System.Int32 familyCode, Broiler.VM.VmReason reason) : static Broiler.VM.Ubc.UbcHookAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer.Refused : System.Boolean { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact..ctor(Broiler.VM.Ubc.UbcArtifact artifact, System.Byte slot, Broiler.VM.Ubc.UbcInstructionTable table, System.ReadOnlyMemory<System.Byte> familyData, Broiler.VM.IVmMeter meter) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.Artifact : Broiler.VM.Ubc.UbcArtifact { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.FamilyData : System.ReadOnlyMemory<System.Byte> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.Meter : Broiler.VM.IVmMeter { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.Slot : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.Table : Broiler.VM.Ubc.UbcInstructionTable { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.Height : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.Opcode : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.Operand : System.UInt64 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.Pc : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.Row : Broiler.VM.Ubc.UbcInstructionRow { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.TypeAt(System.Int32 depth) : Broiler.VM.Ubc.UbcSlotType
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.Unit : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext..ctor(Broiler.VM.Ubc.UbcVerifiedProgram program, Broiler.VM.IVmExecutionEnvironment environment) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext.Environment : Broiler.VM.IVmExecutionEnvironment { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext.Program : Broiler.VM.Ubc.UbcVerifiedProgram { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.Index : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.IsFamily : System.Boolean { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.Next : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.Opcode : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.Operand : System.UInt64 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.Pc : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.Plane : Broiler.VM.Ubc.UbcPlane { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.Row : Broiler.VM.Ubc.UbcInstructionRow { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.TakenValuePushes : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.TakenWordPushes : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.Target : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.ValueHeight : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.ValuePops : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.ValuePushes : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.WordHeight : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.WordPops : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction.WordPushes : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionKind.Branch : const Broiler.VM.Ubc.UbcInstructionKind = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionKind.Call : const Broiler.VM.Ubc.UbcInstructionKind = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionKind.Dynamic : const Broiler.VM.Ubc.UbcInstructionKind = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionKind.Primitive : const Broiler.VM.Ubc.UbcInstructionKind = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionKind.Suspend : const Broiler.VM.Ubc.UbcInstructionKind = 4
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionKind.Throw : const Broiler.VM.Ubc.UbcInstructionKind = 5
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionKind.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow..ctor(System.Byte opcode, System.String mnemonic, Broiler.VM.Ubc.UbcOperandShape shape, Broiler.VM.Ubc.UbcEffect effect, Broiler.VM.Ubc.UbcTarget target, Broiler.VM.Ubc.UbcInstructionKind kind, System.Boolean isTerminal, System.UInt32 cost, System.Nullable<Broiler.VM.Ubc.UbcPrimitive> primitive, System.Byte region, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcTrapMapping> traps) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.Cost : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.Effect : Broiler.VM.Ubc.UbcEffect { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.IsTerminal : System.Boolean { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.Kind : Broiler.VM.Ubc.UbcInstructionKind { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.Mnemonic : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.Opcode : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.Primitive : System.Nullable<Broiler.VM.Ubc.UbcPrimitive> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.Region : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.Shape : Broiler.VM.Ubc.UbcOperandShape { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.Target : Broiler.VM.Ubc.UbcTarget { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow.Traps : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcTrapMapping> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.CanonicaliseNaN : System.Boolean { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.DefinesTrap(System.UInt16 code) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.FamilyIdentity : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.Manifest : Broiler.VM.VmFeatureManifestId { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.RegionKinds : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcRegionKindRow> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.Regions : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcRegionDeclaration> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.Rows : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcInstructionRow> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.TableVersion : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.Traps : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcFamilyTrap> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.TryCreate(System.String familyIdentity, System.UInt32 tableVersion, Broiler.VM.VmFeatureManifestId manifest, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcInstructionRow> rows, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcRegionKindRow> regionKinds, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcRegionDeclaration> regions, System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcFamilyTrap> traps, System.Boolean canonicaliseNaN, out Broiler.VM.Ubc.UbcInstructionTable table, out System.String defect) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.TryGetRegionKind(System.Byte kind, out Broiler.VM.Ubc.UbcRegionKindRow row) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable.TryGetRow(System.Byte opcode, out Broiler.VM.Ubc.UbcInstructionRow row) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcJumpTable..ctor(System.UInt32 unit, System.Collections.Immutable.ImmutableArray<System.UInt32> targets) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcJumpTable.Targets : System.Collections.Immutable.ImmutableArray<System.UInt32> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcJumpTable.Unit : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcLocalRun..ctor(System.UInt32 count, Broiler.VM.Ubc.UbcSlotType type) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcLocalRun.Count : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcLocalRun.Equals(Broiler.VM.Ubc.UbcLocalRun other) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcLocalRun.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcLocalRun.GetHashCode() : virtual System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcLocalRun.Type : Broiler.VM.Ubc.UbcSlotType { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcLocalRun.op_Equality(Broiler.VM.Ubc.UbcLocalRun left, Broiler.VM.Ubc.UbcLocalRun right) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcLocalRun.op_Inequality(Broiler.VM.Ubc.UbcLocalRun left, Broiler.VM.Ubc.UbcLocalRun right) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Call : const Broiler.VM.Ubc.UbcOpcode = 7
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.ConstF32 : const Broiler.VM.Ubc.UbcOpcode = 34
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.ConstF64 : const Broiler.VM.Ubc.UbcOpcode = 35
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.ConstI32 : const Broiler.VM.Ubc.UbcOpcode = 32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.ConstI64 : const Broiler.VM.Ubc.UbcOpcode = 33
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Drop : const Broiler.VM.Ubc.UbcOpcode = 8
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Dup : const Broiler.VM.Ubc.UbcOpcode = 9
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Dup2 : const Broiler.VM.Ubc.UbcOpcode = 10
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Jump : const Broiler.VM.Ubc.UbcOpcode = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.JumpIfNonZero : const Broiler.VM.Ubc.UbcOpcode = 4
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.JumpIfZero : const Broiler.VM.Ubc.UbcOpcode = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.JumpTable : const Broiler.VM.Ubc.UbcOpcode = 5
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.LocalGet : const Broiler.VM.Ubc.UbcOpcode = 16
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.LocalSet : const Broiler.VM.Ubc.UbcOpcode = 17
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.LocalTee : const Broiler.VM.Ubc.UbcOpcode = 18
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Nop : const Broiler.VM.Ubc.UbcOpcode = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Pick : const Broiler.VM.Ubc.UbcOpcode = 12
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Return : const Broiler.VM.Ubc.UbcOpcode = 6
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Select : const Broiler.VM.Ubc.UbcOpcode = 13
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Squash : const Broiler.VM.Ubc.UbcOpcode = 14
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Swap : const Broiler.VM.Ubc.UbcOpcode = 11
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.Trap : const Broiler.VM.Ubc.UbcOpcode = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcodes.All : static System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcCommonRow> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcodes.IsDefined(System.Byte opcode) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcodes.OperandWidth(Broiler.VM.Ubc.UbcOpcode opcode) : static System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcodes.Row(Broiler.VM.Ubc.UbcOpcode opcode) : static Broiler.VM.Ubc.UbcCommonRow
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcodes.TryDescribe(System.Byte opcode, out Broiler.VM.Ubc.UbcCommonRow row) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.F32 : const Broiler.VM.Ubc.UbcOperandShape = 6
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.F64 : const Broiler.VM.Ubc.UbcOperandShape = 7
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.I32 : const Broiler.VM.Ubc.UbcOperandShape = 4
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.I64 : const Broiler.VM.Ubc.UbcOperandShape = 5
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.None : const Broiler.VM.Ubc.UbcOperandShape = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.U16 : const Broiler.VM.Ubc.UbcOperandShape = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.U16U16 : const Broiler.VM.Ubc.UbcOperandShape = 11
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.U32 : const Broiler.VM.Ubc.UbcOperandShape = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.U8 : const Broiler.VM.Ubc.UbcOperandShape = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.U8U16 : const Broiler.VM.Ubc.UbcOperandShape = 9
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.U8U32 : const Broiler.VM.Ubc.UbcOperandShape = 10
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.U8U8 : const Broiler.VM.Ubc.UbcOperandShape = 8
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShapes.First(Broiler.VM.Ubc.UbcOperandShape shape, System.UInt64 operand) : static System.UInt64
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShapes.IsDefined(Broiler.VM.Ubc.UbcOperandShape shape) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShapes.Read(System.ReadOnlySpan<System.Byte> bytes) : static System.UInt64
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShapes.Second(Broiler.VM.Ubc.UbcOperandShape shape, System.UInt64 operand) : static System.UInt64
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShapes.Width(Broiler.VM.Ubc.UbcOperandShape shape) : static System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShapes.Write(System.Span<System.Byte> destination, System.UInt64 operand, System.Int32 width) : static System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPlane.Value : const Broiler.VM.Ubc.UbcPlane = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPlane.Word : const Broiler.VM.Ubc.UbcPlane = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPlane.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPosition..ctor(System.UInt32 unit, System.UInt32 offset, System.Int32 coordinate0, System.Int32 coordinate1) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPosition.Coordinate0 : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPosition.Coordinate1 : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPosition.Offset : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPosition.Unit : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Abs : const Broiler.VM.Ubc.UbcPrimitive = 65
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Add : const Broiler.VM.Ubc.UbcPrimitive = 59
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Ceil : const Broiler.VM.Ubc.UbcPrimitive = 68
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32ConvertI32S : const Broiler.VM.Ubc.UbcPrimitive = 102
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32ConvertI32U : const Broiler.VM.Ubc.UbcPrimitive = 103
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32ConvertI64S : const Broiler.VM.Ubc.UbcPrimitive = 104
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32ConvertI64U : const Broiler.VM.Ubc.UbcPrimitive = 105
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Copysign : const Broiler.VM.Ubc.UbcPrimitive = 72
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32DemoteF64 : const Broiler.VM.Ubc.UbcPrimitive = 110
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Div : const Broiler.VM.Ubc.UbcPrimitive = 62
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Eq : const Broiler.VM.Ubc.UbcPrimitive = 73
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Floor : const Broiler.VM.Ubc.UbcPrimitive = 69
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Ge : const Broiler.VM.Ubc.UbcPrimitive = 78
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Gt : const Broiler.VM.Ubc.UbcPrimitive = 76
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Le : const Broiler.VM.Ubc.UbcPrimitive = 77
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Lt : const Broiler.VM.Ubc.UbcPrimitive = 75
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Max : const Broiler.VM.Ubc.UbcPrimitive = 64
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Min : const Broiler.VM.Ubc.UbcPrimitive = 63
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Mul : const Broiler.VM.Ubc.UbcPrimitive = 61
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Ne : const Broiler.VM.Ubc.UbcPrimitive = 74
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Nearest : const Broiler.VM.Ubc.UbcPrimitive = 71
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Neg : const Broiler.VM.Ubc.UbcPrimitive = 66
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32ReinterpretI32 : const Broiler.VM.Ubc.UbcPrimitive = 114
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Sqrt : const Broiler.VM.Ubc.UbcPrimitive = 67
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Sub : const Broiler.VM.Ubc.UbcPrimitive = 60
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F32Trunc : const Broiler.VM.Ubc.UbcPrimitive = 70
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Abs : const Broiler.VM.Ubc.UbcPrimitive = 85
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Add : const Broiler.VM.Ubc.UbcPrimitive = 79
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Ceil : const Broiler.VM.Ubc.UbcPrimitive = 88
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64ConvertI32S : const Broiler.VM.Ubc.UbcPrimitive = 106
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64ConvertI32U : const Broiler.VM.Ubc.UbcPrimitive = 107
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64ConvertI64S : const Broiler.VM.Ubc.UbcPrimitive = 108
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64ConvertI64U : const Broiler.VM.Ubc.UbcPrimitive = 109
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Copysign : const Broiler.VM.Ubc.UbcPrimitive = 92
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Div : const Broiler.VM.Ubc.UbcPrimitive = 82
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Eq : const Broiler.VM.Ubc.UbcPrimitive = 93
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Floor : const Broiler.VM.Ubc.UbcPrimitive = 89
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Ge : const Broiler.VM.Ubc.UbcPrimitive = 98
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Gt : const Broiler.VM.Ubc.UbcPrimitive = 96
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Le : const Broiler.VM.Ubc.UbcPrimitive = 97
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Lt : const Broiler.VM.Ubc.UbcPrimitive = 95
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Max : const Broiler.VM.Ubc.UbcPrimitive = 84
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Min : const Broiler.VM.Ubc.UbcPrimitive = 83
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Mul : const Broiler.VM.Ubc.UbcPrimitive = 81
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Ne : const Broiler.VM.Ubc.UbcPrimitive = 94
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Nearest : const Broiler.VM.Ubc.UbcPrimitive = 91
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Neg : const Broiler.VM.Ubc.UbcPrimitive = 86
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64PromoteF32 : const Broiler.VM.Ubc.UbcPrimitive = 111
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64ReinterpretI64 : const Broiler.VM.Ubc.UbcPrimitive = 115
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Sqrt : const Broiler.VM.Ubc.UbcPrimitive = 87
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Sub : const Broiler.VM.Ubc.UbcPrimitive = 80
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.F64Trunc : const Broiler.VM.Ubc.UbcPrimitive = 90
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Add : const Broiler.VM.Ubc.UbcPrimitive = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32And : const Broiler.VM.Ubc.UbcPrimitive = 4
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Clz : const Broiler.VM.Ubc.UbcPrimitive = 12
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Ctz : const Broiler.VM.Ubc.UbcPrimitive = 13
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32DivS : const Broiler.VM.Ubc.UbcPrimitive = 26
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32DivU : const Broiler.VM.Ubc.UbcPrimitive = 27
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Eq : const Broiler.VM.Ubc.UbcPrimitive = 16
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Eqz : const Broiler.VM.Ubc.UbcPrimitive = 15
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32GeS : const Broiler.VM.Ubc.UbcPrimitive = 24
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32GeU : const Broiler.VM.Ubc.UbcPrimitive = 25
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32GtS : const Broiler.VM.Ubc.UbcPrimitive = 20
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32GtU : const Broiler.VM.Ubc.UbcPrimitive = 21
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32LeS : const Broiler.VM.Ubc.UbcPrimitive = 22
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32LeU : const Broiler.VM.Ubc.UbcPrimitive = 23
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32LtS : const Broiler.VM.Ubc.UbcPrimitive = 18
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32LtU : const Broiler.VM.Ubc.UbcPrimitive = 19
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Mul : const Broiler.VM.Ubc.UbcPrimitive = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Ne : const Broiler.VM.Ubc.UbcPrimitive = 17
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Or : const Broiler.VM.Ubc.UbcPrimitive = 5
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Popcnt : const Broiler.VM.Ubc.UbcPrimitive = 14
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32ReinterpretF32 : const Broiler.VM.Ubc.UbcPrimitive = 112
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32RemS : const Broiler.VM.Ubc.UbcPrimitive = 28
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32RemU : const Broiler.VM.Ubc.UbcPrimitive = 29
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Rotl : const Broiler.VM.Ubc.UbcPrimitive = 10
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Rotr : const Broiler.VM.Ubc.UbcPrimitive = 11
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Shl : const Broiler.VM.Ubc.UbcPrimitive = 7
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32ShrS : const Broiler.VM.Ubc.UbcPrimitive = 8
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32ShrU : const Broiler.VM.Ubc.UbcPrimitive = 9
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Sub : const Broiler.VM.Ubc.UbcPrimitive = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32TruncF32S : const Broiler.VM.Ubc.UbcPrimitive = 116
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32TruncF32U : const Broiler.VM.Ubc.UbcPrimitive = 117
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32TruncF64S : const Broiler.VM.Ubc.UbcPrimitive = 118
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32TruncF64U : const Broiler.VM.Ubc.UbcPrimitive = 119
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32WrapI64 : const Broiler.VM.Ubc.UbcPrimitive = 99
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I32Xor : const Broiler.VM.Ubc.UbcPrimitive = 6
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Add : const Broiler.VM.Ubc.UbcPrimitive = 30
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64And : const Broiler.VM.Ubc.UbcPrimitive = 33
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Clz : const Broiler.VM.Ubc.UbcPrimitive = 41
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Ctz : const Broiler.VM.Ubc.UbcPrimitive = 42
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64DivS : const Broiler.VM.Ubc.UbcPrimitive = 55
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64DivU : const Broiler.VM.Ubc.UbcPrimitive = 56
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Eq : const Broiler.VM.Ubc.UbcPrimitive = 45
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Eqz : const Broiler.VM.Ubc.UbcPrimitive = 44
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64ExtendI32S : const Broiler.VM.Ubc.UbcPrimitive = 100
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64ExtendI32U : const Broiler.VM.Ubc.UbcPrimitive = 101
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64GeS : const Broiler.VM.Ubc.UbcPrimitive = 53
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64GeU : const Broiler.VM.Ubc.UbcPrimitive = 54
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64GtS : const Broiler.VM.Ubc.UbcPrimitive = 49
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64GtU : const Broiler.VM.Ubc.UbcPrimitive = 50
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64LeS : const Broiler.VM.Ubc.UbcPrimitive = 51
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64LeU : const Broiler.VM.Ubc.UbcPrimitive = 52
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64LtS : const Broiler.VM.Ubc.UbcPrimitive = 47
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64LtU : const Broiler.VM.Ubc.UbcPrimitive = 48
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Mul : const Broiler.VM.Ubc.UbcPrimitive = 32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Ne : const Broiler.VM.Ubc.UbcPrimitive = 46
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Or : const Broiler.VM.Ubc.UbcPrimitive = 34
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Popcnt : const Broiler.VM.Ubc.UbcPrimitive = 43
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64ReinterpretF64 : const Broiler.VM.Ubc.UbcPrimitive = 113
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64RemS : const Broiler.VM.Ubc.UbcPrimitive = 57
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64RemU : const Broiler.VM.Ubc.UbcPrimitive = 58
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Rotl : const Broiler.VM.Ubc.UbcPrimitive = 39
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Rotr : const Broiler.VM.Ubc.UbcPrimitive = 40
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Shl : const Broiler.VM.Ubc.UbcPrimitive = 36
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64ShrS : const Broiler.VM.Ubc.UbcPrimitive = 37
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64ShrU : const Broiler.VM.Ubc.UbcPrimitive = 38
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Sub : const Broiler.VM.Ubc.UbcPrimitive = 31
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64TruncF32S : const Broiler.VM.Ubc.UbcPrimitive = 120
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64TruncF32U : const Broiler.VM.Ubc.UbcPrimitive = 121
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64TruncF64S : const Broiler.VM.Ubc.UbcPrimitive = 122
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64TruncF64U : const Broiler.VM.Ubc.UbcPrimitive = 123
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.I64Xor : const Broiler.VM.Ubc.UbcPrimitive = 35
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadF32 : const Broiler.VM.Ubc.UbcPrimitive = 126
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadF64 : const Broiler.VM.Ubc.UbcPrimitive = 127
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI32 : const Broiler.VM.Ubc.UbcPrimitive = 124
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI32From16S : const Broiler.VM.Ubc.UbcPrimitive = 130
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI32From16U : const Broiler.VM.Ubc.UbcPrimitive = 131
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI32From8S : const Broiler.VM.Ubc.UbcPrimitive = 128
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI32From8U : const Broiler.VM.Ubc.UbcPrimitive = 129
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI64 : const Broiler.VM.Ubc.UbcPrimitive = 125
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI64From16S : const Broiler.VM.Ubc.UbcPrimitive = 134
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI64From16U : const Broiler.VM.Ubc.UbcPrimitive = 135
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI64From32S : const Broiler.VM.Ubc.UbcPrimitive = 136
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI64From32U : const Broiler.VM.Ubc.UbcPrimitive = 137
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI64From8S : const Broiler.VM.Ubc.UbcPrimitive = 132
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionLoadI64From8U : const Broiler.VM.Ubc.UbcPrimitive = 133
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionSize : const Broiler.VM.Ubc.UbcPrimitive = 147
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionStoreF32 : const Broiler.VM.Ubc.UbcPrimitive = 140
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionStoreF64 : const Broiler.VM.Ubc.UbcPrimitive = 141
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionStoreI32 : const Broiler.VM.Ubc.UbcPrimitive = 138
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionStoreI32To16 : const Broiler.VM.Ubc.UbcPrimitive = 143
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionStoreI32To8 : const Broiler.VM.Ubc.UbcPrimitive = 142
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionStoreI64 : const Broiler.VM.Ubc.UbcPrimitive = 139
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionStoreI64To16 : const Broiler.VM.Ubc.UbcPrimitive = 145
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionStoreI64To32 : const Broiler.VM.Ubc.UbcPrimitive = 146
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.RegionStoreI64To8 : const Broiler.VM.Ubc.UbcPrimitive = 144
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.WordKeep : const Broiler.VM.Ubc.UbcPrimitive = 148
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive.value__ : System.UInt16
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitiveResult.Bits : System.UInt64 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitiveResult.Trap : Broiler.VM.Ubc.UbcTrapCode { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitiveResult.Trapped(Broiler.VM.Ubc.UbcTrapCode trap) : static Broiler.VM.Ubc.UbcPrimitiveResult
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitiveResult.Value(System.UInt64 bits) : static Broiler.VM.Ubc.UbcPrimitiveResult
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives.AccessWidth(Broiler.VM.Ubc.UbcPrimitive primitive) : static System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives.Canonicalises(Broiler.VM.Ubc.UbcPrimitive primitive) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives.Evaluate(Broiler.VM.Ubc.UbcPrimitive primitive, System.UInt64 a, System.UInt64 b, System.Boolean canonicaliseNaN) : static Broiler.VM.Ubc.UbcPrimitiveResult
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives.EvaluateRegion(Broiler.VM.Ubc.UbcPrimitive primitive, System.Span<System.Byte> region, System.UInt32 address, System.UInt32 offset, System.UInt64 value, System.UInt32 size) : static Broiler.VM.Ubc.UbcPrimitiveResult
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives.IsDefined(Broiler.VM.Ubc.UbcPrimitive primitive) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives.IsRegionAccess(Broiler.VM.Ubc.UbcPrimitive primitive) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives.TrapsOf(Broiler.VM.Ubc.UbcPrimitive primitive) : static Broiler.VM.Ubc.UbcTrapCode
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives.TryGetSignature(Broiler.VM.Ubc.UbcPrimitive primitive, out System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> operands, out System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> results) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Code : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Dimension : Broiler.VM.VmBudgetDimension { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Exhausted(Broiler.VM.VmBudgetDimension dimension) : static Broiler.VM.Ubc.UbcRefusal
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InCode(System.Int32 unit, System.UInt32 codeOffset) : static Broiler.VM.VmSourcePosition
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InHeader(System.UInt64 offset) : static Broiler.VM.VmSourcePosition
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InRow(Broiler.VM.Ubc.UbcSectionKind kind, System.Int32 row) : static Broiler.VM.VmSourcePosition
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InSection(Broiler.VM.Ubc.UbcSectionKind kind, System.UInt64 offset) : static Broiler.VM.VmSourcePosition
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Invalid(Broiler.VM.Ubc.UbcDiagnosticCode code, Broiler.VM.VmReason reason, Broiler.VM.VmSourcePosition position) : static Broiler.VM.Ubc.UbcRefusal
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.InvalidByFamily(System.Int32 familyCode, Broiler.VM.VmReason reason, Broiler.VM.VmSourcePosition position) : static Broiler.VM.Ubc.UbcRefusal
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Kind : Broiler.VM.Ubc.UbcRefusalKind { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Position : Broiler.VM.VmSourcePosition { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal.ToOutcome() : Broiler.VM.VmVerifierOutcome
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusalKind.Exhausted : const Broiler.VM.Ubc.UbcRefusalKind = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusalKind.Invalid : const Broiler.VM.Ubc.UbcRefusalKind = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusalKind.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegion..ctor(System.UInt32 unit, System.UInt32 start, System.UInt32 end, System.UInt32 handler, System.UInt32 wordEntryHeight, System.UInt32 valueEntryHeight, System.Byte kind) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegion.End : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegion.Handler : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegion.Kind : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegion.Start : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegion.Unit : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegion.ValueEntryHeight : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegion.WordEntryHeight : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegionDeclaration..ctor(System.Byte index, System.String name) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegionDeclaration.Index : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegionDeclaration.Name : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegionKindRow..ctor(System.Byte kind, System.String name, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> landingPushes) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegionKindRow.Kind : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegionKindRow.LandingPushes : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegionKindRow.Name : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder.Emission(Broiler.VM.Ubc.UbcEmission emission) : static System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder.Entries(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcEntry> rows) : static System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder.Families(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcFamilyEntry> rows) : static System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder.JumpTables(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcJumpTable> rows) : static System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder.Positions(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcPosition> rows) : static System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder.Regions(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcRegion> rows) : static System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder.Types(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcSignature> rows) : static System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder.Units(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcUnit> rows) : static System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder.WriteIdentity(System.Collections.Generic.List<System.Byte> output, System.String identity) : static System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder.WriteVarUInt(System.Collections.Generic.List<System.Byte> output, System.UInt64 value) : static System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.Code : const Broiler.VM.Ubc.UbcSectionKind = 4
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.Emission : const Broiler.VM.Ubc.UbcSectionKind = 24
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.Entries : const Broiler.VM.Ubc.UbcSectionKind = 7
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.Families : const Broiler.VM.Ubc.UbcSectionKind = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.FamilyDataFirst : const Broiler.VM.Ubc.UbcSectionKind = 9
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.FamilyDataLast : const Broiler.VM.Ubc.UbcSectionKind = 22
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.JumpTables : const Broiler.VM.Ubc.UbcSectionKind = 5
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.Positions : const Broiler.VM.Ubc.UbcSectionKind = 8
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.Regions : const Broiler.VM.Ubc.UbcSectionKind = 6
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.Types : const Broiler.VM.Ubc.UbcSectionKind = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.Units : const Broiler.VM.Ubc.UbcSectionKind = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSignature..ctor(System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> parameters, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> results) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSignature.Parameters : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSignature.Results : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotType.F32 : const Broiler.VM.Ubc.UbcSlotType = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotType.F64 : const Broiler.VM.Ubc.UbcSlotType = 4
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotType.I32 : const Broiler.VM.Ubc.UbcSlotType = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotType.I64 : const Broiler.VM.Ubc.UbcSlotType = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotType.V : const Broiler.VM.Ubc.UbcSlotType = 5
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotType.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotTypes.IsDefined(System.Byte value) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotTypes.Name(Broiler.VM.Ubc.UbcSlotType type) : static System.String
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotTypes.PlaneOf(Broiler.VM.Ubc.UbcSlotType type) : static Broiler.VM.Ubc.UbcPlane
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Code : System.UInt16 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Defect : static Broiler.VM.Ubc.UbcStatus { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Equals(Broiler.VM.Ubc.UbcStatus other) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.GetHashCode() : virtual System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Kind : Broiler.VM.Ubc.UbcStatusKind { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Next : static Broiler.VM.Ubc.UbcStatus { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Request : static Broiler.VM.Ubc.UbcStatus { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Suspend : static Broiler.VM.Ubc.UbcStatus { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Taken : static Broiler.VM.Ubc.UbcStatus { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Threw : static Broiler.VM.Ubc.UbcStatus { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.Trap(System.UInt16 code) : static Broiler.VM.Ubc.UbcStatus
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.op_Equality(Broiler.VM.Ubc.UbcStatus left, Broiler.VM.Ubc.UbcStatus right) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus.op_Inequality(Broiler.VM.Ubc.UbcStatus left, Broiler.VM.Ubc.UbcStatus right) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatusKind.Defect : const Broiler.VM.Ubc.UbcStatusKind = 6
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatusKind.Next : const Broiler.VM.Ubc.UbcStatusKind = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatusKind.Request : const Broiler.VM.Ubc.UbcStatusKind = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatusKind.Suspend : const Broiler.VM.Ubc.UbcStatusKind = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatusKind.Taken : const Broiler.VM.Ubc.UbcStatusKind = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatusKind.Threw : const Broiler.VM.Ubc.UbcStatusKind = 4
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatusKind.Trap : const Broiler.VM.Ubc.UbcStatusKind = 5
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatusKind.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSymbol..ctor(System.UInt32 unit, System.UInt32 offset) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSymbol.Equals(Broiler.VM.Ubc.UbcSymbol other) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSymbol.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSymbol.GetHashCode() : virtual System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSymbol.Offset : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSymbol.Unit : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSymbol.op_Equality(Broiler.VM.Ubc.UbcSymbol left, Broiler.VM.Ubc.UbcSymbol right) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcSymbol.op_Inequality(Broiler.VM.Ubc.UbcSymbol left, Broiler.VM.Ubc.UbcSymbol right) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTarget.Code() : static Broiler.VM.Ubc.UbcTarget
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTarget.Code(System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> takenPushes) : static Broiler.VM.Ubc.UbcTarget
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTarget.HasDistinctTakenEdge : System.Boolean { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTarget.IsCode : System.Boolean { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTarget.None : static Broiler.VM.Ubc.UbcTarget { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTarget.TakenPushes : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapCode.DivideByZero : const Broiler.VM.Ubc.UbcTrapCode = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapCode.IntegerOverflow : const Broiler.VM.Ubc.UbcTrapCode = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapCode.InvalidConversion : const Broiler.VM.Ubc.UbcTrapCode = 4
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapCode.None : const Broiler.VM.Ubc.UbcTrapCode = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapCode.OutOfBounds : const Broiler.VM.Ubc.UbcTrapCode = 8
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapCode.value__ : System.Byte
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapMapping..ctor(Broiler.VM.Ubc.UbcTrapCode universal, System.UInt16 familyCode) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapMapping.Equals(Broiler.VM.Ubc.UbcTrapMapping other) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapMapping.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapMapping.FamilyCode : System.UInt16 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapMapping.GetHashCode() : virtual System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapMapping.Universal : Broiler.VM.Ubc.UbcTrapCode { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapMapping.op_Equality(Broiler.VM.Ubc.UbcTrapMapping left, Broiler.VM.Ubc.UbcTrapMapping right) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapMapping.op_Inequality(Broiler.VM.Ubc.UbcTrapMapping left, Broiler.VM.Ubc.UbcTrapMapping right) : static System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit..ctor(System.UInt32 typeIndex, System.Byte familySlot, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcLocalRun> locals, System.UInt32 maxWordHeight, System.UInt32 maxValueHeight, System.UInt32 codeOffset, System.UInt32 codeLength, Broiler.VM.Ubc.UbcUnitFlags flags, System.Collections.Immutable.ImmutableArray<System.UInt32> landings) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.CodeLength : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.CodeOffset : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.FamilySlot : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.Flags : Broiler.VM.Ubc.UbcUnitFlags { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.Landings : System.Collections.Immutable.ImmutableArray<System.UInt32> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.Locals : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcLocalRun> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.MaxValueHeight : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.MaxWordHeight : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.TypeIndex : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.Index : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.IndexOf(System.UInt32 pc) : System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.Instructions : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcInstruction> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.ParameterValues : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.ParameterWords : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.Regions : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcDecodedRegion> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.ResultValues : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.ResultWords : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.Signature : Broiler.VM.Ubc.UbcSignature { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.Unit : Broiler.VM.Ubc.UbcUnit { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.ValueLocals : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.WordLocals : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitFlags.Entry : const Broiler.VM.Ubc.UbcUnitFlags = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitFlags.FamilyDefined : const Broiler.VM.Ubc.UbcUnitFlags = 65280
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitFlags.None : const Broiler.VM.Ubc.UbcUnitFlags = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitFlags.Suspendable : const Broiler.VM.Ubc.UbcUnitFlags = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitFlags.value__ : System.UInt16
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram.Artifact : Broiler.VM.Ubc.UbcArtifact { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram.FamilySlot : System.Byte { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram.FamilyState : System.Object { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram.Form : System.String { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram.JumpTableTargets : System.Collections.Immutable.ImmutableArray<System.Collections.Immutable.ImmutableArray<System.Int32>> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram.Table : Broiler.VM.Ubc.UbcInstructionTable { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram.TryGetEntry(System.ReadOnlySpan<System.Byte> name, out System.Int32 unit) : System.Boolean
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram.Units : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcUnitCode> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.AuthoredCoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.BuiltAgainstCoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.VerifierSemanticVersion : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.Verify(in Broiler.VM.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload, Broiler.VM.IVmVerificationContext context, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmVerifierOutcome
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.WalkVersion : const System.Int32 = 1
+type Broiler.VM.Ubc Broiler.VM.Ubc.IUbcExecutorFactory : interface
+type Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily : interface
+type Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamilyVerifier : interface
+type Broiler.VM.Ubc Broiler.VM.Ubc.IUbcValuePlane : interface
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation : struct
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifact : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactReader : static class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest : struct System.IEquatable<Broiler.VM.Ubc.UbcCallRequest>
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcCodeBuilder : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonEffect : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonRow : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionException : sealed class System.Exception
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcContract : static class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion : struct
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcDescriptors : static class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffectForm : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmitterSet : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyEntry : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration : abstract class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyRegistration<TFamily> : sealed class Broiler.VM.Ubc.UbcFamilyRegistration
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyTrap : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcFormat : static class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer : struct
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction : struct
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction : struct
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionKind : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionRow : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionTable : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcJumpTable : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcLocalRun : struct System.IEquatable<Broiler.VM.Ubc.UbcLocalRun>
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcode : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcOpcodes : static class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShape : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcOperandShapes : static class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcPlane : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcPosition : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitive : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitiveResult : struct
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcPrimitives : static class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusal : struct
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcRefusalKind : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegion : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegionDeclaration : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcRegionKindRow : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionEncoder : static class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcSectionKind : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcSignature : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotType : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcSlotTypes : static class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatus : struct System.IEquatable<Broiler.VM.Ubc.UbcStatus>
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcStatusKind : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcSymbol : struct System.IEquatable<Broiler.VM.Ubc.UbcSymbol>
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcTarget : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapCode : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcTrapMapping : struct System.IEquatable<Broiler.VM.Ubc.UbcTrapMapping>
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitFlags : enum
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifiedProgram : sealed class Broiler.VM.IVmVerifiedState
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier : sealed class Broiler.VM.IVmProfileVerifier

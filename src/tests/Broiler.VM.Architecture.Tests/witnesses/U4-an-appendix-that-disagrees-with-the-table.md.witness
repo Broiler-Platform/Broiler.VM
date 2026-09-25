@@ -1,0 +1,40 @@
+Witness for rule U4's first clause: a copy of Appendix A of docs/universal-bytecode.md with four
+perturbations, one per direction the clause decides, read against the real table in
+src/Broiler.VM.Ubc/UbcOpcodes.cs. The rule must report each:
+
+- `pick`'s operand is `u16` here and `U8` in the table - a changed operand shape;
+- `dup`'s effect is `[t] → [t t t]` here and `[t] → [t t]` in the table - a changed effect;
+- `peek` at `0x0F` is listed here and the table has no row for it - a row only the appendix has;
+- `const.f64` at `0x23` is missing here and the table has a row for it - a row only the table has.
+
+Every other row is the appendix's own, so the disagreement the rule reports over the real appendix
+- `jump_table`'s terminal flag - is reported over this copy too.
+
+## Appendix A — The common family
+
+| Byte | Mnemonic | Operand | Effect | Meaning |
+|---|---|---|---|---|
+| `0x00` | `nop` | — | `[] → []` | nothing; never emitted by a translator, admitted so that a patched stream has a legal filler |
+| `0x01` | `trap` | `u8 u16` | terminal | abort: family slot `u8` builds the fault payload from code `u16`; slot 0 code 0 is the universal *unreachable*; no region catches it |
+| `0x02` | `jump` | `u32` | terminal | continue at absolute code offset `u32`, inside the same unit |
+| `0x03` | `jump_if_zero` | `u32` | `[i32] → []` | jump when the popped word is zero |
+| `0x04` | `jump_if_nonzero` | `u32` | `[i32] → []` | jump when the popped word is not zero |
+| `0x05` | `jump_table` | `u16` | `[i32] → []` | jump to row `i32` of jump table `u16`, or to its last row when out of range |
+| `0x06` | `return` | — | `[… results] → terminal` | return the unit's declared results from the top of the stack; whatever is beneath is discarded |
+| `0x07` | `call` | `u32` | `[params] → [results]` | call unit `u32` of the same artifact with the signature its Units row declares; `CallDepth` charged; word parameters copied, value parameters plane-copied |
+| `0x08` | `drop` | — | `[t] → []` | discard the top |
+| `0x09` | `dup` | — | `[t] → [t t t]` | copy the top, twice |
+| `0x0A` | `dup2` | — | `[t u] → [t u t u]` | copy the top two, in order |
+| `0x0B` | `swap` | — | `[t u] → [u t]` | exchange the top two |
+| `0x0C` | `pick` | `u16` | `[t …] → [t … t]` | copy the value `u16` places below the top |
+| `0x0D` | `select` | — | `[t t i32] → [t]` | keep the first when the word is not zero, the second otherwise; both candidates one type |
+| `0x0E` | `squash` | `u8 u8` | `[… n k] → [k]` | keep the top `k` slots and discard the `n` beneath them; how a WebAssembly branch unwinds to a label's height |
+| `0x0F` | `peek` | `u8` | `[t …] → [t … t]` | a row the table does not have |
+| `0x10` | `local.get` | `u16` | `[] → [t]` | push local `u16`, typed by the unit's local table |
+| `0x11` | `local.set` | `u16` | `[t] → []` | pop into local `u16` |
+| `0x12` | `local.tee` | `u16` | `[t] → [t]` | store into local `u16` and keep the value |
+| `0x20` | `const.i32` | `i32` | `[] → [i32]` | push the constant |
+| `0x21` | `const.i64` | `i64` | `[] → [i64]` | push the constant |
+| `0x22` | `const.f32` | `f32` | `[] → [f32]` | push the constant, bits as written |
+| `0xF0`–`0xFE` | *family prefix* | — | — | the next byte is an opcode of family slot `byte − 0xF0` |
+| `0xFF` | *reserved* | — | — | extended prefix; not defined by format version 1, refused |
