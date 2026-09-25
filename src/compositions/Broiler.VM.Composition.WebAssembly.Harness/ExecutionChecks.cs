@@ -29,6 +29,7 @@ internal static class ExecutionChecks
         var checks = new List<(string Name, bool Passed, string Detail)>();
 
         checks.AddRange(Numeric(runtime));
+        checks.AddRange(FloatComparisons(runtime));
         checks.AddRange(Control(runtime));
         checks.AddRange(Memory(runtime));
         checks.AddRange(Calls(runtime));
@@ -126,6 +127,76 @@ internal static class ExecutionChecks
             (Entry("conv", I32(-5)), Double(-5.0)),
         ]);
 
+        return results;
+    }
+
+    // =============================================================================================
+    // The twelve float comparisons
+    // =============================================================================================
+
+    /// <summary>
+    /// Every float comparison over ordered, equal, unordered and signed-zero operands, each answered
+    /// with the specification's value.
+    /// </summary>
+    /// <remarks>
+    /// Added before the universal bytecode programme's base run of milestone UBC-4, so that the class
+    /// its predeclared rule names - a float comparison whose base answer is the interpreter's defect
+    /// and whose answer after is the specification's value - has members in the harness's own checks
+    /// and not only in the primitive corpus. At the base these checks FAIL, because the interpreter
+    /// routes the comparison bytes to its integer arm, which has no case for them.
+    /// </remarks>
+    private static List<(string, bool, string)> FloatComparisons(VmRuntime runtime)
+    {
+        var assembler = new WasmAssembler();
+        var single = assembler.Type([WasmAssembler.F32, WasmAssembler.F32], [WasmAssembler.I32]);
+        var twin = assembler.Type([WasmAssembler.F64, WasmAssembler.F64], [WasmAssembler.I32]);
+        string[] names = ["eq", "ne", "lt", "gt", "le", "ge"];
+
+        for (var index = 0; index < names.Length; index++)
+        {
+            var f32 = assembler.Function(single, [], Binary((byte)(Instruction.F32Eq + index)));
+            var f64 = assembler.Function(twin, [], Binary((byte)(Instruction.F64Eq + index)));
+            assembler.Export("f32" + names[index], WasmAssembler.ExportFunction, f32);
+            assembler.Export("f64" + names[index], WasmAssembler.ExportFunction, f64);
+        }
+
+        // eq ne lt gt le ge, over (1, 2), (2, 2), (NaN, 1) and (-0, +0).
+        (float A, float B, int[] Answers)[] singles =
+        [
+            (1.0f, 2.0f, [0, 1, 1, 0, 1, 0]),
+            (2.0f, 2.0f, [1, 0, 0, 0, 1, 1]),
+            (float.NaN, 1.0f, [0, 1, 0, 0, 0, 0]),
+            (-0.0f, 0.0f, [1, 0, 0, 0, 1, 1]),
+        ];
+
+        (double A, double B, int[] Answers)[] doubles =
+        [
+            (1.0, 2.0, [0, 1, 1, 0, 1, 0]),
+            (2.0, 2.0, [1, 0, 0, 0, 1, 1]),
+            (1.0, double.NaN, [0, 1, 0, 0, 0, 0]),
+            (-0.0, 0.0, [1, 0, 0, 0, 1, 1]),
+        ];
+
+        var calls = new List<(string, Expectation)>();
+
+        foreach (var (a, b, answers) in singles)
+        {
+            for (var index = 0; index < names.Length; index++)
+            {
+                calls.Add((Entry("f32" + names[index], F32(a), F32(b)), Int32(answers[index])));
+            }
+        }
+
+        foreach (var (a, b, answers) in doubles)
+        {
+            for (var index = 0; index < names.Length; index++)
+            {
+                calls.Add((Entry("f64" + names[index], F64(a), F64(b)), Int32(answers[index])));
+            }
+        }
+
+        var results = new List<(string, bool, string)>();
+        Invoke(runtime, assembler.Build(), "float-comparison", results, [.. calls]);
         return results;
     }
 
