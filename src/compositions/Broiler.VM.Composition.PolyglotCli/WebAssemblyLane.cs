@@ -101,7 +101,12 @@ internal static class WebAssemblyLane
 
         // THE TRANSLATOR RUNS UNDER THE CEILINGS THE CORE WOULD HAVE VERIFIED THE MODULE UNDER, read
         // off this runtime, and never under a default: the host's stated ceilings and a caller's
-        // allowances decide what a module may cost, whichever stage spends it.
+        // allowances decide what a module may cost, whichever stage spends it. The one exception is
+        // the wall clock, which only the core's poll accrues: the translation runs outside the core
+        // and is not timed, so --wall bounds verifying the translation and everything after it. A
+        // module whose decoding and validation outlast --wall is therefore answered by the
+        // translation - refused or translated - where the bare-module verifier reported the
+        // allowance spent.
         var translation = WasmTranslator.Translate(
             file.Bytes, Composition.WebAssemblyCeilings(runtime, in descriptor), CancellationToken.None);
 

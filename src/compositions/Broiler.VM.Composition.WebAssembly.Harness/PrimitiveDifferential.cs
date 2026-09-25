@@ -26,7 +26,9 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// table's flag on, the reference's NaN canonicalised must equal the primitive's, which requires both to
 /// be NaNs and the primitive's to be the canonical one; with it off, both must be NaNs. A sign-bit
 /// operation or a reinterpretation is not such a row, and its NaN bits are compared as bits. A row no
-/// input line names fails, because a comparison over nothing is no comparison.
+/// input line names fails, because a comparison over nothing is no comparison - and for the same
+/// reason the lane fails when the table has no numeric row outside the control, or when the control
+/// is not exactly one row at each of 0x5B to 0x66.
 /// </para>
 /// <para>
 /// <b>The twelve float comparisons, 0x5B to 0x66, are reported apart, as the control.</b> The arms the
@@ -51,9 +53,20 @@ internal static class PrimitiveDifferential
     /// <summary>How many disagreements of one row are printed.</summary>
     private const int Shown = 4;
 
-    /// <summary>Compares every numeric primitive row and answers the number of rows that failed.</summary>
-    internal static int Report(string path, bool verbose)
+    /// <summary>Compares every numeric primitive row and answers how many rows and lane checks failed.</summary>
+    /// <param name="path">The input corpus named after <c>--primitives</c>, or null where the flag was the last argument.</param>
+    /// <param name="verbose">Whether every agreeing row is printed too.</param>
+    internal static int Report(string? path, bool verbose)
     {
+        // A FLAG THAT NAMES NO FILE IS A FAILED LANE, never a skipped one: the lane is never
+        // defaulted, and a run that asked for it and printed nothing of it would pass on nothing.
+        if (path is null)
+        {
+            Console.WriteLine("# primitive-differential: no input corpus named");
+            Console.WriteLine("FAIL --primitives: no file follows the flag, and this lane never defaults one");
+            return 1;
+        }
+
         if (!File.Exists(path))
         {
             Console.WriteLine($"# primitive-differential: no input corpus at {path}");
@@ -118,6 +131,17 @@ internal static class PrimitiveDifferential
             Console.WriteLine($"FAIL {path}: line {number.ToString(CultureInfo.InvariantCulture)} is not a primitive input");
         }
 
+        // A LANE OVER NO ROWS IS NO COMPARISON. The rows are read from the table, so a table whose
+        // numeric rows stopped reading as primitives would otherwise leave this lane agreeing over
+        // nothing, and a control that lost a comparison would shrink without a line saying so.
+        if (others.Length == 0)
+        {
+            failed++;
+            Console.WriteLine(
+                $"FAIL {table.Manifest}: the table has no numeric primitive row outside the control, " +
+                "so there is nothing to compare");
+        }
+
         var otherFailures = 0;
 
         foreach (var row in others)
@@ -130,8 +154,23 @@ internal static class PrimitiveDifferential
             $"of {others.Length.ToString(CultureInfo.InvariantCulture)} rows outside the control agreed");
 
         Console.WriteLine(
-            "# primitive-differential control: the twelve float comparisons " +
-            $"0x{FirstComparison:X2}-0x{LastComparison:X2}, against the profile's unmodified reference arms");
+            $"# primitive-differential control: {control.Length.ToString(CultureInfo.InvariantCulture)} rows, " +
+            $"the float comparisons 0x{FirstComparison:X2}-0x{LastComparison:X2}, " +
+            "against the profile's unmodified reference arms");
+
+        for (var opcode = FirstComparison; opcode <= LastComparison; opcode++)
+        {
+            var at = opcode;
+
+            if (control.Count(row => row.Opcode == at) != 1)
+            {
+                failed++;
+                Console.WriteLine(
+                    $"FAIL {table.Manifest}: the table has no single numeric primitive row at 0x{at:X2}, " +
+                    $"so the control is not the {(LastComparison - FirstComparison + 1).ToString(CultureInfo.InvariantCulture)} " +
+                    "float comparisons");
+            }
+        }
 
         var controlFailures = 0;
 

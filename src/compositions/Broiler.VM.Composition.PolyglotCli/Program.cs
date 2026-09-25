@@ -683,7 +683,10 @@ internal static class Program
         Console.WriteLine("  --arg <type>:<literal>");
         Console.WriteLine("              one argument to that export; i32, i64, f32 or f64. Repeatable.");
         Console.WriteLine("  --fuel <n>  the instruction allowance per run");
-        Console.WriteLine("  --wall <ms> the wall-clock allowance per run");
+        Console.WriteLine("  --wall <ms> the wall-clock allowance per run, spent by the core verifying,");
+        Console.WriteLine("              instantiating and invoking. Compiling a script and translating a");
+        Console.WriteLine("              WebAssembly module happen before the core sees the result, and");
+        Console.WriteLine("              are not timed.");
         Console.WriteLine("  --call-depth <n>  the call-depth allowance per run, in frames");
         Console.WriteLine("  --live-bytes <n>  the live-memory allowance per run");
         Console.WriteLine("  --max-depth <n>");

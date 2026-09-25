@@ -138,7 +138,9 @@ internal static class Program
                 failed += Determinism.Report(runtime, built, verbose);
             }
 
-            if (primitives is not null)
+            // A --primitives WITH NO FILE AFTER IT STILL RUNS THE LANE, which then fails: asking for
+            // a lane and getting a passing run that never printed it would read as the lane passing.
+            if (primitives is not null || args.Contains("--primitives", StringComparer.Ordinal))
             {
                 Console.WriteLine();
                 failed += PrimitiveDifferential.Report(primitives, verbose);
