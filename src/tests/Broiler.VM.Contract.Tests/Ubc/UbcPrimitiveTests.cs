@@ -272,33 +272,69 @@ public sealed class UbcPrimitiveTests
     [Fact]
     public void Truncations_Trap_Exactly_Outside_Their_Range()
     {
+        // Outside the target's range a truncation traps as an integer overflow, a trap of its own and
+        // not the invalid conversion a NaN raises: the two are two answers a family can tell apart.
         // i32 from f64: the values just inside survive truncation toward zero, the ones just outside trap.
         Assert.Equal(0x7FFF_FFFFUL, Evaluate(UbcPrimitive.I32TruncF64S, Bits(2147483647.9), 0));
         Assert.Equal(0x8000_0000UL, Evaluate(UbcPrimitive.I32TruncF64S, Bits(-2147483648.9), 0));
-        Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I32TruncF64S, Bits(2147483648.0), 0));
-        Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I32TruncF64S, Bits(-2147483649.0), 0));
+        Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I32TruncF64S, Bits(2147483648.0), 0));
+        Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I32TruncF64S, Bits(-2147483649.0), 0));
         Assert.Equal(0xFFFF_FFFFUL, Evaluate(UbcPrimitive.I32TruncF64U, Bits(4294967295.9), 0));
-        Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I32TruncF64U, Bits(4294967296.0), 0));
-        Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I32TruncF64U, Bits(-1.0), 0));
+        Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I32TruncF64U, Bits(4294967296.0), 0));
+        Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I32TruncF64U, Bits(-1.0), 0));
 
         // i32 from f32: 2^31 is representable and out of range; -2^31 is in range.
-        Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I32TruncF32S, Bits(2147483648.0f), 0));
+        Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I32TruncF32S, Bits(2147483648.0f), 0));
         Assert.Equal(0x8000_0000UL, Evaluate(UbcPrimitive.I32TruncF32S, Bits(-2147483648.0f), 0));
         Assert.Equal(0xFFFF_FF00UL, Evaluate(UbcPrimitive.I32TruncF32U, Bits(4294967040.0f), 0));
-        Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I32TruncF32U, Bits(4294967296.0f), 0));
+        Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I32TruncF32U, Bits(4294967296.0f), 0));
 
         // i64: -2^63 is in range, 2^63 is not, and the largest binary64 below 2^64 converts unsigned.
         Assert.Equal(0x8000_0000_0000_0000UL, Evaluate(UbcPrimitive.I64TruncF64S, Bits(-9223372036854775808.0), 0));
-        Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I64TruncF64S, Bits(9223372036854775808.0), 0));
+        Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I64TruncF64S, Bits(9223372036854775808.0), 0));
         Assert.Equal(0xFFFF_FFFF_FFFF_F800UL, Evaluate(UbcPrimitive.I64TruncF64U, Bits(18446744073709549568.0), 0));
-        Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I64TruncF64U, Bits(18446744073709551616.0), 0));
-        Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I64TruncF32S, Bits(9223372036854775808.0f), 0));
+        Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I64TruncF64U, Bits(18446744073709551616.0), 0));
+        Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I64TruncF32S, Bits(9223372036854775808.0f), 0));
 
         foreach (var infinity in new[] { double.PositiveInfinity, double.NegativeInfinity })
         {
-            Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I64TruncF64S, Bits(infinity), 0));
-            Assert.Equal(UbcTrapCode.InvalidConversion, Trap(UbcPrimitive.I32TruncF32U, Bits((float)infinity), 0));
+            Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I64TruncF64S, Bits(infinity), 0));
+            Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(UbcPrimitive.I32TruncF32U, Bits((float)infinity), 0));
         }
+    }
+
+    [Fact]
+    public void Every_Trapping_Truncation_Can_Raise_Both_Traps_And_Raises_Each_For_Its_Own_Case()
+    {
+        var truncations = new[]
+        {
+            (UbcPrimitive.I32TruncF32S, false), (UbcPrimitive.I32TruncF32U, false), (UbcPrimitive.I64TruncF32S, false), (UbcPrimitive.I64TruncF32U, false),
+            (UbcPrimitive.I32TruncF64S, true), (UbcPrimitive.I32TruncF64U, true), (UbcPrimitive.I64TruncF64S, true), (UbcPrimitive.I64TruncF64U, true),
+        };
+
+        foreach (var (primitive, binary64) in truncations)
+        {
+            // The trap set names both, so a family table must map both - one mapping per trap - and a
+            // row mapping only the invalid conversion is refused at table construction.
+            Assert.Equal(UbcTrapCode.InvalidConversion | UbcTrapCode.IntegerOverflow, UbcPrimitives.TrapsOf(primitive));
+
+            var nan = binary64 ? Bits(double.NaN) : Bits(float.NaN);
+            var huge = binary64 ? Bits(1e300) : Bits(float.PositiveInfinity);
+            var tiny = binary64 ? Bits(-1e300) : Bits(float.NegativeInfinity);
+
+            Assert.Equal(UbcTrapCode.InvalidConversion, Trap(primitive, nan, 0));
+            Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(primitive, huge, 0));
+            Assert.Equal(UbcTrapCode.IntegerOverflow, Trap(primitive, tiny, 0));
+        }
+
+        var onlyOne = new UbcInstructionRow(
+            0x41, "test.trunc", UbcOperandShape.None, UbcEffect.Listed([UbcSlotType.F64], [UbcSlotType.I32]), UbcTarget.None,
+            UbcInstructionKind.Primitive, primitive: UbcPrimitive.I32TruncF64S, traps: [new(UbcTrapCode.InvalidConversion, 1)]);
+
+        Assert.False(UbcInstructionTable.TryCreate(
+            UbcCorpusFamily.Identity, 1, UbcCorpusFamily.BaseManifest, [onlyOne], [], [], [new UbcFamilyTrap(1, "invalid-conversion")],
+            canonicaliseNaN: false, out _, out var defect));
+        Assert.Contains("IntegerOverflow", defect, StringComparison.Ordinal);
     }
 
     [Fact]

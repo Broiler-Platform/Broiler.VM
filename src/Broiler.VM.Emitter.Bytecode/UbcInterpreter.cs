@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
-// Exempt:           22
-// Human-reviewed:   0/25
+// Relevant units:   27
+// Annotated:        27/27
+// Exempt:           23
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         14/12
+// Criteria:         16/13
 // Resource impact:  5/10 max
-// Unverified:       25
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -195,6 +195,10 @@ internal sealed class UbcInterpreter<TFamily>
     private UbcFrame[] frames = System.Array.Empty<UbcFrame>();
     private int depth;
 
+    // Set for a start unit's run: its return at the bottom frame completes the instantiation step and
+    // asks the family for no completion payload, which nobody would read.
+    private bool starting;
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=FD4A38
     // Broiler-Human:        PENDING
     internal UbcInterpreter(UbcInstance instance, IVmMeter meter, IVmHostCapabilityInvoker capabilities, uint pollBound)
@@ -205,7 +209,7 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>Runs the entry unit <paramref name="unit"/>, its parameters bound by the family from the entry's name.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=AE42D7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=DC43D5
     // Broiler-Falsified-If: an entry unit runs with locals the family did not bind left holding a previous operation's values
     // Broiler-Human:        PENDING
     internal VmExecutionStep Start(int unit, System.ReadOnlySpan<byte> name)
@@ -219,7 +223,7 @@ internal sealed class UbcInterpreter<TFamily>
 
         values = TFamily.CreateValuePlane(0);
 
-        if (!Enter(instance.Program, unit, 0, 0, 0, 0, copyParameters: false))
+        if (!Enter(instance.Program, unit, 0, 0, 0, 0, 0, 0, copyParameters: false))
         {
             return Finish(Stop());
         }
@@ -233,6 +237,44 @@ internal sealed class UbcInterpreter<TFamily>
         if (!TFamily.BindParameters(ref activation, name))
         {
             return Finish(VmExecutionStep.Faulted(TFamily.EntryRefused(instance.FamilyState, name)));
+        }
+
+        return Run();
+    }
+
+    /// <summary>
+    /// Runs the instance's start unit <paramref name="unit"/> in the instantiation step: like
+    /// <see cref="Start"/>, with no parameter bound, and ending at its return without a completion
+    /// payload.
+    /// </summary>
+    /// <remarks>
+    /// A start unit takes and gives nothing, so nothing is bound and nothing is returned; a unit whose
+    /// signature says otherwise is the family's defect, answered as a contract violation before
+    /// anything is charged. The executor has checked that the program has the unit.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=050744
+    // Broiler-Falsified-If: a start unit with a parameter or a result runs, or its return asks the family for a completion payload
+    // Broiler-Human:        PENDING
+    internal VmExecutionStep RunStart(int unit)
+    {
+        var signature = instance.Program.Units[unit].Signature;
+
+        if (signature.Parameters.Length != 0 || signature.Results.Length != 0)
+        {
+            return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
+        }
+
+        if (!meter.Poll())
+        {
+            return Stop();
+        }
+
+        values = TFamily.CreateValuePlane(0);
+        starting = true;
+
+        if (!Enter(instance.Program, unit, 0, 0, 0, 0, 0, 0, copyParameters: false))
+        {
+            return Finish(Stop());
         }
 
         return Run();
@@ -309,7 +351,7 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>The loop.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=5; Fingerprint=B82492
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=5; Fingerprint=DB4E30
     // Broiler-Falsified-If: a common row is executed with another meaning than Appendix A gives it, or a family status its row's kind does not admit is acted on rather than answered as a contract violation
     // Broiler-Human:        PENDING
     private VmExecutionStep Run()
@@ -398,15 +440,17 @@ internal sealed class UbcInterpreter<TFamily>
                         // the handler's defect, and so is a unit the program does not have.
                         if (!string.Equals(calleeProgram.Table.FamilyIdentity, instance.Program.Table.FamilyIdentity, System.StringComparison.Ordinal) ||
                             (uint)callee >= (uint)calleeProgram.Units.Length ||
-                            !Fits(row, in ins, calleeProgram.Units[callee]))
+                            !Fits(row, in ins, program, calleeProgram.Units[callee], out var wordsBelow, out var valuesBelow))
                         {
                             return Finish(VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation));
                         }
 
                         frames[depth - 1].Index = index;
 
-                        // The callee's frame starts above the row's whole input region, whose top slots
-                        // are its parameters; its results replace the region.
+                        // The callee's frame starts above the row's whole input region, and its results
+                        // replace the region. Its parameters begin the distance below the top that
+                        // Fits answered: the region's top slots for a listed or counted row, its bottom
+                        // slots, beneath the trailing pops, for a signature row.
                         if (!Enter(
                                 calleeProgram,
                                 callee,
@@ -414,6 +458,8 @@ internal sealed class UbcInterpreter<TFamily>
                                 valueTop,
                                 wordTop - ins.WordPops,
                                 valueTop - ins.ValuePops,
+                                wordTop - wordsBelow,
+                                valueTop - valuesBelow,
                                 copyParameters: true))
                         {
                             return Finish(Stop());
@@ -509,6 +555,11 @@ internal sealed class UbcInterpreter<TFamily>
 
                     if (depth == 0)
                     {
+                        if (starting)
+                        {
+                            return VmExecutionStep.Completed(null);
+                        }
+
                         activation.Program = program;
                         activation.Unit = frame.Unit;
                         activation.Pc = ins.Pc;
@@ -536,6 +587,8 @@ internal sealed class UbcInterpreter<TFamily>
                             ins.Index,
                             wordTop,
                             valueTop,
+                            wordTop - target.ParameterWords,
+                            valueTop - target.ParameterValues,
                             wordTop - target.ParameterWords,
                             valueTop - target.ParameterValues,
                             copyParameters: true))
@@ -691,16 +744,28 @@ internal sealed class UbcInterpreter<TFamily>
     /// to the callee's declared extent.
     /// </summary>
     /// <remarks>
-    /// For a call the parameters are the slots just below the bases, and they are copied into the
-    /// callee's first locals, word parameters copied and value parameters plane-copied, as Appendix A's
-    /// call row says: the caller's slots stay as they were, so a region of the caller whose entry
-    /// heights reach the arguments finds them unchanged when it lands, whatever the callee did to its
-    /// parameters. The entry unit's parameters are the family's to bind.
+    /// For a call the parameters start at <paramref name="wordParameters"/> and
+    /// <paramref name="valueParameters"/>, which the caller names because where they sit depends on the
+    /// row: the slots just below the bases for the common call and a listed or counted call row, the
+    /// bottom of the input region for a signature call row. They are copied into the callee's first
+    /// locals, word parameters copied and value parameters plane-copied, as Appendix A's call row says:
+    /// the caller's slots stay as they were, so a region of the caller whose entry heights reach the
+    /// arguments finds them unchanged when it lands, whatever the callee did to its parameters. The
+    /// entry unit's parameters are the family's to bind, and a start unit has none.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=3D3B8E
-    // Broiler-Falsified-If: a frame is pushed without its CallDepth and fuel charged first, a callee's parameter local is the caller's own slot, or a callee's non-parameter locals start holding anything but zero and the family's empty value
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=3BD58F
+    // Broiler-Falsified-If: a frame is pushed without its CallDepth and fuel charged first, a callee's parameter local is the caller's own slot or another slot than the ones the caller named, or a callee's non-parameter locals start holding anything but zero and the family's empty value
     // Broiler-Human:        PENDING
-    private bool Enter(UbcVerifiedProgram program, int unit, int wordBase, int valueBase, int returnWords, int returnValues, bool copyParameters)
+    private bool Enter(
+        UbcVerifiedProgram program,
+        int unit,
+        int wordBase,
+        int valueBase,
+        int returnWords,
+        int returnValues,
+        int wordParameters,
+        int valueParameters,
+        bool copyParameters)
     {
         if (!meter.TryCharge(VmBudgetDimension.CallDepth, 1))
         {
@@ -737,11 +802,11 @@ internal sealed class UbcInterpreter<TFamily>
 
         if (copyParameters)
         {
-            System.Array.Copy(words, wordBase - code.ParameterWords, words, wordBase, code.ParameterWords);
+            System.Array.Copy(words, wordParameters, words, wordBase, code.ParameterWords);
 
             for (var slot = 0; slot < code.ParameterValues; slot++)
             {
-                values.Copy(valueBase - code.ParameterValues + slot, valueBase + slot);
+                values.Copy(valueParameters + slot, valueBase + slot);
             }
         }
 
@@ -932,35 +997,79 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>
-    /// A call request fits when the callee's parameters are the top slots of the row's input region,
-    /// type for type, and its results are exactly the row's pushes.
+    /// Whether a call request fits its row, and where the callee's parameters begin: how many slots
+    /// below the top of each plane.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=0; Fingerprint=F8A5E6
-    // Broiler-Falsified-If: a request is performed whose callee would read a slot of another type than the walk proved, or return other slots than the row pushes
+    /// <remarks>
+    /// For a listed or counted row the callee's parameters are the top slots of the row's input
+    /// region, type for type, and its results are exactly the row's pushes. For a signature row the
+    /// callee's signature equals the Types row the operand names, parameters and results type for type,
+    /// and its parameters are the region's bottom slots on each plane, beneath the trailing pops, where
+    /// the walk typed them. A form this loop does not know fits nothing.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=0; Fingerprint=D9E802
+    // Broiler-Falsified-If: a request is performed whose callee would read a slot of another type than the walk proved, return other slots than the row pushes, or bind parameters from other slots than the ones its row's form places them in
     // Broiler-Human:        PENDING
-    private static bool Fits(UbcInstructionRow row, in UbcInstruction ins, UbcUnitCode callee)
+    private static bool Fits(
+        UbcInstructionRow row,
+        in UbcInstruction ins,
+        UbcVerifiedProgram program,
+        UbcUnitCode callee,
+        out int wordsBelow,
+        out int valuesBelow)
     {
         var effect = row.Effect;
         var parameters = callee.Signature.Parameters;
-        var region = ins.WordPops + ins.ValuePops;
+        wordsBelow = 0;
+        valuesBelow = 0;
 
-        if (!System.Linq.Enumerable.SequenceEqual(callee.Signature.Results, effect.Pushes) || parameters.Length > region)
+        switch (effect.Form)
         {
-            return false;
-        }
-
-        for (var slot = 0; slot < parameters.Length; slot++)
-        {
-            var position = region - parameters.Length + slot;
-            var type = position < effect.Pops.Length ? effect.Pops[position] : effect.Repeated;
-
-            if (type != parameters[slot])
+            case UbcEffectForm.Listed:
+            case UbcEffectForm.Counted:
             {
-                return false;
-            }
-        }
+                var region = ins.WordPops + ins.ValuePops;
 
-        return true;
+                if (!System.Linq.Enumerable.SequenceEqual(callee.Signature.Results, effect.Pushes) || parameters.Length > region)
+                {
+                    return false;
+                }
+
+                for (var slot = 0; slot < parameters.Length; slot++)
+                {
+                    var position = region - parameters.Length + slot;
+                    var type = position < effect.Pops.Length ? effect.Pops[position] : effect.Repeated;
+
+                    if (type != parameters[slot])
+                    {
+                        return false;
+                    }
+                }
+
+                wordsBelow = callee.ParameterWords;
+                valuesBelow = callee.ParameterValues;
+                return true;
+            }
+
+            case UbcEffectForm.Signature:
+            {
+                // The walk refused an operand naming no Types row, so the row is there to read.
+                var named = program.Artifact.Types[(int)ins.Operand];
+
+                if (!System.Linq.Enumerable.SequenceEqual(callee.Signature.Results, named.Results) ||
+                    !System.Linq.Enumerable.SequenceEqual(parameters, named.Parameters))
+                {
+                    return false;
+                }
+
+                wordsBelow = ins.WordPops;
+                valuesBelow = ins.ValuePops;
+                return true;
+            }
+
+            default:
+                return false;
+        }
     }
 
     /// <summary>Resets values the stack no longer holds, so the collector does not keep them.</summary>
@@ -981,18 +1090,29 @@ internal sealed class UbcInterpreter<TFamily>
         VmExecutionStep.ContractViolation(meter.Stopped ? VmReason.Cancelled : VmReason.AllowanceExhausted);
 
     /// <summary>Releases the depth of every frame still standing, for a step that ends the operation.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4BCCA6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B31EE6
     // Broiler-Falsified-If: an ended operation leaves CallDepth charged for a frame that no longer exists
     // Broiler-Human:        PENDING
     private VmExecutionStep Finish(VmExecutionStep step)
+    {
+        ReleaseDepth();
+        return step;
+    }
+
+    /// <summary>
+    /// Gives back the depth of every frame still standing: for a step that ends the operation, and for
+    /// one a family member's exception ended before the loop could answer.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D12A5B
+    // Broiler-Falsified-If: depth is given back twice for one frame, or a frame's depth is kept once the operation has ended
+    // Broiler-Human:        PENDING
+    internal void ReleaseDepth()
     {
         if (depth > 0)
         {
             meter.ReportReleased(VmBudgetDimension.CallDepth, (ulong)depth);
             depth = 0;
         }
-
-        return step;
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=426DC5

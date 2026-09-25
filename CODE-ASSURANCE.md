@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 230 |
 | Files carrying an annotation | 230 |
-| Code units | 9896 |
-| Relevant | 5578 |
-| Exempt by predicate | 4318 |
-| Annotated | 5578 of 5578 (100%) |
-| Human reviewed | 0 of 5578 (0%) |
-| Unverified | 5578 |
+| Code units | 9931 |
+| Relevant | 5594 |
+| Exempt by predicate | 4337 |
+| Annotated | 5594 of 5594 (100%) |
+| Human reviewed | 0 of 5594 (0%) |
+| Unverified | 5594 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5578 |
+| HUMAN_PENDING | 5594 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4318 |
+| EXEMPT | 4337 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1539 |
-| Low | 5188 |
+| Low | 5205 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 889 |
-| Medium | 4159 |
-| High | 1525 |
+| Low | 892 |
+| Medium | 4167 |
+| High | 1531 |
 | Critical | 226 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 9 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 5578 |
+| Units scored | 5594 |
 
 ## High-security review areas
 
@@ -117,13 +117,14 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Emitter.Bytecode.UbcLoopMeter.TryCharge(VmBudgetDimension, ulong)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter<TFamily>` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Start(int, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.RunStart(int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Resume(UbcContinuation)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Run()` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Enter(UbcVerifiedProgram, int, int, int, int, int, bool)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Enter(UbcVerifiedProgram, int, int, int, int, int, int, int, bool)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Grow(int, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Unwind(ref UbcActivation, object?)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Suspend(ref UbcActivation, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
-- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Fits(UbcInstructionRow, in UbcInstruction, UbcUnitCode)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Fits(UbcInstructionRow, in UbcInstruction, UbcVerifiedProgram, UbcUnitCode, out int, out int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack.Run<T>(System.Func<T>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Assembler` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` - Security=High, human line PENDING
@@ -1749,9 +1750,14 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Ubc.UbcDescriptors.Build<TFamily>(UbcFamilyRegistration<TFamily>, UbcFamilyDeclaration, UbcEmitterSet)` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcDiagnosticCode` in `src/Broiler.VM.Ubc/UbcDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcEffect` in `src/Broiler.VM.Ubc/UbcEffects.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcEffect.Signature(ImmutableArray<UbcSlotType>)` in `src/Broiler.VM.Ubc/UbcEffects.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcEffect.TryGetPopCount(ulong, out int)` in `src/Broiler.VM.Ubc/UbcEffects.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.IUbcFamily` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.IUbcFamily.Handle(ref UbcActivation, byte, ulong)` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.IUbcFamily.AdmitInstance(object)` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.IUbcFamily.ResolveEntry(object, UbcVerifiedProgram, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcEntryAnswer` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcInstanceAnswer` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcCallRequest` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcActivation` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.IUbcFamilyVerifier` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
@@ -1822,8 +1828,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1863 |
-| Units required to carry one | 1751 |
+| Units carrying a criterion | 1870 |
+| Units required to carry one | 1757 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1850,14 +1856,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1327 |
-| ParameterAssigningConstructor | 153 |
-| TrivialExpressionBodiedMember | 56 |
+| TrivialPropertyOrAccessor | 1332 |
+| ParameterAssigningConstructor | 155 |
+| TrivialExpressionBodiedMember | 57 |
 | CompilerSuppliedRecordOrEnumMember | 15 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 754 |
-| EnumMemberOfADeclaredVocabulary | 1861 |
+| FieldDeclaringStorage | 755 |
+| EnumMemberOfADeclaredVocabulary | 1871 |
 | DeclaredInSource | 31 |
 
 ## Per-unit exemptions
@@ -1907,7 +1913,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-9896 of them, exempt and relevant alike - with the fingerprint of its declaration.
+9931 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

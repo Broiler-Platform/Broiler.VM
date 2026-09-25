@@ -1,11 +1,12 @@
-<!-- Violates U1: the universal bytecode declaring IsPackable false only in a Debug build. In every
-     other configuration the vendored packaging props' default of true stands, and the rule does
-     not evaluate the condition, so it cannot show the property is off. -->
+<!-- Violates U1: the universal bytecode declaring IsPackable true and then false. MSBuild takes the
+     last definition, so the project does not pack, while the first definition is still there for a
+     search of the file's text to find. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+  <PropertyGroup>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>

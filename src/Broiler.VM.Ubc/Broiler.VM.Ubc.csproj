@@ -5,9 +5,11 @@
     <AssemblyName>Broiler.VM.Ubc</AssemblyName>
     <Description>The universal bytecode: one instruction encoding, container, common family, family instruction-table schema, primitive table and verifier walk for every Broiler.VM language profile, with every language instruction's meaning owned by the family that declares it. Not part of the Broiler.VM core contract, referenced by nothing in the core, and admitted by the extraction record ADR 0013.</Description>
 
-    <!-- The programme's milestone UBC-1: not packable during the MVP. Whether this assembly becomes
-         a package is decision UBC-D-5, taken at milestone UBC-9 and not before. -->
-    <IsPackable>false</IsPackable>
+    <!-- A package since milestone UBC-4, which took decision UBC-D-5 early: a packable language
+         profile references this assembly, and a package whose dependency is no package cannot be
+         restored. It packs under its assembly name and declares no PackageId (rule U1), and its
+         surface is frozen in docs/ubc/api/public-api.txt (rule U9). -->
+    <IsPackable>true</IsPackable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>

@@ -65,7 +65,7 @@ internal static partial class UbcRules
 
     /// <summary>
     /// U1: the universal bytecode references exactly Abstractions and Binary, declares no
-    /// PackageReference, opens its internals to nobody, carries the literal element IsPackable false
+    /// PackageReference, opens its internals to nobody, carries the literal element IsPackable true
     /// and no PackageId, and does not set AllowUnsafeBlocks.
     /// </summary>
     /// <remarks>
@@ -83,12 +83,18 @@ internal static partial class UbcRules
     /// </para>
     /// <para>
     /// <b>So does the packability clause, for the opposite reason.</b> A text search for the element
-    /// would PASS on a comment that quotes it and on a false definition a later one overrides, and
-    /// the project would pack in both cases. Every <c>IsPackable</c> definition - a property group's
+    /// would PASS on a comment that quotes it and on a true definition a later one overrides, and the
+    /// project would not pack in either case. Every <c>IsPackable</c> definition - a property group's
     /// element outside any target and outside <c>ProjectExtensions</c> - must be unconditional and
-    /// literally <c>false</c>, and no property group inside a target may set it to anything else, which
-    /// <see cref="ArchitectureRules.NotLiterallyUnpackable"/> decides for this rule and for rule N4
-    /// alike.
+    /// literally <c>true</c>, and no property group inside a target may set it to anything else, which
+    /// <see cref="ArchitectureRules.NotLiterallyPackable"/> decides.
+    /// </para>
+    /// <para>
+    /// <b>Packable since UBC-4.</b> Until then the clause asked for the literal <c>false</c>, because
+    /// whether the assembly packs was decision UBC-D-5, due at UBC-9. The decision was taken early, at
+    /// UBC-4, when a packable profile came to reference the assembly and a package whose dependency is
+    /// no package cannot be restored. The package identity clause stays: the package's identity is its
+    /// assembly name, and a PackageId would be a second name for it.
     /// </para>
     /// </remarks>
     internal static IEnumerable<string> U1(ComponentGraph.ProjectFile project)
@@ -119,7 +125,7 @@ internal static partial class UbcRules
             yield return $"{project.RelativePath} opens internals to {target}";
         }
 
-        foreach (var message in ArchitectureRules.NotLiterallyUnpackable(project, "whether this assembly packs is UBC-9's decision"))
+        foreach (var message in ArchitectureRules.NotLiterallyPackable(project, "this assembly is a package since decision UBC-D-5"))
         {
             yield return message;
         }

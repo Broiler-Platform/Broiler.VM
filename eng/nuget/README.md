@@ -19,6 +19,8 @@ All packages are versioned in lockstep and target `net10.0`.
 | `Broiler.VM.Abstractions` | Profile-neutral contracts: descriptors, identities, limits, budgets, results and diagnostics |
 | `Broiler.VM.Binary` | Bounded binary reading and allocation guards shared by the core and every profile verifier |
 | `Broiler.VM.Runtime` | The catalog, the runtime and its lifecycle, resource authority and guest-load mediation |
+| `Broiler.VM.Ubc` | The universal bytecode: container, common family, family table schema, primitive table and the one verifier walk every family's artifacts pass |
+| `Broiler.VM.Emitter.Bytecode` | The universal bytecode's bytecode emitter: the interpreter a composition names to run verified universal bytecode |
 | `Broiler.VM.Profile.JavaScript` | The JavaScript profile: verifier, executor, object model and standard library |
 | `Broiler.VM.Profile.JavaScript.Compiler` | JavaScript source to profile bytecode |
 | `Broiler.VM.Profile.JavaScript.Format` | The JavaScript profile's bytecode format: opcodes, encoder and decoder |

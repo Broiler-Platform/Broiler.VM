@@ -23,8 +23,8 @@ namespace Broiler.VM.Contract.Tests;
 /// <para>
 /// <b>Controls come first.</b> A corpus in which everything fails cannot tell a verifier that
 /// classifies correctly from one that refuses whatever it is handed, so the controls are many and
-/// between them use every common opcode, every family row, every operand shape, both effect forms and
-/// all three target forms, and the runner checks that they do.
+/// between them use every common opcode, every family row, every operand shape, all three effect forms
+/// and all three target forms, and the runner checks that they do.
 /// </para>
 /// <para>
 /// A few configurations are measured rather than stated - the allowance that runs out just after the
@@ -80,6 +80,7 @@ internal static class UbcCorpus
         ("control-word-and-value-slots", WordAndValueSlots(), UbcCorpusConfiguration.Default),
         ("control-entries-and-positions", EntriesAndPositions(), UbcCorpusConfiguration.Default),
         ("control-the-wide-manifest-selects-its-own-table", WideManifest(), new UbcCorpusConfiguration(descriptorManifest: F.WideManifestText)),
+        ("control-a-call-whose-callee-a-types-row-names", SignatureCall(), new UbcCorpusConfiguration(descriptorManifest: F.WideManifestText)),
         ("control-a-family-in-the-highest-slot", HighestSlot(), UbcCorpusConfiguration.Default),
         ("control-optional-sections-present-and-empty", EmptyOptionalSections(), UbcCorpusConfiguration.Default),
         ("control-an-entry-name-of-the-longest-length-the-format-admits", LongestEntryName(), UbcCorpusConfiguration.Default),
@@ -97,7 +98,7 @@ internal static class UbcCorpus
             ["control-every-common-opcode"] =
                 "Every row of Appendix A in two units of no family: every jump form, a jump table, a call, every shuffle, locals of three word types and a reachable trap.",
             ["control-every-family-row"] =
-                "Every row of the base table in one suspendable unit: every operand shape, both effect forms with a multiplier above one, all three target forms, every instruction kind including three region primitives.",
+                "Every row of the base table in one suspendable unit: every operand shape, the listed and counted effect forms, the counted one with a multiplier above one, all three target forms, every instruction kind including three region primitives. The signature form is the wide table's and has a control of its own.",
             ["control-regions-with-landings"] =
                 "Two nested regions of the two region kinds, inner listed first, each landing pushing its kind's slots onto a value prefix; and a region whose entry prefix is a word.",
             ["control-a-suspendable-unit-resumes-at-its-landings"] =
@@ -113,7 +114,9 @@ internal static class UbcCorpus
             ["control-entries-and-positions"] =
                 "Three entries listed out of byte order, two naming one unit, one name not ASCII; positions at both ends of both units and a coordinate at the core's maximum.",
             ["control-the-wide-manifest-selects-its-own-table"] =
-                "The wide manifest selects table version 2, whose extra row the base table lacks.",
+                "The wide manifest selects table version 3, whose extra rows the base table lacks.",
+            ["control-a-call-whose-callee-a-types-row-names"] =
+                "The wide table's call row of the signature effect form: its operand names a Types row whose parameters span both planes, the walk pops them beneath the row's trailing i32 and pushes the row's results, and a later row consumes both results.",
             ["control-a-family-in-the-highest-slot"] =
                 "The family in slot fourteen: prefix byte 0xFE and the last FamilyData section kind.",
             ["control-optional-sections-present-and-empty"] =
@@ -505,6 +508,40 @@ internal static class UbcCorpus
         return spec;
     }
 
+    /// <summary>
+    /// A family unit that calls through the wide table's signature row: an i64 and a value, then the
+    /// i32 the row's trailing pop takes; the callee, a unit of no family, answers its value parameter and
+    /// an i32, and the caller drops the i32 and returns the value.
+    /// </summary>
+    internal static UbcCorpusSpec SignatureCall() => SignatureCall(1, out _);
+
+    /// <summary>The signature control with <paramref name="operand"/> as the row's operand; <paramref name="at"/> is where the row is.</summary>
+    private static UbcCorpusSpec SignatureCall(uint operand, out uint at)
+    {
+        var spec = new UbcCorpusSpec { Manifest = F.WideManifestText }.WithFamily(version: F.WideTableVersion);
+        var main = spec.AddType([], [V]);
+        var called = spec.AddType([I64, V], [V, I32]);
+        var row = 0U;
+
+        var unit = spec.AddUnit(main, 1, 2, 1, Entry, b =>
+        {
+            b.F(Op.PushI64, 7).F(Op.PushSmall, 1).F(Op.PushI32, 1);
+            row = b.Offset;
+            b.F(Op.CallSignature, operand).Emit(O.Drop).Emit(O.Return);
+            return [];
+        });
+
+        spec.AddUnit(called, 0, 1, 1, UbcUnitFlags.None, b =>
+        {
+            b.Emit(O.LocalGet, 1).Emit(O.ConstI32, 0).Emit(O.Return);
+            return [];
+        });
+
+        spec.AddEntry("main", unit);
+        at = row;
+        return spec;
+    }
+
     private static UbcCorpusSpec HighestSlot()
     {
         var spec = new UbcCorpusSpec().WithFamily(UbcFormat.MaxFamilySlot);
@@ -836,7 +873,7 @@ internal static class UbcCorpus
         entries.Add(Refused(
             "a-family-row-of-another-table-version", "families", version.Bytes(),
             UbcDiagnosticCode.FamilyTableVersionMismatch, VmReason.UnknownFeature, InRow(UbcSectionKind.Families, 0),
-            "The right family and manifest with table version 2, which the base manifest does not select."));
+            "The right family and manifest with table version 3, which the base manifest does not select."));
 
         var manifest = SmallestWithFamily();
         manifest.Families![0] = new UbcFamilyEntry(1, F.Identity, F.BaseTableVersion, F.WideManifestText);
@@ -1036,7 +1073,7 @@ internal static class UbcCorpus
         Walk("a-wide-row-under-the-base-manifest",
             OneUnit([], [V], 1, 0, 1, b => { b.F(Op.WideOnly).F(Op.PushSmall, 1).Emit(O.Return); return []; }),
             UbcDiagnosticCode.UnknownOpcode, VmReason.UnknownFeature, 0, 0,
-            "The wide table's extra row under the base manifest, whose table is version 1 and lacks it: the manifest selects the table.");
+            "The wide table's extra row under the base manifest, whose table is version 2 and lacks it: the manifest selects the table.");
 
         Walk("the-prefix-that-would-name-the-common-family",
             OneUnit([], [I32], 0, 1, 0, b => { b.Raw(0xF0, 0x00).Emit(O.ConstI32, 1).Emit(O.Return); return []; }),
@@ -1256,6 +1293,15 @@ internal static class UbcCorpus
             OneUnit([], [V], 1, 0, 1, b => { b.F(Op.MakeTemplate, ushort.MaxValue).Emit(O.Return); return []; }),
             UbcDiagnosticCode.CountedOperandTooLarge, VmReason.InconsistentStructure, 0, 0,
             "make_template 65535 pops 131070 values, more than any declared height admits: refused before anything is popped.");
+
+        // The signature row's operand is a U32 and is checked whole: the largest one names no Types row
+        // of an artifact with two, and is refused as such rather than as a count no stack could supply.
+        var missingType = SignatureCall(uint.MaxValue, out var signatureAt);
+        entries.Add(Refused(
+            "a-signature-call-naming-a-type-the-artifact-does-not-have", "walk", missingType.Bytes(),
+            UbcDiagnosticCode.SignatureTypeOutOfRange, VmReason.InconsistentStructure, InCode(0, signatureAt),
+            "The signature row with operand 4294967295 in an artifact of two Types rows. The operand is compared whole, before any slot is popped.",
+            new UbcCorpusConfiguration(descriptorManifest: F.WideManifestText)));
     }
 
     // ---- regions ------------------------------------------------------------------------------------------

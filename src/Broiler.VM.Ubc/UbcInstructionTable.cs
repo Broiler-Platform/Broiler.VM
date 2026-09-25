@@ -245,7 +245,7 @@ public sealed class UbcFamilyTrap
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=42AD9F
-// Broiler-Falsified-If: a table is created whose row violates the schema - a primitive whose signature is not the row's effect, a target on a non-U32 operand, a trap code outside the vocabulary
+// Broiler-Falsified-If: a table is created whose row violates the schema - a primitive whose signature is not the row's effect, a target on a non-U32 operand, a trap code outside the vocabulary, a signature effect on a row that is not a call
 // Broiler-Human:        PENDING
 public sealed class UbcInstructionTable
 {
@@ -500,8 +500,8 @@ public sealed class UbcInstructionTable
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=BD778E
-    // Broiler-Falsified-If: a primitive row's effect differs from its primitive's signature and the row is admitted, or a non-primitive row carries a primitive or a trap mapping
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=6BAE4A
+    // Broiler-Falsified-If: a primitive row's effect differs from its primitive's signature and the row is admitted, a non-primitive row carries a primitive or a trap mapping, or a signature effect is admitted on a row that is not a call or whose operand is not a U16 or U32
     // Broiler-Human:        PENDING
     private static string? CheckRow(
         UbcInstructionRow row,
@@ -533,9 +533,38 @@ public sealed class UbcInstructionTable
             return "a row costs at least one fuel unit";
         }
 
-        if (row.Effect.Form == UbcEffectForm.Counted && row.Shape is not (UbcOperandShape.U8 or UbcOperandShape.U16))
+        switch (row.Effect.Form)
         {
-            return "a counted effect needs a U8 or U16 operand, which is its count";
+            case UbcEffectForm.Listed:
+                break;
+
+            case UbcEffectForm.Counted:
+                if (row.Shape is not (UbcOperandShape.U8 or UbcOperandShape.U16))
+                {
+                    return "a counted effect needs a U8 or U16 operand, which is its count";
+                }
+
+                break;
+
+            case UbcEffectForm.Signature:
+                // The operand names a row of the artifact's Types section, and only a call consumes a
+                // signature: its parameters are what the callee binds and its results what the callee
+                // returns. The operand is a type index and nothing else, so it is one whole field of
+                // sixteen or thirty-two bits, the two widths a family's type space is written in.
+                if (row.Kind != UbcInstructionKind.Call)
+                {
+                    return "a signature effect is admitted only on a call row";
+                }
+
+                if (row.Shape is not (UbcOperandShape.U16 or UbcOperandShape.U32))
+                {
+                    return "a signature effect needs a U16 or U32 operand, which names a row of the Types section";
+                }
+
+                break;
+
+            default:
+                return "the effect form is not in the closed set";
         }
 
         if (row.Target.IsCode && row.Shape != UbcOperandShape.U32)

@@ -1,11 +1,11 @@
 # The frozen public surface of Broiler.VM.Ubc, the universal bytecode: its
 # container, the common family, the family table schema, the primitive table,
-# the contracts a family implements and the verifier walk. IT DOES NOT PACK -
-# rule U1 holds IsPackable false and no PackageId, and whether it becomes a
-# package is milestone UBC-9's decision - so this file freezes what a family,
-# an emitter or a composition root in this repository can bind to, not what a
-# consumer outside it can. The packable three are frozen in docs/api/ and each
-# profile family in its own docs/api/.
+# the contracts a family implements and the verifier walk. IT PACKS - decision
+# UBC-D-5 was taken at milestone UBC-4 and rule U1 holds IsPackable true and no
+# PackageId - so this file freezes what a family, an emitter or a composition
+# root can bind to, in this repository and in a consumer of the package. The
+# core's three are frozen in docs/api/ and each profile family in its own
+# docs/api/.
 #
 # GENERATED - regenerate with:
 #   BROILER_API_WRITE=1 dotnet test Broiler.VM.slnx -c Release
@@ -16,6 +16,8 @@
 # assembly, and loading it would run code the describer has no reason to run.
 
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcExecutorFactory.Create<TFamily>(UbcFamilyRegistration<TFamily> family, Broiler.VM.Ubc.UbcFamilyDeclaration declaration, Broiler.VM.IVmExecutionEnvironment environment) : abstract Broiler.VM.IVmProfileExecutor
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.AbandonInstance(System.Object instanceState) : static virtual System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.AdmitInstance(System.Object instanceState) : static virtual Broiler.VM.Ubc.UbcInstanceAnswer
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.BindParameters(ref Broiler.VM.Ubc.UbcActivation activation, System.ReadOnlySpan<System.Byte> entryName) : static abstract System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.CaptureValues(Broiler.VM.Ubc.IUbcValuePlane plane, System.Int32 start, System.Int32 count) : static abstract System.Object
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Completion(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.IVmProfilePayload
@@ -26,7 +28,9 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Handle(ref Broiler.VM.Ubc.UbcActivation activation, System.Byte familyOpcode, System.UInt64 operand) : static abstract Broiler.VM.Ubc.UbcStatus
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.OnLand(ref Broiler.VM.Ubc.UbcActivation activation, System.Byte regionKind) : static abstract System.Void
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.OnResume(ref Broiler.VM.Ubc.UbcActivation activation, System.Object reason) : static abstract System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.ResolveEntry(System.Object instanceState, Broiler.VM.Ubc.UbcVerifiedProgram program, System.ReadOnlySpan<System.Byte> entryPoint) : static virtual Broiler.VM.Ubc.UbcEntryAnswer
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.RestoreValues(Broiler.VM.Ubc.IUbcValuePlane plane, System.Int32 start, System.Object captured) : static abstract System.Void
+  Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.StartUnit(System.Object instanceState) : static virtual System.Int32
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.SuspendProjection(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.IVmProfilePayload
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily.Uncaught(ref Broiler.VM.Ubc.UbcActivation activation) : static abstract Broiler.VM.IVmProfilePayload
   Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamilyVerifier.Begin(Broiler.VM.Ubc.UbcHookArtifact artifact, out System.Object familyState) : abstract Broiler.VM.Ubc.UbcHookAnswer
@@ -140,7 +144,7 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault.NoForm : const Broiler.VM.Ubc.UbcCompositionFault = 3
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault.TooManyTables : const Broiler.VM.Ubc.UbcCompositionFault = 6
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcCompositionFault.value__ : System.Int32
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcContract.Version : const System.Int32 = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcContract.Version : const System.Int32 = 2
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.Covers(System.Int32 index) : System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.End : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDecodedRegion.Handler : System.Int32 { get; }
@@ -188,6 +192,7 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.ReservedUnitFlag : const Broiler.VM.Ubc.UbcDiagnosticCode = 3304
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.SectionLengthMismatch : const Broiler.VM.Ubc.UbcDiagnosticCode = 3105
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.SectionOrder : const Broiler.VM.Ubc.UbcDiagnosticCode = 3102
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.SignatureTypeOutOfRange : const Broiler.VM.Ubc.UbcDiagnosticCode = 3418
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.StackTypeMismatch : const Broiler.VM.Ubc.UbcDiagnosticCode = 3407
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.StackUnderflow : const Broiler.VM.Ubc.UbcDiagnosticCode = 3406
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcDiagnosticCode.SuspendOutsideSuspendableUnit : const Broiler.VM.Ubc.UbcDiagnosticCode = 3415
@@ -213,9 +218,11 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Pops : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Pushes : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Repeated : Broiler.VM.Ubc.UbcSlotType { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.Signature(System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSlotType> trailingPops) : static Broiler.VM.Ubc.UbcEffect
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffect.TryGetPopCount(System.UInt64 operand, out System.Int32 count) : System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffectForm.Counted : const Broiler.VM.Ubc.UbcEffectForm = 1
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffectForm.Listed : const Broiler.VM.Ubc.UbcEffectForm = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffectForm.Signature : const Broiler.VM.Ubc.UbcEffectForm = 2
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffectForm.value__ : System.Byte
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission..ctor(System.String form, System.UInt32 emitterVersion, System.UInt32 alignment, System.UInt64 shapeHash, System.Collections.Immutable.ImmutableArray<System.Byte> bytes, System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcSymbol> symbols) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission.Alignment : System.UInt32 { get; }
@@ -230,6 +237,17 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry..ctor(System.Collections.Immutable.ImmutableArray<System.Byte> name, System.UInt32 unit) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry.Name : System.Collections.Immutable.ImmutableArray<System.Byte> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry.Unit : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Fault : Broiler.VM.IVmProfilePayload { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Found(System.Int32 unit) : static Broiler.VM.Ubc.UbcEntryAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Kind : Broiler.VM.Ubc.UbcEntryAnswerKind { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Missing : static Broiler.VM.Ubc.UbcEntryAnswer { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Refused(Broiler.VM.IVmProfilePayload fault) : static Broiler.VM.Ubc.UbcEntryAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer.Unit : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswerKind.Found : const Broiler.VM.Ubc.UbcEntryAnswerKind = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswerKind.Missing : const Broiler.VM.Ubc.UbcEntryAnswerKind = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswerKind.Refused : const Broiler.VM.Ubc.UbcEntryAnswerKind = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswerKind.Unanswered : const Broiler.VM.Ubc.UbcEntryAnswerKind = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswerKind.value__ : System.Byte
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData..ctor(System.Byte slot, System.Collections.Immutable.ImmutableArray<System.Byte> body) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData.Body : System.Collections.Immutable.ImmutableArray<System.Byte> { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData.Slot : System.Byte { get; }
@@ -320,6 +338,16 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.Row : Broiler.VM.Ubc.UbcInstructionRow { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.TypeAt(System.Int32 depth) : Broiler.VM.Ubc.UbcSlotType
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction.Unit : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Exhausted : static Broiler.VM.Ubc.UbcInstanceAnswer { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Fault : Broiler.VM.IVmProfilePayload { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Faulted(Broiler.VM.IVmProfilePayload fault) : static Broiler.VM.Ubc.UbcInstanceAnswer
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Kind : Broiler.VM.Ubc.UbcInstanceAnswerKind { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer.Ready : static Broiler.VM.Ubc.UbcInstanceAnswer { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswerKind.Exhausted : const Broiler.VM.Ubc.UbcInstanceAnswerKind = 3
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswerKind.Faulted : const Broiler.VM.Ubc.UbcInstanceAnswerKind = 2
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswerKind.Ready : const Broiler.VM.Ubc.UbcInstanceAnswerKind = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswerKind.Unanswered : const Broiler.VM.Ubc.UbcInstanceAnswerKind = 0
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswerKind.value__ : System.Byte
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext..ctor(Broiler.VM.Ubc.UbcVerifiedProgram program, Broiler.VM.IVmExecutionEnvironment environment) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext.Environment : Broiler.VM.IVmExecutionEnvironment { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext.Program : Broiler.VM.Ubc.UbcVerifiedProgram { get; }
@@ -754,7 +782,7 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.ProfileId : Broiler.VM.VmProfileId { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.VerifierSemanticVersion : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.Verify(in Broiler.VM.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload, Broiler.VM.IVmVerificationContext context, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmVerifierOutcome
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.WalkVersion : const System.Int32 = 1
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcVerifier.WalkVersion : const System.Int32 = 2
 type Broiler.VM.Ubc Broiler.VM.Ubc.IUbcExecutorFactory : interface
 type Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamily : interface
 type Broiler.VM.Ubc Broiler.VM.Ubc.IUbcFamilyVerifier : interface
@@ -778,6 +806,8 @@ type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEffectForm : enum
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmission : sealed class
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEmitterSet : sealed class
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntry : sealed class
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswer : struct
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcEntryAnswerKind : enum
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyData : sealed class
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyDeclaration : sealed class
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyEntry : sealed class
@@ -790,6 +820,8 @@ type Broiler.VM.Ubc Broiler.VM.Ubc.UbcHeader : sealed class
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookAnswer : struct
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact : sealed class
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookInstruction : struct
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswer : struct
+type Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceAnswerKind : enum
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstanceContext : sealed class
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstruction : struct
 type Broiler.VM.Ubc Broiler.VM.Ubc.UbcInstructionKind : enum

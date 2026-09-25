@@ -1,15 +1,15 @@
-<!-- Violates U1: the universal bytecode declaring IsPackable false and then setting it to true in a
+<!-- Violates U1: the universal bytecode declaring IsPackable true and then setting it to false in a
      target that runs before the pack. A target's property group changes the property for every
      target that runs after it, the pack's included, so a reader that set targets aside as no
-     definition would see only the false one. -->
+     definition would see only the true one. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Broiler.VM.Ubc</AssemblyName>
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
-  <Target Name="Packable" BeforeTargets="Pack">
+  <Target Name="NotPackable" BeforeTargets="Pack">
     <PropertyGroup>
-      <IsPackable>true</IsPackable>
+      <IsPackable>false</IsPackable>
     </PropertyGroup>
   </Target>
   <ItemGroup>

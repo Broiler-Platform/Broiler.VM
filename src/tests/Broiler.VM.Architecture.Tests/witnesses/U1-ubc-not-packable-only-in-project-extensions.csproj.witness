@@ -1,15 +1,14 @@
-<!-- Violates U1: the universal bytecode whose only IsPackable false sits inside ProjectExtensions.
+<!-- Violates U1: the universal bytecode whose only IsPackable true sits inside ProjectExtensions.
      MSBuild does not evaluate what ProjectExtensions holds - it is where tools keep XML of their
-     own - so the vendored packaging props' default of true stands and the project packs, while a
-     reader that counts every element of that name, the property group around it included, finds
-     a definition. -->
+     own - so whether the project packs is whatever an import says, while a reader that counts every
+     element of that name, the property group around it included, finds a definition. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Broiler.VM.Ubc</AssemblyName>
   </PropertyGroup>
   <ProjectExtensions>
     <PropertyGroup>
-      <IsPackable>false</IsPackable>
+      <IsPackable>true</IsPackable>
     </PropertyGroup>
   </ProjectExtensions>
   <ItemGroup>
