@@ -1,0 +1,16 @@
+<!-- Violates U1: the universal bytecode declaring IsPackable false and then true. MSBuild takes the
+     last definition, so the project packs, while the first definition is still there for a search
+     of the file's text to find. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+</Project>

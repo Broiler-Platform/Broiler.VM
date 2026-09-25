@@ -260,6 +260,13 @@ public sealed class ProjectFileRuleTests
         Assert.DoesNotContain(siblingsOnly, message => message.Contains("Broiler.VM.Ubc", StringComparison.Ordinal));
         Assert.Empty(ArchitectureRules.A12(ComponentGraph.Projects.Single(project => string.Equals(
             project.AssemblyName, "Broiler.VM.Composition.Ubc.Fixture", StringComparison.Ordinal))));
+
+        // A sibling is admitted at its product path and nowhere else. A test project named as an
+        // emitter is still a test project, and A4 exempts a composition root only because this rule
+        // refuses every test project that is not a consumer profile.
+        Assert.Contains(
+            ArchitectureRules.A12(ComponentGraph.Witness("A12-composition-links-a-test-project-named-as-an-emitter.csproj.witness")),
+            message => message.Contains("-> Broiler.VM.Emitter.Bytecode.Tests,", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -429,6 +436,22 @@ public sealed class ProjectFileRuleTests
         Assert.Contains(
             ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-omits-ispackable.csproj.witness")),
             message => message.Contains("IsPackable", StringComparison.Ordinal));*/
+    }
+
+    [Fact]
+    public void N4_Reads_The_IsPackable_Elements_Rather_Than_The_Text()
+    {
+        // The rule promises the literal element, and a search of the file's text is satisfied by
+        // the element quoted in a comment and by a false definition a later conditional one
+        // overrides. Each is reported in its own words. Only the witness direction is asserted
+        // here, and the sweep over the checkout is left to the test above.
+        Assert.Contains(
+            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-packable-behind-a-comment.csproj.witness")),
+            message => message.Contains("does not carry the literal <IsPackable>false</IsPackable>", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-overrides-ispackable.csproj.witness")),
+            message => message.Contains("sets IsPackable under a condition", StringComparison.Ordinal));
     }
 
     [Fact]
