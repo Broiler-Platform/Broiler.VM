@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 230 |
 | Files carrying an annotation | 230 |
-| Code units | 9891 |
-| Relevant | 5573 |
+| Code units | 9894 |
+| Relevant | 5576 |
 | Exempt by predicate | 4318 |
-| Annotated | 5573 of 5573 (100%) |
-| Human reviewed | 0 of 5573 (0%) |
-| Unverified | 5573 |
+| Annotated | 5576 of 5576 (100%) |
+| Human reviewed | 0 of 5576 (0%) |
+| Unverified | 5576 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5573 |
+| HUMAN_PENDING | 5576 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -39,7 +39,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 1539 |
-| Low | 5183 |
+| Low | 5186 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,8 +51,8 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 9 |
 | Low | 889 |
-| Medium | 4156 |
-| High | 1523 |
+| Medium | 4158 |
+| High | 1524 |
 | Critical | 226 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 9 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 5573 |
+| Units scored | 5576 |
 
 ## High-security review areas
 
@@ -1799,6 +1799,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Ubc.UbcWalk.CheckRegionPrefixes(WalkState, ImmutableArray<UbcDecodedRegion>, int, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcWalk.Prefix(UbcStackNode?, UbcDecodedRegion, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcWalk.CheckLandings(int, UbcUnit, Raw[], ImmutableArray<UbcDecodedRegion>)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Require(ImmutableArray<uint>, bool[], ulong, uint, int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcWalk.Step(WalkState, int, int, UbcUnit, UbcSignature, LocalLayout, Raw[], UbcInstruction[], ImmutableArray<int>[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Ubc.UbcWalk.StepFamily(WalkState, int, int, UbcUnit, Raw[], UbcInstruction[], UbcInstructionRow, UbcStackNode?, VmSourcePosition, int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Ubc.UbcWalk.Pop(UbcStackNode?, ImmutableArray<UbcSlotType>, VmSourcePosition, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
@@ -1813,15 +1814,15 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Ubc.UbcWalk.Hook(UbcHookAnswer, VmSourcePosition)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcWalk.HookMeter` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcWalk.HookMeter.TryCharge(VmBudgetDimension, ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
-- `Broiler.VM.Ubc.UbcWalk.Work(ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Work(ulong, VmBudgetDimension)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcWalk.Reserve(ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
 
 ## Falsification criteria
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1861 |
-| Units required to carry one | 1749 |
+| Units carrying a criterion | 1862 |
+| Units required to carry one | 1750 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1905,7 +1906,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-9891 of them, exempt and relevant alike - with the fingerprint of its declaration.
+9894 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

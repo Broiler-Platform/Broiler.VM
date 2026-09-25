@@ -296,7 +296,12 @@ public sealed class UbcInstructionTable
     /// <summary>The family's trap vocabulary.</summary>
     public ImmutableArray<UbcFamilyTrap> Traps { get; }
 
-    /// <summary>True when every floating-point primitive result that is a NaN is replaced by the canonical NaN.</summary>
+    /// <summary>
+    /// True when a NaN result of every primitive <see cref="UbcPrimitives.Canonicalises"/> names is replaced
+    /// by the canonical NaN. The sign-bit operations abs, neg and copysign, the reinterpretations and the
+    /// region loads are unaffected under either setting: a NaN they answer keeps its payload, signalling
+    /// or quiet.
+    /// </summary>
     public bool CanonicaliseNaN { get; }
 
     /// <summary>The row of <paramref name="opcode"/>, or false when the table defines none.</summary>
