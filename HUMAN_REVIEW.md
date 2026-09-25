@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5788 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5798 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 237 |
-| Code units | 10259 |
-| Relevant | 5788 |
-| Exempt | 4471 |
-| Assessed | 5788 of 5788 (100%) |
-| Human reviewed | 0 of 5788 (0%) |
-| Unverified | 5788 |
+| Code units | 10283 |
+| Relevant | 5798 |
+| Exempt | 4485 |
+| Assessed | 5798 of 5798 (100%) |
+| Human reviewed | 0 of 5798 (0%) |
+| Unverified | 5798 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5788 |
+| HUMAN_PENDING | 5798 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4471 |
+| EXEMPT | 4485 |
 
 ## 5. Aliases In The Tree
 
@@ -294,7 +294,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.WebAssembly/WasmFormat.cs` | 24 | 10 | 14 | 10 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` | 52 | 25 | 27 | 25 | Low | Critical | 15/15 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmLeb128.cs` | 18 | 12 | 6 | 12 | Low | Critical | 6/6 |
-| `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` | 91 | 51 | 40 | 51 | Low | Critical | 25/23 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` | 116 | 61 | 55 | 61 | Low | Critical | 32/30 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` | 18 | 15 | 3 | 15 | Low | Critical | 9/9 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmModule.cs` | 94 | 50 | 44 | 50 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmName.cs` | 3 | 3 | 0 | 3 | Low | High | 3/3 |
@@ -307,7 +307,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.WebAssembly/WasmTypes.cs` | 45 | 20 | 25 | 20 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` | 113 | 75 | 38 | 75 | Low | Critical | 52/52 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmValue.cs` | 16 | 12 | 4 | 12 | Low | High | 3/3 |
-| `src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs` | 96 | 5 | 91 | 5 | Low | High | 3/3 |
+| `src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs` | 95 | 5 | 90 | 5 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` | 16 | 14 | 2 | 14 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyPayloads.cs` | 42 | 15 | 27 | 15 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` | 20 | 15 | 5 | 15 | Low | High | 7/7 |
@@ -3512,51 +3512,65 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.WebAssembly.WasmLeb128.TryReadSigned(ref VmBoundedReader, int, int, out long, out WasmVarIntStatus)` in `src/Broiler.VM.Profile.WebAssembly/WasmLeb128.cs` - Security=Critical, Spec=none cited, `31C498`, PENDING
   - Falsified if: a sign extension that disagrees with the value's top bit is accepted, or a short encoding is not sign-extended
 - `Broiler.VM.Profile.WebAssembly.WasmLowering` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `FB896C`, PENDING
-  - Falsified if: an artifact is written whose walk refuses it for a module the validator admitted, whose execution answers differently from the bare-module interpreter's other than for the float comparisons, or two translations of one module differ in a byte
+  - Falsified if: an artifact is written whose walk refuses it for a module the validator admitted, whose execution answers differently from the bare-module interpreter's other than for the float comparisons, whose walk compares two different stacks at one instruction, or two translations of one module differ in a byte
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.Lower(WasmModule, ulong, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `3BE11D`, PENDING
   - Falsified if: a translation is answered when a body was refused, or the answered artifact exceeds the byte limit
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.Run()` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=ADR-0013, `926133`, PENDING
   - Falsified if: the sections are written in another order than the container's, a unit is written out of function-index order, or the artifact is answered past the byte limit
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.Definitions()` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=ADR-0013, `433FE8`, PENDING
   - Falsified if: a definition is written with another value than the bare-module executor evaluated for the same module, or an export's order moves
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.LowerBody(int, bool)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `7B112D`, PENDING
-  - Falsified if: a unit declares a height other than the greatest its code reaches, locals other than the body's, a code offset other than where its code begins, or a jump table or position that is not absolute
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.LowerCode(System.ReadOnlySpan<byte>, WasmFuncType)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `18716E`, PENDING
-  - Falsified if: an instruction after a terminal one is emitted before a label another instruction reaches, a body is left with a frame open, or an immediate is read with a reader other than this profile's padding-tolerant one
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.LowerBody(int, bool)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `FC0786`, PENDING
+  - Falsified if: a unit declares a height other than the greatest its code reaches, locals other than the body's followed by its scratch locals, a code offset other than where its code begins, or a jump table or position that is not absolute
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.LowerCode(System.ReadOnlySpan<byte>, WasmFuncType)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `CA09CF`, PENDING
+  - Falsified if: an instruction after a terminal one is emitted before a label another instruction reaches, a body is left with a frame open, an immediate is read with a reader other than this profile's padding-tolerant one, or the code and the trampolines it has asked for pass the byte limit without a refusal
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.SkipToFrameEdge(ref VmBoundedReader)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `712B25`, PENDING
   - Falsified if: the step lands anywhere but the enclosing frame's else or end, or moves backwards
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Step(ref VmBoundedReader, byte, int, WasmFuncType)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `240D19`, PENDING
-  - Falsified if: an instruction lowers to rows whose effect on the typed stack differs from the instruction's, or a row that can trap is emitted without its position
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Open(ref VmBoundedReader, WasmOpcode, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `2730BE`, PENDING
-  - Falsified if: a loop's label is marked anywhere but where its body begins, or a conditional's test jumps anywhere but its alternative or its end
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Else()` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `CA7C14`, PENDING
-  - Falsified if: a consequent that falls into the else is not given a jump to the end, or the alternative begins with any stack but the conditional's entry
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.End()` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `9B6075`, PENDING
-  - Falsified if: code after an end is emitted when nothing falls into the end and nothing branches to it, or a reachable end leaves any stack but the frame's entry and its results
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Branch(uint, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `BC5896`, PENDING
-  - Falsified if: a branch arrives at its label with any slot above the label's entry but the values it carries
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.BranchIf(uint, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `A1400D`, PENDING
-  - Falsified if: the branch jumps straight to a label while slots must be dropped, or to a trampoline another site reaches with another stack
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.BranchTable(ref VmBoundedReader, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `724886`, PENDING
-  - Falsified if: a table's rows are in another order than the vector's with the default last, or a table is named by an index its sixteen-bit operand cannot hold
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.BranchLabel(Frame, int, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `7578AC`, PENDING
-  - Falsified if: two sites with different typed stacks share a trampoline, or a site jumps straight to a label it reaches with slots to drop
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Squash(int, Frame)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=ADR-0013, `916AA4`, PENDING
-  - Falsified if: the pieces drop more or fewer slots than lie between the entry and the carried values, or a piece states a count its byte cannot hold
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Local(ref VmBoundedReader, WasmOpcode, int, WasmFuncType)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `049CE6`, PENDING
-  - Falsified if: a local is typed as anything but its parameter's or its declaration's type, or an index is written past its sixteen-bit field
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Step(ref VmBoundedReader, byte, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `00A8BE`, PENDING
+  - Falsified if: an instruction lowers to rows whose effect on the stack differs from the instruction's, a slot the walk makes anew keeps its old identity, or a row that can trap is emitted without its position
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Open(ref VmBoundedReader, WasmOpcode, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `16EF88`, PENDING
+  - Falsified if: a loop's label is marked anywhere but where its body begins, a conditional's test jumps anywhere but its alternative or its end, or a frame's entry height is taken before a conditional's test is popped
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Else(int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `9088C2`, PENDING
+  - Falsified if: a consequent that falls into the else is not given a jump to the end, the jump arrives with any stack but the conditional's entry stack, or the alternative begins with any stack but that one
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.End()` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `E8EABD`, PENDING
+  - Falsified if: code after an end is emitted when nothing falls into the end and nothing branches to it, an edge into a label arrives with any stack but the frame's entry stack, or a reachable end leaves any stack but the frame's entry and its results
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Branch(uint, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `0890AF`, PENDING
+  - Falsified if: a branch arrives at its label with any stack but the frame's entry stack, or a branch to the function's own label is anything but a return
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.BranchIf(uint, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `5AE77B`, PENDING
+  - Falsified if: the branch jumps straight to a label while slots must be dropped or values stored, or to a trampoline another site reaches with another stack
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.BranchTable(ref VmBoundedReader, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `057521`, PENDING
+  - Falsified if: a table's rows are in another order than the vector's with the default last, a table is named by an index its sixteen-bit operand cannot hold, the drop reaches below a target's entry, or a row's target is reached with any stack but the one the table leaves
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.SplitTable(Frame[], int[], int, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `D7BD92`, PENDING
+  - Falsified if: a selector value reaches another target through the two tables than through the vector, the second table's rows are reached with any stack but the shared slot's, or the drop reaches below a deeper row's entry
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Selector(int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `A43D34`, PENDING
+  - Falsified if: the selector is given an index a unit cannot declare or its sixteen-bit operand cannot hold
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.BranchTarget(Frame, int, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `BCF375`, PENDING
+  - Falsified if: a branch to the function's own label is anything but a return, or a branch that carries a value jumps anywhere its value is not stored first
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Exit(Frame, int[], int, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `A80BE9`, PENDING
+  - Falsified if: two sites with different stacks share a trampoline, one that stores and one that does not share one, or a site jumps straight to a label it reaches with slots to drop or values to store
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Return(int[])` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `060383`, PENDING
+  - Falsified if: two stacks of different identities share a return trampoline, or one that loads and one that does not share one
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Descend(Frame, int, int, out Route)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `9B1AD5`, PENDING
+  - Falsified if: a step drops more slots than one squash states or below the target's entry, pushes the selector above a height the stack already reached, or leads anywhere but the target's label once its entry is reached
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Chain(Floor, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `3347C1`, PENDING
+  - Falsified if: two stacks of different identities share a step, a step drops below the floor's entry, or a step is made again for a floor and an identity that already have one
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.FloorOf(int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `D1C0ED`, PENDING
+  - Falsified if: the floor answered is not the innermost open frame whose entry lies below the height
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Code(Floor, Frame, int, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, Spec=ADR-0013, `3BC26E`, PENDING
+  - Falsified if: two targets at one floor share a code, a code leads anywhere but towards its own target, a code's step arrives at the next floor with any stack but that floor's entry stack, or the selector is given an index a unit cannot declare
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Follow(Route)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `6FEE6F`, PENDING
+  - Falsified if: the selector is set before the drop, or a route with a code is emitted without it
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Scratch(Frame, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=ADR-0013, `1AE868`, PENDING
+  - Falsified if: a scratch local is given an index a unit cannot declare or its sixteen-bit operand cannot hold, a local of another type than the carried value's, or one of the body's own locals
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Local(ref VmBoundedReader, WasmOpcode, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `06BBA8`, PENDING
+  - Falsified if: an index is written past its sixteen-bit field, or a tee changes the stack's identity where the walk keeps it
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.Global(ref VmBoundedReader, WasmOpcode, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `F81D13`, PENDING
   - Falsified if: a global is read or written through the row of another type than its own
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.FamilyRowAt(byte, ulong, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=ADR-0013, `81FC50`, PENDING
-  - Falsified if: a row that maps a trap is emitted without a position, or the typed stack moves otherwise than the row's effect
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Push(UbcSlotType, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=ADR-0013, `22E46C`, PENDING
-  - Falsified if: a height above the format's greatest is admitted, or the unit's declared height is lower than a height its code reaches
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.FamilyRowAt(byte, ulong, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=ADR-0013, `B8E56F`, PENDING
+  - Falsified if: a row that maps a trap is emitted without a position, or the stack moves otherwise than the row's effect
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Push(int, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=ADR-0013, `647489`, PENDING
+  - Falsified if: a height above the format's greatest is admitted, the unit's declared height is lower than a height its code reaches, or a pushed slot shares an identity with another
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.Frame.LabelArity` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `45F18E`, PENDING
   - Falsified if: a branch to a loop is said to carry a value, or a branch to a block fewer than its results
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.TypedStack` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `BBC357`, PENDING
-  - Falsified if: two stacks of different types or heights are one node, or two of the same types are two
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.TypedStack.Push(int, UbcSlotType)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, Spec=none cited, `D2A56B`, PENDING
-  - Falsified if: a push answers a node whose slot beneath or whose type is not the one asked for
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, Spec=none cited, `985077`, PENDING
   - Falsified if: an access reaches a byte outside the current size, or a growth refused by the profile maximum spends a core allowance, or a growth allocates before its charge is taken
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.ProfileMaximumPages` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=High, Spec=none cited, `F9C3B1`, PENDING
@@ -4069,7 +4083,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5665 of the 5788 assessed units declare
+That is not a figure of speech. 5675 of the 5798 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

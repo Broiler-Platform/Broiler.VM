@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   51
-// Annotated:        51/51
-// Exempt:           40
-// Human-reviewed:   0/51
+// Relevant units:   61
+// Annotated:        61/61
+// Exempt:           55
+// Human-reviewed:   0/61
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         25/23
+// Criteria:         32/30
 // Resource impact:  5/10 max
-// Unverified:       51
+// Unverified:       61
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -29,30 +29,63 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>THE WALK OVER EACH BODY IS THE VALIDATOR'S, REPEATED WITH TYPES INSTEAD OF CHECKS.</b> The
+/// <b>THE WALK OVER EACH BODY IS THE VALIDATOR'S, REPEATED WITH HEIGHTS INSTEAD OF CHECKS.</b> The
 /// validator hands over each body's resolved block targets and nothing of its operand stack, so the
-/// lowering tracks the typed stack again, from the function's entry, over the code the validator has
+/// lowering tracks the stack again, from the function's entry, over the code the validator has
 /// already admitted. Every immediate is read again with this profile's own padding-tolerant readers,
 /// because a module may pad an integer within its byte budget and the core's canonical readers would
 /// refuse it; nothing a body says is trusted that the validator did not first check.
 /// </para>
 /// <para>
-/// <b>Structured instructions emit nothing</b>, and a stack of control frames stands for them: each
-/// frame's label, the typed stack at its entry, the values a branch to it carries and whether any
-/// branch reached it. A <c>loop</c>'s label is the offset of what follows it; every other label is
-/// marked where its <c>end</c> is. An <c>if</c> is a <c>jump_if_zero</c> to its alternative or its
-/// end, and an <c>else</c> a <c>jump</c> to the end when the consequent falls into it.
+/// <b>The stack it tracks is the walk's, slot for slot.</b> The universal bytecode walk makes a new
+/// slot for every value an instruction pushes and takes a popped slot's predecessor back unchanged,
+/// and it compares two arrivals at one instruction slot by slot, at a cost of the whole height,
+/// unless they are the very same stack. The lowering gives every pushed slot an identity of its own
+/// the same way, so two stacks with one top identity are one stack of the walk's, and it arranges
+/// that every instruction more than one edge reaches is reached with one such stack: an arrival costs
+/// nothing to compare, however tall the stack beneath it.
 /// </para>
 /// <para>
-/// <b>A branch drops what lies between the label's entry height and the values it carries</b> with
-/// <c>squash</c>, chained two hundred and fifty-five slots at a time, before its <c>jump</c>; a branch
-/// to the function's own label is a <c>return</c>, which drops whatever lies under the results. A
-/// conditional branch that has nothing to drop is one <c>jump_if_nonzero</c> to the label; any other,
-/// and every target of a <c>br_table</c> that has something to drop or that is the function's label,
-/// goes through a trampoline after the body - the <c>squash</c> and <c>jump</c>, or the
-/// <c>return</c> - keyed by the label and by the typed stack at the site, so two sites share one only
-/// when they reach it with one stack, and the walk's rule that every arrival at an instruction brings
-/// one typed stack holds for it. Trampolines follow the body in the order they were first used.
+/// <b>Structured instructions emit nothing</b>, and a stack of control frames stands for them: each
+/// frame's label, the height at its entry, the values a branch to it carries and whether any branch
+/// reached it. A <c>loop</c>'s label is the offset of what follows it; every other label is marked
+/// where its <c>end</c> is. An <c>if</c> is a <c>jump_if_zero</c> to its alternative or its end, and
+/// an <c>else</c> a <c>jump</c> to the end when the consequent falls into it.
+/// </para>
+/// <para>
+/// <b>Every edge into a label arrives with the frame's entry stack.</b> Beneath a frame's entry
+/// nothing inside the frame pops, so dropping to the entry height reaches the entry's own stack. A
+/// value a branch carries to a block would be a slot of its own on each edge, so it is carried in a
+/// scratch local instead: a frame that a branch, or a consequent's jump, carries a value to stores
+/// the value on every edge into its end, falls into its label with the entry stack, and loads the
+/// value after it. The scratch locals - one per carried position and word type a body needs - follow
+/// the body's own locals. A branch to the function's own label is a <c>return</c>, which drops
+/// whatever lies under the results.
+/// </para>
+/// <para>
+/// <b>A branch drops with <c>squash</c>, two hundred and fifty-five slots at a time, down chains the
+/// branches of a body share whatever label they go to.</b> A drop within one <c>squash</c> of the
+/// target's entry is made in place. A longer one names its target in a selector local and descends
+/// through the frames beneath it: to the entry of the innermost frame below the stack - the floor -
+/// by way of the heights that are multiples of two hundred and fifty-five, each step a trampoline
+/// keyed by the floor and the identity of the slot it starts from, and at the floor a dispatch reads
+/// the selector: to the target's label when the floor's entry is the target's, or on to the next
+/// floor down with the selector set for that floor. So every slot a body pushes is dropped by one
+/// chain however many labels lie beneath it, and the code a body's branches need grows with its
+/// branches, its pushes and its frames, never with a product of two of them. A conditional branch that
+/// has nothing to drop and carries nothing is one <c>jump_if_nonzero</c> to the label; any other
+/// conditional branch goes to a trampoline keyed by the label and the identity of its stack: the
+/// stores, the first drop, the selector and the jump, or the <c>return</c>. Trampolines follow the
+/// body in the order they were first needed, and the floors' dispatches follow them.
+/// </para>
+/// <para>
+/// <b>A <c>br_table</c> does its storing and its first drop once, under its selector</b>, down to the
+/// slot its rows share, so its rows' trampolines are keyed by that slot and shared with every site
+/// that reaches it, and a site costs its own rows whatever the number of its targets. When a row goes
+/// to a frame entered at the very stack under the selector and another row deeper, the table keeps
+/// its selector in the selector local, sends the deeper rows to one step of the site's own that drops
+/// to their shared slot, and dispatches again there through a second table, shared by the sites that
+/// reach that slot with those rows.
 /// </para>
 /// <para>
 /// <b>Code no execution reaches is not emitted</b>, because the walk refuses an unreachable
@@ -63,29 +96,29 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <para>
 /// <b>What it writes, in the container's order:</b> the header; one family row, slot one; the module's
 /// types one for one, never deduplicated, because <c>call_indirect</c> compares type indices; one unit
-/// per function in function-index order, its declared locals re-encoded as runs, the exact greatest
-/// word height its emitted code reaches, the entry flag when the function is exported; the code, every
-/// unit built at its absolute offset so jump targets, jump tables and positions are all absolute; one
-/// jump table per <c>br_table</c> in site order; an empty Entries section, because exports are found by
-/// the family through its definitions; one Positions row per emitted row that can trap, naming the
-/// function and the instruction's offset inside its body, in ascending order; and the module's
-/// definitions.
+/// per function in function-index order, its declared locals and its scratch locals as runs, the
+/// exact greatest word height its emitted code reaches, the entry flag when the function is exported;
+/// the code, every unit built at its absolute offset so jump targets, jump tables and positions are
+/// all absolute; the jump tables, unit by unit, one per <c>br_table</c> and per second dispatch in
+/// the order they were needed, then one per floor that tells targets apart; an empty Entries
+/// section, because exports are found by the family through its definitions; one Positions row per
+/// emitted row that can trap, naming the function and the instruction's offset inside its body, in
+/// ascending order; and the module's definitions.
 /// </para>
 /// <para>
 /// <b>What the universal bytecode cannot hold is refused here</b>, with this profile's codes in the
-/// translation band: more locals than a unit declares, a stack above the height a unit declares, more
-/// branch tables than an artifact names, an immediate its operand field cannot hold, a branch carrying
-/// more values than one <c>squash</c> keeps. An artifact larger than the artifact-bytes ceiling is
-/// refused as the core would refuse it, as an exhaustion of that ceiling at artifact scope, before it
-/// is allocated whole.
+/// translation band: more locals than a unit declares, scratch locals included, a stack above the
+/// height a unit declares, more branch tables than an artifact names, an immediate its operand field
+/// cannot hold. An artifact larger than the artifact-bytes ceiling is refused as the core would refuse
+/// it, as an exhaustion of that ceiling at artifact scope, before it is allocated whole.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=5; Fingerprint=FB896C
-// Broiler-Falsified-If: an artifact is written whose walk refuses it for a module the validator admitted, whose execution answers differently from the bare-module interpreter's other than for the float comparisons, or two translations of one module differ in a byte
+// Broiler-Falsified-If: an artifact is written whose walk refuses it for a module the validator admitted, whose execution answers differently from the bare-module interpreter's other than for the float comparisons, whose walk compares two different stacks at one instruction, or two translations of one module differ in a byte
 // Broiler-Human:        PENDING
 internal sealed class WasmLowering
 {
-    /// <summary>The most slots one <c>squash</c> drops or keeps: each count is one byte.</summary>
+    /// <summary>The most slots one <c>squash</c> drops: its count is one byte. The drop chain's heights are its multiples.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=20709D
     // Broiler-Human:        PENDING
     private const int SquashField = 255;
@@ -95,6 +128,11 @@ internal sealed class WasmLowering
     // Broiler-Human:        PENDING
     private const int InstructionsBetweenPolls = 4096;
 
+    /// <summary>The values a trampoline that stores nothing stores.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1E773C
+    // Broiler-Human:        PENDING
+    private static readonly int[] NoStores = [];
+
     private readonly WasmModule module;
     private readonly ulong byteLimit;
     private readonly System.Threading.CancellationToken cancellationToken;
@@ -102,16 +140,26 @@ internal sealed class WasmLowering
     private readonly List<UbcUnit> units = new();
     private readonly List<UbcJumpTable?> tables = new();
     private readonly List<UbcPosition> positions = new();
-    private readonly TypedStack stacks = new();
+    private readonly List<long> slots = new();
     private readonly List<Frame> frames = new();
     private readonly List<long> marks = new();
-    private readonly Dictionary<long, int> trampolineLabels = new();
+    private readonly Dictionary<(int Label, long Slot, bool Stores), int> exits = new();
+    private readonly Dictionary<(int Floor, long Slot), int> chains = new();
+    private readonly Dictionary<(long Slot, bool Loads), int> returns = new();
     private readonly List<Trampoline> trampolines = new();
+    private readonly Dictionary<int, Floor> floors = new();
+    private readonly List<Floor> floorOrder = new();
+    private readonly Dictionary<(long Slot, string Rows), int> redispatches = new();
     private readonly List<(int Table, int[] Labels)> unitTables = new();
+    private readonly List<UbcSlotType> scratch = new();
+    private readonly Dictionary<(int Position, UbcSlotType Type), int> scratchLocals = new();
     private UbcCodeBuilder builder = new();
     private WasmTranslation? refusal;
     private int function;
-    private int stack;
+    private int height;
+    private long lastSlot;
+    private int localBase;
+    private int selector;
     private int maxHeight;
     private int steps;
     private bool reachable;
@@ -288,8 +336,8 @@ internal sealed class WasmLowering
     // ---- one body ---------------------------------------------------------------------------------
 
     /// <summary>Lowers one function's body into one unit at the Code section's current end.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=7B112D
-    // Broiler-Falsified-If: a unit declares a height other than the greatest its code reaches, locals other than the body's, a code offset other than where its code begins, or a jump table or position that is not absolute
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=FC0786
+    // Broiler-Falsified-If: a unit declares a height other than the greatest its code reaches, locals other than the body's followed by its scratch locals, a code offset other than where its code begins, or a jump table or position that is not absolute
     // Broiler-Human:        PENDING
     private bool LowerBody(int index, bool exported)
     {
@@ -308,13 +356,23 @@ internal sealed class WasmLowering
 
         var baseOffset = (uint)code.Count;
         builder = new UbcCodeBuilder(baseOffset);
-        stacks.Clear();
+        slots.Clear();
         frames.Clear();
         marks.Clear();
-        trampolineLabels.Clear();
+        exits.Clear();
+        chains.Clear();
+        returns.Clear();
         trampolines.Clear();
+        floors.Clear();
+        floorOrder.Clear();
+        redispatches.Clear();
         unitTables.Clear();
-        stack = TypedStack.Empty;
+        scratch.Clear();
+        scratchLocals.Clear();
+        height = 0;
+        lastSlot = 0;
+        localBase = signature.ParameterCount + body.LocalCount;
+        selector = -1;
         maxHeight = 0;
         reachable = true;
 
@@ -323,19 +381,67 @@ internal sealed class WasmLowering
             return false;
         }
 
-        // The trampolines, after the body, in the order the sites first used them.
+        // The trampolines, after the body, in the order the sites first needed them.
         foreach (var trampoline in trampolines)
         {
             Mark(trampoline.Label);
 
-            if (trampoline.Target.Kind is FrameKind.Function)
+            switch (trampoline.Kind)
             {
-                builder.Emit(UbcOpcode.Return);
+                case TrampolineKind.Return:
+                    foreach (var local in trampoline.Stores)
+                    {
+                        builder.Emit(UbcOpcode.LocalGet, (uint)local);
+                    }
+
+                    builder.Emit(UbcOpcode.Return);
+                    break;
+
+                case TrampolineKind.Redispatch:
+                    if (trampoline.Route.Drop > 0)
+                    {
+                        builder.Emit(UbcOpcode.Squash, (uint)trampoline.Route.Drop);
+                    }
+
+                    builder.Emit(UbcOpcode.LocalGet, (uint)selector);
+                    builder.Emit(UbcOpcode.JumpTable, (ulong)trampoline.Table);
+                    break;
+
+                default:
+                    Store(trampoline.Stores);
+                    Follow(trampoline.Route);
+                    break;
+            }
+
+            if (builder.Offset > byteLimit)
+            {
+                return TooLargeInBody();
+            }
+        }
+
+        // The floors' dispatches, in the order the floors were first needed: a floor with one target
+        // goes there at once, and one with more tells them apart by the selector, through a jump
+        // table of its own.
+        foreach (var floor in floorOrder)
+        {
+            Mark(floor.Dispatch);
+
+            if (floor.Entries.Count == 1)
+            {
+                builder.EmitTo(UbcOpcode.Jump, floor.Entries[0]);
             }
             else
             {
-                Squash(trampoline.Stack, trampoline.Target);
-                builder.EmitTo(UbcOpcode.Jump, trampoline.Target.Label);
+                if (tables.Count >= UbcFormat.MaxJumpTables)
+                {
+                    return Refuse(WebAssemblyDiagnosticCode.TranslationJumpTablesAboveMaximum, floor.At);
+                }
+
+                var table = tables.Count;
+                tables.Add(null);
+                unitTables.Add((table, floor.Entries.ToArray()));
+                builder.Emit(UbcOpcode.LocalGet, (uint)selector);
+                builder.Emit(UbcOpcode.JumpTable, (ulong)table);
             }
 
             if (builder.Offset > byteLimit)
@@ -363,7 +469,7 @@ internal sealed class WasmLowering
         units.Add(new UbcUnit(
             typeIndex,
             WasmFamilyTable.Slot,
-            Runs(body.Locals),
+            Runs(body.Locals, scratch),
             (uint)maxHeight,
             0,
             baseOffset,
@@ -375,15 +481,15 @@ internal sealed class WasmLowering
     }
 
     /// <summary>Walks one body's instructions, emitting what each reachable one lowers to.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=18716E
-    // Broiler-Falsified-If: an instruction after a terminal one is emitted before a label another instruction reaches, a body is left with a frame open, or an immediate is read with a reader other than this profile's padding-tolerant one
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=CA09CF
+    // Broiler-Falsified-If: an instruction after a terminal one is emitted before a label another instruction reaches, a body is left with a frame open, an immediate is read with a reader other than this profile's padding-tolerant one, or the code and the trampolines it has asked for pass the byte limit without a refusal
     // Broiler-Human:        PENDING
     private bool LowerCode(System.ReadOnlySpan<byte> instructions, WasmFuncType signature)
     {
         var bounds = new VmReadBounds((ulong)instructions.Length, 1, ulong.MaxValue, 1);
         var reader = new VmBoundedReader(instructions, in bounds, new ReadMeter(cancellationToken), WebAssemblyProfile.MaxUnchargedWork);
 
-        frames.Add(new Frame(FrameKind.Function, -1, -1, TypedStack.Empty, Slots(signature.Results), -1, instructions.Length - 1));
+        frames.Add(new Frame(FrameKind.Function, -1, -1, 0, Slots(signature.Results), -1, instructions.Length - 1));
 
         while (frames.Count > 0)
         {
@@ -405,12 +511,14 @@ internal sealed class WasmLowering
                 return Unreadable();
             }
 
-            if (!Step(ref reader, opcode, at, signature))
+            if (!Step(ref reader, opcode, at))
             {
                 return false;
             }
 
-            if (builder.Offset > byteLimit)
+            // Every trampoline and every dispatch asked for is at least one byte after the body, so
+            // the artifact is already past the limit when these are.
+            if ((ulong)builder.Offset + (ulong)trampolines.Count + (ulong)floorOrder.Count > byteLimit)
             {
                 return TooLargeInBody();
             }
@@ -441,10 +549,10 @@ internal sealed class WasmLowering
     }
 
     /// <summary>Lowers one instruction.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=3; Fingerprint=240D19
-    // Broiler-Falsified-If: an instruction lowers to rows whose effect on the typed stack differs from the instruction's, or a row that can trap is emitted without its position
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=3; Fingerprint=00A8BE
+    // Broiler-Falsified-If: an instruction lowers to rows whose effect on the stack differs from the instruction's, a slot the walk makes anew keeps its old identity, or a row that can trap is emitted without its position
     // Broiler-Human:        PENDING
-    private bool Step(ref VmBoundedReader reader, byte opcode, int at, WasmFuncType signature)
+    private bool Step(ref VmBoundedReader reader, byte opcode, int at)
     {
         switch ((WasmOpcode)opcode)
         {
@@ -463,7 +571,7 @@ internal sealed class WasmLowering
                 return Open(ref reader, (WasmOpcode)opcode, at);
 
             case WasmOpcode.Else:
-                return Else();
+                return Else(at);
 
             case WasmOpcode.End:
                 return End();
@@ -491,8 +599,7 @@ internal sealed class WasmLowering
 
                 var type = module.Types[(int)module.FunctionTypeIndices[(int)callee]];
                 builder.Emit(UbcOpcode.Call, callee);
-                stack = stacks.Pop(stack, type.ParameterCount);
-                return PushAll(Slots(type.Results), at);
+                return Pop(type.ParameterCount) && Push(type.ResultCount, at);
             }
 
             case WasmOpcode.CallIndirect:
@@ -506,25 +613,23 @@ internal sealed class WasmLowering
                 var type = module.Types[(int)typeIndex];
                 Position(at);
                 builder.EmitFamily(WasmFamilyTable.Slot, WasmFamilyTable.CallIndirect, row.Shape, typeIndex);
-                stack = stacks.Pop(stack, row.Effect.Pops.Length + type.ParameterCount);
-                return PushAll(Slots(type.Results), at);
+                return Pop(row.Effect.Pops.Length + type.ParameterCount) && Push(type.ResultCount, at);
             }
 
             case WasmOpcode.Drop:
                 builder.Emit(UbcOpcode.Drop);
-                stack = stacks.Pop(stack, 1);
-                return true;
+                return Pop(1);
 
             case WasmOpcode.Select:
-                // The condition and the shallower candidate go; the deeper candidate's slot stays.
+                // The walk pops the condition and both candidates and pushes a new slot for the one
+                // chosen, so the chosen slot is a new one here too.
                 builder.Emit(UbcOpcode.Select);
-                stack = stacks.Pop(stack, 2);
-                return true;
+                return Pop(3) && Push(1, at);
 
             case WasmOpcode.LocalGet:
             case WasmOpcode.LocalSet:
             case WasmOpcode.LocalTee:
-                return Local(ref reader, (WasmOpcode)opcode, at, signature);
+                return Local(ref reader, (WasmOpcode)opcode, at);
 
             case WasmOpcode.GlobalGet:
             case WasmOpcode.GlobalSet:
@@ -617,8 +722,8 @@ internal sealed class WasmLowering
     }
 
     /// <summary>Opens a block, a loop or a conditional; nothing is emitted but a conditional's test.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=2730BE
-    // Broiler-Falsified-If: a loop's label is marked anywhere but where its body begins, or a conditional's test jumps anywhere but its alternative or its end
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=16EF88
+    // Broiler-Falsified-If: a loop's label is marked anywhere but where its body begins, a conditional's test jumps anywhere but its alternative or its end, or a frame's entry height is taken before a conditional's test is popped
     // Broiler-Human:        PENDING
     private bool Open(ref VmBoundedReader reader, WasmOpcode opcode, int at)
     {
@@ -644,30 +749,34 @@ internal sealed class WasmLowering
             {
                 var label = NewLabel();
                 Mark(label);
-                frames.Add(new Frame(FrameKind.Loop, label, -1, stack, results, -1, endAt));
+                frames.Add(new Frame(FrameKind.Loop, label, -1, height, results, -1, endAt));
                 return true;
             }
 
             case WasmOpcode.If:
             {
-                stack = stacks.Pop(stack, UbcOpcodes.Row(UbcOpcode.JumpIfZero).Pops.Length);
+                if (!Pop(UbcOpcodes.Row(UbcOpcode.JumpIfZero).Pops.Length))
+                {
+                    return false;
+                }
+
                 var alternative = NewLabel();
                 builder.EmitTo(UbcOpcode.JumpIfZero, alternative);
-                frames.Add(new Frame(FrameKind.If, NewLabel(), alternative, stack, results, elseAt, endAt));
+                frames.Add(new Frame(FrameKind.If, NewLabel(), alternative, height, results, elseAt, endAt));
                 return true;
             }
 
             default:
-                frames.Add(new Frame(FrameKind.Block, NewLabel(), -1, stack, results, -1, endAt));
+                frames.Add(new Frame(FrameKind.Block, NewLabel(), -1, height, results, -1, endAt));
                 return true;
         }
     }
 
     /// <summary>Ends a conditional's consequent and begins its alternative.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=CA7C14
-    // Broiler-Falsified-If: a consequent that falls into the else is not given a jump to the end, or the alternative begins with any stack but the conditional's entry
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9088C2
+    // Broiler-Falsified-If: a consequent that falls into the else is not given a jump to the end, the jump arrives with any stack but the conditional's entry stack, or the alternative begins with any stack but that one
     // Broiler-Human:        PENDING
-    private bool Else()
+    private bool Else(int at)
     {
         var frame = frames[^1];
 
@@ -678,27 +787,42 @@ internal sealed class WasmLowering
 
         if (reachable)
         {
+            // The consequent's results reach the end in the scratch locals, so the jump arrives with
+            // the entry stack like every other edge into the end.
+            if (frame.Results.Length > 0)
+            {
+                if (!Scratch(frame, at))
+                {
+                    return false;
+                }
+
+                Store(frame.Scratch!);
+
+                if (!Pop(frame.Results.Length))
+                {
+                    return false;
+                }
+            }
+
             builder.EmitTo(UbcOpcode.Jump, frame.Label);
             frame.Branched = true;
         }
 
         Mark(frame.ElseLabel);
         frame.Kind = FrameKind.Else;
-        stack = frame.Entry;
+        height = frame.EntryHeight;
         reachable = true;
         return true;
     }
 
     /// <summary>Ends the innermost frame: marks its label where branches land, and decides whether what follows is reachable.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=9B6075
-    // Broiler-Falsified-If: code after an end is emitted when nothing falls into the end and nothing branches to it, or a reachable end leaves any stack but the frame's entry and its results
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=E8EABD
+    // Broiler-Falsified-If: code after an end is emitted when nothing falls into the end and nothing branches to it, an edge into a label arrives with any stack but the frame's entry stack, or a reachable end leaves any stack but the frame's entry and its results
     // Broiler-Human:        PENDING
     private bool End()
     {
         var frame = frames[^1];
         frames.RemoveAt(frames.Count - 1);
-
-        bool reached;
 
         switch (frame.Kind)
         {
@@ -713,42 +837,72 @@ internal sealed class WasmLowering
                 return true;
 
             case FrameKind.Loop:
-                // A branch to a loop lands at its start, so only falling in reaches its end.
-                reached = reachable;
-                break;
+                // A branch to a loop lands at its start, so only falling in reaches its end, and the
+                // stack goes on as it fell in.
+                return true;
 
             case FrameKind.If:
-                // With no alternative, the test's jump lands here with the entry stack.
+                // With no alternative, the test's jump lands here with the entry stack, and a
+                // conditional with no alternative carries nothing.
                 Mark(frame.ElseLabel);
                 Mark(frame.Label);
-                reached = true;
-                break;
-
-            default:
-                reached = reachable || frame.Branched;
-
-                if (reached)
-                {
-                    Mark(frame.Label);
-                }
-
-                break;
+                height = frame.EntryHeight;
+                reachable = true;
+                return true;
         }
 
-        reachable = reached;
-
-        if (reached)
+        if (frame.Scratch is { } scratchLocals)
         {
-            stack = frame.Entry;
-            return PushAll(frame.Results, frame.EndAt);
+            // Every edge in stored the carried values: so does falling in, then the label is reached
+            // with the entry stack, and the values are loaded after it.
+            if (reachable)
+            {
+                Store(scratchLocals);
+
+                if (!Pop(scratchLocals.Length))
+                {
+                    return false;
+                }
+            }
+
+            Mark(frame.Label);
+            height = frame.EntryHeight;
+            reachable = true;
+
+            foreach (var local in scratchLocals)
+            {
+                builder.Emit(UbcOpcode.LocalGet, (uint)local);
+
+                if (!Push(1, frame.EndAt))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        if (frame.Branched)
+        {
+            // Every edge that carries a value chose the scratch protocol first, so a frame branched to
+            // without it carries nothing; anything else is this assembly disagreeing with itself.
+            if (frame.LabelArity > 0)
+            {
+                return Unreadable();
+            }
+
+            // Nothing is carried, so every branch, and falling in, arrive with the entry stack.
+            Mark(frame.Label);
+            height = frame.EntryHeight;
+            reachable = true;
         }
 
         return true;
     }
 
-    /// <summary>An unconditional branch: the drop in place, then the jump, or a return from the function.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=BC5896
-    // Broiler-Falsified-If: a branch arrives at its label with any slot above the label's entry but the values it carries
+    /// <summary>An unconditional branch: the stores and the first drop in place, then the jump, or a return from the function.</summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=0890AF
+    // Broiler-Falsified-If: a branch arrives at its label with any stack but the frame's entry stack, or a branch to the function's own label is anything but a return
     // Broiler-Human:        PENDING
     private bool Branch(uint depth, int at)
     {
@@ -761,26 +915,40 @@ internal sealed class WasmLowering
             return true;
         }
 
-        if (target.LabelArity > SquashField)
+        Reached(target);
+
+        if (target.LabelArity > 0)
         {
-            return Refuse(WebAssemblyDiagnosticCode.TranslationSquashKeepAboveMaximum, at);
+            if (!Scratch(target, at))
+            {
+                return false;
+            }
+
+            Store(target.Scratch!);
+
+            if (!Pop(target.LabelArity))
+            {
+                return false;
+            }
         }
 
-        Squash(stack, target);
-        builder.EmitTo(UbcOpcode.Jump, target.Label);
-        Reached(target);
+        if (!Descend(target, height, at, out var route))
+        {
+            return false;
+        }
+
+        Follow(route);
         return true;
     }
 
     /// <summary>A conditional branch: one <c>jump_if_nonzero</c>, to the label or to a trampoline.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=A1400D
-    // Broiler-Falsified-If: the branch jumps straight to a label while slots must be dropped, or to a trampoline another site reaches with another stack
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=5AE77B
+    // Broiler-Falsified-If: the branch jumps straight to a label while slots must be dropped or values stored, or to a trampoline another site reaches with another stack
     // Broiler-Human:        PENDING
     private bool BranchIf(uint depth, int at)
     {
-        stack = stacks.Pop(stack, UbcOpcodes.Row(UbcOpcode.JumpIfNonZero).Pops.Length);
-
-        if (!BranchLabel(frames[frames.Count - 1 - (int)depth], at, out var label))
+        if (!Pop(UbcOpcodes.Row(UbcOpcode.JumpIfNonZero).Pops.Length) ||
+            !BranchTarget(frames[frames.Count - 1 - (int)depth], at, out var label))
         {
             return false;
         }
@@ -789,9 +957,22 @@ internal sealed class WasmLowering
         return true;
     }
 
-    /// <summary>A branch through a label vector: one jump table, its rows the labels in order and the default last.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=724886
-    // Broiler-Falsified-If: a table's rows are in another order than the vector's with the default last, or a table is named by an index its sixteen-bit operand cannot hold
+    /// <summary>
+    /// A branch through a label vector: the carried value stored and the stack dropped once, under the
+    /// selector, to a slot every target's trampolines are keyed by, then one jump table, its rows the
+    /// labels in order and the default last.
+    /// </summary>
+    /// <remarks>
+    /// Every label of one vector carries the same values, and a block carries at most one: it is
+    /// swapped above the selector and stored in the scratch local every target's end loads it from, and
+    /// a target that is the function's own label loads it back and returns. The drop goes to the
+    /// highest target entry or to the nearest multiple of <see cref="SquashField"/> below the stack,
+    /// whichever is higher - never more than one <c>squash</c> - so the targets' own descents start
+    /// from a slot the sites of the same frame and height share, and a table costs its own rows and
+    /// no trampoline per target of its own.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=057521
+    // Broiler-Falsified-If: a table's rows are in another order than the vector's with the default last, a table is named by an index its sixteen-bit operand cannot hold, the drop reaches below a target's entry, or a row's target is reached with any stack but the one the table leaves
     // Broiler-Human:        PENDING
     private bool BranchTable(ref VmBoundedReader reader, int at)
     {
@@ -816,18 +997,258 @@ internal sealed class WasmLowering
             return Refuse(WebAssemblyDiagnosticCode.TranslationJumpTablesAboveMaximum, at);
         }
 
-        stack = stacks.Pop(stack, UbcOpcodes.Row(UbcOpcode.JumpTable).Pops.Length);
-
-        var labels = new int[depths.Length];
+        var targets = new Frame[depths.Length];
+        Frame? block = null;
+        var highest = 0;
 
         for (var index = 0; index < depths.Length; index++)
         {
-            if (!BranchLabel(frames[frames.Count - 1 - (int)depths[index]], at, out labels[index]))
+            var target = frames[frames.Count - 1 - (int)depths[index]];
+            targets[index] = target;
+
+            if (target.Kind is not FrameKind.Function)
+            {
+                block = target;
+                highest = System.Math.Max(highest, target.EntryHeight);
+            }
+        }
+
+        var labels = new int[depths.Length];
+
+        if (block is null)
+        {
+            // Every row returns, and a return drops whatever lies under the results.
+            if (!Pop(UbcOpcodes.Row(UbcOpcode.JumpTable).Pops.Length))
+            {
+                return false;
+            }
+
+            System.Array.Fill(labels, Return(NoStores));
+            return Table(labels);
+        }
+
+        var stored = NoStores;
+
+        if (block.LabelArity > 0)
+        {
+            // A block carries at most one value, which the validator proved; a swap lifts it above
+            // the selector.
+            if (block.LabelArity != 1)
+            {
+                return Unreadable();
+            }
+
+            if (!Scratch(block, at))
+            {
+                return false;
+            }
+
+            stored = block.Scratch!;
+            builder.Emit(UbcOpcode.Swap);
+            Store(stored);
+
+            // The swap makes two new slots and the store takes the carried one.
+            if (!Pop(2) || !Push(1, at))
             {
                 return false;
             }
         }
 
+        // Every target but a return that stores needs the scratch protocol at its end, from the same
+        // scratch local as the others, because the value is stored once for them all.
+        foreach (var target in targets)
+        {
+            if (stored.Length > 0 && target.Kind is not FrameKind.Function && !Scratch(target, at))
+            {
+                return false;
+            }
+        }
+
+        // The selector is on top of the stack the targets are reached from.
+        var under = height - 1;
+
+        if (highest == under && System.Array.Exists(targets, target => target.Kind is FrameKind.Function || target.EntryHeight < under))
+        {
+            return SplitTable(targets, stored, under, at);
+        }
+
+        var anchor = System.Math.Max(under > 0 ? (under - 1) / SquashField * SquashField : 0, highest);
+
+        if (anchor < under)
+        {
+            // The selector is kept, as a new slot, over what the targets share.
+            builder.Emit(UbcOpcode.Squash, (uint)(under - anchor) | (1UL << 8));
+
+            if (!Pop(under - anchor + 1) || !Push(1, at))
+            {
+                return false;
+            }
+        }
+
+        if (!Pop(UbcOpcodes.Row(UbcOpcode.JumpTable).Pops.Length))
+        {
+            return false;
+        }
+
+        for (var index = 0; index < targets.Length; index++)
+        {
+            var target = targets[index];
+
+            if (target.Kind is FrameKind.Function)
+            {
+                labels[index] = Return(stored);
+                continue;
+            }
+
+            if (!Exit(target, NoStores, at, out labels[index]))
+            {
+                return false;
+            }
+        }
+
+        return Table(labels);
+    }
+
+    /// <summary>
+    /// A <c>br_table</c> whose rows reach both a frame entered at the very stack under the selector
+    /// and something deeper: the near rows jump there at once, and every other row to one step of the
+    /// site's own that drops to the slot the deeper rows share and dispatches again on the selector,
+    /// kept in the selector local, through a second table the sites that share that slot and those
+    /// rows share.
+    /// </summary>
+    /// <remarks>
+    /// Without it every deeper row would need a trampoline of the site's own, because the stack it
+    /// leaves the table with is the site's own; with it a site costs its two tables' rows and one step,
+    /// whatever the number of its targets.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=D7BD92
+    // Broiler-Falsified-If: a selector value reaches another target through the two tables than through the vector, the second table's rows are reached with any stack but the shared slot's, or the drop reaches below a deeper row's entry
+    // Broiler-Human:        PENDING
+    private bool SplitTable(Frame[] targets, int[] stored, int under, int at)
+    {
+        var deepest = 0;
+
+        foreach (var target in targets)
+        {
+            if (target.Kind is not FrameKind.Function && target.EntryHeight < under)
+            {
+                deepest = System.Math.Max(deepest, target.EntryHeight);
+            }
+        }
+
+        var shared = System.Math.Max(under > 0 ? (under - 1) / SquashField * SquashField : 0, deepest);
+
+        if (!Selector(at))
+        {
+            return false;
+        }
+
+        builder.Emit(UbcOpcode.LocalTee, (uint)selector);
+
+        if (!Pop(UbcOpcodes.Row(UbcOpcode.JumpTable).Pops.Length))
+        {
+            return false;
+        }
+
+        // The second table's rows, from the shared slot: a near row is never taken there, so it names
+        // the first row that is.
+        height = shared;
+        var second = new int[targets.Length];
+
+        for (var index = 0; index < targets.Length; index++)
+        {
+            var target = targets[index];
+
+            if (target.Kind is FrameKind.Function)
+            {
+                second[index] = Return(stored);
+            }
+            else if (target.EntryHeight == under)
+            {
+                second[index] = -1;
+            }
+            else if (!Exit(target, NoStores, at, out second[index]))
+            {
+                return false;
+            }
+        }
+
+        var taken = System.Array.Find(second, label => label >= 0);
+
+        for (var index = 0; index < second.Length; index++)
+        {
+            second[index] = second[index] < 0 ? taken : second[index];
+        }
+
+        var key = (Identity(shared), string.Join(',', second));
+
+        if (!redispatches.TryGetValue(key, out var table))
+        {
+            if (tables.Count >= UbcFormat.MaxJumpTables)
+            {
+                return Refuse(WebAssemblyDiagnosticCode.TranslationJumpTablesAboveMaximum, at);
+            }
+
+            table = tables.Count;
+            tables.Add(null);
+            unitTables.Add((table, second));
+            redispatches.Add(key, table);
+        }
+
+        if (tables.Count >= UbcFormat.MaxJumpTables)
+        {
+            return Refuse(WebAssemblyDiagnosticCode.TranslationJumpTablesAboveMaximum, at);
+        }
+
+        // The first table, from the stack under the selector.
+        height = under;
+        var step = NewLabel();
+        trampolines.Add(new Trampoline(step, NoStores, new Route(under - shared, -1, -1), TrampolineKind.Redispatch, table));
+        var first = new int[targets.Length];
+
+        for (var index = 0; index < targets.Length; index++)
+        {
+            var target = targets[index];
+
+            if (target.Kind is FrameKind.Function || target.EntryHeight < under)
+            {
+                first[index] = step;
+            }
+            else if (!Exit(target, NoStores, at, out first[index]))
+            {
+                return false;
+            }
+        }
+
+        return Table(first);
+    }
+
+    /// <summary>The selector local, declared after the scratch locals the first time a body needs it; refused when a unit could not declare it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=A43D34
+    // Broiler-Falsified-If: the selector is given an index a unit cannot declare or its sixteen-bit operand cannot hold
+    // Broiler-Human:        PENDING
+    private bool Selector(int at)
+    {
+        if (selector >= 0)
+        {
+            return true;
+        }
+
+        if (localBase + scratch.Count >= UbcFormat.MaxLocals)
+        {
+            return Refuse(WebAssemblyDiagnosticCode.TranslationLocalsAboveMaximum, at);
+        }
+
+        selector = localBase + scratch.Count;
+        scratch.Add(UbcSlotType.I32);
+        return true;
+    }
+
+    /// <summary>Emits the jump table of a <c>br_table</c> site over <paramref name="labels"/>; what follows is unreachable.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4365CA
+    // Broiler-Human:        PENDING
+    private bool Table(int[] labels)
+    {
         var table = tables.Count;
         tables.Add(null);
         unitTables.Add((table, labels));
@@ -837,63 +1258,313 @@ internal sealed class WasmLowering
     }
 
     /// <summary>
-    /// Where a branch from the current stack to <paramref name="target"/> jumps: the label itself when
-    /// nothing is to be dropped and the target is not the function, else the trampoline for the label
-    /// and this stack.
+    /// Where a conditional branch from the current stack to <paramref name="target"/> jumps: a return
+    /// trampoline for the function's own label, the label itself when nothing is to be dropped or
+    /// stored, otherwise the trampoline that stores the carried values and descends.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=7578AC
-    // Broiler-Falsified-If: two sites with different typed stacks share a trampoline, or a site jumps straight to a label it reaches with slots to drop
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=BCF375
+    // Broiler-Falsified-If: a branch to the function's own label is anything but a return, or a branch that carries a value jumps anywhere its value is not stored first
     // Broiler-Human:        PENDING
-    private bool BranchLabel(Frame target, int at, out int label)
+    private bool BranchTarget(Frame target, int at, out int label)
     {
-        label = -1;
-
-        if (target.LabelArity > SquashField)
+        if (target.Kind is FrameKind.Function)
         {
-            return Refuse(WebAssemblyDiagnosticCode.TranslationSquashKeepAboveMaximum, at);
+            label = Return(NoStores);
+            return true;
         }
 
+        label = -1;
+        var stored = NoStores;
+
+        if (target.LabelArity > 0)
+        {
+            if (!Scratch(target, at))
+            {
+                return false;
+            }
+
+            stored = target.Scratch!;
+        }
+
+        return Exit(target, stored, at, out label);
+    }
+
+    /// <summary>
+    /// Where a branch to <paramref name="target"/> from the current stack jumps: the label itself when
+    /// nothing is to be dropped or stored, otherwise the trampoline for the target, this stack's
+    /// identity and whether it stores - the stores, then the first step of the descent.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=A80BE9
+    // Broiler-Falsified-If: two sites with different stacks share a trampoline, one that stores and one that does not share one, or a site jumps straight to a label it reaches with slots to drop or values to store
+    // Broiler-Human:        PENDING
+    private bool Exit(Frame target, int[] stored, int at, out int label)
+    {
         Reached(target);
 
-        if (target.Kind is not FrameKind.Function &&
-            stacks.Height(stack) - stacks.Height(target.Entry) == target.LabelArity)
+        if (stored.Length == 0 && height == target.EntryHeight)
         {
             label = target.Label;
             return true;
         }
 
-        // The function's label has no builder label of its own, so its key is minus one, which no
-        // other label is.
-        var key = ((long)target.Label << 32) | (uint)stack;
+        var key = (target.Label, Identity(height), stored.Length > 0);
 
-        if (!trampolineLabels.TryGetValue(key, out label))
+        if (exits.TryGetValue(key, out label))
         {
-            label = NewLabel();
-            trampolineLabels.Add(key, label);
-            trampolines.Add(new Trampoline(label, target, stack));
+            return true;
         }
 
+        if (!Descend(target, height - stored.Length, at, out var route))
+        {
+            return false;
+        }
+
+        label = NewLabel();
+        exits.Add(key, label);
+        trampolines.Add(new Trampoline(label, stored, route, TrampolineKind.Jump, -1));
         return true;
     }
 
     /// <summary>
-    /// Drops the slots between <paramref name="target"/>'s entry and the values a branch to it carries,
-    /// from <paramref name="from"/>, in pieces one <c>squash</c> can state; the branch site has already
-    /// refused a count of carried values its keep byte cannot hold.
+    /// The return trampoline for the current stack: the values in <paramref name="loads"/> loaded back,
+    /// then a return, made once per stack identity and whether it loads.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=916AA4
-    // Broiler-Falsified-If: the pieces drop more or fewer slots than lie between the entry and the carried values, or a piece states a count its byte cannot hold
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=060383
+    // Broiler-Falsified-If: two stacks of different identities share a return trampoline, or one that loads and one that does not share one
     // Broiler-Human:        PENDING
-    private void Squash(int from, Frame target)
+    private int Return(int[] loads)
     {
-        var keep = target.LabelArity;
-        var drop = stacks.Height(from) - stacks.Height(target.Entry) - keep;
+        var key = (Identity(height), loads.Length > 0);
 
-        while (drop > 0)
+        if (!returns.TryGetValue(key, out var label))
         {
-            var piece = System.Math.Min(drop, SquashField);
-            builder.Emit(UbcOpcode.Squash, (uint)piece | ((ulong)(uint)keep << 8));
-            drop -= piece;
+            label = NewLabel();
+            returns.Add(key, label);
+            trampolines.Add(new Trampoline(label, loads, default, TrampolineKind.Return, -1));
+        }
+
+        return label;
+    }
+
+    /// <summary>
+    /// The first step from a stack of height <paramref name="from"/> - the current stack's slots up to
+    /// there - towards <paramref name="target"/>'s label: the slots to drop, the selector to set and
+    /// where to jump; refused when the selector is needed and a unit could not declare it.
+    /// </summary>
+    /// <remarks>
+    /// Within one <c>squash</c> of the target's entry the step drops to it and jumps to the label.
+    /// Further, it goes down towards the floor of the stack - the innermost open frame whose entry lies
+    /// below it - no further than the nearest multiple of <see cref="SquashField"/> on the way, sets
+    /// the selector to the target's code at that floor, and jumps to the chain that goes on from there,
+    /// or to the floor's dispatch when the floor's entry is reached.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=9B1AD5
+    // Broiler-Falsified-If: a step drops more slots than one squash states or below the target's entry, pushes the selector above a height the stack already reached, or leads anywhere but the target's label once its entry is reached
+    // Broiler-Human:        PENDING
+    private bool Descend(Frame target, int from, int at, out Route route)
+    {
+        var entry = target.EntryHeight;
+
+        if (from - entry <= SquashField)
+        {
+            route = new Route(from - entry, -1, target.Label);
+            return true;
+        }
+
+        route = default;
+
+        // A drop longer than one squash lies above the target's entry, so some open frame's entry,
+        // the target's at the latest, lies below the stack.
+        if (FloorOf(from) is not { } floor)
+        {
+            return Unreadable();
+        }
+
+        floor.At = floor.Entries.Count == 0 ? at : floor.At;
+
+        if (!Code(floor, target, at, out var code))
+        {
+            return false;
+        }
+
+        var anchor = System.Math.Max((from - 1) / SquashField * SquashField, floor.Frame.EntryHeight);
+        route = new Route(from - anchor, code, anchor == floor.Frame.EntryHeight ? floor.Dispatch : Chain(floor, anchor));
+        return true;
+    }
+
+    /// <summary>
+    /// The trampoline that takes a stack of height <paramref name="from"/> down to
+    /// <paramref name="floor"/>'s entry and on to its dispatch, made once per floor and slot identity,
+    /// whatever label the branches that come this way are going to.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=3347C1
+    // Broiler-Falsified-If: two stacks of different identities share a step, a step drops below the floor's entry, or a step is made again for a floor and an identity that already have one
+    // Broiler-Human:        PENDING
+    private int Chain(Floor floor, int from)
+    {
+        var key = (floor.Frame.Label, Identity(from));
+
+        if (chains.TryGetValue(key, out var label))
+        {
+            return label;
+        }
+
+        var anchor = System.Math.Max(from - SquashField, floor.Frame.EntryHeight);
+        var next = anchor == floor.Frame.EntryHeight ? floor.Dispatch : Chain(floor, anchor);
+        label = NewLabel();
+        chains.Add(key, label);
+        trampolines.Add(new Trampoline(label, NoStores, new Route(from - anchor, -1, next), TrampolineKind.Jump, -1));
+        return label;
+    }
+
+    /// <summary>
+    /// The floor of a stack of height <paramref name="from"/>: the innermost open frame whose entry
+    /// lies below it, with the dispatch its chains end in; null only when no open frame's entry lies
+    /// below, which a drop never asks for.
+    /// </summary>
+    /// <remarks>
+    /// A slot on the stack has every frame that was open beneath it when it was pushed still open,
+    /// because a frame that ends drops what lies above its entry but its results; so a slot's chains
+    /// lead to the frames it lies in, and only a result a frame's end kept moves, one slot, to the next.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D1C0ED
+    // Broiler-Falsified-If: the floor answered is not the innermost open frame whose entry lies below the height
+    // Broiler-Human:        PENDING
+    private Floor? FloorOf(int from)
+    {
+        for (var index = frames.Count - 1; index >= 0; index--)
+        {
+            var frame = frames[index];
+
+            if (frame.EntryHeight < from)
+            {
+                if (!floors.TryGetValue(frame.Label, out var floor))
+                {
+                    floor = new Floor(frame, NewLabel());
+                    floors.Add(frame.Label, floor);
+                    floorOrder.Add(floor);
+                }
+
+                return floor;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// <paramref name="target"/>'s code at <paramref name="floor"/>: the selector value its dispatch
+    /// sends to the target's label, when the floor's entry is the target's, or to the step that sets the
+    /// target's code at the next floor down and descends to it; allocated the first time a branch to the
+    /// target passes the floor, with the selector local the first time a body needs it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=3BC26E
+    // Broiler-Falsified-If: two targets at one floor share a code, a code leads anywhere but towards its own target, a code's step arrives at the next floor with any stack but that floor's entry stack, or the selector is given an index a unit cannot declare
+    // Broiler-Human:        PENDING
+    private bool Code(Floor floor, Frame target, int at, out int code)
+    {
+        if (floor.Codes.TryGetValue(target.Label, out code))
+        {
+            return true;
+        }
+
+        if (!Selector(at))
+        {
+            return false;
+        }
+
+        var entry = target.Label;
+
+        if (target.EntryHeight < floor.Frame.EntryHeight)
+        {
+            // The target lies further down: on from the floor's own entry, towards the next floor.
+            if (!Descend(target, floor.Frame.EntryHeight, at, out var route))
+            {
+                return false;
+            }
+
+            entry = NewLabel();
+            trampolines.Add(new Trampoline(entry, NoStores, route, TrampolineKind.Jump, -1));
+        }
+
+        code = floor.Entries.Count;
+        floor.Codes.Add(target.Label, code);
+        floor.Entries.Add(entry);
+        return true;
+    }
+
+    /// <summary>
+    /// Emits <paramref name="route"/>: the drop, then the selector when the route names a code - pushed
+    /// on the stack the drop left, so never above a height the stack already reached - then the jump.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=6FEE6F
+    // Broiler-Falsified-If: the selector is set before the drop, or a route with a code is emitted without it
+    // Broiler-Human:        PENDING
+    private void Follow(Route route)
+    {
+        if (route.Drop > 0)
+        {
+            builder.Emit(UbcOpcode.Squash, (uint)route.Drop);
+        }
+
+        if (route.Code >= 0)
+        {
+            builder.Emit(UbcOpcode.ConstI32, (uint)route.Code);
+            builder.Emit(UbcOpcode.LocalSet, (uint)selector);
+        }
+
+        builder.EmitTo(UbcOpcode.Jump, route.Next);
+    }
+
+    /// <summary>
+    /// The scratch locals that carry <paramref name="target"/>'s values across its edges, one per
+    /// carried position and word type, allocated after the body's locals the first time a body needs
+    /// one; refused when a unit could not declare it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=1AE868
+    // Broiler-Falsified-If: a scratch local is given an index a unit cannot declare or its sixteen-bit operand cannot hold, a local of another type than the carried value's, or one of the body's own locals
+    // Broiler-Human:        PENDING
+    private bool Scratch(Frame target, int at)
+    {
+        if (target.Scratch is not null)
+        {
+            return true;
+        }
+
+        var locals = new int[target.Results.Length];
+
+        for (var position = 0; position < locals.Length; position++)
+        {
+            var type = target.Results[position];
+
+            if (!scratchLocals.TryGetValue((position, type), out var local))
+            {
+                local = localBase + scratch.Count;
+
+                if (local >= UbcFormat.MaxLocals)
+                {
+                    return Refuse(WebAssemblyDiagnosticCode.TranslationLocalsAboveMaximum, at);
+                }
+
+                scratch.Add(type);
+                scratchLocals.Add((position, type), local);
+            }
+
+            locals[position] = local;
+        }
+
+        target.Scratch = locals;
+        return true;
+    }
+
+    /// <summary>Stores the carried values into <paramref name="locals"/>, the top value first.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CCACD4
+    // Broiler-Human:        PENDING
+    private void Store(int[] locals)
+    {
+        for (var position = locals.Length - 1; position >= 0; position--)
+        {
+            builder.Emit(UbcOpcode.LocalSet, (uint)locals[position]);
         }
     }
 
@@ -902,11 +1573,11 @@ internal sealed class WasmLowering
     // Broiler-Human:        PENDING
     private static void Reached(Frame target) => target.Branched = true;
 
-    /// <summary>A local access: the common row, typed by the parameter or the declared local it names.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=049CE6
-    // Broiler-Falsified-If: a local is typed as anything but its parameter's or its declaration's type, or an index is written past its sixteen-bit field
+    /// <summary>A local access: the common row, which the walk types by the parameter or the declared local it names.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=06BBA8
+    // Broiler-Falsified-If: an index is written past its sixteen-bit field, or a tee changes the stack's identity where the walk keeps it
     // Broiler-Human:        PENDING
-    private bool Local(ref VmBoundedReader reader, WasmOpcode opcode, int at, WasmFuncType signature)
+    private bool Local(ref VmBoundedReader reader, WasmOpcode opcode, int at)
     {
         if (!U32(ref reader, out var index))
         {
@@ -918,22 +1589,18 @@ internal sealed class WasmLowering
             return Refuse(WebAssemblyDiagnosticCode.TranslationOperandOutOfRange, at);
         }
 
-        var type = index < (uint)signature.ParameterCount
-            ? signature.Parameters[(int)index]
-            : module.Bodies[function].Locals[(int)(index - (uint)signature.ParameterCount)];
-
         switch (opcode)
         {
             case WasmOpcode.LocalGet:
                 builder.Emit(UbcOpcode.LocalGet, index);
-                return Push(SlotOf(type), at);
+                return Push(1, at);
 
             case WasmOpcode.LocalSet:
                 builder.Emit(UbcOpcode.LocalSet, index);
-                stack = stacks.Pop(stack, 1);
-                return true;
+                return Pop(1);
 
             default:
+                // The walk keeps the teed slot as it was.
                 builder.Emit(UbcOpcode.LocalTee, index);
                 return true;
         }
@@ -957,10 +1624,10 @@ internal sealed class WasmLowering
 
     /// <summary>
     /// A row of the family's table with a listed effect: emitted with its operand at the row's shape,
-    /// with a position when the row maps a trap, and applied to the typed stack as its effect says.
+    /// with a position when the row maps a trap, and applied to the stack as its effect says.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=81FC50
-    // Broiler-Falsified-If: a row that maps a trap is emitted without a position, or the typed stack moves otherwise than the row's effect
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=B8E56F
+    // Broiler-Falsified-If: a row that maps a trap is emitted without a position, or the stack moves otherwise than the row's effect
     // Broiler-Human:        PENDING
     private bool FamilyRowAt(byte opcode, ulong operand, int at)
     {
@@ -972,18 +1639,16 @@ internal sealed class WasmLowering
         }
 
         builder.EmitFamily(WasmFamilyTable.Slot, opcode, row.Shape, operand);
-        stack = stacks.Pop(stack, row.Effect.Pops.Length);
-        return PushAll(row.Effect.Pushes, at);
+        return Pop(row.Effect.Pops.Length) && Push(row.Effect.Pushes.Length, at);
     }
 
-    /// <summary>A common row with a listed effect, applied to the typed stack as the common table states it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=9DF25D
+    /// <summary>A common row with a listed effect, applied to the stack as the common table states it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F58AEF
     // Broiler-Human:        PENDING
     private bool Listed(UbcOpcode opcode, int at)
     {
         var row = UbcOpcodes.Row(opcode);
-        stack = stacks.Pop(stack, row.Pops.Length);
-        return PushAll(row.Pushes, at);
+        return Pop(row.Pops.Length) && Push(row.Pushes.Length, at);
     }
 
     /// <summary>The family table's row of <paramref name="opcode"/>; the table defines every byte this lowering emits.</summary>
@@ -994,40 +1659,62 @@ internal sealed class WasmLowering
             ? row
             : throw new System.InvalidOperationException($"the WebAssembly family table has no row 0x{opcode:X2}");
 
-    // ---- the typed stack ---------------------------------------------------------------------------
+    // ---- the stack -----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=90A9AC
+    /// <summary>
+    /// Pushes <paramref name="count"/> new slots, each with an identity no other slot of the body has,
+    /// keeping the greatest height, and refuses a height a unit cannot declare.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=647489
+    // Broiler-Falsified-If: a height above the format's greatest is admitted, the unit's declared height is lower than a height its code reaches, or a pushed slot shares an identity with another
     // Broiler-Human:        PENDING
-    private bool PushAll(ImmutableArray<UbcSlotType> types, int at)
+    private bool Push(int count, int at)
     {
-        foreach (var type in types)
+        for (var index = 0; index < count; index++)
         {
-            if (!Push(type, at))
+            if (height >= UbcFormat.MaxHeight)
             {
-                return false;
+                return Refuse(WebAssemblyDiagnosticCode.TranslationOperandHeightAboveMaximum, at);
             }
-        }
 
-        return true;
-    }
+            lastSlot++;
 
-    /// <summary>Pushes one slot, keeping the greatest height, and refuses a height a unit cannot declare.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=22E46C
-    // Broiler-Falsified-If: a height above the format's greatest is admitted, or the unit's declared height is lower than a height its code reaches
-    // Broiler-Human:        PENDING
-    private bool Push(UbcSlotType type, int at)
-    {
-        stack = stacks.Push(stack, type);
-        var height = stacks.Height(stack);
+            if (height < slots.Count)
+            {
+                slots[height] = lastSlot;
+            }
+            else
+            {
+                slots.Add(lastSlot);
+            }
 
-        if (height > UbcFormat.MaxHeight)
-        {
-            return Refuse(WebAssemblyDiagnosticCode.TranslationOperandHeightAboveMaximum, at);
+            height++;
         }
 
         maxHeight = System.Math.Max(maxHeight, height);
         return true;
     }
+
+    /// <summary>Pops <paramref name="count"/> slots; the slots beneath keep their identities.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=7F5025
+    // Broiler-Human:        PENDING
+    private bool Pop(int count)
+    {
+        if (count > height)
+        {
+            // The validator admitted no body that pops below its frame, so this is this assembly
+            // disagreeing with itself.
+            return Unreadable();
+        }
+
+        height -= count;
+        return true;
+    }
+
+    /// <summary>The identity of the stack of height <paramref name="at"/>: its top slot's, or zero for the empty stack.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=54E7C0
+    // Broiler-Human:        PENDING
+    private long Identity(int at) => at == 0 ? 0 : slots[at - 1];
 
     // ---- labels, positions and refusals ------------------------------------------------------------
 
@@ -1139,36 +1826,46 @@ internal sealed class WasmLowering
         return System.Runtime.InteropServices.ImmutableCollectionsMarshal.AsImmutableArray(slots);
     }
 
-    /// <summary>The body's declared locals, parameters excluded as the decoder already excluded them, as runs of one type.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E3F13A
-    // Broiler-Falsified-If: the runs expand to other types, in another order or in another number than the body's locals
+    /// <summary>
+    /// The body's declared locals, parameters excluded as the decoder already excluded them, followed by
+    /// its scratch locals, as runs of one type.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A86937
+    // Broiler-Falsified-If: the runs expand to other types, in another order or in another number than the body's locals followed by its scratch locals
     // Broiler-Human:        PENDING
-    private static ImmutableArray<UbcLocalRun> Runs(System.ReadOnlySpan<WasmValueType> locals)
+    private static ImmutableArray<UbcLocalRun> Runs(System.ReadOnlySpan<WasmValueType> locals, List<UbcSlotType> scratchTypes)
     {
         var runs = ImmutableArray.CreateBuilder<UbcLocalRun>();
-        var at = 0;
+        var count = 0u;
+        var type = default(UbcSlotType);
 
-        while (at < locals.Length)
+        for (var at = 0; at < locals.Length + scratchTypes.Count; at++)
         {
-            var type = locals[at];
-            var start = at;
+            var next = at < locals.Length ? SlotOf(locals[at]) : scratchTypes[at - locals.Length];
 
-            while (at < locals.Length && locals[at] == type)
+            if (count > 0 && next != type)
             {
-                at++;
+                runs.Add(new UbcLocalRun(count, type));
+                count = 0;
             }
 
-            runs.Add(new UbcLocalRun((uint)(at - start), SlotOf(type)));
+            type = next;
+            count++;
+        }
+
+        if (count > 0)
+        {
+            runs.Add(new UbcLocalRun(count, type));
         }
 
         return runs.ToImmutable();
     }
 
     /// <summary>One frame of the control stack.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=1470A7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A5235D
     // Broiler-Human:        PENDING
     private sealed class Frame(
-        FrameKind kind, int label, int elseLabel, int entry, ImmutableArray<UbcSlotType> results, int elseAt, int endAt)
+        FrameKind kind, int label, int elseLabel, int entryHeight, ImmutableArray<UbcSlotType> results, int elseAt, int endAt)
     {
         /// <summary>What the frame stands for; a conditional's becomes an alternative at its <c>else</c>.</summary>
         internal FrameKind Kind { get; set; } = kind;
@@ -1179,8 +1876,8 @@ internal sealed class WasmLowering
         /// <summary>A conditional's alternative, or its end when it has none: where its test jumps.</summary>
         internal int ElseLabel { get; } = elseLabel;
 
-        /// <summary>The typed stack at the frame's entry, a conditional's test already taken.</summary>
-        internal int Entry { get; } = entry;
+        /// <summary>The stack's height at the frame's entry, a conditional's test already taken; nothing inside pops below it.</summary>
+        internal int EntryHeight { get; } = entryHeight;
 
         /// <summary>The values the frame leaves when it ends.</summary>
         internal ImmutableArray<UbcSlotType> Results { get; } = results;
@@ -1194,6 +1891,9 @@ internal sealed class WasmLowering
         /// <summary>Whether a branch reached the frame's label, or a consequent jumped to its end.</summary>
         internal bool Branched { get; set; }
 
+        /// <summary>The scratch locals its carried values cross its edges in, once an edge has carried one; otherwise null.</summary>
+        internal int[]? Scratch { get; set; }
+
         /// <summary>How many values a branch to the frame carries: none to a loop, its results to anything else.</summary>
         // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=0; Fingerprint=45F18E
         // Broiler-Falsified-If: a branch to a loop is said to carry a value, or a branch to a block fewer than its results
@@ -1201,82 +1901,52 @@ internal sealed class WasmLowering
         internal int LabelArity => Kind is FrameKind.Loop ? 0 : Results.Length;
     }
 
-    /// <summary>A trampoline: its label, the frame it branches to and the typed stack every site reaches it with.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=317CBA
+    /// <summary>What a trampoline does once it has stored or loaded its values.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1BA752
     // Broiler-Human:        PENDING
-    private sealed record Trampoline(int Label, Frame Target, int Stack);
+    private enum TrampolineKind : byte
+    {
+        Jump,
+        Return,
+        Redispatch,
+    }
 
     /// <summary>
-    /// Typed stacks as shared, interned nodes: a node is a slot type over the node beneath it, and two
-    /// stacks of the same types, bottom to top, are one node, so comparing two stacks is comparing two
-    /// integers.
+    /// A trampoline: its label, then the values it stores and the route it follows; or the values it
+    /// loads, in <see cref="Stores"/>, and a return; or the drop in its route and a second dispatch on
+    /// the selector through <see cref="Table"/>.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=BBC357
-    // Broiler-Falsified-If: two stacks of different types or heights are one node, or two of the same types are two
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0819F2
     // Broiler-Human:        PENDING
-    private sealed class TypedStack
+    private sealed record Trampoline(int Label, int[] Stores, Route Route, TrampolineKind Kind, int Table);
+
+    /// <summary>One step of a drop: the slots to drop, the selector's value to set or minus one, and the label to jump to.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5453BF
+    // Broiler-Human:        PENDING
+    private readonly record struct Route(int Drop, int Code, int Next);
+
+    /// <summary>
+    /// A frame as the floor of the chains that end at its entry: the dispatch they end in, and the
+    /// targets it tells apart, each code's entry in code order.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=12560A
+    // Broiler-Human:        PENDING
+    private sealed class Floor(Frame frame, int dispatch)
     {
-        /// <summary>The empty stack.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=BC9006
-        // Broiler-Human:        PENDING
-        internal const int Empty = 0;
+        /// <summary>The frame whose entry the chains end at.</summary>
+        internal Frame Frame { get; } = frame;
 
-        private readonly List<int> below = new();
-        private readonly List<int> heights = new();
-        private readonly Dictionary<long, int> interned = new();
+        /// <summary>The label of the dispatch the chains jump to.</summary>
+        internal int Dispatch { get; } = dispatch;
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=09EBCD
-        // Broiler-Human:        PENDING
-        internal TypedStack() => Clear();
+        /// <summary>Each target's code, by the target's label.</summary>
+        internal Dictionary<int, int> Codes { get; } = new();
 
-        /// <summary>Forgets every node but the empty stack.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0BC866
-        // Broiler-Human:        PENDING
-        internal void Clear()
-        {
-            below.Clear();
-            heights.Clear();
-            interned.Clear();
-            below.Add(-1);
-            heights.Add(0);
-        }
+        /// <summary>Where each code leads, in code order.</summary>
+        internal List<int> Entries { get; } = new();
 
-        /// <summary>The node of <paramref name="type"/> over <paramref name="node"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=D2A56B
-        // Broiler-Falsified-If: a push answers a node whose slot beneath or whose type is not the one asked for
-        // Broiler-Human:        PENDING
-        internal int Push(int node, UbcSlotType type)
-        {
-            var key = ((long)node << 8) | (byte)type;
-
-            if (!interned.TryGetValue(key, out var pushed))
-            {
-                pushed = below.Count;
-                below.Add(node);
-                heights.Add(heights[node] + 1);
-                interned.Add(key, pushed);
-            }
-
-            return pushed;
-        }
-
-        /// <summary>The node <paramref name="count"/> slots beneath <paramref name="node"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=7EED75
-        // Broiler-Human:        PENDING
-        internal int Pop(int node, int count)
-        {
-            for (var index = 0; index < count; index++)
-            {
-                node = below[node];
-            }
-
-            return node;
-        }
-
-        /// <summary>How many slots <paramref name="node"/> holds.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=83DDDE
-        // Broiler-Human:        PENDING
-        internal int Height(int node) => heights[node];
+        /// <summary>The body offset a refusal of the floor's jump table is placed at: the branch that first needed the floor.</summary>
+        internal int At { get; set; }
     }
 
     /// <summary>

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   5
 // Annotated:        5/5
-// Exempt:           91
+// Exempt:           90
 // Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    High
@@ -29,12 +29,12 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <see cref="WasmDecoder"/>, a validation path in <see cref="WasmValidator"/>, the family hook
 /// <see cref="WasmFamilyVerifier"/> over a universal bytecode artifact, the lowering of a validated
 /// module into one by <see cref="WasmTranslator"/>, or the reserved path in
-/// <see cref="WebAssemblyVerifier"/>, in the hook and in the translator - two members of the
-/// translation band excepted, which guard bounds no module the validator admits today can reach and
-/// say so. The numbers are grouped by the pass that emits them so that a reader can tell from a code
-/// alone which pass refused an artifact, and a code is never reused for a different meaning: a
-/// rejection whose meaning changes takes a new number and the old one is retired, because a corpus
-/// entry that recorded a code has dated it.
+/// <see cref="WebAssemblyVerifier"/>, in the hook and in the translator - one member of the
+/// translation band excepted, which guards operand fields no module the validator admits today can
+/// overflow and says so. The numbers are grouped by the pass that emits them so that a reader can
+/// tell from a code alone which pass refused an artifact, and a code is never reused for a different
+/// meaning: a rejection whose meaning changes takes a new number and the old one is retired, because
+/// a corpus entry that recorded a code has dated it.
 /// </para>
 /// <para>
 /// <b>The two thousand and the twenty-one hundred through twenty-six hundred bands are decoding;
@@ -64,7 +64,7 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// be several dozen separately assessed fixed values saying the same thing worse.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E5A055
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D805C6
 // Broiler-Human:        PENDING
 public enum WebAssemblyDiagnosticCode
 {
@@ -364,9 +364,20 @@ public enum WebAssemblyDiagnosticCode
     // the hook's band above, for the reason that band gives.
 
     /// <summary>A function declares more locals, its parameters included, than one universal bytecode unit holds.</summary>
+    /// <remarks>
+    /// A value a branch carries to a block crosses the branch in a scratch local the translation
+    /// declares after the function's own, one per carried position and word type the function needs,
+    /// and a branch that drops further than one squash names its target in one more; so a function
+    /// within five locals of the bound is refused here, at the branch, when it needs one more than the
+    /// unit can declare.
+    /// </remarks>
     TranslationLocalsAboveMaximum = 2871,
 
     /// <summary>A function's operand stack rises above the height one universal bytecode unit may declare.</summary>
+    /// <remarks>
+    /// A call to a function whose type has more results than the height reaches it with one
+    /// instruction, whatever the size of the body.
+    /// </remarks>
     TranslationOperandHeightAboveMaximum = 2872,
 
     /// <summary>The module holds more branch tables than one universal bytecode artifact can name.</summary>
@@ -379,14 +390,6 @@ public enum WebAssemblyDiagnosticCode
     /// operand its field cannot hold, whatever the validator comes to admit.
     /// </remarks>
     TranslationOperandOutOfRange = 2874,
-
-    /// <summary>A branch carries more values than one <c>squash</c> keeps.</summary>
-    /// <remarks>
-    /// No module the validator admits reaches it today: a block carries at most one value, and a branch
-    /// to the function's own label is a return, which keeps its results without a squash. It is
-    /// checked for the day a block type may carry more.
-    /// </remarks>
-    TranslationSquashKeepAboveMaximum = 2875,
 
     // ---- 2900: reserved for a defect in this assembly ---------------------------------------
 

@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 237 |
 | Files carrying an annotation | 237 |
-| Code units | 10259 |
-| Relevant | 5788 |
-| Exempt by predicate | 4471 |
-| Annotated | 5788 of 5788 (100%) |
-| Human reviewed | 0 of 5788 (0%) |
-| Unverified | 5788 |
+| Code units | 10283 |
+| Relevant | 5798 |
+| Exempt by predicate | 4485 |
+| Annotated | 5798 of 5798 (100%) |
+| Human reviewed | 0 of 5798 (0%) |
+| Unverified | 5798 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5788 |
+| HUMAN_PENDING | 5798 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4471 |
+| EXEMPT | 4485 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1539 |
-| Low | 5423 |
+| Low | 5432 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,10 +50,10 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 953 |
-| Medium | 4241 |
-| High | 1581 |
-| Critical | 259 |
+| Low | 952 |
+| Medium | 4244 |
+| High | 1583 |
+| Critical | 264 |
 | *not annotated* | 0 |
 
 ## Resource impact
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 9 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 5788 |
+| Units scored | 5798 |
 
 ## High-security review areas
 
@@ -1645,22 +1645,29 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.LowerBody(int, bool)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.LowerCode(System.ReadOnlySpan<byte>, WasmFuncType)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.SkipToFrameEdge(ref VmBoundedReader)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Step(ref VmBoundedReader, byte, int, WasmFuncType)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Step(ref VmBoundedReader, byte, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.Open(ref VmBoundedReader, WasmOpcode, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Else()` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Else(int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.End()` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.Branch(uint, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.BranchIf(uint, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.BranchTable(ref VmBoundedReader, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.BranchLabel(Frame, int, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Squash(int, Frame)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Local(ref VmBoundedReader, WasmOpcode, int, WasmFuncType)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.SplitTable(Frame[], int[], int, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Selector(int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.BranchTarget(Frame, int, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Exit(Frame, int[], int, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Return(int[])` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Descend(Frame, int, int, out Route)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Chain(Floor, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.FloorOf(int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Code(Floor, Frame, int, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Follow(Route)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Scratch(Frame, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Local(ref VmBoundedReader, WasmOpcode, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.Global(ref VmBoundedReader, WasmOpcode, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.FamilyRowAt(byte, ulong, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.Push(UbcSlotType, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmLowering.Push(int, int)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLowering.Frame.LabelArity` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.TypedStack` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmLowering.TypedStack.Push(int, UbcSlotType)` in `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.ProfileMaximumPages` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.Allocate(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=High, human line PENDING
@@ -1911,8 +1918,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1962 |
-| Units required to carry one | 1840 |
+| Units carrying a criterion | 1969 |
+| Units required to carry one | 1847 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1939,14 +1946,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1392 |
+| TrivialPropertyOrAccessor | 1398 |
 | ParameterAssigningConstructor | 162 |
-| TrivialExpressionBodiedMember | 67 |
+| TrivialExpressionBodiedMember | 66 |
 | CompilerSuppliedRecordOrEnumMember | 15 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 788 |
-| EnumMemberOfADeclaredVocabulary | 1895 |
+| FieldDeclaringStorage | 795 |
+| EnumMemberOfADeclaredVocabulary | 1897 |
 | DeclaredInSource | 31 |
 
 ## Per-unit exemptions
@@ -1996,7 +2003,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10259 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10283 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

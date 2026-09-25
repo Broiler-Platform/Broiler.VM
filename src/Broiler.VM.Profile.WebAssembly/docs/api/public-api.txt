@@ -132,7 +132,6 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationLocalsAboveMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2871
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationOperandHeightAboveMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2872
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationOperandOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2874
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationSquashKeepAboveMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2875
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TrapIndirectCallTypeMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 3008
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TrapIntegerDivideByZero : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 3002
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TrapIntegerOverflow : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 3003

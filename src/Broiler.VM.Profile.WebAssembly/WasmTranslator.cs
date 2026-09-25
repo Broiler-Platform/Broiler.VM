@@ -52,11 +52,14 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// token, so a cancelled translation answers a cancellation whichever read noticed it.
 /// </para>
 /// <para>
-/// <b>What moved with it, and so no longer holds for this work.</b> Translation work is charged to
-/// this meter and to nothing else: it no longer reaches the runtime-level accounting a verification's
-/// meter commits to, the wall clock the core's poll accrues, or the core's rule of one verification
-/// at a time for a profile that declares no concurrent verification. The core still applies all
-/// three to the verification of the artifact.
+/// <b>What moved with it, and so no longer holds for this work.</b> Decoding and validation are
+/// charged to this meter and to nothing else: they no longer reach the runtime-level accounting a
+/// verification's meter commits to, the wall clock the core's poll accrues, or the core's rule of one
+/// verification at a time for a profile that declares no concurrent verification. The core still
+/// applies all three to the verification of the artifact. The lowering that follows is charged to no
+/// meter; it polls the token, its code is held to the artifact-bytes ceiling as it grows, and what it
+/// builds grows with the instructions, pushes, branches and frames the validator admitted, never
+/// with a product of two of them.
 /// </para>
 /// <para>
 /// <b>It never throws.</b> A cancellation that escapes answers a cancellation, and any other escape
