@@ -56,9 +56,10 @@ and the prohibition on publishing are not. Every sentence below is written under
 10. [What was considered and not taken](#10-what-was-considered-and-not-taken)
 11. [What it costs](#11-what-it-costs)
 12. [Routes this concept takes without a decision](#12-routes-this-concept-takes-without-a-decision)
-13. [The programme: stages UBC-0 to UBC-9](#13-the-programme-stages-ubc-0-to-ubc-9)
+13. [The programme: stages UBC-0 to UBC-10](#13-the-programme-stages-ubc-0-to-ubc-10)
 14. [What would falsify this concept](#14-what-would-falsify-this-concept)
 15. [What this concept does not do, stated flatly](#15-what-this-concept-does-not-do-stated-flatly)
+16. [The component layout: one component per language and per emitter](#16-the-component-layout-one-component-per-language-and-per-emitter)
 
 Appendices: [A. The common family](#appendix-a--the-common-family), [B. The JavaScript
 family](#appendix-b--the-javascript-family), [C. The WebAssembly family](#appendix-c--the-webassembly-family),
@@ -75,17 +76,22 @@ touches](#appendix-f--every-rule-and-record-this-concept-touches).
                  (translate, and only translate)        (execute a form)
 
   JavaScript source ──► JavaScript lowering ──┐        ┌──► bytecode emitter ─── interprets UBC
-                                              │        │      (Broiler.VM.Profile.Bytecode)
+                                              │        │      (Broiler.VM.Emitter.Bytecode)
                                               ▼        │
                                      ┌─────────────────┴──┐
-  WebAssembly module ──► WebAssembly ─►   universal        ├──► x86-64 emitter ──── emits machine code,
-  (decoded, validated)   translator  │   bytecode (UBC)   │      arms and runs it
-                                     │  Broiler.VM.Ubc    │      (Broiler.VM.Profile.MachineCode.X64
-                                     └─────────────────┬──┘       + Broiler.VM.Profile.MachineCode)
+  WebAssembly module ──► WebAssembly ─►   universal        ├──► x86 emitter ─────── emits x86-64 machine
+  (decoded, validated)   translator  │   bytecode (UBC)   │      code, arms and runs it
+                                     │  Broiler.VM.Ubc    │      (Broiler.VM.Emitter.X86, its pivot
+                                     │  Broiler.VM.Ubc.   │       and Broiler.VM.Emitter.X86.Execution)
+                                     │        Native      │
+                                     └─────────────────┬──┘
                                               ▲        │
-        a family: its instruction table,      │        └──► arm64 emitter ────── emits, and runs nowhere
-        its handlers, its runtime library,    │                 (Broiler.VM.Profile.MachineCode.Arm64,
-        its verifier hook, its payloads ──────┘                  emitting-only)
+        a family: its instruction table,      │        └──► Arm emitter ───────── emits arm64, runs nowhere
+        its handlers, its runtime library,    │                 (Broiler.VM.Emitter.Arm, emitting-only)
+        its verifier hook, its payloads ──────┘
+
+        each box above is a component of its own under section 16; today they are
+        project families in one repository, under the same names
 ```
 
 - **One bytecode, several families.** The universal bytecode is one instruction encoding with a
@@ -111,7 +117,8 @@ touches](#appendix-f--every-rule-and-record-this-concept-touches).
   own identity, limits, maxima, capability imports and payload range; what changes is that the verifier
   and the executor that descriptor names are built by an emitter from the language's declaration rather
   than written by the language. The core still generates no machine code and learns no encoding: the
-  universal bytecode is not a core assembly and the core never references it.
+  universal bytecode is not part of the core contract and the core's three assemblies never reference
+  it.
 - **One form per artifact, fixed at compile time and pinned at verification.** An artifact is the
   bytecode form or one native form, whole; there is no per-unit choice, no guard, no fallback, no
   promotion and no tier. That is VM-7's rule and the JavaScript profile's amended non-goal, both kept.
@@ -151,6 +158,7 @@ here, so that a reader who knows the frozen vocabulary can map them:
 | **universal bytecode** | The one instruction encoding, container format, verifier walk and family contract every language profile lowers to and every emitter profile consumes. Abbreviated **UBC**. It is a shared *mechanism* component under [section 8](roadmap.md#8-sharing-between-profiles-without-a-lowest-common-denominator-core)'s rule, and section 3 says which halves of it are mechanism and which half asks a standing refusal to be reopened. | None. The term is new, and it is not a synonym for any frozen one. |
 | **family** | One namespace of the universal bytecode's instructions: the common family, owned by the bytecode itself, or a language family, owned by one language profile. A family is what an artifact declares it uses and what a composition declares it composes. | None. |
 | **form** | Which emitter's output an artifact carries: `bytecode`, `x86-64-sysv`, `x86-64-win64` or `arm64-aapcs64`. Fixed when the artifact is compiled, recorded in its header, pinned when it is verified. | **Artifact output form.** |
+| **component** | ADR 0001's word: a repository of its own, with its own roadmap, ledger, decision series, corrections file, rule register, evidence tree, packages and support table, that references other components only through their published packages. Section 16 says which families above become one, and what that takes. | None; the word is ADR 0001's and is used in its sense. |
 
 **The words *backend*, *engine*, *plug-in*, *extension* and *implementation* are not used for any of
 these**, because T4 bans them as synonyms for a VM profile and a document that used one for the
@@ -292,7 +300,7 @@ from what the plans say. Files are named; line numbers are not, because a line m
 | Descriptor built by a static accessor, verifier and executor named directly | `JavaScriptProfile.Descriptor`, `WebAssemblyProfile.Descriptor` | **Kept as the core sees it**; built by an emitter from a family declaration (section 7.1). |
 | Finished bytecode as the native seam, whole artifact or refusal | `JsAssembledProgram`, `IJsNativeBackend` | **Kept and generalised**: the universal bytecode is that seam for every language, and the two-answer rule becomes the emitter contract's. |
 | Handler table in unmanaged memory, `[UnmanagedCallersOnly]` wrappers, activation cookie, thread-static activation slot, `Threw`/`Exit`/`Defect` statuses | `JsBaselineHandlers`, `JsNativeActivation`, `JsBaselineFrame` | **Kept as the family handler mechanism** for every family (section 7.3). |
-| Template tables and template-closure scan in a pivot assembly | `JsNativeTemplates`, `JsNativeScan` | **Kept, moved** to the machine-code family's own pivot (section 4). |
+| Template tables and template-closure scan in a pivot assembly | `JsNativeTemplates`, `JsNativeScan` | **Kept, moved**: the scan and the template schema to `Broiler.VM.Ubc.Native`, the `x86-64` and `arm64` tables to the emitters' own pivots (section 4). |
 | Re-emission equality through a descriptor carrying the encoder | `JavaScriptProfile.DescriptorReEmittingWith` | **Kept** (section 6.3). |
 | Arming path through a hook the composition fills | `JsNativePage.Mapper` ← `VmNativePage` | **Retired**: the emitter's execution half owns the arming path directly and no language profile arms anything. |
 | Core native-compilation seam | `IVmNativeCompiler`, `VmRuntime.CompileToMachineCode` | **Kept, re-read**: implemented by the native emitters, universal bytecode in and the same artifact with an emission section out (route UBC-R5). |
@@ -364,15 +372,17 @@ contracts, not a lowest-common-denominator ISA", and the universal bytecode is n
 nor a lowest common denominator: it is a *union* with namespaces, in which a language's every
 instruction survives with its own meaning, and the only thing the languages have in common is what a
 stack machine has in common with itself. Invariant 14's "the core generates no machine code and knows
-no encoding" holds literally — the encoders live in the machine-code family, the core carries their
+no encoding" holds literally — the encoders live in the emitter families, the core carries their
 bytes as it carries every other profile payload, and "the core owns only whether a composition may
 execute the result" is still the composition register's native-execution column read by rule K5.
 
 **Where this concept sits is one level below the core and one level above the languages, and that
-level is new.** The three-package core stays exactly three. `Broiler.VM.Ubc` is a fourth Broiler.VM-owned
-assembly that is not part of core contract version 1, not packable during the MVP, and referenced by
-every language and emitter family. Whether it becomes a fourth package is a release decision this
-document names in stage UBC-9 and does not take.
+level is new.** The three assemblies of core contract version 1 stay exactly three and reference nothing
+new. `Broiler.VM.Ubc` and `Broiler.VM.Ubc.Native` are Broiler.VM-owned assemblies that are not part of
+core contract version 1, are not packable during the MVP, and are referenced by every language and
+emitter family. Whether they become the fourth and fifth packages is a release decision this document
+names in stage UBC-9 and does not take; section 16 says it is the precondition of laying the families
+out as components of their own.
 
 ### 3.3 ADR 0011's promise P1 — the one place this concept is a reading, and it is recorded as a route
 
@@ -427,17 +437,29 @@ them — is section 11's.
 
 ## 4. The dependency graph after the refactoring
 
-```text
-Broiler.VM.Abstractions                    ──→ (nothing)                                   [core, packable]
-Broiler.VM.Binary                          ──→ (nothing)                                   [core, packable]
-Broiler.VM.Runtime                         ──→ Abstractions + Binary                       [core, packable]
+The assemblies are grouped by the component each belongs to under section 16. Today every one of them
+is a project family in this repository; the grouping is what a later split would move, and the names
+are chosen so that the split is a move and not a rename.
 
+```text
+component Broiler.VM — the core, five packages once UBC-9 decides packability
+Broiler.VM.Abstractions                    ──→ (nothing)                                   [core contract v1, packable]
+Broiler.VM.Binary                          ──→ (nothing)                                   [core contract v1, packable]
+Broiler.VM.Runtime                         ──→ Abstractions + Binary                       [core contract v1, packable]
 Broiler.VM.Ubc                             ──→ Abstractions + Binary                       [NEW: the universal bytecode —
                                                                                               format, common family, table
                                                                                               schema, primitive table, verifier
-                                                                                              walk, family and emitter contracts;
-                                                                                              not packable during the MVP]
+                                                                                              walk, family and emitter contracts,
+                                                                                              descriptor factory]
+Broiler.VM.Ubc.Native                      ──→ Abstractions + Binary + Ubc                 [NEW: the native-form contracts and
+                                                                                              mechanism that name no language and
+                                                                                              no architecture — frame and
+                                                                                              activation contracts, handler-table
+                                                                                              wrappers, template schema, the
+                                                                                              template-closure scan, the
+                                                                                              form-verifier contract]
 
+component Broiler.VM.Profile.JavaScript
 Broiler.VM.Profile.JavaScript.Format       ──→ Ubc                                         [the js.* instruction tables per
                                                                                               manifest, the constant-pool codec,
                                                                                               the family sections' schema]
@@ -447,68 +469,85 @@ Broiler.VM.Profile.JavaScript              ──→ Abstractions + Binary + Ubc
                                                                                               handlers, hook, payloads,
                                                                                               declaration; no loop, no walk,
                                                                                               no arming]
+
+component Broiler.VM.Profile.WebAssembly
 Broiler.VM.Profile.WebAssembly             ──→ Abstractions + Binary + Ubc                 [decoder, validator, translator,
                                                                                               wasm.* tables, store, memory,
                                                                                               handlers, hook, payloads]
 
-Broiler.VM.Profile.Bytecode                ──→ Abstractions + Binary + Ubc                 [emitter profile 1: the interpreter
+component Broiler.VM.Emitter.Bytecode
+Broiler.VM.Emitter.Bytecode                ──→ Abstractions + Binary + Ubc                 [emitter profile 1: the interpreter
                                                                                               and the bytecode-form executor]
-Broiler.VM.Profile.MachineCode.Format      ──→ Ubc                                         [the machine-code family's pivot:
-                                                                                              frames, conventions, template
-                                                                                              tables, the scan]
-Broiler.VM.Profile.MachineCode             ──→ Abstractions + Binary + Ubc + MachineCode.Format
-                                                                                           [emitter profiles 2 and 3, execution
-                                                                                              half: arming path, native
-                                                                                              activation, form verifier layers,
-                                                                                              native executor]
-Broiler.VM.Profile.MachineCode.X64         ──→ Ubc + MachineCode.Format                    [emitter profile 2, emitting half]
-Broiler.VM.Profile.MachineCode.Arm64       ──→ Ubc + MachineCode.Format                    [emitter profile 3, emitting half,
-                                                                                              emitting-only]
+
+component Broiler.VM.Emitter.X86
+Broiler.VM.Emitter.X86.Format              ──→ Ubc + Ubc.Native                            [this architecture family's pivot:
+                                                                                              template tables per form and
+                                                                                              emitter version, conventions,
+                                                                                              frame reservations]
+Broiler.VM.Emitter.X86                     ──→ Ubc + Ubc.Native + X86.Format               [emitter profile 2, emitting half:
+                                                                                              the x86-64 encoders, both
+                                                                                              conventions]
+Broiler.VM.Emitter.X86.Execution           ──→ Abstractions + Binary + Ubc + Ubc.Native + X86.Format
+                                                                                           [emitter profile 2, executing half:
+                                                                                              the arming path, the native
+                                                                                              executor, the form verifier layer;
+                                                                                              today's Broiler.VM.Profile.MachineCode
+                                                                                              project, renamed]
+
+component Broiler.VM.Emitter.Arm
+Broiler.VM.Emitter.Arm.Format              ──→ Ubc + Ubc.Native                            [pivot: the arm64 tables]
+Broiler.VM.Emitter.Arm                     ──→ Ubc + Ubc.Native + Arm.Format               [emitter profile 3, emitting half,
+                                                                                              emitting-only: no execution
+                                                                                              assembly while it arms nothing]
 
 src/compositions/*                         ──→ the three core packages + the families an image composes
-                                                (Ubc and the pivots arrive transitively, as the
-                                                 JavaScript format does today, and are declared in the
-                                                 register's sibling column)
+                                                (Ubc, Ubc.Native and the pivots arrive transitively, as
+                                                 the JavaScript format does today, and are declared in
+                                                 the register's sibling column)
 ```
 
 **Six properties of this graph, each of which a rule holds or will hold:**
 
-1. **The core references nothing new** (B1, B2 unchanged), and nothing in the core names a universal
-   bytecode type. The core's public API baseline (`docs/api/public-api.txt`, rule M1) does not move.
-2. **No family references another family, in either direction** (N2 unchanged). The JavaScript,
-   WebAssembly, Bytecode and MachineCode families are four `Broiler.VM.Profile.<Segment>` families to
-   rules A11 and N2, keyed on the segment, exactly as JavaScript and MachineCode are two families
-   today. An emitter family never references a language family: it receives a family's tables and
-   handlers *as values* at composition, through the contracts in `Broiler.VM.Ubc`.
+1. **The core contract's three assemblies reference nothing new** (B1, B2 unchanged), and nothing in
+   them names a universal bytecode type. The core's public API baseline (`docs/api/public-api.txt`,
+   rule M1) does not move. `Broiler.VM.Ubc` and `Broiler.VM.Ubc.Native` reference only downward.
+2. **No family references another family, in either direction.** The JavaScript and WebAssembly
+   families are `Broiler.VM.Profile.<Language>` families to rules A11 and N2 exactly as today; the
+   Bytecode, X86 and Arm families are `Broiler.VM.Emitter.<Architecture>` families under a second
+   pattern with the same no-cross-family rule, keyed on the segment. An emitter family never references
+   a language family: it receives a family's tables and handlers *as values* at composition, through the
+   contracts in `Broiler.VM.Ubc`; and no two emitter families reference each other, because what they
+   share is in `Broiler.VM.Ubc.Native`.
 3. **Every family references `Broiler.VM.Ubc`, and `Broiler.VM.Ubc` references only the two core
    sinks.** It is a sink of the shared graph the way `Broiler.VM.Binary` is: it holds format, schema and
    mechanism and no language concept, which rule U2 (stage UBC-1) asserts by scanning its exported
-   identifiers against a banned vocabulary.
+   identifiers against a banned vocabulary. `Broiler.VM.Ubc.Native` holds the same kind of thing for a
+   native form and names no architecture either.
 4. **The JavaScript format assembly stops being a sink of the whole graph and stays a sink of its
    family**: it references `Broiler.VM.Ubc` and nothing else (rule N3 revised to say exactly that). The
    reason it exists is unchanged — the lowering and the runtime library must agree on the family's
    tables without depending on each other.
-5. **The machine-code family acquires the shape the JavaScript family has, for the reason the roadmap
+5. **An executing emitter family has the shape the JavaScript family has, for the reason the roadmap
    gives for that shape**: there are two parties, an encoder at compile time and a verifier-plus-executor
    at run time, that must agree on templates and frames without referencing each other, so a pivot holds
-   the tables. The template-closure scan moves from the JavaScript format assembly into
-   `Broiler.VM.Profile.MachineCode.Format`, where an execution-only image reaches it and an encoder does
-   too.
-6. **A composition root's reference list is still "the three core packages plus one or more profile
-   assemblies"** (A12), because every family assembly matches the profile pattern; `Broiler.VM.Ubc` and
-   the two pivots are siblings in the register's sense and appear in the sibling column, as the
-   JavaScript format does today.
+   the tables. What is architecture-free — the activation, the wrappers, the template schema, the scan —
+   is lifted one level further, into `Broiler.VM.Ubc.Native`, so that two emitter families share it
+   without a reference between them; what is this architecture's — the tables and the conventions —
+   stays in the family's pivot, where an execution-only image reaches it and an encoder does too.
+6. **A composition root's reference list is "the three core packages plus one or more profile or
+   emitter assemblies"** (A12 revised to admit the second pattern); `Broiler.VM.Ubc`,
+   `Broiler.VM.Ubc.Native` and the pivots are siblings in the register's sense and appear in the sibling
+   column, as the JavaScript format does today.
 
 **Project and edge budget.** ADR 0001's last budget sentence authorises the graph the checkout holds
-("from 27 projects and 88 edges to 27 and 90"). This concept adds four product projects
-(`Broiler.VM.Ubc`, `Broiler.VM.Profile.Bytecode`, `Broiler.VM.Profile.MachineCode.Format`,
-`Broiler.VM.Profile.MachineCode.X64`) and one emitting-only project
-(`Broiler.VM.Profile.MachineCode.Arm64`), one application-local fixture family under `src/tests/` for
-invariant 13 (section 8.3), and the reference edges the diagram shows; each arrival is a dated revision
-of ADR 0001 with the new counts, and rules A7 and A15 fail until `graph.manifest.json` and the record
-say the same thing. **The counts are not stated here as figures because they are not this document's
-to fix**: a stage that adds a project writes the revision, and a revision written in advance of the
-project would be a budget authorising something that does not exist.
+("from 27 projects and 88 edges to 27 and 90"). This concept adds the projects the diagram marks as new
+or names for the first time, renames the existing machine-code project as the `x86` execution half,
+adds one application-local fixture family under `src/tests/` for invariant 13 (section 8.3), and adds
+the reference edges the diagram shows; each arrival is a dated revision of ADR 0001 with the new counts,
+and rules A7 and A15 fail until `graph.manifest.json` and the record say the same thing. **The counts
+are not stated here as figures because they are not this document's to fix**: a stage that adds a
+project writes the revision, and a revision written in advance of the project would be a budget
+authorising something that does not exist.
 
 ---
 
@@ -1004,7 +1043,7 @@ verification, and one that composes only the bytecode emitter refuses a native o
 no image in which both paths exist for one artifact**, which is the amended non-goal — one executor,
 one form per handle and per instance — restated as a property of a factory.
 
-### 7.2 The bytecode emitter: `Broiler.VM.Profile.Bytecode`
+### 7.2 The bytecode emitter: `Broiler.VM.Emitter.Bytecode`
 
 - **One dispatch loop, generic over the family.** `UbcInterpreter<TFamily>` where `TFamily` is a
   struct the family supplies implementing `IUbcFamily` with static abstract members — the value plane
@@ -1037,7 +1076,7 @@ one form per handle and per instance — restated as a property of a factory.
   threaded code, no computed goto, no per-block steps; the loop is a `switch` over a byte, and whether a
   different loop is worth having is a measurement nobody has taken.
 
-### 7.3 The `x86-64` emitter: `Broiler.VM.Profile.MachineCode.X64` and `Broiler.VM.Profile.MachineCode`
+### 7.3 The `x86-64` emitter: `Broiler.VM.Emitter.X86`, its pivot and its execution half
 
 - **Inputs.** A verified universal bytecode program, the registrations of its families, a convention
   (`x86-64-sysv` or `x86-64-win64`), and the family handler-table shapes. **Outputs.** An Emission
@@ -1065,20 +1104,28 @@ one form per handle and per instance — restated as a property of a factory.
   code and by the thread-static slot that frame sets and restores; emitted code runs in preemptive
   mode; a handler's reverse transition switches to cooperative mode and the collector walks the managed
   frames and finds nothing to trace in between. The same three properties of the thread-static slot
-  hold, and the same text rule is registered over the machine-code family's source instead of the
-  JavaScript profile's.
-- **The pivot, `Broiler.VM.Profile.MachineCode.Format`.** The frame layouts and their offsets, the two
-  conventions' stack reservations and argument registers, the handler-table slot rule, the template
-  tables per (convention, emitter version) with each template's fixed bytes and the closed value set of
-  each variable field, and the template-closure scan. It is where `JsNativeFrame`, `JsBaselineFrame`,
-  `JsNativeTemplates`, `JsNativeScan`, `JsX64Abi` and `VmNativeFrame` go, unified, and it is
-  language-free: a template that calls a handler names a slot, not an opcode of any family.
-- **The executing half, `Broiler.VM.Profile.MachineCode`.** The arming path (`VmNativePage`, W^X,
-  `SafeHandle`, one type and three files, rule X1's subject moved to where it already is), the native
-  activation, the `[UnmanagedCallersOnly]` wrappers per family table slot, the managed entry that
-  enters a unit and lands a suspension or an unwinding, the form verifier layer, and the executor
-  factory the descriptor names. Rules B5c and X1 allowlist this one assembly, and their register
-  statements say so instead of naming the JavaScript profile.
+  hold, and the same text rule is registered over `Broiler.VM.Ubc.Native`'s source instead of the
+  JavaScript profile's (rule U7).
+- **What is architecture-free lives in `Broiler.VM.Ubc.Native`, in the core.** The frame and
+  activation contracts — the handler-table slot rule, the cookie, the statuses — the
+  `[UnmanagedCallersOnly]` wrappers per family table slot and the thread-static rule they obey, the
+  managed entry that enters a unit and lands a suspension or an unwinding, the template-table *schema*
+  (a template's fixed bytes and the closed value set of each variable field), the template-closure scan
+  that decodes any form's bytes against any table of that schema, and the form-verifier contract. It is
+  where `JsNativeFrame`, `JsBaselineFrame`, `JsNativeActivation`, `JsBaselineHandlers`' mechanism,
+  `JsNativeScan` and `VmNativeFrame` go, unified, and it names no language and no architecture: a
+  template that calls a handler names a slot, not an opcode of any family, and a scan reads a table it
+  is handed.
+- **The pivot, `Broiler.VM.Emitter.X86.Format`.** This architecture family's template tables per
+  (form, emitter version), its two conventions' stack reservations and argument registers, and its
+  frame reservations — where `JsNativeTemplates`' `x86-64` tables and `JsX64Abi` go. An execution-only
+  image reaches it and the encoder does too, which is the reason a pivot exists at all.
+- **The executing half, `Broiler.VM.Emitter.X86.Execution`** — today's `Broiler.VM.Profile.MachineCode`
+  project, renamed and given its family's pivot. The arming path (`VmNativePage`, W^X, `SafeHandle`,
+  one type and three files, rule X1's subject), the native executor that enters a unit through
+  `Broiler.VM.Ubc.Native`'s activation, the form verifier layer over this family's tables, and the
+  executor factory the descriptor names. Rules B5c and X1 allowlist this one assembly, and their
+  register statements say so instead of naming the JavaScript profile.
 - **Which manifests it admits.** Every family table whose every row it can emit: a family row of a
   kind it does not implement, or a primitive its template table lacks, is a refusal of the whole
   artifact naming the row. It admits the JavaScript wide and numeric manifests (the baseline and
@@ -1088,9 +1135,9 @@ one form per handle and per instance — restated as a property of a factory.
   composes this family declares `x86-64`; one that does not declares `none` and must be unable to arm,
   which rule K5 reads against the ImplMap tables as today.
 
-### 7.4 The `arm64` emitter: `Broiler.VM.Profile.MachineCode.Arm64`, emitting-only
+### 7.4 The `arm64` emitter: `Broiler.VM.Emitter.Arm`, emitting-only
 
-- **The same inputs, the same pivot, its own template table, and no execution.** It emits for every
+- **The same inputs, its own pivot and template tables, and no execution.** It emits for every
   family table it can, under the AAPCS64 convention, into the same Emission section shape; an artifact
   carrying its form verifies through the scan against the `arm64` table and **refuses to instantiate on
   every host with the unsatisfied-host-assumption contract violation**, exactly as today. The
@@ -1114,7 +1161,7 @@ one form per handle and per instance — restated as a property of a factory.
 | E2 | A `Primitive` row executed inline answers, bit for bit, what the family's handler answers, over the retained primitive corpus, NaN, signed zero, overflow and trap edges included. | the primitive differential check, per (emitter, family, manifest) |
 | E3 | The emitter is deterministic: one program, one emitter version, one emission. | re-emission equality; a two-compile comparison in the checks lane |
 | E4 | The emitter answers with the whole artifact or a refusal naming a row, and never with a per-unit choice. | the emitter contract's signature; a negative control |
-| E5 | The emitted frame holds no managed reference. | rule X2 generalised to the machine-code family's frame types |
+| E5 | The emitted frame holds no managed reference. | rule X2 generalised to every frame type `Broiler.VM.Ubc.Native` declares |
 | E6 | Fuel is charged per row at the same point as the interpreter charges it; a budget verdict agrees with the bytecode form's at every ceiling, outside the one named divergence class. | the fuel-parity twins, per family |
 | E7 | The differential oracle holds: one source, the bytecode form and this form, equal transcripts outside the named classes (a refusal naming the emission ceiling; a fuel exhaustion on a guest-loading program; a wall-clock exhaustion). | `eng/compare-forms.py`, generalised to every family and form, and the conformance suites run in both forms |
 | E8 | The template-closure scan accepts everything the emitter emits and every template is reached by the corpus; byte strings that are legal machine code the emitter never emits are refused by name. | the checks lane, both directions |
@@ -1133,8 +1180,8 @@ reasonably have concluded either more or less than the concept allows.
   a verified universal bytecode program              every unit of the artifact, and the family
         │                                             registrations it names
         ▼
-  1. the emitting half translates every unit,        Broiler.VM.Profile.MachineCode.X64 or .Arm64:
-     or refuses the whole artifact naming a row       references Broiler.VM.Ubc and the pivot only;
+  1. the emitting half translates every unit,        Broiler.VM.Emitter.X86 or Broiler.VM.Emitter.Arm:
+     or refuses the whole artifact naming a row       references Ubc, Ubc.Native and its pivot only;
         │                                             it has no path to a memory-mapping call
         ▼
   2. the emission is written into the SAME           the Emission section of the container (5.2),
@@ -1146,7 +1193,7 @@ reasonably have concluded either more or less than the concept allows.
       scan, re-emission)                              every image, re-emission where the encoder is in it
         │
         ▼
-  4. the executing half maps a page writable,        Broiler.VM.Profile.MachineCode: VmNativePage,
+  4. the executing half maps a page writable,        Broiler.VM.Emitter.X86.Execution: VmNativePage,
      copies the bytes, arms it read-execute           the one arming path, W^X, declared in the
         │                                             composition register and read by rule K5
         ▼
@@ -1209,12 +1256,12 @@ and an artifact executable in two forms among them.
 | `JsOpcode`, `JavaScriptOpcode`, `JsOpcodes.*` tables, `JsNumericManifest` (Format) | the `js.*` family tables, one per manifest, as `UbcInstructionTable` values (Format) | byte values kept; the tables *are* the rows Appendix B lists |
 | `JsFormat`, `JavaScriptFormat`, `JsArtifactWriter`, `JavaScriptArtifactWriter` (Format) | the JavaScript FamilyData sections' schema and codec (Format); the container is the universal bytecode's | **format versions 1 and 2 are retired**; nothing is published, so no external artifact exists to be invalidated |
 | `JsCompiler.Assemble` → `JsAssembledProgram` → `IJsNativeBackend` (Compiler) | `JsCompiler.Assemble` → a universal bytecode program, and nothing after it (Compiler) | the second exit becomes the only exit; `JsOutputForm` leaves the compile request |
-| `JsX64Backend`, `JsX64BaselineEmitter`, `JsX64ValueEmitter`, `JsX64Walk`, `JsX64Assembler`, `JsX64Abi`, `JsArm64*` (Compiler) | `Broiler.VM.Profile.MachineCode.X64` and `.Arm64` | language-free after the move: what was a template per `JsOpcode` becomes a template per common row, per primitive, and one per handler call |
-| `JsNativeTemplates`, `JsNativeScan`, `JsBaselineBlocks`, `JsValueLayout`, `JsNativeFrame`, `JsBaselineFrame`, `JsValueFrame`, `JsWord` (Format) | `Broiler.VM.Profile.MachineCode.Format`, unified; `JsValueFrame`, `JsValueLayout` and `JsWord` are not carried | the value form is not carried (5.7) |
+| `JsX64Backend`, `JsX64BaselineEmitter`, `JsX64ValueEmitter`, `JsX64Walk`, `JsX64Assembler`, `JsX64Abi`, `JsArm64*` (Compiler) | `Broiler.VM.Emitter.X86` and `Broiler.VM.Emitter.Arm`, with the tables and conventions in their pivots | language-free after the move: what was a template per `JsOpcode` becomes a template per common row, per primitive, and one per handler call |
+| `JsNativeTemplates`, `JsNativeScan`, `JsBaselineBlocks`, `JsValueLayout`, `JsNativeFrame`, `JsBaselineFrame`, `JsValueFrame`, `JsWord` (Format) | `Broiler.VM.Ubc.Native` for the frames, the scan and the schema; `Broiler.VM.Emitter.X86.Format` and `Broiler.VM.Emitter.Arm.Format` for the tables; `JsValueFrame`, `JsValueLayout` and `JsWord` are not carried | the value form is not carried (5.7) |
 | `JsVerifier`, `JavaScriptVerifier` (Profile) | `JsFamilyVerifier : IUbcFamilyVerifier` — the family hook — and nothing else | the walk is `Broiler.VM.Ubc`'s |
 | `JsEngine.ExecuteCore<TMode>`'s arms (Profile) | the family handlers, one static method per row, behind `JsFamily : IUbcFamily` | the arm text is the meaning and it moves as text; what is dropped is the loop, the frame list, the region search and the charge sites around it |
-| `JsBaselineHandlers`, `JsValueHelpers`, `JsNativeActivation`, `JsEngine.Baseline` (Profile) | the family's handler table is built by the machine-code family from the same handler methods; the activation is the machine-code family's | one wrapper mechanism for every family |
-| `JsNativePage`, `JsNativeExecution`, `JsNativeAbi` (Profile) | retired; the arming path is the machine-code family's and no language profile arms a page | rule N1's reference list loses nothing and gains `Broiler.VM.Ubc` |
+| `JsBaselineHandlers`, `JsValueHelpers`, `JsNativeActivation`, `JsEngine.Baseline` (Profile) | the family's handler table is built by `Broiler.VM.Ubc.Native` from the same handler methods, and the activation is its | one wrapper mechanism for every family |
+| `JsNativePage`, `JsNativeExecution`, `JsNativeAbi` (Profile) | retired; the arming path is `Broiler.VM.Emitter.X86.Execution`'s and no language profile arms a page | rule N1's reference list loses nothing and gains `Broiler.VM.Ubc` |
 | `JavaScriptProfile.Descriptor` and its four variants (Profile) | `JavaScriptFamily.Registration` and `JavaScriptFamily.Declaration`, consumed by `UbcDescriptors.Build`; the variants become parameters of the declaration (admitted surfaces, host realms, handle stress is gone with the value form) | a composition root writes `UbcDescriptors.Build(JavaScriptFamily.Registration, JavaScriptFamily.Declaration, emitters)` |
 | `JsNativeCompiler : IVmNativeCompiler` (Compiler) | retired; the native emitters implement `IVmNativeCompiler` (route UBC-R5) | |
 
@@ -1226,7 +1273,7 @@ language is where it was; what left is the machinery around it.
 **The three forms, recovered.** The bytecode form is the bytecode emitter over the wide table. The
 numeric form is the `x86-64` emitter over the numeric table, whose operator rows are primitives, so its
 emitted code computes over `f64` words exactly as today's computing templates do — with two
-differences a reader should expect: the frame is the machine-code family's rather than a slab of
+differences a reader should expect: the frame is `Broiler.VM.Ubc.Native`'s rather than a slab of
 doubles with a bailout pc, and the units' locals are word locals rather than scope slots the numeric
 walk flattened. The baseline form is the `x86-64` emitter over the wide table, whose rows are
 `Dynamic`, so its emitted code is control flow and handler calls exactly as JSD-0025 decides — with the
@@ -1318,7 +1365,9 @@ by K5 as today, and the profile-assemblies column lists the family assemblies. *
 composes a native emitter and not the bytecode emitter is a legal image** — a format, a walk, a hook,
 a form verifier and an arming path, with no interpreter loop and no encoder — and is the shape VM-7's
 exit gate clause 3 asks an execution-only composition to demonstrate; whether one is written is a
-stage's choice and none of the rows above is it.
+stage's choice and none of the rows above is it. Under the component layout of section 16 each root
+above lives in the component that owns its evidence, and a root that composes two product families, or
+a native emitter with a language, lives in the product that ships it.
 
 ---
 
@@ -1402,6 +1451,8 @@ decision and reverses without a correction entry, and what is built on it may ha
 | UBC-R5 | **`IVmNativeCompiler` is kept and implemented by the native emitters: universal bytecode in, the same artifact with an Emission section out, under the *input* profile's identity** | **Retiring the interface**, which moves the core's public API baseline (rule M1) and the frozen public-name table; or keeping today's reading, in which the output is a `broiler.machinecode` artifact | A ruling on whether a member of Abstractions whose only implementation is unreachable is contract content; and the contract test's expectation (`NativePipelineContractTests`) rewritten to the new reading | The core contract owner — one person |
 | UBC-R6 | **One call per `Dynamic` row in a native form** (MVP-8 kept, for every family) | **Per-block steps**, one call per run of dynamic rows | The retained measurement MVP-8 names and nobody has taken | The JavaScript profile's owner with the core's security owner — one person |
 | UBC-R7 | **One dispatch loop generic over a family struct, instantiated per composed family** (7.2) | **One loop per family**, hand-written | Stage UBC-2's gate: the instantiated loop's compiled code folds the family tests away, shown on the Native AOT image and not only in source; a loop that does not fold reopens this row | The core architecture owner — one person |
+| UBC-R8 | **The arming path stays in `Broiler.VM.Emitter.X86.Execution` until a second executing emitter exists** (16.2, item 6), which is roadmap section 10's "leaves on the second consumer" read literally | **Moving it into `Broiler.VM.Ubc.Native` now**, so that every executing emitter component starts from one path and no emitter component is ever the one arming assembly | A second executing emitter component; a dated extraction record moves the path then, and names the two consumers | The core architecture owner with the security owner — one person |
+| UBC-R9 | **A universal bytecode contract version of its own, minted by a dated record in the core's ADR set and not by the core contract amendment procedure** (16.2, item 2), on section 3.2's reading that the universal bytecode is not core contract content | **Folding the universal bytecode into core contract version 2**, which the procedure cannot mint, and which would make every language and emitter component wait on it | A ruling by the core contract owner on whether the universal bytecode is contract content; a ruling that it is blocks the version record on the procedure and names the core as holder | The core contract owner — one person |
 
 **UBC-R1 is the row a reader should be most uncomfortable with**, for the reason 3.3 gives: it is the
 one place this concept's "no core amendment" is a reading of a record rather than a fact about the
@@ -1410,7 +1461,7 @@ recorded rather than argued away.
 
 ---
 
-## 13. The programme: stages UBC-0 to UBC-9
+## 13. The programme: stages UBC-0 to UBC-10
 
 Each stage states an objective, what it waits on, and an exit gate written as conditions a run can
 decide. **None is scheduled, none has an owner, and none has a ledger row**; assigning any of the
@@ -1459,7 +1510,7 @@ record, the record is named and not written here.
   0001 revised with the new counts and A7 and A15 green; and the public surface of the assembly
   captured in a baseline of its own under `docs/api/`, compared in both directions.
 
-### UBC-2 — `Broiler.VM.Profile.Bytecode` and the fixture family
+### UBC-2 — `Broiler.VM.Emitter.Bytecode` and the fixture family
 
 - **Objective.** The universal bytecode executes, over a family that is not a language, in one loop
   generic over the family.
@@ -1516,19 +1567,23 @@ record, the record is named and not written here.
   manifest is minted or its absence recorded; and the WebAssembly execution root's closure holds the
   translator and its register row's sibling cell says so.
 
-### UBC-5 — The machine-code family's pivot and execution half
+### UBC-5 — The native contracts, the `x86` pivot and the execution half
 
-- **Objective.** One arming path, one activation, one handler-table mechanism and one scan, for every
-  family, in a family of their own.
+- **Objective.** One activation, one handler-table mechanism and one scan for every family, in the
+  core's `Broiler.VM.Ubc.Native`; one arming path and one execution half, in the `x86` emitter family.
 - **Waits on.** UBC-2.
-- **Exit gate.** `Broiler.VM.Profile.MachineCode.Format` holds the frames, conventions, template
-  tables and scan, references exactly `Broiler.VM.Ubc`, and names no family (U3); rules B5c and X1 name
-  `Broiler.VM.Profile.MachineCode` and `VmNativePage` in their statements as their tests already do,
-  and X2 is generalised to every frame type the pivot declares; X3's `[UnmanagedCallersOnly]` sweep
-  names the machine-code family's wrapper file and nothing else; the thread-static activation slot's
-  three properties are a registered text rule over that family's source; the form verifier layer runs
-  the scan in every image and re-emission through a descriptor carrying the encoder; and `JsNativePage`
-  and every hook that filled it are gone.
+- **Exit gate.** `Broiler.VM.Ubc.Native` holds the frame and activation contracts, the wrappers, the
+  template schema, the scan and the form-verifier contract, references exactly Abstractions, Binary and
+  `Broiler.VM.Ubc`, and names no language and no architecture (U2, U3); `Broiler.VM.Emitter.X86.Format`
+  holds this architecture family's tables and conventions and references exactly `Broiler.VM.Ubc` and
+  `Broiler.VM.Ubc.Native`; the existing `Broiler.VM.Profile.MachineCode` project is renamed
+  `Broiler.VM.Emitter.X86.Execution`, and rules B5c and X1 name it and `VmNativePage` in their
+  statements — which today still name the JavaScript profile while their tests read the MachineCode
+  assembly; X2 is generalised to every frame type `Broiler.VM.Ubc.Native` declares; X3's
+  `[UnmanagedCallersOnly]` sweep names that assembly's wrapper file and nothing else; the thread-static
+  activation slot's three properties are a registered text rule over its source (U7); the form verifier
+  layer runs the scan in every image and re-emission through a descriptor carrying the encoder; and
+  `JsNativePage` and every hook that filled it are gone.
 
 ### UBC-6 — The `x86-64` emitter
 
@@ -1585,6 +1640,12 @@ record, the record is named and not written here.
   every MVP route row of section 12 is filed in `docs/mvp.md` with its state; and every correction this
   programme made is an entry in the file that owns it with the superseded text quoted.
 
+### UBC-10 — The split into components
+
+- Stated in section 16.6, beside the layout it belongs to. It waits on UBC-9 and on every stage whose
+  component it would split out, and it is the only stage that changes where a record lives rather than
+  what it says.
+
 ---
 
 ## 14. What would falsify this concept
@@ -1615,6 +1676,9 @@ record, the record is named and not written here.
   under a new name.
 - **A `v` of one family and a slot of another in one frame**, or an artifact declaring two language
   families that the walk admits. That is the cross-profile value channel under a new name.
+- **A language or emitter component that builds only with a project reference into another
+  component, or through a type that is not public package API.** Section 16 rests on the families
+  meeting nowhere but in `Broiler.VM`'s packages, and one such reference is the split failing quietly.
 
 ---
 
@@ -1633,6 +1697,166 @@ record, the record is named and not written here.
   after.
 - **No review.** Everything this concept would touch is `HUMAN_PENDING` today and would be
   `HUMAN_PENDING` after, and moving unreviewed code is not reviewing it.
+- **No component is split out.** Section 16 shows that the layout the request asks for is one the
+  concept supports and stage UBC-10 names its gate; nothing is moved by this document.
+
+---
+
+## 16. The component layout: one component per language and per emitter
+
+**The request, quoted.** "Verify on that concept that a language profile and an emitter profile can be
+laid out as a completely separate component, so there are in the future the following components:
+`Broiler.VM` (with base types, utilities, bytecode formats, etc., with simple samples and test data);
+`Broiler.VM.Profile.JavaScript`; `Broiler.VM.Profile.WebAssembly`; `Broiler.VM.Emitter.ByteCode`;
+`Broiler.VM.Emitter.X86` (supports x64, maybe x32); `Broiler.VM.Emitter.Arm` (supports Arm64, maybe
+Arm32); and so on. If that is possible, integrate it in the concept."
+
+**The verdict: it is possible, and the concept was already shaped for it; what it takes is six things,
+each named in 16.2, and one of them reverses a dated ruling.** The word *component* is ADR 0001's: a
+repository of its own, with its own roadmap, ledger, decision series, corrections file, rule register,
+evidence tree, packages and support table, that references other components only through their
+published packages. The concept's families meet nowhere but in contracts that `Broiler.VM` publishes —
+a language family and an emitter family never reference each other, and both reference `Broiler.VM.Ubc`
+(sections 4 and 7.1) — so a family becomes a component by a move of directories and a change from
+project references to package references, with no type crossing a boundary that is not public package
+API. That is also why the assembly names in this document are the component names —
+`Broiler.VM.Emitter.Bytecode`, `Broiler.VM.Emitter.X86`, `Broiler.VM.Emitter.Arm` — so that the split
+is a move and not a rename. *(The request spells the first `ByteCode`; this document keeps the
+repository's one-word spelling, as in `JsOutputForm.Bytecode`, and nothing turns on it.)*
+
+### 16.1 The components, and what each holds
+
+| Component | Holds | References, by package | Its own records |
+|---|---|---|---|
+| **`Broiler.VM`** — the core | `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, `Broiler.VM.Runtime`, unchanged; `Broiler.VM.Ubc` (the universal bytecode: container, common family, table schema, primitive table, verifier walk, family and emitter contracts, descriptor factory); `Broiler.VM.Ubc.Native` (the native-form contracts and mechanism that are language-free and architecture-free — 7.3); **simple samples**: the fixture family of 8.3 with its demonstration composition, and the feed-consumer sample under `samples/` that composes through packages alone; **test data**: the universal bytecode's malformed corpus, the primitive input corpus of obligation E2, and sample artifacts of every form; the core's own fixture and consumer profiles, tests and hosts as today | nothing Broiler-owned; it packs five packages where it packs three today | as today: `docs/`, `docs/adr`, the core ledger, `docs/support.md`, `docs/compositions.md`, the rule register |
+| **`Broiler.VM.Profile.JavaScript`** | the three assemblies of 8.1 (`.Format`, `.Compiler`, the profile), its demonstration and harness roots, its corpora, its conformance and benchmark pins | `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, `Broiler.VM.Ubc`; its roots also reference `Broiler.VM.Emitter.Bytecode` | its `docs/` tree, moved whole: the roadmap files, `JSD-nnnn`, `JSC-nn`, the ledger, the evidence tree, the diagnostics registry, the API baseline, rule groups N and J |
+| **`Broiler.VM.Profile.WebAssembly`** | the profile assembly of 8.2 (decoder, validator, translator, family, store), its two roots, its corpus | the same three; its roots also reference `Broiler.VM.Emitter.Bytecode` | its `docs/` tree, `WAC-nn`, the ledger, rule group W |
+| **`Broiler.VM.Emitter.Bytecode`** | one assembly: the interpreter of 7.2 and its executor factory; a demonstration root over the core's fixture family | `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, `Broiler.VM.Ubc` | a ledger, a decision series, a corrections file, an evidence tree, a support row for the form `bytecode` |
+| **`Broiler.VM.Emitter.X86`** | `Broiler.VM.Emitter.X86.Format` (this architecture family's template tables, conventions and frame reservations), `Broiler.VM.Emitter.X86` (the encoders: `x86-64-sysv`, `x86-64-win64`, and any later x86 form), `Broiler.VM.Emitter.X86.Execution` (the arming path, the native executor, the form verifier layer); a demonstration root that emits, arms and runs the core's fixture family | the three above plus `Broiler.VM.Ubc.Native` | its own ledger, decisions, corrections, evidence, golden-byte corpus, a support row per form, rule group X and the emitter half of group U |
+| **`Broiler.VM.Emitter.Arm`** | `Broiler.VM.Emitter.Arm.Format` and `Broiler.VM.Emitter.Arm` (the encoder for `arm64-aapcs64` and any later Arm form); **no execution assembly while it is emitting-only**; a demonstration root that emits and verifies | the three above plus `Broiler.VM.Ubc.Native` | its own ledger, golden bytes, disassembler corpus, a support row per form, each saying *emitting-only* |
+| **a product** — a browser, say | composition roots that compose packages from several of the above; the embedder's seam of 5.13 | whichever it composes | its own register, closure reports, runtime-identifier matrix and evidence, which the roadmap's cross-profile section already requires of a two-profile composition |
+
+**"Supports x64, maybe x32; supports Arm64, maybe Arm32."** An emitter component is named for an
+architecture family and holds one form identity per architecture and convention it emits, each with its
+own template table, emitter version, golden bytes, form verifier table and support-table row, and each
+*emitting-only* or executing on its own evidence. `x86-32` would be a form `Broiler.VM.Emitter.X86` may
+add; nothing here schedules it, and adding it reopens route MVP-5, whose reason for dropping it — the
+callee-pops accident VM-7 keeps as a fixture — is unchanged and would have to be answered by that form's
+own record. A 32-bit Arm form is named nowhere in this repository, and the first record to name it owes
+what `arm64` owed: a convention, an instruction-cache maintenance story, and a disassembler-checked
+corpus. **A component name that admits an architecture is not a claim that the architecture exists**,
+which is the rule the support table already applies to a form.
+
+### 16.2 The six things the split takes
+
+1. **`Broiler.VM` packs the universal bytecode and the native contracts.** `Broiler.VM.Ubc` and
+   `Broiler.VM.Ubc.Native` become the fourth and fifth packages, each with a public API baseline
+   compared in both directions (rule M1's shape), because a separate component can reach nothing that
+   is not public package API — ADR 0011's P2, "there is no privileged surface", applied one level up.
+   That is stage UBC-9's packability decision, taken in the affirmative, and it is the precondition of
+   everything below.
+2. **A universal bytecode contract version, beside the core contract version and not inside it.** A
+   language component and an emitter component built against different revisions of the universal
+   bytecode must fail to compose loudly and never subtly. Each family registration and each emitter
+   carries an authored and a built-against universal bytecode contract version — the two-integer
+   pattern descriptor rows 22 and 23 already use, for the same reason — and `UbcDescriptors.Build`
+   refuses a mismatch at catalog construction, as the catalog refuses a verifier whose identity differs
+   from its descriptor's. The version covers the container format, the common family, the slot types,
+   the operand shapes, the table schema, the primitive table and the public surface of the two packages.
+   It is minted by a dated record in the core's ADR set and is **not** a core contract version, which
+   route UBC-R9 records.
+3. **No component references another except through `Broiler.VM`.** A language component references
+   the three packages; an emitter component references those and `Broiler.VM.Ubc.Native`; neither
+   references the other, and a product composes them. Rules A11, A12 and N2 become per-component rules
+   over package references with the same content. The core's rule D1 — no project outside the component
+   references into `Broiler.VM` — is revised to key on the legacy components it exists for, because under
+   this layout every `Broiler.VM.*` component references into the core by design, and a rule that
+   reported each of them as a legacy breach would be reporting the layout rather than a defect.
+4. **Composition roots live with their evidence.** Each component keeps demonstration roots for its own
+   evidence — a language component composes itself over the bytecode emitter's package, an emitter
+   component composes the core's fixture family over itself — and a composition that composes two
+   product families, or a native emitter with a language, belongs to the product that ships it. The
+   composition register, the closure reports, the native-execution column and rules K1 to K5 are per
+   component, and a register's sibling column names the packages an image links beyond the three core
+   assemblies.
+5. **Each component owns its ledger, and none reads another's.** Core ledger update rule 6 — a profile
+   result never advances a core row — is already the rule between the two ledgers this repository holds,
+   and separation makes it a rule between repositories with no new text. `Broiler.VM`'s support table
+   says the core ships no language and no emitter; each component's own support table names what it
+   has published and run on retained evidence; and a product's table names the components it composes,
+   by name and by universal bytecode contract version.
+6. **The arming path stays with `Broiler.VM.Emitter.X86` until a second executing emitter exists.**
+   Roadmap section 10 says the mapping mechanism leaves the profile that first wrote it on the second
+   consumer, and `Broiler.VM.Emitter.Arm` is not a consumer while it arms nothing. So
+   `Broiler.VM.Emitter.X86.Execution` is the one arming assembly rules B5c and X1 allowlist, its register
+   rows declare `x86-64`, and every other component's rows declare `none` and are unable to arm. When a
+   second executing emitter arrives, the path leaves under the gate — into `Broiler.VM.Ubc.Native` or a
+   package beside it — by a dated extraction record; route UBC-R8 records the choice.
+
+### 16.3 What the split reverses, and what it does not
+
+- **It reverses ADR 0001's ruling of 2026-08-31** that "a language profile is a set of product projects
+  in the Broiler.VM component rather than a component of its own", together with the README's corrected
+  sentence and roadmap section 1's *VM profile* row that restate it. The reversal is a dated revision of
+  ADR 0001 — not contract-bearing — with the superseded text quoted, filed by stage UBC-10 on the
+  authority of the instruction this section quotes. What that ruling was load-bearing for survives
+  unchanged and is restated rather than dropped: the reference runs one way, and no core project
+  references any profile or emitter.
+- **It does not change what the core is.** Invariant 4, invariant 14, the extraction gate and the
+  cross-profile boundary hold as sections 3 and 5.13 state them; a component boundary is a stronger form
+  of the family boundary the concept already draws, not a weaker one.
+- **It reopens two standing refusals of ADR 0011 on their own terms.** The assurance-annotation tooling
+  and the conformance-harness method are refused as shared components while "one product implementation
+  exists and it is this component's own"; a second component carrying its own copy is the reopening
+  condition those rows name, and the split creates it. Whether either is extracted is those rows'
+  verdict to give, and this document does not give it.
+
+### 16.4 What it costs
+
+- **Every component pays the repository's discipline on its own**: a rule register with witnesses, an
+  assurance generator run, a ledger with its update rules, a corrections file, evidence bundles, a
+  publish-and-run lane per declared runtime identifier, and a support table. The lanes are the
+  expensive half: the core's lane publishes and runs every root under three modes and several runtime
+  identifiers, and a component that arms pages owes that per form.
+- **Version skew becomes a real state.** Two components at two universal bytecode contract versions
+  compose only where the descriptor factory admits both, and the factory admits exactly what the version
+  record says; a mismatch is a refusal at catalog construction and never a silent difference in bytes.
+- **One graph becomes several.** `graph.manifest.json` and ADR 0001's budget sentence hold the core's
+  tree only; each component keeps its own, and no rule in one repository can see an edge in another. The
+  cross-component property that matters — no language references an emitter and no emitter references
+  a language — is enforceable only as each component's rule over its own package references, plus a
+  product's closure report read off its published output.
+- **The aggregate checkout.** This repository already assumes it may be nested inside a larger one — its
+  `Directory.Build.props` deliberately does not chain to a parent — and rule D1 scans the project files
+  above it. Six sibling components under one aggregate root is that layout multiplied, and D1's revision
+  is what keeps it from reporting every sibling as a legacy breach.
+
+### 16.5 Alternatives not taken
+
+| Option | Why not |
+|---|---|
+| **One repository, with the same assembly names** | Not refused: it is the state every stage before UBC-10 is in, and the naming makes the split a move. What one repository cannot give is per-component ownership, release cadence and packaging, which the request asks for. |
+| **One `Broiler.VM.Emitter.Native` component for every architecture** | An image that emits `x86-64` need not carry an `arm64` encoder, and the two forms carry different evidence classes — one published and run, one emitting-only — that a single ledger would have to keep apart by hand. |
+| **The universal bytecode as a component of its own, apart from the core** | The request places the bytecode formats in `Broiler.VM`, and section 3.2's argument needs them there: the universal bytecode is the level between the core and the languages, and a separate component for it would be a second core contract by another name. |
+| **Language components with no reference to any emitter package** | Their demonstration roots need one to run anything; it is a root's reference and not the profile's, which A12 already distinguishes, and it is the only cross-component reference a language component makes. |
+
+### 16.6 Stage UBC-10 — the split, as a gate a run can decide
+
+- **Objective.** Each component builds, publishes and runs from the others' packages alone.
+- **Waits on.** UBC-9's packability decision and the universal bytecode contract version record; and
+  UBC-3, UBC-4, UBC-6 and UBC-7 for the components that would exist to be split out.
+- **Exit gate.** A pristine feed holding `Broiler.VM`'s five packages restores and builds every other
+  component with no project reference across a component root, in the shape `eng/verify-feed.ps1` and
+  the feed consumer under `samples/` already prove for the three packages; every component's own rule
+  register holds its reference set by package name, with a negative control watched failing; rule D1
+  is revised and its witness watched; every composition root's closure, read off the published output,
+  contains exactly its register row's packages; the universal bytecode contract version appears in
+  `Broiler.VM`'s support table and in every component's registration; ADR 0001's ruling of
+  2026-08-31 is reversed by a dated revision with the superseded text quoted, and the README and
+  roadmap section 1 sentences that restate it carry the correction; the JavaScript and WebAssembly
+  `docs/` trees move whole with their components, their ledgers' rows unchanged in state; and no
+  component's table claims a runtime identifier, a supported form or a figure it did not claim the
+  day before the split.
 
 ---
 
@@ -2000,15 +2224,16 @@ means a rule this concept mints, each with a negative control watched failing an
 
 | Rule | Today | Under this concept |
 |---|---|---|
-| A6, C1, C2, C3 | exactly three packable | unchanged during the MVP; `Broiler.VM.Ubc`'s packability is UBC-9's dated decision |
+| A6, C1, C2, C3 | exactly three packable; no dependency on a Broiler package outside the three | unchanged during the MVP; the packability of `Broiler.VM.Ubc` and `Broiler.VM.Ubc.Native` is UBC-9's dated decision, and under section 16 A6, C1 and C2 count five |
 | A7, A15 | the graph manifest and ADR 0001's budget sentence hold the tree | revised at every stage that adds a project or an edge |
-| A11, A12, N2 | families keyed on the segment; roots reference core plus profile assemblies | unchanged: four families, no cross-family edge, roots as today |
+| A11, A12, N2 | families keyed on the segment; roots reference core plus profile assemblies | revised: a second family pattern, `Broiler.VM.Emitter.<Architecture>`, keyed on the segment under the same no-cross-family rule; A12 admits emitter assemblies in a root; under section 16 each becomes a per-component rule over package references |
+| A13 | a consumer profile references exactly Abstractions and Binary, with no package reference | revised: the fixture family of 8.3 references `Broiler.VM.Ubc` too |
 | B1, B2 | the core references nothing new | unchanged, and the check that the concept keeps the core untouched |
 | B4 | no exported member names a type outside `System.*` and `Broiler.VM` | unchanged (the universal bytecode's namespace is under `Broiler.VM`) |
-| B5, B5b | no dynamic loading, IL emit or native-code preparation outside the arming path | unchanged in scope; the member allowlist names the machine-code family |
-| B5c, X1 | statements name `Broiler.VM.Profile.JavaScript` and `JsNativePage`; tests read the MachineCode assembly | revised to say what the tests already read; the arming path is the machine-code family's execution half |
-| X2 | `JsBaselineFrame` holds no reference | revised: every frame type the machine-code pivot declares holds none |
-| X3 | `[UnmanagedCallersOnly]` only in two named JavaScript files | revised: only in the machine-code family's wrapper file |
+| B5, B5b | no dynamic loading, IL emit or native-code preparation outside the arming path | unchanged in scope; the member allowlist names `Broiler.VM.Emitter.X86.Execution` |
+| B5c, X1 | statements name `Broiler.VM.Profile.JavaScript` and `JsNativePage`; tests read the MachineCode assembly | revised to name `Broiler.VM.Emitter.X86.Execution` and `VmNativePage`, the renamed MachineCode project the tests already read |
+| X2 | `JsBaselineFrame` holds no reference | revised: every frame type `Broiler.VM.Ubc.Native` declares holds none |
+| X3 | `[UnmanagedCallersOnly]` only in two named JavaScript files | revised: only in `Broiler.VM.Ubc.Native`'s wrapper file |
 | X4 | baseline handlers route by the block partition and keep run-time checks | revised: every family's wrappers keep the cookie, pc and opcode checks |
 | K1–K5 | the composition register held to the tree | unchanged in meaning; the sibling and native-execution cells move with section 9 |
 | M1 | the core's public API baseline in both directions | unchanged; `IVmNativeCompiler` stays (route UBC-R5) |
@@ -2020,13 +2245,14 @@ means a rule this concept mints, each with a negative control watched failing an
 | N12, N19, N20, N21 | no mutable statics in the lowering; the compilation stack; no ambient host holder; the crossing charge | unchanged |
 | N16 | two JavaScript format versions under one verifier, bound to manifests | retired with its reason: the family has no format version of its own; the pairing principle survives one level up as a rule over family table versions (new, **U5**) |
 | W1 | the WebAssembly profile references exactly Abstractions and Binary | revised: plus `Broiler.VM.Ubc` |
-| **U1** *(new)* | | `Broiler.VM.Ubc` references exactly Abstractions and Binary |
+| **U1** *(new)* | | `Broiler.VM.Ubc` references exactly Abstractions and Binary; `Broiler.VM.Ubc.Native` exactly those and `Broiler.VM.Ubc` |
 | **U2** *(new)* | | `Broiler.VM.Ubc` exports no identifier of a banned vocabulary and no family row |
 | **U3** *(new)* | | no emitter family's source names a language family, a language or an opcode of one |
 | **U4** *(new)* | | the common family's stack-effect table is one table the verifier, the interpreter and every encoder read |
 | **U5** *(new)* | | a family table version is bound to the manifest that selects it, and one walk reads every table |
 | **U6** *(new)* | | every `Primitive` row of every composed family has a retained input corpus and a passing differential check per emitter |
-| **U7** *(new)* | | the thread-static activation slot is written only by the machine-code family's managed entry and read only after the cookie check |
+| **U7** *(new)* | | the thread-static activation slot is written only by `Broiler.VM.Ubc.Native`'s managed entry and read only after the cookie check |
+| D1 | no project outside the component references into `Broiler.VM` | unchanged until section 16's split; revised there to key on the legacy components it exists for, because every `Broiler.VM.*` component then references the core |
 | E2, E4 | the ADR index and the contract-bearing set | unchanged: ADR 0013 is not contract-bearing and the index gains its row |
 | H1–H5, J1–J12 | review documents and assurance | unchanged; every moved unit is re-annotated and re-fingerprinted by the generator |
 
@@ -2042,10 +2268,12 @@ means a rule this concept mints, each with a negative control watched failing an
 | ADR 0011 | the standing-refusals table gains a dated verdict row; P1's route | UBC-0 |
 | **ADR 0013** *(new, not contract-bearing)* | the extraction record | UBC-0 |
 | `docs/mvp.md` section 5 | rows UBC-R1 to UBC-R7 as `MVP-10` onward; MVP-3, MVP-7 and MVP-8 annotated as carried over; MVP-2's vector reservation annotated as a universal format question | UBC-0 and after |
-| `docs/support.md` section 3a | becomes the emitter table | UBC-9 |
+| `docs/support.md` section 3a | becomes the emitter table; under section 16 it says the core ships no emitter and names none as supported | UBC-9, UBC-10 |
 | `docs/compositions.md` | sibling and native-execution cells; the missing MachineCode extraction explanation | UBC-0, UBC-5, UBC-8 |
 | JavaScript `roadmap.md` non-goals, section 9 | the second-execution-arm entry (the executor is the emitter's), the second-lowering entry (unchanged in substance), the intermediate-form sentence discharged | UBC-0, as JSD-0036 |
 | JavaScript `roadmap.backends.md` | the whole document describes forms this concept re-homes; a dated note at its head, and its stages' State bullets closed or superseded by name | UBC-3, UBC-6 |
 | JSD-0011, JSD-0025, JSD-0035 | not amended; each cited for the property this concept carries over | — |
 | WebAssembly `roadmap.md` sections 5, 7, 17, the compiler and second-execution-arm non-goals | `WAC-nn` corrections with the superseded text; section 9's memory row taken | UBC-4 |
+| ADR 0001's ruling of 2026-08-31 that a language profile is a set of product projects rather than a component of its own; the README's corrected sentence and roadmap section 1's *VM profile* row that restate it | reversed by a dated revision with the superseded text quoted; the one-way reference direction restated | UBC-10 |
+| ADR 0011's standing refusals of the assurance tooling and the conformance-harness method | their reopening condition, a second component's own implementation, is met by the split; the verdicts are theirs to give | UBC-10 |
 | `HUMAN_REVIEW.md`, `CODE-ASSURANCE.md`, `assurance.manifest.json` | regenerated at every stage; every moved unit `HUMAN_PENDING` | every stage |
