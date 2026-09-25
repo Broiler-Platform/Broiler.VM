@@ -729,9 +729,16 @@ internal static class UbcRules
             return [];
         }
 
-        var locals = build.DescendantNodes().OfType<VariableDeclaratorSyntax>()
+        var declared = build.DescendantNodes().OfType<VariableDeclaratorSyntax>()
             .Where(static local => local.Initializer is not null)
-            .ToDictionary(static local => local.Identifier.ValueText, static local => local.Initializer!.Value, StringComparer.Ordinal);
+            .GroupBy(static local => local.Identifier.ValueText, StringComparer.Ordinal)
+            .ToArray();
+
+        // A name declared twice in Build could resolve to either declaration, so the rule does not
+        // choose one; a row naming it is then unreadable and reported as such.
+        var locals = declared
+            .Where(static group => group.Count() == 1)
+            .ToDictionary(static group => group.Key, static group => group.Single().Initializer!.Value, StringComparer.Ordinal);
 
         var rows = new List<CommonRow>();
 
