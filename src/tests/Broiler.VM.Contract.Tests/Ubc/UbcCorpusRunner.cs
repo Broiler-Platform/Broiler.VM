@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using Broiler.VM;
-using Broiler.VM.Fixtures;
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Text.Json;
 using Broiler.VM.Ubc;
 
 namespace Broiler.VM.Contract.Tests;
@@ -183,10 +185,166 @@ internal static class UbcCorpusRunner
             UbcCorpusFamily.ProfileId,
             configuration.DescriptorFormatVersion,
             VmFeatureManifestId.Parse(configuration.DescriptorManifest),
-            CorpusRunner.RequestedLimits(configuration.ArtifactBytesRequest),
+            RequestedLimits(configuration.ArtifactBytesRequest),
             VmCallerIdentity.FromCanonicalIdentity("corpus://ubc-1"));
 
         var outcome = profile.Verifier.Verify(in descriptor, payload, context, cancellation.Token);
         return new UbcCorpusObservation(outcome, meter);
+    }
+
+    /// <summary>The limits an artifact descriptor requests: nothing, or an artifact-bytes tightening alone.</summary>
+    internal static VmLimitVector RequestedLimits(ulong artifactBytesRequest)
+    {
+        if (artifactBytesRequest == 0)
+        {
+            return default;
+        }
+
+        var values = new ulong[VmBudgetDimensions.Count];
+        Array.Fill(values, ulong.MaxValue);
+        values[(int)VmBudgetDimension.ArtifactBytes] = artifactBytesRequest;
+
+        VmLimitVector.TryCreate(values, out var vector);
+        return vector;
+    }
+}
+
+/// <summary>
+/// How one corpus entry is presented to the verifier: the descriptor's format version and manifest,
+/// the ceilings of the verification context, the hook the descriptor is built with, and whether the
+/// token is already cancelled.
+/// </summary>
+/// <remarks>
+/// ADR 0011's schema carries two of these, <c>descriptorFormatVersion</c> and
+/// <c>artifactBytesRequest</c>. The universal bytecode's walk refuses on four more things a
+/// presentation decides - the descriptor's manifest, a ceiling other than artifact bytes, the hook, and
+/// a cancellation - so the manifest carries them beside the two, and its comment says so.
+/// </remarks>
+internal sealed class UbcCorpusConfiguration
+{
+    internal UbcCorpusConfiguration(
+        uint descriptorFormatVersion = UbcFormat.FormatVersion,
+        ulong artifactBytesRequest = 0,
+        string descriptorManifest = UbcCorpusFamily.BaseManifestText,
+        UbcCorpusHookMode hook = UbcCorpusHookMode.Standard,
+        bool cancelled = false,
+        ImmutableSortedDictionary<VmBudgetDimension, ulong>? ceilings = null)
+    {
+        DescriptorFormatVersion = descriptorFormatVersion;
+        ArtifactBytesRequest = artifactBytesRequest;
+        DescriptorManifest = descriptorManifest;
+        Hook = hook;
+        Cancelled = cancelled;
+        Ceilings = ceilings ?? ImmutableSortedDictionary<VmBudgetDimension, ulong>.Empty;
+    }
+
+    internal static UbcCorpusConfiguration Default { get; } = new();
+
+    /// <summary>The format version the presenting artifact descriptor declares.</summary>
+    internal uint DescriptorFormatVersion { get; }
+
+    /// <summary>An artifact-bytes tightening the artifact descriptor requests, or zero for none.</summary>
+    internal ulong ArtifactBytesRequest { get; }
+
+    /// <summary>The feature manifest the presenting artifact descriptor names.</summary>
+    internal string DescriptorManifest { get; }
+
+    /// <summary>Which hook the descriptor is built with.</summary>
+    internal UbcCorpusHookMode Hook { get; }
+
+    /// <summary>Whether the cancellation token is cancelled before verification begins.</summary>
+    internal bool Cancelled { get; }
+
+    /// <summary>Verification ceilings that replace the family's declared default for their dimension.</summary>
+    internal ImmutableSortedDictionary<VmBudgetDimension, ulong> Ceilings { get; }
+
+    internal static UbcCorpusConfiguration With(VmBudgetDimension dimension, ulong value) =>
+        new(ceilings: ImmutableSortedDictionary<VmBudgetDimension, ulong>.Empty.Add(dimension, value));
+}
+
+/// <summary>An answer, as the manifest writes it: the outcome tuple of ADR 0011's schema and a position.</summary>
+internal readonly record struct UbcCorpusAnswer(
+    VmOutcome Outcome,
+    VmReason Reason,
+    int ProfileDiagnosticCode,
+    VmBudgetDimension Dimension,
+    VmBudgetScope Scope,
+    string Position)
+{
+    /// <summary>The written form of a position: section index, byte offset and the two coordinates, colon-separated.</summary>
+    internal static string Format(VmSourcePosition position) =>
+        string.Create(
+            CultureInfo.InvariantCulture,
+            $"{position.SectionIndex}:{position.ByteOffset}:{position.ProfileCoordinate0}:{position.ProfileCoordinate1}");
+
+    /// <summary>What a pinned row writes where it pins no position.</summary>
+    internal const string Unpinned = "-";
+}
+
+/// <summary>
+/// Replays the retained corpus from its files and prints its failure-class table: one line per entry,
+/// its id and the answer it gave, with the entry's pinned answer compared. The contract suite asserts
+/// the same answers; the universal bytecode's fixture composition compiles this file and runs it in
+/// every publish mode, so the three tables can be compared byte for byte.
+/// </summary>
+internal static class UbcCorpusReplay
+{
+    /// <summary>Replays <paramref name="directory"/>'s manifest; answers the number of entries that disagree.</summary>
+    internal static int Replay(string directory, TextWriter output)
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(directory, "manifest.json")));
+        var failures = 0;
+        var entries = 0;
+
+        foreach (var element in document.RootElement.GetProperty("entries").EnumerateArray())
+        {
+            entries++;
+            var id = element.GetProperty("id").GetString()!;
+            var bytes = File.ReadAllBytes(Path.Combine(directory, element.GetProperty("file").GetString()!));
+
+            if (bytes.Length != element.GetProperty("bytes").GetInt32() ||
+                !string.Equals(Convert.ToHexStringLower(SHA256.HashData(bytes)), element.GetProperty("sha256").GetString(), StringComparison.Ordinal))
+            {
+                failures++;
+                output.WriteLine($"FAIL {id} MUTATED");
+                continue;
+            }
+
+            var ceilings = ImmutableSortedDictionary.CreateBuilder<VmBudgetDimension, ulong>();
+
+            foreach (var ceiling in element.GetProperty("ceilings").EnumerateObject())
+            {
+                ceilings.Add(Enum.Parse<VmBudgetDimension>(ceiling.Name), ceiling.Value.GetUInt64());
+            }
+
+            var configuration = new UbcCorpusConfiguration(
+                element.GetProperty("descriptorFormatVersion").GetUInt32(),
+                element.GetProperty("artifactBytesRequest").GetUInt64(),
+                element.GetProperty("descriptorManifest").GetString()!,
+                Enum.Parse<UbcCorpusHookMode>(element.GetProperty("hook").GetString()!),
+                element.GetProperty("cancelled").GetBoolean(),
+                ceilings.ToImmutable());
+
+            var exact = string.Equals(element.GetProperty("pinning").GetString(), "Exact", StringComparison.Ordinal);
+            var pinned = element.GetProperty(exact ? "expected" : "recorded");
+            var answer = UbcCorpusRunner.Run(bytes, configuration).Answer;
+            var pinnedPosition = pinned.GetProperty("position").GetString()!;
+
+            var agrees =
+                string.Equals(answer.Outcome.ToString(), pinned.GetProperty("outcome").GetString(), StringComparison.Ordinal) &&
+                string.Equals(answer.Reason.ToString(), pinned.GetProperty("reason").GetString(), StringComparison.Ordinal) &&
+                answer.ProfileDiagnosticCode == pinned.GetProperty("profileDiagnosticCode").GetInt32() &&
+                string.Equals(answer.Dimension.ToString(), pinned.GetProperty("dimension").GetString(), StringComparison.Ordinal) &&
+                string.Equals(answer.Scope.ToString(), pinned.GetProperty("scope").GetString(), StringComparison.Ordinal) &&
+                (pinnedPosition == UbcCorpusAnswer.Unpinned || string.Equals(answer.Position, pinnedPosition, StringComparison.Ordinal));
+
+            failures += agrees ? 0 : 1;
+            output.WriteLine(string.Create(
+                CultureInfo.InvariantCulture,
+                $"{(agrees ? "ok  " : "FAIL")} {id} {answer.Outcome} {answer.Reason} {answer.ProfileDiagnosticCode} {answer.Dimension} {answer.Scope} {answer.Position}"));
+        }
+
+        output.WriteLine(string.Create(CultureInfo.InvariantCulture, $"ubc-1 corpus: {entries} entries, {failures} disagree"));
+        return entries == 0 ? 1 : failures;
     }
 }

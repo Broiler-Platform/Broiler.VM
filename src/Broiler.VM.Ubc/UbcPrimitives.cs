@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   33
-// Annotated:        33/33
+// Relevant units:   34
+// Annotated:        34/34
 // Exempt:           156
-// Human-reviewed:   0/33
+// Human-reviewed:   0/34
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         17/10
+// Criteria:         18/10
 // Resource impact:  1/10 max
-// Unverified:       33
+// Unverified:       34
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -578,19 +578,71 @@ public static class UbcPrimitives
     /// Evaluates a primitive that takes no region: <paramref name="a"/> is the deeper operand and
     /// <paramref name="b"/> the top one (a one-operand entry reads <paramref name="a"/> only).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=6C38AB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=800EA6
     // Broiler-Falsified-If: some input yields a result that differs, in any bit, from the entry's statement in Appendix D under the NaN flag given
     // Broiler-Human:        PENDING
     public static UbcPrimitiveResult Evaluate(UbcPrimitive primitive, ulong a, ulong b, bool canonicaliseNaN)
     {
         var result = EvaluateCore(primitive, a, b);
 
-        if (!canonicaliseNaN || result.Trap != UbcTrapCode.None || !Canonicalises(primitive))
+        if (result.Trap != UbcTrapCode.None || !Canonicalises(primitive))
         {
             return result;
         }
 
-        return UbcPrimitiveResult.Value(Canonical(primitive, result.Bits));
+        return UbcPrimitiveResult.Value(canonicaliseNaN ? Canonical(primitive, result.Bits) : Propagated(primitive, a, b, result.Bits));
+    }
+
+    /// <summary>
+    /// A NaN result without canonicalisation, stated rather than left to the host: the first operand
+    /// of the result's own type that is a NaN, made quiet; or, when no such operand is a NaN, the
+    /// canonical NaN. Any other result is returned unchanged.
+    /// </summary>
+    /// <remarks>
+    /// The hardware does not agree with itself: an invalid operation answers a negative default NaN on
+    /// <c>x86-64</c> and a positive one on <c>arm64</c>, and which NaN operand propagates is not the
+    /// same on every instruction set. Appendix D makes every entry a total function with a stated
+    /// result for every input, so the result is stated here and an emitter executing the row inline
+    /// must produce these bits on every architecture it targets.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=654A55
+    // Broiler-Falsified-If: a NaN result's bits depend on anything but the operands' bits
+    // Broiler-Human:        PENDING
+    private static ulong Propagated(UbcPrimitive primitive, ulong a, ulong b, ulong bits)
+    {
+        var binary = primitive is UbcPrimitive.F32Add or UbcPrimitive.F32Sub or UbcPrimitive.F32Mul or UbcPrimitive.F32Div
+            or UbcPrimitive.F32Min or UbcPrimitive.F32Max or UbcPrimitive.F64Add or UbcPrimitive.F64Sub
+            or UbcPrimitive.F64Mul or UbcPrimitive.F64Div or UbcPrimitive.F64Min or UbcPrimitive.F64Max;
+
+        // A conversion's operand is of the other width, so it never propagates: its NaN is canonical.
+        var conversion = primitive is UbcPrimitive.F32DemoteF64 or UbcPrimitive.F64PromoteF32;
+
+        if (ResultIsF32(primitive))
+        {
+            if (!float.IsNaN(System.BitConverter.UInt32BitsToSingle((uint)bits)))
+            {
+                return bits;
+            }
+
+            if (!conversion && float.IsNaN(System.BitConverter.UInt32BitsToSingle((uint)a)))
+            {
+                return (uint)a | 0x0040_0000u;
+            }
+
+            return binary && float.IsNaN(System.BitConverter.UInt32BitsToSingle((uint)b)) ? (uint)b | 0x0040_0000u : CanonicalNaN32;
+        }
+
+        if (!double.IsNaN(System.BitConverter.UInt64BitsToDouble(bits)))
+        {
+            return bits;
+        }
+
+        if (!conversion && double.IsNaN(System.BitConverter.UInt64BitsToDouble(a)))
+        {
+            return a | 0x0008_0000_0000_0000UL;
+        }
+
+        return binary && double.IsNaN(System.BitConverter.UInt64BitsToDouble(b)) ? b | 0x0008_0000_0000_0000UL : CanonicalNaN64;
     }
 
     /// <summary>

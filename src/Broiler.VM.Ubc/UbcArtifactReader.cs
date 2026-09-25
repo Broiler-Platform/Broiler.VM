@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
+// Relevant units:   28
+// Annotated:        28/28
 // Exempt:           14
-// Human-reviewed:   0/27
+// Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         24/24
+// Criteria:         25/25
 // Resource impact:  6/10 max
-// Unverified:       27
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -714,7 +714,7 @@ public static class UbcArtifactReader
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=299E8D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=844D25
     // Broiler-Falsified-If: a count is returned, or reserved against, before the declared-count ceiling has passed it
     // Broiler-Human:        PENDING
     private static bool TryReadCount(
@@ -731,7 +731,17 @@ public static class UbcArtifactReader
             return false;
         }
 
-        return context.TryReserve(count * bytesPerItem, out refusal);
+        // Every counted item takes at least one byte, so a count the rest of the payload cannot hold
+        // is a truncated artifact, refused here rather than reserved for: the reservation below is an
+        // estimate of the decoded rows, and an estimate is the meter's to refuse, not the artifact's
+        // length.
+        if (count > reader.Remaining)
+        {
+            refusal = UbcRefusal.Invalid(UbcDiagnosticCode.Truncated, VmReason.Truncated, UbcRefusal.InSection(kind, reader.Position));
+            return false;
+        }
+
+        return context.TryReserveEstimate(count * bytesPerItem, out refusal);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=AC0F90
@@ -1005,8 +1015,8 @@ public static class UbcArtifactReader
                 return true;
             }
 
-            // An artifact can never need more resident bytes than it may itself be long, which is the
-            // allocator's own rule; a count whose rows would exceed it is refused before the meter.
+            // An exact run of the artifact's bytes can never be longer than the artifact may itself be,
+            // which is the allocator's own rule; one that would be is refused before the meter.
             if (bytes > Bounds.MaxArtifactBytes || !Meter.TryReserve(bytes))
             {
                 refusal = UbcRefusal.Exhausted(VmBudgetDimension.AllocatedBytes);
@@ -1014,6 +1024,27 @@ public static class UbcArtifactReader
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Reserves an estimate of decoded rows: the meter alone judges it. The count it is sized by
+        /// was already held to the payload's remaining bytes, so the estimate is bounded by a multiple
+        /// of the artifact's length and never overflows.
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=ADE972
+        // Broiler-Falsified-If: an estimate is compared with the artifact's length, or a refused estimate is answered as anything but an allocation exhaustion
+        // Broiler-Human:        PENDING
+        internal bool TryReserveEstimate(ulong bytes, out UbcRefusal refusal)
+        {
+            refusal = default;
+
+            if (bytes == 0 || Meter.TryReserve(bytes))
+            {
+                return true;
+            }
+
+            refusal = UbcRefusal.Exhausted(VmBudgetDimension.AllocatedBytes);
+            return false;
         }
     }
 

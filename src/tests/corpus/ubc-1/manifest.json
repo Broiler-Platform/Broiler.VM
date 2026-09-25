@@ -11256,11 +11256,11 @@
       },
       "recorded": {
         "outcome": "InvalidArtifact",
-        "reason": "UnknownFeature",
-        "profileDiagnosticCode": 3301,
+        "reason": "Truncated",
+        "profileDiagnosticCode": 3901,
         "dimension": "Fuel",
         "scope": "Artifact",
-        "position": "2:79:-1:-1"
+        "position": "2:77:-1:-1"
       },
       "note": "Byte 75 of the canonical control inverted. The sweep asserts a closed set of answers that has not moved, not that everything fails."
     },
@@ -11289,11 +11289,11 @@
       },
       "recorded": {
         "outcome": "InvalidArtifact",
-        "reason": "UnknownFeature",
-        "profileDiagnosticCode": 3301,
+        "reason": "Truncated",
+        "profileDiagnosticCode": 3901,
         "dimension": "Fuel",
         "scope": "Artifact",
-        "position": "2:79:-1:-1"
+        "position": "2:78:-1:-1"
       },
       "note": "Byte 76 of the canonical control inverted. The sweep asserts a closed set of answers that has not moved, not that everything fails."
     },
@@ -11520,11 +11520,11 @@
       },
       "recorded": {
         "outcome": "InvalidArtifact",
-        "reason": "UnknownFeature",
-        "profileDiagnosticCode": 3301,
+        "reason": "Truncated",
+        "profileDiagnosticCode": 3901,
         "dimension": "Fuel",
         "scope": "Artifact",
-        "position": "3:86:-1:-1"
+        "position": "3:85:-1:-1"
       },
       "note": "Byte 83 of the canonical control inverted. The sweep asserts a closed set of answers that has not moved, not that everything fails."
     },
@@ -11722,7 +11722,7 @@
         "profileDiagnosticCode": 3901,
         "dimension": "Fuel",
         "scope": "Artifact",
-        "position": "3:107:-1:-1"
+        "position": "3:91:-1:-1"
       },
       "note": "Byte 89 of the canonical control inverted. The sweep asserts a closed set of answers that has not moved, not that everything fails."
     },
@@ -12085,7 +12085,7 @@
         "profileDiagnosticCode": 3901,
         "dimension": "Fuel",
         "scope": "Artifact",
-        "position": "7:103:-1:-1"
+        "position": "7:102:-1:-1"
       },
       "note": "Byte 100 of the canonical control inverted. The sweep asserts a closed set of answers that has not moved, not that everything fails."
     },

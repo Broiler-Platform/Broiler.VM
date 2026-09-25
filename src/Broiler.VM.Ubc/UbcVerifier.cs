@@ -80,7 +80,7 @@ public sealed class UbcVerifier : IVmProfileVerifier
     public int VerifierSemanticVersion => WalkVersion;
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=6; Fingerprint=90CFC7
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=6; Fingerprint=6FF557
     // Broiler-Falsified-If: a refusal of the reader or the walk is answered as anything but its one outcome, or a stop for cancellation is answered as an exhaustion
     // Broiler-Human:        PENDING
     public VmVerifierOutcome Verify(
@@ -93,16 +93,33 @@ public sealed class UbcVerifier : IVmProfileVerifier
         var bounds = UbcReadAdapter.ToReadBounds(context.Ceilings.VerificationCeilings);
         var granularity = declaration.MaxUnchargedWork == 0 ? 65536UL : declaration.MaxUnchargedWork;
 
+        // A verification can share its meter with an executing operation - a guest load's nested
+        // verification is charged to the operation that asked - so it neither inherits that
+        // operation's unpolled work nor leaves its own behind: it polls before its first read and
+        // again before it answers.
+        if (!meter.Poll())
+        {
+            return Answer(UbcRefusal.Exhausted(VmBudgetDimension.VerifierWork), cancellationToken);
+        }
+
         if (!UbcArtifactReader.TryRead(payload, in bounds, new UbcReadAdapter(meter), granularity, descriptor.FormatVersion, out var artifact, out var refusal))
         {
+            meter.Poll();
             return Answer(refusal, cancellationToken);
         }
 
         var walk = new UbcWalk(family, forms, artifact!, descriptor.ProfileId, descriptor.FeatureManifestId, meter, granularity);
+        var admitted = walk.Run(out var program);
+        var settled = meter.Poll();
 
-        return walk.Run(out var program)
+        if (!admitted)
+        {
+            return Answer(walk.Refusal, cancellationToken);
+        }
+
+        return settled
             ? VmVerifierOutcome.Verified(program!, declaration.ArtifactSharing)
-            : Answer(walk.Refusal, cancellationToken);
+            : Answer(UbcRefusal.Exhausted(VmBudgetDimension.VerifierWork), cancellationToken);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=88F12E
@@ -381,7 +398,7 @@ internal sealed class UbcWalk
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=0B373B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=B5AE0C
     // Broiler-Falsified-If: a unit naming a missing signature or an undeclared family, setting a reserved flag, declaring more locals or height than the format admits, or leaving a gap in the code is admitted
     // Broiler-Human:        PENDING
     private bool CheckTypesAndUnits()
@@ -440,6 +457,11 @@ internal sealed class UbcWalk
 
             expected += unit.CodeLength;
 
+            if (!Work((ulong)unit.Landings.Length))
+            {
+                return false;
+            }
+
             for (var landing = 1; landing < unit.Landings.Length; landing++)
             {
                 if (unit.Landings[landing] <= unit.Landings[landing - 1])
@@ -457,7 +479,7 @@ internal sealed class UbcWalk
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9AF037
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=F2B8DD
     // Broiler-Falsified-If: a jump table of a missing unit, with no target, or beyond the count an operand can name is admitted
     // Broiler-Human:        PENDING
     private bool CheckJumpTables()
@@ -469,6 +491,11 @@ internal sealed class UbcWalk
             return Invalid(UbcDiagnosticCode.JumpTableMalformed, VmReason.InconsistentStructure, UbcRefusal.InRow(UbcSectionKind.JumpTables, UbcFormat.MaxJumpTables));
         }
 
+        if (!Work((ulong)tables.Length))
+        {
+            return false;
+        }
+
         for (var index = 0; index < tables.Length; index++)
         {
             if (tables[index].Unit >= (uint)artifact.Units.Length || tables[index].Targets.IsEmpty)
@@ -477,15 +504,20 @@ internal sealed class UbcWalk
             }
         }
 
-        return Work((ulong)tables.Length);
+        return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=12BBCD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=4D34DD
     // Broiler-Falsified-If: a region of a missing unit, with an empty or out-of-unit range, of a unit without a family, or of a kind the table does not define is admitted
     // Broiler-Human:        PENDING
     private bool CheckRegionRows()
     {
         var regions = artifact.Regions;
+
+        if (!Work((ulong)regions.Length))
+        {
+            return false;
+        }
 
         for (var index = 0; index < regions.Length; index++)
         {
@@ -511,16 +543,22 @@ internal sealed class UbcWalk
             }
         }
 
-        return Work((ulong)regions.Length);
+        return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D1E69A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=A308A6
     // Broiler-Falsified-If: two entries with one name, or an entry of a missing unit or of a unit not flagged as an entry, pass
     // Broiler-Human:        PENDING
     private bool CheckEntries(out ImmutableArray<int> order)
     {
         order = default;
         var entries = artifact.Entries;
+
+        // The unit check and the longest-name pass below, one unit each per entry.
+        if (!Work(2 * (ulong)entries.Length))
+        {
+            return false;
+        }
 
         for (var index = 0; index < entries.Length; index++)
         {
@@ -573,12 +611,26 @@ internal sealed class UbcWalk
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=949CB6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A3CD30
     // Broiler-Falsified-If: a position of a missing unit, or at an offset that is not one of its unit's boundaries, passes
     // Broiler-Human:        PENDING
     private bool CheckPositions(UbcUnitCode[] units)
     {
         var positions = artifact.Positions;
+        var longest = 0;
+
+        foreach (var unit in units)
+        {
+            longest = System.Math.Max(longest, unit.Instructions.Length);
+        }
+
+        // Each row is one binary search over its unit's boundaries, charged at the longest unit's depth.
+        var levels = (ulong)System.Numerics.BitOperations.Log2((uint)longest + 1) + 1;
+
+        if (!Work((ulong)units.Length + ((ulong)positions.Length * levels)))
+        {
+            return false;
+        }
 
         for (var index = 0; index < positions.Length; index++)
         {
@@ -595,13 +647,13 @@ internal sealed class UbcWalk
             }
         }
 
-        return Work((ulong)positions.Length);
+        return true;
     }
 
     // ---- the code walk -----------------------------------------------------------------------
 
     /// <summary>Decodes, walks and hooks one unit; answers its decoded code, or null with the refusal set.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=9B4F93
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=A3FB28
     // Broiler-Falsified-If: a unit is answered while an instruction in it is unreachable, a landing is missing or extra, or a region's prefix differs between two covered instructions
     // Broiler-Human:        PENDING
     private UbcUnitCode? WalkUnit(int unitIndex, int[] tableIndices, int[] regionIndices, ImmutableArray<int>[] jumpTargets)
@@ -616,15 +668,19 @@ internal sealed class UbcWalk
 
         var count = decoded.Length;
 
+        var searches = (ulong)System.Numerics.BitOperations.Log2((uint)count + 1) + 1;
+
         foreach (var tableIndex in tableIndices)
         {
             var targets = artifact.JumpTables[tableIndex].Targets;
-            var resolved = new int[targets.Length];
 
-            if (!Reserve((ulong)targets.Length * 4) || !Work((ulong)targets.Length))
+            // A binary search per target, and the resolved row kept: both paid for before either exists.
+            if (!Reserve((ulong)targets.Length * 4) || !Work((ulong)targets.Length * searches))
             {
                 return null;
             }
+
+            var resolved = new int[targets.Length];
 
             for (var index = 0; index < targets.Length; index++)
             {
@@ -636,7 +692,7 @@ internal sealed class UbcWalk
                 }
             }
 
-            jumpTargets[tableIndex] = ImmutableArray.Create(resolved);
+            jumpTargets[tableIndex] = System.Runtime.InteropServices.ImmutableCollectionsMarshal.AsImmutableArray(resolved);
         }
 
         if (!ResolveRegions(unitIndex, unit, regionIndices, decoded, out var regions, out var innermost, out var parents))
@@ -644,14 +700,27 @@ internal sealed class UbcWalk
             return null;
         }
 
-        var layout = new LocalLayout(signature, unit);
-        var state = new WalkState(count, regions.Length);
+        // The unit's local table - its signature's parameters and its own runs - and its signature's
+        // counts are built per unit, so they are charged per unit: a signature many units share is
+        // paid for by each of them.
+        var parameters = (ulong)signature.Parameters.Length;
+        var runs = (ulong)unit.Locals.Length;
 
-        if (!Reserve((ulong)count * InstructionBytes))
+        if (!Work((2 * parameters) + runs + (ulong)signature.Results.Length) || !Reserve((parameters * 4) + (runs * 16)))
         {
             return null;
         }
 
+        var layout = new LocalLayout(signature, unit);
+
+        // The walk's per-instruction state and the decoded instructions, under one reservation made
+        // before either exists; InstructionBytes covers both, and each region's two slots are added.
+        if (!Reserve(((ulong)count * InstructionBytes) + ((ulong)regions.Length * 16)))
+        {
+            return null;
+        }
+
+        var state = new WalkState(count, regions.Length);
         var instructions = new UbcInstruction[count];
 
         if (!Arrive(state, 0, null, unitIndex, unit, decoded))
@@ -668,6 +737,11 @@ internal sealed class UbcWalk
             {
                 return null;
             }
+        }
+
+        if (!Work((ulong)count))
+        {
+            return null;
         }
 
         for (var index = 0; index < count; index++)
@@ -1101,11 +1175,18 @@ internal sealed class UbcWalk
     /// The unit's landings are exactly its resume points - the instruction after every suspending row
     /// that falls through - and its regions' handlers, ascending.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=54E900
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=066AA2
     // Broiler-Falsified-If: a unit whose landings omit a resume point or a handler, or name any other offset, passes
     // Broiler-Human:        PENDING
     private bool CheckLandings(int unitIndex, UbcUnit unit, Raw[] decoded, ImmutableArray<UbcDecodedRegion> regions)
     {
+        // Reserved at the most the set can hold - a resume point per instruction and a handler per
+        // region - before it holds anything.
+        if (!Reserve(((ulong)decoded.Length + (ulong)regions.Length) * 48))
+        {
+            return false;
+        }
+
         var required = new System.Collections.Generic.SortedSet<uint>();
 
         if (!Work((ulong)decoded.Length + (ulong)regions.Length + (ulong)unit.Landings.Length))
@@ -1126,11 +1207,6 @@ internal sealed class UbcWalk
             required.Add(decoded[region.Handler].Pc);
         }
 
-        if (!Reserve((ulong)required.Count * 48))
-        {
-            return false;
-        }
-
         var matches = required.Count == unit.Landings.Length;
         var position = 0;
 
@@ -1148,7 +1224,7 @@ internal sealed class UbcWalk
     }
 
     /// <summary>Applies one instruction to the typed stack, records what the walk proved, and reaches its successors.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=16C3A8
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=0A363D
     // Broiler-Falsified-If: an instruction reaches a successor with a stack other than its effect applied, or is recorded with counts that differ from that effect
     // Broiler-Human:        PENDING
     private bool Step(
@@ -1244,6 +1320,11 @@ internal sealed class UbcWalk
                 }
 
                 resolved = (int)operand;
+
+                if (!Work((ulong)jumpTargets[resolved].Length))
+                {
+                    return false;
+                }
 
                 foreach (var successor in jumpTargets[resolved])
                 {

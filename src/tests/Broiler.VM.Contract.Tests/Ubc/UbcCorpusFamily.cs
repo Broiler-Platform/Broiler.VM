@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using Broiler.VM;
-using Broiler.VM.Fixtures;
 using Broiler.VM.Ubc;
 
 namespace Broiler.VM.Contract.Tests;
@@ -270,9 +269,9 @@ internal static class UbcCorpusFamily
             threadAffinity: VmThreadAffinity.Agile,
             cancellationPollBound: maxUnchargedWork,
             abandonBudget: 777,
-            limitDefaults: FixtureDescriptorFactory.Defaults(),
-            profileHardMaxima: FixtureDescriptorFactory.Maxima(),
-            budgetDeclarationMatrix: FixtureDescriptorFactory.Matrix(declaresGuestLoads: false),
+            limitDefaults: Vector(Defaults),
+            profileHardMaxima: Vector(Maxima),
+            budgetDeclarationMatrix: Matrix(),
             hostCapabilityDescriptors: ImmutableArray<VmCapabilityImport>.Empty,
             guestInitiatedLoads: VmGuestLoadDeclaration.NotDeclared,
             asynchronousInstantiation: VmDeclaration.NotDeclared,
@@ -287,6 +286,46 @@ internal static class UbcCorpusFamily
             maxUnchargedWork: maxUnchargedWork,
             chargingGranularity: 1,
             artifactSharing: VmArtifactSharing.Shareable);
+    }
+
+    // The fixture profile's vectors, stated here rather than borrowed from Broiler.VM.Fixtures: this file
+    // is also compiled into the universal bytecode's fixture composition, which replays the corpus in
+    // every publish mode and may not link a test fixture. The corpus's recorded answers bind the two
+    // copies of nothing, because there is one copy.
+    private static readonly ulong[] Defaults =
+    [
+        1_000_000, 30_000, 8 * 1024 * 1024, 10_000, 8, 64 * 1024, 1_000_000, 8 * 1024 * 1024, 256, 4,
+        1024 * 1024, 64, 65_536, 16, 64,
+    ];
+
+    private static readonly ulong[] Maxima =
+    [
+        100_000_000, 300_000, 64L * 1024 * 1024, 1_000_000, 64, 1024 * 1024, 100_000_000, 64L * 1024 * 1024,
+        4096, 16, 16L * 1024 * 1024, 1024, 1_048_576, 64, ulong.MaxValue,
+    ];
+
+    private static VmLimitVector Vector(ulong[] byDimension)
+    {
+        var values = new ulong[VmBudgetDimensions.Count];
+
+        foreach (var dimension in VmBudgetDimensions.All)
+        {
+            values[(int)dimension] = byDimension[(int)dimension];
+        }
+
+        VmLimitVector.TryCreate(values, out var vector);
+        return vector;
+    }
+
+    private static VmBudgetDeclarationMatrix Matrix()
+    {
+        var rows = new VmBudgetApplicability[VmBudgetDimensions.Count];
+        Array.Fill(rows, VmBudgetApplicability.Charged);
+        rows[(int)VmBudgetDimension.NestedLoadDepth] = VmBudgetApplicability.NotApplicable;
+        rows[(int)VmBudgetDimension.NestedLoadFanOut] = VmBudgetApplicability.NotApplicable;
+        rows[(int)VmBudgetDimension.NestedLoadBytes] = VmBudgetApplicability.NotApplicable;
+        VmBudgetDeclarationMatrix.TryCreate(rows, out var matrix);
+        return matrix;
     }
 
     /// <summary>The emitter set: the bytecode form, whose executor factory is a stub.</summary>

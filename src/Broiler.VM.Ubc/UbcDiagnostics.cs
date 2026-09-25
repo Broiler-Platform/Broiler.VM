@@ -234,6 +234,9 @@ public enum UbcDiagnosticCode
     /// <summary>The bounded reader stopped for a status this build has no arm for. Defensive.</summary>
     ReaderStopped = 3903,
 
-    /// <summary>The walk itself failed; an internal defect, reported rather than thrown. Defensive.</summary>
+    /// <summary>
+    /// The walk or the family's hook broke its own contract - a hook answering with a code of the
+    /// universal range, or with no invalid-artifact reason - reported rather than thrown.
+    /// </summary>
     VerifierDefect = 3904,
 }
