@@ -858,13 +858,23 @@ internal static class WasmFamilyData
     /// them by name, refusing a name stated twice.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A function export's index is checked by the hook against the artifact's units, which this
-    /// codec does not see. The sort is charged as the walk charges its own: twice the comparisons an
-    /// introspective sort can make, each at the longest name's length in eight-byte steps, with the
-    /// passes before and after it.
+    /// codec does not see.
+    /// </para>
+    /// <para>
+    /// <b>The sort is charged at what its comparisons can cost, before it runs.</b> A comparison of two
+    /// names stops at the first byte that differs, so it costs at most the shorter name's length, and
+    /// the introspective sort's partitions compare each name about once per level. So each of twice
+    /// its levels is charged one step per name and the names' bytes in eight-byte steps, and the pass
+    /// that numbers the rows before it and the pass that compares neighbours after it are charged with
+    /// it. The walk charges its own sort at the longest name's length for every comparison instead;
+    /// here that would price a thousand short names at one long name's length each, and refuse at
+    /// verification a module the profile's own validator admits.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=6ED0DF
-    // Broiler-Falsified-If: a name that is not well-formed UTF-8, a kind byte outside the four, an index of a table, memory or global the definitions do not declare, or a name stated twice is admitted
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=ABE35E
+    // Broiler-Falsified-If: a name that is not well-formed UTF-8, a kind byte outside the four, an index of a table, memory or global the definitions do not declare, or a name stated twice is admitted, or the sort runs before its charge
     // Broiler-Human:        PENDING
     private static UbcHookAnswer ReadExports(
         ref Cursor reader,
@@ -887,7 +897,7 @@ internal static class WasmFamilyData
         }
 
         var read = new WasmExportDefinition[count];
-        var longest = 0;
+        var nameBytes = 0UL;
 
         for (var index = 0; index < read.Length; index++)
         {
@@ -920,13 +930,15 @@ internal static class WasmFamilyData
             }
 
             read[index] = new WasmExportDefinition(name, (WasmExportKind)kind, target);
-            longest = System.Math.Max(longest, name.Length);
+            nameBytes += (ulong)name.Length;
         }
 
+        // One step per name and its bytes in eight-byte steps: what one level of the sort, and the
+        // neighbour pass, can spend. The names are windows onto the section, so the sum cannot overflow.
         var levels = Depth(read.Length);
-        var steps = 1 + ((ulong)longest / 8);
+        var weight = (ulong)read.Length + (nameBytes / 8);
 
-        if (!meter.TryChargeWork((ulong)read.Length + (2 * (ulong)read.Length * levels * steps) + ((ulong)read.Length * steps)))
+        if (!meter.TryChargeWork((ulong)read.Length + (2 * levels * weight) + weight))
         {
             return meter.Exhausted();
         }

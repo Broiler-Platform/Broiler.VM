@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   32
-// Annotated:        32/32
+// Relevant units:   33
+// Annotated:        33/33
 // Exempt:           19
-// Human-reviewed:   0/32
+// Human-reviewed:   0/33
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         17/15
+// Criteria:         18/16
 // Resource impact:  4/10 max
-// Unverified:       32
+// Unverified:       33
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -35,7 +35,8 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <b>The rows.</b> The numeric rows are primitives an emitter executes itself; where one does not, the
 /// handler answers with this profile's own arms, <see cref="WasmReferenceNumerics"/>. A load, a store
 /// and <c>memory.size</c> are the region primitive over the instance's memory, read at the access;
-/// <c>memory.grow</c> is route MVP-1's growth, charged through the step's meter; a global row reads or
+/// <c>memory.grow</c> is route MVP-1's growth, charged through the step's meter with its retention
+/// charged before the allocation, and a growth a core budget refused ends the step; a global row reads or
 /// writes the instance's global bits; <c>call_indirect</c> checks the table index, the entry and the
 /// callee's module type in that order and asks the emitter to enter the callee.
 /// </para>
@@ -45,7 +46,11 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// element segments and then the data segments, each atomic and each charged, a segment that does
 /// not fit recording the trap the instantiation faults with. A start function, if the module names
 /// one, is the emitter's to run once the instance is admitted. An instance that is not published
-/// gives back everything it retained, within the step that retained it.
+/// gives back everything it retained, within the step that retained it. That includes an
+/// instantiation the core would refuse to publish: the core answers a step whose meter latched a
+/// refusal as that refusal and drops its state unabandoned, so every retention here is charged
+/// before its allocation and every refusal the family meets ends the step, and no instantiation
+/// the family lets complete carries a latched refusal of its own.
 /// </para>
 /// <para>
 /// <b>No value plane.</b> WebAssembly's values are all words, so the family's plane holds nothing and
@@ -59,8 +64,16 @@ namespace Broiler.VM.Profile.WebAssembly;
 public struct WasmFamily : IUbcFamily
 {
     /// <summary>Executes one family row.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=84BE34
-    // Broiler-Falsified-If: a row is answered from state it does not own, or a trap it raises is answered as another
+    /// <remarks>
+    /// A growth a core budget refused ends the step through <see cref="UbcStatusKind.Defect"/>, the one
+    /// status a dynamic row has that ends it without a trap the guest could see. It is not answered as
+    /// a contract violation: a refused charge or retention latched an exhaustion on the meter, a
+    /// refused poll the cancellation or the wall-clock exhaustion it saw, and the core ranks what it
+    /// latched above the step's kind, at an invocation and at an instantiation alike. The loop's meter
+    /// polls at the declared bound, so no poll inside a growth is refused for the bound itself.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=8E6403
+    // Broiler-Falsified-If: a row is answered from state it does not own, a trap it raises is answered as another, or a growth a core budget refused lets the guest run on
     // Broiler-Human:        PENDING
     static UbcStatus IUbcFamily.Handle(ref UbcActivation activation, byte familyOpcode, ulong operand)
     {
@@ -103,10 +116,21 @@ public struct WasmFamily : IUbcFamily
                 return UbcStatus.Defect;
             }
 
-            // Route MVP-1 unchanged: a request above the profile's own ceiling answers minus one before
-            // any charge; a refused charge answers minus one with the meter latched, which the core
-            // reports as the exhaustion it is. The step's meter paces the fuel with the loop's own.
-            var answer = memory.Grow((uint)words[at], activation.Meter);
+            // Route MVP-1: a request above the profile's own ceiling answers minus one before any
+            // charge, and the guest goes on with it. The step's meter paces the fuel with the loop's
+            // own, and the retention is charged before the allocation, so every refusal by a core
+            // budget is seen here. Such a refusal latched on the meter, and the core answers the
+            // operation as the exhaustion or cancellation it latched whatever the step does next, so
+            // the step ends here rather than running the guest past a growth it will never be told
+            // about: an instantiation whose start function grows is then abandoned, and gives back
+            // what it retained, rather than completed and dropped by the core with its retention.
+            var answer = memory.Grow((uint)words[at], activation.Meter, gateRetention: true, out var refusedByBudget);
+
+            if (refusedByBudget)
+            {
+                return UbcStatus.Defect;
+            }
+
             words[at] = (uint)(int)answer;
             return UbcStatus.Next;
         }
@@ -569,12 +593,21 @@ internal sealed class WasmNullPlane : IUbcValuePlane
 /// <para>
 /// <b>It is the base store's allocation, in the base store's order and at its charges.</b> The memory
 /// is a pinned array at its declared minimum (decision WAD-0001), charged to allocated bytes and
-/// reported retained; a minimum above the profile's own page ceiling is refused by forcing the latched
+/// retained as live bytes; a minimum above the profile's own page ceiling is refused by forcing the latched
 /// exhaustion the base executor forced. The table is an array of unit indices at its minimum, null
 /// throughout, charged and retained the same way under its own ceiling. The globals are not charged,
 /// as they never were. Each element and then each data segment is charged under the profile's pacing -
 /// its entries plus one, its bytes over sixty-four plus one - and applied whole or not at all, and the
 /// first that does not fit stops the making with its trap recorded.
+/// </para>
+/// <para>
+/// <b>Two departures from the base store, both about a refusal it did not see or a bound it did not
+/// keep.</b> The retention of the memory and of the table is charged before the array exists, where
+/// the base store reported it after: a report returns nothing, so the base store went on past a
+/// refused retention to an instantiation the core then answered as that exhaustion and dropped, with
+/// everything retained still counted. And a segment's charge is made in pieces no larger than the
+/// uncharged-work bound, each polled for as the pacing requires, where the base store made it whole:
+/// one charge above the bound is work the core measures as unpolled.
 /// </para>
 /// <para>
 /// <b>Nothing it retained outlives a refusal.</b> Every path that will not be published releases the
@@ -584,7 +617,7 @@ internal sealed class WasmNullPlane : IUbcValuePlane
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=6E21EB
-// Broiler-Falsified-If: an array is allocated before its charge returns true, a segment is applied in part, or a state that is not published keeps a byte reported retained
+// Broiler-Falsified-If: an array is allocated before its allocation and retention charges return true, a segment is applied in part, more fuel than the uncharged-work bound is charged between two polls, or a state that is not published keeps a byte reported retained
 // Broiler-Human:        PENDING
 internal sealed class WasmInstanceState
 {
@@ -632,8 +665,8 @@ internal sealed class WasmInstanceState
     internal bool Exhausted { get; private set; }
 
     /// <summary>Makes an instance's state from its context, as the type's remarks describe.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=E0FDB8
-    // Broiler-Falsified-If: a store is allocated before its charge, a segment is applied past a refused charge or poll, or a minimum above a profile ceiling is allocated
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=CFE4F3
+    // Broiler-Falsified-If: a store is allocated before its charges, a segment is applied past a refused charge or poll, or a minimum above a profile ceiling is allocated
     // Broiler-Human:        PENDING
     internal static WasmInstanceState Create(UbcInstanceContext context)
     {
@@ -664,9 +697,8 @@ internal sealed class WasmInstanceState
         for (var index = 0; index < definitions.Elements.Length; index++)
         {
             var segment = definitions.Elements[index];
-            var cost = (ulong)segment.Functions.Length + 1;
 
-            if (!pacing.TryReserve(cost) || !pacing.TryCharge(cost))
+            if (!TryChargePaced(pacing, (ulong)segment.Functions.Length + 1))
             {
                 state.Refuse();
                 return state;
@@ -682,9 +714,8 @@ internal sealed class WasmInstanceState
         for (var index = 0; index < definitions.Data.Length; index++)
         {
             var segment = definitions.Data[index];
-            var cost = ((ulong)segment.Contents.Length / 64) + 1;
 
-            if (!pacing.TryReserve(cost) || !pacing.TryCharge(cost))
+            if (!TryChargePaced(pacing, ((ulong)segment.Contents.Length / 64) + 1))
             {
                 state.Refuse();
                 return state;
@@ -721,9 +752,43 @@ internal sealed class WasmInstanceState
         }
     }
 
+    /// <summary>
+    /// Charges <paramref name="cost"/> fuel under <paramref name="pacing"/> in pieces no larger than the
+    /// profile's uncharged-work bound, polling before any piece that would cross it.
+    /// </summary>
+    /// <remarks>
+    /// The pacing buys headroom for one charge by polling first, and a poll cannot make room for a
+    /// charge larger than the bound itself: charged whole, a segment of seventy thousand entries or
+    /// of four mebibytes and more is work the core measures as unpolled, and the next poll refuses.
+    /// The pieces add up to the whole cost, so the fuel a segment spends is the base store's.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=6D280A
+    // Broiler-Falsified-If: a piece larger than the uncharged-work bound is charged, the pieces add up to anything but the cost, or a refused piece is answered as charged
+    // Broiler-Human:        PENDING
+    private static bool TryChargePaced(WasmPacing pacing, ulong cost)
+    {
+        while (cost > 0)
+        {
+            var piece = System.Math.Min(cost, WebAssemblyProfile.MaxUnchargedWork);
+
+            if (!pacing.TryCharge(piece))
+            {
+                return false;
+            }
+
+            cost -= piece;
+        }
+
+        return true;
+    }
+
     /// <summary>Allocates the declared memory at its minimum, or answers false with the refusal recorded.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=03353E
-    // Broiler-Falsified-If: the array exists before the allocation charge returned true, or a minimum above the page ceiling is allocated
+    /// <remarks>
+    /// Its retention is charged before the array exists, so a live-bytes ceiling that refuses it
+    /// refuses the instantiation here rather than latching a report the making went on past.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=FD62D2
+    // Broiler-Falsified-If: the array exists before the allocation and retention charges returned true, or a minimum above the page ceiling is allocated
     // Broiler-Human:        PENDING
     private bool AllocateMemory(IVmMeter meter)
     {
@@ -743,20 +808,21 @@ internal sealed class WasmInstanceState
 
         var initialBytes = (ulong)declared.Minimum * WasmMemoryInstance.PageBytes;
 
-        if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, initialBytes))
+        if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, initialBytes) ||
+            !meter.TryCharge(VmBudgetDimension.LiveBytes, initialBytes))
         {
             Refuse();
             return false;
         }
 
         Memory = new WasmMemoryInstance(WasmMemoryInstance.Allocate(initialBytes), maximum);
-        meter.ReportRetained(VmBudgetDimension.LiveBytes, initialBytes);
         return true;
     }
 
     /// <summary>Allocates the declared table at its minimum, every entry null, or answers false with the refusal recorded.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=8E255D
-    // Broiler-Falsified-If: the array exists before the allocation charge returned true, or a minimum above the entry ceiling is allocated
+    /// <remarks>Its retention is charged before the array exists, as the memory's is.</remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=102116
+    // Broiler-Falsified-If: the array exists before the allocation and retention charges returned true, or a minimum above the entry ceiling is allocated
     // Broiler-Human:        PENDING
     private bool AllocateTable(IVmMeter meter)
     {
@@ -775,7 +841,8 @@ internal sealed class WasmInstanceState
 
         var entryBytes = (ulong)declared.Minimum * sizeof(int);
 
-        if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, entryBytes))
+        if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, entryBytes) ||
+            !meter.TryCharge(VmBudgetDimension.LiveBytes, entryBytes))
         {
             Refuse();
             return false;
@@ -784,7 +851,6 @@ internal sealed class WasmInstanceState
         var entries = new int[(int)declared.Minimum];
         System.Array.Fill(entries, WasmTableInstance.NullFunctionReference);
         Table = new WasmTableInstance(entries);
-        meter.ReportRetained(VmBudgetDimension.LiveBytes, entryBytes);
         return true;
     }
 

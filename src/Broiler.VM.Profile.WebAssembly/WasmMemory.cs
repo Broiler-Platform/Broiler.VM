@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
+// Relevant units:   15
+// Annotated:        15/15
 // Exempt:           3
-// Human-reviewed:   0/14
+// Human-reviewed:   0/15
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         8/8
+// Criteria:         9/9
 // Resource impact:  4/10 max
-// Unverified:       14
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -132,7 +132,7 @@ internal sealed class WasmMemoryInstance
     /// The memory's current bytes, for a region access that reads the base at the access.
     /// </summary>
     /// <remarks>
-    /// The span is a view, and a successful <see cref="Grow"/> invalidates it: a caller takes it for
+    /// The span is a view, and a successful growth invalidates it: a caller takes it for
     /// one access and never holds it across an instruction that can grow the memory.
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=0; Fingerprint=CB7CA1
@@ -238,7 +238,17 @@ internal sealed class WasmMemoryInstance
     }
 
     /// <summary>
-    /// Grows the memory by whole pages, answering the old page count or minus one.
+    /// Grows the memory by whole pages, answering the old page count or minus one, with the growth's
+    /// retention reported after the allocation: the profile's own executor's growth.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=0; Fingerprint=EFF481
+    // Broiler-Falsified-If: it grows by other charges, in another order or with another retention report than the gated overload with the retention reported after the allocation
+    // Broiler-Human:        PENDING
+    internal long Grow(uint deltaPages, IVmMeter meter) => Grow(deltaPages, meter, gateRetention: false, out _);
+
+    /// <summary>
+    /// Grows the memory by whole pages, answering the old page count or minus one, and says whether a
+    /// core budget refused the growth.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -249,16 +259,31 @@ internal sealed class WasmMemoryInstance
     /// only then, the allocation.
     /// </para>
     /// <para>
+    /// <b>The retention is reported after the allocation, or gated before it.</b> The profile's own
+    /// executor reports it after, which is a report whose refusal nobody hears: the meter latches it
+    /// and the growth stands. With <paramref name="gateRetention"/> the retention is charged before
+    /// the allocation instead - the meter's own statement of how a caller that must observe a ceiling
+    /// refusal does it - so a refused retention allocates nothing, holds nothing unreported, and is
+    /// answered as the core-budget refusal it is. Either way the bytes and the dimension retained are
+    /// the same, and a refusal by a core budget is never observed by the guest: the meter latched it.
+    /// </para>
+    /// <para>
+    /// <paramref name="refusedByBudget"/> is true exactly when a charge or a retention the meter refused
+    /// is why the answer is minus one, and false for a refusal against the page ceiling, which charged
+    /// nothing. A caller that must not run the guest past a latched refusal reads it.
+    /// </para>
+    /// <para>
     /// A growth of zero pages is not a no-op the caller may skip: the specification defines it as the
     /// way a module reads its own size through this instruction, and it answers the current page
     /// count without allocating.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=7E66E2
-    // Broiler-Falsified-If: an array is allocated before the allocation charge returns true, or a refusal against the profile ceiling reaches the meter
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=7501F9
+    // Broiler-Falsified-If: an array is allocated before the allocation charge returns true or, gated, before the retention charge returns true, a refusal against the profile ceiling reaches the meter or is answered as refused by a budget, or a refused charge is answered as a refusal against the ceiling
     // Broiler-Human:        PENDING
-    internal long Grow(uint deltaPages, IVmMeter meter)
+    internal long Grow(uint deltaPages, IVmMeter meter, bool gateRetention, out bool refusedByBudget)
     {
+        refusedByBudget = false;
         var current = PageCount;
 
         if (deltaPages == 0)
@@ -280,13 +305,12 @@ internal sealed class WasmMemoryInstance
 
         // Proportional rather than flat: the cost of a growth is the cost of zeroing what it added,
         // and a flat charge would let a guest buy sixty-four mebibytes for the price of one page.
-        if (!meter.TryCharge(VmBudgetDimension.Fuel, deltaPages))
+        // Every refusal from here on latched on the meter.
+        if (!meter.TryCharge(VmBudgetDimension.Fuel, deltaPages) ||
+            !meter.TryCharge(VmBudgetDimension.AllocatedBytes, addedBytes) ||
+            (gateRetention && !meter.TryCharge(VmBudgetDimension.LiveBytes, addedBytes)))
         {
-            return GrowthRefused;
-        }
-
-        if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, addedBytes))
-        {
+            refusedByBudget = true;
             return GrowthRefused;
         }
 
@@ -298,8 +322,12 @@ internal sealed class WasmMemoryInstance
         bytes = grown;
 
         // Retained rather than consumed: the bytes live for as long as the store does, which is what
-        // makes live bytes a ceiling and allocated bytes an allowance.
-        meter.ReportRetained(VmBudgetDimension.LiveBytes, addedBytes);
+        // makes live bytes a ceiling and allocated bytes an allowance. A gated growth charged it above.
+        if (!gateRetention)
+        {
+            meter.ReportRetained(VmBudgetDimension.LiveBytes, addedBytes);
+        }
+
         return current;
     }
 
