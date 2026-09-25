@@ -9,6 +9,7 @@
     <Project Path="src/Broiler.VM.Profile.MachineCode/Broiler.VM.Profile.MachineCode.csproj" />
     <Project Path="src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj" />
     <Project Path="src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj" />
+    <Project Path="src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj" />
   </Folder>
   <Folder Name="/compositions/">
     <Project Path="src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj" />
@@ -20,6 +21,7 @@
     <Project Path="src/compositions/Broiler.VM.Composition.WebAssembly.Execution/Broiler.VM.Composition.WebAssembly.Execution.csproj" />
     <Project Path="src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Broiler.VM.Composition.WebAssembly.Harness.csproj" />
     <Project Path="src/compositions/Broiler.VM.Composition.PolyglotCli/Broiler.VM.Composition.PolyglotCli.csproj" />
+    <Project Path="src/compositions/Broiler.VM.Composition.Ubc.Fixture/Broiler.VM.Composition.Ubc.Fixture.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj" />
@@ -31,5 +33,6 @@
     <Project Path="src/tests/Broiler.VM.Soak.Host/Broiler.VM.Soak.Host.csproj" />
     <Project Path="src/tests/Com.Example.Calculator/Com.Example.Calculator.csproj" />
     <Project Path="src/tests/Com.Example.Ledger/Com.Example.Ledger.csproj" />
+    <Project Path="src/tests/Com.Example.Tally/Com.Example.Tally.csproj" />
   </Folder>
 </Solution>

@@ -161,6 +161,9 @@ the exact closure this register exists to describe.
 | `Broiler.VM.Composition.WebAssembly.Execution` | demonstration | `broiler.webassembly` | `Broiler.VM.Profile.WebAssembly` | none | none registered | none registered | `src/Broiler.VM.Profile.WebAssembly/docs/evidence/wa-0-001` | none |
 | `Broiler.VM.Composition.WebAssembly.Harness` | demonstration | `broiler.webassembly` | `Broiler.VM.Profile.WebAssembly` | none | none registered | none registered | `src/Broiler.VM.Profile.WebAssembly/docs/evidence/wa-0-001` | none |
 | `Broiler.VM.Composition.PolyglotCli` | demonstration | `broiler.javascript`, `broiler.webassembly` | `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.WebAssembly` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write`, `broiler.javascript.resolve`, `broiler.javascript.source-provider` (all optional imports of `broiler.javascript`; the WebAssembly profile imports nothing, and the three are registered only for a JavaScript run) | `broiler.javascript.source-provider`, answered by this root's own compiler | `docs/evidence/vm-7-cli-001` | none |
+| `Broiler.VM.Composition.Ubc.Fixture` | demonstration | `com.example.tally`, `com.example.ledger` | `Com.Example.Tally`, `Com.Example.Ledger` | `Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode` | `com.example.tally.program-provider` (optional import of `com.example.tally`; the ledger imports it not), registered by the fixture checks and not by the hostile-neighbour check | `com.example.tally.program-provider`, answered by this root with the fixture family's guest program and, for the breach check, the ledger's artifact | `docs/evidence/ubc-2-001` | none |
+
+**The universal bytecode's fixture root is the first row whose image links an emitter rather than a profile's own executor** *(added 2026-09-25, by the programme's milestone UBC-2)*. `Broiler.VM.Composition.Ubc.Fixture` composes the fixture family `com.example.tally`, whose descriptor it builds itself through `UbcDescriptors.Build` over the one form it composes - the bytecode emitter - because a family names no emitter and the form is the root's choice. `Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode` are therefore its sibling assemblies, and its native-execution cell is `none` because neither can map memory executable. The ledger is composed beside it for the two-profile hostile-neighbour check the roadmap's section 14 has asked for since VM-3, and its artifact is also what the root's provider answers a guest load with when it checks that a provider may not answer one profile with another's.
 
 **Three rows declare `x86-64` and the rest read `none`** *(corrected 2026-09-23,
 and the sentence this replaces is quoted below because it is the finding)*.
@@ -879,10 +882,14 @@ when the VM-3 evidence bundle was collected.
 |---|---|---|---|---|
 | `Broiler.VM.Composition.Calculator` | `linux-x64` | published and run | published and run | published and run |
 | `Broiler.VM.Composition.Workbench` | `linux-x64` | published and run | published and run | published and run |
+| `Broiler.VM.Composition.Ubc.Fixture` | `win-x64` | published and run | published and run | published and run |
 
 The transcripts are in `docs/evidence/vm-3/`, and the closure report for each
 mode is listed there from the published output rather than described. One RID,
-one machine, one lane: exclusion EX-45 of the VM-2 bundle applies unchanged.
+one machine, one lane: exclusion EX-45 of the VM-2 bundle applies unchanged. *(Added 2026-09-25: the universal bytecode's fixture
+root was published and run on `win-x64`, and its transcripts, catalog table and
+closure report are in `docs/evidence/ubc-2-001/`. The same limit applies to it:
+one RID, one machine, one lane.)*
 
 ---
 

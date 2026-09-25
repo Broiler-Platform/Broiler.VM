@@ -8,8 +8,14 @@ complete merely because this document exists.
 Broiler.VM is a new, statically composed, NativeAOT-compatible component that executes verified
 bytecode artifacts. It is a **host for language profiles, not a language.** It owns profile
 selection, bounded loading, the verification boundary, the execution lifecycle, resource
-authority, diagnostics, and composition evidence. It owns no opcode set, no value representation,
-and no language semantics of its own.
+authority, diagnostics, and composition evidence. It owns no value representation and no language
+semantics of its own, and its core owns no opcode set: the universal bytecode's common family, an
+instruction encoding whose meanings name no language, lives in `Broiler.VM.Ubc`, outside the core
+contract and referenced by nothing in the core *(revised 2026-09-25 through
+[ADR 0003](adr/0003-core-contract-v1-and-amendments.md) section 11, register row 23, when milestone
+UBC-1 of [the universal bytecode programme](universal-bytecode.roadmap.md) put that family in this
+component: this sentence read "It owns no opcode set, no value representation, and no language
+semantics of its own.")*.
 
 This roadmap plans the core only. **JavaScript** and **WebAssembly** are the two intended first
 profiles. Each is a family of product projects **in this component**, at

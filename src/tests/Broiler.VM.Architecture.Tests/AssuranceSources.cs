@@ -56,6 +56,7 @@ internal static class AssuranceSources
     [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
+        "Broiler.VM.Emitter.Bytecode",
         "Broiler.VM.Profile.JavaScript",
         "Broiler.VM.Profile.JavaScript.Compiler",
         "Broiler.VM.Profile.JavaScript.Format",

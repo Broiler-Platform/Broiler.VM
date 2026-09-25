@@ -26,7 +26,9 @@
     "",
     "2026-09-23 restores the arming edge to the two roots that lost it, taking the graph from 27 projects and 88 edges to 27 and 90, and adds NO project and NO packable assembly. It is a correction rather than a growth: Broiler.VM.Composition.JavaScript.Conformance and Broiler.VM.Composition.JavaScript.Cli could arm a page through Broiler.VM.Profile.JavaScript until 2026-09-18, when the arming path moved into Broiler.VM.Profile.MachineCode and was given back to Broiler.VM.Composition.JavaScript.SliceCompiler alone. For the five days between, both roots linked the encoders and not the page, so every native run they were asked for verified an artifact and then refused to instantiate it under ProfileFault/UnsatisfiedHostAssumption. The edge SHAPE is the one the slice-compiler root already has and the roots are the two the register's native-execution column now declares x86-64 for. ADR 0001's revision of 2026-09-23 records it.",
     "",
-    "UBC-1 adds Broiler.VM.Ubc, the universal bytecode ADR 0013 accepted as candidate A, taking the graph from 27 projects and 90 edges to 28 and 93: it references Broiler.VM.Abstractions and Broiler.VM.Binary and nothing else (rule U1), and the behavioural contract suite references it, because the universal bytecode's malformed corpus is replayed there. It adds ZERO packable assemblies: Broiler.VM.Ubc declares IsPackable false and carries no package identity, and whether it becomes a package is UBC-9's question."
+    "UBC-1 adds Broiler.VM.Ubc, the universal bytecode ADR 0013 accepted as candidate A, taking the graph from 27 projects and 90 edges to 28 and 93: it references Broiler.VM.Abstractions and Broiler.VM.Binary and nothing else (rule U1), and the behavioural contract suite references it, because the universal bytecode's malformed corpus is replayed there. It adds ZERO packable assemblies: Broiler.VM.Ubc declares IsPackable false and carries no package identity, and whether it becomes a package is UBC-9's question.",
+    "",
+    "UBC-2 adds three projects, taking the graph from 28 projects and 93 edges to 31 and 106: Broiler.VM.Emitter.Bytecode, the bytecode emitter, referencing Broiler.VM.Abstractions, Broiler.VM.Binary and Broiler.VM.Ubc; Com.Example.Tally, the universal bytecode's fixture family, an application-local consumer family referencing the same three and nothing else (rule A13 as revised); and Broiler.VM.Composition.Ubc.Fixture, the demonstration root composing the fixture family over the bytecode emitter beside Com.Example.Ledger. It adds ZERO packable assemblies: all three declare IsPackable false and carry no package identity."
   ],
   "milestone": "JS-1",
   "coreContractVersion": 1,
@@ -129,6 +131,19 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
+      ]
+    },
+    {
+      "path": "src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj",
+      "assemblyName": "Broiler.VM.Emitter.Bytecode",
+      "rootNamespace": "Broiler.VM.Emitter.Bytecode",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Ubc"
       ]
     },
     {
@@ -281,6 +296,23 @@
       ]
     },
     {
+      "path": "src/compositions/Broiler.VM.Composition.Ubc.Fixture/Broiler.VM.Composition.Ubc.Fixture.csproj",
+      "assemblyName": "Broiler.VM.Composition.Ubc.Fixture",
+      "rootNamespace": "Broiler.VM.Composition.Ubc.Fixture",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Emitter.Bytecode",
+        "Broiler.VM.Runtime",
+        "Broiler.VM.Ubc",
+        "Com.Example.Ledger",
+        "Com.Example.Tally"
+      ]
+    },
+    {
       "path": "src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj",
       "assemblyName": "Broiler.VM.Architecture.Tests",
       "rootNamespace": "Broiler.VM.Architecture.Tests",
@@ -399,6 +431,19 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
+      ]
+    },
+    {
+      "path": "src/tests/Com.Example.Tally/Com.Example.Tally.csproj",
+      "assemblyName": "Com.Example.Tally",
+      "rootNamespace": "Com.Example.Tally",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Ubc"
       ]
     }
   ]

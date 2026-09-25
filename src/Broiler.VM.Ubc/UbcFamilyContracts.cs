@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   46
-// Annotated:        46/46
-// Exempt:           54
-// Human-reviewed:   0/46
+// Relevant units:   45
+// Annotated:        45/45
+// Exempt:           58
+// Human-reviewed:   0/45
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         5/4
+// Criteria:         6/5
 // Resource impact:  0/10 max
-// Unverified:       46
+// Unverified:       45
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -279,36 +279,56 @@ public readonly struct UbcStatus : System.IEquatable<UbcStatus>
     public static bool operator !=(UbcStatus left, UbcStatus right) => !left.Equals(right);
 }
 
-/// <summary>A call request: the unit of the same program a call row's handler asks the emitter to enter.</summary>
+/// <summary>
+/// A call request: the unit a call row's handler asks the emitter to enter - of the calling program, or
+/// of another verified program of the same family, such as one a guest load answered with.
+/// </summary>
 /// <remarks>
+/// <para>
 /// The callee's parameters are the top slots of the row's input region, in the callee's signature's
 /// order, per plane: the handler may rearrange the region before it answers, and the emitter moves the
 /// parameters into the callee's locals. When the callee returns, the row's inputs are discarded and the
 /// callee's results are placed at the row's argument bases; they must be exactly the row's pushes, and
 /// anything else is a defect.
+/// </para>
+/// <para>
+/// A program of another family is a defect of the handler that names it: the family boundary is not
+/// crossed by a call, and the emitter refuses the request rather than run it.
+/// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D9C29E
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=D9C29E
+// Broiler-Falsified-If: a request naming a program of another family, or a unit outside the named program, can be performed
 // Broiler-Human:        PENDING
 public readonly struct UbcCallRequest : System.IEquatable<UbcCallRequest>
 {
-    /// <summary>A request to enter <paramref name="unit"/>.</summary>
+    /// <summary>A request to enter <paramref name="unit"/> of the calling program.</summary>
     public UbcCallRequest(int unit) => Unit = unit;
+
+    /// <summary>A request to enter <paramref name="unit"/> of <paramref name="program"/>, a program of the same family.</summary>
+    public UbcCallRequest(UbcVerifiedProgram program, int unit)
+    {
+        Program = program;
+        Unit = unit;
+    }
+
+    /// <summary>The program the callee belongs to, or null for the calling program.</summary>
+    public UbcVerifiedProgram? Program { get; }
 
     /// <summary>The callee's unit index.</summary>
     public int Unit { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B9C817
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=69A4B3
     // Broiler-Human:        PENDING
-    public bool Equals(UbcCallRequest other) => Unit == other.Unit;
+    public bool Equals(UbcCallRequest other) => Unit == other.Unit && ReferenceEquals(Program, other.Program);
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is UbcCallRequest other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F758D6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=85C392
     // Broiler-Human:        PENDING
-    public override int GetHashCode() => Unit;
+    public override int GetHashCode() => System.HashCode.Combine(Unit, Program);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(UbcCallRequest left, UbcCallRequest right) => left.Equals(right);
@@ -330,7 +350,7 @@ public readonly struct UbcCallRequest : System.IEquatable<UbcCallRequest>
 /// of every family touches, and the loop and the handler share it by reference.
 /// </para>
 /// <para>
-/// <b>What a handler may do with it.</b> Read <see cref="Unit"/>, <see cref="Pc"/>,
+/// <b>What a handler may do with it.</b> Read <see cref="Program"/>, <see cref="Unit"/>, <see cref="Pc"/>,
 /// <see cref="InstanceState"/>, <see cref="Meter"/> and <see cref="Capabilities"/>; read its inputs and
 /// write its outputs in <see cref="Words"/> and <see cref="Values"/> at and above
 /// <see cref="WordArgs"/> and <see cref="ValueArgs"/>, within its row's effect; set
@@ -358,7 +378,14 @@ public struct UbcActivation
     /// <summary>The value plane: every language-value slot of every frame.</summary>
     public IUbcValuePlane Values;
 
-    /// <summary>The unit being executed.</summary>
+    /// <summary>
+    /// The program being executed: the instance's, or one a guest load answered with and a call request
+    /// entered. Its <see cref="UbcVerifiedProgram.FamilyState"/> is what the hook read from that
+    /// program's FamilyData.
+    /// </summary>
+    public UbcVerifiedProgram Program;
+
+    /// <summary>The unit being executed, an index into <see cref="Program"/>'s units.</summary>
     public int Unit;
 
     /// <summary>The absolute code offset of the instruction being executed.</summary>

@@ -43,6 +43,7 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Meter : Broiler.VM.IVmMeter
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Pc : System.UInt32
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Pending : System.Object
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Program : Broiler.VM.Ubc.UbcVerifiedProgram
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.Unit : System.Int32
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.ValueArgs : System.Int32
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcActivation.ValueBase : System.Int32
@@ -83,10 +84,12 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.WithSectionCount(System.UInt32 count) : Broiler.VM.Ubc.UbcArtifactWriter
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.WithTrailing(System.ReadOnlySpan<System.Byte> bytes) : Broiler.VM.Ubc.UbcArtifactWriter
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcArtifactWriter.Write(Broiler.VM.Ubc.UbcArtifact artifact) : static System.Byte[]
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest..ctor(Broiler.VM.Ubc.UbcVerifiedProgram program, System.Int32 unit) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest..ctor(System.Int32 unit) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.Equals(Broiler.VM.Ubc.UbcCallRequest other) : System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.Equals(System.Object obj) : virtual System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.GetHashCode() : virtual System.Int32
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.Program : Broiler.VM.Ubc.UbcVerifiedProgram { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.Unit : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.op_Equality(Broiler.VM.Ubc.UbcCallRequest left, Broiler.VM.Ubc.UbcCallRequest right) : static System.Boolean
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcCallRequest.op_Inequality(Broiler.VM.Ubc.UbcCallRequest left, Broiler.VM.Ubc.UbcCallRequest right) : static System.Boolean

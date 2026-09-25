@@ -1,0 +1,15 @@
+<!-- Violates A11: a language family referencing an emitter. A family names no emitter; the
+     composition root hands the family's registration to the emitter it composes, so the family
+     and the emitter never see each other. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.Witness</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Emitter.Bytecode\Broiler.VM.Emitter.Bytecode.csproj" />
+  </ItemGroup>
+</Project>

@@ -35,7 +35,7 @@ promises, frozen at core contract version 1.
 
 | # | Promise |
 |---|---|
-| P1 | A profile is an ordinary `net10.0` project whose Broiler.VM reference set is exactly {Broiler.VM.Abstractions, Broiler.VM.Binary}, by project or package reference, compiled into the application. **The set is of Broiler.VM-owned assemblies; a profile component's own siblings - its format assembly, its lowering, its composition roots - are not members of it and P1 does not bound them.** Its descriptor and factory are named directly by a composition root (deferred to VM-3 for the first advertised root). |
+| P1 | A profile is an ordinary `net10.0` project whose Broiler.VM reference set is exactly {Broiler.VM.Abstractions, Broiler.VM.Binary}, by project or package reference, compiled into the application. **The set is of Broiler.VM-owned assemblies; a profile component's own siblings - its format assembly, its lowering, its composition roots - are not members of it and P1 does not bound them.** Its descriptor and factory are named directly by a composition root (deferred to VM-3 for the first advertised root). *(Revised 2026-09-25 by route MVP-10: a profile that lowers to the universal bytecode may also reference `Broiler.VM.Ubc`, the assembly ADR 0013's extraction verdict admitted, and nothing else is added; see the editorial revision below.)* |
 | P2 | The promised surface is exactly the public API of those two assemblies, as captured by the public API baseline (deferred to VM-6). There is no privileged surface: nothing profile-facing is reachable through `InternalsVisibleTo`, a friend assembly, an internal partial, or an unlisted type. If a profile needs it, it is public or it does not exist. |
 | P3 | Within one core contract version, a profile that compiles and passes its contract tests against a core package version compiles unchanged, with the same semantics, against any later core package version carrying that same contract version. |
 | P4 | Every unsupported case a profile can reach has a named deterministic failure, and the profile may rely on that name (invariant 8). Which of the two discharge forms applies to each artefact is ADR 0003's (`0003-core-contract-v1-and-amendments.md`) admitted-versus-implemented table. |
@@ -63,6 +63,20 @@ rule A13's subject below). Section 10's format pivot in the roadmap is incoheren
 unless a profile may reference its own format assembly, which is the second reason
 the reading was never in doubt and the first reason it should have been written
 down.
+
+**Editorial revision, 2026-09-25: P1's set gains `Broiler.VM.Ubc` for a universal
+bytecode family, by route MVP-10 of `docs/mvp.md`.** ADR 0013 accepted the universal bytecode
+and named the edges its verdict adds; a profile that lowers to it references a third
+Broiler.VM-owned assembly. The route reads that edge as the recorded consequence of a gate this
+record already contains rather than as a change to the contract, and says P1's text is edited in
+the change where a profile first takes the edge, and not before. That change is the programme's
+milestone UBC-2: the first profile to take the edge is `Com.Example.Tally`, the universal
+bytecode's application-local fixture family, and rule A13 is revised in the same change to hold
+such a family to exactly {Broiler.VM.Abstractions, Broiler.VM.Binary, Broiler.VM.Ubc}. **No
+other member is added**, no profile may reference an emitter or Broiler.VM.Runtime, and the
+core's public API does not move. The reading is the route's and not a ruling: route MVP-10
+names the core contract owner's ruling that would settle it, and until that ruling this
+revision is what the route prescribes rather than an amendment the owner has made.
 
 Two registered rules already hold the shape of P1 and P2 against the shells:
 
@@ -543,7 +557,8 @@ prescribes, with no verdict. **The table above is not edited**, and nothing here
 changes this record's promises. P1's member list in particular is not edited by
 this pointer; route MVP-10 of `docs/mvp.md` records the reading under which it
 would gain `Broiler.VM.Ubc` when a profile first references it, and names the
-ruling that would settle that reading.
+ruling that would settle that reading. *(Added 2026-09-25: a profile first referenced it at milestone
+UBC-2, and P1's editorial revision of that date records the edit.)*
 
 ### Canonical forms this record publishes, so the copies agree
 

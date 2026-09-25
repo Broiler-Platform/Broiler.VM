@@ -584,7 +584,8 @@ a freeze either, so the divergence is made auditable instead of tacit: every
 sentence a VM-0 decision supersedes is listed below with its verbatim current
 text and the text that would replace it. **Every row is `Proposed` and unapplied
 except rows 1 and 13.** *(Rows 19 to 22 were added and applied on
-2026-09-25; see the editorial revision after the table.)*
+2026-09-25; see the editorial revision after the table. Row 23 was added and
+applied the same day; see the second editorial revision.)*
 
 Quoting convention. The old-text column is character-exact, with two departures
 forced by the ASCII-only house rule and by table layout: a line break inside a
@@ -616,6 +617,7 @@ outside ASCII.
 | 20 | 8 | candidate table, shared value representation, frame layout, or opcode set | `**No.** These are the semantics the core exists not to own.` | `**No.** These are the semantics the core exists not to own.`, unchanged, followed by a dated re-dating note naming ADR 0013 as the new verdict on the opcode-set half; and a new row after it: `The universal bytecode: one instruction encoding, container, common family, family-table schema, primitive table, verifier walk and dispatch loop, with every language instruction's meaning owned by the family that declares it` - `**Yes, by extraction verdict of 2026-09-25 (ADR 0013).**` with G1 to G4 answered, and the native-form mechanism beside it not admitted because G1 is unsatisfied for it | 0013 | universal-bytecode-extraction-verdict, candidates A and B | Applied 2026-09-25 |
 | 21 | 10 | Where compilation lives, output-form row | `the same compiler. A backend is a **choice inside one lowering**, not a second lowering *(added 2026-09-07 for VM-7)*` | `the same compiler. A backend is a **choice inside one lowering**, not a second lowering *(added 2026-09-07 for VM-7)*. Under the universal bytecode programme the choice may leave the lowering for an emitter family: a lowering emits universal bytecode only, and which form an artifact takes is chosen by the emitter a composition hands it to, which is still not a second lowering` | 0013 | universal-bytecode-extraction-verdict, candidate A | Applied 2026-09-25 |
 | 22 | 16 | risk: the core becomes a lowest-common-denominator language runtime | `Keep opcodes, values, frames, verifier rules, and semantics profile-owned. Apply section 8's extraction gate before sharing anything, and reject a shared primitive that introduces a profile-to-profile dependency or a semantic conversion tax.` | `Keep values, frame layouts, the meaning of every language instruction, each language's own verifier rules, and semantics profile-owned. Apply section 8's extraction gate before sharing anything, and reject a shared primitive that introduces a profile-to-profile dependency or a semantic conversion tax. The universal bytecode, admitted by that gate on 2026-09-25, shares a container, an encoding, a common family and a primitive table whose meanings name no language, a family-table schema, a verifier walk and a dispatch loop, and the programme's U rules are this row's mechanical form for it as each is minted: U1 bounds its references to the core's two sinks, U2 bans every language's vocabulary and every family row from its exported surface, U3 bans them from every emitter, and U4 keeps the common family's effects in one table.` | 0013 | universal-bytecode-extraction-verdict, candidate A | Applied 2026-09-25 |
+| 23 | head | what Broiler.VM owns | `It owns no opcode set, no value representation, and no language semantics of its own.` | `It owns no value representation and no language semantics of its own, and its core owns no opcode set: the universal bytecode's common family, an instruction encoding whose meanings name no language, lives in Broiler.VM.Ubc, outside the core contract and referenced by nothing in the core` | 0013 | universal-bytecode-extraction-verdict, candidate A; made true by milestone UBC-1 | Applied 2026-09-25 |
 
 **Row 13 was applied on 2026-08-31 and its wording differs from the proposal.**
 The roadmap now restricts the gate to product profiles and excludes the fixture
@@ -653,6 +655,17 @@ shared assembly owns, and row 22 kept verifier rules profile-owned and said the
 universal bytecode shared "nothing else" than four things - each contradicted by
 the common family and the walk the same rows admit. The texts above are the
 corrected ones, and the roadmap carries them.
+
+**Editorial revision, 2026-09-25: row 23.** Milestone UBC-1 of the universal
+bytecode programme added `Broiler.VM.Ubc` to this component, and with it the
+universal bytecode's common family - an instruction encoding whose meanings name
+no language. The roadmap's opening paragraph said Broiler.VM "owns no opcode
+set", and that stopped being true of the component while staying true of its
+core, which references nothing of the new assembly. Row 23 says so, and the
+revised sentence in `docs/roadmap.md` carries its superseded text beside it. The
+preamble's list of applied rows now also excepts row 23. **No behaviour of core
+contract version 1 changes**, for the reasons the revision above gives for rows
+19 to 22, and rule E2 asserts the contract-bearing set unchanged.
 
 No row proposes a change to an engineering invariant, to a milestone gate, to
 section 13's delivery order, or to sections 14, 15 and 16 beyond the four

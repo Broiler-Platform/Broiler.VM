@@ -3,8 +3,11 @@
 Broiler.VM is a new, planned NativeAOT-compatible component that executes verified bytecode
 artifacts. It is a **host for language profiles, not a language**: it owns profile selection,
 bounded loading, the verification boundary, the execution lifecycle, resource authority,
-diagnostics, and composition evidence, and it owns no opcode set, value representation, or
-language semantics of its own.
+diagnostics, and composition evidence, and it owns no value representation or language semantics
+of its own; its core owns no opcode set, and the universal bytecode's common family - an instruction
+encoding whose meanings name no language - lives in `Broiler.VM.Ubc`, outside the core contract
+*(corrected 2026-09-25, milestone UBC-1: this sentence read "it owns no opcode set, value
+representation, or language semantics of its own")*.
 
 Profiles are **product project families in this component**, at
 `src/Broiler.VM.Profile.<Language>*`, and the core never references a profile: a composition root

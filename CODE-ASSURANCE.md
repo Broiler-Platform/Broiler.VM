@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 228 |
-| Files carrying an annotation | 228 |
-| Code units | 9808 |
-| Relevant | 5536 |
-| Exempt by predicate | 4272 |
-| Annotated | 5536 of 5536 (100%) |
-| Human reviewed | 0 of 5536 (0%) |
-| Unverified | 5536 |
+| Files scanned | 230 |
+| Files carrying an annotation | 230 |
+| Code units | 9891 |
+| Relevant | 5573 |
+| Exempt by predicate | 4318 |
+| Annotated | 5573 of 5573 (100%) |
+| Human reviewed | 0 of 5573 (0%) |
+| Unverified | 5573 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5536 |
+| HUMAN_PENDING | 5573 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4272 |
+| EXEMPT | 4318 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1539 |
-| Low | 5143 |
+| Low | 5183 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,10 +50,10 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 881 |
-| Medium | 4144 |
-| High | 1507 |
-| Critical | 222 |
+| Low | 889 |
+| Medium | 4156 |
+| High | 1523 |
+| Critical | 226 |
 | *not annotated* | 0 |
 
 ## Resource impact
@@ -61,8 +61,8 @@ figures below are the measurement of how far from that claim the component is.
 | Metric | Value |
 |---|---:|
 | Maximum | 9 / 10 |
-| Average over annotated units | 1.8 / 10 |
-| Units scored | 5536 |
+| Average over annotated units | 1.7 / 10 |
+| Units scored | 5573 |
 
 ## High-security review areas
 
@@ -106,6 +106,24 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.VmBoundedReader.TryConsume(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader.TryReadVarUInt64Core(int, out ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcBytecodeExecutorFactory.Create<TFamily>(UbcFamilyRegistration<TFamily>, UbcFamilyDeclaration, IVmExecutionEnvironment)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcContinuation` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcExecutor<TFamily>` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcExecutor.Instantiate(VmVerifiedArtifact, System.Threading.CancellationToken)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcExecutor.Invoke(IVmInstanceState, in VmInvocationRequest, System.Threading.CancellationToken)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcExecutor.Resume(IVmInstanceState, IVmProfileContinuation, System.Threading.CancellationToken)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcLoopMeter` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcLoopMeter.Spend(ulong)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcLoopMeter.TryCharge(VmBudgetDimension, ulong)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter<TFamily>` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Start(int, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Resume(UbcContinuation)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Run()` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Enter(UbcVerifiedProgram, int, int, int, int, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Grow(int, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Unwind(ref UbcActivation, object?)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Suspend(ref UbcActivation, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Fits(UbcInstructionRow, in UbcInstruction, UbcUnitCode)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack.Run<T>(System.Func<T>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Assembler` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` - Security=High, human line PENDING
@@ -1720,6 +1738,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Ubc.UbcArtifactReader.Capacity(uint, ref VmBoundedReader)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcArtifactReader.Context` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcArtifactReader.Context.TryReserve(ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.Context.TryReserveEstimate(ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcFamilyRegistration` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcFamilyRegistration.UbcFamilyRegistration(string, System.Collections.Generic.IEnumerable<UbcInstructionTable>, IUbcFamilyVerifier, int, int)` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.IUbcExecutorFactory` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
@@ -1733,6 +1752,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Ubc.UbcEffect.TryGetPopCount(ulong, out int)` in `src/Broiler.VM.Ubc/UbcEffects.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.IUbcFamily` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.IUbcFamily.Handle(ref UbcActivation, byte, ulong)` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcCallRequest` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcActivation` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.IUbcFamilyVerifier` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcInstructionRow` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, human line PENDING
@@ -1800,8 +1820,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1838 |
-| Units required to carry one | 1729 |
+| Units carrying a criterion | 1861 |
+| Units required to carry one | 1749 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1828,14 +1848,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1309 |
-| ParameterAssigningConstructor | 150 |
+| TrivialPropertyOrAccessor | 1326 |
+| ParameterAssigningConstructor | 154 |
 | TrivialExpressionBodiedMember | 56 |
 | CompilerSuppliedRecordOrEnumMember | 15 |
-| DelegatingOverrideOrOperator | 120 |
+| DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 733 |
-| EnumMemberOfADeclaredVocabulary | 1858 |
+| FieldDeclaringStorage | 754 |
+| EnumMemberOfADeclaredVocabulary | 1861 |
 | DeclaredInSource | 31 |
 
 ## Per-unit exemptions
@@ -1885,7 +1905,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-9808 of them, exempt and relevant alike - with the fingerprint of its declaration.
+9891 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -1893,7 +1913,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 228 of them - with a
+Beside the units it lists **every covered file** - 230 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

@@ -1150,7 +1150,11 @@ public sealed class ReviewRecordRuleTests
         // addresses a unit by its file and its name - the verified program, the verifier walk, and the
         // assembly marker. The walk is a parser over untrusted bytes, which is
         // why the record should cover every file of it; nothing in them has been read by a human.
-        Assert.Equal(228, AssuranceSources.Files.Count);
+        //
+        // AND THE TWO OF MILESTONE UBC-2, the whole of Broiler.VM.Emitter.Bytecode: the form and the
+        // executor with its instance and continuation, and the dispatch loop with its frame and its
+        // meter. Nothing in them has been read by a human.
+        Assert.Equal(230, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

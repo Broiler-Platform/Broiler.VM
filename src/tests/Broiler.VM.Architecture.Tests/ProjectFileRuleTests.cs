@@ -249,6 +249,44 @@ public sealed class ProjectFileRuleTests
         Assert.Contains(
             ArchitectureRules.A12(ComponentGraph.Witness("A12-composition-package-reference.csproj.witness")),
             message => message.Contains("PackageReference", StringComparison.Ordinal));
+
+        // UBC-2: the universal bytecode and its emitters are siblings a root may link, and they do not
+        // count as the profile a root must compose. The fixture root links both and is clean in the
+        // sweep above; a root linking only them composes nothing.
+        var siblingsOnly = ArchitectureRules.A12(
+            ComponentGraph.Witness("A12-composition-links-only-universal-bytecode-siblings.csproj.witness")).ToArray();
+
+        Assert.Contains(siblingsOnly, message => message.Contains("composes no profile", StringComparison.Ordinal));
+        Assert.DoesNotContain(siblingsOnly, message => message.Contains("Broiler.VM.Ubc", StringComparison.Ordinal));
+        Assert.Empty(ArchitectureRules.A12(ComponentGraph.Projects.Single(project => string.Equals(
+            project.AssemblyName, "Broiler.VM.Composition.Ubc.Fixture", StringComparison.Ordinal))));
+    }
+
+    [Fact]
+    public void A11_Admits_No_Emitter_Outside_A_Composition_Root_In_Either_Direction()
+    {
+        // UBC-2's revision, witnessed both ways the roadmap asks: an emitter naming a language
+        // family, and a language family naming an emitter. The real emitter and the real fixture
+        // family are clean in the sweep, and the bytecode emitter references the universal
+        // bytecode, which is neither a profile nor an emitter.
+        Assert.Contains(
+            ArchitectureRules.A11(ComponentGraph.Witness("A11-emitter-references-a-language-family.csproj.witness")),
+            message => message.Contains("Broiler.VM.Profile.JavaScript", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.A11(ComponentGraph.Witness("A11-language-family-references-an-emitter.csproj.witness")),
+            message => message.Contains("Broiler.VM.Emitter.Bytecode", StringComparison.Ordinal));
+
+        foreach (var name in new[] { "Broiler.VM.Emitter.Bytecode", "Com.Example.Tally" })
+        {
+            Assert.Empty(ArchitectureRules.A11(ComponentGraph.Projects.Single(project =>
+                string.Equals(project.AssemblyName, name, StringComparison.Ordinal))));
+        }
+
+        // Keyed on the architecture segment, like the profile families on the language.
+        Assert.True(ArchitectureRules.IsSameEmitterFamily("Broiler.VM.Emitter.X86", "Broiler.VM.Emitter.X86.Pivot"));
+        Assert.False(ArchitectureRules.IsSameEmitterFamily("Broiler.VM.Emitter.X86", "Broiler.VM.Emitter.Arm"));
+        Assert.False(ArchitectureRules.IsEmitter("Broiler.VM.Ubc"));
     }
 
     [Fact]
@@ -269,6 +307,15 @@ public sealed class ProjectFileRuleTests
         Assert.Contains(
             ArchitectureRules.A13(ComponentGraph.Witness("A13-profile-internals-visible-to.csproj.witness")),
             message => message.Contains("opens internals", StringComparison.Ordinal));
+
+        // UBC-2's revision: a universal bytecode family takes exactly one more edge, to
+        // Broiler.VM.Ubc, and never one to an emitter. The fixture family is the clean subject.
+        Assert.Contains(
+            ArchitectureRules.A13(ComponentGraph.Witness("A13-family-references-an-emitter.csproj.witness")),
+            message => message.Contains("Broiler.VM.Emitter.Bytecode", StringComparison.Ordinal));
+
+        Assert.Empty(ArchitectureRules.A13(ComponentGraph.Projects.Single(project => string.Equals(
+            project.AssemblyName, "Com.Example.Tally", StringComparison.Ordinal))));
     }
 
     [Fact]

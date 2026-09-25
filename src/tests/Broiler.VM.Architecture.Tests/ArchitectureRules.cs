@@ -255,11 +255,60 @@ internal static class ArchitectureRules
             return [];
         }
 
-        return project.ReferencedAssemblyNames
+        // Revised 2026-09-25 for the universal bytecode programme's UBC-2: the emitter family pattern
+        // Broiler.VM.Emitter.<Architecture> joins the profile families under the same no-cross-family
+        // rule. Only a composition root may reference an emitter, save a sibling of the same emitter
+        // family; and an emitter, which is not a composition root, may reference no profile - the
+        // clause above already refuses that half, because an emitter is a project like any other.
+        var profiles = project.ReferencedAssemblyNames
             .Where(IsComposableProfile)
-            .Where(name => !IsSameProfileFamily(project.AssemblyName, name))
-            .Select(name => $"{project.RelativePath} -> {name}");
+            .Where(name => !IsSameProfileFamily(project.AssemblyName, name));
+
+        var emitters = project.ReferencedAssemblyNames
+            .Where(IsEmitter)
+            .Where(name => !IsSameEmitterFamily(project.AssemblyName, name));
+
+        return profiles.Concat(emitters).Select(name => $"{project.RelativePath} -> {name}");
     }
+
+    /// <summary>Whether an assembly name is an emitter: <c>Broiler.VM.Emitter.&lt;Architecture&gt;</c> or one of its siblings.</summary>
+    internal static bool IsEmitter(string assemblyName) => EmitterFamily(assemblyName) is not null;
+
+    /// <summary>
+    /// Whether two assembly names belong to the same emitter family, keyed on the architecture
+    /// segment exactly as <see cref="IsSameProfileFamily"/> keys on the language: an emitter's pivot
+    /// and its execution half are family, and two architectures are not.
+    /// </summary>
+    internal static bool IsSameEmitterFamily(string left, string right)
+    {
+        var leftFamily = EmitterFamily(left);
+
+        return leftFamily is not null &&
+            string.Equals(leftFamily, EmitterFamily(right), StringComparison.Ordinal);
+    }
+
+    /// <summary>The <c>Broiler.VM.Emitter.&lt;Architecture&gt;</c> prefix of an assembly name, or null.</summary>
+    internal static string? EmitterFamily(string assemblyName)
+    {
+        const string Prefix = "Broiler.VM.Emitter.";
+
+        if (!assemblyName.StartsWith(Prefix, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        var architecture = assemblyName[Prefix.Length..].Split('.')[0];
+
+        return architecture.Length == 0 ? null : Prefix + architecture;
+    }
+
+    /// <summary>
+    /// Whether an assembly name is one a composition root may link beside its profiles for the
+    /// universal bytecode: <c>Broiler.VM.Ubc</c> or an emitter. Neither is a profile, so neither
+    /// counts toward A12's "at least one profile".
+    /// </summary>
+    internal static bool IsUniversalBytecodeSibling(string assemblyName) =>
+        string.Equals(assemblyName, "Broiler.VM.Ubc", StringComparison.Ordinal) || IsEmitter(assemblyName);
 
     /// <summary>
     /// Whether two assembly names belong to the same profile family: the same language under
@@ -346,7 +395,14 @@ internal static class ArchitectureRules
                 continue;
             }
 
-            yield return $"{project.RelativePath} -> {name}, which is neither a core package nor a composable profile";
+            // Revised 2026-09-25 (UBC-2): the universal bytecode and its emitters are siblings a root
+            // links beside the families it composes; they are not profiles and do not count as one.
+            if (IsUniversalBytecodeSibling(name))
+            {
+                continue;
+            }
+
+            yield return $"{project.RelativePath} -> {name}, which is neither a core package, a composable profile nor a universal bytecode sibling";
         }
 
         if (profiles == 0)
@@ -385,11 +441,15 @@ internal static class ArchitectureRules
             .OrderBy(static name => name, StringComparer.Ordinal)
             .ToArray();
 
-        if (!referenced.SequenceEqual(ConsumerProfileReferences, StringComparer.Ordinal))
+        // Revised 2026-09-25 (UBC-2): a consumer family that lowers to the universal bytecode takes a
+        // third edge, to Broiler.VM.Ubc - exactly that one, and never to an emitter, which a family
+        // does not name; the composition root hands the family to the emitter it composes.
+        if (!referenced.SequenceEqual(ConsumerProfileReferences, StringComparer.Ordinal) &&
+            !referenced.SequenceEqual(ConsumerFamilyReferences, StringComparer.Ordinal))
         {
             yield return
                 $"{project.RelativePath} references [{string.Join(", ", referenced)}] rather than " +
-                $"[{string.Join(", ", ConsumerProfileReferences)}]";
+                $"[{string.Join(", ", ConsumerProfileReferences)}], or [{string.Join(", ", ConsumerFamilyReferences)}] for a universal bytecode family";
         }
 
         foreach (var package in project.PackageReferences)
@@ -406,6 +466,13 @@ internal static class ArchitectureRules
     /// <summary>The exact reference set ADR 0011's obligation P1 allows a profile package.</summary>
     internal static readonly string[] ConsumerProfileReferences =
         ["Broiler.VM.Abstractions", "Broiler.VM.Binary"];
+
+    /// <summary>
+    /// The exact reference set a consumer family of the universal bytecode takes: P1's two, and the
+    /// universal bytecode, which ADR 0013's verdict adds and route MVP-10 records.
+    /// </summary>
+    internal static readonly string[] ConsumerFamilyReferences =
+        ["Broiler.VM.Abstractions", "Broiler.VM.Binary", "Broiler.VM.Ubc"];
 
     /// <summary>
     /// Whether an assembly name is a profile a composition may name: a Broiler-owned language

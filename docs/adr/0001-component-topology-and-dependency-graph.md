@@ -1788,3 +1788,25 @@ three assemblies to it, so rules B1 and B2 stand and the core's public API
 baseline does not move; no edge runs from it to any profile.
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-09-25 - the bytecode emitter and the fixture family, UBC-2
+
+**What changes.** Three projects are added. `Broiler.VM.Emitter.Bytecode` under
+`src/`: the bytecode emitter, whose emitting half emits nothing and whose
+executing half is one dispatch loop generic over the family. It references
+`Broiler.VM.Abstractions`, `Broiler.VM.Binary` and `Broiler.VM.Ubc`, and no
+profile. `Com.Example.Tally` under `src/tests/`: the universal bytecode's fixture
+family, an application-local consumer family in the position the two consumer
+profiles occupy, referencing the same three assemblies and nothing else - rule
+A13 is revised to admit `Broiler.VM.Ubc` for a consumer family. And
+`Broiler.VM.Composition.Ubc.Fixture` under `src/compositions/`: the demonstration
+root that composes the fixture family over the bytecode emitter beside
+`Com.Example.Ledger`, and is published and run under the three publish modes.
+Rules A11 and A12 gain the `Broiler.VM.Emitter.<Architecture>` family pattern.
+
+**What is now true.** The graph goes from 28 projects and 93 edges to 31 and 106.
+The packable set is unchanged and still holds exactly three: none of the three
+projects is packable or carries a package identity, and section 1 of the
+composition register still advertises nothing.
+
+**What is not edited.** Every revision above stands as written.

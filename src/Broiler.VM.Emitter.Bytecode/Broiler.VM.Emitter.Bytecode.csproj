@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Emitter.Bytecode</RootNamespace>
+    <AssemblyName>Broiler.VM.Emitter.Bytecode</AssemblyName>
+    <Description>The universal bytecode's bytecode emitter: an emitting half that emits nothing, and an executing half that interprets verified universal bytecode in one dispatch loop generic over the family. It names no family and no language; a family's handlers reach it through the contracts of Broiler.VM.Ubc.</Description>
+
+    <!-- The programme's milestone UBC-2: not packable during the MVP, like Broiler.VM.Ubc. -->
+    <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!--
+    THREE EDGES, ALL DOWN. The two core sinks and the universal bytecode; never a profile. A family
+    reaches this assembly only as a type argument and a registration, handed over by a composition
+    root, so no edge runs from an emitter to a language family or back (rules A11 and A12).
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
+  </ItemGroup>
+
+</Project>
