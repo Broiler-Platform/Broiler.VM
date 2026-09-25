@@ -28,8 +28,9 @@ internal static class ProbeChecks
 
     /// <summary>
     /// A signature call row enters the callee its top i32 names with the named signature's parameters,
-    /// which lie beneath a trailing value and the i32 on each plane; a callee of another signature, or
-    /// none, is refused, and one of the same slots under another Types row is admitted.
+    /// which lie beneath a trailing value and the i32 on each plane; a callee whose parameters differ, one
+    /// whose results differ, and none at all are refused, and one of the same slots under another Types
+    /// row is admitted.
     /// </summary>
     internal static (string, bool, string) SignatureCall()
     {
@@ -44,8 +45,13 @@ internal static class ProbeChecks
         Expect(failures, "mismatch", Run(bytes, "mismatch"), ContractViolation);
         Expect(failures, "absent", Run(bytes, "absent"), ContractViolation);
 
+        // A callee of the named results whose parameters are three i64s: entered, it would take the
+        // trailing i32 for its third parameter and answer words 7009 and 8, so only comparing the
+        // parameters, and not the results alone, refuses it.
+        Expect(failures, "parameters", Run(bytes, "parameters"), ContractViolation);
+
         return failures.Count == 0
-            ? ("signature-call", true, "a signature row entered its callee with the parameters beneath its trailing value and i32 on both planes, admitted a callee of equal slots under another Types row, and refused one of another signature and one the program does not have")
+            ? ("signature-call", true, "a signature row entered its callee with the parameters beneath its trailing value and i32 on both planes, admitted a callee of equal slots under another Types row, and refused one of other parameters, one of other results and one the program does not have")
             : ("signature-call", false, string.Join("; ", failures));
     }
 
@@ -149,35 +155,42 @@ internal static class ProbeChecks
     }
 
     /// <summary>
-    /// A start unit runs in the instantiation step, once, before the instance is published: a completed
-    /// run publishes it with the run's effect, and a trap, a signature that takes or gives anything, a
-    /// unit the program does not have, an exhausted allowance, a handler's exception and a suspension
-    /// each abandon the state once - the exception giving back the call depth its frames held.
+    /// A start unit runs in the instantiation step, once, before the instance is published, and asks the
+    /// family for no completion payload: a completed run publishes it with the run's effect, and a trap,
+    /// a signature that takes or gives anything, a unit the program does not have, an exhausted
+    /// allowance, a handler's exception and a suspension each abandon the state once - the exception
+    /// giving back the call depth its frames held, as does one the value plane throws before the start
+    /// unit's frame stands.
     /// </summary>
     internal static (string, bool, string) StartUnit()
     {
         var failures = new List<string>();
 
-        void Case(string name, byte start, string expected, int abandoned, Action<ulong[]>? adjust = null)
+        void Case(string name, byte start, string expected, int abandoned, int completions, Action<ulong[]>? adjust = null)
         {
             ProbeLog.Reset();
             var answer = Run(AdmissionProgram(ProbeAdmission.Ready, start), "main", adjust);
             Expect(failures, name, answer, expected);
             Counted(failures, name, 1, abandoned);
+            Completions(failures, name, completions);
         }
 
-        Case("completes", 1, "completed words=[5] values=[]", 0);
-        Case("traps", 2, "instantiation faulted Trap code=1", 1);
-        Case("gives a result", 3, "instantiation " + ContractViolation, 1);
-        Case("is no unit", 0xFE, "instantiation " + ContractViolation, 1);
-        Case("never ends", 4, "instantiation exhausted Fuel", 1, limits => limits[(int)VmBudgetDimension.Fuel] = 5_000);
-        Case("throws", 5, "instantiation " + ContractViolation, 1);
-        Case("suspends", 6, "instantiation " + ContractViolation, 1);
+        // Only an invocation's return asks for a completion payload: the start run's return does not,
+        // so the one that completes is asked for one payload, by the invocation of main.
+        Case("completes", 1, "completed words=[5] values=[]", 0, 1);
+        Case("traps", 2, "instantiation faulted Trap code=1", 1, 0);
+        Case("gives a result", 3, "instantiation " + ContractViolation, 1, 0);
+        Case("is no unit", 0xFE, "instantiation " + ContractViolation, 1, 0);
+        Case("never ends", 4, "instantiation exhausted Fuel", 1, 0, limits => limits[(int)VmBudgetDimension.Fuel] = 5_000);
+        Case("throws", 5, "instantiation " + ContractViolation, 1, 0);
+        Case("suspends", 6, "instantiation " + ContractViolation, 1, 0);
 
-        // The start unit ran once, before publication, and not again for each invocation.
+        // The start unit ran once, before publication, and not again for each invocation, and the two
+        // invocations' returns were the only ones asked for a payload.
         using (var runtime = Runtime())
         {
             var descriptor = ProbeProfile.ArtifactDescriptor();
+            ProbeLog.Reset();
 
             if (runtime.Verify(in descriptor, AdmissionProgram(ProbeAdmission.Ready, start: 1), default).TryGetArtifact(out var handle) &&
                 runtime.Instantiate(handle, default).TryGetInstance(out var instance))
@@ -187,6 +200,7 @@ internal static class ProbeChecks
                     var first = Invoke(instance, "main");
                     var second = Invoke(instance, "main");
                     Expect(failures, "second invocation", $"{first} | {second}", "completed words=[5] values=[] | completed words=[5] values=[]");
+                    Completions(failures, "second invocation", 2);
                 }
             }
             else
@@ -204,18 +218,45 @@ internal static class ProbeChecks
             Expect(failures, "under a call depth of one", $"{crashed} | {after}", $"instantiation {ContractViolation} | completed words=[5] values=[]");
         }
 
+        // So did one whose value plane threw while the start unit's frame was being entered - after its
+        // depth was charged and before the frame stood - which the core, settling only operations,
+        // would otherwise leave charged in the runtime for good.
+        using (var shallow = Runtime(limits => limits[(int)VmBudgetDimension.CallDepth] = 1))
+        {
+            string grew;
+            ProbeLog.Reset();
+            ProbePlane.FailGrowth = true;
+
+            try
+            {
+                grew = Run(shallow, AdmissionProgram(ProbeAdmission.Ready, start: 1), "main");
+            }
+            finally
+            {
+                ProbePlane.FailGrowth = false;
+            }
+
+            Counted(failures, "a plane that throws", 1, 1);
+            var after = Run(shallow, AdmissionProgram(ProbeAdmission.Ready, start: 1), "main");
+            var again = Run(shallow, AdmissionProgram(ProbeAdmission.Ready, start: 1), "main");
+            Expect(
+                failures, "after a plane that throws", $"{grew} | {after} | {again}",
+                $"instantiation {ContractViolation} | completed words=[5] values=[] | completed words=[5] values=[]");
+        }
+
         return failures.Count == 0
-            ? ("start-unit", true, "a start unit ran once before publication; a trap, a result, an absent unit, fuel run out, a handler's exception and a suspension each abandoned the state once; and the exception gave its depth back")
+            ? ("start-unit", true, "a start unit ran once before publication and asked for no payload; a trap, a result, an absent unit, fuel run out, a handler's exception and a suspension each abandoned the state once; and a handler's exception, and a plane's before the frame stood, gave the depth back")
             : ("start-unit", false, string.Join("; ", failures));
     }
 
     // ---- the programs -----------------------------------------------------------------------------
 
     /// <summary>
-    /// Four callers and three callees. Each caller pushes 7, a value of 5, 9 and a value of 99, then
+    /// Five callers and four callees. Each caller pushes 7, a value of 5, 9 and a value of 99, then
     /// the unit it calls, and calls through the signature row naming Types row 1, [i64 v i64] to
-    /// [i64 v]; it answers the callee's i64 and the value's amount. Unit 4 has row 1, unit 5 a row of
-    /// the same parameters and one result, and unit 6 a row of exactly row 1's slots.
+    /// [i64 v]; it answers the callee's i64 and the value's amount. Unit 5 has row 1, unit 6 a row of
+    /// the same parameters and one result, unit 7 a row of exactly row 1's slots, and unit 8 a row of
+    /// row 1's results whose parameters are three i64s. No unit 9 exists.
     /// </summary>
     private static byte[] SignatureProgram()
     {
@@ -225,7 +266,9 @@ internal static class ProbeChecks
         var fewer = assembly.Type([I64, V, I64], [I64]);
         var same = assembly.Type([I64, V, I64], [I64, V]);
 
-        foreach (var (entry, callee) in new[] { ("main", 4), ("structural", 6), ("mismatch", 5), ("absent", 9) })
+        var words = assembly.Type([I64, I64, I64], [I64, V]);
+
+        foreach (var (entry, callee) in new[] { ("main", 5), ("structural", 7), ("mismatch", 6), ("absent", 9), ("parameters", 8) })
         {
             var b = assembly.Begin();
             b.EmitFamily(S, ProbeProfile.Push, UbcOperandShape.I32, 7);
@@ -261,6 +304,18 @@ internal static class ProbeChecks
         equal.Emit(UbcOpcode.LocalGet, 1);
         equal.Emit(UbcOpcode.Return);
         assembly.End(equal, same, 1, 1, UbcUnitFlags.None);
+
+        // Its first parameter times a thousand plus its second, and its third boxed.
+        var confused = assembly.Begin();
+        confused.Emit(UbcOpcode.LocalGet, 0);
+        confused.Emit(UbcOpcode.ConstI64, 1000);
+        confused.EmitFamily(S, ProbeProfile.MulWords, UbcOperandShape.None);
+        confused.Emit(UbcOpcode.LocalGet, 1);
+        confused.EmitFamily(S, ProbeProfile.AddWords, UbcOperandShape.None);
+        confused.Emit(UbcOpcode.LocalGet, 2);
+        confused.EmitFamily(S, ProbeProfile.Box, UbcOperandShape.None);
+        confused.Emit(UbcOpcode.Return);
+        assembly.End(confused, words, 2, 1, UbcUnitFlags.None);
 
         return assembly.Write();
     }
@@ -408,6 +463,14 @@ internal static class ProbeChecks
         if (!string.Equals(actual, expected, StringComparison.Ordinal))
         {
             failures.Add($"{name}: expected '{expected}', got '{actual}'");
+        }
+    }
+
+    private static void Completions(List<string> failures, string name, int completions)
+    {
+        if (ProbeLog.Completions != completions)
+        {
+            failures.Add($"{name}: the family was asked for {ProbeLog.Completions} completion payloads, where {completions} were due");
         }
     }
 

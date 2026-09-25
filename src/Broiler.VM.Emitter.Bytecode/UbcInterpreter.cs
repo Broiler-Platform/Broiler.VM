@@ -753,8 +753,8 @@ internal sealed class UbcInterpreter<TFamily>
     /// arguments finds them unchanged when it lands, whatever the callee did to its parameters. The
     /// entry unit's parameters are the family's to bind, and a start unit has none.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=3BD58F
-    // Broiler-Falsified-If: a frame is pushed without its CallDepth and fuel charged first, a callee's parameter local is the caller's own slot or another slot than the ones the caller named, or a callee's non-parameter locals start holding anything but zero and the family's empty value
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=91914A
+    // Broiler-Falsified-If: a frame is pushed without its CallDepth and fuel charged first, the CallDepth charged for a frame that never stands is kept after Enter returns or throws, a callee's parameter local is the caller's own slot or another slot than the ones the caller named, or a callee's non-parameter locals start holding anything but zero and the family's empty value
     // Broiler-Human:        PENDING
     private bool Enter(
         UbcVerifiedProgram program,
@@ -772,58 +772,72 @@ internal sealed class UbcInterpreter<TFamily>
             return false;
         }
 
-        var code = program.Units[unit];
+        // Until the frame stands, the unit just charged is not one of the frames ReleaseDepth gives
+        // back, so every way out before that gives it back here: a refused charge, and an exception
+        // from the family's value plane or from an allocation, which would otherwise leave it charged
+        // at the runtime level after an instantiation step (the core settles only operations).
+        var entered = false;
 
-        if (!meter.Spend(code.FrameFuel))
+        try
         {
-            meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
-            return false;
-        }
+            var code = program.Units[unit];
 
-        if (depth == frames.Length)
-        {
-            var length = System.Math.Max(4, frames.Length * 2);
-
-            if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, (ulong)(length - frames.Length) * FrameBytes))
+            if (!meter.Spend(code.FrameFuel))
             {
-                meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
                 return false;
             }
 
-            System.Array.Resize(ref frames, length);
-        }
-
-        if (!Grow(wordBase + code.WordLocals + (int)code.Unit.MaxWordHeight + 1,
-                  valueBase + code.ValueLocals + (int)code.Unit.MaxValueHeight + 1))
-        {
-            meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
-            return false;
-        }
-
-        if (copyParameters)
-        {
-            System.Array.Copy(words, wordParameters, words, wordBase, code.ParameterWords);
-
-            for (var slot = 0; slot < code.ParameterValues; slot++)
+            if (depth == frames.Length)
             {
-                values.Copy(valueParameters + slot, valueBase + slot);
+                var length = System.Math.Max(4, frames.Length * 2);
+
+                if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, (ulong)(length - frames.Length) * FrameBytes))
+                {
+                    return false;
+                }
+
+                System.Array.Resize(ref frames, length);
+            }
+
+            if (!Grow(wordBase + code.WordLocals + (int)code.Unit.MaxWordHeight + 1,
+                      valueBase + code.ValueLocals + (int)code.Unit.MaxValueHeight + 1))
+            {
+                return false;
+            }
+
+            if (copyParameters)
+            {
+                System.Array.Copy(words, wordParameters, words, wordBase, code.ParameterWords);
+
+                for (var slot = 0; slot < code.ParameterValues; slot++)
+                {
+                    values.Copy(valueParameters + slot, valueBase + slot);
+                }
+            }
+
+            System.Array.Clear(words, wordBase + code.ParameterWords, code.WordLocals - code.ParameterWords);
+            values.Clear(valueBase + code.ParameterValues, code.ValueLocals - code.ParameterValues);
+
+            frames[depth++] = new UbcFrame
+            {
+                Program = program,
+                Unit = unit,
+                Index = 0,
+                WordBase = wordBase,
+                ValueBase = valueBase,
+                ReturnWords = returnWords,
+                ReturnValues = returnValues,
+            };
+            entered = true;
+            return true;
+        }
+        finally
+        {
+            if (!entered)
+            {
+                meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
             }
         }
-
-        System.Array.Clear(words, wordBase + code.ParameterWords, code.WordLocals - code.ParameterWords);
-        values.Clear(valueBase + code.ParameterValues, code.ValueLocals - code.ParameterValues);
-
-        frames[depth++] = new UbcFrame
-        {
-            Program = program,
-            Unit = unit,
-            Index = 0,
-            WordBase = wordBase,
-            ValueBase = valueBase,
-            ReturnWords = returnWords,
-            ReturnValues = returnValues,
-        };
-        return true;
     }
 
     /// <summary>Grows each plane to at least the given capacity, charging the bytes before allocating them.</summary>

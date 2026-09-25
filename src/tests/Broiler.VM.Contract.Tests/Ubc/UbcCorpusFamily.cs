@@ -343,7 +343,7 @@ internal static class UbcCorpusFamily
 
     /// <summary>The emitter set: the bytecode form, whose executor factory is a stub.</summary>
     internal static UbcEmitterSet Forms(UbcCorpusExecutorFactory? factory = null) =>
-        UbcEmitterSet.Create(new UbcForm(UbcFormat.BytecodeForm, 1, factory ?? new UbcCorpusExecutorFactory()));
+        UbcEmitterSet.Create(new UbcForm(UbcFormat.BytecodeForm, 1, factory ?? new UbcCorpusExecutorFactory(), UbcContract.Version));
 
     /// <summary>The descriptor the corpus is verified by, built and never registered.</summary>
     internal static VmProfileDescriptor Descriptor(

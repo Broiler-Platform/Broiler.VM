@@ -223,8 +223,9 @@ internal sealed class ProbeDefinitions
 }
 
 /// <summary>
-/// Every probe state made and every abandonment asked for, since the last <see cref="Reset"/>: what the
-/// checks hold the executor to. The checks run one after another, so plain counters suffice.
+/// Every probe state made, every abandonment asked for and every completion payload asked for, since
+/// the last <see cref="Reset"/>: what the checks hold the executor and the interpreter to. The checks
+/// run one after another, so plain counters suffice.
 /// </summary>
 internal static class ProbeLog
 {
@@ -235,9 +236,14 @@ internal static class ProbeLog
     /// <summary>States abandoned more than once: always zero when the executor keeps its promise.</summary>
     internal static int AbandonedTwice { get; private set; }
 
-    internal static void Reset() => (Created, Abandoned, AbandonedTwice) = (0, 0, 0);
+    /// <summary>Completion payloads asked for: one per invocation that completes, none for a start run.</summary>
+    internal static int Completions { get; private set; }
+
+    internal static void Reset() => (Created, Abandoned, AbandonedTwice, Completions) = (0, 0, 0, 0);
 
     internal static void Made() => Created++;
+
+    internal static void Completed() => Completions++;
 
     internal static void Abandon(ProbeInstance instance)
     {
@@ -280,6 +286,13 @@ internal sealed class ProbePlane(int capacity) : IUbcValuePlane
 {
     private long[] slots = new long[capacity];
 
+    /// <summary>
+    /// Set by one start-unit check, and only around one instantiation: every plane's growth throws, as
+    /// a family's plane may, in the interpreter's window between charging a frame's call depth and the
+    /// frame standing.
+    /// </summary>
+    internal static bool FailGrowth { get; set; }
+
     public int Capacity => slots.Length;
 
     public int ValueBytes => sizeof(long);
@@ -296,6 +309,11 @@ internal sealed class ProbePlane(int capacity) : IUbcValuePlane
 
     public void Resize(int capacity)
     {
+        if (FailGrowth)
+        {
+            throw new InvalidOperationException("the probe was told to fail growing its value plane");
+        }
+
         if (capacity > slots.Length)
         {
             Array.Resize(ref slots, capacity);
@@ -530,6 +548,7 @@ internal struct ProbeFamily : IUbcFamily
 
     public static IVmProfilePayload? Completion(ref UbcActivation activation)
     {
+        ProbeLog.Completed();
         var unit = activation.Program.Units[activation.Unit];
         var plane = (ProbePlane)activation.Values;
         var words = ImmutableArray.CreateBuilder<long>(unit.ResultWords);

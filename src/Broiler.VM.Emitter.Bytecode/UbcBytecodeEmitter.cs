@@ -48,10 +48,14 @@ public static class UbcBytecodeEmitter
     // Broiler-Human:        PENDING
     public const int SemanticVersion = 2;
 
-    /// <summary>The bytecode form: the identity <see cref="UbcFormat.BytecodeForm"/> and the interpreter as its executor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=2B5582
+    /// <summary>
+    /// The bytecode form: the identity <see cref="UbcFormat.BytecodeForm"/> and the interpreter as its
+    /// executor, written for universal bytecode contract version 2 and carrying the version this
+    /// assembly was compiled against, which the descriptor factory compares with its own.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=798ACE
     // Broiler-Human:        PENDING
-    public static UbcForm Form { get; } = new(UbcFormat.BytecodeForm, SemanticVersion, new UbcBytecodeExecutorFactory());
+    public static UbcForm Form { get; } = new(UbcFormat.BytecodeForm, SemanticVersion, new UbcBytecodeExecutorFactory(), authoredUbcContractVersion: 2);
 }
 
 /// <summary>Makes the interpreter's executor for one family.</summary>

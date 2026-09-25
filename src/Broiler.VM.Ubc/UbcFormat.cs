@@ -127,10 +127,12 @@ public static class UbcFormat
 /// <see cref="UbcDescriptors"/> refuses to build a descriptor for one that differs from this
 /// assembly's. It covers the family table schema, the primitive table and this assembly's public
 /// surface. Version 2, at milestone UBC-4, adds the signature effect form, gives the trapping
-/// truncations two distinct traps, and adds the family members that resolve an entry, admit an
-/// instance and name its start unit. The version is minted by a dated record in the core's ADR set
-/// (the programme's route UBC-R9, at milestone UBC-9); until then nothing outside this repository
-/// depends on it.
+/// truncations two distinct traps, adds the family members that resolve an entry, admit an
+/// instance and name its start unit, and gives an emitter's form the two version integers a family
+/// registration carries. The version is minted by a dated record in the core's ADR set
+/// (the programme's route UBC-R9, at milestone UBC-9); until that record exists its number is this
+/// assembly's alone, and what holds a family or an emitter to it is the comparison the descriptor
+/// factory makes.
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=0; Fingerprint=9349A5
 // Broiler-Human:        PENDING

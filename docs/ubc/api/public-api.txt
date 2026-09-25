@@ -294,7 +294,9 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyTrap..ctor(System.UInt16 code, System.String name) : void
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyTrap.Code : System.UInt16 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcFamilyTrap.Name : System.String { get; }
-  Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm..ctor(System.String identity, System.Int32 semanticVersion, Broiler.VM.Ubc.IUbcExecutorFactory executorFactory) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm..ctor(System.String identity, System.Int32 semanticVersion, Broiler.VM.Ubc.IUbcExecutorFactory executorFactory, System.Int32 authoredUbcContractVersion, System.Int32 builtAgainstUbcContractVersion) : void
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm.AuthoredUbcContractVersion : System.Int32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm.BuiltAgainstUbcContractVersion : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm.ExecutorFactory : Broiler.VM.Ubc.IUbcExecutorFactory { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm.Identity : System.String { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcForm.SemanticVersion : System.Int32 { get; }

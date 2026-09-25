@@ -79,9 +79,9 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 230 |
-| Code units | 9931 |
+| Code units | 9933 |
 | Relevant | 5594 |
-| Exempt | 4337 |
+| Exempt | 4339 |
 | Assessed | 5594 of 5594 (100%) |
 | Human reviewed | 0 of 5594 (0%) |
 | Unverified | 5594 |
@@ -100,7 +100,7 @@ annotations and the current fingerprints; nothing stores them.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4337 |
+| EXEMPT | 4339 |
 
 ## 5. Aliases In The Tree
 
@@ -331,7 +331,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Ubc/UbcArtifact.cs` | 98 | 20 | 78 | 20 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Ubc/UbcArtifactReader.cs` | 42 | 28 | 14 | 28 | Low | Critical | 25/25 |
 | `src/Broiler.VM.Ubc/UbcArtifactWriter.cs` | 53 | 43 | 10 | 43 | Low | Low | 5/0 |
-| `src/Broiler.VM.Ubc/UbcComposition.cs` | 62 | 16 | 46 | 16 | Low | High | 8/8 |
+| `src/Broiler.VM.Ubc/UbcComposition.cs` | 64 | 16 | 48 | 16 | Low | High | 8/8 |
 | `src/Broiler.VM.Ubc/UbcDiagnostics.cs` | 58 | 1 | 57 | 1 | Low | High | 1/1 |
 | `src/Broiler.VM.Ubc/UbcEffects.cs` | 24 | 11 | 13 | 11 | Low | High | 5/3 |
 | `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` | 132 | 58 | 74 | 58 | Low | High | 10/9 |
@@ -468,8 +468,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a resumption continues with a plane other than the one captured, at an instruction other than the one after the suspending row, or with a frame standing whose depth is not charged
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Run()` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, Spec=ADR-0013, `DB4E30`, PENDING
   - Falsified if: a common row is executed with another meaning than Appendix A gives it, or a family status its row's kind does not admit is acted on rather than answered as a contract violation
-- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Enter(UbcVerifiedProgram, int, int, int, int, int, int, int, bool)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, Spec=none cited, `3BD58F`, PENDING
-  - Falsified if: a frame is pushed without its CallDepth and fuel charged first, a callee's parameter local is the caller's own slot or another slot than the ones the caller named, or a callee's non-parameter locals start holding anything but zero and the family's empty value
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Enter(UbcVerifiedProgram, int, int, int, int, int, int, int, bool)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, Spec=none cited, `91914A`, PENDING
+  - Falsified if: a frame is pushed without its CallDepth and fuel charged first, the CallDepth charged for a frame that never stands is kept after Enter returns or throws, a callee's parameter local is the caller's own slot or another slot than the ones the caller named, or a callee's non-parameter locals start holding anything but zero and the family's empty value
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Grow(int, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=none cited, `294E27`, PENDING
   - Falsified if: a plane grows by bytes that were not charged to the allocated-bytes allowance first
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Unwind(ref UbcActivation, object?)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=ADR-0013, `3620FA`, PENDING
@@ -3722,8 +3722,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a native form identity is admitted into a set
 - `Broiler.VM.Ubc.UbcDescriptors` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=ADR-0013, `221939`, PENDING
   - Falsified if: a descriptor is built for a family of another universal bytecode contract version, or a row the declaration owns differs from the declaration's
-- `Broiler.VM.Ubc.UbcDescriptors.Build<TFamily>(UbcFamilyRegistration<TFamily>, UbcFamilyDeclaration, UbcEmitterSet)` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=ADR-0013, `058D0F`, PENDING
-  - Falsified if: a mismatched contract version or identity yields a descriptor rather than an exception
+- `Broiler.VM.Ubc.UbcDescriptors.Build<TFamily>(UbcFamilyRegistration<TFamily>, UbcFamilyDeclaration, UbcEmitterSet)` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=ADR-0013, `1395B9`, PENDING
+  - Falsified if: a family or an emitter of a mismatched contract version, or a mismatched identity, yields a descriptor rather than an exception
 - `Broiler.VM.Ubc.UbcDiagnosticCode` in `src/Broiler.VM.Ubc/UbcDiagnostics.cs` - Security=High, Spec=ADR-0013, `6E0ADC`, PENDING
   - Falsified if: a member is emitted with two different core reasons, or a refusal of the walk carries no member of this vocabulary
 - `Broiler.VM.Ubc.UbcEffect` in `src/Broiler.VM.Ubc/UbcEffects.cs` - Security=High, Spec=ADR-0013, `5F03D0`, PENDING
