@@ -1767,3 +1767,24 @@ reader deciding whether to give them the edge should read it as restoring what
 they had, not as granting something new.**
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-09-25 - the universal bytecode, UBC-1
+
+**What changes.** `Broiler.VM.Ubc` is added under `src/`: the universal bytecode's
+container, its common family, the schema of a family's instruction table, the
+contracts a family implements, the descriptor factory and the one verifier.
+[ADR 0013](0013-the-universal-bytecode-extraction-record.md) accepted it as
+candidate A and printed its two edges before it existed; this revision is the
+milestone that declares them. It references `Broiler.VM.Abstractions` and
+`Broiler.VM.Binary` and nothing else, which rule U1 holds it to.
+`Broiler.VM.Contract.Tests` gains an edge to it, because the universal bytecode's
+malformed corpus is replayed in the behavioural contract suite.
+
+**What is now true.** The graph goes from 27 projects and 90 edges to 28 and 93.
+The packable set is unchanged and still holds exactly three: the new assembly
+declares `IsPackable false` and carries no package identity, and whether it
+becomes a package is the programme's UBC-9 question. No edge runs from the core's
+three assemblies to it, so rules B1 and B2 stand and the core's public API
+baseline does not move; no edge runs from it to any profile.
+
+**What is not edited.** Every revision above stands as written.

@@ -8,6 +8,7 @@
     <Project Path="src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj" />
     <Project Path="src/Broiler.VM.Profile.MachineCode/Broiler.VM.Profile.MachineCode.csproj" />
     <Project Path="src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj" />
+    <Project Path="src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj" />
   </Folder>
   <Folder Name="/compositions/">
     <Project Path="src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj" />

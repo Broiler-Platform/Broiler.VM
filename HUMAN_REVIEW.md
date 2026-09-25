@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5190 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5533 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 211 |
-| Code units | 8814 |
-| Relevant | 5190 |
-| Exempt | 3624 |
-| Assessed | 5190 of 5190 (100%) |
-| Human reviewed | 0 of 5190 (0%) |
-| Unverified | 5190 |
+| Files scanned | 228 |
+| Code units | 9805 |
+| Relevant | 5533 |
+| Exempt | 4272 |
+| Assessed | 5533 of 5533 (100%) |
+| Human reviewed | 0 of 5533 (0%) |
+| Unverified | 5533 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5190 |
+| HUMAN_PENDING | 5533 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 3624 |
+| EXEMPT | 4272 |
 
 ## 5. Aliases In The Tree
 
@@ -325,6 +325,23 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Runtime/VmRuntimeCreationOptions.cs` | 55 | 22 | 33 | 22 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmRuntimeState.cs` | 18 | 8 | 10 | 8 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmVerification.cs` | 12 | 8 | 4 | 8 | Low | High | 3/3 |
+| `src/Broiler.VM.Ubc/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
+| `src/Broiler.VM.Ubc/UbcArtifact.cs` | 98 | 20 | 78 | 20 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Ubc/UbcArtifactReader.cs` | 38 | 24 | 14 | 24 | Low | Critical | 21/21 |
+| `src/Broiler.VM.Ubc/UbcArtifactWriter.cs` | 53 | 43 | 10 | 43 | Low | Low | 5/0 |
+| `src/Broiler.VM.Ubc/UbcComposition.cs` | 62 | 16 | 46 | 16 | Low | High | 8/8 |
+| `src/Broiler.VM.Ubc/UbcDiagnostics.cs` | 57 | 1 | 56 | 1 | Low | High | 1/1 |
+| `src/Broiler.VM.Ubc/UbcEffects.cs` | 22 | 10 | 12 | 10 | Low | High | 4/2 |
+| `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` | 100 | 46 | 54 | 46 | Low | High | 5/4 |
+| `src/Broiler.VM.Ubc/UbcFamilyRegistrationOfT.cs` | 3 | 3 | 0 | 3 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Ubc/UbcFormat.cs` | 33 | 17 | 16 | 17 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Ubc/UbcInstructionTable.cs` | 60 | 18 | 42 | 18 | Low | High | 6/6 |
+| `src/Broiler.VM.Ubc/UbcOpcodes.cs` | 60 | 11 | 49 | 11 | Low | High | 3/2 |
+| `src/Broiler.VM.Ubc/UbcPrimitives.cs` | 189 | 33 | 156 | 33 | Low | Critical | 17/10 |
+| `src/Broiler.VM.Ubc/UbcRefusal.cs` | 26 | 17 | 9 | 17 | Low | High | 5/4 |
+| `src/Broiler.VM.Ubc/UbcSlotTypes.cs` | 33 | 14 | 19 | 14 | Low | High | 2/1 |
+| `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` | 54 | 10 | 44 | 10 | Low | High | 5/3 |
+| `src/Broiler.VM.Ubc/UbcVerifier.cs` | 102 | 59 | 43 | 59 | Low | Critical | 39/34 |
 
 ## 7. Decisions Recorded
 
@@ -3601,6 +3618,198 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: cancellation is decided after an input is examined, or an unknown profile answers InvalidArtifact
 - `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, Spec=none cited, `D433B9`, PENDING
   - Falsified if: an escaping verifier exception is answered as a category, or both effective ceilings are one vector, or a cancelled or poll-bound-violating verification is answered as resource exhaustion
+- `Broiler.VM.Ubc.UbcArtifactReader` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=Critical, Spec=ADR-0013, `F628F2`, PENDING
+  - Falsified if: an input makes the reader throw, allocate before the count that sizes the allocation has passed its bound, or answer an artifact whose sections were not each consumed exactly
+- `Broiler.VM.Ubc.UbcArtifactReader.TryRead(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter, ulong, uint?, out UbcArtifact?, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=Critical, Spec=ADR-0013, `77EF0F`, PENDING
+  - Falsified if: a payload with trailing bytes, an out-of-order or repeated section, a section not consumed exactly, or a count past its bound yields an artifact
+- `Broiler.VM.Ubc.UbcArtifactReader.FromReader(ref VmBoundedReader, VmSourcePosition)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=ADR-0011, `06EC41`, PENDING
+  - Falsified if: a ceiling status is answered as an invalid artifact, or a status is mapped to another status's dimension
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadSection(ref VmBoundedReader, Context, ref uint, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=Critical, Spec=none cited, `95F3E4`, PENDING
+  - Falsified if: a section kind is admitted before its order and uniqueness are checked, or a body that under-reads or over-reads its declared length is accepted
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadFamilies(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `D3E5E7`, PENDING
+  - Falsified if: a slot outside one to fourteen, or a slot not above its predecessor, is read into a row
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadTypes(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `CADD1D`, PENDING
+  - Falsified if: a slot-type byte outside the closed set is read into a signature
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadUnits(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `7FB1F3`, PENDING
+  - Falsified if: a unit row with a family slot above fourteen, flags above sixteen bits, or a local-run type outside the closed set is read
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadCode(ref VmBoundedReader, Context, Sections, ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `E757D0`, PENDING
+  - Falsified if: the code bytes are allocated before their length is reserved, or read in one charge larger than the poll granularity
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadJumpTables(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `CDCFF6`, PENDING
+  - Falsified if: a jump table row is read whose target count was not bounded before its targets were reserved
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadRegions(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `BFE508`, PENDING
+  - Falsified if: a region row is read from bytes past the section's declared length
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadEntries(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `3A55CC`, PENDING
+  - Falsified if: an entry name longer than the format admits, or not valid UTF-8, is read into a row
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadPositions(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `CF6549`, PENDING
+  - Falsified if: a coordinate above the core's signed range is read into a row
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadFamilyData(ref VmBoundedReader, Context, Sections, byte, ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `5A79FC`, PENDING
+  - Falsified if: a family's section body is allocated before its length passes the artifact bound and the allowance
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadEmission(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `CC904A`, PENDING
+  - Falsified if: an emission whose stated code length is not the bytes that follow is read into a section
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadCount(ref VmBoundedReader, Context, UbcSectionKind, ulong, out uint, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `299E8D`, PENDING
+  - Falsified if: a count is returned, or reserved against, before the declared-count ceiling has passed it
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadSlotTypes(ref VmBoundedReader, Context, UbcSectionKind, out ImmutableArray<UbcSlotType>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `02A77C`, PENDING
+  - Falsified if: a slot list is read whose count was not bounded, or a byte outside the closed set of slot types is answered as a type
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadOffsets(ref VmBoundedReader, Context, UbcSectionKind, out ImmutableArray<uint>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `3994A7`, PENDING
+  - Falsified if: an offset list is reserved or read before its count passed the declared-count ceiling
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadIdentity(ref VmBoundedReader, Context, int, out string, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `67607E`, PENDING
+  - Falsified if: an empty identity, one longer than the format admits, or one holding a byte outside its character set is answered as a string
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadRun(ref VmBoundedReader, Context, UbcSectionKind, ulong, out ImmutableArray<byte>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `C42454`, PENDING
+  - Falsified if: the run is allocated before its length passes the artifact bound and the allowance, or one read charges more work than the granularity
+- `Broiler.VM.Ubc.UbcArtifactReader.Context` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `7776E1`, PENDING
+  - Falsified if: a reservation larger than the artifact bound reaches the meter, or a refused reservation is answered as anything but an allocation exhaustion
+- `Broiler.VM.Ubc.UbcArtifactReader.Context.TryReserve(ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `98778E`, PENDING
+  - Falsified if: a byte count past the artifact bound is charged, or a refusal is not answered as an allocation exhaustion
+- `Broiler.VM.Ubc.UbcFamilyRegistration` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=ADR-0013, `47FF0D`, PENDING
+  - Falsified if: a registration holds two tables for one manifest, or a table of another family's identity
+- `Broiler.VM.Ubc.UbcFamilyRegistration.UbcFamilyRegistration(string, System.Collections.Generic.IEnumerable<UbcInstructionTable>, IUbcFamilyVerifier, int, int)` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=none cited, `BBC790`, PENDING
+  - Falsified if: a table whose family identity is not the registration's, or a second table for one manifest, is accepted
+- `Broiler.VM.Ubc.IUbcExecutorFactory` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=ADR-0013, `A9D5B1`, PENDING
+  - Falsified if: an executor is made for a family by any path but this member, or with a type argument other than the registration's
+- `Broiler.VM.Ubc.IUbcExecutorFactory.Create<TFamily>(UbcFamilyRegistration<TFamily>, UbcFamilyDeclaration, IVmExecutionEnvironment)` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=none cited, `BB6186`, PENDING
+  - Falsified if: an executor is returned that runs a program with a family other than the type argument's
+- `Broiler.VM.Ubc.UbcEmitterSet` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=ADR-0013, `CD3796`, PENDING
+  - Falsified if: a set is created empty, with one identity twice, or with a form this contract version cannot verify
+- `Broiler.VM.Ubc.UbcEmitterSet.Create(params UbcForm[])` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=ADR-0013, `843C4C`, PENDING
+  - Falsified if: a native form identity is admitted into a set
+- `Broiler.VM.Ubc.UbcDescriptors` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=ADR-0013, `221939`, PENDING
+  - Falsified if: a descriptor is built for a family of another universal bytecode contract version, or a row the declaration owns differs from the declaration's
+- `Broiler.VM.Ubc.UbcDescriptors.Build<TFamily>(UbcFamilyRegistration<TFamily>, UbcFamilyDeclaration, UbcEmitterSet)` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, Spec=ADR-0013, `058D0F`, PENDING
+  - Falsified if: a mismatched contract version or identity yields a descriptor rather than an exception
+- `Broiler.VM.Ubc.UbcDiagnosticCode` in `src/Broiler.VM.Ubc/UbcDiagnostics.cs` - Security=High, Spec=ADR-0013, `4503D5`, PENDING
+  - Falsified if: a member is emitted with two different core reasons, or a refusal of the walk carries no member of this vocabulary
+- `Broiler.VM.Ubc.UbcEffect` in `src/Broiler.VM.Ubc/UbcEffects.cs` - Security=High, Spec=ADR-0013, `5F03D0`, PENDING
+  - Falsified if: an effect can be constructed whose pops or pushes name a slot type outside the closed set
+- `Broiler.VM.Ubc.UbcEffect.TryGetPopCount(ulong, out int)` in `src/Broiler.VM.Ubc/UbcEffects.cs` - Security=High, Spec=none cited, `63713B`, PENDING
+  - Falsified if: an operand large enough to overflow the product yields a small count instead of false
+- `Broiler.VM.Ubc.IUbcFamily` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, Spec=ADR-0013, `CA8AC4`, PENDING
+  - Falsified if: a member here lets a family move a plane's top, push a frame, or read a value of another family
+- `Broiler.VM.Ubc.IUbcFamily.Handle(ref UbcActivation, byte, ulong)` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, Spec=none cited, `A2D95E`, PENDING
+  - Falsified if: a handler is reached for a row whose effect the walk did not apply, or its answer moves a plane's top
+- `Broiler.VM.Ubc.UbcActivation` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, Spec=ADR-0013, `BAFCB2`, PENDING
+  - Falsified if: a handler reaches a value of another frame or another family through this structure, or the loop reads an output a handler did not answer the status for
+- `Broiler.VM.Ubc.IUbcFamilyVerifier` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, Spec=ADR-0013, `4939EC`, PENDING
+  - Falsified if: an answer of this hook can turn a refusal of the walk into an admission
+- `Broiler.VM.Ubc.UbcInstructionRow` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=ADR-0013, `9D85CA`, PENDING
+  - Falsified if: a row constructed here escapes the table's constructor checks, so an inconsistent row reaches the walk
+- `Broiler.VM.Ubc.UbcInstructionTable` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=ADR-0013, `42AD9F`, PENDING
+  - Falsified if: a table is created whose row violates the schema - a primitive whose signature is not the row's effect, a target on a non-U32 operand, a trap code outside the vocabulary
+- `Broiler.VM.Ubc.UbcInstructionTable.TryGetRow(byte, out UbcInstructionRow)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=none cited, `61E7DC`, PENDING
+  - Falsified if: an opcode the table does not define answers true
+- `Broiler.VM.Ubc.UbcInstructionTable.TryCreate(string, uint, VmFeatureManifestId, System.Collections.Generic.IEnumerable<UbcInstructionRow>, System.Collections.Generic.IEnumerable<UbcRegionKindRow>, System.Collections.Generic.IEnumerable<UbcRegionDeclaration>, System.Collections.Generic.IEnumerable<UbcFamilyTrap>, bool, out UbcInstructionTable?, out string?)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=ADR-0013, `8F8B14`, PENDING
+  - Falsified if: a row that breaks one of the rules listed in the method body is accepted
+- `Broiler.VM.Ubc.UbcInstructionTable.CheckRow(UbcInstructionRow, System.Collections.Generic.HashSet<ushort>, System.Collections.Generic.HashSet<byte>)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=none cited, `BD778E`, PENDING
+  - Falsified if: a primitive row's effect differs from its primitive's signature and the row is admitted, or a non-primitive row carries a primitive or a trap mapping
+- `Broiler.VM.Ubc.UbcInstructionTable.CheckPrimitive(UbcInstructionRow, System.Collections.Generic.HashSet<ushort>, System.Collections.Generic.HashSet<byte>)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=none cited, `56F521`, PENDING
+  - Falsified if: a primitive row is admitted without a mapping for a trap its primitive can raise, or with a region the table does not declare
+- `Broiler.VM.Ubc.UbcOpcodes` in `src/Broiler.VM.Ubc/UbcOpcodes.cs` - Security=High, Spec=ADR-0013, `944BD6`, PENDING
+  - Falsified if: a common row's width or effect is stated anywhere in this assembly outside this table
+- `Broiler.VM.Ubc.UbcOpcodes.TryDescribe(byte, out UbcCommonRow)` in `src/Broiler.VM.Ubc/UbcOpcodes.cs` - Security=High, Spec=none cited, `3E1C8B`, PENDING
+  - Falsified if: a byte in the prefix range or an undefined byte answers true
+- `Broiler.VM.Ubc.UbcPrimitives` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, Spec=ADR-0013, `523F94`, PENDING
+  - Falsified if: an entry answers a result bit pattern IEEE-754 or two's complement does not give for some input, or fails to trap where the entry's trap set says it must
+- `Broiler.VM.Ubc.UbcPrimitives.TrapsOf(UbcPrimitive)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, Spec=none cited, `9CB1EF`, PENDING
+  - Falsified if: an entry whose evaluation can trap answers a set that omits that trap
+- `Broiler.VM.Ubc.UbcPrimitives.TryGetSignature(UbcPrimitive, out ImmutableArray<UbcSlotType>, out ImmutableArray<UbcSlotType>)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, Spec=none cited, `AB80AF`, PENDING
+  - Falsified if: an entry's signature disagrees with the types its evaluation reads and writes
+- `Broiler.VM.Ubc.UbcPrimitives.AccessWidth(UbcPrimitive)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, Spec=none cited, `CE2261`, PENDING
+  - Falsified if: an access answers a width other than the bytes it moves, so the bounds check admits a read past the region
+- `Broiler.VM.Ubc.UbcPrimitives.Evaluate(UbcPrimitive, ulong, ulong, bool)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, Spec=none cited, `6C38AB`, PENDING
+  - Falsified if: some input yields a result that differs, in any bit, from the entry's statement in Appendix D under the NaN flag given
+- `Broiler.VM.Ubc.UbcPrimitives.EvaluateRegion(UbcPrimitive, System.Span<byte>, uint, uint, ulong, uint)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=Critical, Spec=none cited, `CB4415`, PENDING
+  - Falsified if: an access whose effective address plus width exceeds the region's length reads or writes instead of trapping, including through overflow of the sum
+- `Broiler.VM.Ubc.UbcPrimitives.EvaluateCore(UbcPrimitive, ulong, ulong)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, Spec=none cited, `D6AA6A`, PENDING
+  - Falsified if: an integer entry's result keeps bits above its width, or a shift or rotation uses an unmasked count
+- `Broiler.VM.Ubc.UbcPrimitives.EvaluateFloat(UbcPrimitive, ulong, ulong)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, Spec=none cited, `819B5A`, PENDING
+  - Falsified if: a floating-point entry's result differs in any bit from IEEE-754 round-to-nearest-even, or min and max do not order the zeros and propagate NaN
+- `Broiler.VM.Ubc.UbcPrimitives.TruncToI32(double, bool)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, Spec=none cited, `64E30C`, PENDING
+  - Falsified if: a value whose truncation lies outside the target range converts instead of trapping, or NaN converts
+- `Broiler.VM.Ubc.UbcPrimitives.TruncToI64(double, bool)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, Spec=none cited, `66725E`, PENDING
+  - Falsified if: a value whose truncation lies outside the sixty-four-bit range converts instead of trapping, the bound itself included
+- `Broiler.VM.Ubc.UbcReadAdapter` in `src/Broiler.VM.Ubc/UbcRefusal.cs` - Security=High, Spec=ADR-0011, `A570A8`, PENDING
+  - Falsified if: a member charges a dimension other than the one ADR 0011's projection names for it
+- `Broiler.VM.Ubc.UbcReadAdapter.ToReadBounds(VmLimitVector)` in `src/Broiler.VM.Ubc/UbcRefusal.cs` - Security=High, Spec=ADR-0011, `A50120`, PENDING
+  - Falsified if: a ceiling is read from a dimension other than its own
+- `Broiler.VM.Ubc.UbcReadAdapter.TryReserve(ulong)` in `src/Broiler.VM.Ubc/UbcRefusal.cs` - Security=High, Spec=none cited, `FFFA26`, PENDING
+  - Falsified if: a reservation is charged to a dimension other than allocated bytes
+- `Broiler.VM.Ubc.UbcReadAdapter.TryChargeWork(ulong)` in `src/Broiler.VM.Ubc/UbcRefusal.cs` - Security=High, Spec=none cited, `4E1E45`, PENDING
+  - Falsified if: verifier work is charged to a dimension other than verifier work
+- `Broiler.VM.Ubc.UbcOperandShapes.Read(System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Ubc/UbcSlotTypes.cs` - Security=High, Spec=none cited, `739347`, PENDING
+  - Falsified if: a byte beyond the shape's width contributes to the value, or the byte order is not little-endian
+- `Broiler.VM.Ubc.UbcVerifiedProgram` in `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` - Security=High, Spec=ADR-0013, `B1A0C5`, PENDING
+  - Falsified if: a member here can be changed after verification returns, or answers a fact the walk did not prove
+- `Broiler.VM.Ubc.UbcUnitCode` in `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` - Security=High, Spec=ADR-0013, `A3975A`, PENDING
+  - Falsified if: a local count, parameter count or result count here differs from the unit's signature and local runs
+- `Broiler.VM.Ubc.UbcInstruction` in `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` - Security=High, Spec=ADR-0013, `411334`, PENDING
+  - Falsified if: a count here differs from the effect the walk applied to the typed stack at this instruction
+- `Broiler.VM.Ubc.UbcVerifier` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `D5418D`, PENDING
+  - Falsified if: an artifact whose walk would leave a stack unbalanced, a target off a boundary, a join unequal or a height above its declaration is admitted, or a work charge is performed after the work it pays for
+- `Broiler.VM.Ubc.UbcVerifier.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, IVmVerificationContext, System.Threading.CancellationToken)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `90CFC7`, PENDING
+  - Falsified if: a refusal of the reader or the walk is answered as anything but its one outcome, or a stop for cancellation is answered as an exhaustion
+- `Broiler.VM.Ubc.UbcWalk` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `E1BDC7`, PENDING
+  - Falsified if: a stage runs after an earlier stage refused, an instruction is admitted without its effect applied to the typed stack, or work is performed without being charged first
+- `Broiler.VM.Ubc.UbcWalk.Run(out UbcVerifiedProgram?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `B9F64F`, PENDING
+  - Falsified if: the stages run in another order than the concept's, or a program is answered after any stage refused
+- `Broiler.VM.Ubc.UbcWalk.CheckHeader()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `C8E773`, PENDING
+  - Falsified if: a header naming another profile, another manifest or a form the image does not compose passes
+- `Broiler.VM.Ubc.UbcWalk.CheckFamilies()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `F059FA`, PENDING
+  - Falsified if: an artifact declaring a family the image does not compose, a family twice, or FamilyData for an undeclared slot passes
+- `Broiler.VM.Ubc.UbcWalk.CheckTypesAndUnits()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `0B373B`, PENDING
+  - Falsified if: a unit naming a missing signature or an undeclared family, setting a reserved flag, declaring more locals or height than the format admits, or leaving a gap in the code is admitted
+- `Broiler.VM.Ubc.UbcWalk.CheckJumpTables()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `9AF037`, PENDING
+  - Falsified if: a jump table of a missing unit, with no target, or beyond the count an operand can name is admitted
+- `Broiler.VM.Ubc.UbcWalk.CheckRegionRows()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `12BBCD`, PENDING
+  - Falsified if: a region of a missing unit, with an empty or out-of-unit range, of a unit without a family, or of a kind the table does not define is admitted
+- `Broiler.VM.Ubc.UbcWalk.CheckEntries(out ImmutableArray<int>)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `D1E69A`, PENDING
+  - Falsified if: two entries with one name, or an entry of a missing unit or of a unit not flagged as an entry, pass
+- `Broiler.VM.Ubc.UbcWalk.WalkUnit(int, int[], int[], ImmutableArray<int>[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `9B4F93`, PENDING
+  - Falsified if: a unit is answered while an instruction in it is unreachable, a landing is missing or extra, or a region's prefix differs between two covered instructions
+- `Broiler.VM.Ubc.UbcWalk.Decode(int, UbcUnit, out Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=none cited, `0A6973`, PENDING
+  - Falsified if: an undefined opcode, the reserved prefixes, another slot's prefix or an operand running past the unit is decoded as an instruction
+- `Broiler.VM.Ubc.UbcWalk.ResolveRegions(int, UbcUnit, int[], Raw[], out ImmutableArray<UbcDecodedRegion>, out int[], out int[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=none cited, `1A4531`, PENDING
+  - Falsified if: two regions that overlap without nesting, or an enclosing region listed before one it encloses, are admitted
+- `Broiler.VM.Ubc.UbcWalk.Arrive(WalkState, int, UbcStackNode?, int, UbcUnit, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=none cited, `8BCDD6`, PENDING
+  - Falsified if: a second arrival with a different typed stack is accepted, or an arrival above the unit's declared heights is admitted
+- `Broiler.VM.Ubc.UbcWalk.EnterRegions(WalkState, int, int[], int[], ImmutableArray<UbcDecodedRegion>, int, UbcUnit, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `4AFD75`, PENDING
+  - Falsified if: a handler is reached with a state other than the region's prefix and its kind's landing pushes
+- `Broiler.VM.Ubc.UbcWalk.CheckRegionPrefixes(WalkState, ImmutableArray<UbcDecodedRegion>, int, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `53792D`, PENDING
+  - Falsified if: a covered instruction whose bottom slots differ from its region's prefix passes
+- `Broiler.VM.Ubc.UbcWalk.Prefix(UbcStackNode?, UbcDecodedRegion, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `B7F7A2`, PENDING
+  - Falsified if: a prefix is answered whose words or values differ from the region's entry heights
+- `Broiler.VM.Ubc.UbcWalk.CheckLandings(int, UbcUnit, Raw[], ImmutableArray<UbcDecodedRegion>)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `54E900`, PENDING
+  - Falsified if: a unit whose landings omit a resume point or a handler, or name any other offset, passes
+- `Broiler.VM.Ubc.UbcWalk.Step(WalkState, int, int, UbcUnit, UbcSignature, LocalLayout, Raw[], UbcInstruction[], ImmutableArray<int>[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `05A7A7`, PENDING
+  - Falsified if: an instruction reaches a successor with a stack other than its effect applied, or is recorded with counts that differ from that effect
+- `Broiler.VM.Ubc.UbcWalk.StepFamily(WalkState, int, int, UbcUnit, Raw[], UbcInstruction[], UbcInstructionRow, UbcStackNode?, VmSourcePosition, int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `08DCB4`, PENDING
+  - Falsified if: a family row is applied with other pops than its effect names for its operand, a suspending row passes outside a suspendable unit, or a branch's taken edge carries the fall-through's pushes when the row names its own
+- `Broiler.VM.Ubc.UbcWalk.Pop(UbcStackNode?, ImmutableArray<UbcSlotType>, VmSourcePosition, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=none cited, `8BD449`, PENDING
+  - Falsified if: a slot of another type than the list names is popped, or a pop past the bottom answers true
+- `Broiler.VM.Ubc.UbcWalk.Repeat(UbcStackNode?, UbcSlotType, int, VmSourcePosition, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `FE337A`, PENDING
+  - Falsified if: a run holding a slot of another type is popped
+- `Broiler.VM.Ubc.UbcWalk.Take(UbcStackNode?, int, VmSourcePosition, out ImmutableArray<UbcSlotType>, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `C8FF1A`, PENDING
+  - Falsified if: the slots answered are not the stack's top slots bottom to top, or a take past the bottom answers true
+- `Broiler.VM.Ubc.UbcWalk.Push(UbcStackNode?, ImmutableArray<UbcSlotType>, UbcUnit, VmSourcePosition, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `2257D0`, PENDING
+  - Falsified if: a slot is created before its work and bytes are charged, or a push past a declared height builds a stack
+- `Broiler.VM.Ubc.UbcWalk.Same(UbcStackNode?, UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=none cited, `0D6F45`, PENDING
+  - Falsified if: two stacks differing in any slot's type or in height compare equal
+- `Broiler.VM.Ubc.UbcWalk.Target(Raw[], ulong, VmSourcePosition, out int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `9DB159`, PENDING
+  - Falsified if: a target outside the unit or between two boundaries resolves to an instruction
+- `Broiler.VM.Ubc.UbcWalk.LocalLayout` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `2C752C`, PENDING
+  - Falsified if: a local is answered with a type or a plane index other than its signature's or its run's
+- `Broiler.VM.Ubc.UbcWalk.LocalLayout.LocalLayout(UbcSignature, UbcUnit)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `8D469A`, PENDING
+  - Falsified if: a local is placed at a plane index another local of the same plane already has
+- `Broiler.VM.Ubc.UbcWalk.LocalLayout.TryGet(ulong, out UbcSlotType, out int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `F52618`, PENDING
+  - Falsified if: an index at or past the local count answers a type
+- `Broiler.VM.Ubc.UbcWalk.Hook(UbcHookAnswer, VmSourcePosition)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=ADR-0013, `44F6D0`, PENDING
+  - Falsified if: a refusal of the hook is answered as an admission, or a hook code in the universal range reaches the outcome as the hook's
+- `Broiler.VM.Ubc.UbcWalk.HookMeter` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `922DD1`, PENDING
+  - Falsified if: a charge the hook makes reaches the meter without passing the walk's count of work since the last poll
+- `Broiler.VM.Ubc.UbcWalk.HookMeter.TryCharge(VmBudgetDimension, ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `843D78`, PENDING
+  - Falsified if: verifier work the hook charges escapes the walk's count of work since the last poll
+- `Broiler.VM.Ubc.UbcWalk.Work(ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=ADR-0007, `6CEB02`, PENDING
+  - Falsified if: work since the last poll can exceed the family's uncharged-work bound, or a refused charge is answered as success
+- `Broiler.VM.Ubc.UbcWalk.Reserve(ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `6BCE88`, PENDING
+  - Falsified if: an allocation the walk keeps is made before its bytes are charged
 
 ## 10. What This Record Does Not Say
 
@@ -3623,7 +3832,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5073 of the 5190 assessed units declare
+That is not a figure of speech. 5416 of the 5533 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

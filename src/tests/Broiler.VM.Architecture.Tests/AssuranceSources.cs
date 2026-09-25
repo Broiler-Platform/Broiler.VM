@@ -62,6 +62,7 @@ internal static class AssuranceSources
         "Broiler.VM.Profile.MachineCode",
         "Broiler.VM.Profile.WebAssembly",
         "Broiler.VM.Runtime",
+        "Broiler.VM.Ubc",
     ];
 
     /// <summary>

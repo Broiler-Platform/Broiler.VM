@@ -1140,7 +1140,17 @@ public sealed class ReviewRecordRuleTests
         // both derive from it, JsValueLayout.cs, in the format assembly; and the emitter that writes
         // that layout's bytes, JsX64ValueEmitter.cs, in the compiler. Both are covered on the same
         // terms as every other product file, and nothing in them has been read by a human.
-        Assert.Equal(211, AssuranceSources.Files.Count);
+        //
+        // AND THE SEVENTEEN OF MILESTONE UBC-1 of the universal bytecode programme, the whole of
+        // Broiler.VM.Ubc: the container's format, reader and writer, the slot types and operand
+        // shapes, the effect and target descriptors, the common family's one table, the primitive
+        // table, the family table's schema, the diagnostic vocabulary and the refusal, the contracts a
+        // family implements, the composition and descriptor factory, the generic registration - a file
+        // of its own because it shares its name with the registration it derives from, and the record
+        // addresses a unit by its file and its name - the verified program, the verifier walk, and the
+        // assembly marker. The walk is a parser over untrusted bytes, which is
+        // why the record should cover every file of it; nothing in them has been read by a human.
+        Assert.Equal(228, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
