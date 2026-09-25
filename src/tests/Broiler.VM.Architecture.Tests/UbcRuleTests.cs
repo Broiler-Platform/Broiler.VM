@@ -70,7 +70,23 @@ public sealed class UbcRuleTests
 
         Assert.Contains(
             UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable.csproj.witness")),
+            message => message.Contains("sets IsPackable to true", StringComparison.Ordinal));
+
+        // The packability clause reads elements, not text, so each way a search of the text is
+        // satisfied while the project packs is reported: the element quoted in a comment and
+        // nowhere else, a false definition a later one overrides, and a false definition that
+        // holds only under a condition the rule does not evaluate.
+        Assert.Contains(
+            UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable-behind-a-comment.csproj.witness")),
             message => message.Contains("does not carry the literal <IsPackable>false</IsPackable>", StringComparison.Ordinal));
+
+        Assert.Contains(
+            UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable-overridden.csproj.witness")),
+            message => message.Contains("sets IsPackable to true", StringComparison.Ordinal));
+
+        Assert.Contains(
+            UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable-under-a-condition.csproj.witness")),
+            message => message.Contains("sets IsPackable under a condition", StringComparison.Ordinal));
 
         Assert.Contains(
             UbcRules.U1(ComponentGraph.Witness("U1-ubc-package-id.csproj.witness")),
@@ -306,6 +322,13 @@ public sealed class UbcRuleTests
         Assert.Contains(sources, static source => source.RelativePath == "src/Broiler.VM.Ubc/UbcVerifier.cs");
         Assert.Contains(sources, static source => source.Project == "Broiler.VM.Contract.Tests");
 
+        // And a project file's Using items, read as the SDK writes them into the generated file the
+        // sweep does not read, because a global using written there reaches every file of the
+        // project exactly as one written in a source file does.
+        Assert.Contains(sources, static source =>
+            source.RelativePath == "src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj" &&
+            source.Text.Contains("global using global::Xunit;", StringComparison.Ordinal));
+
         // And the four enums a second table would be written in were read, so a using static of any
         // of them is followed rather than silently unmatched.
         var enums = UbcRules.TableEnums();
@@ -405,6 +428,97 @@ public sealed class UbcRuleTests
                 ],
                 enums),
             message => message.Contains(Expected, StringComparison.Ordinal));
+
+        // And through the project file's Using items, which the SDK writes into a generated file
+        // under obj/ that the sweep does not read: a static import, and an alias whose metadata is
+        // written as a child element rather than as an attribute. Every spelling below is tried and
+        // the ones not reported are named together, so one run shows each spelling a change misses.
+        var missed = new List<string>();
+
+        foreach (var (item, table) in new[]
+                 {
+                     ("<Using Include=\"Broiler.VM.Ubc.UbcOpcode\" Static=\"true\" />",
+                      "static class C { static int W(Broiler.VM.Ubc.UbcOpcode o) => o switch { Jump => 5, _ => 0 }; }"),
+                     ("<Using Include=\"Broiler.VM.Ubc.UbcOpcode\"><Alias>Op</Alias></Using>",
+                      "static class C { static int W(Op o) => o switch { Op.Jump => 5, _ => 0 }; }"),
+                 })
+        {
+            var usings = UbcRules.ProjectUsings($"<Project Sdk=\"Microsoft.NET.Sdk\"><ItemGroup>{item}</ItemGroup></Project>");
+
+            var reportedThroughTheProject = UbcRules.U4SecondTables(
+                [
+                    new UbcRules.UbcSource("src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj", Project, usings),
+                    new UbcRules.UbcSource("src/tests/Broiler.VM.Contract.Tests/C.cs", Project, table),
+                ],
+                enums);
+
+            if (!reportedThroughTheProject.Any(message => message.Contains(Expected, StringComparison.Ordinal)))
+            {
+                missed.Add(item);
+            }
+        }
+
+        // A row whose value is composite states each of its parts, so a second table written as
+        // tuples, records or several assignments is reported as surely as one written a fact at a
+        // time: a tuple, a constructor, an object initialiser and a with expression as an arm's
+        // value; a section of assignments, with or without a closing return; a tuple in both
+        // dictionary spellings, in an indexed assignment and beside an opcode in a tuple; and an
+        // anonymous object and a with initialiser pairing an opcode with a shape.
+        foreach (var (row, expected) in new[]
+                 {
+                     ("static object W(UbcOpcode o) => o switch { UbcOpcode.Jump => (3, UbcOperandShape.U32), _ => 0 };",
+                      "a switch arm keyed on UbcOpcode.Jump states an integer literal (3)"),
+                     ("static object W(UbcOpcode o) => o switch { UbcOpcode.Jump => (UbcOperandShape.U32, UbcCommonEffect.Jump), _ => 0 };",
+                      "a switch arm keyed on UbcOpcode.Jump states a common effect (UbcCommonEffect.Jump)"),
+                     ("static object W(UbcOpcode o) => o switch { UbcOpcode.Jump => new Info(3, UbcOperandShape.U32, UbcCommonEffect.Jump), _ => 0 };",
+                      "a switch arm keyed on UbcOpcode.Jump states an operand shape (UbcOperandShape.U32)"),
+                     ("static object W(UbcOpcode o) => o switch { UbcOpcode.Jump => new Info { Width = 3 }, _ => 0 };",
+                      "a switch arm keyed on UbcOpcode.Jump states an integer literal (3)"),
+                     ("static object W(UbcOpcode o, Info i) => o switch { UbcOpcode.Jump => i with { Width = 3 }, _ => 0 };",
+                      "a switch arm keyed on UbcOpcode.Jump states an integer literal (3)"),
+                     ("static void W(UbcOpcode o, out int w, out UbcOperandShape s) { w = 0; s = default; switch (o) { case UbcOpcode.Jump: w = 3; s = UbcOperandShape.U32; break; } }",
+                      "a switch section keyed on UbcOpcode.Jump states an operand shape (UbcOperandShape.U32)"),
+                     ("static UbcOperandShape W(UbcOpcode o, out int w) { w = 0; switch (o) { case UbcOpcode.Jump: w = 3; return UbcOperandShape.U32; default: return default; } }",
+                      "a switch section keyed on UbcOpcode.Jump states an integer literal (3)"),
+                     ("static object T = new Dictionary<UbcOpcode, (int, UbcOperandShape)> { [UbcOpcode.Jump] = (3, UbcOperandShape.U32) };",
+                      "a dictionary entry keyed on UbcOpcode.Jump states an integer literal (3)"),
+                     ("static object T = new Dictionary<UbcOpcode, (int, UbcOperandShape)> { { UbcOpcode.Jump, (3, UbcOperandShape.U32) } };",
+                      "a dictionary entry keyed on UbcOpcode.Jump states an integer literal (3)"),
+                     ("static void W((int, UbcOperandShape)[] t) { t[(int)UbcOpcode.Jump] = (3, UbcOperandShape.U32); }",
+                      "an element indexed keyed on UbcOpcode.Jump states an integer literal (3)"),
+                     ("static object T = (UbcOpcode.Jump, (3, UbcOperandShape.U32));",
+                      "a tuple keyed on UbcOpcode.Jump states an operand shape (UbcOperandShape.U32)"),
+                     ("static object T = new { Op = UbcOpcode.Jump, Shape = UbcOperandShape.U32 };",
+                      "an anonymous object keyed on UbcOpcode.Jump states an operand shape (UbcOperandShape.U32)"),
+                     ("static object W(Info i) => i with { Op = UbcOpcode.Jump, Shape = UbcOperandShape.U32 };",
+                      "a with initialiser keyed on UbcOpcode.Jump states an operand shape (UbcOperandShape.U32)"),
+                 })
+        {
+            var reportedInTheRow = UbcRules.U4SecondTables(
+                [new UbcRules.UbcSource("src/tests/Broiler.VM.Contract.Tests/C.cs", Project, "using Broiler.VM.Ubc; static class C { " + row + " }")],
+                enums);
+
+            if (!reportedInTheRow.Any(message => message.Contains(expected, StringComparison.Ordinal)))
+            {
+                missed.Add(row);
+            }
+        }
+
+        Assert.Empty(missed);
+
+        // And the two limits the row states stay where they were: an integer beside an opcode in an
+        // argument list is how an instruction is emitted with its operand, and a section that calls
+        // anything is behaviour.
+        foreach (var row in new[]
+                 {
+                     "static object T = KeyValuePair.Create(UbcOpcode.Jump, 3);",
+                     "static int W(UbcOpcode o, Stack<int> s) { var pc = 0; switch (o) { case UbcOpcode.Jump: s.Push(3); pc += 5; break; } return pc; }",
+                 })
+        {
+            Assert.Empty(UbcRules.U4SecondTables(
+                [new UbcRules.UbcSource("src/tests/Broiler.VM.Contract.Tests/C.cs", Project, "using Broiler.VM.Ubc; static class C { " + row + " }")],
+                enums));
+        }
     }
 
     [Fact]

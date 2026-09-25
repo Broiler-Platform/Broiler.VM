@@ -1,0 +1,10 @@
+<!-- Violates N4: a JavaScript-family project declaring IsPackable false and then, in a Release
+     build, true. MSBuild takes the last definition that applies, so a Release build packs, and the
+     rule does not evaluate the condition, so it cannot show the property is off. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <IsPackable Condition="'$(Configuration)' == 'Release'">true</IsPackable>
+  </PropertyGroup>
+</Project>

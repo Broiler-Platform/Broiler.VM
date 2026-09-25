@@ -81,6 +81,13 @@ internal static partial class UbcRules
     /// <c>false</c> - <c>true</c>, a property reference, or a conditional definition - is reported,
     /// because the rule cannot show any of them is off.
     /// </para>
+    /// <para>
+    /// <b>So does the packability clause, for the opposite reason.</b> A text search for the element
+    /// would PASS on a comment that quotes it and on a false definition a later one overrides, and
+    /// the project would pack in both cases. Every <c>IsPackable</c> definition must be unconditional
+    /// and literally <c>false</c>, which <see cref="ArchitectureRules.NotLiterallyUnpackable"/>
+    /// decides for this rule and for rule N4 alike.
+    /// </para>
     /// </remarks>
     internal static IEnumerable<string> U1(ComponentGraph.ProjectFile project)
     {
@@ -110,9 +117,9 @@ internal static partial class UbcRules
             yield return $"{project.RelativePath} opens internals to {target}";
         }
 
-        if (!project.RawText.Contains("<IsPackable>false</IsPackable>", StringComparison.Ordinal))
+        foreach (var message in ArchitectureRules.NotLiterallyUnpackable(project, "whether this assembly packs is UBC-9's decision"))
         {
-            yield return $"{project.RelativePath} does not carry the literal <IsPackable>false</IsPackable>";
+            yield return message;
         }
 
         if (project.PackageId is not null)
@@ -930,7 +937,10 @@ internal static partial class UbcRules
         return widths;
     }
 
-    /// <summary>One source file a U4 sweep reads, with the project it belongs to.</summary>
+    /// <summary>
+    /// One source a U4 sweep reads, with the project it belongs to: a source file, or the global
+    /// using directives a project file's <c>Using</c> items declare, at the project file's path.
+    /// </summary>
     internal sealed record UbcSource(string RelativePath, string Project, string Text);
 
     /// <summary>
@@ -943,7 +953,10 @@ internal static partial class UbcRules
     /// emitter that references it - can name the common family's opcodes just as well, because
     /// project references flow, so the sweep follows the reference closure rather than the direct
     /// edges alone. The files are every <c>*.cs</c> under the project's directory outside its own build
-    /// output, and every <c>Compile</c> item the project links from elsewhere.
+    /// output, and every <c>Compile</c> item the project links from elsewhere. The project file's
+    /// <c>Using</c> items are one more source, made by <see cref="ProjectUsings"/>, because the file
+    /// the SDK writes them to is build output and a global using there reaches every file of the
+    /// project.
     /// </para>
     /// <para>
     /// The one table's own file is in the sweep's input and is excluded by <see cref="U4SecondTables"/>
@@ -987,9 +1000,64 @@ internal static partial class UbcRules
                     project.AssemblyName,
                     File.ReadAllText(path)));
             }
+
+            if (ProjectUsings(project.RawText) is { Length: > 0 } usings)
+            {
+                sources.Add(new UbcSource(project.RelativePath, project.AssemblyName, usings));
+            }
         }
 
         return sources;
+    }
+
+    /// <summary>
+    /// The global using directives a project file's <c>Using</c> items declare, written as the SDK
+    /// writes them into the project's generated global-usings file.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The SDK turns each item into one directive: <c>Static="true"</c> into a
+    /// <c>global using static</c>, <c>Alias="A"</c> into a <c>global using A =</c>, and anything else
+    /// into a plain <c>global using</c>. The file it writes them to is under <c>obj/</c>, which the
+    /// sweep does not read, so the directives are made here from the items that produce them. The
+    /// metadata is read as an attribute or as a child element, because MSBuild accepts both.
+    /// </para>
+    /// <para>
+    /// <b>Read wider than MSBuild would evaluate it, not narrower.</b> A conditional item is taken to
+    /// apply, an <c>Update</c> is read as though it declared the item, and an item a later
+    /// <c>Remove</c> takes away is kept, because following one name too many can only report more.
+    /// An item an import declares - <c>Directory.Build.props</c>, or an SDK's implicit usings - is not
+    /// seen, because the rule reads the project file's own elements.
+    /// </para>
+    /// </remarks>
+    internal static string ProjectUsings(string projectText)
+    {
+        var text = new StringBuilder();
+
+        foreach (var item in XDocument.Parse(projectText).Descendants().Where(static element => element.Name.LocalName == "Using"))
+        {
+            var names = (item.Attribute("Include")?.Value ?? item.Attribute("Update")?.Value ?? string.Empty)
+                .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            var alias = Metadata(item, "Alias");
+            var isStatic = string.Equals(Metadata(item, "Static"), "true", StringComparison.OrdinalIgnoreCase);
+
+            foreach (var name in names)
+            {
+                text.Append(
+                    alias is { Length: > 0 } ? $"global using {alias} = global::{name};" :
+                    isStatic ? $"global using static global::{name};" :
+                    $"global using global::{name};");
+
+                text.Append('\n');
+            }
+        }
+
+        return text.ToString();
+
+        static string? Metadata(XElement item, string name) =>
+            (item.Attribute(name)?.Value ??
+             item.Elements().FirstOrDefault(element => element.Name.LocalName == name)?.Value)?.Trim();
     }
 
     /// <summary>
@@ -1018,13 +1086,22 @@ internal static partial class UbcRules
     /// <remarks>
     /// <para>
     /// <b>What is a second table.</b> A construct keyed on <c>UbcOpcode</c> members whose value, for
-    /// a key, is a fact the common table owns: a switch-expression arm or a switch-statement section
-    /// whose whole body returns or assigns it; a dictionary initialiser entry, in either spelling; an
-    /// assignment to an element indexed by an opcode member, which is how an array keyed on opcodes is
-    /// filled; an <c>Add</c> or <c>TryAdd</c> call with an opcode member among its arguments; and any
-    /// argument list, object initialiser or tuple that pairs an opcode member with a shape, an effect
-    /// or a slot type. The facts are an integer literal - a width - an operand shape, a common effect
-    /// or an effect descriptor, a slot type, or a list of slot types.
+    /// a key, is a fact the common table owns: a switch-expression arm whose value states it; a
+    /// switch-statement section whose whole body is assignments, with or without a closing return,
+    /// and assigns or returns it; a dictionary initialiser entry, in either spelling; an assignment to
+    /// an element indexed by an opcode member, which is how an array keyed on opcodes is filled; an
+    /// <c>Add</c> or <c>TryAdd</c> call with an opcode member among its arguments; and any argument
+    /// list, object initialiser, anonymous object, <c>with</c> initialiser or tuple that pairs an
+    /// opcode member with a shape, an effect or a slot type. The facts are an integer literal - a
+    /// width - an operand shape, a common effect or an effect descriptor, a slot type, or a list of
+    /// slot types.
+    /// </para>
+    /// <para>
+    /// <b>A composite value states each of its parts.</b> A row can be written as a tuple, a record
+    /// or a field at a time as readily as a fact at a time, so a value that is not itself a fact is
+    /// read through its parts - a tuple's elements, a constructor's arguments and object initialiser,
+    /// an anonymous object's members and a <c>with</c> initialiser, at any depth - and each part that
+    /// is a fact is reported (<see cref="Facts"/>).
     /// </para>
     /// <para>
     /// <b>Integer literals are read only where a construct is keyed.</b> An argument list or a tuple
@@ -1032,14 +1109,17 @@ internal static partial class UbcRules
     /// <c>Emit(UbcOpcode.ConstI32, 7)</c> carries an operand, not a width - so a bare integer beside an
     /// opcode is a table only in a switch, a dictionary, an indexed assignment or an <c>Add</c> call.
     /// Dispatching on an opcode to behaviour is not reported either: an arm whose body does something
-    /// is what an interpreter is, and only an arm whose whole body IS one of these facts is a row.
+    /// is what an interpreter is, and only an arm whose value or whose assignments state these facts
+    /// is a row.
     /// </para>
     /// <para>
     /// <b>Names are followed through the file's and the project's using directives</b> - an alias of
-    /// one of the four enums and a <c>using static</c> of one - and read through unicode escapes, because
+    /// one of the four enums and a <c>using static</c> of one, the project's global ones including
+    /// those its project file's <c>Using</c> items declare - and read through unicode escapes, because
     /// the rule compares identifiers' value text. What a syntax scan cannot see is stated rather than
     /// implied: a table keyed on raw opcode BYTES rather than members, a value held in a constant or
-    /// returned by a helper rather than written in the arm, and a key reached through a variable.
+    /// returned by a helper - a call's arguments included - rather than written in the arm, a key
+    /// reached through a variable, and a <c>Using</c> item an import declares.
     /// </para>
     /// </remarks>
     internal static IEnumerable<string> U4SecondTables(
@@ -1104,41 +1184,58 @@ internal static partial class UbcRules
     {
         switch (node)
         {
-            case SwitchExpressionArmSyntax arm when OpcodeKeys(arm.Pattern, scope).FirstOrDefault() is { } key &&
-                Fact(arm.Expression, scope, integers: true) is { } kind:
-                yield return ("a switch arm", key, arm.Expression, kind);
+            case SwitchExpressionArmSyntax arm when OpcodeKeys(arm.Pattern, scope).FirstOrDefault() is { } key:
+                foreach (var (value, kind) in Facts(arm.Expression, scope, integers: true))
+                {
+                    yield return ("a switch arm", key, value, kind);
+                }
+
                 break;
 
             case SwitchSectionSyntax section:
             {
                 var key = section.Labels.SelectMany(label => LabelKeys(label, scope)).FirstOrDefault();
 
-                if (key is not null && SectionValue(section) is { } value && Fact(value, scope, integers: true) is { } kind)
+                if (key is null)
                 {
-                    yield return ("a switch section", key, value, kind);
+                    break;
+                }
+
+                foreach (var stated in SectionValues(section))
+                {
+                    foreach (var (value, kind) in Facts(stated, scope, integers: true))
+                    {
+                        yield return ("a switch section", key, value, kind);
+                    }
                 }
 
                 break;
             }
 
             case AssignmentExpressionSyntax { Left: ImplicitElementAccessSyntax access } assignment
-                when access.ArgumentList.Arguments.Select(argument => scope.Member(argument.Expression, "UbcOpcode")).FirstOrDefault(static member => member is not null) is { } key &&
-                Fact(assignment.Right, scope, integers: true) is { } kind:
-                yield return ("a dictionary entry", key, assignment.Right, kind);
+                when access.ArgumentList.Arguments.Select(argument => scope.Member(argument.Expression, "UbcOpcode")).FirstOrDefault(static member => member is not null) is { } key:
+                foreach (var (value, kind) in Facts(assignment.Right, scope, integers: true))
+                {
+                    yield return ("a dictionary entry", key, value, kind);
+                }
+
                 break;
 
             case AssignmentExpressionSyntax { Left: ElementAccessExpressionSyntax access } assignment
-                when access.ArgumentList.Arguments.Select(argument => scope.Member(argument.Expression, "UbcOpcode")).FirstOrDefault(static member => member is not null) is { } key &&
-                Fact(assignment.Right, scope, integers: true) is { } kind:
-                yield return ("an element indexed", key, assignment.Right, kind);
+                when access.ArgumentList.Arguments.Select(argument => scope.Member(argument.Expression, "UbcOpcode")).FirstOrDefault(static member => member is not null) is { } key:
+                foreach (var (value, kind) in Facts(assignment.Right, scope, integers: true))
+                {
+                    yield return ("an element indexed", key, value, kind);
+                }
+
                 break;
 
             case InitializerExpressionSyntax initializer when initializer.IsKind(SyntaxKind.ComplexElementInitializerExpression) &&
                 initializer.Expressions.Count > 1 &&
                 scope.Member(initializer.Expressions[0], "UbcOpcode") is { } key:
-                foreach (var value in initializer.Expressions.Skip(1))
+                foreach (var stated in initializer.Expressions.Skip(1))
                 {
-                    if (Fact(value, scope, integers: true) is { } kind)
+                    foreach (var (value, kind) in Facts(stated, scope, integers: true))
                     {
                         yield return ("a dictionary entry", key, value, kind);
                     }
@@ -1146,14 +1243,21 @@ internal static partial class UbcRules
 
                 break;
 
-            case InitializerExpressionSyntax initializer when initializer.IsKind(SyntaxKind.ObjectInitializerExpression):
+            case InitializerExpressionSyntax initializer when initializer.IsKind(SyntaxKind.ObjectInitializerExpression) ||
+                initializer.IsKind(SyntaxKind.WithInitializerExpression):
                 foreach (var row in Paired(
-                             "an object initialiser",
-                             initializer.Expressions.OfType<AssignmentExpressionSyntax>()
-                                 .Where(static assignment => assignment.Left is IdentifierNameSyntax)
-                                 .Select(static assignment => assignment.Right),
+                             initializer.IsKind(SyntaxKind.WithInitializerExpression) ? "a with initialiser" : "an object initialiser",
+                             InitialisedValues(initializer),
                              scope,
                              integers: false))
+                {
+                    yield return row;
+                }
+
+                break;
+
+            case AnonymousObjectCreationExpressionSyntax anonymous:
+                foreach (var row in Paired("an anonymous object", anonymous.Initializers.Select(static member => member.Expression), scope, integers: false))
                 {
                     yield return row;
                 }
@@ -1203,7 +1307,10 @@ internal static partial class UbcRules
         }
     }
 
-    /// <summary>A list of expressions in which an opcode member is paired with a fact the table owns.</summary>
+    /// <summary>
+    /// A list of expressions in which an opcode member is paired with a fact the table owns, the facts
+    /// inside a composite element of the list included.
+    /// </summary>
     private static IEnumerable<(string Construct, string Key, ExpressionSyntax Value, string Kind)> Paired(
         string construct, IEnumerable<ExpressionSyntax> expressions, Scope scope, bool integers)
     {
@@ -1215,14 +1322,67 @@ internal static partial class UbcRules
             yield break;
         }
 
-        foreach (var value in list)
+        foreach (var element in list)
         {
-            if (scope.Member(value, "UbcOpcode") is null && Fact(value, scope, integers) is { } kind)
+            if (scope.Member(element, "UbcOpcode") is not null)
+            {
+                continue;
+            }
+
+            foreach (var (value, kind) in Facts(element, scope, integers))
             {
                 yield return (construct, key, value, kind);
             }
         }
     }
+
+    /// <summary>
+    /// The facts the common table owns that a value states: the value itself when it is one, and
+    /// otherwise every part of a composite value that is one, at any depth.
+    /// </summary>
+    /// <remarks>
+    /// The parts are a tuple's elements, a constructor's arguments and the members its object
+    /// initialiser assigns, an anonymous object's members, and the members a <c>with</c> expression
+    /// assigns: every way to write a row whose value is several facts rather than one. A call is not
+    /// a composite - its result is what a helper returns, which the rule states it does not see - and
+    /// neither is a collection, which is read only as a slot-type list.
+    /// </remarks>
+    private static IEnumerable<(ExpressionSyntax Value, string Kind)> Facts(ExpressionSyntax expression, Scope scope, bool integers)
+    {
+        if (Fact(expression, scope, integers) is { } kind)
+        {
+            yield return (expression, kind);
+            yield break;
+        }
+
+        IEnumerable<ExpressionSyntax> parts = Strip(expression) switch
+        {
+            TupleExpressionSyntax tuple => tuple.Arguments.Select(static argument => argument.Expression),
+            BaseObjectCreationExpressionSyntax creation =>
+                (creation.ArgumentList?.Arguments.Select(static argument => argument.Expression) ?? [])
+                    .Concat(InitialisedValues(creation.Initializer)),
+            AnonymousObjectCreationExpressionSyntax anonymous => anonymous.Initializers.Select(static member => member.Expression),
+            WithExpressionSyntax with => InitialisedValues(with.Initializer),
+            _ => [],
+        };
+
+        foreach (var part in parts)
+        {
+            foreach (var fact in Facts(part, scope, integers))
+            {
+                yield return fact;
+            }
+        }
+    }
+
+    /// <summary>The values an object initialiser or a <c>with</c> initialiser assigns to named members.</summary>
+    private static IEnumerable<ExpressionSyntax> InitialisedValues(InitializerExpressionSyntax? initializer) =>
+        initializer is not null &&
+        (initializer.IsKind(SyntaxKind.ObjectInitializerExpression) || initializer.IsKind(SyntaxKind.WithInitializerExpression))
+            ? initializer.Expressions.OfType<AssignmentExpressionSyntax>()
+                .Where(static assignment => assignment.Left is IdentifierNameSyntax)
+                .Select(static assignment => assignment.Right)
+            : [];
 
     /// <summary>Every <c>UbcOpcode</c> member a switch label names.</summary>
     private static IEnumerable<string> LabelKeys(SwitchLabelSyntax label, Scope scope)
@@ -1243,22 +1403,44 @@ internal static partial class UbcRules
         }
     }
 
-    /// <summary>The one value a switch section's whole body returns or assigns, or null.</summary>
-    private static ExpressionSyntax? SectionValue(SwitchSectionSyntax section)
+    /// <summary>
+    /// The values a switch section's whole body assigns and returns, or none when the body does
+    /// anything else.
+    /// </summary>
+    /// <remarks>
+    /// A body of assignments, with or without a closing return, is a row written a field at a time,
+    /// so every value in it is read. A body holding any other statement - a call, a declaration, a
+    /// branch - is behaviour, and nothing in it is read, which is how an interpreter arm stays
+    /// unreported.
+    /// </remarks>
+    private static IReadOnlyList<ExpressionSyntax> SectionValues(SwitchSectionSyntax section)
     {
         var statements = section.Statements
             .SelectMany(static statement => statement is BlockSyntax block
                 ? (IEnumerable<StatementSyntax>)block.Statements
                 : [statement])
-            .Where(static statement => statement is not BreakStatementSyntax)
-            .ToArray();
+            .Where(static statement => statement is not BreakStatementSyntax);
 
-        return statements switch
+        var values = new List<ExpressionSyntax>();
+
+        foreach (var statement in statements)
         {
-            [ReturnStatementSyntax { Expression: { } value }] => value,
-            [ExpressionStatementSyntax { Expression: AssignmentExpressionSyntax assignment }] => assignment.Right,
-            _ => null,
-        };
+            switch (statement)
+            {
+                case ExpressionStatementSyntax { Expression: AssignmentExpressionSyntax assignment }:
+                    values.Add(assignment.Right);
+                    break;
+
+                case ReturnStatementSyntax { Expression: { } value }:
+                    values.Add(value);
+                    break;
+
+                default:
+                    return [];
+            }
+        }
+
+        return values;
     }
 
     /// <summary>Every <c>UbcOpcode</c> member a pattern names as a constant.</summary>
