@@ -28,8 +28,10 @@ internal sealed class FixtureProbe : IUbcExecutorFactory
 {
     private readonly List<VmExecutionStepKind> steps = new();
 
-    /// <summary>The token whose cancellation the probe measures from; none measures nothing.</summary>
-    internal CancellationToken Watched { get; init; }
+    // The token the core handed the executor with the step in progress: the operation's own, which is
+    // the one its meter polls. The host's token is linked into it, and a measure started from the
+    // host's would count the moment between the two as the loop's.
+    private CancellationToken operation;
 
     /// <summary>Cancelled as an invocation starts, so that verification and instantiation run uncancelled.</summary>
     internal CancellationTokenSource? CancelAtInvoke { get; init; }
@@ -46,10 +48,10 @@ internal sealed class FixtureProbe : IUbcExecutorFactory
     /// <summary>True when a call into the executor threw.</summary>
     internal bool Threw { get; private set; }
 
-    /// <summary>The fuel the executor charged once <see cref="Watched"/> was cancelled.</summary>
+    /// <summary>The fuel the executor charged once the operation's token was cancelled.</summary>
     internal ulong FuelAfterCancellation { get; private set; }
 
-    /// <summary>True when a poll the core answered returned false after <see cref="Watched"/> was cancelled.</summary>
+    /// <summary>True when a poll the core answered returned false after the operation's token was cancelled.</summary>
     internal bool CancellationObserved { get; private set; }
 
     /// <summary>The fixture family's descriptor over this probe as its one form.</summary>
@@ -90,6 +92,7 @@ internal sealed class FixtureProbe : IUbcExecutorFactory
 
         public VmExecutionStep Invoke(IVmInstanceState state, in VmInvocationRequest request, CancellationToken cancellationToken)
         {
+            probe.operation = cancellationToken;
             probe.CancelAtInvoke?.Cancel();
 
             try
@@ -107,8 +110,11 @@ internal sealed class FixtureProbe : IUbcExecutorFactory
             }
         }
 
-        public VmExecutionStep Resume(IVmInstanceState state, IVmProfileContinuation continuation, CancellationToken cancellationToken) =>
-            probe.Record(() => inner.Resume(state, continuation, cancellationToken));
+        public VmExecutionStep Resume(IVmInstanceState state, IVmProfileContinuation continuation, CancellationToken cancellationToken)
+        {
+            probe.operation = cancellationToken;
+            return probe.Record(() => inner.Resume(state, continuation, cancellationToken));
+        }
 
         public void Unwind(IVmProfileContinuation continuation, ulong effectiveUnwindAllowance) =>
             inner.Unwind(continuation, effectiveUnwindAllowance);
@@ -130,7 +136,7 @@ internal sealed class FixtureProbe : IUbcExecutorFactory
     {
         public bool TryCharge(VmBudgetDimension dimension, ulong amount)
         {
-            if (dimension == VmBudgetDimension.Fuel && probe.Watched.IsCancellationRequested)
+            if (dimension == VmBudgetDimension.Fuel && probe.operation.IsCancellationRequested)
             {
                 probe.FuelAfterCancellation += amount;
             }
@@ -147,7 +153,7 @@ internal sealed class FixtureProbe : IUbcExecutorFactory
 
             var answer = inner.Poll();
 
-            if (!answer && probe.Watched.IsCancellationRequested)
+            if (!answer && probe.operation.IsCancellationRequested)
             {
                 probe.CancellationObserved = true;
             }

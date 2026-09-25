@@ -177,7 +177,7 @@ internal static class FixtureChecks
 
         (string Transcript, FixtureProbe Probe) Run(bool swallow, CancellationTokenSource cancellation, ulong fuel, bool cancelAtInvoke)
         {
-            var probe = new FixtureProbe { Watched = cancellation.Token, SwallowPolls = swallow, CancelAtInvoke = cancelAtInvoke ? cancellation : null };
+            var probe = new FixtureProbe { SwallowPolls = swallow, CancelAtInvoke = cancelAtInvoke ? cancellation : null };
             using var runtime = FixtureHost.Runtime(
                 limits =>
                 {

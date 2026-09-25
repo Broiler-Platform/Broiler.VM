@@ -12,7 +12,7 @@
 #   run-jit.log, run-trimmed.log, run-aot.log      the root's contract checks, verbose, in each mode
 #   catalog-fixture.txt                            the catalog table the published root prints (--closure),
 #                                                  and catalog-modes.log saying whether the three modes agree
-#   closure-fixture.txt                            the non-framework assemblies each publish contains
+#   closure-fixture.txt                            the non-framework managed assemblies each publish contains
 #   corpus-jit.log, corpus-trimmed.log, corpus-aot.log
 #                                                  the fixture family's retained corpus (src/tests/corpus/ubc-2)
 #                                                  replayed in each mode, and corpus-modes.log comparing them
@@ -67,6 +67,24 @@ def run(command, env=None, cwd=ROOT):
     result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, env=env or BASE_ENV,
                             encoding="utf-8", errors="replace")
     return result.returncode, (result.stdout + result.stderr).replace("\r\n", "\n")
+
+
+def is_managed(path):
+    """True when the file is a PE image carrying a CLR header - an assembly, not a native library the
+    self-contained runtime ships beside it under the same extension."""
+    try:
+        with open(path, "rb") as handle:
+            data = handle.read(4096)
+        pe = int.from_bytes(data[0x3C:0x40], "little")
+        if data[pe:pe + 4] != b"PE\0\0":
+            return False
+        optional = pe + 24
+        magic = int.from_bytes(data[optional:optional + 2], "little")
+        directories = optional + (96 if magic == 0x10B else 112)
+        clr = directories + 14 * 8
+        return int.from_bytes(data[clr:clr + 4], "little") != 0
+    except (OSError, ValueError):
+        return False
 
 
 def write(name, text):
@@ -137,6 +155,7 @@ def main():
     for mode, directory in (("trimmed", trimmed), ("aot", aot)):
         full = os.path.join(ROOT, directory)
         names = sorted(n[:-4] for n in os.listdir(full) if n.endswith(".dll")
+                       and is_managed(os.path.join(full, n))
                        and not n.startswith(("System.", "Microsoft."))
                        and n not in ("netstandard.dll", "mscorlib.dll", "WindowsBase.dll"))
         closure.append("[%s] %d non-framework assemblies" % (mode, len(names)))
