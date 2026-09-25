@@ -176,7 +176,7 @@ internal ref struct WasmDecoder
     /// <remarks>
     /// The bounds arrive as a parameter rather than being read here, because the ordering that
     /// matters - the ceilings are fixed before the first byte is examined - is a property of the
-    /// verifier's sequence and is stated there.
+    /// translator's sequence and is stated there.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=7A55F8
     // Broiler-Falsified-If: any field is left uninitialised so a failed decode hands back an array nothing filled

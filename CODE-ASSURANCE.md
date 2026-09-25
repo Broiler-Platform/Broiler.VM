@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 237 |
-| Files carrying an annotation | 237 |
-| Code units | 10283 |
-| Relevant | 5798 |
-| Exempt by predicate | 4485 |
-| Annotated | 5798 of 5798 (100%) |
-| Human reviewed | 0 of 5798 (0%) |
-| Unverified | 5798 |
+| Files scanned | 234 |
+| Files carrying an annotation | 234 |
+| Code units | 10178 |
+| Relevant | 5740 |
+| Exempt by predicate | 4438 |
+| Annotated | 5740 of 5740 (100%) |
+| Human reviewed | 0 of 5740 (0%) |
+| Unverified | 5740 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5798 |
+| HUMAN_PENDING | 5740 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4485 |
+| EXEMPT | 4438 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1539 |
-| Low | 5432 |
+| Low | 5332 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,18 +51,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 9 |
 | Low | 952 |
-| Medium | 4244 |
-| High | 1583 |
-| Critical | 264 |
+| Medium | 4177 |
+| High | 1565 |
+| Critical | 249 |
 | *not annotated* | 0 |
 
 ## Resource impact
 
 | Metric | Value |
 |---|---:|
-| Maximum | 9 / 10 |
+| Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 5798 |
+| Units scored | 5740 |
 
 ## High-security review areas
 
@@ -1617,21 +1617,6 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.WebAssembly.WasmFamilyVerifier.CheckInstructionCore(WasmDefinitions, byte, ulong, UbcInstructionRow)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyVerifier.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmFormat` in `src/Broiler.VM.Profile.WebAssembly/WasmFormat.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmFormat.OrderRankOf(WasmSectionId)` in `src/Broiler.VM.Profile.WebAssembly/WasmFormat.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmLabel` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmFrame` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmPacing` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmPacing.TryReserve(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmPacing.TryCharge(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmPacing.Observe(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.Call(int, System.ReadOnlySpan<WasmValue>, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.TryPushFrame(int, out WasmRunStatus)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.PopFrame(WasmFrame)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.Run()` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.Branch(WasmFrame, int, ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.MemoryAccess(byte, System.ReadOnlySpan<byte>, ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.ReadU32(System.ReadOnlySpan<byte>, ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.ReadS64(System.ReadOnlySpan<byte>, ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLeb128` in `src/Broiler.VM.Profile.WebAssembly/WasmLeb128.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLeb128.TryReadVarU32(ref VmBoundedReader, out uint, out WasmVarIntStatus)` in `src/Broiler.VM.Profile.WebAssembly/WasmLeb128.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmLeb128.TryReadVarS32(ref VmBoundedReader, out int, out WasmVarIntStatus)` in `src/Broiler.VM.Profile.WebAssembly/WasmLeb128.cs` - Security=High, human line PENDING
@@ -1672,11 +1657,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.ProfileMaximumPages` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.Allocate(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.Bytes` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.TryLoad(ulong, int, out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.TryStore(ulong, int, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.TryInitialise(ulong, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.Grow(uint, IVmMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.Grow(uint, IVmMeter, bool, out bool)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.Grow(uint, IVmMeter, out bool)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmJumpTarget` in `src/Broiler.VM.Profile.WebAssembly/WasmModule.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmFunctionBody` in `src/Broiler.VM.Profile.WebAssembly/WasmModule.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmFunctionBody.TrySeal(int, int, WasmJumpTarget[])` in `src/Broiler.VM.Profile.WebAssembly/WasmModule.cs` - Security=Critical, human line PENDING
@@ -1687,6 +1669,9 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.WebAssembly.WasmName` in `src/Broiler.VM.Profile.WebAssembly/WasmName.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmName.IsWellFormed(System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.WebAssembly/WasmName.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmName.Follows(System.ReadOnlySpan<byte>, int, int, byte, byte)` in `src/Broiler.VM.Profile.WebAssembly/WasmName.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmPacing` in `src/Broiler.VM.Profile.WebAssembly/WasmPacing.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmPacing.TryCharge(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmPacing.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmPacing.Observe(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmPacing.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmReadAdapter` in `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmReadAdapter.Ceilings` in `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmReadAdapter.WasmReadAdapter(IVmMeter, VmLimitVector)` in `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` - Security=High, human line PENDING
@@ -1695,21 +1680,18 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.WebAssembly.WasmReadAdapter.ReleaseStructuralDepth(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryEvaluate(byte, ulong, ulong, out ulong, out WasmTrapKind)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryNumeric(byte, WasmValue[], ref int, out WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Integer(byte, WasmValue[], ref int, ref WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Float(byte, WasmValue[], ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.FloatComparison(byte, WasmValue[], ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Convert(byte, WasmValue[], ref int, ref WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmTableInstance` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmTableInstance.TryRead(uint, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmTableInstance.TryInitialise(ulong, System.ReadOnlySpan<uint>)` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmStore` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmStore.TryAllocate(WasmModule, IVmMeter, out WasmStore?, out bool)` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmStore.ReleasePartial(WasmMemoryInstance?[], WasmTableInstance?[], IVmMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmStore.ProfileMaximumTableEntries` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmStore.Release(IVmMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmInstance` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmContinuation` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryNumeric(byte, Operand[], ref int, out WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Integer(byte, Operand[], ref int, ref WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Float(byte, Operand[], ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.FloatComparison(byte, Operand[], ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Convert(byte, Operand[], ref int, ref WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Operand` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Operand.FromF32(float)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Operand.FromF64(double)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmTableInstance` in `src/Broiler.VM.Profile.WebAssembly/WasmTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmTableInstance.ProfileMaximumTableEntries` in `src/Broiler.VM.Profile.WebAssembly/WasmTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmTableInstance.TryRead(uint, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmTableInstance.TryInitialise(ulong, System.ReadOnlySpan<uint>)` in `src/Broiler.VM.Profile.WebAssembly/WasmTable.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmTranslator` in `src/Broiler.VM.Profile.WebAssembly/WasmTranslator.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmTranslator.Translate(System.ReadOnlySpan<byte>, VmLimitVector, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WasmTranslator.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmTranslator.TranslateCore(System.ReadOnlySpan<byte>, VmLimitVector, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WasmTranslator.cs` - Security=Critical, human line PENDING
@@ -1771,32 +1753,17 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryGrow<TElement>(ref TElement[], ref ulong, int, ulong, VmBudgetDimension)` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryAppendJump(int, int, int, int, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryPoll()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmValue` in `src/Broiler.VM.Profile.WebAssembly/WasmValue.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmValue.FromF32(float)` in `src/Broiler.VM.Profile.WebAssembly/WasmValue.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmValue.FromF64(double)` in `src/Broiler.VM.Profile.WebAssembly/WasmValue.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmRefusal` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmRefusal.FromReader(VmBoundedReadStatus, VmSourcePosition)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmRefusal.FromVarInt(WasmVarIntStatus, VmBoundedReadStatus, VmSourcePosition)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Instantiate(VmVerifiedArtifact, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Invoke(IVmInstanceState, in VmInvocationRequest, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Unwind(IVmProfileContinuation, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.InstantiateCore(VmVerifiedArtifact, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.InvokeCore(IVmInstanceState, in VmInvocationRequest)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Faulted(WasmTrapKind, int, int)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyValue` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyPayloads.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyTrap` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyPayloads.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.MaxUnchargedWork` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Registration` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Declaration` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Build()` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Declare()` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Defaults()` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Matrix()` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyVerifier.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.PollGranularity` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyVerifier.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, IVmVerificationContext, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyVerifier.cs` - Security=Critical, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.VerifyCore(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, IVmVerificationContext, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyVerifier.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.VmInstanceImplementation.Dispose(System.TimeSpan)` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmInstanceImplementation.LeaveStep()` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmLimitPrecedence.TryApply(VmBudgetScope, ulong[], VmLimitOverrides, out ulong[], out VmBudgetDimension, out VmReason)` in `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` - Security=High, human line PENDING
@@ -1918,8 +1885,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1969 |
-| Units required to carry one | 1847 |
+| Units carrying a criterion | 1937 |
+| Units required to carry one | 1814 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1946,14 +1913,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1398 |
+| TrivialPropertyOrAccessor | 1383 |
 | ParameterAssigningConstructor | 162 |
-| TrivialExpressionBodiedMember | 66 |
+| TrivialExpressionBodiedMember | 64 |
 | CompilerSuppliedRecordOrEnumMember | 15 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 795 |
-| EnumMemberOfADeclaredVocabulary | 1897 |
+| FieldDeclaringStorage | 770 |
+| EnumMemberOfADeclaredVocabulary | 1892 |
 | DeclaredInSource | 31 |
 
 ## Per-unit exemptions
@@ -2003,7 +1970,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10283 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10178 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -2011,7 +1978,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 237 of them - with a
+Beside the units it lists **every covered file** - 234 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

@@ -148,11 +148,11 @@ internal struct WasmControlFrame
 /// <para>
 /// <b>Two bounds are computed here because they cannot honestly be read anywhere else.</b> The
 /// deepest the operand stack goes and the deepest the control stack goes are high-water marks over
-/// a walk that has to happen anyway, and they are stored on the function body so that an
-/// interpreter sizes its stacks from a number this pass computed rather than from a number the
-/// payload chose. The jump targets are the same argument: this pass already knows, at every
-/// <c>end</c>, which opening instruction it closes, so the pairing is recorded and no interpreter
-/// ever scans forward for a matching <c>end</c>.
+/// a walk that has to happen anyway, and they are stored on the function body so that nothing that
+/// reads a body sizes anything from a number the payload chose. The jump targets are the same
+/// argument: this pass already knows, at every <c>end</c>, which opening instruction it closes, so
+/// the pairing is recorded and the translator's lowering never scans forward for a matching
+/// <c>end</c>.
 /// </para>
 /// <para>
 /// <b>Nesting is charged as a high-water mark and released, and the loop is iterative.</b> A level
@@ -761,7 +761,7 @@ internal ref struct WasmValidator
     // =============================================================================================
 
     /// <summary>
-    /// Walks one function body once, type-checking it and computing what an interpreter will need.
+    /// Walks one function body once, type-checking it and computing its bounds and its jump targets.
     /// </summary>
     /// <remarks>
     /// The outermost control frame is the function itself: a block whose label types are the

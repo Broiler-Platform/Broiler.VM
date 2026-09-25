@@ -3,9 +3,11 @@
   <PropertyGroup>
     <RootNamespace>Broiler.VM.Profile.WebAssembly</RootNamespace>
     <AssemblyName>Broiler.VM.Profile.WebAssembly</AssemblyName>
-    <Description>The Broiler.VM WebAssembly language profile. It carries an identity, a descriptor, a decoder for the binary format, a validator, and an interpreter over the four numeric types, locals, globals, one linear memory, structured control flow, direct and indirect calls. It has no linker and admits no import, no manifest has been scored against the specification's own conformance suite, and the status ledger under docs/ is the authority for what exists.</Description>
+    <Description>The Broiler.VM WebAssembly language profile. It carries an identity, a decoder for the binary format, a validator, a translator of a validated module into universal bytecode, and the universal bytecode family that runs it over the four numeric types, locals, globals, one linear memory, structured control flow, direct and indirect calls. It has no linker and admits no import, no manifest has been scored against the specification's own conformance suite, and the status ledger under docs/ is the authority for what exists.</Description>
 
-    <!-- WA-0 declares no package. Packaging is WA-10's decision and rule N4 holds the claim. -->
+    <!-- Packable since commit d16a6aa, with no PackageId, so it packs under its assembly name. WA-0
+         declared no package and the packaging decision is still WA-10's; rule N4, which asks every
+         profile project for the literal element false, reports this one. -->
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -26,12 +28,13 @@
     references an emitter, which rule A11 forbids a profile. So the set is the two core assemblies
     and the universal bytecode, and rule W1 asserts it.
 
-    During UBC-4 the profile carries both paths: the descriptor its roots verify bare modules under
-    today, and the family they will verify translated universal bytecode under, with the translator
-    that writes that bytecode from a module the profile's own decoder and validator admit. Until the
-    roots move, nothing composes the family or calls the translator but a scratch probe, and the
-    payload the roots hand the core is still a bare WebAssembly module produced by an external
-    toolchain.
+    The family is the profile's one execution path. A composition root hands a module produced by an
+    external toolchain to the profile's translator, which decodes and validates it with the
+    profile's own decoder and validator and lowers it into universal bytecode; the root builds the
+    family's descriptor over the bytecode emitter it composes, and the core verifies and runs the
+    translation's artifact under it. The profile builds no descriptor of its own: milestone UBC-4
+    retired the one it built over bare modules, with its verifier, its executor and its
+    interpreter, once the roots translated first.
   -->
   <ItemGroup>
     <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />

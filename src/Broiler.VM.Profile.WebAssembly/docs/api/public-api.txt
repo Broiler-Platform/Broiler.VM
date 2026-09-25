@@ -19,7 +19,6 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmExportKind.Memory : const Broiler.VM.Profile.WebAssembly.WasmExportKind = 2
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmExportKind.Table : const Broiler.VM.Profile.WebAssembly.WasmExportKind = 1
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmExportKind.value__ : System.Int32
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmInstance.InvocationCount : System.Int32 { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule.CustomSectionCount : System.Int32 { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule.DataSegmentCount : System.Int32 { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule.DeclaresDataCount : System.Boolean { get; }
@@ -174,13 +173,7 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem.UnknownArgumentType : const Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem = 4
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem.UnknownExport : const Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem = 7
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem.value__ : System.Int32
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Instantiate(Broiler.VM.VmVerifiedArtifact artifact, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmExecutionStep
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Invoke(Broiler.VM.IVmInstanceState state, in Broiler.VM.VmInvocationRequest request, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmExecutionStep
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.ProfileId : Broiler.VM.VmProfileId { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Resume(Broiler.VM.IVmInstanceState state, Broiler.VM.IVmProfileContinuation continuation, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmExecutionStep
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Unwind(Broiler.VM.IVmProfileContinuation continuation, System.UInt64 effectiveUnwindAllowance) : System.Void
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Declaration : static Broiler.VM.Ubc.UbcFamilyDeclaration { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Descriptor : static Broiler.VM.VmProfileDescriptor { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.EntryPointFaultKindId : const System.Int32 = 2003
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Id : static Broiler.VM.VmProfileId { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.MaxUnchargedWork : const System.UInt32 = 65536
@@ -211,18 +204,9 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyValueKind.I32 : const Broiler.VM.Profile.WebAssembly.WebAssemblyValueKind = 1
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyValueKind.I64 : const Broiler.VM.Profile.WebAssembly.WebAssemblyValueKind = 2
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyValueKind.value__ : System.Int32
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier..ctor(Broiler.VM.VmProfileId profileId, Broiler.VM.VmFeatureManifestId manifest) : void
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.AuthoredCoreContractVersion : System.Int32 { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.BuiltAgainstCoreContractVersion : System.Int32 { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.PollGranularity : const System.UInt64 = 65536
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.ProfileId : Broiler.VM.VmProfileId { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.VerifierSemanticVersion : System.Int32 { get; }
-  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.Verify(in Broiler.VM.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload, Broiler.VM.IVmVerificationContext context, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmVerifierOutcome
-type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmContinuation : sealed class Broiler.VM.IVmProfileContinuation
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmExportKind : enum
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmFamily : struct Broiler.VM.Ubc.IUbcFamily
-type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmInstance : sealed class Broiler.VM.IVmInstanceState
-type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule : sealed class Broiler.VM.IVmVerifiedState
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule : sealed class
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter : sealed class Broiler.VM.IVmBoundedAllocationMeter
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation : sealed class
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator : static class
@@ -230,10 +214,8 @@ type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTrapKind 
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode : enum
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointProblem : enum
-type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor : sealed class Broiler.VM.IVmProfileExecutor
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile : static class
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyResults : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyTrap : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyValue : struct
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyValueKind : enum
-type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier : sealed class Broiler.VM.IVmProfileVerifier

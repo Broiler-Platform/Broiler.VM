@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   33
-// Annotated:        33/33
+// Relevant units:   34
+// Annotated:        34/34
 // Exempt:           19
-// Human-reviewed:   0/33
+// Human-reviewed:   0/34
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         18/16
+// Criteria:         19/16
 // Resource impact:  4/10 max
-// Unverified:       33
+// Unverified:       34
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -41,7 +41,7 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// callee's module type in that order and asks the emitter to enter the callee.
 /// </para>
 /// <para>
-/// <b>What an instantiation does</b>, in the order the profile's executor did it: the memory and the
+/// <b>What an instantiation does</b>, in the order the base executor did it: the memory and the
 /// table at their declared minimums, charged and retained; the globals from their initial bits; the
 /// element segments and then the data segments, each atomic and each charged, a segment that does
 /// not fit recording the trap the instantiation faults with. A start function, if the module names
@@ -56,6 +56,13 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <b>No value plane.</b> WebAssembly's values are all words, so the family's plane holds nothing and
 /// the hook refuses any artifact naming a value slot. Nothing in the table suspends, throws or lands,
 /// so the members that serve those are unreachable and say so by throwing.
+/// </para>
+/// <para>
+/// <b>The base.</b> Where these remarks name the base executor, the base interpreter or the base store,
+/// they mean the bare-module path this profile carried until milestone UBC-4 retired it: its
+/// descriptor's executor, the interpreter that executor ran and the store it allocated. The family
+/// answers what that path answered - the traps, their codes and positions, the entry-point faults and
+/// the order of an instantiation - and evidence bundle ubc-4-001 retains the base run it is held to.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=3; Fingerprint=E5586C
@@ -72,7 +79,7 @@ public struct WasmFamily : IUbcFamily
     /// latched above the step's kind, at an invocation and at an instantiation alike. The loop's meter
     /// polls at the declared bound, so no poll inside a growth is refused for the bound itself.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=8E6403
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=2CB32A
     // Broiler-Falsified-If: a row is answered from state it does not own, a trap it raises is answered as another, or a growth a core budget refused lets the guest run on
     // Broiler-Human:        PENDING
     static UbcStatus IUbcFamily.Handle(ref UbcActivation activation, byte familyOpcode, ulong operand)
@@ -124,7 +131,7 @@ public struct WasmFamily : IUbcFamily
             // the step ends here rather than running the guest past a growth it will never be told
             // about: an instantiation whose start function grows is then abandoned, and gives back
             // what it retained, rather than completed and dropped by the core with its retention.
-            var answer = memory.Grow((uint)words[at], activation.Meter, gateRetention: true, out var refusedByBudget);
+            var answer = memory.Grow((uint)words[at], activation.Meter, out var refusedByBudget);
 
             if (refusedByBudget)
             {
@@ -231,7 +238,7 @@ public struct WasmFamily : IUbcFamily
     /// whose parameters the arguments match in count and type.
     /// </summary>
     /// <remarks>
-    /// Every refusal is the fault the profile's executor answered for it: a problem of the text with
+    /// Every refusal is the fault the base executor answered for it: a problem of the text with
     /// the index of the argument being read, a name no export carries or one naming another kind of
     /// thing with no argument index, a count mismatch with none, and a type mismatch with the argument's.
     /// </remarks>
@@ -495,18 +502,39 @@ public struct WasmFamily : IUbcFamily
     }
 
     /// <summary>A trap payload at a function index and a body-relative offset, as the base executor built one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8463F0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=DE4B9F
     // Broiler-Human:        PENDING
     private static WebAssemblyTrap Trap(WasmTrapKind kind, int function, int offset) =>
         new(
             WebAssemblyProfile.Id,
             kind,
-            (int)WebAssemblyExecutor.DiagnosticFor(kind),
+            (int)DiagnosticFor(kind),
             new VmSourcePosition(
                 sectionIndex: (int)WasmSectionId.Code,
                 byteOffset: offset < 0 ? 0 : (ulong)offset,
                 profileCoordinate0: function,
                 profileCoordinate1: offset));
+
+    /// <summary>The registry row a trap kind carries, as the base executor mapped it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2E67B2
+    // Broiler-Falsified-If: a trap kind is mapped to a registry row of another trap
+    // Broiler-Human:        PENDING
+    private static WebAssemblyDiagnosticCode DiagnosticFor(WasmTrapKind kind) => kind switch
+    {
+        WasmTrapKind.Unreachable => WebAssemblyDiagnosticCode.TrapUnreachable,
+        WasmTrapKind.IntegerDivideByZero => WebAssemblyDiagnosticCode.TrapIntegerDivideByZero,
+        WasmTrapKind.IntegerOverflow => WebAssemblyDiagnosticCode.TrapIntegerOverflow,
+        WasmTrapKind.InvalidConversionToInteger =>
+            WebAssemblyDiagnosticCode.TrapInvalidConversionToInteger,
+        WasmTrapKind.OutOfBoundsMemoryAccess =>
+            WebAssemblyDiagnosticCode.TrapOutOfBoundsMemoryAccess,
+        WasmTrapKind.OutOfBoundsTableAccess =>
+            WebAssemblyDiagnosticCode.TrapOutOfBoundsTableAccess,
+        WasmTrapKind.UndefinedElement => WebAssemblyDiagnosticCode.TrapUndefinedElement,
+        WasmTrapKind.IndirectCallTypeMismatch =>
+            WebAssemblyDiagnosticCode.TrapIndirectCallTypeMismatch,
+        _ => WebAssemblyDiagnosticCode.TrapUninitializedElement,
+    };
 
     /// <summary>An entry point refused with <paramref name="problem"/> at <paramref name="argumentIndex"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AAF54C
@@ -591,14 +619,16 @@ internal sealed class WasmNullPlane : IUbcValuePlane
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>It is the base store's allocation, in the base store's order and at its charges.</b> The memory
-/// is a pinned array at its declared minimum (decision WAD-0001), charged to allocated bytes and
-/// retained as live bytes; a minimum above the profile's own page ceiling is refused by forcing the latched
-/// exhaustion the base executor forced. The table is an array of unit indices at its minimum, null
-/// throughout, charged and retained the same way under its own ceiling. The globals are not charged,
-/// as they never were. Each element and then each data segment is charged under the profile's pacing -
-/// its entries plus one, its bytes over sixty-four plus one - and applied whole or not at all, and the
-/// first that does not fit stops the making with its trap recorded.
+/// <b>It is the base store's allocation, in the base store's order and at its charges</b> - the
+/// store the bare-module executor allocated until milestone UBC-4 retired it, which this state
+/// replaced. The memory is a pinned array at its declared minimum (decision WAD-0001), charged to
+/// allocated bytes and retained as live bytes; a minimum above the profile's own page ceiling is
+/// refused by forcing the latched exhaustion the base executor forced. The table is an array of
+/// unit indices at its minimum, null throughout, charged and retained the same way under its own
+/// ceiling. The globals are not charged, as they never were. Each element and then each data
+/// segment is charged under the profile's pacing - its entries plus one, its bytes over sixty-four
+/// plus one - and applied whole or not at all, and the first that does not fit stops the making
+/// with its trap recorded.
 /// </para>
 /// <para>
 /// <b>Two departures from the base store, both about a refusal it did not see or a bound it did not
@@ -821,7 +851,7 @@ internal sealed class WasmInstanceState
 
     /// <summary>Allocates the declared table at its minimum, every entry null, or answers false with the refusal recorded.</summary>
     /// <remarks>Its retention is charged before the array exists, as the memory's is.</remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=102116
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=192D32
     // Broiler-Falsified-If: the array exists before the allocation and retention charges returned true, or a minimum above the entry ceiling is allocated
     // Broiler-Human:        PENDING
     private bool AllocateTable(IVmMeter meter)
@@ -833,7 +863,7 @@ internal sealed class WasmInstanceState
 
         var declared = Definitions.Table;
 
-        if (declared.Minimum > WasmStore.ProfileMaximumTableEntries)
+        if (declared.Minimum > WasmTableInstance.ProfileMaximumTableEntries)
         {
             RefuseByProfileCeiling(meter);
             return false;

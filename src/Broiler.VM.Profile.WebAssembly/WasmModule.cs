@@ -455,8 +455,8 @@ internal sealed class WasmFunctionBody
 }
 
 /// <summary>
-/// The decoded and validated module verification produces, and the state a verified artifact
-/// carries.
+/// The decoded and validated module a translation produces, and the summary a translation that
+/// succeeded hands back beside its artifact.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -475,29 +475,35 @@ internal sealed class WasmFunctionBody
 /// </para>
 /// <para>
 /// <b>What neither pass asserts is anything about the guest's behaviour</b> - only that the body is
-/// walkable and its bounds are computed. Running it is the executor's job, and the executor beside
-/// this class runs it: it allocates a store, evaluates the start function if the module declares
-/// one, and answers a completed step carrying results on invocation.
+/// walkable and its bounds are computed. Running it is the universal bytecode's job: the translator
+/// lowers a module both passes admitted into an artifact, the core verifies the artifact, and an
+/// emitter runs it over the family's handlers - allocating a store, running the start function if
+/// the module declares one, and answering a completed step carrying results on invocation. The
+/// module itself is never handed to the core; it is the translation's summary.
 /// <i>(Corrected 2026-09-08. This paragraph read "<b>What it still does not assert is that the
 /// module can be run</b>, because running it needs an interpreter and there is none in this
 /// assembly. The executor beside this class refuses every step and says so in its own words." Both
-/// halves were true when written and stopped being true when <see cref="WasmInterpreter"/> landed
-/// in this assembly and <see cref="WebAssemblyExecutor"/> began running it. The superseded reading
+/// halves were true when written and stopped being true when <c>WasmInterpreter</c> landed
+/// in this assembly and <c>WebAssemblyExecutor</c> began running it. The superseded reading
 /// is quoted rather than deleted, because a record that revises itself silently is a record a
 /// reader cannot audit.)</i>
+/// <i>(Corrected 2026-09-25. The corrected paragraph then read "Running it is the executor's job,
+/// and the executor beside this class runs it", and this class was the state a verified artifact
+/// carried. Milestone UBC-4 retired that executor, its interpreter and the verifier that handed this
+/// class to the core, and the module stopped being a verified artifact's state.)</i>
 /// </para>
 /// <para>
-/// <b>Everything reachable from it is immutable once verification returns.</b> That is what makes a
-/// shareable handle safe for two runtimes reading it at once with no synchronisation between them.
+/// <b>Everything reachable from it is immutable once validation returns.</b> That is what makes a
+/// module safe for two threads reading it at once with no synchronisation between them.
 /// No array is handed out: the arrays are private, the internal accessors return read-only windows,
 /// and the public surface is counts and copies. There is no cache slot, no interned identity and no
 /// process-local object anywhere behind it.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=25C6A2
+// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=4DF8A9
 // Broiler-Falsified-If: anything reachable from this state can be mutated after verification returns, or a caller reads one of these fields as though a validation pass had run
 // Broiler-Human:        PENDING
-public sealed class WasmModule : IVmVerifiedState
+public sealed class WasmModule
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E975C8
     // Broiler-Human:        PENDING
@@ -649,13 +655,13 @@ public sealed class WasmModule : IVmVerifiedState
 
     /// <summary>
     /// Whether the per-body execution bounds have been computed, which they have on every module
-    /// verification hands back.
+    /// a translation hands back.
     /// </summary>
     /// <remarks>
     /// A caller reads this rather than inferring it from a count, because a zero bound would be
     /// indistinguishable from a function that happens to need no stack. It is false only on a module
     /// that decoding produced and validation has not yet sealed, which is a state that exists inside
-    /// one verification and never outside it.
+    /// one translation and never outside it.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A79497
     // Broiler-Falsified-If: it reports true while any body still carries the not-computed sentinel

@@ -28,10 +28,11 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// assembly can emit is a member below, and every member below is reachable from a decode path in
 /// <see cref="WasmDecoder"/>, a validation path in <see cref="WasmValidator"/>, the family hook
 /// <see cref="WasmFamilyVerifier"/> over a universal bytecode artifact, the lowering of a validated
-/// module into one by <see cref="WasmTranslator"/>, or the reserved path in
-/// <see cref="WebAssemblyVerifier"/>, in the hook and in the translator - one member of the
-/// translation band excepted, which guards operand fields no module the validator admits today can
-/// overflow and says so. The numbers are grouped by the pass that emits them so that a reader can
+/// module into one by <see cref="WasmTranslator"/>, or the reserved path in the hook and in the
+/// translator - one member of the translation band excepted, which guards operand fields no module
+/// the validator admits today can overflow and says so, and the two header members the retired
+/// bare-module verifier emitted, which stay numbered and are emitted by nothing. The numbers are
+/// grouped by the pass that emits them so that a reader can
 /// tell from a code alone which pass refused an artifact, and a code is never reused for a different
 /// meaning: a rejection whose meaning changes takes a new number and the old one is retired, because
 /// a corpus entry that recorded a code has dated it.
@@ -54,9 +55,9 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <para>
 /// <b>The 2900 band is reserved and is not a decode diagnostic.</b> It is the answer a defect in
 /// this assembly produces, and reaching it is a bug to be fixed rather than a rejection route: the
-/// core deliberately does not catch a verifier's exception, so an escape would surface as a crash
-/// in the caller rather than as an answer, and converting one into a refusal is the only way this
-/// verifier can be total.
+/// core deliberately does not catch a verifier's exception, so an escape from the family's hook
+/// would surface as a crash in the caller rather than as an answer, and converting one into a
+/// refusal is the only way the hook and the translator can be total.
 /// </para>
 /// <para>
 /// <b>It is an enum rather than a class of constants</b>, for the reason the JavaScript profile's
@@ -77,9 +78,19 @@ public enum WebAssemblyDiagnosticCode
     UnsupportedBinaryVersion = 2002,
 
     /// <summary>The artifact descriptor names a format version outside this profile's range.</summary>
+    /// <remarks>
+    /// Emitted by nothing since milestone UBC-4 retired the bare-module verifier that checked it. The
+    /// core refuses an artifact's format version against the descriptor a root builds from the
+    /// family before the family's hook is reached, and the number stays taken.
+    /// </remarks>
     UnsupportedArtifactFormatVersion = 2003,
 
     /// <summary>The artifact descriptor names a feature manifest this verifier does not accept.</summary>
+    /// <remarks>
+    /// Emitted by nothing since milestone UBC-4 retired the bare-module verifier that checked it. The
+    /// core refuses an artifact's manifest against the descriptor a root builds from the family before
+    /// the family's hook is reached, and the number stays taken.
+    /// </remarks>
     UnacceptedFeatureManifest = 2004,
 
     // ---- 2100: section framing ------------------------------------------------------------
@@ -397,10 +408,11 @@ public enum WebAssemblyDiagnosticCode
     /// Something in this assembly threw. It says nothing about the artifact.
     /// </summary>
     /// <remarks>
-    /// It is emitted by the one catch that makes this verifier total, and it exists so that a
-    /// defect here becomes a deterministic refusal instead of an exception escaping into a caller
-    /// that has no way to tell it from a malicious module. A retained corpus entry recording this
-    /// code is a bug report, never an expected answer.
+    /// It is emitted by the catches that make the family's hook and the translator total, and by the
+    /// validator where it disagrees with itself, and it exists so that a defect here becomes a
+    /// deterministic refusal instead of an exception escaping into a caller that has no way to tell it
+    /// from a malicious module. A retained corpus entry recording this code is a bug report, never an
+    /// expected answer.
     /// </remarks>
     VerifierDefect = 2901,
 
@@ -450,7 +462,7 @@ public enum WebAssemblyDiagnosticCode
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>IT IS ONE MAPPING BECAUSE TWO WOULD DISAGREE.</b> Both passes of this verifier read bytes
+/// <b>IT IS ONE MAPPING BECAUSE TWO WOULD DISAGREE.</b> Both passes, decoding and validation, read bytes
 /// through the core's bounded reader and both read this profile's own variable-length integers, so
 /// both have to decide, for every way those can stop, whether the answer is an invalid artifact
 /// carrying a diagnostic code or a resource exhaustion naming a dimension and a scope. That split

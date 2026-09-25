@@ -88,9 +88,8 @@ internal static class WasmEntryPoint
     /// <remarks>
     /// It reads bytes and answers; it allocates nothing and it throws on nothing. The name is
     /// reported as an offset and a length into the caller's own span rather than copied, because the
-    /// caller compares it against export names it already holds. The arguments are bits rather than
-    /// interpreter slots so that both executors bind them: the interpreter's, which wraps each in a
-    /// slot, and the family's, which writes them into the entry frame's word locals.
+    /// caller compares it against export names it already holds. The arguments are bits, which the
+    /// family writes into the entry frame's word locals.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=E6C5D8
     // Broiler-Falsified-If: a byte count is trusted past the end of the text, or a malformed literal is read as a value

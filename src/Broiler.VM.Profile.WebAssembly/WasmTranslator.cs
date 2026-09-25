@@ -22,8 +22,8 @@ namespace Broiler.VM.Profile.WebAssembly;
 
 /// <summary>
 /// The WebAssembly translator: decodes and validates a WebAssembly binary module exactly as this
-/// profile's verifier does, and lowers a module that passes into a universal bytecode artifact of
-/// the WebAssembly family.
+/// profile's bare-module verifier did until milestone UBC-4 retired it, and lowers a module that
+/// passes into a universal bytecode artifact of the WebAssembly family.
 /// </summary>
 /// <remarks>
 /// <para>
