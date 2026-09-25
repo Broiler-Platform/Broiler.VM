@@ -1163,7 +1163,14 @@ public sealed class ReviewRecordRuleTests
         // instance store, WasmFamily.cs; and the numeric arms moved out of the interpreter,
         // WasmReferenceNumerics.cs. They are covered on the same terms as every other product file,
         // and nothing in them has been read by a human.
-        Assert.Equal(235, AssuranceSources.Files.Count);
+        //
+        // AND THE TWO OF MILESTONE UBC-4's TRANSLATOR, in the WebAssembly profile: the public front of
+        // the translation with its answer and the meter the decoder and the validator charge under it,
+        // WasmTranslator.cs, which reads an untrusted module and is therefore a parser over untrusted
+        // bytes; and the lowering of a validated module into universal bytecode, WasmLowering.cs. They
+        // are covered on the same terms as every other product file, and nothing in them has been read
+        // by a human.
+        Assert.Equal(237, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

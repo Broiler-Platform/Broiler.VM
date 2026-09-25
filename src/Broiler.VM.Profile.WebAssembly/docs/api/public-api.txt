@@ -45,6 +45,19 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.TryChargeStructuralDepth(System.UInt64 levels) : System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.TryChargeWork(System.UInt64 workUnits) : System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter.TryReserve(System.UInt64 byteCount) : System.Boolean
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Artifact : System.Collections.Immutable.ImmutableArray<System.Byte> { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Code : Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Dimension : Broiler.VM.VmBudgetDimension { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Module : Broiler.VM.Profile.WebAssembly.WasmModule { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Outcome : Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Position : Broiler.VM.VmSourcePosition { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Scope : Broiler.VM.VmBudgetScope { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation.Succeeded : System.Boolean { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator.Translate(System.ReadOnlySpan<System.Byte> module, Broiler.VM.VmLimitVector ceilings, System.Threading.CancellationToken cancellationToken) : static Broiler.VM.Profile.WebAssembly.WasmTranslation
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator.TranslatorIdentity : const System.String = "broiler.webassembly.translator"
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator.TranslatorVersion : const System.UInt32 = 1
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator.VerificationDefaults : static Broiler.VM.VmLimitVector { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTrapKind.IndirectCallTypeMismatch : const Broiler.VM.Profile.WebAssembly.WasmTrapKind = 8
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTrapKind.IntegerDivideByZero : const Broiler.VM.Profile.WebAssembly.WasmTrapKind = 2
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTrapKind.IntegerOverflow : const Broiler.VM.Profile.WebAssembly.WasmTrapKind = 3
@@ -115,6 +128,11 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.StartFunctionSignatureInvalid : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2703
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TableNotDeclared : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2818
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TagSectionNotAdmitted : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2105
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationJumpTablesAboveMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2873
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationLocalsAboveMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2871
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationOperandHeightAboveMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2872
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationOperandOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2874
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationSquashKeepAboveMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2875
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TrapIndirectCallTypeMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 3008
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TrapIntegerDivideByZero : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 3002
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TrapIntegerOverflow : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 3003
@@ -207,6 +225,8 @@ type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmFamily : 
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmInstance : sealed class Broiler.VM.IVmInstanceState
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule : sealed class Broiler.VM.IVmVerifiedState
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter : sealed class Broiler.VM.IVmBoundedAllocationMeter
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslation : sealed class
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTranslator : static class
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmTrapKind : enum
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode : enum
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault : sealed class Broiler.VM.IVmProfilePayload

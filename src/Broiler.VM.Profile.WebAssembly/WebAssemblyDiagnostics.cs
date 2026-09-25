@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   5
 // Annotated:        5/5
-// Exempt:           86
+// Exempt:           91
 // Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    High
@@ -27,11 +27,14 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <b>The registry is bound in both directions or it is not a registry.</b> Every code this
 /// assembly can emit is a member below, and every member below is reachable from a decode path in
 /// <see cref="WasmDecoder"/>, a validation path in <see cref="WasmValidator"/>, the family hook
-/// <see cref="WasmFamilyVerifier"/> over a universal bytecode artifact, or the reserved path in
-/// <see cref="WebAssemblyVerifier"/> and in the hook. The numbers are grouped by the pass that emits them
-/// so that a reader can tell from a code alone which pass refused an artifact, and a code is never
-/// reused for a different meaning: a rejection whose meaning changes takes a new number and the old
-/// one is retired, because a corpus entry that recorded a code has dated it.
+/// <see cref="WasmFamilyVerifier"/> over a universal bytecode artifact, the lowering of a validated
+/// module into one by <see cref="WasmTranslator"/>, or the reserved path in
+/// <see cref="WebAssemblyVerifier"/>, in the hook and in the translator - two members of the
+/// translation band excepted, which guard bounds no module the validator admits today can reach and
+/// say so. The numbers are grouped by the pass that emits them so that a reader can tell from a code
+/// alone which pass refused an artifact, and a code is never reused for a different meaning: a
+/// rejection whose meaning changes takes a new number and the old one is retired, because a corpus
+/// entry that recorded a code has dated it.
 /// </para>
 /// <para>
 /// <b>The two thousand and the twenty-one hundred through twenty-six hundred bands are decoding;
@@ -61,7 +64,7 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// be several dozen separately assessed fixed values saying the same thing worse.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5A1542
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E5A055
 // Broiler-Human:        PENDING
 public enum WebAssemblyDiagnosticCode
 {
@@ -350,6 +353,40 @@ public enum WebAssemblyDiagnosticCode
 
     /// <summary>A global row's type is not the type of the global its operand names.</summary>
     GlobalRowTypeMismatch = 2860,
+
+    // ---- 2870: the translation, what a valid module says that universal bytecode cannot hold ---
+    //
+    // A module the decoder and the validator admitted is lowered into a universal bytecode artifact,
+    // and the container's format bounds what one unit and one artifact hold. A module past one of
+    // those bounds is refused at translation with one of the members below, each naming its bound,
+    // with the reason this profile gives a well-formed module it does not admit and the position the
+    // validator gives a body's refusals. They share the upper half of the body-validation hundred with
+    // the hook's band above, for the reason that band gives.
+
+    /// <summary>A function declares more locals, its parameters included, than one universal bytecode unit holds.</summary>
+    TranslationLocalsAboveMaximum = 2871,
+
+    /// <summary>A function's operand stack rises above the height one universal bytecode unit may declare.</summary>
+    TranslationOperandHeightAboveMaximum = 2872,
+
+    /// <summary>The module holds more branch tables than one universal bytecode artifact can name.</summary>
+    TranslationJumpTablesAboveMaximum = 2873,
+
+    /// <summary>An immediate does not fit the operand field of the universal bytecode row it lowers to.</summary>
+    /// <remarks>
+    /// No module the validator admits reaches it today: a local index is bounded by the locals a unit
+    /// holds, and an alignment by the access width. It is checked so that a lowering never writes an
+    /// operand its field cannot hold, whatever the validator comes to admit.
+    /// </remarks>
+    TranslationOperandOutOfRange = 2874,
+
+    /// <summary>A branch carries more values than one <c>squash</c> keeps.</summary>
+    /// <remarks>
+    /// No module the validator admits reaches it today: a block carries at most one value, and a branch
+    /// to the function's own label is a return, which keeps its results without a squash. It is
+    /// checked for the day a block type may carry more.
+    /// </remarks>
+    TranslationSquashKeepAboveMaximum = 2875,
 
     // ---- 2900: reserved for a defect in this assembly ---------------------------------------
 

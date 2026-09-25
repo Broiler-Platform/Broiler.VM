@@ -27,9 +27,11 @@
     and the universal bytecode, and rule W1 asserts it.
 
     During UBC-4 the profile carries both paths: the descriptor its roots verify bare modules under
-    today, and the family they will verify translated universal bytecode under. Until the roots move,
-    nothing composes the family but a scratch probe, and the payload the roots hand the core is still
-    a bare WebAssembly module produced by an external toolchain.
+    today, and the family they will verify translated universal bytecode under, with the translator
+    that writes that bytecode from a module the profile's own decoder and validator admit. Until the
+    roots move, nothing composes the family or calls the translator but a scratch probe, and the
+    payload the roots hand the core is still a bare WebAssembly module produced by an external
+    toolchain.
   -->
   <ItemGroup>
     <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
