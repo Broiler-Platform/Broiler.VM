@@ -255,7 +255,8 @@ from what the plans say. Files are named; line numbers are not, because a line m
   from nowhere (`WasmInterpreter.cs`, `TryNumeric` and `FloatComparison`). This document does not fix
   it and does not move a ledger row for it; it names it because a family whose instruction table
   declares `wasm.f32.eq` as a primitive would have had that primitive checked against the family's
-  handler on the day the table was written.
+  handler on the day the table was written. The repair is written out as a suggested task in
+  [`docs/tasks/fix-webassembly-float-comparisons.md`](tasks/fix-webassembly-float-comparisons.md).
 
 ### 2.3 The MachineCode profile: an arming path and an unreachable second artifact form
 
@@ -272,7 +273,9 @@ from what the plans say. Files are named; line numbers are not, because a line m
   different entry layout and a different native-header width than the writer and verifier use, writes
   the two `x86-64` convention codes the other way round from the enum it targets, and names a manifest
   (`broiler.machinecode.x86_64`) whose underscore the identity grammar refuses. Nothing in the tree
-  calls it.
+  calls it. Repairing or retiring it is written out as a suggested task in
+  [`docs/tasks/repair-or-retire-js-native-compiler.md`](tasks/repair-or-retire-js-native-compiler.md),
+  independent of this concept.
 - **Why this matters to the concept.** The BMC path was a first attempt at what this document
   proposes — an output form as a component the language profile hands its bytecode to — and it shows
   the two things such a component cannot do without: a *verifiable* payload (the BMC verifier scans no
