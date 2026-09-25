@@ -3,7 +3,7 @@
 
 # JSD-0036 - The universal bytecode is the back-end-neutral intermediate form section 9 promises
 
-**Status:** Taken, 2026-09-25, as the JavaScript profile's half of
+**Status:** Taken, 2026-09-25, following
 [ADR 0013](../../../../docs/adr/0013-the-universal-bytecode-extraction-record.md), the extraction record
 of the universal bytecode, whose verdict on its candidate A is an acceptance. The owner gave that verdict
 in advance of the record's correspondence table, on the condition that the table held, and this decision
@@ -54,8 +54,14 @@ by an emitter profile, and ADR 0013 admitted that bytecode through the core's ex
    [JSD-0025](0025-the-baseline-native-form-over-the-wide-manifest.md). This record discharges the
    sentence by saying what it points at; it does not claim the thing pointed at exists.
 3. **Section 9's sentence is not rewritten.** It was the right promise and it now has a named subject.
-   The corrections file records the discharge as [JSC-227](../roadmap.corrections.md#jsc-227), and
+   The corrections file records the changed reading as [JSC-227](../roadmap.corrections.md#jsc-227), and
    section 9 carries the bare pointer to it, which is this plan's discipline for a changed reading.
+   **JSB-3's clause is read, not simply met.** Its words ask for "a dated decision recording that the
+   bytecode **is** that form", written when the only bytecode was this profile's own. This record names
+   a bytecode that is not yet in the tree, as the universal bytecode programme's work package UBC-0.4
+   plans, and reads the clause as discharged by that naming; a reader who takes the clause to mean this
+   profile's bytecode will find it still open until the lowering emits the universal bytecode at
+   UBC-3, and both readings are stated here so that neither is mistaken for the other.
 4. **JSB-3's other open clause is untouched.** The check that a backend refusing every unit leaves the
    artifacts byte-identical is still not written, and nothing here says otherwise.
 
@@ -76,9 +82,9 @@ by an emitter profile, and ADR 0013 admitted that bytecode through the core's ex
 - **Nothing about any native form's granularity, rooting or speed.** JSD-0025 and route MVP-8 stand.
 - **No milestone, no ledger row and no support claim.** It moves no `JS-` row and no row of the core's or
   the programme's ledgers.
-- **Nothing about the native half of the concept.** ADR 0013 refuses the native-form mechanism's
-  extraction on G1; how this profile's native forms are recovered on the universal bytecode is the
-  programme's to settle after that refusal is reopened.
+- **Nothing about the native half of the concept.** ADR 0013 notes that G1 is unsatisfied for the
+  native-form mechanism, so the gate cannot yet be invoked for it; how this profile's native forms are
+  recovered on the universal bytecode is the programme's to settle once that changes.
 
 **This record is amended at the programme's work package UBC-3.11 with what landed.**
 

@@ -40,8 +40,8 @@ retainability: each merged test262 report is one eng/run-test262.py marks retain
 comparison: per variant, the verdict row of the base report against the verdict row of the cut-over report, over the same set of variants
 admitted classes:
   (a) a variant whose base verdict depended on the old verifier admitting an artifact the universal walk refuses, where that refusal is recorded, entry by entry, in the corpus re-base of UBC-3.8 with its reason;
-  (b) a variant the re-based ratchet retires by name, with its reason written beside it in ubc-3-002 (the floors under src/tests/conformance/floors hold totals only, so the named list is retained in the bundle and the floor's retired line cites it);
-  (c) a wall-clock exhaustion on either side is not a verdict: that variant is re-run alone, under the same allowances, on both arms; if one arm still exhausts the wall clock and the other does not, the difference is not admitted
+  (b) a variant the re-based ratchet retires by name, with its reason written beside it in ubc-3-002 (the floors under src/tests/conformance/floors hold totals only, so the named list is retained in the bundle and the floor's retired line cites it)
+re-run procedure (not an admitted class): a variant that exhausts the wall clock in either whole-suite run is run again alone, on both arms, under the same allowances; the two isolated verdicts replace the whole-suite rows of that variant for the comparison, and both the whole-suite rows and the isolated ones are retained in ubc-3-002; if one arm still exhausts the wall clock and the other does not, that is a difference outside the admitted classes
 every other difference is a regression
 octane: every benchmark the pin names reports a score in the cut-over form; no score is compared, ranked or quoted outside ubc-3-002's README
 twins: every fuel-parity twin gives one verdict at every fuel ceiling tried, and the verdict at each ceiling is the base commit's
@@ -49,10 +49,15 @@ MET if and only if every difference is in an admitted class and is named in ubc-
 NOT MET otherwise.
 ```
 
-**Where the classes come from.** Class (a) and class (b) are the two the roadmap's UBC-0.7 names. Class
-(c) is not an admission: it is the procedure by which a wall-clock exhaustion, which depends on the
-machine and not only on the program, is separated from a verdict, and it ends in a regression when the
-separation does not hold. **No other class exists**, in particular none for a fuel exhaustion: the
+**Where the classes come from.** Class (a) and class (b) are the two the roadmap's UBC-0.7 names, and
+they are the only admitted classes. The re-run procedure is not an admission: it is how a wall-clock
+exhaustion, which depends on the machine and not only on the program, is separated from a verdict, and
+it ends in a regression when the separation does not hold.
+
+*(Revised 2026-09-25, the day it was written, before any base run and before any code of UBC-3 existed:
+the block listed the re-run procedure as "(c)" among the admitted classes, which a literal reading of
+"MET if and only if every difference is in an admitted class" would have made a third admission the
+roadmap does not name. Nothing was judged under the superseded text.)* **No other class exists**, in particular none for a fuel exhaustion: the
 programme's principle 7 is that fuel is exact per instruction at the same point in every form, and the
 bytecode form's charges move from the interpreter's charge sites to the loop's without changing any
 row's cost.

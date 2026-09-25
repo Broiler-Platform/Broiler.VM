@@ -37,23 +37,32 @@ evidence class: conformance parity (not a measurement)
 population A: every assertion of the WebAssembly specification's test suite at a pinned revision, read by a script reader in the harness root, under the feature manifest the family's table is selected by; precondition: the pin and the reader exist at the base commit, or population A is not judged and clause 5 of UBC-4 stays unmet
 population B: every retained entry of src/tests/wasm/corpus (corpus.manifest), every execution check and every differential check the harness root Broiler.VM.Composition.WebAssembly.Harness runs, each replayed as that root replays it
 comparison: per assertion (A) and per entry or check (B), the answer at the base commit against the answer after the translator, over the same set
-admitted class:
+admitted classes:
   (f) an assertion, entry or check that exercises one of the float-comparison instructions (W3C opcodes 0x5B to 0x66), whose base answer is the defect the base interpreter gives (a validated module ending in a contract violation) and whose answer after is the value the specification gives; each such row is named in ubc-4-002
-every other difference is a regression, including a float-comparison row whose answer after is anything but the specification's value
-corpus re-base: a malformed module the decoder or the validator refuses keeps its answer, reached now at translation; a refusal the universal walk gives instead is recorded with its new universal code and its reason, entry by entry (UBC-4.7)
+  (r) a retained corpus entry of population B whose base answer is a refusal and whose answer after is a refusal of the same outcome category that the universal walk now gives, with a universal code in place of the profile's; each such entry is recorded with its new code and its reason in the corpus re-base of UBC-4.7
+every other difference is a regression, including a float-comparison row whose answer after is anything but the specification's value, and a malformed module the decoder or the validator refused at the base that is admitted after
 negative control: obligation E2's differential check over the family's float-comparison rows is run against the unmodified interpreter arms and is retained failing, naming the rows; the arms are corrected; the same check is retained passing
-MET if and only if every difference is in class (f) and named, the negative control was retained failing and then passing, and, for clause 5, population A was judged.
-NOT MET otherwise.
+MET if and only if population A was judged, every difference in populations A and B is in class (f) or class (r) and is named, and the negative control was retained failing and then passing.
+NOT MET otherwise, and in particular NOT MET while population A cannot be judged because its precondition is unmet.
 ```
 
-**Where the class comes from.** The concept's section 2.2 records that the validator admits the
+**Where the classes come from.** The concept's section 2.2 records that the validator admits the
 float comparisons and the interpreter's numeric dispatch routes them to an arm with no case for them;
 [`docs/tasks/fix-webassembly-float-comparisons.md`](../../tasks/fix-webassembly-float-comparisons.md)
-writes the repair out. Class (f) is that defect becoming an answer, and nothing else.
+writes the repair out. Class (f) is that defect becoming an answer, and nothing else. Class (r) is the
+roadmap's work package UBC-4.7 stated as a class: a malformed module keeps its refusal, and only which
+verifier layer gives it, and so which code it carries, may move.
 
 **What the verdict does.**
-- **MET.** Clauses 4 and 5 of UBC-4's exit gate are demonstrated by `ubc-4-002` — or clause 4 alone,
-  with clause 5 named unmet, if population A was not judged. Neither is acceptance.
+- **MET.** Clauses 4 and 5 of UBC-4's exit gate are demonstrated by `ubc-4-002`. That is evidence, not
+  acceptance. While population A cannot be judged the verdict is NOT MET, and `ubc-4-002` may still
+  retain population B's comparison and the negative control as partial evidence, named as such.
+
+*(Revised 2026-09-25, the day it was written, before any base run and before any code of UBC-4 existed:
+the block named class (f) only, while its "corpus re-base" line admitted refusals that move to the
+universal walk with a new code - an admission the block did not name - and its verdict allowed a second
+MET, for clause 4 alone. The block now names both classes and produces one decision. Nothing was judged
+under the superseded text.)*
 - **NOT MET.** The milestone stays `In progress`; a regression is fixed and the run after is taken
   again whole. The rule is not revised to admit a difference; a revision is a new dated file with this
   one quoted, and the base run is taken again under it.

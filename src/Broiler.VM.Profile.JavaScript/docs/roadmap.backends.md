@@ -609,14 +609,15 @@ names, and a stage identifier is never reused.
   a dated decision, so the plan still promises a back-end-neutral intermediate form this component
   does not have.
 
-- **State on 2026-09-25: the second open clause is discharged; the first is unchanged.**
+- **State on 2026-09-25: the second open clause is read as discharged; the first is unchanged.**
   [JSD-0036](decisions/0036-the-universal-bytecode-is-the-back-end-neutral-form.md) is the dated
-  decision this gate's last clause asked for: the back-end-neutral intermediate form section 9
-  promises is the universal bytecode admitted by
+  decision this gate's last clause asked for, with one difference it states: the clause asked for a
+  decision "that the bytecode **is** that form", meaning this profile's bytecode, and JSD-0036 names
+  instead the universal bytecode admitted by
   [ADR 0013](../../../docs/adr/0013-the-universal-bytecode-extraction-record.md), and the corrections
-  file carries the discharge as [JSC-227](roadmap.corrections.md#jsc-227). It names a form that is not
-  yet in the tree; the lowering acquires it as its one exit at the universal bytecode programme's
-  milestone UBC-3. **The first open clause stands as the bullet above states it**: no check shows that
+  file carries the changed reading as [JSC-227](roadmap.corrections.md#jsc-227). It names a form that
+  is not yet in the tree; the lowering acquires it as its one exit at the universal bytecode programme's
+  milestone UBC-3, and on the clause's first reading the clause stays open until then. **The first open clause stands as the bullet above states it**: no check shows that
   a backend refusing every unit leaves the artifacts byte-identical. The stage is not met, and this
   bullet is not acceptance.
 

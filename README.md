@@ -98,7 +98,8 @@ a design route that an unmade decision would have chosen between, the route is r
 taken-without-a-decision at the place its consequence lands, and a reader who wants the list of what
 is unmade reads `docs/mvp.md` rather than inferring it from confident prose.
 
-What exists is [twelve boundary records](docs/adr/README.md) and an implementation of core
+What exists is [thirteen boundary records](docs/adr/README.md) *(corrected 2026-09-25: this read
+"twelve boundary records"; ADR 0013 is the thirteenth)* and an implementation of core
 contract version 1: the profile-neutral contracts, the bounded binary primitives, the immutable
 catalog, the runtime and its lifecycle, resource authority including shared aggregate budgets and
 the full limit-precedence algorithm, guest-initiated-load mediation with its bounds, external
@@ -332,8 +333,9 @@ one dispatch loop that executes it. So opcodes are now shared **as an encoding**
 instructions keep the meanings the profile gives them, and the profile still owns its values, its
 semantics, its payloads and its conformance suite, while its verifier walk and its dispatch loop
 move to the shared mechanism when [the programme](docs/universal-bytecode.roadmap.md) reaches it.
-Values and frame layouts are still not shared. The same record refuses the native-form mechanism
-the concept placed beside it. Nothing of either exists in the tree on this date.)*
+Values and frame layouts are still not shared. For the native-form mechanism the concept placed
+beside it the same record notes that G1 is unsatisfied, so the gate cannot yet be invoked for it;
+nothing is refused. Nothing of either exists in the tree on this date.)*
 
 ## Relationship to Broiler.JS
 

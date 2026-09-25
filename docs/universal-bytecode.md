@@ -7,7 +7,16 @@ repository gives for theirs: a `VM-`, `JS-` or `WA-` identifier with no ledger r
 milestone somebody is tracking. *(Added 2026-09-25, later the same day: the scheduling this document
 declines is done beside it by [the programme roadmap](universal-bytecode.roadmap.md), whose milestones
 are these stages, and recorded in [the programme ledger](universal-bytecode.status.md), where every row
-is `Not started`. This document is unchanged in what it decides, which is nothing.)*
+is `Not started`. This document is unchanged in what it decides, which is nothing.)* *(Added again
+2026-09-25: "where every row is `Not started`" stopped being true when stage UBC-0's record,
+[ADR 0013](adr/0013-the-universal-bytecode-extraction-record.md), was filed. It accepts the universal
+bytecode and its one loop, and for the native-form mechanism of section 7.3 it notes that the extraction
+gate's G1 is unsatisfied - one product profile has emitted code and the other has none - so the gate
+cannot yet be invoked for it. Section 3.1's argument that G1 "holds ... for the behaviour actually being
+extracted" is true of the bytecode half and not of the native half, and the ledger says what that
+keeps from meeting its gate. Section 3.1's reliance on the standing refusal's "reopening clause" is
+also not borne out: the clause it quotes belongs to refused extraction records, and the reopening is
+filed as route MVP-12 instead.)*
 
 **Owner:** the Broiler.VM architecture owner, who also holds the release, security, contract-minting
 and review roles [ADR 0012](adr/0012-security-ownership-and-support-matrix.md) names — six roles held

@@ -9664,8 +9664,11 @@ validated tree, the lowering emits universal bytecode, and every output form is 
 emitter profile. **The form is not yet in the tree**: until the programme's milestone UBC-3 gives the
 lowering that exit, format version 2 is still what every native form of this profile attaches at, and a
 reader of section 9 should read the sentence as a promise with a named subject, not as a description of
-the checkout. This is a discharge by a dated decision, which is one of the two answers JSB-3's clause
-admits; section 9 carries the bare pointer.
+the checkout. JSB-3's clause asked for "a dated decision recording that the bytecode **is** that form",
+written when the only bytecode was this profile's own; JSD-0036 names another bytecode, one not yet in the
+tree, and reads the clause as discharged by that naming, as the universal bytecode programme's work
+package UBC-0.4 plans. On the clause's first reading it stays open until the lowering emits the universal
+bytecode, and JSD-0036 states both readings. Section 9 carries the bare pointer.
 
 **What this entry does NOT do.** It does not close JSB-3: that stage's other open clause, the
 byte-identical artifacts under a backend refusing every unit, is untouched. It moves no ledger row and

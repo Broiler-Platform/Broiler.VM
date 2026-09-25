@@ -1280,7 +1280,7 @@ lowering assembly. The composition decides which is present; the code is not wri
 The compiler plug-in interface in the seed returns the seed's expression-tree type, which means a
 bytecode back end physically cannot implement it. It is not copied. This profile's front-end
 contract returns a validated tree or a back-end-neutral intermediate form, and the lowering
-consumes that *(discharged: JSC-227)*.
+consumes that *(corrected: JSC-227)*.
 
 **And for `broiler.javascript.slice` the front end is not ingested at all — it is written
 here** *(corrected: JSC-43)*. Everything above describes adapting the seed's four

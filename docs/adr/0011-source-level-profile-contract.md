@@ -527,20 +527,23 @@ Standing refusals, restated so they are not re-litigated:
 | The retained malformed-corpus method and its entry schema | Refused for now. **G1 unsatisfied on 2026-08-31.** The core implements it; the entry schema is published below so two profiles' corpora agree on the record without sharing an assembly. |
 | The read-order recorder | Refused for now. **G1 unsatisfied on 2026-08-31.** Duplication documented and kept; the canonical form is `FixtureReadOrderRecorder` and it is test-only. |
 
-**Editorial pointer, 2026-09-25: a new dated verdict on one half of the second
-row.** [ADR 0013](0013-the-universal-bytecode-extraction-record.md) is the first
-extraction record this gate has produced. It reopens the opcode-set half of "A
-shared value representation, frame layout, or opcode set" under the failure
-clause's own condition - a language-free formulation is found - and accepts a
-shared encoding, a common family and a verifier walk whose language instructions
-keep the meanings their profiles give them; the value-representation and
-frame-layout halves stand refused. The same record refuses the native-form
-mechanism beside it on G1. **The table above is not edited**: its verdict text is
-what it was, and the new verdict lives in that record, as the failure clause
-requires. Nothing here changes this record's promises. P1's member list in
-particular is not edited by this pointer; route MVP-10 of `docs/mvp.md` records
-the reading under which it would gain `Broiler.VM.Ubc` when a profile first
-references it, and names the ruling that would settle that reading.
+**Editorial pointer, 2026-09-25: a verdict that reaches the second row.**
+[ADR 0013](0013-the-universal-bytecode-extraction-record.md) is the first
+extraction record this gate has produced. Its verdict accepts a shared encoding,
+a common family and a verifier walk whose language instructions keep the meanings
+their profiles give them, which admits an opcode set - as an encoding - that the
+second row of the table above refuses permanently. That row is a standing
+refusal and not a refused extraction record, so the failure clause's reopening
+conditions do not reach it, and ADR 0013 does not claim they do: it takes the
+reopening as route MVP-12 of `docs/mvp.md`, which names the ruling that would
+settle it. The value-representation and frame-layout halves stand refused. The
+same record notes that G1 is unsatisfied for the native-form mechanism the
+concept places beside the encoding, in the note exclusion item 5 below
+prescribes, with no verdict. **The table above is not edited**, and nothing here
+changes this record's promises. P1's member list in particular is not edited by
+this pointer; route MVP-10 of `docs/mvp.md` records the reading under which it
+would gain `Broiler.VM.Ubc` when a profile first references it, and names the
+ruling that would settle that reading.
 
 ### Canonical forms this record publishes, so the copies agree
 

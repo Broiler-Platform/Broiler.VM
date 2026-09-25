@@ -68,7 +68,11 @@ def main():
 
     bundle = arguments.bundle.replace("\\", "/").rstrip("/")
     head = git("rev-parse", "HEAD")
-    clean = git("status", "--porcelain") == ""
+    # The bundle's own files are written before its manifest and committed with it, so the tree is
+    # called clean when nothing outside the bundle directory differs from HEAD.
+    dirty = [line for line in git("status", "--porcelain", "--untracked-files=all").splitlines()
+             if not line[3:].replace("\\", "/").startswith(bundle + "/")]
+    clean = not dirty
 
     manifest = {
         "bundle": os.path.basename(bundle),
