@@ -15,12 +15,14 @@
   </ItemGroup>
 
   <!-- ADR 0001: the behavioural suite is the second of the two test-only projects VM-1 is
-       permitted to add. It is a consumer of the whole graph, so it references all four. -->
+       permitted to add. It is a consumer of the whole graph, so it references all four; and,
+       from UBC-1, the universal bytecode, whose malformed corpus it replays. -->
   <ItemGroup>
     <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
     <ProjectReference Include="..\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
   </ItemGroup>
 
   <ItemGroup>

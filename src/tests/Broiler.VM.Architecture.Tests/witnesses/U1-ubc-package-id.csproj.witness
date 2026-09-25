@@ -1,0 +1,14 @@
+<!-- Violates U1: the universal bytecode carrying a package identity while it declares IsPackable
+     false. A PackageId is the half of a packaging decision that survives the other half being
+     flipped, so the name a package would be published under is not chosen until UBC-9 chooses it. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+    <PackageId>Broiler.VM.Ubc</PackageId>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+</Project>

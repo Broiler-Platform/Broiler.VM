@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Ubc</RootNamespace>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+    <Description>The universal bytecode: one instruction encoding, container, common family, family instruction-table schema, primitive table and verifier walk for every Broiler.VM language profile, with every language instruction's meaning owned by the family that declares it. Not part of the Broiler.VM core contract, referenced by nothing in the core, and admitted by the extraction record ADR 0013.</Description>
+
+    <!-- The programme's milestone UBC-1: not packable during the MVP. Whether this assembly becomes
+         a package is decision UBC-D-5, taken at milestone UBC-9 and not before. -->
+    <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!--
+    EXACTLY TWO EDGES, AND BOTH POINT DOWN (rule U1).
+
+    This assembly holds format, schema and mechanism and no language concept, so it is a sink of the
+    shared graph the way Broiler.VM.Binary is: it references the two core sinks and nothing else, it
+    names no pointer type (no AllowUnsafeBlocks), and nothing in the core references it. Rule U2 scans
+    its exported identifiers against docs/ubc/banned-vocabulary.txt, so a language's name cannot
+    arrive here by a type or a member either.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+
+</Project>

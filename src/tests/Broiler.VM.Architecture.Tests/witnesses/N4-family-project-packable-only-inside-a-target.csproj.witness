@@ -1,0 +1,15 @@
+<!-- Violates N4: a JavaScript-family project whose only IsPackable false is set inside a target. A
+     target's property group sets the property only if the target runs, and only for the targets
+     that run after it, so the evaluated property is the vendored packaging props' default of true
+     and the project packs, while a reader that counts every element of that name finds a
+     definition. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+  </PropertyGroup>
+  <Target Name="NotPackable" BeforeTargets="Build">
+    <PropertyGroup>
+      <IsPackable>false</IsPackable>
+    </PropertyGroup>
+  </Target>
+</Project>

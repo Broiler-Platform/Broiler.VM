@@ -1,0 +1,12 @@
+[jit] Run: no type test or family-contract dispatch; family members called directly: Completion, Fault, Handle, Uncaught
+[jit] Start: no type test or family-contract dispatch; family members called directly: BindParameters
+[jit] Resume: no type test or family-contract dispatch; family members called directly: OnResume, RestoreValues
+[jit] Unwind: no type test or family-contract dispatch; family members called directly: OnLand
+[jit] Suspend: no type test or family-contract dispatch; family members called directly: CaptureValues, SuspendProjection
+[jit] FOLDED
+[aot] Run: no type test or family-contract dispatch; family members called directly: Completion, Fault, Handle, Uncaught
+[aot] Start: no type test or family-contract dispatch; family members called directly: BindParameters
+[aot] Resume: no type test or family-contract dispatch; family members called directly: OnResume, RestoreValues
+[aot] Unwind: no type test or family-contract dispatch; family members called directly: OnLand
+[aot] Suspend: no type test or family-contract dispatch; family members called directly: CaptureValues, SuspendProjection
+[aot] FOLDED

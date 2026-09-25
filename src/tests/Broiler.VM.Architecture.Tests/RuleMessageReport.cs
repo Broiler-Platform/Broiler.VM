@@ -118,6 +118,13 @@ internal static class RuleReport
 /// also where the new group letter's report lives. Rule B5c is reported here, in group B, because
 /// it reads compiled metadata like the rest of that group.
 /// </para>
+/// <para>
+/// <b>Group U joined on 2026-09-25 and its report lives in <c>UbcRuleTests</c></b>, beside the
+/// universal bytecode's tests whose inputs it mirrors, as group W's lives in
+/// <c>WebAssemblyFamilyRuleTests</c>. Like J11's below, it is not silent on a clean checkout: U4
+/// reports the disagreement between the concept's Appendix A and the common
+/// family's table about <c>jump_table</c>'s terminal flag, which its test pins rather than hides.
+/// </para>
 /// <list type="bullet">
 /// <item><b>E5</b> is <b>Deferred</b> and superseded at VM-1 by V1 and V2. No test asserts it,
 /// because <c>RuleRegisterTests</c> requires that none does. A report on it would be writing the

@@ -1,0 +1,42 @@
+$ dotnet test src/tests/Broiler.VM.Contract.Tests -c Release --no-build --logger console;verbosity=detailed --filter FullyQualifiedName~UbcMalformedCorpusTests|FullyQualifiedName~UbcCorpusReplayTests
+Test run for D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+D:\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.06]   Discovering: Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.12]   Discovered:  Broiler.VM.Contract.Tests
+[xUnit.net 00:00:00.13]   Starting:    Broiler.VM.Contract.Tests
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Declared_Bound_Holds_The_Work_Between_Two_Polls_And_Changes_No_Answer(bound: 8) [100 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Declared_Bound_Holds_The_Work_Between_Two_Polls_And_Changes_No_Answer(bound: 1000) [2 ms]
+  Passed Broiler.VM.Contract.Tests.UbcCorpusReplayTests.The_Replayer_Answers_Every_Entry_As_Recorded [107 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Declared_Bound_Holds_The_Work_Between_Two_Polls_And_Changes_No_Answer(bound: 2) [3 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Declared_Bound_Holds_The_Work_Between_Two_Polls_And_Changes_No_Answer(bound: 65) [2 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Declared_Bound_Holds_The_Work_Between_Two_Polls_And_Changes_No_Answer(bound: 1) [4 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Declared_Bound_Holds_The_Work_Between_Two_Polls_And_Changes_No_Answer(bound: 3) [3 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.The_Local_Control_Places_Every_Local_In_Its_Plane [26 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Manifest_Row_Names_A_File_Of_The_Length_And_Hash_It_Records [39 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.A_Mutated_Entry_Is_Detected [11 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.The_Controls_Reach_Regions_Landings_Jump_Tables_Calls_Entries_And_Positions [9 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Ceiling_And_Allowance_A_Verification_Runs_Under_Has_An_Exhaustion_Entry [22 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Control_Verifies [3 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.No_Verification_Works_Longer_Between_Two_Polls_Than_The_Family_Declares [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Recorded_Entry_Still_Answers_What_Was_Recorded [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Diagnostic_Code_But_The_Defensive_Ones_Is_The_Expected_Code_Of_A_Named_Exact_Entry [22 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Two_Regenerations_Render_Byte_Identical_Manifests [105 ms]
+[xUnit.net 00:00:00.90]   Finished:    Broiler.VM.Contract.Tests
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Common_Opcode_And_Every_Family_Row_Of_Both_Tables_Is_Used_By_A_Verifying_Entry [7 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.The_Corpus_On_Disk_Is_What_The_Generator_Writes [26 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Exactly_Pinned_Entry_Answers_What_Its_Declaration_Says [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.The_Corpus_Covers_Every_Group_It_Is_Built_From [9 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.The_Corpus_Can_Fail_In_Both_Directions [2 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Entry_Answers_Inside_The_Closed_Set_And_Only_A_Verified_Answer_Carries_A_Program [< 1 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.Every_Operand_Shape_Effect_Form_Target_Form_And_Kind_Is_Exercised_By_A_Verifying_Entry [8 ms]
+  Passed Broiler.VM.Contract.Tests.UbcMalformedCorpusTests.No_Corpus_File_Is_Unnamed_By_The_Manifest [8 ms]
+  Passed Broiler.VM.Contract.Tests.UbcCorpusReplayTests.The_Replayer_Reports_A_Mutated_Entry [630 ms]
+
+Test Run Successful.
+Total tests: 26
+     Passed: 26
+ Total time: 1,2773 Seconds
+
+exit 0

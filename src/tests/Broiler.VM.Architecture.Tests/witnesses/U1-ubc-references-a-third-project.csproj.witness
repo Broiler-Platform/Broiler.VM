@@ -1,0 +1,16 @@
+<!-- Violates U1: the universal bytecode referencing a third project, Broiler.VM.Runtime. ADR 0013
+     accepted the assembly as a sink of the shared graph beside Broiler.VM.Binary, printing its two
+     edges before it existed, and an edge to the runtime would put the core's implementation within
+     reach of every family written against the format - the one thing ADR 0011's obligation P1
+     keeps a profile away from, reached through the assembly every profile will reference. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+  </ItemGroup>
+</Project>

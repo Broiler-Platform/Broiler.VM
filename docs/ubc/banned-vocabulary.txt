@@ -1,0 +1,27 @@
+# The universal bytecode's banned vocabulary
+#
+# One list, read in two places, so that the record and the rule cannot disagree about what a
+# language's identifier is:
+#
+#   - eng/ubc-vocabulary-scan.py, over the shared-part column of the correspondence table in
+#     docs/adr/0013-the-universal-bytecode-extraction-record.md (programme milestone UBC-0, exit gate
+#     clause 2), and over any other text it is pointed at;
+#   - rule U2 (programme milestone UBC-1), over every identifier Broiler.VM.Ubc exports.
+#
+# A term is matched ignoring case. Its kind says where it may stand:
+#
+#   word       a whole word of prose, or a whole segment of an identifier split at its case
+#              boundaries and separators: "JsValue" and "JS" match "js", and "Json" does not;
+#   substring  anywhere at all, because the term cannot occur inside an innocent word;
+#   prefix     a family mnemonic prefix: the term immediately followed by a letter or a digit.
+#
+# A family that is added to the programme adds its mnemonic prefix here in the change that mints
+# its table. Removing a row is a change to rule U2 and needs that rule's witness watched again.
+#
+# term|kind|why
+js|word|the type-name prefix of the JavaScript profile's implementation (JsValue, JsEngine)
+javascript|substring|the name of a language
+wasm|substring|the type-name prefix of the WebAssembly profile's implementation, and a name of that language
+webassembly|substring|the name of a language
+js.|prefix|the JavaScript family's mnemonic prefix (js.add)
+wasm.|prefix|the WebAssembly family's mnemonic prefix (wasm.i64.add)

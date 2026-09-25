@@ -520,7 +520,13 @@ public sealed class AssuranceScannerTests
         // literal is the point of this assertion - an eighth product project appearing in the tree
         // fails here until someone decides whether it is covered, and that decision is what the
         // number records having been made.
-        Assert.Equal(8, onDisk.Length);
+        //
+        // The ninth is the universal bytecode, Broiler.VM.Ubc, at UBC-1: a product project because
+        // every family's descriptor is built by it and every artifact of every family is verified by
+        // its walk, so it is covered on the terms every other product project is. The tenth is its
+        // bytecode emitter, Broiler.VM.Emitter.Bytecode, at UBC-2: the loop that executes every
+        // family's instructions is product code for the same reason.
+        Assert.Equal(10, onDisk.Length);
 
         // The covered list is exactly those projects...
         Assert.Equal(

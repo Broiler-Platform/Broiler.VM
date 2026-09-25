@@ -1,0 +1,13 @@
+# closure Broiler.VM.Composition.Ubc.Fixture rid=win-x64
+
+[trimmed] 8 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.Ubc.Fixture
+Broiler.VM.Emitter.Bytecode
+Broiler.VM.Runtime
+Broiler.VM.Ubc
+Com.Example.Ledger
+Com.Example.Tally
+
+[aot] 0 non-framework assemblies

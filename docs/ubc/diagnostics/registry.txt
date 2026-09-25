@@ -1,0 +1,104 @@
+# The universal bytecode's diagnostic-code registry
+#
+# registry-revision: 1
+# published-at-milestone: UBC-1 (revision 1)
+# owning-decision: ADR 0013
+# vocabulary: UbcDiagnosticCode, in src/Broiler.VM.Ubc/UbcDiagnostics.cs
+# corpus: src/tests/corpus/ubc-1/manifest.json
+# format-version: 1
+#
+# code|name|reason|reachability|case|since
+#
+# code           the member's number. The universal bytecode's codes are the 3000 range, and the
+#                hundreds group them the way the enumeration's own comments do: the header, section
+#                framing, the Families section and FamilyData, Types and Units, the code walk,
+#                regions, jump tables with entries and positions, the form layer, and the bounded
+#                reader with the verifier itself. A code is never reused for another meaning.
+# name           the member of UbcDiagnosticCode that has that number.
+# reason         the ONE core VmReason every emission of this code carries. A code emitted with two
+#                reasons is a registry violation, not a code with two meanings: a corpus triple that
+#                recorded it would no longer identify what happened.
+# reachability   corpus     the case column names an entry of the retained corpus that is pinned
+#                           Exact and expects an invalid artifact with this code and this reason.
+#                defensive  no artifact reaches it at this build, and the case column says why.
+#                           WHICH ROWS MAY SAY THIS IS FIXED BY RULE U8 AND NOT BY THIS FILE: the
+#                           rule lists them with their reasons, so a new defensive row is an edit to
+#                           the rule's own list rather than to the file the rule reads. The corpus
+#                           manifest's defensiveCodes says the same thing in the same words.
+# case           for a corpus row, the id of the entry in the corpus manifest; for a defensive row,
+#                why no artifact reaches the code.
+# since          the registry revision the code was minted in. The revision and this column date a
+#                code's MEANING: a new corpus entry for an existing code moves neither.
+#
+# ONE HALF. Every code here travels in a core verification result, in the profile diagnostic-code
+# field, beside its reason and a position; none is a rejection of source. A family's hook answers
+# with codes of its own registry, outside this range, and those rows are the family's to publish,
+# not this file's.
+#
+# VerifierDefect IS A CORPUS ROW, although the enumeration's own comment calls it defensive. No
+# artifact reaches it through a well-behaved family, and that is what the comment says; the corpus
+# reaches it by replaying entries under hooks that break the hook contract on purpose - a hook that
+# answers with a code of this range, and one that answers with no invalid-artifact reason - which
+# the walk reports as a defect of its hook rather than passing on. The row names the first of them.
+#
+# Held by rule U8 (src/tests/Broiler.VM.Architecture.Tests/UbcRules.Registry.cs) in both
+# directions: every member of UbcDiagnosticCode has exactly one row and every row names a member of
+# its number; every emission site in the source of Broiler.VM.Ubc carries this row's reason; every
+# corpus row's entry exists and expects exactly this code with this reason; and the defensive rows
+# are the ones the rule lists.
+3001|WrongMagic|MalformedEncoding|corpus|a-wrong-magic|1
+3002|DescriptorFormatVersionMismatch|DescriptorMismatch|corpus|a-payload-version-the-descriptor-does-not-name|1
+3003|UnsupportedFormatVersion|UnsupportedProfileFormatVersion|corpus|a-format-version-this-build-does-not-define|1
+3004|MalformedIdentity|MalformedEncoding|corpus|an-empty-profile-identity|1
+3005|DescriptorProfileMismatch|DescriptorMismatch|corpus|another-profiles-artifact|1
+3006|DescriptorManifestMismatch|DescriptorMismatch|corpus|a-manifest-the-descriptor-does-not-name|1
+3007|ManifestNotComposed|UnsupportedFeatureManifest|corpus|a-manifest-that-selects-no-table-of-the-family|1
+3008|FormNotComposed|UnknownFeature|corpus|a-native-form-this-image-does-not-compose|1
+3101|UnknownSectionKind|UnknownFeature|corpus|a-section-of-kind-zero|1
+3102|SectionOrder|InconsistentStructure|corpus|sections-out-of-order|1
+3103|MissingSection|InconsistentStructure|corpus|no-entries-section|1
+3104|TrailingBytes|InconsistentStructure|corpus|a-byte-after-the-last-section|1
+3105|SectionLengthMismatch|InconsistentStructure|corpus|a-section-longer-than-its-rows|1
+3201|FamilySlotInvalid|InconsistentStructure|corpus|a-family-in-slot-zero|1
+3202|FamilyNotComposed|UnknownFeature|corpus|a-family-this-image-does-not-compose|1
+3203|FamilyTableVersionMismatch|UnknownFeature|corpus|a-family-row-of-another-table-version|1
+3204|FamilyManifestMismatch|InconsistentStructure|corpus|a-family-row-selected-by-another-manifest|1
+3205|FamilyDataForUndeclaredSlot|InconsistentStructure|corpus|family-data-for-a-slot-no-family-occupies|1
+3206|DuplicateFamily|InconsistentStructure|corpus|the-family-declared-twice|1
+3301|UnknownSlotType|UnknownFeature|corpus|a-parameter-of-slot-type-zero|1
+3302|TypeIndexOutOfRange|InconsistentStructure|corpus|a-unit-naming-a-missing-signature|1
+3303|UnitFamilyUndeclared|InconsistentStructure|corpus|a-unit-of-an-undeclared-family-slot|1
+3304|ReservedUnitFlag|InconsistentStructure|corpus|a-unit-with-a-reserved-flag|1
+3305|CodeNotTiled|InconsistentStructure|corpus|a-gap-between-two-units|1
+3306|UnitDeclarationTooLarge|InconsistentStructure|corpus|more-locals-than-an-operand-can-name|1
+3307|LandingsInvalid|InconsistentStructure|corpus|landings-that-descend|1
+3401|UnknownOpcode|UnknownFeature|corpus|an-undefined-common-opcode|1
+3402|ReservedPrefix|UnknownFeature|corpus|the-prefix-that-would-name-the-common-family|1
+3403|ForeignFamilyInstruction|InconsistentStructure|corpus|another-slots-prefix|1
+3404|TruncatedInstruction|Truncated|corpus|an-operand-that-runs-past-the-unit|1
+3405|NotAnInstructionBoundary|InconsistentStructure|corpus|a-jump-into-an-operand|1
+3406|StackUnderflow|InconsistentStructure|corpus|a-drop-on-an-empty-stack|1
+3407|StackTypeMismatch|InconsistentStructure|corpus|a-branch-on-a-sixty-four-bit-word|1
+3408|JoinMismatch|InconsistentStructure|corpus|two-paths-meeting-with-different-stacks|1
+3409|HeightAboveDeclared|InconsistentStructure|corpus|a-push-above-the-declared-height|1
+3410|FallsOffTheEnd|InconsistentStructure|corpus|a-path-that-runs-off-the-end|1
+3411|UnreachableInstruction|InconsistentStructure|corpus|an-instruction-no-path-reaches|1
+3412|LocalIndexOutOfRange|InconsistentStructure|corpus|a-local-past-the-local-table|1
+3413|CallTargetOutOfRange|InconsistentStructure|corpus|a-call-to-a-unit-that-does-not-exist|1
+3414|JumpTableInvalid|InconsistentStructure|corpus|a-jump-table-that-does-not-exist|1
+3415|SuspendOutsideSuspendableUnit|InconsistentStructure|corpus|a-suspension-in-a-unit-not-flagged-suspendable|1
+3416|TrapUndefined|InconsistentStructure|corpus|a-trap-of-the-common-slot-with-a-code|1
+3417|CountedOperandTooLarge|InconsistentStructure|corpus|a-counted-operand-no-stack-could-supply|1
+3501|RegionRangeInvalid|InconsistentStructure|corpus|a-region-of-a-unit-that-does-not-exist|1
+3502|RegionNesting|InconsistentStructure|corpus|regions-that-overlap-without-nesting|1
+3503|RegionEntryInconsistent|InconsistentStructure|corpus|a-region-entry-height-above-the-format|1
+3504|RegionKindUndefined|InconsistentStructure|corpus|a-region-of-a-kind-the-table-does-not-define|1
+3601|JumpTableMalformed|InconsistentStructure|corpus|a-jump-table-of-a-unit-that-does-not-exist|1
+3602|EntryNameInvalid|InconsistentStructure|corpus|an-empty-entry-name|1
+3603|EntryUnitInvalid|InconsistentStructure|corpus|an-entry-of-a-unit-that-does-not-exist|1
+3604|PositionInvalid|InconsistentStructure|corpus|a-position-of-a-unit-that-does-not-exist|1
+3701|EmissionUnexpected|InconsistentStructure|corpus|an-emission-in-the-bytecode-form|1
+3901|Truncated|Truncated|corpus|an-empty-payload|1
+3902|MalformedEncoding|MalformedEncoding|corpus|a-format-version-with-a-redundant-group|1
+3903|ReaderStopped|InconsistentStructure|defensive|The reader's mapping of a latched bounded-read status (ADR 0011, C2) has an arm for every status a failed read can latch; the default arm answers a status no read produces, Ok included, which a failed read never leaves latched.|1
+3904|VerifierDefect|InconsistentStructure|corpus|a-hook-answering-a-universal-code|1

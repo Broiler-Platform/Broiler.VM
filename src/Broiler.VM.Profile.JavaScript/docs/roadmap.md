@@ -246,6 +246,22 @@ trimming, and Native AOT gates for the core boundary.
   ledger; the ledger records its work only as observed repository state, in three rows
   (corrected 2026-09-15, after collection: this sentence ended "in three `[NONE]` rows"; the rows are
   marked `[PARTIAL]` since bundle JSB-11-001 was retained, and that mark is not acceptance).*
+
+  ***And a concept proposing a universal bytecode and emitter profiles now stands beside this plan***
+  *(added 2026-09-25).* *[The universal bytecode concept](../../../docs/universal-bytecode.md), with
+  [its programme roadmap](../../../docs/universal-bytecode.roadmap.md) and ledger, proposes that this
+  profile lower only to a bytecode shared with every language profile, that the forms it runs today be
+  produced from that bytecode by emitter profiles outside this family, and that its verifier walk and
+  its dispatch loop leave it for a shared walk and a shared loop that call this profile's own
+  instruction arms as handlers. **Naming it here schedules nothing in this plan and amends none of its
+  non-goals**, by the convention the backend paragraph above follows: the programme's milestones are
+  `UBC-n`, not `JS-n`, and none is a row of this profile's ledger. What it has already done is one
+  thing, and it is recorded where it belongs: [JSD-0036](decisions/0036-the-universal-bytecode-is-the-back-end-neutral-form.md)
+  names the universal bytecode as the back-end-neutral form section 9 promises. **The paragraphs above
+  stand as written** - one form per handle and per instance, no promotion, no path that picks a form
+  from run-time observation - and the concept keeps every one of them; the milestone that would move a
+  line of this profile onto the shared bytecode is its UBC-3, and the corrections that milestone owes
+  this plan are filed by it and not before.*
 - **A second verifier.** Whatever validates an artifact is this profile's verifier, reached
   through the core's one verification entry point. A build-time reimplementation that is merely
   supposed to agree with it is a security defect with a schedule attached.
@@ -1264,7 +1280,7 @@ lowering assembly. The composition decides which is present; the code is not wri
 The compiler plug-in interface in the seed returns the seed's expression-tree type, which means a
 bytecode back end physically cannot implement it. It is not copied. This profile's front-end
 contract returns a validated tree or a back-end-neutral intermediate form, and the lowering
-consumes that.
+consumes that *(corrected: JSC-227)*.
 
 **And for `broiler.javascript.slice` the front end is not ingested at all — it is written
 here** *(corrected: JSC-43)*. Everything above describes adapting the seed's four

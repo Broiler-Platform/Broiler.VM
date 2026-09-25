@@ -1,0 +1,16 @@
+<!-- Violates A12: a composition root linking the universal bytecode and an emitter and no profile.
+     The siblings are admitted beside the families a root composes; they are not profiles, and a
+     root that composes none of either kind composes nothing. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Composition.Witness</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Emitter.Bytecode\Broiler.VM.Emitter.Bytecode.csproj" />
+  </ItemGroup>
+</Project>
