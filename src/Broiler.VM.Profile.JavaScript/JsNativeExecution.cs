@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
+// Relevant units:   14
+// Annotated:        14/14
 // Exempt:           9
-// Human-reviewed:   0/13
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         17/17
+// Criteria:         18/18
 // Resource impact:  4/10 max
-// Unverified:       13
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -71,6 +71,22 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
     // Broiler-Falsified-If: an emitted unit can be entered when fewer slots remain than its region needs
     // Broiler-Human:        PENDING
     internal const int OperandSlabSlots = 1 << 16;
+
+    /// <summary>How many slots the slab carries past <see cref="OperandSlabSlots"/>, which emitted code is never told about.</summary>
+    /// <remarks>
+    /// <b>A CALL WRITES ITS ARGUMENTS INTO THE CALLEE'S REGION BEFORE THE CALLEE'S PROLOGUE HAS
+    /// CHECKED THAT THE REGION FITS.</b> The caller's prologue checked its own region only, so a call
+    /// made with fewer slots left than it passes arguments stored them past the end of the array -
+    /// into the header of whatever the pinned heap held next - and only then did the callee refuse.
+    /// A recursion whose region divides the slab exactly reached that state on its last level, and
+    /// the invocation answered a contract violation where the interpreter answers a RangeError. The
+    /// headroom is the format's ceiling on arguments, so every such store lands in slots this
+    /// instance owns, and the callee's prologue still refuses exactly where it did.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=9C90B6
+    // Broiler-Falsified-If: a call's argument store reaches past the end of the operand slab's array
+    // Broiler-Human:        PENDING
+    internal const int OutgoingArgumentHeadroom = (int)JsFormat.CeilingCallArguments;
 
     /// <summary>
     /// The fuel one invocation of an emitted artifact is given before it must stop.
@@ -161,7 +177,7 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
     internal int InvocationCount { get; set; }
 
     /// <summary>Maps and arms the artifact's code, and builds the slabs it reads.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=9F87C8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=030FF4
     // Broiler-Falsified-If: an instance is produced whose mapping is not armed
     // Broiler-Human:        PENDING
     internal static JsNativeInstance? TryCreate(
@@ -180,7 +196,8 @@ internal sealed unsafe class JsNativeInstance : IVmInstanceState, System.IDispos
             return null;
         }
 
-        var operands = System.GC.AllocateArray<double>(OperandSlabSlots, pinned: true);
+        var operands = System.GC.AllocateArray<double>(
+            OperandSlabSlots + OutgoingArgumentHeadroom, pinned: true);
         var bindings = System.GC.AllocateArray<double>(
             System.Math.Max(1, program.Constants.Length), pinned: true);
 
@@ -324,7 +341,7 @@ internal static unsafe class JsNativeExecution
     /// pretending to be.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=09609E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=660C65
     // Broiler-Falsified-If: a value is reported that the emitted code did not leave in the frame's first operand slot
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Invoke(
@@ -385,7 +402,7 @@ internal static unsafe class JsNativeExecution
             var frame = new JsNativeFrame
             {
                 Operands = operands,
-                OperandCount = instance.Operands.Length,
+                OperandCount = JsNativeInstance.OperandSlabSlots,
                 Locals = bindings,
                 LocalCount = instance.Bindings.Length,
                 Constants = constants,

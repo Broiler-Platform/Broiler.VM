@@ -1112,7 +1112,35 @@ public sealed class ReviewRecordRuleTests
         // of ID_Start, ID_Continue and WhiteSpace from those tables, which the tokenizer and the
         // matcher's group names share. Covered on the same terms; nothing in it has been read by a
         // human.
-        Assert.Equal(200, AssuranceSources.Files.Count);
+        //
+        // AND THE FIVE OF STAGE JSV-0 OF THE VALUE FORM (the proposed JSD-0035, section 10): the word
+        // layout, JsWord.cs, in the format assembly because a value-form emitter and the template scan
+        // will read it beside the profile; and in the profile the per-instance handle table,
+        // JsHandleTable.cs, the slab of words whose frames root it, JsValueSlab.cs, the codec between
+        // the interpreter's value and a word, JsWordCodec.cs, and the stage's exit gate,
+        // JsWordChecks.cs. They are counted for the reason the native output form's nine were: the
+        // table is a second rooting mechanism for references, the thing JSD-0011 Row 2 refuses
+        // everywhere else, so a record that did not cover it would cover everything but the part a
+        // reader would most want read. No execution path reaches any of them yet. They are covered on
+        // the same terms as every other product file, and nothing in them has been read by a human.
+        //
+        // AND THE FOUR OF STAGE JSV-1 (the proposed JSD-0035, section 10), which put the value form on
+        // an execution path: the frame context its emitted code is entered with, JsValueFrame.cs, in
+        // the format assembly beside the baseline frame, with the emitted-code header's form byte; and
+        // in the profile the chain of pinned slabs a value-form instance's frames live in,
+        // JsValueStack.cs, the helper table native code calls one helper per instruction through,
+        // JsValueHelpers.cs - the second file rule X3 lets carry an unmanaged entry point - and the
+        // decoding and encoding of each instruction's words around the interpreter's arm,
+        // JsValueWindows.cs. They are covered on the same terms as every other product file, and
+        // nothing in them has been read by a human.
+        //
+        // AND THE TWO OF STAGE JSV-2 (the proposed JSD-0035, section 10), which let the value form
+        // run instructions no helper sees: the plan of a unit - its operand heights, scope depths,
+        // resident bindings and inline decisions - and the layout the emitter and the template scan
+        // both derive from it, JsValueLayout.cs, in the format assembly; and the emitter that writes
+        // that layout's bytes, JsX64ValueEmitter.cs, in the compiler. Both are covered on the same
+        // terms as every other product file, and nothing in them has been read by a human.
+        Assert.Equal(211, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

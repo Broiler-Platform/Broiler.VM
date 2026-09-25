@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   26
-// Annotated:        26/26
+// Relevant units:   27
+// Annotated:        27/27
 // Exempt:           14
-// Human-reviewed:   0/26
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         12/12
+// Criteria:         13/13
 // Resource impact:  3/10 max
-// Unverified:       26
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -660,6 +660,39 @@ public static class JavaScriptProfile
     /// whose identity it has already checked, and this accessor is what turns it into a type the
     /// caller can read. A core-side generic projection would need the core to name a profile type.
     /// </remarks>
+    /// <summary>
+    /// A descriptor whose value-form instances run under handle-stress, for a conformance or check lane
+    /// that holds the value form's rooting to a corpus (JSD-0035 section 4).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Under handle-stress a value-form instance's handle table compacts at every helper call</b>,
+    /// releasing and re-generationing every entry no live word roots, and every word a helper decodes is
+    /// also compared with the value the interpreter's stack holds for it. A rooting or codec mistake
+    /// therefore fails the variant it happens in, by name. It changes nothing for an instance of any
+    /// other form, and it never changes a JavaScript answer: a run under it either gives the answers of a
+    /// run without it or reports an internal defect.
+    /// </para>
+    /// <para>
+    /// <b>A fourth door and not a property</b>, for the reason <see cref="DescriptorHostingRealms"/>
+    /// gives. <paramref name="surface"/> is the realm embedder when there is one, exactly as that door
+    /// takes it, and nothing otherwise.
+    /// </para>
+    /// </remarks>
+    /// <param name="surface">The realm embedder, or nothing.</param>
+    /// <param name="surfaces">The optional surfaces admitted; none means every one.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A66C15
+    // Broiler-Falsified-If: a descriptor built here runs a value-form instance whose table does not compact at every safepoint, or changes anything for an instance of another form
+    // Broiler-Human:        PENDING
+    public static VmProfileDescriptor DescriptorUnderHandleStress(
+        IJsHostSurface? surface, params VmFeatureManifestId[] surfaces)
+    {
+        var names = Named(surfaces);
+
+        return Build(
+            names.Length == 0 ? EverySurface : names, emitter: null, hostSurface: surface, handleStress: true);
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50E921
     // Broiler-Human:        PENDING
     public static bool TryGetCompletion(in VmInvocationResult result, out JavaScriptCompletion completion) =>
@@ -714,13 +747,14 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7C0731
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=319B97
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build(
         ImmutableArray<string> admittedSurfaces,
         Format.IJsNativeEmitter? emitter = null,
-        IJsHostSurface? hostSurface = null)
+        IJsHostSurface? hostSurface = null,
+        bool handleStress = false)
     {
         VmDiagnosticsIdentity.TryCreate(Id, "broiler.javascript.diagnostics", out var diagnostics);
 
@@ -747,7 +781,7 @@ public static class JavaScriptProfile
                 JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion),
             acceptedFeatureManifests: accepted,
             verifier: new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces, emitter),
-            executorFactory: environment => new JavaScriptExecutor(Id, environment, hostSurface),
+            executorFactory: environment => new JavaScriptExecutor(Id, environment, hostSurface, handleStress),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
             artifactLifetimeKind: VmArtifactLifetimeKind.Managed,
             supportsConcurrentVerification: true,

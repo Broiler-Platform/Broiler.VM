@@ -1,0 +1,170 @@
+{
+  "bundle": "jsv-4-001",
+  "evidence-class": "measurement",
+  "decision": "decision-rule.md in this folder: ADOPT or REFUSE the value form (JSD-0035 section 10)",
+  "rule": "7625415c7acec2dca790d51c83c75c7f73969eb8",
+  "harness": "f362e9281a4933186a6a696215a8a51f1fec8531",
+  "arms": {
+    "control": {
+      "commit": "f490be0db065f827c598930d22d5b04f635fcee6",
+      "timed-as": [
+        "B-control"
+      ],
+      "built": "dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj -c Release -o <dir>, in a clean detached worktree of the commit",
+      "files": {
+        "Broiler.VM.Abstractions.deps.json": "c39e853ab3c732c0238f18e63d8aabcd3c8a2d10ec1d9991dfb15d942e5ae513",
+        "Broiler.VM.Abstractions.dll": "0be0062241a6402b402adb679f2c7aacbefe3a414870c83926667d56e4b7bfe6",
+        "Broiler.VM.Abstractions.pdb": "7c2d3e65daa050d425bad27b564440cf4d28ec7a00359ea80b45645d8b606b04",
+        "Broiler.VM.Abstractions.xml": "8c409b694e9b43f59492aef985aab430c9df25e47887b94e5ee974ac1c5f4fd3",
+        "Broiler.VM.Binary.deps.json": "1a9fb3fba35c7d8ef534be7c6a48559fca443b9ed19f20cfa8c5c8e98e904796",
+        "Broiler.VM.Binary.dll": "7015236ff8c34914e6d44dd9f2e5775cf835adfcc6822cac056769b867fdbdce",
+        "Broiler.VM.Binary.pdb": "f8af521245afa07536c7bd3b060b4462a15dc2b89f1f1cd991cc58f3bb91d7da",
+        "Broiler.VM.Binary.xml": "e25064016929415e7ffefff3b093ec99c6d4fa06fe36830622afc984d30b6d96",
+        "Broiler.VM.Composition.JavaScript.Cli": "5732cd659566cfce22fcdafba9038b359e055b7912b586107b36f5b33636b6c3",
+        "Broiler.VM.Composition.JavaScript.Cli.deps.json": "428b12bc55daa07907a172a4909341c5ba995a0db050929bc02f1062aecb42ee",
+        "Broiler.VM.Composition.JavaScript.Cli.dll": "3d0000aba60e14ef9ef8099b6836c7c1904469b579004312ecaccc77087613ee",
+        "Broiler.VM.Composition.JavaScript.Cli.pdb": "6054e58580edf7346d33e8d29dc5f8c1d4c8b72b5cd3233c8323b04e67432260",
+        "Broiler.VM.Composition.JavaScript.Cli.runtimeconfig.json": "6ec78d8bce150481843834331681c1a4ff63f6586570afeadda103171a8cb8fc",
+        "Broiler.VM.Composition.JavaScript.Cli.xml": "7cb65b9f0abf498c89f3df14946a9d620e122715c266671f5bc0205ba4a586f7",
+        "Broiler.VM.Profile.JavaScript.Compiler.deps.json": "f5f65b571e73c2e297c26489df8e83951f1b79a17020cdc586d84cd897842ad8",
+        "Broiler.VM.Profile.JavaScript.Compiler.dll": "211e7ff2e5b85b6e2455e7f5b7f996f1c9420be80ec8bbb7ee7bc9198297add1",
+        "Broiler.VM.Profile.JavaScript.Compiler.pdb": "e72681d358473298a69601b06d21cfa3419f01e8834e44fadc0d7c5cce0bab35",
+        "Broiler.VM.Profile.JavaScript.Compiler.xml": "0ce5c21a34aa74714c1a5bd165d6a5902ac4bb882c12efdf7fee26526ac60f6e",
+        "Broiler.VM.Profile.JavaScript.Format.deps.json": "0dd64fd819e446a551ecd0d62dc0a2dce456c100e8c67b2a038d2287bb6c308a",
+        "Broiler.VM.Profile.JavaScript.Format.dll": "89386cd99cd3dab7b01324e088adcb2bfa475bf6673a1961e46fc40ebb829d90",
+        "Broiler.VM.Profile.JavaScript.Format.pdb": "9baf924b8e04965020e718000666f7d40a937e4a1117c8017b88fc6642994314",
+        "Broiler.VM.Profile.JavaScript.Format.xml": "0f5135c55c3c9ce94b9ee6b3cfa3d2a3d8bd34fb9b9cf3e5c5abcc585425a8a4",
+        "Broiler.VM.Profile.JavaScript.deps.json": "6962c5947f8b43b4fec1ff459cae6392c009cc5c14da33ff5ba218838637f0a3",
+        "Broiler.VM.Profile.JavaScript.dll": "35d5d8a51eadf3d400188b40597e4a772753fe459674aa483f5b1fa0378f09f1",
+        "Broiler.VM.Profile.JavaScript.pdb": "79d3839e4f36a50e55fd7b4db6927efde86d6624a0014149ff7cae9e84032ee5",
+        "Broiler.VM.Profile.JavaScript.xml": "f14f8efaff2f6e58d7494026ae8aaa2e5a445d455c11d196401fe81d9f4fb70d",
+        "Broiler.VM.Profile.MachineCode.deps.json": "13d82739282f9a4d47d8aeeb0b6f5c3468891c5f02c0cef57dd2cff1b966dffe",
+        "Broiler.VM.Profile.MachineCode.dll": "d666ece28130cdfa36b311af7695da60ee349612d59f304b9ec2c0332532b7cd",
+        "Broiler.VM.Profile.MachineCode.pdb": "43ede79c46d1b7877e48366ae1da80d3d3080a581ed067cfc7575f989fd1696b",
+        "Broiler.VM.Profile.MachineCode.xml": "da43b5c1d9244a2222197400b931ff325bf6e39414d669ee21bce555a31b3aa6",
+        "Broiler.VM.Runtime.deps.json": "98861877656e687ba33b1ce38d5489f1b0f4d1e5c3278f8aa5b039b53437309a",
+        "Broiler.VM.Runtime.dll": "1d048af90fbe17fb6bedae58612e693d7d6512fc963de1922998a8f6536a2904",
+        "Broiler.VM.Runtime.pdb": "51d2c7eb0c9d687419652a4274a042be9888f7e78c73577661306840b7c8e458",
+        "Broiler.VM.Runtime.xml": "4190cc343eb7c777d75521c529a1464cab47535483d4af8cc35e1264735caeaf"
+      }
+    },
+    "candidate": {
+      "commit": "99a849f0a3b7c6bf617ff5d1235eae1966f3cadf",
+      "timed-as": [
+        "B",
+        "V",
+        "V-again",
+        "L"
+      ],
+      "built": "dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj -c Release -o <dir>, in a clean detached worktree of the commit",
+      "files": {
+        "Broiler.VM.Abstractions.deps.json": "c39e853ab3c732c0238f18e63d8aabcd3c8a2d10ec1d9991dfb15d942e5ae513",
+        "Broiler.VM.Abstractions.dll": "0f593540248fc366afaed35710f4bd008cb59b6d71943acfe744e447412e1a49",
+        "Broiler.VM.Abstractions.pdb": "5d9c0707120245964838a5b213726d9142e72a591ca98c11f2a203520fb3a42c",
+        "Broiler.VM.Abstractions.xml": "8c409b694e9b43f59492aef985aab430c9df25e47887b94e5ee974ac1c5f4fd3",
+        "Broiler.VM.Binary.deps.json": "1a9fb3fba35c7d8ef534be7c6a48559fca443b9ed19f20cfa8c5c8e98e904796",
+        "Broiler.VM.Binary.dll": "4c95374378e4a3f28c8dc609ed49fc594ae656ae819822656f6f367110e0ba31",
+        "Broiler.VM.Binary.pdb": "4fb729cdce3dc180a208b5f2e4aad5a46eda6c8c706909675d4372c27aa71474",
+        "Broiler.VM.Binary.xml": "e25064016929415e7ffefff3b093ec99c6d4fa06fe36830622afc984d30b6d96",
+        "Broiler.VM.Composition.JavaScript.Cli": "5732cd659566cfce22fcdafba9038b359e055b7912b586107b36f5b33636b6c3",
+        "Broiler.VM.Composition.JavaScript.Cli.deps.json": "428b12bc55daa07907a172a4909341c5ba995a0db050929bc02f1062aecb42ee",
+        "Broiler.VM.Composition.JavaScript.Cli.dll": "3f6643baeba56458ca6e113082e1584656e9f2e4ad97c38391e686af608a677c",
+        "Broiler.VM.Composition.JavaScript.Cli.pdb": "4a3b73a8ffb0ea9ca3702d6157deaafe814e7b9b96bc9b055a5be1acf42e6604",
+        "Broiler.VM.Composition.JavaScript.Cli.runtimeconfig.json": "6ec78d8bce150481843834331681c1a4ff63f6586570afeadda103171a8cb8fc",
+        "Broiler.VM.Composition.JavaScript.Cli.xml": "7cb65b9f0abf498c89f3df14946a9d620e122715c266671f5bc0205ba4a586f7",
+        "Broiler.VM.Profile.JavaScript.Compiler.deps.json": "f5f65b571e73c2e297c26489df8e83951f1b79a17020cdc586d84cd897842ad8",
+        "Broiler.VM.Profile.JavaScript.Compiler.dll": "87e3c117c9229162fcdb0054108d93185d1aecbe9122cbd4bb06d407982d1f19",
+        "Broiler.VM.Profile.JavaScript.Compiler.pdb": "c0d728abda9da0a04e77d859050c2088af56cadd065eaa1ab045a3411a68e78a",
+        "Broiler.VM.Profile.JavaScript.Compiler.xml": "83d304beb0e1afca74e503b9c66291890560b6f46a13bf328e2fcaa4709e302d",
+        "Broiler.VM.Profile.JavaScript.Format.deps.json": "0dd64fd819e446a551ecd0d62dc0a2dce456c100e8c67b2a038d2287bb6c308a",
+        "Broiler.VM.Profile.JavaScript.Format.dll": "c65bc23bbe829aa259ec488e8a1b09cb3b612fcee116c55b13d424a2f27b1f34",
+        "Broiler.VM.Profile.JavaScript.Format.pdb": "5020494d7c82b49b77d68b68c72dd24a805708f98be08421a32feaf00c54ffdc",
+        "Broiler.VM.Profile.JavaScript.Format.xml": "e4a661b8dd984f329fb5034245b2171185e41b989cc77872c20da7a791103d01",
+        "Broiler.VM.Profile.JavaScript.deps.json": "6962c5947f8b43b4fec1ff459cae6392c009cc5c14da33ff5ba218838637f0a3",
+        "Broiler.VM.Profile.JavaScript.dll": "68809cee9ad0e5fb15b885a03da2fe5b04bef2c9d697a0f008c73482de11587b",
+        "Broiler.VM.Profile.JavaScript.pdb": "3388260f2d23a5ad4cddd17edc32ddc9f2a61489dc16780727a661e05f41556b",
+        "Broiler.VM.Profile.JavaScript.xml": "e3d4f98c87d64fce558f6f6d4913557c832a91da6cec80020da17f3a1ab9c51f",
+        "Broiler.VM.Profile.MachineCode.deps.json": "13d82739282f9a4d47d8aeeb0b6f5c3468891c5f02c0cef57dd2cff1b966dffe",
+        "Broiler.VM.Profile.MachineCode.dll": "812138128e74128af50ad560e23a0e4b5870a5503a920e92e211c099cc512ae7",
+        "Broiler.VM.Profile.MachineCode.pdb": "d3a5284d853a98e5cd6271dfd6e7c0d1fb26db9a5f3611fe9e9a0bae20494f7a",
+        "Broiler.VM.Profile.MachineCode.xml": "da43b5c1d9244a2222197400b931ff325bf6e39414d669ee21bce555a31b3aa6",
+        "Broiler.VM.Runtime.deps.json": "98861877656e687ba33b1ce38d5489f1b0f4d1e5c3278f8aa5b039b53437309a",
+        "Broiler.VM.Runtime.dll": "bc3d61c9ce96742a2de6e9b3f51786c3954acce9633d432b5a65e395671ce461",
+        "Broiler.VM.Runtime.pdb": "acce9ddf66327c089cc2baa13087577b6e150d558a6951452dc5c5c77803c1f4",
+        "Broiler.VM.Runtime.xml": "4190cc343eb7c777d75521c529a1464cab47535483d4af8cc35e1264735caeaf"
+      }
+    }
+  },
+  "submodules": "none",
+  "host": {
+    "path": "/root/.dotnet/dotnet",
+    "sha256": "01d89e0a0191052bfea616cd4ce624c8faf13b05bbddf7f64499c23e2a9d9269",
+    "runtimes": [
+      "Microsoft.AspNetCore.App 10.0.12 [/root/.dotnet/shared/Microsoft.AspNetCore.App]",
+      "Microsoft.NETCore.App 10.0.12 [/root/.dotnet/shared/Microsoft.NETCore.App]"
+    ],
+    "sdks": [
+      "10.0.401 [/root/.dotnet/sdk]"
+    ]
+  },
+  "repetitions": 7,
+  "warmup": 3,
+  "lanes": [
+    "Bc-bytecode-check",
+    "Bc-bytecode-run",
+    "B-bytecode-check",
+    "B-bytecode-run",
+    "V-value-check",
+    "V-value-run",
+    "V-again-check",
+    "V-again-run",
+    "L-native-check",
+    "L-native-run"
+  ],
+  "shapes": {
+    "array-loop.js": "92ceecd3b3d810515202b730dd0571fa69ca2411",
+    "array-loop.small.js": "f29c2fce1cd65d10080df12a885216b407121296",
+    "call-loop.js": "9a00fffe2affec2b939e69ac1974e9b41a3d9f6f",
+    "call-loop.small.js": "98d0684f5566fa839301d4b81f2b9f4b6048f6be",
+    "closure-loop.js": "fe12010aa7e2b90f4f9be18261416a82fd34ac34",
+    "closure-loop.small.js": "5f1e105248c7f58e3f5cede158600b621ef1c455",
+    "fib.js": "582791818525504b2e555febddb438f8b21f827e",
+    "fib.small.js": "cc03298b770e94c2f8be61dc9b8cf2dc258a2b69",
+    "fresh-small.js": "0256cd9ad1a490289dea64d337c508bf9a27601b",
+    "generator-loop.js": "711036ffb54d7bd022bd20600380407f58887e62",
+    "generator-loop.small.js": "517224973c93b4b3c7a315910801dd34d9e10660",
+    "numeric-loop.js": "39661a516f9394036587168369139dbc72971751",
+    "numeric-loop.small.js": "03e5c4b5a09adaa0c76495105d9a31cd79efa4b5",
+    "property-loop.js": "f7d803d873e9d72e89ffe852256560deadd514c1",
+    "property-loop.small.js": "a1173f86941d049392fdfad186f5824b5fcb1206",
+    "string-loop.js": "9cd5ed3fe5f6b2cda105ef57aa5b367b96e1f448",
+    "string-loop.small.js": "bbd1ab3032520668f38c0c07ee6614eb03d6b942",
+    "throw-loop.js": "5280e1619a8f80b8cb668d050014d5c431c890bb",
+    "throw-loop.small.js": "dfdf22321d0658a9c275e2a6ae8cf7c53720a2e6",
+    "try-loop.js": "093982b6e76b5dc4dd5b64b676c424610b595cb1",
+    "try-loop.small.js": "11e8cb5489ce9ca3695ab6e7826fb619a041069b"
+  },
+  "allowances": {
+    "fuel": 1000000000000,
+    "wall": 600000,
+    "backend": "x86-64-sysv"
+  },
+  "environment": {
+    "scrubbed": [
+      "DOTNET_CLI_TELEMETRY_OPTOUT",
+      "DOTNET_NOLOGO",
+      "DOTNET_ROOT"
+    ],
+    "machine": {
+      "platform": "Linux-6.18.44-fc-v37-x86_64-with-glibc2.39",
+      "architecture": "x86_64",
+      "logical-processors": 4,
+      "cpu": "Intel(R) Xeon(R) Processor @ 2.80GHz"
+    }
+  },
+  "octane": {
+    "judged": false,
+    "runner": "eng/run-octane.py --binary-directory <candidate arm>, once per form: bytecode, --native x86-64-sysv, --value x86-64-sysv, with --artifact-bytes 134217728 --nested-load-bytes 134217728 in every form",
+    "after": "the harness's run, on the same machine, with nothing else running"
+  }
+}

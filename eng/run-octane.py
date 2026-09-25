@@ -36,7 +36,7 @@
 #
 #   python3 eng/run-octane.py [--binary-directory <dir>] [--only <name>]... [--skip <name>]...
 #                             [--fuel <n>] [--wall <ms>] [--live-bytes <n>] [--max-depth <n>]
-#                             [--report <path>]
+#                             [--native <backend>] [--report <path>]
 #
 # `--only` may be repeated and names a SELECTION; with none of them the fifteen in the pin all run.
 # `--skip` removes a benchmark from whatever that selection came to, and every run that uses one
@@ -61,6 +61,18 @@
 # the middle of a transcript that a reader has to learn to ignore, which is the kind of thing that
 # teaches a reader to ignore the next line too. `--quiet` suppresses the completion value and
 # nothing else: the driver's own `print` calls are the write capability and are untouched.
+#
+# `--native <backend>` RUNS THE WORKLOAD IN THE BASELINE NATIVE FORM, added 2026-09-23. The host has
+# taken `--native` since 2026-09-15 and this script had no way to pass it, so every Octane report
+# this repository retains is a bytecode run and no benchmark had ever been driven through emitted
+# code. The backend is handed to the host unchanged - `x86-64-sysv` on Linux and macOS, `x86-64-win64`
+# on Windows - and a backend this machine does not arm is the host's refusal to print, not this
+# script's. The form is written into the report, because a bytecode score and a native score of the
+# same benchmark are two numbers about two configurations and a reader must never have to guess which.
+#
+# `--value <backend>` RUNS IT IN THE WIDE MANIFEST'S VALUE FORM (JSD-0035), added 2026-09-24, and
+# `--handle-stress` runs that form with its handle table compacting at every helper call. The two are
+# passed to the host unchanged and written into the report's `form`, for the reason above.
 
 import argparse
 import hashlib
@@ -78,8 +90,11 @@ from datetime import datetime, timezone
 
 # The report format's own version, bumped whenever a reader of an older file would misread a newer
 # one. It is NOT the pin's version and not the suite's: it names the shape of the JSON below.
+#
+# VERSION 2 ADDED `form`. A version-1 reader handed a native report would read its scores as the
+# bytecode form's, which is a misreading and not a missing field, so the number moved.
 REPORT_SCHEMA = "broiler-js octane report"
-REPORT_VERSION = 1
+REPORT_VERSION = 2
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PINS = ROOT / "src/tests/octane/pins"
@@ -240,7 +255,19 @@ def whole_or_partial(wanted, skipped, missing):
     return "whole" if not reasons else "partial|" + "; ".join(reasons)
 
 
-def run(binary, checkout, name, fuel, wall, live_bytes, max_depth):
+def form_name(arguments):
+    """The form a run is written into its report as."""
+    if arguments.value:
+        return "value-stress" if arguments.handle_stress else "value"
+
+    if arguments.value_flat:
+        return "value-flat-stress" if arguments.handle_stress else "value-flat"
+
+    return "native" if arguments.native else "bytecode"
+
+
+def run(binary, checkout, name, fuel, wall, live_bytes, max_depth, native, value=None, stress=False,
+        artifact_bytes=None, nested_load_bytes=None, value_flat=None):
     """One benchmark, one process, through the ordinary command line."""
     files = [str(checkout / "base.js")]
     files += [str(checkout / f) for f in COMPANIONS.get(name, [f"{name}.js"])]
@@ -252,6 +279,24 @@ def run(binary, checkout, name, fuel, wall, live_bytes, max_depth):
     command = [str(binary)] + files + [
         DRIVER, "--fuel", str(fuel), "--wall", str(wall), "--live-bytes", str(live_bytes),
         "--max-depth", str(max_depth), "--quiet"]
+
+    if native:
+        command += ["--native", native]
+
+    if value:
+        command += ["--value", value]
+
+    if value_flat:
+        command += ["--value-flat", value_flat]
+
+    if stress:
+        command += ["--handle-stress"]
+
+    if artifact_bytes:
+        command += ["--artifact-bytes", str(artifact_bytes)]
+
+    if nested_load_bytes:
+        command += ["--nested-load-bytes", str(nested_load_bytes)]
 
     # WHAT THE BENCHMARK COST, WHICH THIS SCRIPT DID NOT REPORT AND SHOULD HAVE. The `--wall`
     # above is an allowance a caller states in milliseconds, and a caller with no per-benchmark
@@ -316,10 +361,16 @@ def report(path, fields, binary, rows, components, total, coverage, skipped, spe
             "files": int(fields["files"]) if "files" in fields else None,
         },
         "host": host(binary),
+        "form": {
+            "form": form_name(arguments),
+            "backend": arguments.native or arguments.value or arguments.value_flat,
+        },
         "allowances": {
             "fuel": arguments.fuel,
             "wall-ms-requested": arguments.wall,
             "live-bytes": arguments.live_bytes,
+            "artifact-bytes": arguments.artifact_bytes,
+            "nested-load-bytes": arguments.nested_load_bytes,
             "max-depth": arguments.max_depth,
         },
         "selection": {
@@ -405,6 +456,20 @@ def main():
     # move that bound and this script does not pretend it does.
     parser.add_argument("--max-depth", type=int, default=512)
 
+    # THE OUTPUT FORM, passed to the host unchanged. See the header for why it exists.
+    parser.add_argument("--native", default=None, metavar="BACKEND")
+    parser.add_argument("--value", default=None, metavar="BACKEND")
+    parser.add_argument("--value-flat", default=None, metavar="BACKEND")
+    parser.add_argument("--handle-stress", action="store_true")
+
+    # THE TWO ALLOWANCES AN ARTIFACT'S OWN SIZE IS CHARGED TO, passed to the host only when stated and
+    # written into the report when they are. The value form calls a helper for every instruction it
+    # does not run inline, so its artifacts are several times their bytecode's size and mandreel's
+    # meets the profile's default artifact ceiling; raising it is a stated allowance, like --wall, and
+    # not a property of the form.
+    parser.add_argument("--artifact-bytes", type=int, default=None)
+    parser.add_argument("--nested-load-bytes", type=int, default=None)
+
     # `--report` IS OPT-IN AND WRITES OUTSIDE THE DOCUMENTS. Scores have only ever existed as
     # `score <n>` lines in a transcript, which means every reader of a run has been a person and
     # every comparison between two runs has been a person's eye. A file with a schema and a version
@@ -413,6 +478,12 @@ def main():
     # away from a scored file the tree retains, and roadmap section 17 is about exactly that step.
     parser.add_argument("--report", default=None, metavar="PATH")
     arguments = parser.parse_args()
+
+    if sum(1 for named in (arguments.native, arguments.value, arguments.value_flat) if named) > 1:
+        raise SystemExit("# --native, --value and --value-flat name three forms, and a run has one")
+
+    if arguments.handle_stress and not (arguments.value or arguments.value_flat):
+        raise SystemExit("# --handle-stress applies to the value form alone, and this run names no --value")
 
     # A NAME THAT IS NOT A BENCHMARK IS REFUSED HERE, before the archive is even read. A lane
     # passes this selection through a shell, and a typo in one that ran what it could and said
@@ -465,6 +536,14 @@ def main():
         print(f"# octane {fields['upstream']} at {fields['revision']}")
         print(f"# {fields['files']} files, content {fields['content-sha256']}")
         print(f"# judging {binary}")
+        backend = arguments.native or arguments.value or arguments.value_flat
+        print("# form " + (f"{form_name(arguments)} ({backend})" if backend else "bytecode"))
+
+        # AN ALLOWANCE THE CALLER MOVED IS PRINTED WHERE THE FORM IS, so a transcript read without its
+        # report still says what the run was allowed.
+        if arguments.artifact_bytes or arguments.nested_load_bytes:
+            print(f"# allowances: artifact bytes {arguments.artifact_bytes or 'the profile default'}, "
+                  f"nested-load bytes {arguments.nested_load_bytes or 'the profile default'}")
 
         # THE SKIPS ARE PRINTED BEFORE ANYTHING RUNS, and that placement is the point: a reader who
         # sees only the summary at the end still meets the exclusion at the top of the transcript,
@@ -483,7 +562,8 @@ def main():
         for name in wanted:
             code, output, seconds = run(
                 binary, checkout, name, arguments.fuel, arguments.wall, arguments.live_bytes,
-                arguments.max_depth)
+                arguments.max_depth, arguments.native, arguments.value, arguments.handle_stress,
+                arguments.artifact_bytes, arguments.nested_load_bytes, arguments.value_flat)
             spent += seconds
             print(f"--- {name} (exit {code}, {seconds:.0f}s)")
 

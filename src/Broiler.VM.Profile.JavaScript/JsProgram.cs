@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
-// Exempt:           42
-// Human-reviewed:   0/17
+// Relevant units:   18
+// Annotated:        18/18
+// Exempt:           46
+// Human-reviewed:   0/18
 // IP risk:          Low
-// Security risk:    Medium
-// Criteria:         1/1
+// Security risk:    Critical
+// Criteria:         4/4
 // Resource impact:  2/10 max
-// Unverified:       17
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -224,7 +224,7 @@ internal readonly struct JsEntry(string name, uint unit)
 internal sealed class JsProgram : IVmVerifiedState
 {
     /// <summary>Creates a verified program.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D6A0E0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EC37D5
     // Broiler-Human:        PENDING
     internal JsProgram(
         JsValue[] constants,
@@ -245,7 +245,9 @@ internal sealed class JsProgram : IVmVerifiedState
         Format.JsNativeSymbolRow[]? nativeSymbols = null,
         JsEvalMap? evalMap = null,
         System.Collections.Generic.Dictionary<int, JsScriptDeclaration>? scriptDeclarations = null,
-        System.Collections.Generic.Dictionary<int, string>? scriptReferrers = null)
+        System.Collections.Generic.Dictionary<int, string>? scriptReferrers = null,
+        bool nativeValueForm = false,
+        Format.JsNativeProgramImage? nativeValueImage = null)
     {
         Constants = constants;
         Names = names;
@@ -267,7 +269,81 @@ internal sealed class JsProgram : IVmVerifiedState
         EvalMap = evalMap;
         ScriptDeclarations = scriptDeclarations;
         ScriptReferrers = scriptReferrers;
+        NativeValueForm = nativeValueForm;
+        NativeValueImage = nativeValueImage;
+        valuePlans = nativeValueImage is null ? [] : new Format.JsValueUnitPlan?[functions.Length];
     }
+
+    /// <summary>The value-form plans made so far, one slot per code unit, filled on a unit's first entry.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=02CFED
+    // Broiler-Human:        PENDING
+    private readonly Format.JsValueUnitPlan?[] valuePlans;
+
+    /// <summary>The handler offsets of the value image, grouped once, on the first plan made.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=30F743
+    // Broiler-Human:        PENDING
+    private Format.JsBaselineHandlerOffsets? valueHandlerOffsets;
+
+    /// <summary>The image a value-form payload was scanned against, or nothing for any other program.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=BC2C12
+    // Broiler-Falsified-If: this differs from the image the verifier scanned and re-emitted the value-form payload against
+    // Broiler-Human:        PENDING
+    internal Format.JsNativeProgramImage? NativeValueImage { get; }
+
+    /// <summary>
+    /// The value plan of one code unit - its heights, its region and its residency - made from the image the
+    /// payload was scanned against the first time the unit is entered, or nothing where there is none.
+    /// </summary>
+    /// <remarks>
+    /// <b>A PROGRAM IS SHARED, SO A PLAN IS PUBLISHED ONCE AND NEVER REPLACED.</b> Two threads that plan one
+    /// unit at once make two equal plans, because the plan is a pure function of the image, and the first
+    /// published is the one both read.
+    /// </remarks>
+    /// <param name="unitIndex">The code unit.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=6F3F18
+    // Broiler-Falsified-If: it answers a plan other than the one the template scan held the unit's payload to, or replaces a published plan
+    // Broiler-Human:        PENDING
+    internal Format.JsValueUnitPlan? ValuePlan(int unitIndex)
+    {
+        if (NativeValueImage is null || (uint)unitIndex >= (uint)valuePlans.Length)
+        {
+            return null;
+        }
+
+        var published = System.Threading.Volatile.Read(ref valuePlans[unitIndex]);
+
+        if (published is not null)
+        {
+            return published;
+        }
+
+        var offsets = System.Threading.Volatile.Read(ref valueHandlerOffsets);
+
+        if (offsets is null)
+        {
+            offsets = Format.JsBaselineBlocks.GroupHandlerOffsets(NativeValueImage);
+            System.Threading.Interlocked.CompareExchange(ref valueHandlerOffsets, offsets, null);
+        }
+
+        if (!Format.JsValueLayout.TryPlan(
+                NativeValueImage, unitIndex, offsets.Of(unitIndex), NativeValueImage.ResidentBindings, out var plan, out _))
+        {
+            return null;
+        }
+
+        return System.Threading.Interlocked.CompareExchange(ref valuePlans[unitIndex], plan, null) ?? plan;
+    }
+
+    /// <summary>Whether the emitted code is the value form rather than the manifest's own native form.</summary>
+    /// <remarks>
+    /// <b>It is the emitted-code header's form byte, carried as the verifier read it</b>, so an instance
+    /// enters the value form's helpers exactly when the payload was scanned and re-emitted as the value
+    /// form (JSD-0035 section 9).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=942D8A
+    // Broiler-Falsified-If: this differs from the form byte of the emitted code section the verifier scanned
+    // Broiler-Human:        PENDING
+    internal bool NativeValueForm { get; }
 
     /// <summary>The eval scope map the artifact carries, or nothing.</summary>
     /// <remarks>

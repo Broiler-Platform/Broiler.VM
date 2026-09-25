@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   12
 // Annotated:        12/12
-// Exempt:           7
+// Exempt:           11
 // Human-reviewed:   0/12
 // IP risk:          None
 // Security risk:    Medium
-// Criteria:         0/0
+// Criteria:         4/0
 // Resource impact:  2/10 max
 // Unverified:       12
 //
@@ -55,7 +55,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// <param name="Constants">The constant pool, one encoded entry each, in pool order.</param>
 /// <param name="MaximumOperandStack">The deepest operand stack any unit declares.</param>
 /// <param name="MaximumScopeSlots">The most slots any unit's own environment declares.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=847CEC
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0847D6
 // Broiler-Human:        PENDING
 public sealed record JsAssembledProgram(
     string ManifestId,
@@ -64,7 +64,28 @@ public sealed record JsAssembledProgram(
     System.Collections.Generic.IReadOnlyList<JsExceptionRegionRow> ExceptionRegions,
     System.Collections.Generic.IReadOnlyList<byte[]> Constants,
     uint MaximumOperandStack,
-    uint MaximumScopeSlots);
+    uint MaximumScopeSlots)
+{
+    /// <summary>Whether the caller asked for the wide manifest's value form rather than its baseline form.</summary>
+    /// <remarks>
+    /// <b>The request states it and no backend infers it.</b> The compiler sets it from the output form
+    /// its caller asked for; a backend that emits no value form refuses an assembled program that asks
+    /// for one, and one that does records it in the emission it answers.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=07A8FC
+    // Broiler-Falsified-If: a backend emits a baseline form for a program asking for the value form, or the reverse
+    // Broiler-Human:        PENDING
+    public bool ValueForm { get; init; }
+
+    /// <summary>
+    /// Whether a value-form program's bindings may be resident: true for the form, false for the control
+    /// that keeps every binding in its managed environment (JSD-0035's residency risk).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A94B56
+    // Broiler-Falsified-If: a backend emits a resident binding for a program asking for none
+    // Broiler-Human:        PENDING
+    public bool ResidentBindings { get; init; } = true;
+}
 
 /// <summary>What a backend produced: the emitted bytes and the table that says which unit is where.</summary>
 /// <param name="Architecture">The instruction set and calling convention the bytes were written for.</param>
@@ -76,14 +97,27 @@ public sealed record JsAssembledProgram(
 /// <param name="CodeAlignment">The alignment every unit's entry point is written at.</param>
 /// <param name="Code">The emitted bytes, every unit's back to back.</param>
 /// <param name="Symbols">One row per code unit, in code-unit order, tiling <paramref name="Code"/>.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=405BB0
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=FC1491
 // Broiler-Human:        PENDING
 public sealed record JsNativeEmission(
     JsNativeArchitecture Architecture,
     uint BackendSemanticVersion,
     uint CodeAlignment,
     byte[] Code,
-    JsNativeSymbolRow[] Symbols);
+    JsNativeSymbolRow[] Symbols)
+{
+    /// <summary>Whether the bytes are the value form, which the artifact records in its form byte.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=07A8FC
+    // Broiler-Falsified-If: an emission of the value form answers false here, or one of another form answers true
+    // Broiler-Human:        PENDING
+    public bool ValueForm { get; init; }
+
+    /// <summary>Whether a value-form emission's bindings may be resident, which the form byte records.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A94B56
+    // Broiler-Falsified-If: an emission planned with every binding non-resident answers true here
+    // Broiler-Human:        PENDING
+    public bool ResidentBindings { get; init; } = true;
+}
 
 /// <summary>An emitter of machine code for one architecture and calling convention.</summary>
 /// <remarks>

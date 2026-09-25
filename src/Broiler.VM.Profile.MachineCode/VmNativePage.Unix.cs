@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
+// Relevant units:   11
+// Annotated:        11/11
 // Exempt:           1
-// Human-reviewed:   0/10
+// Human-reviewed:   0/11
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         11/11
+// Criteria:         12/12
 // Resource impact:  4/10 max
-// Unverified:       10
+// Unverified:       11
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -42,6 +42,20 @@ public sealed unsafe partial class VmNativePage
     // Broiler-Human:        PENDING
     private const int MapPrivateAnonymous = 0x02 | 0x20;
 
+    /// <summary>A private anonymous mapping, as macOS and FreeBSD spell it.</summary>
+    /// <remarks>
+    /// <b>THE ANONYMOUS FLAG IS NOT ONE NUMBER ACROSS THE UNIX FAMILY.</b> Linux spells it
+    /// <c>0x20</c>; Darwin and FreeBSD spell it <c>0x1000</c>, and on Darwin <c>0x20</c> is
+    /// <c>MAP_RENAME</c>. Passing the Linux value there asked for a file-backed mapping of
+    /// descriptor -1, which fails, so every native artifact verified and then refused to instantiate
+    /// on macOS as an unsatisfied host assumption - the sentence this host prints for an artifact
+    /// emitted for another machine. Private is <c>0x02</c> on all three.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=60B009
+    // Broiler-Falsified-If: this names a shared or a file-backed mapping on the systems it is chosen for
+    // Broiler-Human:        PENDING
+    private const int MapPrivateAnonymousBsd = 0x02 | 0x1000;
+
     /// <summary>What <c>mmap</c> answers when it failed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=BAFAB4
     // Broiler-Falsified-If: this differs from the value the platform answers a failed mapping with, so a failure is read as an address
@@ -49,12 +63,16 @@ public sealed unsafe partial class VmNativePage
     private static readonly void* MapFailed = (void*)(-1);
 
     /// <summary>Maps a writable, non-executable region.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=31576D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=61768A
     // Broiler-Falsified-If: this passes any protection other than the readable-and-writable one
     // Broiler-Human:        PENDING
     private static byte* MapUnix(nuint bytes)
     {
-        var mapped = Map(null, bytes, ProtReadWrite, MapPrivateAnonymous, -1, 0);
+        var flags = System.OperatingSystem.IsMacOS() || System.OperatingSystem.IsFreeBSD()
+            ? MapPrivateAnonymousBsd
+            : MapPrivateAnonymous;
+
+        var mapped = Map(null, bytes, ProtReadWrite, flags, -1, 0);
         return mapped == MapFailed ? null : (byte*)mapped;
     }
 

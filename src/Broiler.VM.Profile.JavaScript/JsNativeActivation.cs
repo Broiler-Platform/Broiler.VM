@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   4
-// Annotated:        4/4
-// Exempt:           22
-// Human-reviewed:   0/4
-// IP risk:          None
+// Relevant units:   9
+// Annotated:        9/9
+// Exempt:           28
+// Human-reviewed:   0/9
+// IP risk:          Low
 // Security risk:    Critical
-// Criteria:         14/14
+// Criteria:         24/24
 // Resource impact:  5/10 max
-// Unverified:       4
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -201,11 +201,66 @@ internal sealed unsafe class JsNativeActivation
     // Broiler-Human:        PENDING
     internal JsValue Result;
 
+    /// <summary>The value-form segment this activation's region is in, or nothing outside the value form.</summary>
+    /// <remarks>
+    /// <b>Set by the value form's entry for exactly the life of its region</b>, and cleared when the region
+    /// is closed, so a value step of an activation whose region is gone runs nothing.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=61730A
+    // Broiler-Falsified-If: a value step reads or writes words of a segment other than the one the activation's region was opened in, or runs after the region was closed
+    // Broiler-Human:        PENDING
+    internal JsValueSlab? Segment;
+
+    /// <summary>The index of the activation's frame header in <see cref="Segment"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=A73741
+    // Broiler-Falsified-If: this names any header other than the one the entry opened for this activation
+    // Broiler-Human:        PENDING
+    internal int SlabFrame;
+
+    /// <summary>The value plan of the activation's unit, or nothing outside the value form.</summary>
+    /// <remarks>
+    /// <b>Set by the value form's entry with the region</b>: it says which region words are the arguments,
+    /// the resident bindings and the operand stack, and the operand height before every instruction, which
+    /// is how a helper knows the height inline code left, since inline code writes no managed state.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=3EC17C
+    // Broiler-Falsified-If: a value step of this activation reads a plan other than the one of its own unit the template scan held the payload to
+    // Broiler-Human:        PENDING
+    internal Format.JsValueUnitPlan? Plan;
+
+    /// <summary>Whether the last step ended at a landing: a caught throw or a caught forced return.</summary>
+    /// <remarks>
+    /// <b>The dispatch loop sets it where it lands, and only outside the interpreter's own
+    /// instantiation.</b> A landing truncates the operand stack to the region's height and pushes one
+    /// value there, which may be below the instruction's own inputs, so a value step reads it to know
+    /// which words the step wrote.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=3B3559
+    // Broiler-Falsified-If: a step that landed leaves this false, or one that did not land leaves it true
+    // Broiler-Human:        PENDING
+    internal bool Landed;
+
     /// <summary>The exception a step caught at the wrapper, for the entering frame to raise.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=AE8477
     // Broiler-Falsified-If: an exception a step caught is dropped rather than raised by the managed frame that entered the emitted code
     // Broiler-Human:        PENDING
     internal System.Exception? Pending;
+
+    /// <summary>The activation whose emitted code called this one's directly, or nothing (stage JSV-3).</summary>
+    /// <remarks>
+    /// <b>IT IS WHAT ROOTS A DIRECT CALL'S CALLER</b>: the thread slot names the innermost activation, and each
+    /// directly called one names the one below it, down to the activation <c>RunValue</c> entered, which that
+    /// method's frame holds; the finish helper follows it back when the callee returns.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=275E20
+    // Broiler-Falsified-If: a direct callee runs with no caller named, or names one other than the activation whose call site entered it
+    // Broiler-Human:        PENDING
+    internal JsNativeActivation? Caller;
+
+    /// <summary>The script or module a direct call's caller was running, which its return restores.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3F30FA
+    // Broiler-Human:        PENDING
+    internal string? CallerReferrer;
 
     /// <summary>The activation whose emitted code is innermost on this thread.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=1; Fingerprint=859662
@@ -301,6 +356,329 @@ internal sealed unsafe class JsNativeActivation
                 act);
 
             return act.Exited ? (int)JsBaselineStatus.Exit : act.Pc;
+        }
+        catch (System.Exception escaped)
+        {
+            act.Pending = escaped;
+            return (int)JsBaselineStatus.Threw;
+        }
+    }
+
+    /// <summary>
+    /// Runs one instruction for value-form emitted code, over the decoding of its input words, after the
+    /// checks <see cref="Step{TMode}"/> makes (JSD-0035 section 5).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE PROGRAM COUNTER IS CHECKED AGAINST THE PLAN, NOT AGAINST THE LAST STEP.</b> Inline templates
+    /// run instructions no managed code sees, so the offset the emitted code passes is not the one the last
+    /// helper answered; it must be an instruction start of the activation's own unit that the plan reached,
+    /// the byte there must be this helper's opcode, and the activation must hold an open region. Any one of
+    /// them failing runs nothing and answers a defect.
+    /// </para>
+    /// <para>
+    /// <b>THE DEBT IS CHARGED BEFORE ANYTHING RUNS</b>: the pure instructions the emitted code ran since the
+    /// last settlement are charged to the meter with the existing charge, and an allowance that cannot take
+    /// them ends the operation here, before the helper's own instruction - which is where the interpreter
+    /// would have run out, give or take pure instructions nothing observes (JSD-0035 section 7). Then the
+    /// window is decoded from the region, the per-opcode instantiation of the dispatch loop runs the one
+    /// instruction exactly as the interpreter would, and what it left is encoded back and published.
+    /// </para>
+    /// <para>
+    /// <b>NOTHING CROSSES BACK INTO THE EMITTED CODE AS AN EXCEPTION</b>, for Step's reason: a defect the
+    /// codec reports, a guest throw no region covers and an exhausted allowance are all parked on the
+    /// activation and raised by the managed frame that entered the emitted code.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=D0E8EF
+    // Broiler-Falsified-If: a value step starts at an offset that is not a reached instruction start of its activation's unit, with an opcode or for an activation other than the emitted code's own, runs with no open region, runs before its debt is charged, leaves a word the arm wrote unencoded or unpublished, or lets an exception escape into emitted code
+    // Broiler-Human:        PENDING
+    internal static int StepValue<TMode>(JsValueFrame* frame, int pc, JsOpcode expected)
+        where TMode : struct, IJsExecutionMode
+    {
+        var act = current;
+
+        if (act is null ||
+            frame is null ||
+            act.Cookie != frame->Cookie ||
+            act.Exited ||
+            (uint)pc >= (uint)act.Code.Length ||
+            act.Code[pc] != (byte)expected ||
+            act.Segment is null ||
+            act.Plan is null)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        if (act.Plan.HeightAt(pc) < 0)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        try
+        {
+            var debt = frame->Debt;
+            frame->Debt = 0;
+            act.Engine.ChargeDebt(debt);
+
+            var pops = JsValueWindows.Enter(act, pc, out var height);
+            act.Landed = false;
+
+            _ = act.Engine.ExecuteCore<TMode>(
+                act.Program,
+                act.UnitIndex,
+                act.Environment,
+                act.ThisValue,
+                act.Arguments,
+                act.Self,
+                act.NewTarget,
+                act.ThisBinding,
+                act.Frame,
+                act);
+
+            if (act.Exited)
+            {
+                // A FRAME THAT SUSPENDED TAKES ITS RESIDENT WORDS WITH IT (stage JSV-4): its stack is already
+                // the frame's, decoded whole by the window, and the codec puts the rest into its records.
+                if (act.Frame is { Suspended: true })
+                {
+                    JsValueWindows.Suspend(act, pc);
+                }
+
+                return (int)JsBaselineStatus.Exit;
+            }
+
+            JsValueWindows.Leave(act, pc, height, pops);
+            return act.Pc;
+        }
+        catch (System.Exception escaped)
+        {
+            act.Pending = escaped;
+            return (int)JsBaselineStatus.Threw;
+        }
+    }
+
+    /// <summary>
+    /// Charges the debt value-form emitted code carried to a debt test, and answers the offset it resumes at
+    /// (JSD-0035 section 7, clause V5).
+    /// </summary>
+    /// <remarks>
+    /// <b>IT RUNS NO INSTRUCTION AND TOUCHES NO WORD.</b> It makes the value step's checks - the cookie, a
+    /// live activation, an offset that is a reached instruction start of its unit, an open region - and then
+    /// charges the debt, which is where cancellation and the wall clock are polled on a loop of pure
+    /// instructions; an allowance that cannot take it is parked as the exhaustion it is.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=2A7F11
+    // Broiler-Falsified-If: a settlement answers an offset other than the one it was handed, runs an instruction, writes a word, or leaves a debt it was handed uncharged without parking the refusal
+    // Broiler-Human:        PENDING
+    internal static int SettleValue(JsValueFrame* frame, int pc)
+    {
+        var act = current;
+
+        if (act is null ||
+            frame is null ||
+            act.Cookie != frame->Cookie ||
+            act.Exited ||
+            act.Segment is null ||
+            act.Plan is null)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        if (act.Plan.HeightAt(pc) < 0)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        try
+        {
+            var debt = frame->Debt;
+            frame->Debt = 0;
+            act.Engine.ChargeDebt(debt);
+            return pc;
+        }
+        catch (System.Exception escaped)
+        {
+            act.Pending = escaped;
+            return (int)JsBaselineStatus.Threw;
+        }
+    }
+
+    /// <summary>
+    /// The call-prepare helper's work at a direct call site: the <c>Call</c> run through its own helper, or a
+    /// direct call prepared - the callee's activation made, its region opened, its context filled - and the
+    /// thread slot moved to it (JSD-0035 section 6, stage JSV-3).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>IT MAKES <see cref="StepValue{TMode}"/>'S CHECKS FIRST</b>, and a callee that is not a plain script
+    /// function of the caller's program is the ordinary helper's to call, through <see cref="StepValue{TMode}"/>
+    /// itself, with nothing done before it. A direct call charges the debt, decodes the call's window as that
+    /// step would, and then does exactly what the interpreter's <c>Call</c> does before it runs a callee.
+    /// </para>
+    /// <para>
+    /// <b>WHAT FAILS BEFORE THE CALLEE RUNS IS RAISED AT THE CALL</b>, so the <c>RangeError</c> of a recursion
+    /// past the counted bound lands in the caller's own regions exactly as the interpreter's does, and what
+    /// lands nowhere is parked for the caller's caller.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=F68147
+    // Broiler-Falsified-If: a direct call is prepared for a call site whose checks fail, for a callee the ordinary helper should call, without its debt charged, or answers the direct call with the thread slot naming anything but the prepared callee; or anything but the direct call escapes into emitted code
+    // Broiler-Human:        PENDING
+    internal static int PrepareCall<TMode>(JsValueFrame* frame, int pc, JsValueFrame* context)
+        where TMode : struct, IJsExecutionMode
+    {
+        var act = current;
+
+        if (act is null ||
+            frame is null ||
+            context is null ||
+            act.Cookie != frame->Cookie ||
+            act.Exited ||
+            (uint)pc >= (uint)act.Code.Length ||
+            act.Code[pc] != (byte)JsOpcode.Call ||
+            act.Segment is null ||
+            act.Plan is null)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        if (act.Plan.HeightAt(pc) < 0)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        if (!act.Engine.TryDirectCallee(act, pc, out var function))
+        {
+            return StepValue<TMode>(frame, pc, JsOpcode.Call);
+        }
+
+        var height = -1;
+        var pops = 0;
+
+        try
+        {
+            var debt = frame->Debt;
+            frame->Debt = 0;
+            act.Engine.ChargeDebt(debt + JsEngine.DirectCallCharge);
+
+            pops = JsValueWindows.Enter(act, pc, out height);
+            act.Landed = false;
+
+            current = act.Engine.BeginDirectCall(act, pc, height, function, context);
+            return JsValueAbi.DirectCall;
+        }
+        catch (System.Exception escaped)
+        {
+            return RaiseAt(act, pc, height, pops, escaped);
+        }
+    }
+
+    /// <summary>
+    /// The call-finish helper's work after a directly called function's emitted code returned: the thread slot
+    /// moved back to the caller, the callee's region closed, and its answer pushed or its exception raised at
+    /// the call (stage JSV-3).
+    /// </summary>
+    /// <remarks>
+    /// <b>THE CALLEE IS THE THREAD SLOT'S, AND ITS CALLER IS THE ONE IT NAMES</b>: each must carry the cookie
+    /// of the context it was handed, and the caller must still be at the call's instruction, or nothing runs
+    /// and the answer is a defect. A returned value is written where the interpreter's arm writes it, and the
+    /// caller goes on at the instruction after the call.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=C2D3A2
+    // Broiler-Falsified-If: it acts for a callee or a caller whose cookie is not its context's, leaves the thread slot naming the callee, leaves the callee's region, depth or referrer taken, writes the answer anywhere but the call's own output slot, or lets an exception escape into emitted code
+    // Broiler-Human:        PENDING
+    internal static int FinishCall(JsValueFrame* frame, int pc, JsValueFrame* context, int status)
+    {
+        var callee = current;
+
+        if (callee is null ||
+            frame is null ||
+            context is null ||
+            callee.Cookie != context->Cookie ||
+            callee.Caller is not { } act ||
+            act.Cookie != frame->Cookie ||
+            act.Exited ||
+            act.Pc != pc ||
+            act.Plan is null ||
+            act.Segment is null)
+        {
+            return (int)JsBaselineStatus.Defect;
+        }
+
+        current = act;
+
+        var height = act.Plan.HeightAt(pc);
+        var pops = act.Code[pc + 1] + 2;
+
+        try
+        {
+            var debt = context->Debt;
+            context->Debt = 0;
+
+            try
+            {
+                // AN INLINE RETURN LEFT ITS VALUE IN THE CALLEE'S FIRST WORD, which is read before the region
+                // closes and before anything can compact, and its debt, which is charged before the caller
+                // sees the value.
+                if (status == JsValueAbi.Returned)
+                {
+                    _ = act.Engine.Returned(callee, debt);
+                    status = (int)JsBaselineStatus.Exit;
+                }
+                else
+                {
+                    act.Engine.ChargeDebt(debt);
+                }
+            }
+            finally
+            {
+                act.Engine.EndDirectCall(callee);
+            }
+
+            if (status == (int)JsBaselineStatus.Exit && callee.Exited)
+            {
+                var slot = height - pops;
+                act.Stack[slot] = callee.Result;
+                act.Sp = slot + 1;
+                act.Pc = pc + 2;
+                act.Landed = false;
+                JsValueWindows.Leave(act, pc, height, pops);
+                return act.Pc;
+            }
+
+            return status == (int)JsBaselineStatus.Threw
+                ? RaiseAt(act, pc, height, pops, callee.Pending ??
+                    new JsAbort(JsAbortKind.InternalDefect, "a direct callee threw nothing"))
+                : (int)JsBaselineStatus.Defect;
+        }
+        catch (System.Exception escaped)
+        {
+            act.Pending = escaped;
+            return (int)JsBaselineStatus.Threw;
+        }
+    }
+
+    /// <summary>
+    /// Raises an exception at a direct call's instruction: landed in the caller's own region the interpreter's
+    /// filter would pick, through the dispatch loop's own landing and with no throw, or parked for the caller's
+    /// caller as a status (JSD-0035 section 8, stage JSV-4).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=8E4FA9
+    // Broiler-Falsified-If: an exception lands where the interpreter's filter would not land it, one it would land is parked, it is thrown again to land, or a landing's words are left unencoded or unpublished
+    // Broiler-Human:        PENDING
+    private static int RaiseAt(JsNativeActivation act, int pc, int height, int pops, System.Exception raised)
+    {
+        try
+        {
+            if (height < 0 || !JsEngine.TryLand(act, pc, raised))
+            {
+                act.Pending = raised;
+                return (int)JsBaselineStatus.Threw;
+            }
+
+            JsValueWindows.Leave(act, pc, height, pops);
+            return act.Pc;
         }
         catch (System.Exception escaped)
         {

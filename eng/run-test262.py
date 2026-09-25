@@ -38,6 +38,14 @@
 # they were, the merge refuses shards that disagree, and eng/compare-test262-forms.py is what holds
 # a native run's per-variant verdicts to a bytecode run's.
 #
+# `--form value` compiles every variant to the wide manifest's value form (JSD-0035) instead: every
+# instruction one helper call over NaN-boxed words in a pinned slab, the control flow between them
+# emitted. `--form value-stress` is the same form with the instance's handle table compacting at every
+# helper call, which is how a rooting mistake becomes a failing variant rather than a rare wrong answer.
+# `--form value-flat` is the value form with every binding classed non-resident, the control run stage
+# JSV-2's residency analysis is held to. All three are admitted under the wide manifest alone, and each
+# is a run of its own to compare with bytecode.
+#
 # THE ALLOWANCES, AND WHY THEY ARE SMALL HERE. A variant gets a fuel ceiling and a wall-clock
 # ceiling, and both are allowances this script states rather than measurements it took. Fuel is the
 # one meant to decide: it is charged per instruction, so the same test decides the same way on a busy
@@ -271,7 +279,7 @@ def main():
     parser.add_argument(
         "--manifest", default=None,
         help=f"defaults to {WIDE_MANIFEST} in either form; a native run may name {NUMERIC_MANIFEST}")
-    parser.add_argument("--form", choices=("bytecode", "native"), default="bytecode")
+    parser.add_argument("--form", choices=("bytecode", "native", "value", "value-stress", "value-flat"), default="bytecode")
     parser.add_argument(
         "--backend", default=None, help="a native run's backend; the harness defaults it to the host's")
     parser.add_argument("--decline", action="append", default=[])
@@ -315,7 +323,7 @@ def main():
     if arguments.manifest is None:
         arguments.manifest = WIDE_MANIFEST
 
-    if arguments.backend and arguments.form != "native":
+    if arguments.backend and arguments.form == "bytecode":
         parser.error("--backend names a native backend, and this run's form is bytecode")
 
     binary = pathlib.Path(arguments.binary_directory) / BINARY_NAME

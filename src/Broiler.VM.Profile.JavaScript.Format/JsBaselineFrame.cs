@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   9
 // Annotated:        9/9
-// Exempt:           7
+// Exempt:           8
 // Human-reviewed:   0/9
 // IP risk:          None
 // Security risk:    Critical
@@ -17,24 +17,25 @@
 
 namespace Broiler.VM.Profile.JavaScript.Format;
 
-/// <summary>Which of the two native forms an emitted code section is, read off the artifact's manifest.</summary>
+/// <summary>Which of the three native forms an emitted code section is.</summary>
 /// <remarks>
 /// <para>
-/// <b>THE TIER IS NOT A FIELD OF THE ARTIFACT, BECAUSE THE MANIFEST ALREADY SAYS IT.</b> An artifact
-/// declaring <c>broiler.javascript.numeric</c> carries computing templates over a slab of
-/// <c>double</c>; an artifact declaring <c>broiler.javascript.wide</c> carries the baseline form, whose
-/// emitted code calls into the interpreter's own dispatch at every block head. A second
-/// field naming the same fact would be a second place for the two to disagree, and the verifier would
-/// have to choose which one to believe.
+/// <b>THE MANIFEST SAYS WHICH FORMS AN ARTIFACT MAY HAVE, AND ONE BYTE OF THE EMITTED-CODE HEADER SAYS
+/// WHICH OF THEM IT HAS.</b> An artifact declaring <c>broiler.javascript.numeric</c> carries computing
+/// templates over a slab of <c>double</c>, and that manifest has no other form. An artifact declaring
+/// <c>broiler.javascript.wide</c> carries the baseline form, whose emitted code calls into the
+/// interpreter's own dispatch at every block head, unless its header's form byte names
+/// <see cref="Value"/> (JSD-0035 section 9). A zero form byte means the manifest's own form, which is
+/// what every artifact written before the value form existed says, so the byte and the manifest
+/// cannot disagree about any of them.
 /// </para>
 /// <para>
-/// <b>It selects a template table and nothing else.</b> The scanner, the re-emitting verifier and the
-/// emitter each ask it which table a blob is judged against; no executor asks it which arm to run,
-/// because an instance of a wide artifact is always run by the engine and an instance of a numeric one
-/// never is.
+/// <b>It selects a template table, a partition and an entry.</b> The scanner, the re-emitting verifier
+/// and the emitter each ask it which table and which partition a blob is judged against, and the
+/// executor asks it only which of the engine's two native entries a wide instance runs.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=2E4C4B
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4C0956
 // Broiler-Human:        PENDING
 public enum JsNativeTier : byte
 {
@@ -43,6 +44,12 @@ public enum JsNativeTier : byte
 
     /// <summary>The wide manifest's baseline form: values stay in managed memory, reached only by handlers.</summary>
     Baseline = 1,
+
+    /// <summary>
+    /// The wide manifest's value form: values are NaN-boxed words in a pinned slab, and a helper per
+    /// instruction runs the interpreter's arm over their decoding (JSD-0035).
+    /// </summary>
+    Value = 2,
 }
 
 /// <summary>

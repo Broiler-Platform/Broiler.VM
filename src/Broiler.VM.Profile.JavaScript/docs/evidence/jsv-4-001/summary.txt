@@ -1,0 +1,33 @@
+# What bundle jsv-4-001's measurement found, and nothing else.
+#
+# Q is the median over the retained repetitions of (run_ms - check_ms), in milliseconds.
+# N = |Q(V) - Q(V-again)|, one observation of the noise floor rather than an estimate.
+# D = Q(B) - Q(V); positive means the value form is faster. E = Q(B) - Q(B-control).
+# The verdict is computed ONLY from the fenced block of src/Broiler.VM.Profile.JavaScript/docs/evidence/jsv-4-001/decision-rule.md (sha256 106ae8e5c56368d49114873f9af99d02e00e0a32eae663373ddaa5f5c6ad5aa1).
+#
+# repetitions retained 7, warm-up 3
+# clause 2: ceil(1/2 * shapes) = 5 of 10 shapes, ratio 0.9; clause 3: 1.25 * Q(B) + N; clause 4: 0.03 * Q(B-control)
+
+shape            Q(B-control)       Q(B)       Q(V) Q(V-again)       Q(L)         N          D    V/B         E  resolution
+array-loop.js          4212.4     4075.8     6910.9     6818.3     5307.9      92.6    -2835.1  1.696    -136.6  slower, beyond the floor
+call-loop.js           4737.9     4673.7     6374.8     6371.7     7173.7       3.2    -1701.2  1.364     -64.2  slower, beyond the floor
+closure-loop.js        4685.1     4689.9     6921.7     6869.2     6879.1      52.5    -2231.8  1.476       4.8  slower, beyond the floor
+fib.js                 4986.3     4922.6     5074.6     5138.1     8409.1      63.5     -152.0  1.031     -63.7  slower, beyond the floor
+generator-loop.js       4797.8     4922.7     6461.1     6504.3     7171.4      43.2    -1538.3  1.312     124.9  slower, beyond the floor
+numeric-loop.js        4324.1     4280.6     5524.7     5408.4     5681.1     116.3    -1244.1  1.291     -43.5  slower, beyond the floor
+property-loop.js       5436.9     5612.5     9605.8     9715.5     6644.2     109.7    -3993.3  1.712     175.6  slower, beyond the floor
+string-loop.js         4048.6     4429.1     6710.4     6703.4     5515.8       7.0    -2281.3  1.515     380.5  slower, beyond the floor
+throw-loop.js         17580.3    15716.5    15953.4    15890.2    25953.8      63.2     -236.9  1.015   -1863.8  slower, beyond the floor
+try-loop.js            4410.0     4478.3     5976.7     6023.5     5982.8      46.8    -1498.4  1.335      68.4  slower, beyond the floor
+
+## the rule, clause by clause
+        clauses 1 and 5 are not computed here. Each is enforced by stopping - a
+        condition that fails, or a child whose effective-configuration line differs
+        from the first recorded, ends the run before this file is written - so a
+        summary that carries figures is what those two clauses assert.
+        every timed child reported runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
+NOT MET 2 value, at least 5 shapes clear the floor and the ratio: 0 of 10: none
+NOT MET 3 value, every shape within 1.25 * Q(B) + N: past it on: array-loop.js, call-loop.js, closure-loop.js, generator-loop.js, numeric-loop.js, property-loop.js, string-loop.js, try-loop.js
+NOT MET 4 bytecode, every shape within 0.03 * Q(B-control): moved on: array-loop.js, property-loop.js, string-loop.js, throw-loop.js
+
+VERDICT: REFUSE the value form, by the rule above and by nothing else.

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   44
-// Annotated:        44/44
+// Relevant units:   46
+// Annotated:        46/46
 // Exempt:           30
-// Human-reviewed:   0/44
-// IP risk:          None
+// Human-reviewed:   0/46
+// IP risk:          Low
 // Security risk:    High
-// Criteria:         17/15
+// Criteria:         19/17
 // Resource impact:  2/10 max
-// Unverified:       44
+// Unverified:       46
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -359,13 +359,66 @@ public static class JsBaselineBlocks
     /// <param name="handlerOffsets">The handler offsets of the unit's exception regions.</param>
     /// <param name="plan">The plan, when the answer is <see langword="true"/>.</param>
     /// <param name="refusal">Why there is no plan, when the answer is <see langword="false"/>.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=37D79E
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=D47050
     // Broiler-Falsified-If: a plan it answers omits the unit's entry, a handler offset it was given, the successor of a Yield, Await or EnterBody or a YieldDelegate from its landings, names a head that is not an instruction start of the unit, gives a head a last instruction other than the first after which StopsAfter holds on its linear walk, or it answers differently for the same image, unit and handler offsets
     // Broiler-Human:        PENDING
     public static bool TryPlan(
         JsNativeProgramImage image,
         int unitIndex,
         System.ReadOnlySpan<uint> handlerOffsets,
+        out JsBaselineUnitPlan plan,
+        out string refusal) =>
+        Plan(image, unitIndex, handlerOffsets, eachInstruction: false, out plan, out refusal);
+
+    /// <summary>
+    /// The plan of one code unit in the value form's partition, in which every instruction is a block of
+    /// its own - or a refusal that says why the unit has none.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>IT IS <see cref="TryPlan"/> WITH EVERY INSTRUCTION A HEAD AND EVERY INSTRUCTION A STOP</b>, so the
+    /// landings, the refusals and their order, the tails and the layout grammar are that method's, and a
+    /// value-form unit calls one helper per instruction and follows its answer exactly as a baseline unit
+    /// follows a block's (JSD-0035 section 5, stage JSV-1). Every tail therefore compares the one
+    /// instruction's own successors: its code target when it has one, then the instruction after it.
+    /// </para>
+    /// <para>
+    /// <b>A helper runs one instruction, so no stop rule is asked while it runs</b>, and nothing in the
+    /// engine reads this partition: the helper's step is a per-opcode instantiation, which stops after
+    /// its one instruction by construction.
+    /// </para>
+    /// </remarks>
+    /// <param name="image">The program the unit belongs to.</param>
+    /// <param name="unitIndex">Which code unit of <paramref name="image"/> to plan.</param>
+    /// <param name="handlerOffsets">The handler offsets of the unit's exception regions.</param>
+    /// <param name="plan">The plan, when the answer is <see langword="true"/>.</param>
+    /// <param name="refusal">Why there is no plan, when the answer is <see langword="false"/>.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=580104
+    // Broiler-Falsified-If: a plan it answers has a block that is not exactly one instruction, omits an instruction of the unit from its heads, or has landings, tails or refusals other than TryPlan's for the same image, unit and handler offsets
+    // Broiler-Human:        PENDING
+    public static bool TryPlanEachInstruction(
+        JsNativeProgramImage image,
+        int unitIndex,
+        System.ReadOnlySpan<uint> handlerOffsets,
+        out JsBaselineUnitPlan plan,
+        out string refusal) =>
+        Plan(image, unitIndex, handlerOffsets, eachInstruction: true, out plan, out refusal);
+
+    /// <summary>The one planning walk both partitions are made by.</summary>
+    /// <param name="image">The program the unit belongs to.</param>
+    /// <param name="unitIndex">Which code unit of <paramref name="image"/> to plan.</param>
+    /// <param name="handlerOffsets">The handler offsets of the unit's exception regions.</param>
+    /// <param name="eachInstruction">Whether every instruction is a head and ends its block.</param>
+    /// <param name="plan">The plan, when the answer is <see langword="true"/>.</param>
+    /// <param name="refusal">Why there is no plan, when the answer is <see langword="false"/>.</param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=358E53
+    // Broiler-Falsified-If: with eachInstruction false it answers differently from the baseline partition TryPlan documents, or with it true some block is longer than one instruction
+    // Broiler-Human:        PENDING
+    private static bool Plan(
+        JsNativeProgramImage image,
+        int unitIndex,
+        System.ReadOnlySpan<uint> handlerOffsets,
+        bool eachInstruction,
         out JsBaselineUnitPlan plan,
         out string refusal)
     {
@@ -500,7 +553,7 @@ public static class JsBaselineBlocks
                 headCount += MarkHead(marks, (int)(target - first));
             }
 
-            if (RunsAlone(opcode))
+            if (eachInstruction || RunsAlone(opcode))
             {
                 headCount += MarkHead(marks, index);
             }
@@ -531,7 +584,7 @@ public static class JsBaselineBlocks
                     at, opcode, at, false, JsBaselineBlock.NoTarget, following, JsBaselineTail.Leave);
             }
 
-            if (StopsAfter(code, at, following, unitEnd))
+            if (eachInstruction || StopsAfter(code, at, following, unitEnd))
             {
                 for (; pending < laid; pending++)
                 {

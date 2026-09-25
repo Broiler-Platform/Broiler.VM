@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 200 |
-| Files carrying an annotation | 200 |
-| Code units | 7937 |
-| Relevant | 4505 |
-| Exempt by predicate | 3432 |
-| Annotated | 4505 of 4505 (100%) |
-| Human reviewed | 0 of 4505 (0%) |
-| Unverified | 4505 |
+| Files scanned | 211 |
+| Files carrying an annotation | 211 |
+| Code units | 8814 |
+| Relevant | 5190 |
+| Exempt by predicate | 3624 |
+| Annotated | 5190 of 5190 (100%) |
+| Human reviewed | 0 of 5190 (0%) |
+| Unverified | 5190 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 4505 |
+| HUMAN_PENDING | 5190 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 3432 |
+| EXEMPT | 3624 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1538 |
-| Low | 4083 |
+| Low | 4792 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,10 +50,10 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 7 |
-| Low | 730 |
-| Medium | 3952 |
-| High | 904 |
-| Critical | 109 |
+| Low | 748 |
+| Medium | 4026 |
+| High | 1424 |
+| Critical | 206 |
 | *not annotated* | 0 |
 
 ## Resource impact
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 9 / 10 |
 | Average over annotated units | 1.9 / 10 |
-| Units scored | 4505 |
+| Units scored | 5190 |
 
 ## High-security review areas
 
@@ -216,6 +216,10 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter.TryEmit(JsNativeProgramImage, JsX64Abi, uint, out byte[], out JsNativeSymbolRow[], out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64BaselineEmitter.EmitUnit(JsX64Assembler, JsNativeProgramImage, int, System.ReadOnlySpan<uint>, JsX64Abi, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64BaselineEmitter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueEmitter` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64ValueEmitter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueEmitter.TryEmit(JsNativeProgramImage, JsX64Abi, uint, out byte[], out JsNativeSymbolRow[], out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64ValueEmitter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueEmitter.EmitUnit(JsX64Assembler, JsNativeProgramImage, int, System.ReadOnlySpan<uint>, JsX64Abi, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64ValueEmitter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueEmitter.Encode(JsX64Assembler, JsX64Abi, JsValueInstruction)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64ValueEmitter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64ValueKind` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Walk` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsX64Walk.TryResolveSlot(int, int, int, out int, out string)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Walk.cs` - Security=High, human line PENDING
@@ -319,6 +323,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.StopsAfter(byte[], int, int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.GroupHandlerOffsets(JsNativeProgramImage)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.TryPlan(JsNativeProgramImage, int, System.ReadOnlySpan<uint>, out JsBaselineUnitPlan, out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.TryPlanEachInstruction(JsNativeProgramImage, int, System.ReadOnlySpan<uint>, out JsBaselineUnitPlan, out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Plan(JsNativeProgramImage, int, System.ReadOnlySpan<uint>, bool, out JsBaselineUnitPlan, out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.LayoutLength(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Layout(JsBaselineUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsBaselineBlocks.Lay<TSink>(JsBaselineUnitPlan, ref TSink)` in `src/Broiler.VM.Profile.JavaScript.Format/JsBaselineBlocks.cs` - Security=High, human line PENDING
@@ -339,27 +345,105 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeValues` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeValues.UninitialisedBits` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeProgramImage.Tier` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeProgramImage.ResidentBindings` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeAbiProbe` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeAbiProbeLayout` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeEmitter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeFrame` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeFrame.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, byte[], JsNativeSymbolRow[], uint, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.Scan(JsNativeArchitecture, JsNativeTier, byte[], JsNativeSymbolRow[], uint, JsNativeProgramImage?, System.Collections.Generic.ICollection<string>?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.ValueLayout(JsNativeTemplate[], byte[], JsNativeSymbolRow[], JsNativeProgramImage?, System.Collections.Generic.List<(uint At, int Index)>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.ValueRefusal(JsValueInstruction, int, uint, string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.OwnedBy(JsNativeSymbolRow[], JsNativeProgramImage?)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BlockLayout(JsNativeTemplate[], byte[], JsNativeSymbolRow[], JsNativeProgramImage?, System.Collections.Generic.List<(uint At, int Index)>, int[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BaselineTemplateIndices(JsNativeTemplate[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.BaselineTemplateNames` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison.Take(int, JsBaselineInstruction)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.LayoutComparison.Refusal(int, uint)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameShape(System.Collections.Generic.List<(uint At, int Index)>, int, int, uint, int, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameShape(System.Collections.Generic.List<(uint At, int Index)>, int, int, int, int, uint, int, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeScan.FrameTargets(System.Collections.Generic.List<Branch>, System.Collections.Generic.HashSet<uint>)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.For(JsNativeArchitecture, JsNativeTier)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.IsX64Baseline(JsNativeTemplate[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.IsX64Value(JsNativeTemplate[])` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.Admits(JsNativeFieldKind, long)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.windowsBaseline` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.systemVBaseline` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.windowsValue` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.systemVValue` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.X64Value(JsNativeArchitecture)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Format.JsNativeTemplates.X64Baseline(JsNativeArchitecture)` in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueFrame` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.HelpersOffset` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.CookieOffset` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.RegionOffset` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.DebtOffset` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.FrameSize` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.EntryOffset` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.EntryPcOffset` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.HelperSlots` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.SettleSlot` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.PrepareSlot` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.FinishSlot` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.DirectCall` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.Returned` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.CalleeOffset(JsNativeArchitecture)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueAbi.FrameBytes(JsNativeArchitecture)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader.Pack(JsNativeArchitecture, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsNativeCodeHeader.TryUnpack(uint, out JsNativeArchitecture, out bool, out bool)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueFrame.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueInline` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.StackBase` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.Suspends` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.HeightAt(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.DepthAt(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.InlineAt(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.ResidentBaseOf(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.ResidentSlotsOf(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueUnitPlan.OperandAt(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.DebtThreshold` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.CeilingRegionWords` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Names` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.IsSuspension(JsOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.TemplateName(JsValueTemplate)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.TryPlan(JsNativeProgramImage, int, System.ReadOnlySpan<uint>, bool, out JsValueUnitPlan, out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Layout(JsValueUnitPlan)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Walk(JsNativeProgramImage, int, int, int, int[], int[], out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Seed(int, int, int, int, int[], int[], System.Collections.Generic.Stack<int>, out string)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Decide(JsNativeProgramImage, JsOpcode, uint, int, int[], int[], int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Build()` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Finish()` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Helper(JsBaselineBlock, bool, bool)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.DirectCall(JsBaselineBlock)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Tail(JsBaselineBlock, bool)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Slow(JsBaselineBlock, ref int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.DebtTest(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Settlement(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Transfer(int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Inline(JsBaselineBlock)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Branch(JsBaselineBlock, int, ref int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.OneNumber(JsBaselineBlock, int, ref int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.TwoNumbers(JsBaselineBlock, int, ref int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Compare(JsOpcode, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Slot(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Tree(System.ReadOnlySpan<int>, int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.Guard(JsValueTemplate, int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsValueLayout.Builder.LabelOf(int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsValueLayout.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.FirstTag` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.Empty` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.CanonicalNaN` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.NaNTagReach` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.IsNumber(ulong)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.IsHandle(ulong)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.FromNumber(double)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.Handle(ushort, ushort, uint)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JsWord.Header(int, int)` in `src/Broiler.VM.Profile.JavaScript.Format/JsWord.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptReadAdapter` in `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptInstance` in `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptContinuation` in `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` - Security=High, human line PENDING
@@ -376,7 +460,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorAdmitting(params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorReEmittingWith(Format.IJsNativeEmitter, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorHostingRealms(IJsHostSurface, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Build(ImmutableArray<string>, Format.IJsNativeEmitter?, IJsHostSurface?)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorUnderHandleStress(IJsHostSurface?, params VmFeatureManifestId[])` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Build(ImmutableArray<string>, Format.IJsNativeEmitter?, IJsHostSurface?, bool)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Defaults()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Matrix()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptValue.ToInt32()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs` - Security=High, human line PENDING
@@ -637,9 +722,20 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsFinalizationRegistryObject` in `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.RunNative(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.ValueStack` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.ValueHandles` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.RunValue(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.Returned(JsNativeActivation, long)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.OpenValue(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.CloseValue(JsNativeActivation)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.Frame(JsNativeActivation, JsValueFrame*)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.TryDirectCallee(JsNativeActivation, int, out JsScriptFunction)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.BeginDirectCall(JsNativeActivation, int, int, JsScriptFunction, JsValueFrame*)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.EndDirectCall(JsNativeActivation)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.NativePageOf(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.RequireInstanceForm(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.nativeForm` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.valueForm` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.DrainJobs()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.StepOneJob(out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.DropPendingJobs()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
@@ -663,6 +759,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsEngine.StackBackstopReached()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ChargeText(int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ChargeHostCrossing(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.ChargeDebt(long)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.RetainOrAbort(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ToNumberFromText(string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ToNumeric(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
@@ -673,6 +770,10 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsEngine.NumberToBigInt(double)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ToElementValue(JsElementKind, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.BigIntToNumber(JsBigInt)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.EnterCall()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.DirectCallCharge` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.EnterDepth()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.LeaveCall()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.instanced` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.RunModuleGraph(JsProgram, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.TemplateObject(JsProgram, int, JsValue[], int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
@@ -697,6 +798,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResumeAsyncGenerator(JsAsyncGenerator, JsResumeMode, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.Execute(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?, string?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ExecuteCore<TMode>(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?, JsNativeActivation?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.Land(System.Collections.Generic.List<JsEnvironment>, JsValue[], ref int, ref int, JsRegion, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.TryLand(JsNativeActivation, int, System.Exception)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.Delegate(JsFrame, JsValue[], ref int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.DelegateAsync(JsFrame, JsValue[], ref int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResolveName(System.Collections.Generic.List<JsEnvironment>, int, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
@@ -735,6 +838,19 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsGenerator` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsAsyncCall` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsAsyncGenerator` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Free` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Live` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Permanent` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Retired` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.JsHandleTable(IJsWordRoots, bool, int)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.HandleFor(object, ushort, bool)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.TryResolve(ulong, out object?)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Safepoint()` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Compact()` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.MarkRoot(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Allocate()` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsHandleTable.Release(int)` in `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostObject` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostObject.TryGetOwnProperty(string, out JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsHostObject.SetOwnProperty(string, JsProperty)` in `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` - Security=High, human line PENDING
@@ -805,11 +921,22 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Sp` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Pc` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Exited` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.Segment` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.SlabFrame` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.Plan` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.Landed` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Pending` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.Caller` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Current` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeActivation.Step<TMode>(JsBaselineFrame*, int, JsOpcode)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.StepValue<TMode>(JsValueFrame*, int, JsOpcode)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.SettleValue(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.PrepareCall<TMode>(JsValueFrame*, int, JsValueFrame*)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.FinishCall(JsValueFrame*, int, JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeActivation.RaiseAt(JsNativeActivation, int, int, int, System.Exception)` in `src/Broiler.VM.Profile.JavaScript/JsNativeActivation.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.OperandSlabSlots` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsNativeInstance.OutgoingArgumentHeadroom` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.FuelPerInvocation` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.JsNativeInstance(JsProgram, IVmExecutionEnvironment, JsNativePage, double[], double[], double[], long[])` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeInstance.Operands` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=Critical, human line PENDING
@@ -826,6 +953,9 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.Render(double)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsNativeExecution.TypeOf(double)` in `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsMappedArguments` in `src/Broiler.VM.Profile.JavaScript/JsObject.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsProgram.NativeValueImage` in `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsProgram.ValuePlan(int)` in `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsProgram.NativeValueForm` in `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsProgram.NativePage` in `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.GetAsyncIterator(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.BigIntWrap(JsEngine, JsValue[], bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.BigInt.cs` - Security=High, human line PENDING
@@ -867,6 +997,462 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsRealm.NewHostPromise(JsEngine)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.AwaitOn(JsEngine, JsValue, System.Action<JsEngine, JsValue, bool>)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.NormalizeText(JsEngine, string, bool, bool)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Table` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.JsValueHelpers()` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Sound(nint[], nint)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Settle(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Prepare(JsValueFrame*, int, JsValueFrame*)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Finish(JsValueFrame*, int, JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Undefined(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Nop(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadUndefined(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadNull(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadTrue(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadFalse(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadConstant(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadThis(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.NewArguments(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadNewTarget(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadArgument(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.RestArguments(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadScoped(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.StoreScoped(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.InitialiseScoped(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadGlobal(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.StoreGlobal(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadGlobalOrUndefined(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.PushScope(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.PopScope(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.CopyScope(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DeclareGlobal(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.PushObjectScope(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ResolveName(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.NewObject(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.NewArray(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.GetProperty(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.SetProperty(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.GetIndex(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.SetIndex(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DefineField(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DefineIndexed(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DeleteProperty(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DeleteIndex(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DefineGetter(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DefineSetter(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DefineMethod(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadSuperProperty(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.StoreSuperProperty(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArrayAppend(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Closure(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Call(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Construct(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Return(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ReturnUndefined(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.CallEval(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.SuperCall(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.SuperCallForwarded(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.NewClass(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArrayHoles(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.SpreadArray(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.SpreadObject(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.CallSpread(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ConstructSpread(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.SuperCallSpread(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.SetPrototypeLiteral(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Add(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Subtract(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Multiply(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Divide(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Remainder(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Exponent(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Negate(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ToNumber(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Not(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.BitwiseNot(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LessThan(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LessThanOrEqual(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.GreaterThan(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.GreaterThanOrEqual(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.StrictEquals(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.StrictNotEquals(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LooseEquals(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LooseNotEquals(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.BitwiseOr(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.BitwiseAnd(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.BitwiseXor(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ShiftLeft(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ShiftRight(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ShiftRightUnsigned(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.TypeOf(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.InstanceOf(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.In(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Void(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.RequireCoercible(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ToPropertyKey(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.GetTemplateObject(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Jump(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.JumpIfFalse(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.JumpIfTrue(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Throw(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ForInStart(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ForInNext(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.IterateStart(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.IterateNext(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.IterateRest(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.IterateClose(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Yield(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.YieldDelegate(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Await(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadImport(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ThrowImmutable(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DefineClassElement(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Pop(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Duplicate(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DuplicateTwo(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Swap(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Pick(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.NewPrivateName(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadPrivate(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.StorePrivate(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.HasPrivate(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.RunStaticElements(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.IterateStartAsync(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.IterateNextAsync(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.IterateAwaitStep(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.IterateCloseAsync(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.IterateCloseCheck(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DeclareGlobalLet(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DeclareGlobalConst(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.InitialiseGlobalLexical(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DeleteGlobalBinding(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.EnterBody(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ImportCall(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ImportMeta(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.CallEvalSpread(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadEvalName(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadEvalNameOrUndefined(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.StoreEvalName(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadEvalNameWithBase(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DeleteEvalName(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.WithBaseObject(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.StoreEvalVariable(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DisposeScope(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DisposeAdd(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DisposeFold(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DisposeStep(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.DisposeEnd(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ToNumeric(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Increment(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.Decrement(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNop` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNop.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadUndefined` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadUndefined.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadNull` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadNull.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadTrue` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadTrue.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadFalse` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadFalse.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadConstant` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadConstant.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadThis` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadThis.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNewArguments` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNewArguments.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadNewTarget` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadNewTarget.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadArgument` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadArgument.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmRestArguments` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmRestArguments.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadScoped` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadScoped.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStoreScoped` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStoreScoped.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmInitialiseScoped` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmInitialiseScoped.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadGlobal` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadGlobal.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStoreGlobal` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStoreGlobal.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadGlobalOrUndefined` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadGlobalOrUndefined.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmPushScope` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmPushScope.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmPopScope` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmPopScope.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmCopyScope` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmCopyScope.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeclareGlobal` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeclareGlobal.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmPushObjectScope` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmPushObjectScope.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmResolveName` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmResolveName.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNewObject` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNewObject.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNewArray` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNewArray.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetProperty` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetProperty.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSetProperty` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSetProperty.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetIndex` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetIndex.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSetIndex` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSetIndex.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineField` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineField.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineIndexed` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineIndexed.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeleteProperty` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeleteProperty.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeleteIndex` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeleteIndex.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineGetter` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineGetter.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineSetter` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineSetter.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineMethod` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineMethod.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadSuperProperty` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadSuperProperty.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStoreSuperProperty` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStoreSuperProperty.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmArrayAppend` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmArrayAppend.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmClosure` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmClosure.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmCall` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmCall.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmConstruct` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmConstruct.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmReturn` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmReturn.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmReturnUndefined` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmReturnUndefined.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmCallEval` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmCallEval.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSuperCall` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSuperCall.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSuperCallForwarded` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSuperCallForwarded.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNewClass` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNewClass.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmArrayHoles` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmArrayHoles.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSpreadArray` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSpreadArray.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSpreadObject` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSpreadObject.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmCallSpread` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmCallSpread.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmConstructSpread` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmConstructSpread.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSuperCallSpread` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSuperCallSpread.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSetPrototypeLiteral` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSetPrototypeLiteral.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmAdd` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmAdd.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSubtract` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSubtract.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmMultiply` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmMultiply.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDivide` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDivide.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmRemainder` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmRemainder.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmExponent` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmExponent.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNegate` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNegate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmToNumber` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmToNumber.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNot` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNot.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmBitwiseNot` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmBitwiseNot.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLessThan` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLessThan.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLessThanOrEqual` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLessThanOrEqual.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGreaterThan` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGreaterThan.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGreaterThanOrEqual` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGreaterThanOrEqual.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStrictEquals` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStrictEquals.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStrictNotEquals` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStrictNotEquals.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLooseEquals` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLooseEquals.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLooseNotEquals` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLooseNotEquals.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmBitwiseOr` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmBitwiseOr.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmBitwiseAnd` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmBitwiseAnd.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmBitwiseXor` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmBitwiseXor.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmShiftLeft` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmShiftLeft.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmShiftRight` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmShiftRight.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmShiftRightUnsigned` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmShiftRightUnsigned.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmTypeOf` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmTypeOf.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmInstanceOf` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmInstanceOf.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIn` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIn.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmVoid` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmVoid.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmRequireCoercible` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmRequireCoercible.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmToPropertyKey` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmToPropertyKey.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetTemplateObject` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetTemplateObject.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmJump` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmJump.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmJumpIfFalse` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmJumpIfFalse.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmJumpIfTrue` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmJumpIfTrue.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmThrow` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmThrow.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmForInStart` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmForInStart.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmForInNext` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmForInNext.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateStart` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateStart.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateNext` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateNext.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateRest` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateRest.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateClose` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateClose.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmYield` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmYield.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmYieldDelegate` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmYieldDelegate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmAwait` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmAwait.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadImport` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadImport.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmThrowImmutable` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmThrowImmutable.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineClassElement` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDefineClassElement.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmPop` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmPop.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDuplicate` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDuplicate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDuplicateTwo` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDuplicateTwo.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSwap` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSwap.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmPick` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmPick.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNewPrivateName` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNewPrivateName.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadPrivate` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadPrivate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStorePrivate` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStorePrivate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmHasPrivate` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmHasPrivate.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmRunStaticElements` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmRunStaticElements.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateStartAsync` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateStartAsync.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateNextAsync` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateNextAsync.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateAwaitStep` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateAwaitStep.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateCloseAsync` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateCloseAsync.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateCloseCheck` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIterateCloseCheck.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeclareGlobalLet` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeclareGlobalLet.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeclareGlobalConst` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeclareGlobalConst.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmInitialiseGlobalLexical` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmInitialiseGlobalLexical.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeleteGlobalBinding` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeleteGlobalBinding.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmEnterBody` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmEnterBody.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmImportCall` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmImportCall.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmImportMeta` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmImportMeta.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmCallEvalSpread` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmCallEvalSpread.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadEvalName` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadEvalName.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadEvalNameOrUndefined` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadEvalNameOrUndefined.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStoreEvalName` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStoreEvalName.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadEvalNameWithBase` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadEvalNameWithBase.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeleteEvalName` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDeleteEvalName.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmWithBaseObject` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmWithBaseObject.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStoreEvalVariable` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmStoreEvalVariable.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDisposeScope` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDisposeScope.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDisposeAdd` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDisposeAdd.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDisposeFold` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDisposeFold.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDisposeStep` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDisposeStep.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDisposeEnd` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDisposeEnd.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmToNumeric` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmToNumeric.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIncrement` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmIncrement.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDecrement` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDecrement.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.Headroom` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.TryPushFrame(int, out int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.Publish(int, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.PopFrame(int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.Scan(JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueSlab.HeaderAt(int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.IJsWordRoots` in `src/Broiler.VM.Profile.JavaScript/JsValueStack.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.IJsWordRoots.Scan(JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsValueStack.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueStack` in `src/Broiler.VM.Profile.JavaScript/JsValueStack.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueStack.MaximumWords` in `src/Broiler.VM.Profile.JavaScript/JsValueStack.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueStack.TryPush(int, out JsValueSlab, out int)` in `src/Broiler.VM.Profile.JavaScript/JsValueStack.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueStack.Pop(JsValueSlab, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueStack.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueStack.Scan(JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsValueStack.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Open(JsNativeActivation, JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Enter(JsNativeActivation, int, out int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Leave(JsNativeActivation, int, int, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Suspend(JsNativeActivation, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Returned(JsNativeActivation)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.ReadDepth(byte[], int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Depth(JsOpcode, uint, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Pops(byte[], int)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.FixedPops` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.FixedReads` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.BuildFixed(bool)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Pops(JsOpcode, uint)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueWindows.Operand(byte[], int, JsOpcode)` in `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadManifest(in VmArtifactDescriptor, ref VmBoundedReader, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadBigInt(ref VmBoundedReader, Sections, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReadNativeCode(ref VmBoundedReader, ulong, Sections)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
@@ -881,10 +1467,41 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsVerifier.NativeImage(Sections, JsNativeTier)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.ReEmit(Sections, byte[], JsNativeSymbolRow[], IJsNativeEmitter?, JsNativeProgramImage)` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsVerifier.LinkModules(Sections, JsCodeUnit[], IVmVerificationContext, JavaScriptReadAdapter, out JsModuleRecord[], out JsBinding[])` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsVerifier.Sections.NativeValueForm` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsVerifier.Sections.NativeResidentBindings` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsVerifier.Sections.NativeValueImage` in `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.Fuzz(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryTagPrefixHasExactlyOneClass()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.TheHardwareNaNsAreNumbers()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryNaNPayloadEncodesCanonically()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryKindRoundTrips()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.OneObjectHasOneWord()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.WordsThatNameNoValueAreRefused()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AWrappingSlotIsRetired()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.PermanentAndNurseryEntriesSurvive()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AnAllocationCompactionKeepsTheNursery()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.OnlyPublishedWordsAreRoots()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.HandleStressRefusesAnUnrootedWord()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AReleasedLiveWordStopsTheScan()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.AMalformedFrameChainStopsTheScan()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FramesCloseInOrderAndRefuseToOverflow()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.TheValueStackOpensASegmentAndScansEveryOne()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.TheValueStackClosesFramesInCallOrder()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.EveryHelperWindowIsTheVerifiersCount()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel.Run(int)` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel.CheckLive(int)` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordChecks.FuzzModel.CheckDropped()` in `src/Broiler.VM.Profile.JavaScript/JsWordChecks.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordCodec` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.Encode(in JsValue, JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.TryDecode(ulong, JsHandleTable, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.Decode(ulong, JsHandleTable)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsWordCodec.TryDecodeSpecial(ulong, out JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsWordCodec.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.ProtReadWrite` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.ProtReadExecute` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.MapPrivateAnonymous` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.MachineCode.VmNativePage.MapPrivateAnonymousBsd` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.MapFailed` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.MapUnix(nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.MachineCode.VmNativePage.ArmUnix(byte*, nuint)` in `src/Broiler.VM.Profile.MachineCode/VmNativePage.Unix.cs` - Security=Critical, human line PENDING
@@ -1084,8 +1701,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1090 |
-| Units required to carry one | 1013 |
+| Units carrying a criterion | 1714 |
+| Units required to carry one | 1630 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1112,14 +1729,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1044 |
-| ParameterAssigningConstructor | 113 |
+| TrivialPropertyOrAccessor | 1064 |
+| ParameterAssigningConstructor | 114 |
 | TrivialExpressionBodiedMember | 53 |
-| CompilerSuppliedRecordOrEnumMember | 10 |
+| CompilerSuppliedRecordOrEnumMember | 15 |
 | DelegatingOverrideOrOperator | 106 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 633 |
-| EnumMemberOfADeclaredVocabulary | 1442 |
+| FieldDeclaringStorage | 687 |
+| EnumMemberOfADeclaredVocabulary | 1554 |
 | DeclaredInSource | 31 |
 
 ## Per-unit exemptions
@@ -1169,7 +1786,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-7937 of them, exempt and relevant alike - with the fingerprint of its declaration.
+8814 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -1177,7 +1794,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 200 of them - with a
+Beside the units it lists **every covered file** - 211 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

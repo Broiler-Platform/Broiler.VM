@@ -124,7 +124,7 @@ internal sealed class SourceProvider(JsCompileRequest compileRequest) : IVmArtif
     private VmArtifactProviderAnswer Unanswered(
         IReadOnlyList<JsScriptUnit> scripts, IReadOnlyList<JsModuleUnit> modules)
     {
-        if (compileRequest.Form == JsOutputForm.Native)
+        if (compileRequest.Form is JsOutputForm.Native or JsOutputForm.Value or JsOutputForm.ValueFlat)
         {
             var bytecode = JsCompiler.Compile(
                 scripts, modules, compileRequest with { Form = JsOutputForm.Bytecode, Backend = string.Empty });

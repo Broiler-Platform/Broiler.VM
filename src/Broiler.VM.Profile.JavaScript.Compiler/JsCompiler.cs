@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   228
 // Annotated:        228/228
-// Exempt:           119
+// Exempt:           121
 // Human-reviewed:   0/228
 // IP risk:          Low
 // Security risk:    High
@@ -157,7 +157,7 @@ public enum JsFeatureManifest
 /// byte, and a form that maps executable memory is something a caller has to ask for by name.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9CB116
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=62A179
 // Broiler-Human:        PENDING
 public enum JsOutputForm
 {
@@ -172,6 +172,23 @@ public enum JsOutputForm
     /// re-emission-equality verification both read it, and neither is an execution path.
     /// </remarks>
     Native = 1,
+
+    /// <summary>
+    /// Machine code beside the bytecode in the wide manifest's value form, emitted for one x86-64
+    /// convention by one named backend (JSD-0035).
+    /// </summary>
+    /// <remarks>
+    /// It is a form of its own and not an option of <see cref="Native"/>, because it is fixed when the
+    /// artifact is compiled and recorded in the artifact, exactly as the other two are: nothing chooses
+    /// it from a run.
+    /// </remarks>
+    Value = 2,
+
+    /// <summary>
+    /// The value form with every binding left in its managed environment: the control JSD-0035 names for
+    /// its residency analysis, recorded in the artifact's form byte so the verifier re-plans it that way.
+    /// </summary>
+    ValueFlat = 3,
 }
 
 /// <summary>What a caller asks a compilation for beside its sources.</summary>
@@ -940,7 +957,7 @@ public sealed class JsCompiler
 
     // ---- assembly ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9DC23A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=21F757
     // Broiler-Human:        PENDING
     private byte[] Assemble()
     {
@@ -1103,7 +1120,7 @@ public sealed class JsCompiler
 
         JsNativeEmission? emission = null;
 
-        if (request.Form == JsOutputForm.Native && diagnostics.Count == 0)
+        if (request.Form is JsOutputForm.Native or JsOutputForm.Value or JsOutputForm.ValueFlat && diagnostics.Count == 0)
         {
             emission = Emit(assembled);
         }
@@ -1197,7 +1214,7 @@ public sealed class JsCompiler
             sections.Add(new JavaScriptArtifactWriter.Section(
                 (JavaScriptFormat.SectionKind)JsFormat.SectionKind.NativeCode,
                 JsArtifactWriter.NativeCode(
-                    (uint)emission.Architecture,
+                    JsNativeCodeHeader.Pack(emission.Architecture, emission.ValueForm, emission.ResidentBindings),
                     emission.BackendSemanticVersion,
                     emission.CodeAlignment,
                     emission.Code)));
@@ -1347,7 +1364,7 @@ public sealed class JsCompiler
     /// names a construct rather than a stage.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5AAE40
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6F05A5
     // Broiler-Human:        PENDING
     private JsNativeEmission? Emit(JsAssembledProgram assembled)
     {
@@ -1363,6 +1380,19 @@ public sealed class JsCompiler
             return null;
         }
 
+        // THE VALUE FORM IS THE WIDE MANIFEST'S ALONE (JSD-0035 section 1), and asking for it under the
+        // numeric manifest is asking for something this profile does not define there.
+        if (request.Form is JsOutputForm.Value or JsOutputForm.ValueFlat && request.Manifest != JsFeatureManifest.Wide)
+        {
+            Refuse(
+                default,
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "the value output form is admitted by the `" + JsFormat.ManifestId + "` feature " +
+                "manifest alone");
+
+            return null;
+        }
+
         if (!JsNativeBackends.TryFind(request.Backend, out var backend))
         {
             Refuse(
@@ -1374,7 +1404,14 @@ public sealed class JsCompiler
             return null;
         }
 
-        if (!backend.TryEmit(assembled, out var emission, out var refusal))
+        if (!backend.TryEmit(
+                assembled with
+                {
+                    ValueForm = request.Form is JsOutputForm.Value or JsOutputForm.ValueFlat,
+                    ResidentBindings = request.Form != JsOutputForm.ValueFlat,
+                },
+                out var emission,
+                out var refusal))
         {
             Refuse(default, SliceSourceDiagnosticCode.ConstructOutsideManifest, refusal);
             return null;

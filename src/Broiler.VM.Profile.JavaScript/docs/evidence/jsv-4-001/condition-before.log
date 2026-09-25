@@ -1,0 +1,142 @@
+# condition-before: every build and form over every shape, untimed, with --runtime
+# 2026-09-24T20:59:48Z
+condition-before   control   bytecode run   exit 0 stdout 850cebc739ddaca9c95c84b799bdf187e1030fef3ac07fc019effc67a78da6e4
+condition-before   candidate bytecode run   exit 0 stdout 850cebc739ddaca9c95c84b799bdf187e1030fef3ac07fc019effc67a78da6e4
+condition-before   candidate value    run   exit 0 stdout 850cebc739ddaca9c95c84b799bdf187e1030fef3ac07fc019effc67a78da6e4
+condition-before   candidate native   run   exit 0 stdout 850cebc739ddaca9c95c84b799bdf187e1030fef3ac07fc019effc67a78da6e4
+condition-before   control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+array-loop.js: every combination answers 850cebc739ddaca9c95c84b799bdf187e1030fef3ac07fc019effc67a78da6e4
+condition-before   control   bytecode run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-before   candidate bytecode run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-before   candidate value    run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-before   candidate native   run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-before   control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+call-loop.js: every combination answers a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-before   control   bytecode run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-before   candidate bytecode run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-before   candidate value    run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-before   candidate native   run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-before   control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+closure-loop.js: every combination answers a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-before   control   bytecode run   exit 0 stdout c57b376ca4883de409932a8847c48e75c39e0c17ffe579e7b01cae10348fc264
+condition-before   candidate bytecode run   exit 0 stdout c57b376ca4883de409932a8847c48e75c39e0c17ffe579e7b01cae10348fc264
+condition-before   candidate value    run   exit 0 stdout c57b376ca4883de409932a8847c48e75c39e0c17ffe579e7b01cae10348fc264
+condition-before   candidate native   run   exit 0 stdout c57b376ca4883de409932a8847c48e75c39e0c17ffe579e7b01cae10348fc264
+condition-before   control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+fib.js: every combination answers c57b376ca4883de409932a8847c48e75c39e0c17ffe579e7b01cae10348fc264
+condition-before   control   bytecode run   exit 0 stdout 420002158111bff8adb3347d84029e480f45e60e1869b454b6adac3345f9f7d4
+condition-before   candidate bytecode run   exit 0 stdout 420002158111bff8adb3347d84029e480f45e60e1869b454b6adac3345f9f7d4
+condition-before   candidate value    run   exit 0 stdout 420002158111bff8adb3347d84029e480f45e60e1869b454b6adac3345f9f7d4
+condition-before   candidate native   run   exit 0 stdout 420002158111bff8adb3347d84029e480f45e60e1869b454b6adac3345f9f7d4
+condition-before   control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+generator-loop.js: every combination answers 420002158111bff8adb3347d84029e480f45e60e1869b454b6adac3345f9f7d4
+condition-before   control   bytecode run   exit 0 stdout f60260e656ad57721144aa337d701695322e53d2973b6ff8b384cd0d331bc382
+condition-before   candidate bytecode run   exit 0 stdout f60260e656ad57721144aa337d701695322e53d2973b6ff8b384cd0d331bc382
+condition-before   candidate value    run   exit 0 stdout f60260e656ad57721144aa337d701695322e53d2973b6ff8b384cd0d331bc382
+condition-before   candidate native   run   exit 0 stdout f60260e656ad57721144aa337d701695322e53d2973b6ff8b384cd0d331bc382
+condition-before   control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+numeric-loop.js: every combination answers f60260e656ad57721144aa337d701695322e53d2973b6ff8b384cd0d331bc382
+condition-before   control   bytecode run   exit 0 stdout 3f3ea8a1afc0f5a6ce7ace3152abfdaa52ea3726c4f66e728790f42cbc005901
+condition-before   candidate bytecode run   exit 0 stdout 3f3ea8a1afc0f5a6ce7ace3152abfdaa52ea3726c4f66e728790f42cbc005901
+condition-before   candidate value    run   exit 0 stdout 3f3ea8a1afc0f5a6ce7ace3152abfdaa52ea3726c4f66e728790f42cbc005901
+condition-before   candidate native   run   exit 0 stdout 3f3ea8a1afc0f5a6ce7ace3152abfdaa52ea3726c4f66e728790f42cbc005901
+condition-before   control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+property-loop.js: every combination answers 3f3ea8a1afc0f5a6ce7ace3152abfdaa52ea3726c4f66e728790f42cbc005901
+condition-before   control   bytecode run   exit 0 stdout f4ccd05b3271c386ee55d9876c7450012a3b361e5065c09dc22075e38b3cc35c
+condition-before   candidate bytecode run   exit 0 stdout f4ccd05b3271c386ee55d9876c7450012a3b361e5065c09dc22075e38b3cc35c
+condition-before   candidate value    run   exit 0 stdout f4ccd05b3271c386ee55d9876c7450012a3b361e5065c09dc22075e38b3cc35c
+condition-before   candidate native   run   exit 0 stdout f4ccd05b3271c386ee55d9876c7450012a3b361e5065c09dc22075e38b3cc35c
+condition-before   control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+string-loop.js: every combination answers f4ccd05b3271c386ee55d9876c7450012a3b361e5065c09dc22075e38b3cc35c
+condition-before   control   bytecode run   exit 0 stdout 86462511f5bae5ed2d407ecc8d2699a032b2ee003e4d10c3e38511780dd6d016
+condition-before   candidate bytecode run   exit 0 stdout 86462511f5bae5ed2d407ecc8d2699a032b2ee003e4d10c3e38511780dd6d016
+condition-before   candidate value    run   exit 0 stdout 86462511f5bae5ed2d407ecc8d2699a032b2ee003e4d10c3e38511780dd6d016
+condition-before   candidate native   run   exit 0 stdout 86462511f5bae5ed2d407ecc8d2699a032b2ee003e4d10c3e38511780dd6d016
+condition-before   control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+throw-loop.js: every combination answers 86462511f5bae5ed2d407ecc8d2699a032b2ee003e4d10c3e38511780dd6d016
+condition-before   control   bytecode run   exit 0 stdout b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784
+condition-before   candidate bytecode run   exit 0 stdout b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784
+condition-before   candidate value    run   exit 0 stdout b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784
+condition-before   candidate native   run   exit 0 stdout b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784
+condition-before   control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-before   candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+try-loop.js: every combination answers b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784
+array-loop.small.js: smallest completing allowance 73082, under B
+    candidate bytecode completes at 73082, AllowanceExhausted on Fuel at 73081
+    candidate value    completes at 73082, AllowanceExhausted on Fuel at 73081
+    control   bytecode completes at 73082, AllowanceExhausted on Fuel at 73081
+    candidate native   completes at 73082, AllowanceExhausted on Fuel at 73081   (recorded, judged by no clause)
+call-loop.small.js: smallest completing allowance 28026, under B
+    candidate bytecode completes at 28026, AllowanceExhausted on Fuel at 28025
+    candidate value    completes at 28026, AllowanceExhausted on Fuel at 28025
+    control   bytecode completes at 28026, AllowanceExhausted on Fuel at 28025
+    candidate native   completes at 28026, AllowanceExhausted on Fuel at 28025   (recorded, judged by no clause)
+closure-loop.small.js: smallest completing allowance 31044, under B
+    candidate bytecode completes at 31044, AllowanceExhausted on Fuel at 31043
+    candidate value    completes at 31044, AllowanceExhausted on Fuel at 31043
+    control   bytecode completes at 31044, AllowanceExhausted on Fuel at 31043
+    candidate native   completes at 31044, AllowanceExhausted on Fuel at 31043   (recorded, judged by no clause)
+fib.small.js: smallest completing allowance 7682, under B
+    candidate bytecode completes at 7682, AllowanceExhausted on Fuel at 7681
+    candidate value    completes at 7682, AllowanceExhausted on Fuel at 7681
+    control   bytecode completes at 7682, AllowanceExhausted on Fuel at 7681
+    candidate native   completes at 7682, AllowanceExhausted on Fuel at 7681   (recorded, judged by no clause)
+generator-loop.small.js: smallest completing allowance 40075, under B
+    candidate bytecode completes at 40075, AllowanceExhausted on Fuel at 40074
+    candidate value    completes at 40075, AllowanceExhausted on Fuel at 40074
+    control   bytecode completes at 40075, AllowanceExhausted on Fuel at 40074
+    candidate native   completes at 40075, AllowanceExhausted on Fuel at 40074   (recorded, judged by no clause)
+numeric-loop.small.js: smallest completing allowance 23022, under B
+    candidate bytecode completes at 23022, AllowanceExhausted on Fuel at 23021
+    candidate value    completes at 23022, AllowanceExhausted on Fuel at 23021
+    control   bytecode completes at 23022, AllowanceExhausted on Fuel at 23021
+    candidate native   completes at 23022, AllowanceExhausted on Fuel at 23021   (recorded, judged by no clause)
+property-loop.small.js: smallest completing allowance 29029, under B
+    candidate bytecode completes at 29029, AllowanceExhausted on Fuel at 29028
+    candidate value    completes at 29029, AllowanceExhausted on Fuel at 29028
+    control   bytecode completes at 29029, AllowanceExhausted on Fuel at 29028
+    candidate native   completes at 29029, AllowanceExhausted on Fuel at 29028   (recorded, judged by no clause)
+string-loop.small.js: smallest completing allowance 26083, under B
+    candidate bytecode completes at 26083, AllowanceExhausted on Fuel at 26082
+    candidate value    completes at 26083, AllowanceExhausted on Fuel at 26082
+    control   bytecode completes at 26083, AllowanceExhausted on Fuel at 26082
+    candidate native   completes at 26083, AllowanceExhausted on Fuel at 26082   (recorded, judged by no clause)
+throw-loop.small.js: smallest completing allowance 34026, under B
+    candidate bytecode completes at 34026, AllowanceExhausted on Fuel at 34025
+    candidate value    completes at 34026, AllowanceExhausted on Fuel at 34025
+    control   bytecode completes at 34026, AllowanceExhausted on Fuel at 34025
+    candidate native   completes at 34026, AllowanceExhausted on Fuel at 34025   (recorded, judged by no clause)
+try-loop.small.js: smallest completing allowance 28022, under B
+    candidate bytecode completes at 28022, AllowanceExhausted on Fuel at 28021
+    candidate value    completes at 28022, AllowanceExhausted on Fuel at 28021
+    control   bytecode completes at 28022, AllowanceExhausted on Fuel at 28021
+    candidate native   completes at 28022, AllowanceExhausted on Fuel at 28021   (recorded, judged by no clause)

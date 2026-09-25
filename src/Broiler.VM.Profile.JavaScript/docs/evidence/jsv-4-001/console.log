@@ -1,0 +1,55 @@
+# broiler-js value-form measurement, bundle jsv-4-001
+# 2026-09-24T20:59:48Z
+# Linux-6.18.44-fc-v37-x86_64-with-glibc2.39, x86_64, 4 logical processors
+# 10 shapes, 3 warm-up + 7 retained repetitions, interleaved
+#
+# NO WALL-CLOCK FIGURE IS PRINTED HERE. The console says what the harness did; the files
+# beside --out say what it measured, and rule L1 governs what may be done with those.
+#
+# condition before any timing, and nothing is timed until it holds
+# condition-before: array-loop.js
+# condition-before: call-loop.js
+# condition-before: closure-loop.js
+# condition-before: fib.js
+# condition-before: generator-loop.js
+# condition-before: numeric-loop.js
+# condition-before: property-loop.js
+# condition-before: string-loop.js
+# condition-before: throw-loop.js
+# condition-before: try-loop.js
+# fuel parity: array-loop.small.js completes at 73082 in B
+# fuel parity: call-loop.small.js completes at 28026 in B
+# fuel parity: closure-loop.small.js completes at 31044 in B
+# fuel parity: fib.small.js completes at 7682 in B
+# fuel parity: generator-loop.small.js completes at 40075 in B
+# fuel parity: numeric-loop.small.js completes at 23022 in B
+# fuel parity: property-loop.small.js completes at 29029 in B
+# fuel parity: string-loop.small.js completes at 26083 in B
+# fuel parity: throw-loop.small.js completes at 34026 in B
+# fuel parity: try-loop.small.js completes at 28022 in B
+# the condition holds; timing starts
+# repetition 1 of 10 (warm-up, retained and excluded from Q)
+# repetition 2 of 10 (warm-up, retained and excluded from Q)
+# repetition 3 of 10 (warm-up, retained and excluded from Q)
+# repetition 4 of 10 (retained)
+# repetition 5 of 10 (retained)
+# repetition 6 of 10 (retained)
+# repetition 7 of 10 (retained)
+# repetition 8 of 10 (retained)
+# repetition 9 of 10 (retained)
+# repetition 10 of 10 (retained)
+# every lane ran and every lane's answer was the expected one
+# condition-after: array-loop.js
+# condition-after: call-loop.js
+# condition-after: closure-loop.js
+# condition-after: fib.js
+# condition-after: generator-loop.js
+# condition-after: numeric-loop.js
+# condition-after: property-loop.js
+# condition-after: string-loop.js
+# condition-after: throw-loop.js
+# condition-after: try-loop.js
+# written to /tmp/claude-0/-home-user-Broiler-VM/aaa35499-04c0-537e-883f-b8cea93d4967/scratchpad/bundle-run
+VERDICT: REFUSE the value form, by the rule above and by nothing else.
+# NO FIGURE OF THIS RUN MAY LEAVE ITS BUNDLE. summary.txt and runs.jsonl are the files carrying one, and the bundle's README is the one place a figure from them is written.
+harness exit 0
