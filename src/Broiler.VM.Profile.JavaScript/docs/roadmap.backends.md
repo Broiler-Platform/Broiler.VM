@@ -359,7 +359,12 @@ manifest's form calls back once per instruction — is recorded inside the fourt
   with a real argument behind it — an intermediate form would give a backend types, an explicit
   control-flow graph and a place to put an analysis, none of which the bytecode gives it. This
   document proposes the cheaper route because it is the one that does not fork the front end, and **no
-  decision record has chosen between them.**
+  decision record has chosen between them.** *(Decided 2026-09-25, and not in this route's words:
+  [JSD-0036](decisions/0036-the-universal-bytecode-is-the-back-end-neutral-form.md) chooses a third
+  answer - the shared universal bytecode rather than this profile's own - and refuses both this
+  route's reading, format version 2 as the form, and the typed intermediate form it weighs against.
+  The bullet is kept so that the route this document took stays readable beside the decision that
+  replaced it.)*
 - **That the numeric form's emitted body computes rather than delegates — taken without a decision on
   2026-09-07, and weighed by one on 2026-09-15.** The alternative design emits one call per opcode
   into the managed helpers the interpreter's own switch arms already call, keeping the operand stack as it is and removing only dispatch and operand
@@ -603,6 +608,17 @@ names, and a stage identifier is never reused.
   [section 9](roadmap.md#9-the-semantic-front-end-and-lowering) is neither corrected nor discharged by
   a dated decision, so the plan still promises a back-end-neutral intermediate form this component
   does not have.
+
+- **State on 2026-09-25: the second open clause is discharged; the first is unchanged.**
+  [JSD-0036](decisions/0036-the-universal-bytecode-is-the-back-end-neutral-form.md) is the dated
+  decision this gate's last clause asked for: the back-end-neutral intermediate form section 9
+  promises is the universal bytecode admitted by
+  [ADR 0013](../../../docs/adr/0013-the-universal-bytecode-extraction-record.md), and the corrections
+  file carries the discharge as [JSC-227](roadmap.corrections.md#jsc-227). It names a form that is not
+  yet in the tree; the lowering acquires it as its one exit at the universal bytecode programme's
+  milestone UBC-3. **The first open clause stands as the bullet above states it**: no check shows that
+  a backend refusing every unit leaves the artifacts byte-identical. The stage is not met, and this
+  bullet is not acceptance.
 
 ### JSB-4 — The artifact sections that carry emitted code and its symbols
 

@@ -9640,3 +9640,62 @@ accounts of their own measurements stay true. No human has read a line.
 and skipping step 1; stage JSB-12's predeclared bounds
 [`jsb-12-001/bounds.md`](evidence/jsb-12-001/bounds.md), section 8.4 and its dated addition 8.6 of the
 same day. 2026-09-17.
+
+---
+
+### JSC-227
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering), "What the front end is
+not", the sentence on the front-end contract; and the open clause of stage
+[JSB-3](roadmap.backends.md#jsb-3--the-backend-abstraction-and-where-the-form-is-chosen) that asks for
+that sentence to be corrected or discharged.
+
+**What the plan said.** That this profile's front-end contract "returns a validated tree or a
+back-end-neutral intermediate form, and the lowering consumes that", with no decision saying what the
+intermediate form is. None existed: the syntax tree was the only tree and the format-version-2 bytecode
+the only intermediate form, and the backend roadmap's section 4 read the bytecode as that form by a
+route no record had taken.
+
+**What replaced it.** The sentence stands and now has a named subject.
+[JSD-0036](decisions/0036-the-universal-bytecode-is-the-back-end-neutral-form.md) decides that the
+back-end-neutral intermediate form is the universal bytecode admitted by
+[ADR 0013](../../../docs/adr/0013-the-universal-bytecode-extraction-record.md): the front end returns a
+validated tree, the lowering emits universal bytecode, and every output form is produced from it by an
+emitter profile. **The form is not yet in the tree**: until the programme's milestone UBC-3 gives the
+lowering that exit, format version 2 is still what every native form of this profile attaches at, and a
+reader of section 9 should read the sentence as a promise with a named subject, not as a description of
+the checkout. This is a discharge by a dated decision, which is one of the two answers JSB-3's clause
+admits; section 9 carries the bare pointer.
+
+**What this entry does NOT do.** It does not close JSB-3: that stage's other open clause, the
+byte-identical artifacts under a backend refusing every unit, is untouched. It moves no ledger row and
+claims nothing about any form. No human has read a line.
+
+**Authority and date.** [JSD-0036](decisions/0036-the-universal-bytecode-is-the-back-end-neutral-form.md),
+decision items 1 to 3; ADR 0013's verdict on its candidate A. 2026-09-25.
+
+---
+
+### JSC-228
+
+**Where:** roadmap [section 1](roadmap.md#1-terminology-and-support-claims), the non-goals, the first
+entry ("A second execution arm") and the paragraphs dated beneath it.
+
+**What the plan said.** That one proposal document about output forms stands beside the plan - the
+backend roadmap, named in the paragraph of 2026-09-07 - and that naming it schedules nothing.
+
+**What replaced it.** Two stand there now. [The universal bytecode concept](../../../docs/universal-bytecode.md)
+and its programme roadmap propose that this profile lower only to a bytecode shared with every language
+profile, that its forms be produced by emitter profiles outside this family, and that its verifier walk
+and its dispatch loop leave it for a shared walk and loop that call its own instruction arms as handlers.
+The non-goals gain a dated paragraph naming it, in the backend paragraph's shape: naming it schedules
+nothing, its milestones are `UBC-n` and are rows of no ledger of this profile, and every refusal the
+non-goals state stands - the concept keeps one form per handle and per instance, no promotion and no form
+chosen from run-time observation.
+
+**What naming it changes, stated because the answer is nearly nothing.** One record: JSD-0036, which
+JSC-227 describes. Nothing else in this plan or its ledger moves on the paragraph's date; the
+corrections the programme's milestone UBC-3 owes this plan are filed by that milestone.
+
+**Authority and date.** The concept, its programme roadmap and ledger, and
+[ADR 0013](../../../docs/adr/0013-the-universal-bytecode-extraction-record.md), all 2026-09-25.

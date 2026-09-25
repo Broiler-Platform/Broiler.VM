@@ -33,13 +33,17 @@ Every record carries a `**Core contract:**` header field. The ten
 contract-bearing records own part of core contract version 1 and cannot change
 without the amendment procedure in
 [ADR 0003](0003-core-contract-v1-and-amendments.md). ADR 0001 and ADR 0012
-govern component shape and ownership instead, and are not contract-bearing.
+govern component shape and ownership instead, and are not contract-bearing, and
+so is ADR 0013, the first extraction record the sharing gate of ADR 0011 has
+produced *(added 2026-09-25: this paragraph named ADR 0001 and ADR 0012 as the
+only records outside the contract; the contract-bearing ten are unchanged)*.
 `CoreContractVersionTests` in the architecture test project asserts that this
 table lists exactly the files present, that every record declares the field, and
 that the contract-bearing ten declare the version the `VmCoreContract` constants
 carry.
 
-All twelve are `Proposed`, not `Approved`. Every one of the six ownership roles
+All thirteen are `Proposed`, not `Approved` *(corrected 2026-09-25: this read
+"All twelve", which ADR 0013 made false)*. Every one of the six ownership roles
 in [ADR 0012](0012-security-ownership-and-support-matrix.md) is now held by one
 person, so someone is in a position to accept them - but nobody has, and with a
 single maintainer that confirmation would not be independent.
@@ -58,6 +62,7 @@ single maintainer that confirmation would not be independent.
 | [0010](0010-embedding-decisions.md) | Embedding: byte round-trip, lazy sections, and incremental verification | version 1 |
 | [0011](0011-source-level-profile-contract.md) | The source-level profile contract, profile checklist, and sharing rule | version 1 |
 | [0012](0012-security-ownership-and-support-matrix.md) | Security ownership, support matrix, and pinned platform references | not contract-bearing |
+| [0013](0013-the-universal-bytecode-extraction-record.md) | The universal bytecode extraction record: the correspondence, the proposed surface, and the verdict on each candidate | not contract-bearing |
 
 ## Reading order
 
@@ -81,3 +86,6 @@ transition the first release will not implement.
 [0011](0011-source-level-profile-contract.md) is the record a profile author
 reads; [0012](0012-security-ownership-and-support-matrix.md) is the record a
 release or security owner reads.
+[0013](0013-the-universal-bytecode-extraction-record.md) is read after 0011, whose
+extraction gate it invokes: it is the first record that gate has produced, and it
+is the precondition of [the universal bytecode programme](../universal-bytecode.roadmap.md).

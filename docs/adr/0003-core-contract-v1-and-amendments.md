@@ -154,6 +154,15 @@ governs component shape, and ADR 0012, which governs roles, RIDs and support
 truth. Neither carries contract surface, and section 3 above already places
 shape outside the version.
 
+**Editorial revision, 2026-09-25: a third record outside the contract.**
+ADR 0013, the extraction record of the universal bytecode, is not
+contract-bearing either: it names no lifecycle transition, no result category
+and no public type of this contract. The paragraph above said "Two are not" and
+named ADR 0001 and ADR 0012; three are not now. The contract-bearing set is
+unchanged - ten records, 0002 through 0011 - and that set, not the count of
+records outside it, is what Rule E2 asserts, so no behaviour this record
+governs has changed.
+
 Membership is mechanical, not editorial. Every ADR file (exists at VM-0:
 `docs/adr/0001..0012` and `docs/adr/README.md`) carries a mandatory header field
 immediately after `**Date:**`, reading either `**Core contract:** version 1
@@ -574,7 +583,8 @@ an ADR set that anchors to sentences its own analysis found contradictory is not
 a freeze either, so the divergence is made auditable instead of tacit: every
 sentence a VM-0 decision supersedes is listed below with its verbatim current
 text and the text that would replace it. **Every row is `Proposed` and unapplied
-except rows 1 and 13.**
+except rows 1 and 13.** *(Rows 19 to 22 were added and applied on
+2026-09-25; see the editorial revision after the table.)*
 
 Quoting convention. The old-text column is character-exact, with two departures
 forced by the ASCII-only house rule and by table layout: a line break inside a
@@ -602,6 +612,10 @@ outside ASCII.
 | 16 | 15 | gate 1 | `**Support truth:** the public table names the core contract version, the compositions, host capabilities, guest-initiated-load and external-control support, RIDs, and deterministic exclusions separately, and states that no language profile ships with the core.` | `**Support truth:** the public table names the core contract version the release implements, the minimum core contract version it accepts, the deterministic failure returned for a descriptor outside that window, the compositions, host capabilities, guest-initiated-load and external-control support, RIDs, and deterministic exclusions separately, and states that no language profile ships with the core.` | 0003 | descriptor-and-envelope-contract-version-compatibility | Proposed |
 | 17 | 16 | risk: concurrent runtimes multiply a host ceiling | `Meter fuel, wall-clock, allocation, and live-runtime counts against a shared aggregate budget as well as each runtime, and refuse creation and resumption once the parent allowance is spent.` | `Meter every summable dimension in ADR 0007's table against a shared aggregate budget as well as each runtime, and refuse runtime creation and operation resumption once the parent allowance is spent.` | 0007 | aggregate-budget-core-object | Proposed |
 | 18 | 16 | risk: external pause becomes an unbounded or privileged side channel | `Declare who may request external suspension, keep it distinct from guest suspension and terminal cancellation, bound how long a paused operation may block disposal, and leave what a paused profile exposes to the profile.` | `Declare who may request external suspension, keep it distinct from guest suspension and terminal cancellation, bound how long a paused operation may block disposal with a mandatory finite MaxSuspendedResidency, latch an abandoned external suspension as cancelled, and leave what a paused profile exposes to the profile.` | 0009 | external-suspension-transitions-and-authority | Proposed |
+| 19 | 1 | Non-goals | `one universal opcode set, tagged value, or frame ABI shared across languages;` | `a value representation, tagged value or frame ABI shared across languages, and any instruction set whose instructions' meanings the core or a shared assembly owns. A shared *encoding* is not this non-goal: the universal bytecode - one instruction encoding, a common family whose every row means the same in any language, and a verifier walk, in Broiler.VM.Ubc, outside the core contract and referenced by nothing in the core - is admitted by ADR 0013's extraction verdict, and every language instruction in it keeps the meaning its profile gives it;` | 0013 | universal-bytecode-extraction-verdict, candidate A | Applied 2026-09-25 |
+| 20 | 8 | candidate table, shared value representation, frame layout, or opcode set | `**No.** These are the semantics the core exists not to own.` | `**No.** These are the semantics the core exists not to own.`, unchanged, followed by a dated re-dating note naming ADR 0013 as the new verdict on the opcode-set half; and a new row after it: `The universal bytecode: one instruction encoding, container, common family, family-table schema, primitive table, verifier walk and dispatch loop, with every language instruction's meaning owned by the family that declares it` - `**Yes, by extraction verdict of 2026-09-25 (ADR 0013).**` with G1 to G4 answered, and the native-form mechanism beside it refused on G1 | 0013 | universal-bytecode-extraction-verdict, candidates A and B | Applied 2026-09-25 |
+| 21 | 10 | Where compilation lives, output-form row | `the same compiler. A backend is a **choice inside one lowering**, not a second lowering *(added 2026-09-07 for VM-7)*` | `the same compiler. A backend is a **choice inside one lowering**, not a second lowering *(added 2026-09-07 for VM-7)*. Under the universal bytecode programme the choice may leave the lowering for an emitter family: a lowering emits universal bytecode only, and which form an artifact takes is chosen by the emitter a composition hands it to, which is still not a second lowering` | 0013 | universal-bytecode-extraction-verdict, candidate A | Applied 2026-09-25 |
+| 22 | 16 | risk: the core becomes a lowest-common-denominator language runtime | `Keep opcodes, values, frames, verifier rules, and semantics profile-owned. Apply section 8's extraction gate before sharing anything, and reject a shared primitive that introduces a profile-to-profile dependency or a semantic conversion tax.` | `Keep values, frame layouts, instruction meanings, verifier rules, and semantics profile-owned. Apply section 8's extraction gate before sharing anything, and reject a shared primitive that introduces a profile-to-profile dependency or a semantic conversion tax. The universal bytecode, admitted by that gate on 2026-09-25, shares an encoding, a common family, a verifier walk and a dispatch loop and nothing else, and the programme's U rules are this row's mechanical form for it as each is minted: U1 bounds its references to the core's two sinks, U2 bans every language's vocabulary and every family row from its exported surface, U3 bans them from every emitter, and U4 keeps the common family's effects in one table.` | 0013 | universal-bytecode-extraction-verdict, candidate A | Applied 2026-09-25 |
 
 **Row 13 was applied on 2026-08-31 and its wording differs from the proposal.**
 The roadmap now restricts the gate to product profiles and excludes the fixture
@@ -618,6 +632,21 @@ to the core architecture owner with a profile supplying only its half, and four
 further candidate rows in the sharing table. Those are recorded as Exclusion
 EX-104 below rather than as register rows, because this register runs from the
 ADR set to the roadmap and they run the other way.
+
+**Editorial revision, 2026-09-25: rows 19 to 22.** ADR 0013, the extraction
+record of the universal bytecode, is the first record this register has served
+since VM-0, and it runs in the register's own direction - from an ADR to the
+roadmap - so its four roadmap sentences are rows here rather than exclusions.
+Each was applied on the record's date, and each revised sentence in
+`docs/roadmap.md` carries its superseded text beside it as well as here. Two
+sentences of this section are made false by the rows and are corrected rather
+than left: the preamble's "Every row is `Proposed` and unapplied except rows 1
+and 13" now also excepts rows 19 to 22; and the sentence below, which says no
+row changes sections 14, 15 and 16 "beyond the four blocking-failure and
+mitigation cells listed above", now counts a fifth, row 22's mitigation cell.
+**No behaviour of core contract version 1 changes**: no contract-bearing record
+is amended by the rows, the contract-bearing set is 0002 through 0011 as before,
+no public type of the core moves, and rule E2 asserts the set unchanged.
 
 No row proposes a change to an engineering invariant, to a milestone gate, to
 section 13's delivery order, or to sections 14, 15 and 16 beyond the four
@@ -912,7 +941,9 @@ unchanged by this record.
 **The version cannot drift.** Any change to the number is a two-file change -
 the constant and this record's header - and Rule E1 fails on either half alone.
 Rule E2 and Rule E3 make the contract-bearing set and its declared version a
-set-equality assertion over all twelve files rather than an editorial habit.
+set-equality assertion over every ADR file rather than an editorial habit
+*(editorial revision, 2026-09-25: this read "over all twelve files", which ADR
+0013 made thirteen; the assertion was always over the files present)*.
 
 **`Broiler.VM.Abstractions` is non-empty at VM-0**, which is what lets the
 architecture tests reflect over a real exported surface while proving the

@@ -322,6 +322,19 @@ budget is charged — and never **semantics**. Values, frames, opcodes, and synt
 shared, and a new shared component is opened only through the extraction gate in
 [section 8 of the roadmap](docs/roadmap.md).
 
+*(Corrected 2026-09-25. These two paragraphs are unchanged in what they say of the core, and
+they are no longer the whole of what the component holds. The extraction gate they name has fired
+once: [ADR 0013](docs/adr/0013-the-universal-bytecode-extraction-record.md) admits the **universal
+bytecode** - one instruction encoding, a common family whose rows mean the same in every language,
+a family-table schema, a primitive table of machine operations and one verifier walk, in an assembly
+`Broiler.VM.Ubc` that is not part of the core contract and that no core assembly references - and
+one dispatch loop that executes it. So opcodes are now shared **as an encoding**: a profile's own
+instructions keep the meanings the profile gives them, and the profile still owns its values, its
+semantics, its payloads and its conformance suite, while its verifier walk and its dispatch loop
+move to the shared mechanism when [the programme](docs/universal-bytecode.roadmap.md) reaches it.
+Values and frame layouts are still not shared. The same record refuses the native-form mechanism
+the concept placed beside it. Nothing of either exists in the tree on this date.)*
+
 ## Relationship to Broiler.JS
 
 `Broiler.JS` is a **legacy component** with its own roadmap, ledger, and consumers. Broiler.VM does

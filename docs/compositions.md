@@ -178,7 +178,12 @@ corrected here; it then restored the reference to ONE root, and the other roots'
 cells went to `none` because nobody put the assembly back, not because anybody
 decided they should not have it. **No decision record in this repository explains
 the extraction or names the roots it was meant to leave behind**, and this
-paragraph does not supply one: what is recorded is what happened.
+paragraph does not supply one: what is recorded is what happened. *(Added
+2026-09-25: [ADR 0013](adr/0013-the-universal-bytecode-extraction-record.md),
+section "The 2026-09-18 extraction into the MachineCode project, explained",
+now supplies the account this paragraph says no record gives. It decides
+nothing after the fact and restores no cell: the cells stand as they are read
+above, and rule K5 reads them as before.)*
 
 **Six cells read `x86-64` the day before, and five of them moved.** The day before that refactor this
 column read `x86-64` for every row naming `Broiler.VM.Profile.JavaScript` -
