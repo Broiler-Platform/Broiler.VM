@@ -1,8 +1,13 @@
-# broiler-vm-composition core-contract-version=1
+# broiler-vm-composition core-contract-version=1 ubc-contract-version=2
 composition Broiler.VM.Composition.WebAssembly.Harness
 label none
 advertised no
 profiles 1
-profile broiler.webassembly Broiler.VM.Profile.WebAssembly 1 0
+profile broiler.webassembly Broiler.VM.Profile.WebAssembly 2 0
 manifest broiler.webassembly.slice
-corpus-entries 0
+translator broiler.webassembly.translator 1
+form bytecode 2
+corpus-entries 290
+corpus-retained yes src/tests/wasm/corpus
+interpreter yes
+linker no

@@ -3,22 +3,26 @@
 
 using Broiler.VM;
 using Broiler.VM.Profile.WebAssembly;
+using Broiler.VM.Ubc;
 using System.Globalization;
 
 namespace Broiler.VM.Composition.PolyglotCli;
 
 /// <summary>
-/// The <c>broiler.webassembly</c> lane: a module's bytes, verified, instantiated and invoked.
+/// The <c>broiler.webassembly</c> lane: a module's bytes, translated, verified, instantiated and
+/// invoked.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>NOTHING IS COMPILED IN THIS LANE, AND THAT IS A PROPERTY OF THE PROFILE RATHER THAN A CHOICE
-/// THIS ROOT MADE.</b> The WebAssembly profile has no lowering anywhere in this repository: its
-/// payload is a module produced by an external toolchain and read verbatim, so the file a person
-/// names IS the artifact. The JavaScript lane beside it lowers source into an artifact and then
-/// verifies it; this one verifies what it was handed. That asymmetry is why <c>compile</c> answers
-/// a refusal for a <c>.wasm</c> file instead of copying it: a host that pretended to compile a
-/// module would be claiming a lowering nothing here has.
+/// <b>THE MODULE IS TRANSLATED AND THE TRANSLATION IS WHAT THE CORE VERIFIES.</b> Since the universal
+/// bytecode programme's milestone UBC-4 the WebAssembly profile carries a lowering of its own: its
+/// translator decodes and validates a module produced by an external toolchain, exactly as the
+/// profile's verifier did, and lowers it into universal bytecode, and the core verifies that artifact
+/// under the family's descriptor. A module the translator refuses is reported in the fields the core
+/// reported it in - the code, the outcome and reason, the section and the offset - because that
+/// refusal is still a statement about the input. The translation lives only for one run and is
+/// never written anywhere, which is why <c>compile</c> still answers a refusal for a <c>.wasm</c>
+/// file: see <c>Program.Compile</c> for the reason it gives.
 /// </para>
 /// <para>
 /// <b>The entry-point encoding is the profile's own and this lane spells it in one place.</b> An
@@ -90,12 +94,45 @@ internal static class WebAssemblyLane
     {
         var descriptor = new VmArtifactDescriptor(
             WebAssemblyProfile.Id,
-            1,
+            UbcFormat.FormatVersion,
             WebAssemblyProfile.SliceManifest,
             default,
             VmCallerIdentity.FromCanonicalIdentity(Caller));
 
-        var verified = runtime.Verify(in descriptor, file.Bytes, CancellationToken.None);
+        // THE TRANSLATOR RUNS UNDER THE CEILINGS THE CORE WOULD HAVE VERIFIED THE MODULE UNDER, read
+        // off this runtime, and never under a default: the host's stated ceilings and a caller's
+        // allowances decide what a module may cost, whichever stage spends it.
+        var translation = WasmTranslator.Translate(
+            file.Bytes, Composition.WebAssemblyCeilings(runtime, in descriptor), CancellationToken.None);
+
+        if (!translation.Succeeded)
+        {
+            if (translation.Outcome == VmOutcome.ResourceExhaustion)
+            {
+                return new RunResult(
+                    RunStatus.Exhausted,
+                    string.Empty,
+                    $"verifying the module spent the allowance: {translation.Reason}",
+                    []);
+            }
+
+            // A MODULE THIS HOST DID NOT PRODUCE IS A REFUSED SOURCE AND NOT A REFUSED ARTIFACT.
+            // The translator refuses what the profile's decoder and validator refuse, in the fields
+            // the core refused it in before the universal bytecode, and a refusal of a file that came
+            // from an external toolchain is a statement about the input: reporting it under the code
+            // that means "defect here" would send a reader looking for a bug in this image.
+            return new RunResult(
+                RunStatus.RefusedSource,
+                string.Empty,
+                $"the module was refused: code {((int)translation.Code).ToString(CultureInfo.InvariantCulture)} " +
+                $"({translation.Outcome}/{translation.Reason}) at section " +
+                translation.Position.SectionIndex.ToString(CultureInfo.InvariantCulture) +
+                " offset " +
+                translation.Position.ByteOffset.ToString(CultureInfo.InvariantCulture),
+                []);
+        }
+
+        var verified = runtime.Verify(in descriptor, translation.Artifact.AsSpan(), CancellationToken.None);
 
         if (!verified.TryGetArtifact(out var artifact))
         {
@@ -108,32 +145,29 @@ internal static class WebAssemblyLane
                     []);
             }
 
-            // A MODULE THIS HOST DID NOT PRODUCE IS A REFUSED SOURCE AND NOT A REFUSED ARTIFACT,
-            // which is the one place the two lanes disagree about how to report the same core
-            // answer. In the JavaScript lane a refused artifact accuses this component, because
-            // this component's own lowering wrote the bytes. Here nothing in this image wrote
-            // them: the file came from an external toolchain, so a refusal is a statement about
-            // the input, and reporting it under the code that means "defect here" would send a
-            // reader looking for a bug in a compiler this profile does not have.
+            // AN ARTIFACT THIS IMAGE'S OWN TRANSLATOR WROTE, REFUSED, IS A DEFECT HERE. Everything a
+            // module can be refused for the translator has already refused it for; the core refusing
+            // what the translation answered accuses the translator or the family's verifier hook, the
+            // same accusation the JavaScript lane makes of its own lowering.
             return new RunResult(
-                RunStatus.RefusedSource,
+                RunStatus.RefusedArtifact,
                 string.Empty,
-                $"the module was refused: code {verified.Diagnostics.ProfileDiagnosticCode} " +
-                $"({verified.Outcome}/{verified.Reason}) at section " +
-                verified.Diagnostics.SourcePosition.SectionIndex.ToString(CultureInfo.InvariantCulture) +
-                " offset " +
-                verified.Diagnostics.SourcePosition.ByteOffset.ToString(CultureInfo.InvariantCulture),
+                "the module translated and the core refused the artifact the translator wrote, which " +
+                $"is a defect here: code {verified.Diagnostics.ProfileDiagnosticCode.ToString(CultureInfo.InvariantCulture)} " +
+                $"({verified.Outcome}/{verified.Reason})",
                 []);
         }
 
         using (artifact)
         {
-            if (!artifact.TryGetState(out var state) || state is not WasmModule module)
+            if (!artifact.TryGetState(out var state) || state is not UbcVerifiedProgram ||
+                translation.Module is not { } module)
             {
                 return new RunResult(
                     RunStatus.HostDefect,
                     string.Empty,
-                    "a verified artifact carried no decoded module, which is a defect here",
+                    "a verified artifact carried no universal bytecode program translated from a " +
+                    "decoded module, which is a defect here",
                     []);
             }
 

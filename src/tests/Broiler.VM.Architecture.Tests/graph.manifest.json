@@ -32,7 +32,9 @@
     "",
     "UBC-4 takes decision UBC-D-5 early and makes Broiler.VM.Ubc and Broiler.VM.Emitter.Bytecode packable, and its first change adds no project and no edge. Neither declares a PackageId - each packs under its assembly name, which rule U1 holds for the universal bytecode - so the figure the register counts by package identity does not move. The same change corrects Broiler.VM.Profile.WebAssembly's isPackable, which read false here from commit d16a6aa, when the profile's project file began to declare IsPackable true, until now; the JavaScript profile's three projects and Broiler.VM.Profile.MachineCode, made packable the same way, still read false here, and correcting them belongs with the packaging records of those profiles.",
     "",
-    "UBC-4's second change adds one edge and no project, taking the graph from 31 projects and 106 edges to 31 and 107: Broiler.VM.Profile.WebAssembly references Broiler.VM.Ubc, to declare the WebAssembly family - its instruction table, its verifier hook, its handlers and its registration - against the universal bytecode (rule W1 as revised). It references no emitter, which rule A11 forbids a profile, so a composition root builds the family's descriptor over the bytecode emitter itself. It adds ZERO packable assemblies. ADR 0001's budget sentence has not been revised for it yet, which rule A15 reports."
+    "UBC-4's second change adds one edge and no project, taking the graph from 31 projects and 106 edges to 31 and 107: Broiler.VM.Profile.WebAssembly references Broiler.VM.Ubc, to declare the WebAssembly family - its instruction table, its verifier hook, its handlers and its registration - against the universal bytecode (rule W1 as revised). It references no emitter, which rule A11 forbids a profile, so a composition root builds the family's descriptor over the bytecode emitter itself. It adds ZERO packable assemblies. ADR 0001's budget sentence has not been revised for it yet, which rule A15 reports.",
+    "",
+    "UBC-4's third change adds six edges and no project, taking the graph from 31 projects and 107 edges to 31 and 113: Broiler.VM.Composition.WebAssembly.Execution, Broiler.VM.Composition.WebAssembly.Harness and Broiler.VM.Composition.PolyglotCli each reference Broiler.VM.Ubc and Broiler.VM.Emitter.Bytecode, because the core now verifies the WebAssembly translator's universal bytecode artifact and each root builds the WebAssembly family's descriptor over the bytecode emitter itself (rule A12 admits both as siblings at their product paths). It adds ZERO packable assemblies. ADR 0001's budget sentence has not been revised for it yet, which rule A15 reports."
   ],
   "milestone": "JS-1",
   "coreContractVersion": 1,
@@ -267,6 +269,8 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
         "Broiler.VM.Runtime",
+        "Broiler.VM.Ubc",
+        "Broiler.VM.Emitter.Bytecode",
         "Broiler.VM.Profile.WebAssembly"
       ]
     },
@@ -281,6 +285,8 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
         "Broiler.VM.Runtime",
+        "Broiler.VM.Ubc",
+        "Broiler.VM.Emitter.Bytecode",
         "Broiler.VM.Profile.WebAssembly"
       ]
     },
@@ -295,6 +301,8 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
         "Broiler.VM.Runtime",
+        "Broiler.VM.Ubc",
+        "Broiler.VM.Emitter.Bytecode",
         "Broiler.VM.Profile.JavaScript",
         "Broiler.VM.Profile.JavaScript.Compiler",
         "Broiler.VM.Profile.WebAssembly"

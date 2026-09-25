@@ -33,11 +33,19 @@
     Its reference set is the execution root's, so the two publish identical closures. What differs
     is the register: this one is never advertised, and the rule that asserts non-advertisement is
     what keeps that a fact rather than an intention.
+
+    THE UNIVERSAL BYTECODE AND ITS BYTECODE EMITTER ARE SIBLINGS OF THE PROFILE HERE. The profile
+    translates a module into universal bytecode and declares the WebAssembly family; the core
+    verifies the translation's artifact, and the family executes through the one form this root
+    composes. A family names no emitter, so the root builds the family's descriptor over the
+    bytecode emitter itself, and that is why this project names both.
   -->
   <ItemGroup>
     <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Emitter.Bytecode\Broiler.VM.Emitter.Bytecode.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj" />
   </ItemGroup>
 

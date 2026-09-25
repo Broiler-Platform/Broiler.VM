@@ -21,21 +21,26 @@
   </PropertyGroup>
 
   <!--
-    THE EXECUTION-ONLY CLOSURE, STATED AS A REFERENCE SET.
+    THE CLOSURE, STATED AS A REFERENCE SET.
 
-    Four assemblies: the three the core is, plus the profile. There is no lowering to leave out and
-    no format sibling to arrive transitively, because this profile has neither - its payload is a
-    bare WebAssembly module produced by an external toolchain, so nothing in this repository
-    compiles anything into it.
+    Six assemblies: the three the core is, the profile, and the universal bytecode with its bytecode
+    emitter as the profile's siblings. The profile translates a WebAssembly module produced by an
+    external toolchain into universal bytecode and declares the WebAssembly family; the core
+    verifies the translation's artifact, and the family executes through the one form this root
+    composes. A family names no emitter, so the root builds the family's descriptor over the bytecode
+    emitter itself, and that is why this project names both.
 
-    What the label means here is therefore narrower than it means for a compiling profile, and it
-    is worth saying plainly: this image cannot turn source into an artifact because no image of
-    this profile can, not because this root declined to link a compiler.
+    Until the universal bytecode programme's milestone UBC-4 this was the execution-only closure of
+    four assemblies, and the label meant something narrower here than for a compiling profile: the
+    image could not turn anything into an artifact because the profile carried no lowering at all.
+    The translator is a lowering, it is in this image, and the image no longer claims the label.
   -->
   <ItemGroup>
     <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Emitter.Bytecode\Broiler.VM.Emitter.Bytecode.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj" />
   </ItemGroup>
 

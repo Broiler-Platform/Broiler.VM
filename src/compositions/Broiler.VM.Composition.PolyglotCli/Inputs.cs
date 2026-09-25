@@ -18,7 +18,7 @@ internal enum Lane
     /// <summary>The <c>broiler.javascript</c> profile: source text in, bytecode out, run.</summary>
     JavaScript,
 
-    /// <summary>The <c>broiler.webassembly</c> profile: a module's bytes verbatim, verified and run.</summary>
+    /// <summary>The <c>broiler.webassembly</c> profile: a module's bytes, translated, verified and run.</summary>
     WebAssembly,
 }
 
