@@ -277,7 +277,7 @@ public sealed class WebAssemblyExecutor : IVmProfileExecutor
         return VmExecutionStep.Instantiated(new WasmInstance(module, store!), null);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=41C410
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=B85121
     // Broiler-Falsified-If: an entry point resolves to a function whose parameters the arguments do not match
     // Broiler-Human:        PENDING
     private VmExecutionStep InvokeCore(IVmInstanceState state, in VmInvocationRequest request)
@@ -294,14 +294,14 @@ public sealed class WebAssemblyExecutor : IVmProfileExecutor
             return Refused(pacing.Failure);
         }
 
-        System.Span<WasmValue> arguments = stackalloc WasmValue[WasmEntryPoint.MaximumArguments];
+        System.Span<ulong> argumentBits = stackalloc ulong[WasmEntryPoint.MaximumArguments];
         System.Span<WasmValueType> argumentTypes =
             stackalloc WasmValueType[WasmEntryPoint.MaximumArguments];
 
         var text = request.EntryPoint.Utf8;
 
         if (!WasmEntryPoint.TryParse(
-            text, arguments, argumentTypes,
+            text, argumentBits, argumentTypes,
             out var nameOffset, out var nameLength, out var argumentCount, out var problem))
         {
             return EntryPointFaulted(problem, argumentCount);
@@ -352,8 +352,17 @@ public sealed class WebAssemblyExecutor : IVmProfileExecutor
 
         instance.InvocationCount++;
 
+        // The parser answers bits; the interpreter's slots are made from them here, one per argument,
+        // exactly as the parser once made them itself.
+        System.Span<WasmValue> arguments = stackalloc WasmValue[argumentCount];
+
+        for (var index = 0; index < argumentCount; index++)
+        {
+            arguments[index] = WasmValue.FromBits(argumentBits[index]);
+        }
+
         var interpreter = new WasmInterpreter(instance.Module, instance.Store, pacing);
-        var status = interpreter.Call(function, arguments[..argumentCount], out var resultCount);
+        var status = interpreter.Call(function, arguments, out var resultCount);
 
         if (status is WasmRunStatus.Trapped)
         {
@@ -432,9 +441,9 @@ public sealed class WebAssemblyExecutor : IVmProfileExecutor
             new WebAssemblyEntryPointFault(ProfileId, problem, argumentIndex));
 
     /// <summary>The registry row a trap kind carries.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2E67B2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B05D4E
     // Broiler-Human:        PENDING
-    private static WebAssemblyDiagnosticCode DiagnosticFor(WasmTrapKind kind) => kind switch
+    internal static WebAssemblyDiagnosticCode DiagnosticFor(WasmTrapKind kind) => kind switch
     {
         WasmTrapKind.Unreachable => WebAssemblyDiagnosticCode.TrapUnreachable,
         WasmTrapKind.IntegerDivideByZero => WebAssemblyDiagnosticCode.TrapIntegerDivideByZero,

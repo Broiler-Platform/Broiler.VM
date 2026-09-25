@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           2
-// Human-reviewed:   0/13
+// Relevant units:   14
+// Annotated:        14/14
+// Exempt:           3
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         6/6
+// Criteria:         8/8
 // Resource impact:  4/10 max
-// Unverified:       13
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -25,11 +25,13 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>THE REPRESENTATION IS A MANAGED ARRAY, AND THE BOUNDS CHECK IS NOT OPTIONAL AND NOT
-/// DEFERRED.</b> Every load and store goes through <see cref="TryLoad"/> or <see cref="TryStore"/>,
-/// each of which computes the effective address in 64-bit arithmetic - so a 32-bit address plus a
-/// 32-bit static offset cannot wrap - and compares the whole accessed range against the memory's
-/// current size before touching a byte. <i>The alternative not taken</i> is a reserved virtual
+/// <b>THE REPRESENTATION IS A PINNED MANAGED ARRAY, AND THE BOUNDS CHECK IS NOT OPTIONAL AND NOT
+/// DEFERRED.</b> Decision WAD-0001 pins the array (<see cref="Allocate"/>) so its base is stable
+/// between growths. Every load and store goes through <see cref="TryLoad"/> or
+/// <see cref="TryStore"/>, or - under the universal bytecode - through the region primitive over
+/// <see cref="Bytes"/>, each of which computes the effective address in 64-bit arithmetic - so a
+/// 32-bit address plus a 32-bit static offset cannot wrap - and compares the whole accessed range
+/// against the memory's current size before touching a byte. <i>The alternative not taken</i> is a reserved virtual
 /// range with guard pages, which moves the check into the memory management unit and makes every
 /// claimed runtime identifier a separate piece of evidence; it is the representation this profile
 /// will have to cost when there is a measurement to cost it against, and it is not this one.
@@ -110,6 +112,33 @@ internal sealed class WasmMemoryInstance
         bytes = initial;
         declaredMaximumPages = maximumPages;
     }
+
+    /// <summary>
+    /// Allocates the pinned, zeroed array a memory of <paramref name="byteCount"/> bytes is held in,
+    /// which the caller has already charged.
+    /// </summary>
+    /// <remarks>
+    /// <b>DECISION WAD-0001: A LINEAR MEMORY IS A PINNED MANAGED ARRAY.</b> It is allocated on the
+    /// pinned object heap, so the collector never moves it while it lives and its base is stable
+    /// between growths; a growth allocates a new one and republishes the base. The profile's own page
+    /// ceiling keeps the count far below what one array can hold.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=35BEEF
+    // Broiler-Falsified-If: a memory's array is allocated anywhere but the pinned object heap, or allocated before its charge
+    // Broiler-Human:        PENDING
+    internal static byte[] Allocate(ulong byteCount) => System.GC.AllocateArray<byte>((int)byteCount, pinned: true);
+
+    /// <summary>
+    /// The memory's current bytes, for a region access that reads the base at the access.
+    /// </summary>
+    /// <remarks>
+    /// The span is a view, and a successful <see cref="Grow"/> invalidates it: a caller takes it for
+    /// one access and never holds it across an instruction that can grow the memory.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=0; Fingerprint=CB7CA1
+    // Broiler-Falsified-If: a span taken here is held across a growth, or covers bytes outside the current array
+    // Broiler-Human:        PENDING
+    internal System.Span<byte> Bytes => bytes;
 
     /// <summary>How many pages the memory currently holds.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F46F93
@@ -225,7 +254,7 @@ internal sealed class WasmMemoryInstance
     /// count without allocating.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=859A66
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=7E66E2
     // Broiler-Falsified-If: an array is allocated before the allocation charge returns true, or a refusal against the profile ceiling reaches the meter
     // Broiler-Human:        PENDING
     internal long Grow(uint deltaPages, IVmMeter meter)
@@ -261,7 +290,10 @@ internal sealed class WasmMemoryInstance
             return GrowthRefused;
         }
 
-        var grown = new byte[(int)((ulong)current * PageBytes + addedBytes)];
+        // A new pinned array, the contents copied, and the base republished: decision WAD-0001's growth.
+        // Every view of the old array is stale from here, which is why nothing holds one across an
+        // instruction.
+        var grown = Allocate((ulong)current * PageBytes + addedBytes);
         System.Array.Copy(bytes, grown, bytes.Length);
         bytes = grown;
 

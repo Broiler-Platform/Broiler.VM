@@ -3,19 +3,20 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           3
-// Human-reviewed:   0/13
+// Relevant units:   15
+// Annotated:        15/15
+// Exempt:           5
+// Human-reviewed:   0/15
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         4/4
+// Criteria:         7/7
 // Resource impact:  3/10 max
-// Unverified:       13
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.VM;
+using Broiler.VM.Ubc;
 using System.Collections.Immutable;
 
 namespace Broiler.VM.Profile.WebAssembly;
@@ -120,6 +121,70 @@ public static class WebAssemblyProfile
     public static VmProfileDescriptor Descriptor { get; } = Build();
 
     /// <summary>
+    /// The WebAssembly family's registration: its identity, its one instruction table under
+    /// <see cref="SliceManifest"/>, its verifier hook, and the universal bytecode contract version it
+    /// was written for and compiled against.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is what a composition root builds the universal bytecode descriptor from</b>, with
+    /// <see cref="Declaration"/> and the forms the root composes, through
+    /// <c>UbcDescriptors.Build</c>: this profile references no emitter, so it cannot build that
+    /// descriptor itself. The descriptor verifies universal bytecode an artifact names this profile
+    /// in, and runs it over the family's handlers, <see cref="WasmFamily"/>.
+    /// </para>
+    /// <para>
+    /// <b>During milestone UBC-4 it sits beside <see cref="Descriptor"/>, not in its place.</b> The
+    /// composition roots still verify bare modules under the descriptor above until they translate
+    /// first; nothing here changes what that descriptor accepts or answers.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=9322B9
+    // Broiler-Falsified-If: the registration carries a table of another identity or manifest, or a contract version other than the one the family was written for
+    // Broiler-Human:        PENDING
+    public static UbcFamilyRegistration<WasmFamily> Registration { get; } =
+        new(WasmFamilyTable.Identity, [WasmFamilyTable.Table], new WasmFamilyVerifier(), authoredUbcContractVersion: 2);
+
+    /// <summary>
+    /// The descriptor rows the WebAssembly family declares itself - rows 1 to 3 and 8 to 30 - which a
+    /// composition root hands <c>UbcDescriptors.Build</c> with <see cref="Registration"/>.
+    /// </summary>
+    /// <remarks>
+    /// Every row is the one <see cref="Descriptor"/> carries, but the revision, which is 2: the
+    /// descriptor built from these rows is a revision of the profile's descriptor whose format,
+    /// manifests, verifier and executor are the universal bytecode's rather than the bare module's.
+    /// Rows 4 to 7 are not here, because they are the universal bytecode's.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=B55BAA
+    // Broiler-Falsified-If: a row here differs from the same row of the profile's descriptor, other than the revision
+    // Broiler-Human:        PENDING
+    public static UbcFamilyDeclaration Declaration { get; } = Declare();
+
+    /// <summary>
+    /// Evaluates one numeric row with this profile's own arms - the reference handler - over
+    /// <paramref name="a"/>, the deeper operand, and <paramref name="b"/>, the top one, which a
+    /// one-operand row does not read.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Answers true with the result's bits, a thirty-two-bit result's in the low half; or true with
+    /// the trap the arm raised in <paramref name="trap"/> and zero bits. <paramref name="trap"/> is zero,
+    /// which names no trap, when none was raised. Answers false when the arms have no answer for the
+    /// row, and for a byte that is not a numeric row of the family's table.
+    /// </para>
+    /// <para>
+    /// <b>It is the door the universal bytecode's obligation E2 reads the profile through.</b> The arms
+    /// are the interpreter's own, including the routing defect that gives the twelve float comparisons,
+    /// 0x5B to 0x66, no answer; they canonicalise no NaN, so a comparison with the primitive table under
+    /// the family's NaN flag must read a NaN answer as a NaN.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=1; Fingerprint=B05DAD
+    // Broiler-Human:        PENDING
+    public static bool TryEvaluateReference(byte opcode, ulong a, ulong b, out ulong bits, out WasmTrapKind trap) =>
+        WasmReferenceNumerics.TryEvaluate(opcode, a, b, out bits, out trap);
+
+    /// <summary>
     /// Builds the descriptor in one full-arity construction.
     /// </summary>
     /// <remarks>
@@ -188,6 +253,52 @@ public static class WebAssemblyProfile
             // cannot mint a payload identity the other's range would accept. Three of the hundred
             // are used: the values an entry point returned, a trap, and an entry point that could
             // not be resolved.
+            payloadKindIdRange: new VmPayloadKindIdRange(2000, 2099),
+            authoredCoreContractVersion: 1,
+            conformanceManifestId: VmConformanceManifestId.Create("broiler.webassembly.conformance"),
+            conformanceManifestVersion: 1,
+            diagnosticsIdentity: diagnostics,
+            packageIdentity: new VmPackageIdentity(
+                "Broiler.VM.Profile.WebAssembly", "0.1.0-preview.1", "broiler.webassembly"),
+            faultRecovery: VmFaultRecovery.InstanceRecoverable,
+            maxUnchargedWork: MaxUnchargedWork,
+            chargingGranularity: 1,
+            artifactSharing: VmArtifactSharing.Shareable);
+    }
+
+    /// <summary>
+    /// The family's declaration: the descriptor's own rows, in the same full-arity construction, at
+    /// descriptor revision 2.
+    /// </summary>
+    /// <remarks>
+    /// The rows are spelled here rather than read off <see cref="Descriptor"/> so that the declaration
+    /// stands when the bare-module descriptor is retired; a composition that holds both can compare
+    /// them row for row, and every row but the revision agrees.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=1B63C5
+    // Broiler-Falsified-If: a row here states a capability, a guest load, a limit or an identity the descriptor does not
+    // Broiler-Human:        PENDING
+    private static UbcFamilyDeclaration Declare()
+    {
+        VmDiagnosticsIdentity.TryCreate(Id, "broiler.webassembly.diagnostics", out var diagnostics);
+
+        return new UbcFamilyDeclaration(
+            profileId: Id,
+            displayName: "Broiler WebAssembly",
+            descriptorRevision: 2,
+            artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
+            artifactLifetimeKind: VmArtifactLifetimeKind.Managed,
+            supportsConcurrentVerification: true,
+            threadAffinity: VmThreadAffinity.Agile,
+            cancellationPollBound: 65_536,
+            abandonBudget: 0,
+            limitDefaults: Defaults(),
+            profileHardMaxima: Maxima(),
+            budgetDeclarationMatrix: Matrix(),
+            hostCapabilityDescriptors: ImmutableArray<VmCapabilityImport>.Empty,
+            guestInitiatedLoads: VmGuestLoadDeclaration.NotDeclared,
+            asynchronousInstantiation: VmDeclaration.NotDeclared,
+            externalSuspension: VmDeclaration.NotDeclared,
             payloadKindIdRange: new VmPayloadKindIdRange(2000, 2099),
             authoredCoreContractVersion: 1,
             conformanceManifestId: VmConformanceManifestId.Create("broiler.webassembly.conformance"),

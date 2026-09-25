@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <!--
-    THE REFERENCE SET IS EXACTLY TWO, AND THERE IS NO FORMAT SIBLING.
+    THE REFERENCE SET IS EXACTLY THREE, AND THERE IS NO FORMAT SIBLING.
 
     ADR 0011 obligation P1 fixes a profile's Broiler.VM-owned reference set at Abstractions and
     Binary, and its 2026-08-31 revision admits a profile component's own siblings beside them. The
@@ -19,13 +19,22 @@
     apart.
 
     This profile has no pivot to hold apart. Its roadmap section 5 rejects a format assembly by
-    name: there is no compiler here, the payload is a bare WebAssembly module produced by an
-    external toolchain, and a third project would be a boundary with nothing on either side of it.
-    So the set is the two core assemblies and nothing else, and rule W1 asserts it.
+    name, and the universal bytecode programme's milestone UBC-4 gives it the pivot that already
+    exists instead: Broiler.VM.Ubc, the format, family-table schema and verifier every family is
+    written against. The profile references it to declare its family - the table, the verifier hook,
+    the handlers and the registration a composition root builds a descriptor from - and it never
+    references an emitter, which rule A11 forbids a profile. So the set is the two core assemblies
+    and the universal bytecode, and rule W1 asserts it.
+
+    During UBC-4 the profile carries both paths: the descriptor its roots verify bare modules under
+    today, and the family they will verify translated universal bytecode under. Until the roots move,
+    nothing composes the family but a scratch probe, and the payload the roots hand the core is still
+    a bare WebAssembly module produced by an external toolchain.
   -->
   <ItemGroup>
     <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
     <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
   </ItemGroup>
 
 </Project>

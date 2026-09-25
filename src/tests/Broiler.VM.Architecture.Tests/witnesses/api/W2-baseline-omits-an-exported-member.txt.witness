@@ -2,7 +2,7 @@
 #
 # WebAssemblyProfile.Id is exported and this baseline does not list it. That is an ADDITION as
 # far as the rule can tell, and for a profile that is the direction that matters: this assembly
-# is referenced by two composition roots, so a member added here is a member a composition can
+# is referenced by composition roots, so a member added here is a member a composition can
 # bind to without anyone deciding it should be bindable.
 #
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor..ctor(Broiler.VM.VmProfileId profileId) : void

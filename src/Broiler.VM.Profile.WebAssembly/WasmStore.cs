@@ -177,7 +177,7 @@ internal sealed class WasmStore
     /// budget exhaustion, because no budget was consulted.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=9C0CD5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=8F718B
     // Broiler-Falsified-If: an array is allocated before its charge returns true, or a declared minimum above the profile ceiling is allocated
     // Broiler-Human:        PENDING
     internal static bool TryAllocate(
@@ -211,7 +211,7 @@ internal sealed class WasmStore
                 return false;
             }
 
-            allocatedMemories[index] = new WasmMemoryInstance(new byte[(int)initialBytes], maximum);
+            allocatedMemories[index] = new WasmMemoryInstance(WasmMemoryInstance.Allocate(initialBytes), maximum);
             meter.ReportRetained(VmBudgetDimension.LiveBytes, initialBytes);
         }
 

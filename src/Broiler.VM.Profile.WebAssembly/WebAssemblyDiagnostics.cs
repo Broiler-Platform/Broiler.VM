@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   5
 // Annotated:        5/5
-// Exempt:           76
+// Exempt:           86
 // Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    High
@@ -26,8 +26,9 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <para>
 /// <b>The registry is bound in both directions or it is not a registry.</b> Every code this
 /// assembly can emit is a member below, and every member below is reachable from a decode path in
-/// <see cref="WasmDecoder"/>, a validation path in <see cref="WasmValidator"/>, or the reserved
-/// path in <see cref="WebAssemblyVerifier"/>. The numbers are grouped by the pass that emits them
+/// <see cref="WasmDecoder"/>, a validation path in <see cref="WasmValidator"/>, the family hook
+/// <see cref="WasmFamilyVerifier"/> over a universal bytecode artifact, or the reserved path in
+/// <see cref="WebAssemblyVerifier"/> and in the hook. The numbers are grouped by the pass that emits them
 /// so that a reader can tell from a code alone which pass refused an artifact, and a code is never
 /// reused for a different meaning: a rejection whose meaning changes takes a new number and the old
 /// one is retired, because a corpus entry that recorded a code has dated it.
@@ -60,7 +61,7 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// be several dozen separately assessed fixed values saying the same thing worse.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=11871F
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5A1542
 // Broiler-Human:        PENDING
 public enum WebAssemblyDiagnosticCode
 {
@@ -307,6 +308,48 @@ public enum WebAssemblyDiagnosticCode
     /// be false.
     /// </remarks>
     OpcodeNotAdmitted = 2822,
+
+    // ---- 2850: the family hook, over a universal bytecode artifact's module definitions -----
+    //
+    // The universal bytecode walk verifies what every family shares; the family's hook then checks
+    // what only this profile knows, over the artifact's FamilyData section and at every family
+    // instruction. A hook refusal that means exactly what a decoder or validator code above already
+    // means carries that code: a limits minimum above its maximum is 2305 whichever pass finds it.
+    // The members below are the checks nothing above states, because they are about the universal
+    // bytecode container a translation writes rather than about a WebAssembly module's bytes. They
+    // sit in the upper half of the body-validation hundred, the one hundred with room, because every
+    // hundred from 2000 to 2900 is taken and 3000 to 3999 is the universal bytecode's own range,
+    // which the walk answers as a defect of the hook when a hook names it.
+
+    /// <summary>The artifact carries no module definitions: no FamilyData section of family slot one.</summary>
+    ModuleDefinitionsMissing = 2851,
+
+    /// <summary>The module definitions ended where their layout says more bytes follow.</summary>
+    ModuleDefinitionsTruncated = 2852,
+
+    /// <summary>The module definitions carry bytes after the start field that ends them.</summary>
+    ModuleDefinitionsTrailingBytes = 2853,
+
+    /// <summary>The module definitions name a layout version this build does not read.</summary>
+    ModuleDefinitionsVersionUnsupported = 2854,
+
+    /// <summary>A byte saying whether a memory or a table is declared is neither zero nor one.</summary>
+    ModuleDefinitionsMalformedPresence = 2855,
+
+    /// <summary>A thirty-two-bit global's initial bits set a bit above its width.</summary>
+    GlobalInitialValueOutOfRange = 2856,
+
+    /// <summary>A Types row or a unit's locals name a language-value slot, and this family has no value plane.</summary>
+    ValueSlotNotAdmitted = 2857,
+
+    /// <summary>An exported function's unit is not flagged as an entry, so no invocation could start it.</summary>
+    ExportedFunctionNotAnEntry = 2858,
+
+    /// <summary>The Positions rows are not in ascending order of unit and offset, or one position is stated twice.</summary>
+    PositionsNotOrdered = 2859,
+
+    /// <summary>A global row's type is not the type of the global its operand names.</summary>
+    GlobalRowTypeMismatch = 2860,
 
     // ---- 2900: reserved for a defect in this assembly ---------------------------------------
 

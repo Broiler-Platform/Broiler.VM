@@ -1154,7 +1154,16 @@ public sealed class ReviewRecordRuleTests
         // AND THE TWO OF MILESTONE UBC-2, the whole of Broiler.VM.Emitter.Bytecode: the form and the
         // executor with its instance and continuation, and the dispatch loop with its frame and its
         // meter. Nothing in them has been read by a human.
-        Assert.Equal(230, AssuranceSources.Files.Count);
+        //
+        // AND THE FIVE OF MILESTONE UBC-4's WEBASSEMBLY FAMILY, in the WebAssembly profile: the
+        // family's instruction table, WasmFamilyTable.cs; the codec of its module definitions with the
+        // position index and the meter adapter the hook reads them through, WasmFamilyData.cs; the
+        // verifier hook, WasmFamilyVerifier.cs, which every artifact naming the profile reaches and
+        // which is therefore a parser over untrusted bytes; the handlers, the null value plane and the
+        // instance store, WasmFamily.cs; and the numeric arms moved out of the interpreter,
+        // WasmReferenceNumerics.cs. They are covered on the same terms as every other product file,
+        // and nothing in them has been read by a human.
+        Assert.Equal(235, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5594 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5711 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 230 |
-| Code units | 9933 |
-| Relevant | 5594 |
-| Exempt | 4339 |
-| Assessed | 5594 of 5594 (100%) |
-| Human reviewed | 0 of 5594 (0%) |
-| Unverified | 5594 |
+| Files scanned | 235 |
+| Code units | 10120 |
+| Relevant | 5711 |
+| Exempt | 4409 |
+| Assessed | 5711 of 5711 (100%) |
+| Human reviewed | 0 of 5711 (0%) |
+| Unverified | 5711 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5594 |
+| HUMAN_PENDING | 5711 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4339 |
+| EXEMPT | 4409 |
 
 ## 5. Aliases In The Tree
 
@@ -287,23 +287,28 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.WebAssembly/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` | 63 | 39 | 24 | 39 | Low | Critical | 24/24 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` | 8 | 8 | 0 | 8 | Low | High | 5/5 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` | 51 | 32 | 19 | 32 | Low | Critical | 17/15 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` | 84 | 47 | 37 | 47 | Low | Critical | 20/17 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmFamilyTable.cs` | 24 | 23 | 1 | 23 | Low | High | 6/6 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmFamilyVerifier.cs` | 10 | 10 | 0 | 10 | Low | Critical | 8/6 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmFormat.cs` | 24 | 10 | 14 | 10 | Low | High | 2/2 |
-| `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` | 57 | 30 | 27 | 30 | Low | Critical | 20/20 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` | 52 | 25 | 27 | 25 | Low | Critical | 15/15 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmLeb128.cs` | 18 | 12 | 6 | 12 | Low | Critical | 6/6 |
-| `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` | 15 | 13 | 2 | 13 | Low | Critical | 6/6 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` | 17 | 14 | 3 | 14 | Low | Critical | 8/8 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmModule.cs` | 94 | 50 | 44 | 50 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmName.cs` | 3 | 3 | 0 | 3 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmOpcode.cs` | 173 | 1 | 172 | 1 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` | 12 | 10 | 2 | 10 | Low | High | 6/6 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` | 7 | 7 | 0 | 7 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` | 27 | 18 | 9 | 18 | Low | Critical | 10/10 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmTrapKind.cs` | 16 | 2 | 14 | 2 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmTypes.cs` | 45 | 20 | 25 | 20 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` | 113 | 75 | 38 | 75 | Low | Critical | 52/52 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmValue.cs` | 16 | 12 | 4 | 12 | Low | High | 3/3 |
-| `src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs` | 81 | 5 | 76 | 5 | Low | High | 3/3 |
+| `src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs` | 91 | 5 | 86 | 5 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` | 16 | 14 | 2 | 14 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyPayloads.cs` | 42 | 15 | 27 | 15 | Low | High | 2/2 |
-| `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` | 16 | 13 | 3 | 13 | Low | High | 4/4 |
+| `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` | 20 | 15 | 5 | 15 | Low | High | 7/7 |
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyVerifier.cs` | 11 | 7 | 4 | 7 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Runtime/VmAggregateBudget.cs` | 42 | 23 | 19 | 23 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs` | 17 | 6 | 11 | 6 | Low | Medium | 1/0 |
@@ -3360,14 +3365,102 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the array is created before the reservation returns true, or the byte-count product is unchecked
 - `Broiler.VM.Profile.WebAssembly.WasmEntryPoint` in `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` - Security=High, Spec=none cited, `A39A6F`, PENDING
   - Falsified if: two different (name, argument) pairs encode to the same text, or a float literal does not round-trip its exact bit pattern
-- `Broiler.VM.Profile.WebAssembly.WasmEntryPoint.TryParse(System.ReadOnlySpan<byte>, System.Span<WasmValue>, System.Span<WasmValueType>, out int, out int, out int, out WebAssemblyEntryPointProblem)` in `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` - Security=High, Spec=none cited, `B56F30`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmEntryPoint.TryParse(System.ReadOnlySpan<byte>, System.Span<ulong>, System.Span<WasmValueType>, out int, out int, out int, out WebAssemblyEntryPointProblem)` in `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` - Security=High, Spec=none cited, `E6C5D8`, PENDING
   - Falsified if: a byte count is trusted past the end of the text, or a malformed literal is read as a value
 - `Broiler.VM.Profile.WebAssembly.WasmEntryPoint.TryReadCount(System.ReadOnlySpan<byte>, ref int, out uint)` in `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` - Security=High, Spec=none cited, `7C643C`, PENDING
   - Falsified if: a count is accumulated past what a 32-bit length can hold
-- `Broiler.VM.Profile.WebAssembly.WasmEntryPoint.TryReadLiteral(WasmValueType, System.ReadOnlySpan<byte>, out WasmValue)` in `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` - Security=High, Spec=none cited, `DEABD5`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmEntryPoint.TryReadLiteral(WasmValueType, System.ReadOnlySpan<byte>, out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` - Security=High, Spec=none cited, `A1B9E7`, PENDING
   - Falsified if: a float literal of the wrong digit count is accepted, or an integer literal is accepted with a trailing byte
 - `Broiler.VM.Profile.WebAssembly.WasmEntryPoint.TryReadInteger(System.ReadOnlySpan<byte>, out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` - Security=High, Spec=none cited, `247F89`, PENDING
   - Falsified if: a literal with no digits or with a trailing non-digit is accepted
+- `Broiler.VM.Profile.WebAssembly.WasmFamily` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `E5586C`, PENDING
+  - Falsified if: a handler writes outside its row's effect, a trap is answered with a code of another meaning than the base interpreter's, or an instance that is not published keeps retained bytes
+- `Broiler.VM.Profile.WebAssembly.WasmFamily.IUbcFamily.Handle(ref UbcActivation, byte, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `84BE34`, PENDING
+  - Falsified if: a row is answered from state it does not own, or a trap it raises is answered as another
+- `Broiler.VM.Profile.WebAssembly.WasmFamily.IUbcFamily.CreateInstance(UbcInstanceContext)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=High, Spec=ADR-0013, `D6DB06`, PENDING
+  - Falsified if: the state answered is not the one the instance's definitions and the environment's meter make
+- `Broiler.VM.Profile.WebAssembly.WasmFamily.IUbcFamily.AdmitInstance(object)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=High, Spec=ADR-0013, `B1FE11`, PENDING
+  - Falsified if: an instance whose segment trapped or whose charge was refused is answered ready
+- `Broiler.VM.Profile.WebAssembly.WasmFamily.IUbcFamily.AbandonInstance(object)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=High, Spec=none cited, `3447A9`, PENDING
+  - Falsified if: an abandoned instance keeps any byte reported retained
+- `Broiler.VM.Profile.WebAssembly.WasmFamily.IUbcFamily.ResolveEntry(object, UbcVerifiedProgram, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=High, Spec=ADR-0013, `434777`, PENDING
+  - Falsified if: an entry point resolves to a unit whose parameters its arguments do not match, or a refusal carries another problem or argument index than the base executor's
+- `Broiler.VM.Profile.WebAssembly.WasmFamily.IUbcFamily.BindParameters(ref UbcActivation, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=High, Spec=ADR-0013, `0FBD82`, PENDING
+  - Falsified if: a local beyond the unit's parameters is written, or an argument is bound to a parameter of another type
+- `Broiler.VM.Profile.WebAssembly.WasmFamily.Access(WasmInstanceState, UbcInstructionRow, ulong[], int, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `9BE7E2`, PENDING
+  - Falsified if: an access reads or writes a byte the region primitive's bounds check refused, or a view of the memory is held past the access
+- `Broiler.VM.Profile.WebAssembly.WasmFamily.CallIndirect(ref UbcActivation, WasmInstanceState, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `422CCD`, PENDING
+  - Falsified if: an index past the table, a null entry or a callee of another type index is requested rather than trapped, or the traps are raised in another order than the base interpreter's
+- `Broiler.VM.Profile.WebAssembly.WasmInstanceState` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `6E21EB`, PENDING
+  - Falsified if: an array is allocated before its charge returns true, a segment is applied in part, or a state that is not published keeps a byte reported retained
+- `Broiler.VM.Profile.WebAssembly.WasmInstanceState.Create(UbcInstanceContext)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `E0FDB8`, PENDING
+  - Falsified if: a store is allocated before its charge, a segment is applied past a refused charge or poll, or a minimum above a profile ceiling is allocated
+- `Broiler.VM.Profile.WebAssembly.WasmInstanceState.Release()` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=High, Spec=none cited, `5D7247`, PENDING
+  - Falsified if: a byte is reported released twice, or one reported retained is never released on a path that is not published
+- `Broiler.VM.Profile.WebAssembly.WasmInstanceState.AllocateMemory(IVmMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=none cited, `03353E`, PENDING
+  - Falsified if: the array exists before the allocation charge returned true, or a minimum above the page ceiling is allocated
+- `Broiler.VM.Profile.WebAssembly.WasmInstanceState.AllocateTable(IVmMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=none cited, `8E255D`, PENDING
+  - Falsified if: the array exists before the allocation charge returned true, or a minimum above the entry ceiling is allocated
+- `Broiler.VM.Profile.WebAssembly.WasmInstanceState.RefuseByProfileCeiling(IVmMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=High, Spec=none cited, `801282`, PENDING
+  - Falsified if: the refusal leaves the meter unlatched, or retained bytes behind it
+- `Broiler.VM.Profile.WebAssembly.WasmDefinitions` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=ADR-0013, `3DE38C`, PENDING
+  - Falsified if: a member here can change after the hook has answered it, or an export found by name is not the one of exactly that name
+- `Broiler.VM.Profile.WebAssembly.WasmDefinitions.TryFindExport(System.ReadOnlySpan<byte>, out WasmExportDefinition)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `8B6C8F`, PENDING
+  - Falsified if: a name no export carries answers an export, or a name one carries answers false
+- `Broiler.VM.Profile.WebAssembly.WasmPositionIndex.TryBuild(ImmutableArray<UbcPosition>, WasmHookMeter, out WasmPositionIndex)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `AF9449`, PENDING
+  - Falsified if: rows out of order or stated twice are indexed, or the key array is allocated before its bytes are reserved
+- `Broiler.VM.Profile.WebAssembly.WasmHookMeter` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `FA12FE`, PENDING
+  - Falsified if: a charge made through this adapter reaches a dimension other than the one named, or a refusal is answered as an exhaustion of another dimension
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=Critical, Spec=ADR-0013, `4EE470`, PENDING
+  - Falsified if: a section the layout does not describe is read as definitions, a count is trusted past the bytes that remain, an array is allocated before its bytes are reserved, or a written section reads back as other definitions
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.TryRead(System.ReadOnlyMemory<byte>, WasmHookMeter, out WasmDefinitions?)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=Critical, Spec=ADR-0013, `E3BDF6`, PENDING
+  - Falsified if: a body the layout does not describe exactly is admitted, a count is used before it is bounded by the remaining bytes and charged, or a read runs past the body
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.ReadLimits(ref Cursor, bool, out bool, out WasmLimits)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `E4BA58`, PENDING
+  - Falsified if: a presence or maximum flag other than zero or one is read as a flag, a minimum above its maximum passes, or a memory's limits pass above the format's page maximum
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.ReadGlobals(ref Cursor, WasmHookMeter, out ImmutableArray<WasmGlobalDefinition>)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `ED6CF0`, PENDING
+  - Falsified if: a type byte outside the four, a mutability byte other than zero or one, or a thirty-two-bit global's initial bits above its width is read as a global
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.ReadElements(ref Cursor, WasmHookMeter, bool, out ImmutableArray<WasmElementDefinition>)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `1261CA`, PENDING
+  - Falsified if: a segment is read when no table is declared, or a function list is read before its count is bounded and charged
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.ReadData(ref Cursor, WasmHookMeter, bool, out ImmutableArray<WasmDataDefinition>)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `360308`, PENDING
+  - Falsified if: a segment is read when no memory is declared, or its bytes are taken past the end of the section
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.ReadExports(ref Cursor, WasmHookMeter, bool, bool, int, out ImmutableArray<WasmExportDefinition>, out ImmutableArray<int>)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `6ED0DF`, PENDING
+  - Falsified if: a name that is not well-formed UTF-8, a kind byte outside the four, an index of a table, memory or global the definitions do not declare, or a name stated twice is admitted
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.ReadCount(ref Cursor, WasmHookMeter, ulong, ulong, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=Critical, Spec=none cited, `F23076`, PENDING
+  - Falsified if: a count the remaining bytes cannot hold is answered, or one is answered before it is charged and its array reserved
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.Cursor` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=Critical, Spec=none cited, `ABC8AF`, PENDING
+  - Falsified if: a read answers bytes past the end of the section, or a window it takes is longer than what remains
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.Cursor.TryU8(out byte)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `1831FB`, PENDING
+  - Falsified if: a byte past the end of the section is answered
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.Cursor.TryU32(out uint)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `2C9FAC`, PENDING
+  - Falsified if: a field running past the end of the section is answered, or its bytes are read in another order than little-endian
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.Cursor.TryU64(out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `DABF2D`, PENDING
+  - Falsified if: a field running past the end of the section is answered, or its bytes are read in another order than little-endian
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyData.Cursor.TryTake(uint, out System.ReadOnlyMemory<byte>)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `60146D`, PENDING
+  - Falsified if: a window longer than the bytes that remain is answered
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyTable` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyTable.cs` - Security=High, Spec=ADR-0013, `E00481`, PENDING
+  - Falsified if: a numeric row names a primitive of another operation than its W3C byte's, or a row maps a trap its primitive cannot raise
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyTable.FamilyCodeOf(UbcTrapCode)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyTable.cs` - Security=High, Spec=none cited, `70B886`, PENDING
+  - Falsified if: a universal trap maps to a kind of another meaning, so a payload names the wrong trap
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyTable.Primitives` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyTable.cs` - Security=High, Spec=none cited, `2C03D0`, PENDING
+  - Falsified if: a byte is paired with a primitive whose operation is not the W3C instruction of that byte
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyTable.Table` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyTable.cs` - Security=High, Spec=none cited, `76C1E4`, PENDING
+  - Falsified if: a table the schema refused is answered rather than thrown
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyTable.Build()` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyTable.cs` - Security=High, Spec=ADR-0013, `0F6E49`, PENDING
+  - Falsified if: a row reaches the table without passing the constructor's schema checks, or a numeric row's trap mappings are not the primitive's own trap set
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyTable.TrapsFor(UbcPrimitive)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyTable.cs` - Security=High, Spec=none cited, `658D26`, PENDING
+  - Falsified if: a trap the primitive can raise is left unmapped, or one it cannot raise is mapped
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyVerifier` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyVerifier.cs` - Security=Critical, Spec=ADR-0013, `0B3876`, PENDING
+  - Falsified if: any input makes a member of this type throw, or an artifact whose definitions or family rows break a check listed here is admitted
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyVerifier.Begin(UbcHookArtifact, out object?)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyVerifier.cs` - Security=Critical, Spec=none cited, `D7C76C`, PENDING
+  - Falsified if: an exception escapes this member, or a family state is answered alongside a refusal
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyVerifier.CheckInstruction(object?, in UbcHookInstruction)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyVerifier.cs` - Security=Critical, Spec=none cited, `C5BC7C`, PENDING
+  - Falsified if: an exception escapes this member, or an instruction breaking a check listed on the type is admitted
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyVerifier.BeginCore(UbcHookArtifact, out WasmDefinitions?)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyVerifier.cs` - Security=Critical, Spec=ADR-0013, `BE194D`, PENDING
+  - Falsified if: definitions are answered from an artifact without the section of family slot one, or before every check against the artifact has passed
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyVerifier.CheckAgainstArtifact(UbcArtifact, WasmDefinitions, WasmHookMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyVerifier.cs` - Security=Critical, Spec=ADR-0013, `1370ED`, PENDING
+  - Falsified if: a value slot, an element or export naming no unit, an exported function without the entry flag, or a start unit that takes or gives anything is admitted
+- `Broiler.VM.Profile.WebAssembly.WasmFamilyVerifier.CheckInstructionCore(WasmDefinitions, byte, ulong, UbcInstructionRow)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyVerifier.cs` - Security=Critical, Spec=ADR-0013, `293B18`, PENDING
+  - Falsified if: a memory row with no memory, a nonzero reserved byte, an alignment above natural, a global row naming no global, a global of another type or an immutable one it sets, or an indirect call with no table is admitted
 - `Broiler.VM.Profile.WebAssembly.WasmFormat` in `src/Broiler.VM.Profile.WebAssembly/WasmFormat.cs` - Security=High, Spec=none cited, `ABAE0A`, PENDING
   - Falsified if: section order is decided anywhere in this assembly by comparing identifier values rather than by this table
 - `Broiler.VM.Profile.WebAssembly.WasmFormat.OrderRankOf(WasmSectionId)` in `src/Broiler.VM.Profile.WebAssembly/WasmFormat.cs` - Security=High, Spec=none cited, `0C2C57`, PENDING
@@ -3392,7 +3485,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a frame is pushed without a call-depth charge taking, or arguments are read below the caller's own base
 - `Broiler.VM.Profile.WebAssembly.WasmInterpreter.PopFrame(WasmFrame)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=none cited, `99DB03`, PENDING
   - Falsified if: it leaves anything on the stack other than exactly the declared results
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.Run()` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, Spec=none cited, `105A25`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.Run()` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, Spec=none cited, `599992`, PENDING
   - Falsified if: an opcode validation admits is not handled here, or a handled opcode reads a different immediate shape than validation read
 - `Broiler.VM.Profile.WebAssembly.WasmInterpreter.Branch(WasmFrame, int, ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, Spec=none cited, `A49C19`, PENDING
   - Falsified if: a branch to a loop closes the loop's own label, or a branch leaves values below the label's height
@@ -3402,16 +3495,6 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: it reads past the end of the body, or shifts a payload byte past the width
 - `Broiler.VM.Profile.WebAssembly.WasmInterpreter.ReadS64(System.ReadOnlySpan<byte>, ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=none cited, `FA830B`, PENDING
   - Falsified if: it reads past the end of the body, or sign-extends from the wrong bit
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.TryNumeric(byte, out WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=none cited, `0123F7`, PENDING
-  - Falsified if: an opcode inside these ranges answers false, or one outside them answers true
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.Integer(byte, ref WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, Spec=none cited, `23CF43`, PENDING
-  - Falsified if: a signed remainder by minus one traps, or a shift count is used unmasked
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.Float(byte)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=none cited, `A93738`, PENDING
-  - Falsified if: a float operation here raises a trap, or a minimum of a negative and a positive zero answers the positive one
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.FloatComparison(byte)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=none cited, `9BCC47`, PENDING
-  - Falsified if: a comparison against a NaN answers anything but false, or an inequality against a NaN answers false
-- `Broiler.VM.Profile.WebAssembly.WasmInterpreter.Convert(byte, ref WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, Spec=none cited, `A0EBA3`, PENDING
-  - Falsified if: a value exactly on a bound is refused, or a value one unit past it is accepted
 - `Broiler.VM.Profile.WebAssembly.WasmLeb128` in `src/Broiler.VM.Profile.WebAssembly/WasmLeb128.cs` - Security=High, Spec=none cited, `839507`, PENDING
   - Falsified if: any member here calls one of the core's canonical variable-length readers, or a padded encoding inside its byte budget is refused
 - `Broiler.VM.Profile.WebAssembly.WasmLeb128.TryReadVarU32(ref VmBoundedReader, out uint, out WasmVarIntStatus)` in `src/Broiler.VM.Profile.WebAssembly/WasmLeb128.cs` - Security=High, Spec=none cited, `D83660`, PENDING
@@ -3428,13 +3511,17 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an access reaches a byte outside the current size, or a growth refused by the profile maximum spends a core allowance, or a growth allocates before its charge is taken
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.ProfileMaximumPages` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=High, Spec=none cited, `F9C3B1`, PENDING
   - Falsified if: this bound is derived from a limit vector rather than declared here, or refusing against it charges anything
+- `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.Allocate(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=High, Spec=ADR-0013, `35BEEF`, PENDING
+  - Falsified if: a memory's array is allocated anywhere but the pinned object heap, or allocated before its charge
+- `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.Bytes` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, Spec=ADR-0013, `CB7CA1`, PENDING
+  - Falsified if: a span taken here is held across a growth, or covers bytes outside the current array
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.TryLoad(ulong, int, out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, Spec=none cited, `8389FD`, PENDING
   - Falsified if: it reads a byte at or past the current size, or the range check is performed in 32-bit arithmetic
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.TryStore(ulong, int, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, Spec=none cited, `A3FB78`, PENDING
   - Falsified if: it writes a byte at or past the current size, or the range check is performed in 32-bit arithmetic
 - `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.TryInitialise(ulong, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=High, Spec=none cited, `FA5507`, PENDING
   - Falsified if: a prefix of a segment that does not fit is written, or a segment that does fit is refused
-- `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.Grow(uint, IVmMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, Spec=none cited, `859A66`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmMemoryInstance.Grow(uint, IVmMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` - Security=Critical, Spec=none cited, `7E66E2`, PENDING
   - Falsified if: an array is allocated before the allocation charge returns true, or a refusal against the profile ceiling reaches the meter
 - `Broiler.VM.Profile.WebAssembly.WasmJumpTarget` in `src/Broiler.VM.Profile.WebAssembly/WasmModule.cs` - Security=High, Spec=none cited, `4D9BAD`, PENDING
   - Falsified if: an offset here is assigned from a value read out of the payload rather than from a position validation reached
@@ -3468,6 +3555,20 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a level charged here is not released when it closes, so nesting is counted as a running total
 - `Broiler.VM.Profile.WebAssembly.WasmReadAdapter.ReleaseStructuralDepth(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` - Security=High, Spec=none cited, `0E44B7`, PENDING
   - Falsified if: it releases more levels than were charged, so a ceiling admits a nesting it should refuse
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, Spec=ADR-0013, `8A1B77`, PENDING
+  - Falsified if: an arm here answers differently from the interpreter arm it was moved from, or the reference evaluation reads an operand the row does not pop
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryEvaluate(byte, ulong, ulong, out ulong, out WasmTrapKind)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, Spec=ADR-0013, `19B6AD`, PENDING
+  - Falsified if: an answer is given for a byte that is no numeric row, or a row's arm is run over more operands than its effect pops
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryNumeric(byte, WasmValue[], ref int, out WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, Spec=none cited, `9E674E`, PENDING
+  - Falsified if: an opcode inside these ranges answers false, or one outside them answers true
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Integer(byte, WasmValue[], ref int, ref WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=Critical, Spec=none cited, `B9E1D6`, PENDING
+  - Falsified if: a signed remainder by minus one traps, or a shift count is used unmasked
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Float(byte, WasmValue[], ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, Spec=none cited, `A815A7`, PENDING
+  - Falsified if: a float operation here raises a trap, or a minimum of a negative and a positive zero answers the positive one
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.FloatComparison(byte, WasmValue[], ref int)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, Spec=none cited, `C9F6CF`, PENDING
+  - Falsified if: a comparison against a NaN answers anything but false, or an inequality against a NaN answers false
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Convert(byte, WasmValue[], ref int, ref WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=Critical, Spec=none cited, `91820A`, PENDING
+  - Falsified if: a value exactly on a bound is refused, or a value one unit past it is accepted
 - `Broiler.VM.Profile.WebAssembly.WasmTableInstance` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, Spec=none cited, `6C840E`, PENDING
   - Falsified if: a slot is read without its index being compared against the entry count first
 - `Broiler.VM.Profile.WebAssembly.WasmTableInstance.TryRead(uint, out int)` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, Spec=none cited, `895FB1`, PENDING
@@ -3476,7 +3577,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a prefix of a segment that does not fit is written
 - `Broiler.VM.Profile.WebAssembly.WasmStore` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, Spec=none cited, `F2E105`, PENDING
   - Falsified if: anything here becomes reachable from an artifact's state once verification has returned
-- `Broiler.VM.Profile.WebAssembly.WasmStore.TryAllocate(WasmModule, IVmMeter, out WasmStore?, out bool)` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=Critical, Spec=none cited, `9C0CD5`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmStore.TryAllocate(WasmModule, IVmMeter, out WasmStore?, out bool)` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=Critical, Spec=none cited, `8F718B`, PENDING
   - Falsified if: an array is allocated before its charge returns true, or a declared minimum above the profile ceiling is allocated
 - `Broiler.VM.Profile.WebAssembly.WasmStore.ReleasePartial(WasmMemoryInstance?[], WasmTableInstance?[], IVmMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmStore.cs` - Security=High, Spec=none cited, `EC74DD`, PENDING
   - Falsified if: a refused allocation leaves any byte reported retained and never released
@@ -3618,7 +3719,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: any guest instruction is dispatched on this path
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.InstantiateCore(VmVerifiedArtifact, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=Critical, Spec=none cited, `9A4768`, PENDING
   - Falsified if: a store outlives a refused instantiation without being released
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.InvokeCore(IVmInstanceState, in VmInvocationRequest)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=Critical, Spec=none cited, `41C410`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.InvokeCore(IVmInstanceState, in VmInvocationRequest)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=Critical, Spec=none cited, `B85121`, PENDING
   - Falsified if: an entry point resolves to a function whose parameters the arguments do not match
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Faulted(WasmTrapKind, int, int)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=High, Spec=none cited, `98D997`, PENDING
   - Falsified if: a trap kind reaches a caller without the diagnostic code its registry row names
@@ -3628,8 +3729,14 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a trap reaches a caller as a CLR exception rather than as one of these
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.MaxUnchargedWork` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, Spec=none cited, `D58353`, PENDING
   - Falsified if: the descriptor's uncharged-work row and this constant disagree
+- `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Registration` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, Spec=ADR-0013, `9322B9`, PENDING
+  - Falsified if: the registration carries a table of another identity or manifest, or a contract version other than the one the family was written for
+- `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Declaration` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, Spec=ADR-0013, `B55BAA`, PENDING
+  - Falsified if: a row here differs from the same row of the profile's descriptor, other than the revision
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Build()` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, Spec=none cited, `FDF7A7`, PENDING
   - Falsified if: a row here states a capability, a guest load, a manifest or a format version this assembly does not implement without the surrounding text saying so
+- `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Declare()` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, Spec=ADR-0013, `1B63C5`, PENDING
+  - Falsified if: a row here states a capability, a guest load, a limit or an identity the descriptor does not
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Defaults()` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, Spec=none cited, `00D0CA`, PENDING
   - Falsified if: a default here is zero on a dimension this profile declares inapplicable, or any default exceeds its maximum
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Matrix()` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` - Security=High, Spec=none cited, `18E0B0`, PENDING
@@ -3896,7 +4003,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5477 of the 5594 assessed units declare
+That is not a figure of speech. 5591 of the 5711 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

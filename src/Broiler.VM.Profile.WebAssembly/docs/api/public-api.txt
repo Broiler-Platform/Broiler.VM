@@ -72,12 +72,15 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ElementSegmentTableIndexOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2706
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ElseWithoutIf : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2806
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ExportIndexOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2704
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ExportedFunctionNotAnEntry : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2858
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.FunctionAndCodeCountMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2501
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.FunctionBodyLengthMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2503
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.FunctionIndexOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2815
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.FunctionTypeIndexOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2701
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.GlobalIndexOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2813
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.GlobalInitialValueOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2856
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.GlobalIsImmutable : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2814
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.GlobalRowTypeMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2860
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.IfWithoutElseResultMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2807
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ImportNotAdmitted : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2403
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.InstructionsAfterFunctionEnd : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2809
@@ -92,11 +95,17 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.MalformedNameEncoding : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2401
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.MemoryNotDeclared : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2817
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.MemoryPagesAboveFormatMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2306
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ModuleDefinitionsMalformedPresence : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2855
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ModuleDefinitionsMissing : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2851
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ModuleDefinitionsTrailingBytes : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2853
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ModuleDefinitionsTruncated : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2852
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ModuleDefinitionsVersionUnsupported : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2854
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.MultipleMemoriesNotAdmitted : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2504
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.MultipleTablesNotAdmitted : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2505
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.OpcodeNotAdmitted : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2822
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.OperandStackUnderflow : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2803
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.OperandTypeMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2802
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.PositionsNotOrdered : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2859
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ReaderMalformedEncoding : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2107
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ReaderStopped : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2902
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ReservedImmediateNotZero : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2821
@@ -128,6 +137,7 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.UnsupportedConstantExpressionOpcode : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2601
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.UnsupportedSegmentKind : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2603
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.UnterminatedFunctionBody : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2808
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ValueSlotNotAdmitted : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2857
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ValueTypeNotAdmitted : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2303
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.VerifierDefect : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2901
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.WrongMagic : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2001
@@ -152,13 +162,16 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.ProfileId : Broiler.VM.VmProfileId { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Resume(Broiler.VM.IVmInstanceState state, Broiler.VM.IVmProfileContinuation continuation, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmExecutionStep
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Unwind(Broiler.VM.IVmProfileContinuation continuation, System.UInt64 effectiveUnwindAllowance) : System.Void
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Declaration : static Broiler.VM.Ubc.UbcFamilyDeclaration { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Descriptor : static Broiler.VM.VmProfileDescriptor { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.EntryPointFaultKindId : const System.Int32 = 2003
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Id : static Broiler.VM.VmProfileId { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.MaxUnchargedWork : const System.UInt32 = 65536
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Registration : static Broiler.VM.Ubc.UbcFamilyRegistration<Broiler.VM.Profile.WebAssembly.WasmFamily> { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.ResultsKindId : const System.Int32 = 2001
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.SliceManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TrapKindId : const System.Int32 = 2002
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryEvaluateReference(System.Byte opcode, System.UInt64 a, System.UInt64 b, out System.UInt64 bits, out Broiler.VM.Profile.WebAssembly.WasmTrapKind trap) : static System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetEntryPointFault(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault fault) : static System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetResults(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyResults results) : static System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetTrap(in Broiler.VM.VmInstantiationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyTrap trap) : static System.Boolean
@@ -190,6 +203,7 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.Verify(in Broiler.VM.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload, Broiler.VM.IVmVerificationContext context, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmVerifierOutcome
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmContinuation : sealed class Broiler.VM.IVmProfileContinuation
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmExportKind : enum
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmFamily : struct Broiler.VM.Ubc.IUbcFamily
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmInstance : sealed class Broiler.VM.IVmInstanceState
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmModule : sealed class Broiler.VM.IVmVerifiedState
 type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WasmReadAdapter : sealed class Broiler.VM.IVmBoundedAllocationMeter

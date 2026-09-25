@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
     <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
     <InternalsVisibleTo Include="Broiler.VM.Composition.WebAssembly.Harness" />
   </ItemGroup>
 </Project>
