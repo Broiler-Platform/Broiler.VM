@@ -24,7 +24,7 @@ All packages are versioned in lockstep and target `net10.0`.
 | `Broiler.VM.Profile.JavaScript` | The JavaScript profile: verifier, executor, object model and standard library |
 | `Broiler.VM.Profile.JavaScript.Compiler` | JavaScript source to profile bytecode |
 | `Broiler.VM.Profile.JavaScript.Format` | The JavaScript profile's bytecode format: opcodes, encoder and decoder |
-| `Broiler.VM.Profile.WebAssembly` | The WebAssembly profile: decoder, validator and interpreter |
+| `Broiler.VM.Profile.WebAssembly` | The WebAssembly profile: decoder, validator, translator into universal bytecode, and the universal bytecode family that runs it |
 | `Broiler.VM.Profile.MachineCode` | The native output profile: native page arming and machine-code execution |
 
 ## Getting started

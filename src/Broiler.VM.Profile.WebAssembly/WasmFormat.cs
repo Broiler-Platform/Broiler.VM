@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
+// Relevant units:   8
+// Annotated:        8/8
 // Exempt:           14
-// Human-reviewed:   0/10
+// Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  2/10 max
-// Unverified:       10
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -113,16 +113,6 @@ internal static class WasmFormat
     // Broiler-AI:           Origin=Specification; IP=Low; Security=Medium; Resources=0; Fingerprint=4B1A6F
     // Broiler-Human:        PENDING
     internal const uint BinaryVersion = 1;
-
-    /// <summary>The lowest artifact format version this profile decodes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=9E0BD9
-    // Broiler-Human:        PENDING
-    internal const uint MinimumFormatVersion = 1;
-
-    /// <summary>The highest artifact format version this profile decodes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B614A4
-    // Broiler-Human:        PENDING
-    internal const uint MaximumFormatVersion = 1;
 
     /// <summary>The highest section identifier the format defines.</summary>
     // Broiler-AI:           Origin=Specification; IP=Low; Security=Medium; Resources=0; Fingerprint=CF79F5

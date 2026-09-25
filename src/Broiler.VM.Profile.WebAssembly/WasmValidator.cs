@@ -148,11 +148,14 @@ internal struct WasmControlFrame
 /// <para>
 /// <b>Two bounds are computed here because they cannot honestly be read anywhere else.</b> The
 /// deepest the operand stack goes and the deepest the control stack goes are high-water marks over
-/// a walk that has to happen anyway, and they are stored on the function body so that nothing that
-/// reads a body sizes anything from a number the payload chose. The jump targets are the same
-/// argument: this pass already knows, at every <c>end</c>, which opening instruction it closes, so
-/// the pairing is recorded and the translator's lowering never scans forward for a matching
-/// <c>end</c>.
+/// a walk that has to happen anyway, and they are stored on the function body. The bare-module
+/// interpreter sized its stacks from them rather than from a number the payload chose; since
+/// milestone UBC-4 retired it nothing sizes anything from them, and they are still computed because
+/// computing them costs this walk nothing it does not already charge, and
+/// <see cref="WasmModule.ExecutionBoundsComputed"/> reads them as the proof that validation reached
+/// every body. The jump targets are the same argument: this pass already knows, at every
+/// <c>end</c>, which opening instruction it closes, so the pairing is recorded and the translator's
+/// lowering never scans forward for a matching <c>end</c>.
 /// </para>
 /// <para>
 /// <b>Nesting is charged as a high-water mark and released, and the loop is iterative.</b> A level
@@ -170,7 +173,7 @@ internal struct WasmControlFrame
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=Specification; IP=Low; Security=Critical; Resources=8; Fingerprint=566927
-// Broiler-Falsified-If: a pop at a frame's own height answers the bottom type while the frame is not unreachable, or a module reaches an interpreter with an index, an opcode, a block or an operand stack this pass did not check
+// Broiler-Falsified-If: a pop at a frame's own height answers the bottom type while the frame is not unreachable, or a module reaches the translator with an index, an opcode, a block or an operand stack this pass did not check
 // Broiler-Human:        PENDING
 internal ref struct WasmValidator
 {
@@ -1380,7 +1383,7 @@ internal ref struct WasmValidator
     /// a question with no answer.
     /// </remarks>
     // Broiler-AI:           Origin=Specification; IP=Low; Security=Critical; Resources=3; Fingerprint=3B8775
-    // Broiler-Falsified-If: an alignment above the natural alignment of the access reaches an interpreter, or a store pops its address before its value
+    // Broiler-Falsified-If: an alignment above the natural alignment of the access reaches the translator, or a store pops its address before its value
     // Broiler-Human:        PENDING
     private bool? TryMemoryAccess(byte opcode)
     {

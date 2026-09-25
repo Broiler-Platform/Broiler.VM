@@ -77,7 +77,7 @@ public enum WebAssemblyDiagnosticCode
     /// <summary>The four bytes after the magic are not a binary format version this build reads.</summary>
     UnsupportedBinaryVersion = 2002,
 
-    /// <summary>The artifact descriptor names a format version outside this profile's range.</summary>
+    /// <summary>The artifact descriptor named a format version outside the retired bare-module verifier's range.</summary>
     /// <remarks>
     /// Emitted by nothing since milestone UBC-4 retired the bare-module verifier that checked it. The
     /// core refuses an artifact's format version against the descriptor a root builds from the
@@ -85,7 +85,7 @@ public enum WebAssemblyDiagnosticCode
     /// </remarks>
     UnsupportedArtifactFormatVersion = 2003,
 
-    /// <summary>The artifact descriptor names a feature manifest this verifier does not accept.</summary>
+    /// <summary>The artifact descriptor named a feature manifest the retired bare-module verifier did not accept.</summary>
     /// <remarks>
     /// Emitted by nothing since milestone UBC-4 retired the bare-module verifier that checked it. The
     /// core refuses an artifact's manifest against the descriptor a root builds from the family before
