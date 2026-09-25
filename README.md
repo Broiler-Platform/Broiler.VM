@@ -336,3 +336,9 @@ edge in either direction. The conditions on that copy are recorded in
 The architecture, milestones, evidence requirements, test matrix, release gates, and risks are in
 [the Broiler.VM roadmap](docs/roadmap.md); current evidence is tracked separately in
 [the authoritative status ledger](docs/roadmap.status.md).
+
+A concept for one **universal bytecode** that both language profiles lower to and that separate
+**emitter profiles** execute — an interpreter first, `x86-64` and `arm64` machine code after — is
+written up in [docs/universal-bytecode.md](docs/universal-bytecode.md). It is a proposal document in
+the sense the profile plans use the term: it decides nothing, moves no ledger row, mints no identifier
+in any decision series and schedules no work, and it names every published rule it would ask to move.
