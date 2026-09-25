@@ -347,8 +347,8 @@ public sealed class UbcInstructionTable
     /// <summary>
     /// Builds a table, or answers the first schema violation as <paramref name="defect"/>, naming the row.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=8F8B14
-    // Broiler-Falsified-If: a row that breaks one of the rules listed in the method body is accepted
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=63FE0D
+    // Broiler-Falsified-If: a row that breaks one of the rules listed in the method body is accepted, or a missing list or element throws rather than answering a defect
     // Broiler-Human:        PENDING
     public static bool TryCreate(
         string familyIdentity,
@@ -377,11 +377,25 @@ public sealed class UbcInstructionTable
             return false;
         }
 
+        // A list or an element that is missing is a schema violation like any other, answered as a
+        // defect rather than as the null dereference it would otherwise become.
+        if (rows is null || regionKinds is null || regions is null || traps is null)
+        {
+            defect = "the rows, region kinds, regions and traps must each be given, even when empty; one is missing";
+            return false;
+        }
+
         var trapList = System.Linq.Enumerable.ToArray(traps);
         var trapCodes = new System.Collections.Generic.HashSet<ushort>();
 
         foreach (var trap in trapList)
         {
+            if (trap is null)
+            {
+                defect = "a trap of the vocabulary is missing";
+                return false;
+            }
+
             if (!trapCodes.Add(trap.Code))
             {
                 defect = $"trap code {trap.Code} is declared twice";
@@ -394,6 +408,12 @@ public sealed class UbcInstructionTable
 
         foreach (var region in regionList)
         {
+            if (region is null)
+            {
+                defect = "a region declaration is missing";
+                return false;
+            }
+
             if (!regionIndices.Add(region.Index))
             {
                 defect = $"region {region.Index} is declared twice";
@@ -406,6 +426,12 @@ public sealed class UbcInstructionTable
 
         foreach (var kind in kindList)
         {
+            if (kind is null)
+            {
+                defect = "a region kind is missing";
+                return false;
+            }
+
             if (!kindBytes.Add(kind.Kind))
             {
                 defect = $"region kind {kind.Kind} is declared twice";
@@ -423,6 +449,12 @@ public sealed class UbcInstructionTable
 
         foreach (var row in rows)
         {
+            if (row is null)
+            {
+                defect = "a row is missing";
+                return false;
+            }
+
             if (byOpcode[row.Opcode] is not null)
             {
                 defect = $"opcode 0x{row.Opcode:X2} has two rows";

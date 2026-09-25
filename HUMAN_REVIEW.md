@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5533 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5536 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 228 |
-| Code units | 9805 |
-| Relevant | 5533 |
+| Code units | 9808 |
+| Relevant | 5536 |
 | Exempt | 4272 |
-| Assessed | 5533 of 5533 (100%) |
-| Human reviewed | 0 of 5533 (0%) |
-| Unverified | 5533 |
+| Assessed | 5536 of 5536 (100%) |
+| Human reviewed | 0 of 5536 (0%) |
+| Unverified | 5536 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5533 |
+| HUMAN_PENDING | 5536 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -327,7 +327,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Runtime/VmVerification.cs` | 12 | 8 | 4 | 8 | Low | High | 3/3 |
 | `src/Broiler.VM.Ubc/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Ubc/UbcArtifact.cs` | 98 | 20 | 78 | 20 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Ubc/UbcArtifactReader.cs` | 38 | 24 | 14 | 24 | Low | Critical | 21/21 |
+| `src/Broiler.VM.Ubc/UbcArtifactReader.cs` | 41 | 27 | 14 | 27 | Low | Critical | 24/24 |
 | `src/Broiler.VM.Ubc/UbcArtifactWriter.cs` | 53 | 43 | 10 | 43 | Low | Low | 5/0 |
 | `src/Broiler.VM.Ubc/UbcComposition.cs` | 62 | 16 | 46 | 16 | Low | High | 8/8 |
 | `src/Broiler.VM.Ubc/UbcDiagnostics.cs` | 57 | 1 | 56 | 1 | Low | High | 1/1 |
@@ -3620,43 +3620,49 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an escaping verifier exception is answered as a category, or both effective ceilings are one vector, or a cancelled or poll-bound-violating verification is answered as resource exhaustion
 - `Broiler.VM.Ubc.UbcArtifactReader` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=Critical, Spec=ADR-0013, `F628F2`, PENDING
   - Falsified if: an input makes the reader throw, allocate before the count that sizes the allocation has passed its bound, or answer an artifact whose sections were not each consumed exactly
-- `Broiler.VM.Ubc.UbcArtifactReader.TryRead(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter, ulong, uint?, out UbcArtifact?, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=Critical, Spec=ADR-0013, `77EF0F`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryRead(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter, ulong, uint?, out UbcArtifact?, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=Critical, Spec=ADR-0013, `F515AE`, PENDING
   - Falsified if: a payload with trailing bytes, an out-of-order or repeated section, a section not consumed exactly, or a count past its bound yields an artifact
 - `Broiler.VM.Ubc.UbcArtifactReader.FromReader(ref VmBoundedReader, VmSourcePosition)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=ADR-0011, `06EC41`, PENDING
   - Falsified if: a ceiling status is answered as an invalid artifact, or a status is mapped to another status's dimension
 - `Broiler.VM.Ubc.UbcArtifactReader.TryReadSection(ref VmBoundedReader, Context, ref uint, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=Critical, Spec=none cited, `95F3E4`, PENDING
   - Falsified if: a section kind is admitted before its order and uniqueness are checked, or a body that under-reads or over-reads its declared length is accepted
-- `Broiler.VM.Ubc.UbcArtifactReader.ReadFamilies(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `D3E5E7`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadFamilies(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `F719B9`, PENDING
   - Falsified if: a slot outside one to fourteen, or a slot not above its predecessor, is read into a row
-- `Broiler.VM.Ubc.UbcArtifactReader.ReadTypes(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `CADD1D`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadTypes(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `215619`, PENDING
   - Falsified if: a slot-type byte outside the closed set is read into a signature
-- `Broiler.VM.Ubc.UbcArtifactReader.ReadUnits(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `7FB1F3`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadUnits(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `E6E487`, PENDING
   - Falsified if: a unit row with a family slot above fourteen, flags above sixteen bits, or a local-run type outside the closed set is read
 - `Broiler.VM.Ubc.UbcArtifactReader.ReadCode(ref VmBoundedReader, Context, Sections, ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `E757D0`, PENDING
   - Falsified if: the code bytes are allocated before their length is reserved, or read in one charge larger than the poll granularity
-- `Broiler.VM.Ubc.UbcArtifactReader.ReadJumpTables(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `CDCFF6`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadJumpTables(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `00759D`, PENDING
   - Falsified if: a jump table row is read whose target count was not bounded before its targets were reserved
-- `Broiler.VM.Ubc.UbcArtifactReader.ReadRegions(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `BFE508`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadRegions(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `0218EE`, PENDING
   - Falsified if: a region row is read from bytes past the section's declared length
-- `Broiler.VM.Ubc.UbcArtifactReader.ReadEntries(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `3A55CC`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadEntries(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `79128F`, PENDING
   - Falsified if: an entry name longer than the format admits, or not valid UTF-8, is read into a row
-- `Broiler.VM.Ubc.UbcArtifactReader.ReadPositions(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `CF6549`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadPositions(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `5F05CB`, PENDING
   - Falsified if: a coordinate above the core's signed range is read into a row
 - `Broiler.VM.Ubc.UbcArtifactReader.ReadFamilyData(ref VmBoundedReader, Context, Sections, byte, ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `5A79FC`, PENDING
   - Falsified if: a family's section body is allocated before its length passes the artifact bound and the allowance
-- `Broiler.VM.Ubc.UbcArtifactReader.ReadEmission(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `CC904A`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadEmission(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `28CBC5`, PENDING
   - Falsified if: an emission whose stated code length is not the bytes that follow is read into a section
 - `Broiler.VM.Ubc.UbcArtifactReader.TryReadCount(ref VmBoundedReader, Context, UbcSectionKind, ulong, out uint, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `299E8D`, PENDING
   - Falsified if: a count is returned, or reserved against, before the declared-count ceiling has passed it
-- `Broiler.VM.Ubc.UbcArtifactReader.TryReadSlotTypes(ref VmBoundedReader, Context, UbcSectionKind, out ImmutableArray<UbcSlotType>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `02A77C`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadSlotTypes(ref VmBoundedReader, Context, UbcSectionKind, out ImmutableArray<UbcSlotType>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `AC0F90`, PENDING
   - Falsified if: a slot list is read whose count was not bounded, or a byte outside the closed set of slot types is answered as a type
-- `Broiler.VM.Ubc.UbcArtifactReader.TryReadOffsets(ref VmBoundedReader, Context, UbcSectionKind, out ImmutableArray<uint>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `3994A7`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadOffsets(ref VmBoundedReader, Context, UbcSectionKind, out ImmutableArray<uint>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `641226`, PENDING
   - Falsified if: an offset list is reserved or read before its count passed the declared-count ceiling
-- `Broiler.VM.Ubc.UbcArtifactReader.TryReadIdentity(ref VmBoundedReader, Context, int, out string, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `67607E`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadIdentity(ref VmBoundedReader, Context, int, out string, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `93F04B`, PENDING
   - Falsified if: an empty identity, one longer than the format admits, or one holding a byte outside its character set is answered as a string
-- `Broiler.VM.Ubc.UbcArtifactReader.TryReadRun(ref VmBoundedReader, Context, UbcSectionKind, ulong, out ImmutableArray<byte>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `C42454`, PENDING
-  - Falsified if: the run is allocated before its length passes the artifact bound and the allowance, or one read charges more work than the granularity
-- `Broiler.VM.Ubc.UbcArtifactReader.Context` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `7776E1`, PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadRun(ref VmBoundedReader, Context, UbcSectionKind, ulong, out ImmutableArray<byte>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `B66BB1`, PENDING
+  - Falsified if: the run is allocated before its length passes the artifact bound and the allowance, or one read charges more work than the read window
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadWindow(ulong)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=ADR-0007, `F48D31`, PENDING
+  - Falsified if: the window and the bounded reader's poll granularity sum to more than the bound and one, so the work between two polls can pass the bound
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadExact(ref VmBoundedReader, Context, scoped System.Span<byte>)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `D1349E`, PENDING
+  - Falsified if: one piece charges more work than the read window, or a truncated field consumes bytes before it is refused
+- `Broiler.VM.Ubc.UbcArtifactReader.Capacity(uint, ref VmBoundedReader)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `5E5286`, PENDING
+  - Falsified if: a count above the payload's remaining bytes, or above the largest array length, becomes an array capacity
+- `Broiler.VM.Ubc.UbcArtifactReader.Context` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `ED3A85`, PENDING
   - Falsified if: a reservation larger than the artifact bound reaches the meter, or a refused reservation is answered as anything but an allocation exhaustion
 - `Broiler.VM.Ubc.UbcArtifactReader.Context.TryReserve(ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, Spec=none cited, `98778E`, PENDING
   - Falsified if: a byte count past the artifact bound is charged, or a refusal is not answered as an allocation exhaustion
@@ -3696,8 +3702,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a table is created whose row violates the schema - a primitive whose signature is not the row's effect, a target on a non-U32 operand, a trap code outside the vocabulary
 - `Broiler.VM.Ubc.UbcInstructionTable.TryGetRow(byte, out UbcInstructionRow)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=none cited, `61E7DC`, PENDING
   - Falsified if: an opcode the table does not define answers true
-- `Broiler.VM.Ubc.UbcInstructionTable.TryCreate(string, uint, VmFeatureManifestId, System.Collections.Generic.IEnumerable<UbcInstructionRow>, System.Collections.Generic.IEnumerable<UbcRegionKindRow>, System.Collections.Generic.IEnumerable<UbcRegionDeclaration>, System.Collections.Generic.IEnumerable<UbcFamilyTrap>, bool, out UbcInstructionTable?, out string?)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=ADR-0013, `8F8B14`, PENDING
-  - Falsified if: a row that breaks one of the rules listed in the method body is accepted
+- `Broiler.VM.Ubc.UbcInstructionTable.TryCreate(string, uint, VmFeatureManifestId, System.Collections.Generic.IEnumerable<UbcInstructionRow>, System.Collections.Generic.IEnumerable<UbcRegionKindRow>, System.Collections.Generic.IEnumerable<UbcRegionDeclaration>, System.Collections.Generic.IEnumerable<UbcFamilyTrap>, bool, out UbcInstructionTable?, out string?)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=ADR-0013, `63FE0D`, PENDING
+  - Falsified if: a row that breaks one of the rules listed in the method body is accepted, or a missing list or element throws rather than answering a defect
 - `Broiler.VM.Ubc.UbcInstructionTable.CheckRow(UbcInstructionRow, System.Collections.Generic.HashSet<ushort>, System.Collections.Generic.HashSet<byte>)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=none cited, `BD778E`, PENDING
   - Falsified if: a primitive row's effect differs from its primitive's signature and the row is admitted, or a non-primitive row carries a primitive or a trap mapping
 - `Broiler.VM.Ubc.UbcInstructionTable.CheckPrimitive(UbcInstructionRow, System.Collections.Generic.HashSet<ushort>, System.Collections.Generic.HashSet<byte>)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, Spec=none cited, `56F521`, PENDING
@@ -3832,7 +3838,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5416 of the 5533 assessed units declare
+That is not a figure of speech. 5419 of the 5536 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

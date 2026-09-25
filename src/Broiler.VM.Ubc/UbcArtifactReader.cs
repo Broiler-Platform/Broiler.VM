@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   24
-// Annotated:        24/24
+// Relevant units:   27
+// Annotated:        27/27
 // Exempt:           14
-// Human-reviewed:   0/24
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         21/21
+// Criteria:         24/24
 // Resource impact:  6/10 max
-// Unverified:       24
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -39,7 +39,15 @@ namespace Broiler.VM.Ubc;
 /// the decoded artifact keeps what it reserved.
 /// </para>
 /// <para>
-/// <b>No member throws</b> on any input; a refusal is an answer.
+/// <b>The work between two polls stays inside the bound.</b> Every byte consumed is charged as verifier
+/// work before it is consumed. No single read charges more than the read window - half the
+/// uncharged-work bound the caller passes, and one unit - and the bounded reader polls at the other
+/// half, so a read begun just short of a poll still ends inside the bound. A byte string longer than
+/// the window, a name, an identity, a body or a fixed-width field alike, is read in pieces no longer
+/// than it.
+/// </para>
+/// <para>
+/// <b>No member throws</b> on any input, under any bounds; a refusal is an answer.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=6; Fingerprint=F628F2
@@ -57,8 +65,10 @@ public static class UbcArtifactReader
     /// <summary>
     /// Reads <paramref name="payload"/>. When <paramref name="descriptorFormatVersion"/> is given, the
     /// payload's format version is compared with it before anything else is read.
+    /// <paramref name="pollGranularity"/> is the uncharged-work bound: the verifier work charged
+    /// between two polls never exceeds it, and zero is read as one.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=6; Fingerprint=77EF0F
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=6; Fingerprint=F515AE
     // Broiler-Falsified-If: a payload with trailing bytes, an out-of-order or repeated section, a section not consumed exactly, or a count past its bound yields an artifact
     // Broiler-Human:        PENDING
     public static bool TryRead(
@@ -71,10 +81,13 @@ public static class UbcArtifactReader
         out UbcRefusal refusal)
     {
         artifact = null;
-        var reader = new VmBoundedReader(payload, in bounds, meter, pollGranularity);
-        var context = new Context(bounds, meter, pollGranularity);
+        var bound = pollGranularity == 0 ? 1UL : pollGranularity;
+        var window = ReadWindow(bound);
+        var reader = new VmBoundedReader(payload, in bounds, meter, bound - window + 1);
+        var context = new Context(bounds, meter, window);
+        System.Span<byte> magic = stackalloc byte[4];
 
-        if (!reader.TryReadBytes(4, out var magic))
+        if (!TryReadExact(ref reader, context, magic))
         {
             refusal = FromReader(ref reader, UbcRefusal.InHeader(0));
             return false;
@@ -268,7 +281,7 @@ public static class UbcArtifactReader
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D3E5E7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F719B9
     // Broiler-Falsified-If: a slot outside one to fourteen, or a slot not above its predecessor, is read into a row
     // Broiler-Human:        PENDING
     private static bool ReadFamilies(ref VmBoundedReader reader, Context context, Sections sections, out UbcRefusal refusal)
@@ -280,7 +293,7 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var rows = ImmutableArray.CreateBuilder<UbcFamilyEntry>((int)count);
+        var rows = ImmutableArray.CreateBuilder<UbcFamilyEntry>(Capacity(count, ref reader));
         var previous = 0u;
 
         for (var index = 0u; index < count; index++)
@@ -324,7 +337,7 @@ public static class UbcArtifactReader
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=CADD1D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=215619
     // Broiler-Falsified-If: a slot-type byte outside the closed set is read into a signature
     // Broiler-Human:        PENDING
     private static bool ReadTypes(ref VmBoundedReader reader, Context context, Sections sections, out UbcRefusal refusal)
@@ -336,7 +349,7 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var rows = ImmutableArray.CreateBuilder<UbcSignature>((int)count);
+        var rows = ImmutableArray.CreateBuilder<UbcSignature>(Capacity(count, ref reader));
 
         for (var index = 0u; index < count; index++)
         {
@@ -353,7 +366,7 @@ public static class UbcArtifactReader
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7FB1F3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E6E487
     // Broiler-Falsified-If: a unit row with a family slot above fourteen, flags above sixteen bits, or a local-run type outside the closed set is read
     // Broiler-Human:        PENDING
     private static bool ReadUnits(ref VmBoundedReader reader, Context context, Sections sections, out UbcRefusal refusal)
@@ -365,7 +378,7 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var rows = ImmutableArray.CreateBuilder<UbcUnit>((int)count);
+        var rows = ImmutableArray.CreateBuilder<UbcUnit>(Capacity(count, ref reader));
 
         for (var index = 0u; index < count; index++)
         {
@@ -388,7 +401,7 @@ public static class UbcArtifactReader
                 return false;
             }
 
-            var runs = ImmutableArray.CreateBuilder<UbcLocalRun>((int)runCount);
+            var runs = ImmutableArray.CreateBuilder<UbcLocalRun>(Capacity(runCount, ref reader));
 
             for (var run = 0u; run < runCount; run++)
             {
@@ -457,7 +470,7 @@ public static class UbcArtifactReader
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=CDCFF6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=00759D
     // Broiler-Falsified-If: a jump table row is read whose target count was not bounded before its targets were reserved
     // Broiler-Human:        PENDING
     private static bool ReadJumpTables(ref VmBoundedReader reader, Context context, Sections sections, out UbcRefusal refusal)
@@ -469,7 +482,7 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var rows = ImmutableArray.CreateBuilder<UbcJumpTable>((int)count);
+        var rows = ImmutableArray.CreateBuilder<UbcJumpTable>(Capacity(count, ref reader));
 
         for (var index = 0u; index < count; index++)
         {
@@ -491,7 +504,7 @@ public static class UbcArtifactReader
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=BFE508
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=0218EE
     // Broiler-Falsified-If: a region row is read from bytes past the section's declared length
     // Broiler-Human:        PENDING
     private static bool ReadRegions(ref VmBoundedReader reader, Context context, Sections sections, out UbcRefusal refusal)
@@ -503,7 +516,7 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var rows = ImmutableArray.CreateBuilder<UbcRegion>((int)count);
+        var rows = ImmutableArray.CreateBuilder<UbcRegion>(Capacity(count, ref reader));
 
         for (var index = 0u; index < count; index++)
         {
@@ -526,7 +539,7 @@ public static class UbcArtifactReader
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=3A55CC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=79128F
     // Broiler-Falsified-If: an entry name longer than the format admits, or not valid UTF-8, is read into a row
     // Broiler-Human:        PENDING
     private static bool ReadEntries(ref VmBoundedReader reader, Context context, Sections sections, out UbcRefusal refusal)
@@ -538,7 +551,8 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var rows = ImmutableArray.CreateBuilder<UbcEntry>((int)count);
+        var rows = ImmutableArray.CreateBuilder<UbcEntry>(Capacity(count, ref reader));
+        System.Span<byte> buffer = stackalloc byte[UbcFormat.MaxEntryNameBytes];
 
         for (var index = 0u; index < count; index++)
         {
@@ -556,7 +570,9 @@ public static class UbcArtifactReader
                 return false;
             }
 
-            if (!reader.TryReadBytes(nameLength, out var name))
+            var name = buffer[..(int)nameLength];
+
+            if (!TryReadExact(ref reader, context, name))
             {
                 refusal = FromReader(ref reader, UbcRefusal.InSection(kind, reader.Position));
                 return false;
@@ -588,7 +604,7 @@ public static class UbcArtifactReader
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=CF6549
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=5F05CB
     // Broiler-Falsified-If: a coordinate above the core's signed range is read into a row
     // Broiler-Human:        PENDING
     private static bool ReadPositions(ref VmBoundedReader reader, Context context, Sections sections, out UbcRefusal refusal)
@@ -600,7 +616,7 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var rows = ImmutableArray.CreateBuilder<UbcPosition>((int)count);
+        var rows = ImmutableArray.CreateBuilder<UbcPosition>(Capacity(count, ref reader));
 
         for (var index = 0u; index < count; index++)
         {
@@ -644,7 +660,7 @@ public static class UbcArtifactReader
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=CC904A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=28CBC5
     // Broiler-Falsified-If: an emission whose stated code length is not the bytes that follow is read into a section
     // Broiler-Human:        PENDING
     private static bool ReadEmission(ref VmBoundedReader reader, Context context, Sections sections, out UbcRefusal refusal)
@@ -656,14 +672,20 @@ public static class UbcArtifactReader
             return false;
         }
 
+        System.Span<byte> hashField = stackalloc byte[8];
+        System.Span<byte> lengthField = stackalloc byte[4];
+
         if (!reader.TryReadVarUInt32(out var version) ||
             !reader.TryReadVarUInt32(out var alignment) ||
-            !reader.TryReadUInt64LittleEndian(out var shapeHash) ||
-            !reader.TryReadUInt32LittleEndian(out var codeLength))
+            !TryReadExact(ref reader, context, hashField) ||
+            !TryReadExact(ref reader, context, lengthField))
         {
             refusal = FromReader(ref reader, UbcRefusal.InSection(kind, reader.Position));
             return false;
         }
+
+        var shapeHash = UbcOperandShapes.Read(hashField);
+        var codeLength = UbcOperandShapes.Read(lengthField);
 
         if (!TryReadRun(ref reader, context, kind, codeLength, out var bytes, out refusal))
         {
@@ -675,7 +697,7 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var symbols = ImmutableArray.CreateBuilder<UbcSymbol>((int)symbolCount);
+        var symbols = ImmutableArray.CreateBuilder<UbcSymbol>(Capacity(symbolCount, ref reader));
 
         for (var index = 0u; index < symbolCount; index++)
         {
@@ -712,7 +734,7 @@ public static class UbcArtifactReader
         return context.TryReserve(count * bytesPerItem, out refusal);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=02A77C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=AC0F90
     // Broiler-Falsified-If: a slot list is read whose count was not bounded, or a byte outside the closed set of slot types is answered as a type
     // Broiler-Human:        PENDING
     private static bool TryReadSlotTypes(
@@ -729,7 +751,7 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var builder = ImmutableArray.CreateBuilder<UbcSlotType>((int)count);
+        var builder = ImmutableArray.CreateBuilder<UbcSlotType>(Capacity(count, ref reader));
 
         for (var index = 0u; index < count; index++)
         {
@@ -752,7 +774,7 @@ public static class UbcArtifactReader
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=3994A7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=641226
     // Broiler-Falsified-If: an offset list is reserved or read before its count passed the declared-count ceiling
     // Broiler-Human:        PENDING
     private static bool TryReadOffsets(
@@ -769,7 +791,7 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var builder = ImmutableArray.CreateBuilder<uint>((int)count);
+        var builder = ImmutableArray.CreateBuilder<uint>(Capacity(count, ref reader));
 
         for (var index = 0u; index < count; index++)
         {
@@ -790,7 +812,7 @@ public static class UbcArtifactReader
     /// Reads an identity string: a length bounded by the format, then that many bytes, each an ASCII
     /// letter, digit, dot, hyphen or underscore.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=67607E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=93F04B
     // Broiler-Falsified-If: an empty identity, one longer than the format admits, or one holding a byte outside its character set is answered as a string
     // Broiler-Human:        PENDING
     private static bool TryReadIdentity(
@@ -816,7 +838,10 @@ public static class UbcArtifactReader
             return false;
         }
 
-        if (!reader.TryReadBytes(length, out var bytes))
+        System.Span<byte> buffer = stackalloc byte[UbcFormat.MaxIdentityBytes];
+        var bytes = buffer[..(int)length];
+
+        if (!TryReadExact(ref reader, context, bytes))
         {
             refusal = FromReader(ref reader, position);
             return false;
@@ -844,11 +869,11 @@ public static class UbcArtifactReader
     }
 
     /// <summary>
-    /// Reads a run of bytes: reserved first, then read in pieces no larger than the poll granularity,
-    /// so no single work charge outruns the uncharged-work bound the reader polls against.
+    /// Reads a run of bytes: reserved first, then read in pieces no larger than the read window, so
+    /// the work between two polls stays inside the uncharged-work bound.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=C42454
-    // Broiler-Falsified-If: the run is allocated before its length passes the artifact bound and the allowance, or one read charges more work than the granularity
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=B66BB1
+    // Broiler-Falsified-If: the run is allocated before its length passes the artifact bound and the allowance, or one read charges more work than the read window
     // Broiler-Human:        PENDING
     private static bool TryReadRun(
         ref VmBoundedReader reader,
@@ -872,12 +897,11 @@ public static class UbcArtifactReader
             return false;
         }
 
-        var window = context.Granularity is 0 or > 65536 ? 65536UL : context.Granularity;
         var written = 0UL;
 
         while (written < length)
         {
-            var piece = System.Math.Min(window, length - written);
+            var piece = System.Math.Min(context.Window, length - written);
 
             if (!reader.TryReadBytes(piece, out var chunk))
             {
@@ -894,21 +918,80 @@ public static class UbcArtifactReader
         return true;
     }
 
+    /// <summary>
+    /// The most work one read may charge under the uncharged-work bound <paramref name="bound"/>: half
+    /// the bound and one unit, never more than 65536. The bounded reader polls once its unpolled work
+    /// reaches the rest of the bound, so it enters a read with at most that less one unpolled, and
+    /// leaves it with at most the bound.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=High; Resources=0; Fingerprint=F48D31
+    // Broiler-Falsified-If: the window and the bounded reader's poll granularity sum to more than the bound and one, so the work between two polls can pass the bound
+    // Broiler-Human:        PENDING
+    private static ulong ReadWindow(ulong bound) => System.Math.Min((bound / 2) + 1, 65536UL);
+
+    /// <summary>
+    /// Reads exactly <paramref name="destination"/>'s length in pieces no longer than the read window.
+    /// A length the payload cannot hold is refused before any of it is consumed, exactly as one read of
+    /// the whole length would refuse it, so a refusal's position does not depend on the window.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D1349E
+    // Broiler-Falsified-If: one piece charges more work than the read window, or a truncated field consumes bytes before it is refused
+    // Broiler-Human:        PENDING
+    private static bool TryReadExact(ref VmBoundedReader reader, Context context, scoped System.Span<byte> destination)
+    {
+        var length = (ulong)destination.Length;
+
+        if (length > reader.Remaining)
+        {
+            // Latches the truncation, or the status the reader already stopped for, consuming nothing.
+            return reader.TryReadBytes(length, out _);
+        }
+
+        var written = 0;
+
+        while (written < destination.Length)
+        {
+            var piece = (int)System.Math.Min(context.Window, (ulong)(destination.Length - written));
+
+            if (!reader.TryReadBytes((ulong)piece, out var chunk))
+            {
+                return false;
+            }
+
+            chunk.CopyTo(destination[written..]);
+            written += piece;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// The capacity a row array of <paramref name="count"/> rows is created with. Every row takes at
+    /// least one payload byte, so the loop that fills the array completes only for a count no larger
+    /// than what remains, and the array is then exactly the count; a larger count, which a generous
+    /// declared-count ceiling admits, never becomes a capacity, so no conversion of it can wrap.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=5E5286
+    // Broiler-Falsified-If: a count above the payload's remaining bytes, or above the largest array length, becomes an array capacity
+    // Broiler-Human:        PENDING
+    private static int Capacity(uint count, ref VmBoundedReader reader) => (int)System.Math.Min(count, reader.Remaining);
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1C2C8E
     // Broiler-Human:        PENDING
     private static ImmutableArray<T> OrEmpty<T>(ImmutableArray<T> array) => array.IsDefault ? ImmutableArray<T>.Empty : array;
 
-    /// <summary>What every section reader shares: the bounds, the meter, and the granularity.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=7776E1
+    /// <summary>What every section reader shares: the bounds, the meter, and the read window.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=ED3A85
     // Broiler-Falsified-If: a reservation larger than the artifact bound reaches the meter, or a refused reservation is answered as anything but an allocation exhaustion
     // Broiler-Human:        PENDING
-    private sealed class Context(VmReadBounds bounds, IVmBoundedAllocationMeter meter, ulong granularity)
+    private sealed class Context(VmReadBounds bounds, IVmBoundedAllocationMeter meter, ulong window)
     {
         internal VmReadBounds Bounds { get; } = bounds;
 
         internal IVmBoundedAllocationMeter Meter { get; } = meter;
 
-        internal ulong Granularity { get; } = granularity;
+        /// <summary>The most work one read charges; see <see cref="ReadWindow"/>.</summary>
+        internal ulong Window { get; } = window;
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=98778E
         // Broiler-Falsified-If: a byte count past the artifact bound is charged, or a refusal is not answered as an allocation exhaustion

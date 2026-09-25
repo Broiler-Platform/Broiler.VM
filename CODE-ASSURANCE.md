@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 228 |
 | Files carrying an annotation | 228 |
-| Code units | 9805 |
-| Relevant | 5533 |
+| Code units | 9808 |
+| Relevant | 5536 |
 | Exempt by predicate | 4272 |
-| Annotated | 5533 of 5533 (100%) |
-| Human reviewed | 0 of 5533 (0%) |
-| Unverified | 5533 |
+| Annotated | 5536 of 5536 (100%) |
+| Human reviewed | 0 of 5536 (0%) |
+| Unverified | 5536 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5533 |
+| HUMAN_PENDING | 5536 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -39,7 +39,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 1539 |
-| Low | 5140 |
+| Low | 5143 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -52,7 +52,7 @@ figures below are the measurement of how far from that claim the component is.
 | None | 9 |
 | Low | 881 |
 | Medium | 4144 |
-| High | 1504 |
+| High | 1507 |
 | Critical | 222 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 9 / 10 |
 | Average over annotated units | 1.8 / 10 |
-| Units scored | 5533 |
+| Units scored | 5536 |
 
 ## High-security review areas
 
@@ -1715,6 +1715,9 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Ubc.UbcArtifactReader.TryReadOffsets(ref VmBoundedReader, Context, UbcSectionKind, out ImmutableArray<uint>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcArtifactReader.TryReadIdentity(ref VmBoundedReader, Context, int, out string, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcArtifactReader.TryReadRun(ref VmBoundedReader, Context, UbcSectionKind, ulong, out ImmutableArray<byte>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadWindow(ulong)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadExact(ref VmBoundedReader, Context, scoped System.Span<byte>)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.Capacity(uint, ref VmBoundedReader)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcArtifactReader.Context` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcArtifactReader.Context.TryReserve(ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.Ubc.UbcFamilyRegistration` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
@@ -1797,8 +1800,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1835 |
-| Units required to carry one | 1726 |
+| Units carrying a criterion | 1838 |
+| Units required to carry one | 1729 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1882,7 +1885,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-9805 of them, exempt and relevant alike - with the fingerprint of its declaration.
+9808 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
