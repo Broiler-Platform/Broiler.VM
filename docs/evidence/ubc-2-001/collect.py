@@ -22,6 +22,9 @@
 #   disasm-jit.txt, disasm-aot.txt, fold-check.log the loop's disassembly for the fixture family on the JIT
 #                                                  lane and on the Native AOT image, and the assertion over both
 #   publish.log                                    the three publishes' output
+#   architecture-tests.log                         rules K1 to K5, A7, A11 to A13 and A15 in detail, run after
+#                                                  the catalog and closure above are written, then the whole
+#                                                  architecture suite
 # It judges nothing beyond the fold assertion it states: the README says what the files show.
 #
 # THE NATIVE AOT PUBLISH on Windows needs a vcvars64 shell, as the core's collector records (EX-42). On the
@@ -49,9 +52,19 @@ UNFOLDED = re.compile(
     r"CORINFO_HELP_ISINSTANCEOF|CORINFO_HELP_CHKCAST|CORINFO_HELP_BOX|CORINFO_HELP_UNBOX|"
     r"RhTypeCast|IsInstanceOf|CheckCast|IUbcFamily|RhpNewFast.*TallyFamily")
 
+# A direct call to a member of the family struct, as each disassembler names it.
+DIRECT = re.compile(r"Com\.Example\.Tally\.TallyFamily:(\w+)|Com_Example_Tally_TallyFamily__(\w+)")
+
+# The methods of the loop that call the family's members.
+METHODS = ("Run", "Start", "Resume", "Unwind", "Suspend")
+
+
+# The retained logs are read by people who did not run them: the command line's own messages in English.
+BASE_ENV = dict(os.environ, DOTNET_CLI_UI_LANGUAGE="en", VSLANG="1033", DOTNET_NOLOGO="1")
+
 
 def run(command, env=None, cwd=ROOT):
-    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, env=env,
+    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, env=env or BASE_ENV,
                             encoding="utf-8", errors="replace")
     return result.returncode, (result.stdout + result.stderr).replace("\r\n", "\n")
 
@@ -131,47 +144,77 @@ def main():
         closure.append("")
     write("closure-fixture.txt", "\n".join(closure))
 
-    # The fold check, JIT half: the loop compiled with full optimisation, its listing extracted.
+    # The fold check, JIT half: every method of the loop that calls the family - the loop itself, the
+    # entry, the resumption, the unwinding and the suspension - compiled with full optimisation, and
+    # each listing extracted.
     listing_file = os.path.join(tempfile.gettempdir(), "ubc-2-001-disasm.txt")
     if os.path.exists(listing_file):
         os.remove(listing_file)
-    env = dict(os.environ, DOTNET_TieredCompilation="0", DOTNET_ReadyToRun="0",
-               DOTNET_JitDisasm="Run", DOTNET_JitStdOutFile=listing_file)
+    env = dict(BASE_ENV, DOTNET_TieredCompilation="0", DOTNET_ReadyToRun="0",
+               DOTNET_JitDisasm=" ".join(METHODS), DOTNET_JitStdOutFile=listing_file)
     run(modes["jit"], env)
     text = io.open(listing_file, encoding="utf-8", errors="replace").read()
-    marker = "; Assembly listing for method Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Run"
-    start = text.index(marker)
-    end = text.find("; Assembly listing for method", start + len(marker))
-    jit = text[start:end if end > 0 else len(text)]
-    write("disasm-jit.txt", jit)
+    jit = {}
+    for method in METHODS:
+        marker = "; Assembly listing for method Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:%s(" % method
+        start = text.find(marker)
+        if start >= 0:
+            end = text.find("; Assembly listing for method", start + len(marker))
+            jit[method] = text[start:end if end > 0 else len(text)]
+    write("disasm-jit.txt", "\n".join(jit[m] if m in jit else "; %s: NOT COMPILED ON ITS OWN\n" % m for m in METHODS))
 
-    # The fold check, Native AOT half: the image disassembled with dumpbin, the same instantiation's loop.
-    aot_listing = ""
+    # The fold check, Native AOT half: the image disassembled with dumpbin, the same instantiation's methods.
+    aot = {}
+    collected = False
     if WINDOWS and os.path.exists(arguments.vcvars):
         dump = os.path.join(tempfile.gettempdir(), "ubc-2-001-aot.txt")
         vcvars_batch(arguments.vcvars, ['dumpbin /disasm:nobytes "%s" > "%s"' % (modes["aot"][0], dump)])
-        image = io.open(dump, encoding="latin-1").read()
-        label = "UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Run:"
-        at = image.find(label)
-        if at >= 0:
-            at = image.rfind("\n", 0, at) + 1
-            following = re.compile(r"^\S[^\n]*:\s*$", re.M).search(image, at + len(label) + 1)
-            aot_listing = image[at:following.start() if following else len(image)]
-    write("disasm-aot.txt", aot_listing or "NOT COLLECTED: no disassembler over the published image in this lane")
+        if os.path.exists(dump):
+            collected = True
+            image = io.open(dump, encoding="latin-1").read()
+            for method in METHODS:
+                label = "UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__%s:" % method
+                at = image.find(label)
+                if at >= 0:
+                    at = image.rfind("\n", 0, at) + 1
+                    following = re.compile(r"^\S[^\n]*:\s*$", re.M).search(image, at + len(label) + 1)
+                    aot[method] = image[at:following.start() if following else len(image)]
+    write("disasm-aot.txt", "\n".join(aot[m] if m in aot else "; %s: NOT A SYMBOL OF ITS OWN IN THE IMAGE\n" % m for m in METHODS)
+          if collected else "NOT COLLECTED: no disassembler over the published image in this lane")
 
     lines = []
-    for mode, listing in (("jit", jit), ("aot", aot_listing)):
-        if not listing:
+    for mode, listings, present in (("jit", jit, True), ("aot", aot, collected)):
+        if not present or not listings:
             lines.append("[%s] not asserted: no listing was collected" % mode)
             continue
-        unfolded = [l.strip() for l in listing.splitlines() if UNFOLDED.search(l)]
-        direct = [l.strip() for l in listing.splitlines() if "TallyFamily" in l and "Handle" in l and "call" in l]
-        lines.append("[%s] %s: %s type test or family-contract dispatch; %s direct call to the family's Handle"
-                     % (mode, "FOLDED" if not unfolded and direct else "NOT FOLDED",
-                        "no" if not unfolded else "%d lines with a" % len(unfolded),
-                        "a" if direct else "no"))
-        lines.extend("    " + l for l in unfolded)
+        unfolded = []
+        for method in METHODS:
+            listing = listings.get(method)
+            if listing is None:
+                lines.append("[%s] %s: no listing of its own (inlined into its caller, whose listing is checked)" % (mode, method))
+                continue
+            bad = [l.strip() for l in listing.splitlines() if UNFOLDED.search(l)]
+            members = sorted({m.group(1) or m.group(2) for l in listing.splitlines() if "call" in l for m in [DIRECT.search(l)] if m})
+            unfolded.extend(bad)
+            lines.append("[%s] %s: %s type test or family-contract dispatch; family members called directly: %s"
+                         % (mode, method, "no" if not bad else "%d lines with a" % len(bad), ", ".join(members) or "none"))
+            lines.extend("    " + l for l in bad)
+        handle = "Run" in listings and any(DIRECT.search(l) and "Handle" in l and "call" in l for l in listings["Run"].splitlines())
+        lines.append("[%s] %s" % (mode, "FOLDED" if not unfolded and handle else "NOT FOLDED"))
     write("fold-check.log", "\n".join(lines))
+
+    def architecture(filter_expression=None):
+        command = ["dotnet", "test", "src/tests/Broiler.VM.Architecture.Tests", "-c", "Release", "--no-build",
+                   "--logger", "console;verbosity=detailed"]
+        if filter_expression:
+            command += ["--filter", filter_expression]
+        code, out = run(command)
+        return "$ %s\n%s\nexit %d\n" % (" ".join(command), out, code)
+
+    rules = architecture("|".join("FullyQualifiedName~%s" % n for n in (
+        "CompositionRegisterTests", "TopologyBudgetTests", "ProjectFileRuleTests.A7_", "ProjectFileRuleTests.A11_",
+        "ProjectFileRuleTests.A12_", "ProjectFileRuleTests.A13_")))
+    write("architecture-tests.log", rules + "\n--- THE WHOLE ARCHITECTURE SUITE ---\n\n" + architecture())
     print("collected; now write README.md, then run eng/ubc-bundle-manifest.py")
     return 0
 

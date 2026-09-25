@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5573 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5575 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 230 |
-| Code units | 9891 |
-| Relevant | 5573 |
+| Code units | 9893 |
+| Relevant | 5575 |
 | Exempt | 4318 |
-| Assessed | 5573 of 5573 (100%) |
-| Human reviewed | 0 of 5573 (0%) |
-| Unverified | 5573 |
+| Assessed | 5575 of 5575 (100%) |
+| Human reviewed | 0 of 5575 (0%) |
+| Unverified | 5575 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5573 |
+| HUMAN_PENDING | 5575 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -342,7 +342,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Ubc/UbcPrimitives.cs` | 190 | 34 | 156 | 34 | Low | Critical | 18/10 |
 | `src/Broiler.VM.Ubc/UbcRefusal.cs` | 26 | 17 | 9 | 17 | Low | High | 5/4 |
 | `src/Broiler.VM.Ubc/UbcSlotTypes.cs` | 33 | 14 | 19 | 14 | Low | High | 2/1 |
-| `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` | 54 | 10 | 44 | 10 | Low | High | 5/3 |
+| `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` | 56 | 12 | 44 | 12 | Low | High | 6/4 |
 | `src/Broiler.VM.Ubc/UbcVerifier.cs` | 102 | 59 | 43 | 59 | Low | Critical | 39/34 |
 
 ## 7. Decisions Recorded
@@ -460,20 +460,20 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: fuel a handler charges reaches the core's meter without being counted toward the bound
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter<TFamily>` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, Spec=ADR-0013, `2D9DF7`, PENDING
   - Falsified if: an instruction's effect happens before its fuel is charged, a frame is pushed without CallDepth being charged, or a slot is read or written outside the heights the walk proved
-- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Start(int, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=none cited, `4B4571`, PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Start(int, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=none cited, `AE42D7`, PENDING
   - Falsified if: an entry unit runs with locals the family did not bind left holding a previous operation's values
-- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Resume(UbcContinuation)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=none cited, `74FAA0`, PENDING
-  - Falsified if: a resumption continues with a plane other than the one captured, or at an instruction other than the one after the suspending row
-- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Run()` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, Spec=ADR-0013, `D832DB`, PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Resume(UbcContinuation)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=none cited, `CC284E`, PENDING
+  - Falsified if: a resumption continues with a plane other than the one captured, at an instruction other than the one after the suspending row, or with a frame standing whose depth is not charged
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Run()` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, Spec=ADR-0013, `B82492`, PENDING
   - Falsified if: a common row is executed with another meaning than Appendix A gives it, or a family status its row's kind does not admit is acted on rather than answered as a contract violation
-- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Enter(UbcVerifiedProgram, int, int, int, int, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, Spec=none cited, `994B75`, PENDING
-  - Falsified if: a frame is pushed without a CallDepth charge, or a callee's non-parameter locals start holding anything but zero and the family's empty value
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Enter(UbcVerifiedProgram, int, int, int, int, int, bool)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, Spec=none cited, `3D3B8E`, PENDING
+  - Falsified if: a frame is pushed without its CallDepth and fuel charged first, a callee's parameter local is the caller's own slot, or a callee's non-parameter locals start holding anything but zero and the family's empty value
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Grow(int, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=none cited, `294E27`, PENDING
   - Falsified if: a plane grows by bytes that were not charged to the allocated-bytes allowance first
-- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Unwind(ref UbcActivation, object?)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=ADR-0013, `FBB03A`, PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Unwind(ref UbcActivation, object?)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=ADR-0013, `3620FA`, PENDING
   - Falsified if: an outer region lands before an inner one covering the same instruction, or a landing leaves either plane above the region's entry height
-- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Suspend(ref UbcActivation, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=none cited, `87A7E0`, PENDING
-  - Falsified if: a slot below the arguments is missing from the continuation, or the capture's bytes are not charged
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Suspend(ref UbcActivation, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, Spec=none cited, `F91B21`, PENDING
+  - Falsified if: a slot below the arguments is missing from the continuation, the capture's bytes are not charged, or a parked continuation still holds CallDepth
 - `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Fits(UbcInstructionRow, in UbcInstruction, UbcUnitCode)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, Spec=none cited, `F8A5E6`, PENDING
   - Falsified if: a request is performed whose callee would read a slot of another type than the walk proved, or return other slots than the row pushes
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, Spec=none cited, `2C7737`, PENDING
@@ -3788,6 +3788,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a member here can be changed after verification returns, or answers a fact the walk did not prove
 - `Broiler.VM.Ubc.UbcUnitCode` in `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` - Security=High, Spec=ADR-0013, `A3975A`, PENDING
   - Falsified if: a local count, parameter count or result count here differs from the unit's signature and local runs
+- `Broiler.VM.Ubc.UbcUnitCode.UbcUnitCode(int, UbcUnit, UbcSignature, int, int, int, int, int, int, ImmutableArray<UbcInstruction>, ImmutableArray<UbcDecodedRegion>)` in `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` - Security=High, Spec=ADR-0007, `E385CE`, PENDING
+  - Falsified if: a unit's frame fuel is other than one unit for every LocalsPerFrameFuel of its declared locals, rounded down
 - `Broiler.VM.Ubc.UbcInstruction` in `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` - Security=High, Spec=ADR-0013, `411334`, PENDING
   - Falsified if: a count here differs from the effect the walk applied to the typed stack at this instruction
 - `Broiler.VM.Ubc.UbcVerifier` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `D5418D`, PENDING
@@ -3880,7 +3882,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5456 of the 5573 assessed units declare
+That is not a figure of speech. 5458 of the 5575 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

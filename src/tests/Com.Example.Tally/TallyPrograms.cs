@@ -127,7 +127,7 @@ public static class TallyPrograms
             "a trap instruction naming the family's slot and a code of its vocabulary");
 
         Add("catch", Catch(), "completed words=[5] tallies=[]",
-            "a throw a region of the same unit covers: the planes truncated to the region's entry heights, the landing pushing the thrown tally");
+            "a throw a region of the same unit covers, the landing pushing the thrown tally; nested-regions shows the cut to the entry heights");
 
         Add("uncaught", Single(b => b
                 .EmitFamily(S, TallyTable.Const, UbcOperandShape.I32, 7)
@@ -222,8 +222,29 @@ public static class TallyPrograms
             "an invocation naming an entry the program does not have",
             entry: "absent");
 
+        Add("arguments-kept", ArgumentsKept(), "completed words=[11] tallies=[]",
+            "a throw in a callee that overwrote both its parameters, caught by the caller's region whose entry heights reach the call's arguments: the parameters were copies, so the landing finds the arguments as they were");
+
+        Add("nested-regions", NestedRegions(), "completed words=[49] tallies=[]",
+            "a throw inside two regions of one unit, with non-zero entry heights and more above them on both planes: the inner region lands first, and the planes are cut to its entry heights");
+
+        Add("common-edges", CommonEdges(), "completed words=[20] tallies=[]",
+            "the meanings the common tour leaves unobserved: a jump table through every row and past its end, a taken jump_if_zero, a value-plane select of zero, and a return with slots of both planes beneath its result");
+
+        Add("mixed-call", MixedCall(), "completed words=[1012] tallies=[]",
+            "a common call whose parameters span both planes, above a slot of the caller's own");
+
+        Add("wide-frame", WideFrame(), $"completed words=[{WideFrameCalls}] tallies=[]",
+            "calls into a unit that declares many locals: each frame's entry is charged its unit's frame fuel with it, so a wide callee is not bought for the call row's one unit");
+
         return list.ToImmutable();
     }
+
+    /// <summary>How many times the wide-frame program calls its wide unit.</summary>
+    public const int WideFrameCalls = 10;
+
+    /// <summary>The locals the wide-frame program's callee declares.</summary>
+    public const int WideFrameLocals = 32_000;
 
     // ---- the programs ----------------------------------------------------------------------------
 
@@ -643,6 +664,168 @@ public static class TallyPrograms
         b.Emit(UbcOpcode.Drop);                                     // [24]
         b.Emit(UbcOpcode.Return);
         assembly.End(b, assembly.Type([], [UbcSlotType.I64]), [new UbcLocalRun(1, UbcSlotType.V)], 4, 8, UbcUnitFlags.Entry);
+        assembly.Entry("main", 0);
+        return assembly.Write();
+    }
+
+    private static byte[] ArgumentsKept()
+    {
+        var assembly = new TallyAssembly();
+        var main = assembly.Begin();
+        main.Emit(UbcOpcode.ConstI64, 5);                                   // [5]
+        main.EmitFamily(S, TallyTable.Const, UbcOperandShape.I32, 5);      // [5 | v5]
+        var start = main.Offset;
+        main.Emit(UbcOpcode.Call, 1);                                       // the callee throws
+        var end = main.Offset;
+        main.Emit(UbcOpcode.ConstI64, 0);
+        main.Emit(UbcOpcode.Return);
+        var handler = main.Offset;                                          // [5 | v5 v1]
+        main.EmitFamily(S, TallyTable.Add, UbcOperandShape.None);          // [5 | v6]
+        main.EmitFamily(S, TallyTable.Count, UbcOperandShape.None);        // [5 6]
+        main.EmitFamily(S, TallyTable.AddWords, UbcOperandShape.None);     // [11]
+        main.Emit(UbcOpcode.Return);
+        assembly.End(main, assembly.Type([], [UbcSlotType.I64]), [], 4, 4, UbcUnitFlags.Entry, [handler]);
+        assembly.Region(0, start, end, handler, 1, 1, TallyTable.Catch);
+
+        var callee = assembly.Begin();
+        callee.Emit(UbcOpcode.ConstI64, 1000);
+        callee.Emit(UbcOpcode.LocalSet, 0);                                 // the word parameter overwritten
+        callee.EmitFamily(S, TallyTable.Const, UbcOperandShape.I32, 900);
+        callee.Emit(UbcOpcode.LocalSet, 1);                                 // and the value parameter
+        callee.EmitFamily(S, TallyTable.Const, UbcOperandShape.I32, 1);
+        callee.EmitFamily(S, TallyTable.Throw, UbcOperandShape.None);
+        assembly.End(callee, assembly.Type([UbcSlotType.I64, UbcSlotType.V], []), [], 2, 2, UbcUnitFlags.None);
+        assembly.Entry("main", 0);
+        return assembly.Write();
+    }
+
+    private static byte[] NestedRegions()
+    {
+        var assembly = new TallyAssembly();
+        var b = assembly.Begin();
+        b.Emit(UbcOpcode.ConstI64, 40);                                    // [40]
+        var outer = b.Offset;
+        b.Emit(UbcOpcode.ConstI64, 2);                                     // [40 2]
+        var inner = b.Offset;
+        b.Emit(UbcOpcode.ConstI64, 100);                                   // [40 2 100]
+        b.EmitFamily(S, TallyTable.Const, UbcOperandShape.I32, 50);       // [40 2 100 | v50]
+        b.EmitFamily(S, TallyTable.Const, UbcOperandShape.I32, 7);        // [40 2 100 | v50 v7]
+        b.EmitFamily(S, TallyTable.Throw, UbcOperandShape.None);
+        var innerHandler = b.Offset;                                       // [40 2 | v7]
+        b.EmitFamily(S, TallyTable.Count, UbcOperandShape.None);          // [40 2 7]
+        b.EmitFamily(S, TallyTable.AddWords, UbcOperandShape.None);       // [40 9]
+        b.EmitFamily(S, TallyTable.AddWords, UbcOperandShape.None);       // [49]
+        b.Emit(UbcOpcode.Return);
+        var outerHandler = b.Offset;                                       // [40 | v7]
+        b.EmitFamily(S, TallyTable.Count, UbcOperandShape.None);          // [40 7]
+        b.EmitFamily(S, TallyTable.AddWords, UbcOperandShape.None);       // [47]
+        b.Emit(UbcOpcode.ConstI64, 1000);
+        b.EmitFamily(S, TallyTable.AddWords, UbcOperandShape.None);       // [1047]
+        b.Emit(UbcOpcode.Return);
+        assembly.End(b, assembly.Type([], [UbcSlotType.I64]), [], 4, 4, UbcUnitFlags.Entry, [innerHandler, outerHandler]);
+
+        // The inner region first, as the section orders them: the one that must land.
+        assembly.Region(0, inner, innerHandler, innerHandler, 2, 0, TallyTable.Catch);
+        assembly.Region(0, outer, innerHandler, outerHandler, 1, 0, TallyTable.Catch);
+        assembly.Entry("main", 0);
+        return assembly.Write();
+    }
+
+    private static byte[] CommonEdges()
+    {
+        var assembly = new TallyAssembly();
+        var b = assembly.Begin();
+        var tables = new System.Collections.Generic.List<uint[]>();
+        b.Emit(UbcOpcode.ConstI64, 111);                                   // [111] - beneath the result
+        b.EmitFamily(S, TallyTable.Const, UbcOperandShape.I32, 222);      // [111 | v222] - and on the other plane
+        b.Emit(UbcOpcode.ConstI64, 0);                                     // [111 0 | v222]
+
+        // One dispatch per selector into rows adding one, two and four; the last row is also every
+        // selector past the end. The accumulator names every row taken: 1 + 2 + 4 + 4.
+        foreach (var selector in new ulong[] { 0, 1, 2, 9 })
+        {
+            var next = b.NewLabel();
+            b.Emit(UbcOpcode.ConstI32, selector);
+            b.Emit(UbcOpcode.JumpTable, (ulong)tables.Count);
+            var rows = new uint[3];
+
+            for (var row = 0; row < rows.Length; row++)
+            {
+                rows[row] = b.Offset;
+                b.Emit(UbcOpcode.ConstI64, 1UL << row);
+                b.EmitFamily(S, TallyTable.AddWords, UbcOperandShape.None);
+                b.EmitTo(UbcOpcode.Jump, next);
+            }
+
+            tables.Add(rows);
+            b.Mark(next);
+        }                                                                  // [111 11 | v222]
+
+        var skip = b.NewLabel();
+        b.Emit(UbcOpcode.ConstI32, 0);
+        b.EmitTo(UbcOpcode.JumpIfZero, skip);                              // taken
+        b.Emit(UbcOpcode.Trap, 0);
+        b.Mark(skip);
+        b.EmitFamily(S, TallyTable.Const, UbcOperandShape.I32, 3);        // [111 11 | v222 v3]
+        b.EmitFamily(S, TallyTable.Const, UbcOperandShape.I32, 9);        // [111 11 | v222 v3 v9]
+        b.Emit(UbcOpcode.ConstI32, 0);
+        b.Emit(UbcOpcode.Select);                                          // [111 11 | v222 v9] - zero keeps the shallower
+        b.EmitFamily(S, TallyTable.Count, UbcOperandShape.None);          // [111 11 9 | v222]
+        b.EmitFamily(S, TallyTable.AddWords, UbcOperandShape.None);       // [111 20 | v222]
+        b.Emit(UbcOpcode.Return);                                          // the result is the top word alone
+        var unit = assembly.End(b, assembly.Type([], [UbcSlotType.I64]), [], 4, 4, UbcUnitFlags.Entry);
+
+        foreach (var rows in tables)
+        {
+            assembly.JumpTable(unit, rows);
+        }
+
+        assembly.Entry("main", 0);
+        return assembly.Write();
+    }
+
+    private static byte[] MixedCall()
+    {
+        var assembly = new TallyAssembly();
+        var main = assembly.Begin();
+        main.Emit(UbcOpcode.ConstI64, 1000);                               // [1000] - the caller's own
+        main.Emit(UbcOpcode.ConstI64, 5);                                  // [1000 5]
+        main.EmitFamily(S, TallyTable.Const, UbcOperandShape.I32, 7);     // [1000 5 | v7]
+        main.Emit(UbcOpcode.Call, 1);                                      // [1000 12]
+        main.EmitFamily(S, TallyTable.AddWords, UbcOperandShape.None);    // [1012]
+        main.Emit(UbcOpcode.Return);
+        assembly.End(main, assembly.Type([], [UbcSlotType.I64]), [], 4, 2, UbcUnitFlags.Entry);
+
+        var callee = assembly.Begin();
+        callee.Emit(UbcOpcode.LocalGet, 1);                                // [ | v7]
+        callee.EmitFamily(S, TallyTable.Count, UbcOperandShape.None);     // [7]
+        callee.Emit(UbcOpcode.LocalGet, 0);                                // [7 5]
+        callee.EmitFamily(S, TallyTable.AddWords, UbcOperandShape.None);  // [12]
+        callee.Emit(UbcOpcode.Return);
+        assembly.End(callee, assembly.Type([UbcSlotType.I64, UbcSlotType.V], [UbcSlotType.I64]), [], 2, 1, UbcUnitFlags.None);
+        assembly.Entry("main", 0);
+        return assembly.Write();
+    }
+
+    private static byte[] WideFrame()
+    {
+        var assembly = new TallyAssembly();
+        var main = assembly.Begin();
+        main.Emit(UbcOpcode.ConstI64, 0);
+
+        for (var call = 0; call < WideFrameCalls; call++)
+        {
+            main.Emit(UbcOpcode.Call, 1);
+            main.EmitFamily(S, TallyTable.AddWords, UbcOperandShape.None);
+        }
+
+        main.Emit(UbcOpcode.Return);
+        assembly.End(main, assembly.Type([], [UbcSlotType.I64]), [], 2, 0, UbcUnitFlags.Entry);
+
+        var wide = assembly.Begin();
+        wide.Emit(UbcOpcode.ConstI64, 1);
+        wide.Emit(UbcOpcode.Return);
+        assembly.End(wide, assembly.Type([], [UbcSlotType.I64]), [new UbcLocalRun(WideFrameLocals, UbcSlotType.I64)], 1, 0, UbcUnitFlags.None);
         assembly.Entry("main", 0);
         return assembly.Write();
     }

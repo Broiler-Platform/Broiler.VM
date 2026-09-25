@@ -882,14 +882,23 @@ when the VM-3 evidence bundle was collected.
 |---|---|---|---|---|
 | `Broiler.VM.Composition.Calculator` | `linux-x64` | published and run | published and run | published and run |
 | `Broiler.VM.Composition.Workbench` | `linux-x64` | published and run | published and run | published and run |
-| `Broiler.VM.Composition.Ubc.Fixture` | `win-x64` | published and run | published and run | published and run |
 
 The transcripts are in `docs/evidence/vm-3/`, and the closure report for each
 mode is listed there from the published output rather than described. One RID,
-one machine, one lane: exclusion EX-45 of the VM-2 bundle applies unchanged. *(Added 2026-09-25: the universal bytecode's fixture
-root was published and run on `win-x64`, and its transcripts, catalog table and
-closure report are in `docs/evidence/ubc-2-001/`. The same limit applies to it:
-one RID, one machine, one lane.)*
+one machine, one lane: exclusion EX-45 of the VM-2 bundle applies unchanged.
+
+*(Added 2026-09-25.)* The universal bytecode's fixture root was published and
+run later, when bundle `ubc-2-001` was collected, and it is kept out of the table
+above because that table is what the VM-3 bundle built. It is not a supported RID
+either.
+
+| Composition | RID | JIT | Trimmed, self-contained | Native AOT |
+|---|---|---|---|---|
+| `Broiler.VM.Composition.Ubc.Fixture` | `win-x64` | published and run | published and run | published and run |
+
+Its transcripts, catalog table and closure report are in
+`docs/evidence/ubc-2-001/`. The same limit applies to it: one RID, one machine,
+one lane.
 
 ---
 

@@ -31,5 +31,10 @@ program|resume-long|b3ce067ec4791a204968c414e423fbc950bc1f0baddeea8ff30a13d8982c
 program|load-then-run|8e1ef5d475467ce554389f5464e889446077242542641db3708a96244d792003|main|completed words=[105] tallies=[]
 program|hook-refusal|7e662e7841f2b8a6d4b35f31661a11bbcbba531513fd7c2608524f4d7d26fe13|main|refused InvalidArtifact SemanticValidationFailed 7001
 program|no-such-entry|c8d452f84ee962f941fe301c8dcbecfda79851a9a92aac5ff7e4d602a5cc5165|absent|faulted NoSuchEntry code=0 amount=0
+program|arguments-kept|4fa7b1fc7430f84120246397586f2877b97b1ef03d53acc3f91fcaca8ad61a9c|main|completed words=[11] tallies=[]
+program|nested-regions|e3e67a22060b4b4494181d8158be14b8ac7b9449242b5cf1a76407748312c344|main|completed words=[49] tallies=[]
+program|common-edges|458ac2a8fcce01e5eb106e0debca0819e98eeecce47441def602e2bce64b8d39|main|completed words=[20] tallies=[]
+program|mixed-call|6b8b78ad63b741d47b74c8aeaafb89d280b6104d1274fe8940a73464bc9e17f5|main|completed words=[1012] tallies=[]
+program|wide-frame|f28266b3aa5a1b6437f3a89bb2740fee814c72088d90673d535b7b52006d1f31|main|completed words=[10] tallies=[]
 file|guest-1.bubc|6ae0fddbf8bdbf5b9674e4ca15491515038079c7641bd4e2ceec3e91409b994f
-file|primitives.txt|bda18a0c59ee38c9a9a1535707fe93abda75832f4d0d99fa6d5777e34b2c3950
+file|primitives.txt|ffcf286da1cb8a982c7d039f3fe0109e0107a19340da90c3bff22572dd2005fd

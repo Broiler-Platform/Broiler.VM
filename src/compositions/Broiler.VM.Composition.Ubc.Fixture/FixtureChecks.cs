@@ -5,6 +5,7 @@ using Com.Example.Ledger;
 using Com.Example.Tally;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Text;
 
 namespace Broiler.VM.Composition.Ubc.Fixture;
 
@@ -109,53 +110,108 @@ internal static class FixtureChecks
     /// Every step an executor may answer is reached from the fixture family: completed, instantiated,
     /// suspended, faulted, and a contract violation - the last kept apart from the guest's faults.
     /// </summary>
+    /// <remarks>
+    /// The core answers an exception an executor throws exactly as it answers a contract violation the
+    /// executor returns, so the transcript alone cannot tell the two apart. The check reads the steps
+    /// the executor itself answered through a probing form, requires that no call threw, and is watched
+    /// failing over an executor told to throw where it should refuse.
+    /// </remarks>
     internal static (string, bool, string) EveryStepKind()
     {
-        var expected = new (string Program, string Prefix, string Step)[]
+        var expected = new (string Program, string Prefix, VmExecutionStepKind[] Steps)[]
         {
-            ("sum", "completed", "Completed and Instantiated"),
-            ("suspend", "suspended", "Suspended"),
-            ("divide-by-zero", "faulted Trap", "Faulted"),
-            ("bad-request", "ProfileFault ProfileContractViolation", "ContractViolation"),
+            ("sum", "completed", [VmExecutionStepKind.Instantiated, VmExecutionStepKind.Completed]),
+            ("suspend", "suspended", [VmExecutionStepKind.Instantiated, VmExecutionStepKind.Suspended, VmExecutionStepKind.Completed]),
+            ("divide-by-zero", "faulted Trap", [VmExecutionStepKind.Instantiated, VmExecutionStepKind.Faulted]),
+            ("bad-request", "ProfileFault ProfileContractViolation", [VmExecutionStepKind.Instantiated, VmExecutionStepKind.ContractViolation]),
         };
         var missing = new List<string>();
 
-        foreach (var (name, prefix, step) in expected)
+        foreach (var (name, prefix, steps) in expected)
         {
-            using var runtime = FixtureHost.Runtime();
+            var probe = new FixtureProbe();
+            using var runtime = FixtureHost.Runtime(descriptor: probe.Descriptor());
             var program = TallyPrograms.Named(name);
             var transcript = FixtureHost.Transcript(runtime, program.Artifact.AsSpan(), program.Entry);
 
-            if (!transcript.StartsWith(prefix, StringComparison.Ordinal))
+            if (!transcript.StartsWith(prefix, StringComparison.Ordinal) || probe.Threw || !probe.Steps.SequenceEqual(steps))
             {
-                missing.Add($"{step} from {name}: '{transcript}'");
+                missing.Add($"{name}: '{transcript}', steps [{string.Join(' ', probe.Steps)}]{(probe.Threw ? ", the executor threw" : string.Empty)}");
+            }
+        }
+
+        // The control: an executor that crashes where it should refuse gives the same transcript, and
+        // the check must see through it.
+        var crashing = new FixtureProbe { ThrowOnInvoke = true };
+
+        using (var runtime = FixtureHost.Runtime(descriptor: crashing.Descriptor()))
+        {
+            var program = TallyPrograms.Named("bad-request");
+            var transcript = FixtureHost.Transcript(runtime, program.Artifact.AsSpan(), program.Entry);
+
+            if (!crashing.Threw || !string.Equals(transcript, program.Expected, StringComparison.Ordinal))
+            {
+                missing.Add($"the crashing control was not told apart: '{transcript}', threw {crashing.Threw}");
             }
         }
 
         return missing.Count == 0
-            ? ("every-step-kind", true, "all five executor steps reached")
+            ? ("every-step-kind", true, "all five executor steps reached and read from the executor itself, and a crashing executor told apart from a refusing one")
             : ("every-step-kind", false, string.Join("; ", missing));
     }
 
     /// <summary>
-    /// A loop with no exit, given fuel it cannot spend before its token is cancelled, ends cancelled -
-    /// which it can only do if the loop polled within the family's declared bound, because the core
-    /// answers a poll-bound breach as a profile fault instead.
+    /// A loop with no exit, whose token is cancelled while it runs, stops within the family's declared
+    /// bound of fuel after the cancellation, having seen the cancellation at a poll.
     /// </summary>
+    /// <remarks>
+    /// The core ranks a cancellation above a poll-bound breach, so a cancelled answer alone would come
+    /// from a loop that never polled as readily as from one that did. The check measures the fuel the
+    /// executor charged after the token was cancelled, through a probing form, and requires a poll to
+    /// have answered the cancellation; it is watched failing over a loop whose polls are swallowed.
+    /// </remarks>
     internal static (string, bool, string) CancellationWithinTheBound()
     {
-        using var runtime = FixtureHost.Runtime(limits =>
-        {
-            limits[(int)VmBudgetDimension.Fuel] = 100_000_000;
-            limits[(int)VmBudgetDimension.WallClock] = 60_000;
-        });
-        using var cancellation = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
-        var program = TallyPrograms.Named("spin");
-        var transcript = FixtureHost.Transcript(runtime, program.Artifact.AsSpan(), program.Entry, cancellation.Token);
+        var bound = (ulong)TallyProfile.Declaration.MaxUnchargedWork;
+        var spin = TallyPrograms.Named("spin");
 
-        return string.Equals(transcript, "cancelled", StringComparison.Ordinal)
-            ? ("cancellation-within-bound", true, $"cancelled, with the loop polling at the declared bound of {TallyProfile.Declaration.MaxUnchargedWork.ToString(CultureInfo.InvariantCulture)}")
-            : ("cancellation-within-bound", false, transcript);
+        (string Transcript, FixtureProbe Probe) Run(bool swallow, CancellationTokenSource cancellation, ulong fuel, bool cancelAtInvoke)
+        {
+            var probe = new FixtureProbe { Watched = cancellation.Token, SwallowPolls = swallow, CancelAtInvoke = cancelAtInvoke ? cancellation : null };
+            using var runtime = FixtureHost.Runtime(
+                limits =>
+                {
+                    limits[(int)VmBudgetDimension.Fuel] = fuel;
+                    limits[(int)VmBudgetDimension.WallClock] = 60_000;
+                },
+                descriptor: probe.Descriptor());
+            return (FixtureHost.Transcript(runtime, spin.Artifact.AsSpan(), spin.Entry, cancellation.Token), probe);
+        }
+
+        bool Holds(string transcript, FixtureProbe probe) =>
+            string.Equals(transcript, "cancelled", StringComparison.Ordinal) && probe.CancellationObserved && probe.FuelAfterCancellation <= bound;
+
+        using var timed = new CancellationTokenSource(TimeSpan.FromMilliseconds(100));
+        var (answer, measured) = Run(swallow: false, timed, 100_000_000, cancelAtInvoke: false);
+
+        if (!Holds(answer, measured))
+        {
+            return ("cancellation-within-bound", false,
+                $"'{answer}', {measured.FuelAfterCancellation.ToString(CultureInfo.InvariantCulture)} fuel after the cancellation against a bound of {bound.ToString(CultureInfo.InvariantCulture)}, observed at a poll {measured.CancellationObserved}");
+        }
+
+        // The control: a loop that never polls, its token cancelled as the invocation starts, is still
+        // answered as cancelled once its fuel runs out, and the check must not pass it.
+        using var cancelled = new CancellationTokenSource();
+        var (control, swallowed) = Run(swallow: true, cancelled, 1_000_000, cancelAtInvoke: true);
+
+        if (!string.Equals(control, "cancelled", StringComparison.Ordinal) || Holds(control, swallowed))
+        {
+            return ("cancellation-within-bound", false, $"the control that never polls was not answered cancelled and failed by the measure: '{control}'");
+        }
+
+        return ("cancellation-within-bound", true,
+            $"cancelled, {measured.FuelAfterCancellation.ToString(CultureInfo.InvariantCulture)} fuel after the cancellation against a declared bound of {bound.ToString(CultureInfo.InvariantCulture)}, seen at a poll; a loop that never polls fails the same measure ('{control}', {swallowed.FuelAfterCancellation.ToString(CultureInfo.InvariantCulture)} fuel after it)");
     }
 
     /// <summary>An artifact naming a form this image does not compose is refused at verification, by name.</summary>
@@ -209,11 +265,25 @@ internal static class FixtureChecks
     /// The two-profile hostile-neighbour check: composed beside the ledger, the fixture family is not
     /// reached by the ledger's hard maxima, and is reached by its defaults when the host adopts them.
     /// </summary>
+    /// <remarks>
+    /// The defaults half runs a call two frames deep: more than the ledger's default call depth and no
+    /// more than its hard maximum, so it is refused only if the ceiling in force is the default and not
+    /// the maximum, and the check first shows that it completes under the maximum.
+    /// </remarks>
     internal static (string, bool, string) HostileNeighbour()
     {
         var countdown = TallyPrograms.Named("countdown");
+        var shallow = TallyPrograms.Named("call-request");
         var catalog = FixtureHost.Catalog(FixtureHost.Tally, LedgerProfile.Descriptor);
         var limits = FixtureHost.Vector(TallyProfile.Defaults());
+        var ledgerDepth = LedgerProfile.Descriptor.ProfileHardMaxima[VmBudgetDimension.CallDepth];
+        var ledgerDefault = LedgerProfile.Descriptor.LimitDefaults[VmBudgetDimension.CallDepth];
+
+        // The programs must separate the two values, or the check proves nothing.
+        if (!(ledgerDefault < 2 && 2 <= ledgerDepth && ledgerDepth < 22))
+        {
+            return ("hostile-neighbour", false, "the ledger's call-depth default and maximum no longer separate a two-frame call from a countdown twenty-two frames deep");
+        }
 
         // The ledger's own maximum call depth is below what the countdown needs; the host states the
         // family's depth explicitly, and the neighbour's maximum must not reach the family's artifacts.
@@ -227,14 +297,25 @@ internal static class FixtureChecks
             }
         }
 
-        var ledgerDepth = LedgerProfile.Descriptor.ProfileHardMaxima[VmBudgetDimension.CallDepth];
-        var ledgerDefault = LedgerProfile.Descriptor.LimitDefaults[VmBudgetDimension.CallDepth];
+        // The two-frame call fits under the neighbour's maximum.
+        var atMaximum = (ulong[])limits.Clone();
+        atMaximum[(int)VmBudgetDimension.CallDepth] = ledgerDepth;
+
+        using (var maximum = FixtureHost.Create(catalog, FixtureHost.Explicit(atMaximum), withProvider: false))
+        {
+            var transcript = FixtureHost.Transcript(maximum, shallow.Artifact.AsSpan(), shallow.Entry);
+
+            if (!string.Equals(transcript, shallow.Expected, StringComparison.Ordinal))
+            {
+                return ("hostile-neighbour", false, $"a two-frame call did not complete under the neighbour's maximum: '{transcript}'");
+            }
+        }
 
         // The host adopts profile defaults: the tightest in the catalog per dimension, which for call
-        // depth is the ledger's, so the countdown is refused naming the dimension.
+        // depth is the ledger's, so the two-frame call is refused naming the dimension.
         using (var adopted = FixtureHost.Create(catalog, FixtureHost.AdoptDefaults(), withProvider: false))
         {
-            var transcript = FixtureHost.Transcript(adopted, countdown.Artifact.AsSpan(), countdown.Entry);
+            var transcript = FixtureHost.Transcript(adopted, shallow.Artifact.AsSpan(), shallow.Entry);
 
             if (!string.Equals(transcript, "exhausted CallDepth", StringComparison.Ordinal))
             {
@@ -243,6 +324,111 @@ internal static class FixtureChecks
         }
 
         return ("hostile-neighbour", true,
-            $"the ledger's call-depth maximum of {ledgerDepth.ToString(CultureInfo.InvariantCulture)} did not reach a countdown twenty frames deep; its default of {ledgerDefault.ToString(CultureInfo.InvariantCulture)}, once adopted, refused it");
+            $"the ledger's call-depth maximum of {ledgerDepth.ToString(CultureInfo.InvariantCulture)} did not reach a countdown twenty-two frames deep and admits a two-frame call; its default of {ledgerDefault.ToString(CultureInfo.InvariantCulture)}, once adopted, refused that call");
+    }
+
+    /// <summary>
+    /// A frame's entry is charged its unit's frame fuel: calls into a unit that declares many locals are
+    /// refused under a fuel ceiling their call rows alone would fit in many times over.
+    /// </summary>
+    internal static (string, bool, string) FrameFuelCharged()
+    {
+        var wide = TallyPrograms.Named("wide-frame");
+        var ceiling = (ulong)TallyPrograms.WideFrameLocals / UbcUnitCode.LocalsPerFrameFuel * TallyPrograms.WideFrameCalls;
+
+        using var generous = FixtureHost.Runtime();
+        var completed = FixtureHost.Transcript(generous, wide.Artifact.AsSpan(), wide.Entry);
+
+        using var tight = FixtureHost.Runtime(limits => limits[(int)VmBudgetDimension.Fuel] = ceiling);
+        var refused = FixtureHost.Transcript(tight, wide.Artifact.AsSpan(), wide.Entry);
+
+        return string.Equals(completed, wide.Expected, StringComparison.Ordinal) && string.Equals(refused, "exhausted Fuel", StringComparison.Ordinal)
+            ? ("frame-fuel", true, $"completes under the family's fuel default, and is refused under {ceiling.ToString(CultureInfo.InvariantCulture)}, what its frames alone cost")
+            : ("frame-fuel", false, $"under the default '{completed}', under {ceiling.ToString(CultureInfo.InvariantCulture)} '{refused}'");
+    }
+
+    /// <summary>
+    /// A parked operation holds no call depth: beside one suspended two frames deep, and after one whose
+    /// resumption was cancelled at its first poll, a sibling needing the rest of a small ceiling runs.
+    /// </summary>
+    internal static (string, bool, string) ParkedOperationHoldsNoDepth()
+    {
+        var suspending = TallyPrograms.Named("suspend-in-callee");
+        var sibling = TallyPrograms.Named("call-request");
+        using var runtime = FixtureHost.Runtime(limits => limits[(int)VmBudgetDimension.CallDepth] = 3);
+        var descriptor = FixtureHost.Descriptor();
+        var main = Encoding.UTF8.GetBytes("main");
+        var failures = new List<string>();
+
+        VmInstance Instance(TallyProgram program)
+        {
+            if (!runtime.Verify(in descriptor, program.Artifact.AsSpan(), default).TryGetArtifact(out var handle) ||
+                !runtime.Instantiate(handle, default).TryGetInstance(out var instance))
+            {
+                throw new InvalidOperationException($"{program.Name} did not verify and instantiate");
+            }
+
+            return instance;
+        }
+
+        string Sibling()
+        {
+            using var instance = Instance(sibling);
+            var request = new VmInvocationRequest(new VmUtf8Text(main));
+            var result = instance.Invoke(in request, default);
+            return result.Outcome == VmOutcome.Normal ? "ran" : $"{result.Outcome} {result.Diagnostics.ExhaustedDimension}";
+        }
+
+        using (var parked = Instance(suspending))
+        {
+            var request = new VmInvocationRequest(new VmUtf8Text(main));
+            var suspended = parked.Invoke(in request, default);
+
+            if (!suspended.TryGetSuspension(out var suspension))
+            {
+                return ("parked-holds-no-depth", false, $"the program did not suspend: {suspended.Outcome}");
+            }
+
+            if (Sibling() is var beside && beside != "ran")
+            {
+                failures.Add($"beside a parked operation the sibling answered {beside}");
+            }
+
+            if (runtime.Resume(suspension).Outcome != VmOutcome.Normal)
+            {
+                failures.Add("the parked operation did not resume to its end");
+            }
+        }
+
+        using (var host = new CancellationTokenSource())
+        using (var parked = Instance(suspending))
+        {
+            var request = new VmInvocationRequest(new VmUtf8Text(main));
+            var suspended = parked.Invoke(in request, host.Token);
+
+            if (suspended.TryGetSuspension(out var suspension))
+            {
+                host.Cancel();
+                var resumed = runtime.Resume(suspension);
+
+                if (resumed.Outcome != VmOutcome.Cancellation)
+                {
+                    failures.Add($"a resumption of a cancelled operation answered {resumed.Outcome}");
+                }
+
+                if (Sibling() is var after && after != "ran")
+                {
+                    failures.Add($"after a resumption ended at its first poll the sibling answered {after}");
+                }
+            }
+            else
+            {
+                failures.Add($"the second program did not suspend: {suspended.Outcome}");
+            }
+        }
+
+        return failures.Count == 0
+            ? ("parked-holds-no-depth", true, "under a call depth of 3, a two-frame sibling ran beside an operation parked two frames deep, and after one whose resumption was cancelled at its first poll")
+            : ("parked-holds-no-depth", false, string.Join("; ", failures));
     }
 }

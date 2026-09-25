@@ -16,9 +16,10 @@ namespace Broiler.VM.Composition.Ubc.Fixture;
 /// <para>
 /// Its checks are the programme's UBC-2.7 contract checks, run inside the published image so that
 /// every publish mode answers them: the descriptor's rows, the contract-version refusal, the program
-/// corpus's transcripts, cancellation within the declared bound, a form the image does not compose
-/// refused at verification by name, fuel parity across the twins, and the two-profile hostile-neighbour
-/// check the roadmap has asked for since VM-3.
+/// corpus's transcripts, every executor step read from the executor itself, cancellation within the
+/// declared bound, a form the image does not compose refused at verification by name, fuel parity across
+/// the twins, the two-profile hostile-neighbour check the roadmap has asked for since VM-3, a frame's
+/// fuel charged with it, and a parked operation holding no call depth.
 /// </para>
 /// <para>
 /// <c>--closure</c> prints what the composition declares; <c>--transcripts</c> prints every program's
@@ -75,6 +76,8 @@ internal static class Program
                 FixtureChecks.FormNotComposed(),
                 FixtureChecks.FuelParity(),
                 FixtureChecks.HostileNeighbour(),
+                FixtureChecks.FrameFuelCharged(),
+                FixtureChecks.ParkedOperationHoldsNoDepth(),
             };
 
             var failed = 0;

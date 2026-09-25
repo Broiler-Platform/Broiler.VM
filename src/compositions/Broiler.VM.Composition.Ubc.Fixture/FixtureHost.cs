@@ -24,12 +24,21 @@ internal static class FixtureHost
         TallyProfile.Declaration,
         UbcEmitterSet.Create(UbcBytecodeEmitter.Form));
 
-    /// <summary>A runtime composing the fixture family alone, with its own defaults as explicit ceilings.</summary>
-    internal static VmRuntime Runtime(System.Action<ulong[]>? adjust = null, bool withProvider = true)
+    /// <summary>
+    /// A runtime composing the fixture family alone, with its own defaults as explicit ceilings, over
+    /// <paramref name="descriptor"/> when a check brings a probing one and the image's own otherwise;
+    /// <paramref name="guest"/> is what the provider answers the first guest name with, the lowering's
+    /// guest when none is given.
+    /// </summary>
+    internal static VmRuntime Runtime(
+        System.Action<ulong[]>? adjust = null,
+        bool withProvider = true,
+        VmProfileDescriptor? descriptor = null,
+        ReadOnlyMemory<byte>? guest = null)
     {
         var limits = Vector(TallyProfile.Defaults());
         adjust?.Invoke(limits);
-        return Create(Catalog(Tally), Explicit(limits), withProvider);
+        return Create(Catalog(descriptor ?? Tally), Explicit(limits), withProvider, guest);
     }
 
     /// <summary>A catalog of the given descriptors, in order.</summary>
@@ -46,13 +55,15 @@ internal static class FixtureHost
     }
 
     /// <summary>A runtime over <paramref name="catalog"/> with the given ceilings.</summary>
-    internal static VmRuntime Create(VmCatalog catalog, ImmutableArray<VmCeilingSpec> ceilings, bool withProvider)
+    internal static VmRuntime Create(VmCatalog catalog, ImmutableArray<VmCeilingSpec> ceilings, bool withProvider, ReadOnlyMemory<byte>? guest = null)
     {
         var capabilities = ImmutableArray.CreateBuilder<VmCapabilityRegistration>();
 
         if (withProvider)
         {
-            capabilities.Add(VmCapabilityRegistration.ArtifactProvider(TallyProfile.ProviderCapability, new GuestProvider()));
+            capabilities.Add(VmCapabilityRegistration.ArtifactProvider(
+                TallyProfile.ProviderCapability,
+                new GuestProvider(guest ?? TallyPrograms.Guest.AsMemory())));
         }
 
         var options = new VmRuntimeCreationOptions(
@@ -181,7 +192,7 @@ internal static class FixtureHost
     /// answer the core must refuse as a breach, because a provider may answer a profile only with an
     /// artifact of that profile - and anything else is not found.
     /// </summary>
-    private sealed class GuestProvider : IVmArtifactProvider
+    private sealed class GuestProvider(ReadOnlyMemory<byte> guest) : IVmArtifactProvider
     {
         public VmCapabilityId CapabilityId => TallyProfile.ProviderCapability.CapabilityId;
 
@@ -194,7 +205,7 @@ internal static class FixtureHost
             if (string.Equals(name, TallyPrograms.GuestName(1), StringComparison.Ordinal))
             {
                 var descriptor = Descriptor();
-                return VmArtifactProviderAnswer.Provided(in descriptor, TallyPrograms.Guest.AsSpan());
+                return VmArtifactProviderAnswer.Provided(in descriptor, guest.Span);
             }
 
             if (string.Equals(name, TallyPrograms.GuestName(2), StringComparison.Ordinal))

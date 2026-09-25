@@ -722,9 +722,11 @@
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.MaxValueHeight : System.UInt32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.MaxWordHeight : System.UInt32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnit.TypeIndex : System.UInt32 { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.FrameFuel : System.UInt64 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.Index : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.IndexOf(System.UInt32 pc) : System.Int32
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.Instructions : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcInstruction> { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.LocalsPerFrameFuel : const System.Int32 = 32
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.ParameterValues : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.ParameterWords : System.Int32 { get; }
   Broiler.VM.Ubc Broiler.VM.Ubc.UbcUnitCode.Regions : System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcDecodedRegion> { get; }

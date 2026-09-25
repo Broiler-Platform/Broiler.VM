@@ -166,7 +166,14 @@ internal sealed class UbcLoopMeter : IVmMeter
 /// </para>
 /// <para>
 /// <b>Fuel before effects.</b> Every instruction charges its row's cost before anything it does, the
-/// common rows one each, and the loop polls at the family's declared bound.
+/// common rows one each; a frame's entry charges its unit's <see cref="UbcUnitCode.FrameFuel"/> with
+/// it, and unwinding a unit per region it looks at and per frame it leaves. The loop polls at the
+/// family's declared bound.
+/// </para>
+/// <para>
+/// <b>A parked operation holds no depth.</b> A suspension gives its frames' <c>CallDepth</c> back
+/// and a resumption charges it again before any frame stands, because the core may drop a parked
+/// continuation outside any step, where nothing could give it back.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=5; Fingerprint=2D9DF7
@@ -198,7 +205,7 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>Runs the entry unit <paramref name="unit"/>, its parameters bound by the family from the entry's name.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=4B4571
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=AE42D7
     // Broiler-Falsified-If: an entry unit runs with locals the family did not bind left holding a previous operation's values
     // Broiler-Human:        PENDING
     internal VmExecutionStep Start(int unit, System.ReadOnlySpan<byte> name)
@@ -212,7 +219,7 @@ internal sealed class UbcInterpreter<TFamily>
 
         values = TFamily.CreateValuePlane(0);
 
-        if (!Enter(instance.Program, unit, 0, 0, 0, 0))
+        if (!Enter(instance.Program, unit, 0, 0, 0, 0, copyParameters: false))
         {
             return Finish(Stop());
         }
@@ -232,8 +239,8 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>Restores a suspended operation's frames and planes and continues after the suspending row.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=74FAA0
-    // Broiler-Falsified-If: a resumption continues with a plane other than the one captured, or at an instruction other than the one after the suspending row
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=CC284E
+    // Broiler-Falsified-If: a resumption continues with a plane other than the one captured, at an instruction other than the one after the suspending row, or with a frame standing whose depth is not charged
     // Broiler-Human:        PENDING
     internal VmExecutionStep Resume(UbcContinuation continuation)
     {
@@ -244,13 +251,18 @@ internal sealed class UbcInterpreter<TFamily>
             return Stop();
         }
 
+        // The suspension gave the frames' depth back; they are charged again before any of them
+        // stands, and from here every exit that ends the operation gives it back through Finish.
+        if (!meter.TryCharge(VmBudgetDimension.CallDepth, (ulong)continuation.Depth))
+        {
+            return Stop();
+        }
+
         depth = continuation.Depth;
         var length = System.Math.Max(depth, 4);
 
         if (!meter.Inner.TryCharge(VmBudgetDimension.AllocatedBytes, (ulong)length * FrameBytes) || !meter.Spend((ulong)depth))
         {
-            // Nothing is standing yet, but the frames the continuation carries are still charged to
-            // CallDepth, and the operation ends here.
             return Finish(Stop());
         }
 
@@ -297,7 +309,7 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>The loop.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=5; Fingerprint=D832DB
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=5; Fingerprint=B82492
     // Broiler-Falsified-If: a common row is executed with another meaning than Appendix A gives it, or a family status its row's kind does not admit is acted on rather than answered as a contract violation
     // Broiler-Human:        PENDING
     private VmExecutionStep Run()
@@ -391,16 +403,18 @@ internal sealed class UbcInterpreter<TFamily>
                             return Finish(VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation));
                         }
 
-                        var target = calleeProgram.Units[callee];
                         frames[depth - 1].Index = index;
 
+                        // The callee's frame starts above the row's whole input region, whose top slots
+                        // are its parameters; its results replace the region.
                         if (!Enter(
                                 calleeProgram,
                                 callee,
-                                activation.WordArgs + ins.WordPops - target.ParameterWords,
-                                activation.ValueArgs + ins.ValuePops - target.ParameterValues,
-                                activation.WordArgs,
-                                activation.ValueArgs))
+                                wordTop,
+                                valueTop,
+                                wordTop - ins.WordPops,
+                                valueTop - ins.ValuePops,
+                                copyParameters: true))
                         {
                             return Finish(Stop());
                         }
@@ -515,13 +529,16 @@ internal sealed class UbcInterpreter<TFamily>
                     var target = units[ins.Index];
                     frames[depth - 1].Index = index;
 
+                    // The callee's frame starts above the caller's stack, whose top slots are the
+                    // arguments; its results replace them.
                     if (!Enter(
                             program,
                             ins.Index,
+                            wordTop,
+                            valueTop,
                             wordTop - target.ParameterWords,
                             valueTop - target.ParameterValues,
-                            wordTop - target.ParameterWords,
-                            valueTop - target.ParameterValues))
+                            copyParameters: true))
                     {
                         return Finish(Stop());
                     }
@@ -669,14 +686,21 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>
-    /// Pushes a frame for <paramref name="unit"/> whose locals start at the given bases - where the
-    /// caller left the parameters, so they are the first locals without a copy - charging
-    /// <c>CallDepth</c> first and growing the planes to the callee's declared extent.
+    /// Pushes a frame for <paramref name="unit"/> whose locals start at the given bases, charging
+    /// <c>CallDepth</c> and the unit's <see cref="UbcUnitCode.FrameFuel"/> first and growing the planes
+    /// to the callee's declared extent.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=994B75
-    // Broiler-Falsified-If: a frame is pushed without a CallDepth charge, or a callee's non-parameter locals start holding anything but zero and the family's empty value
+    /// <remarks>
+    /// For a call the parameters are the slots just below the bases, and they are copied into the
+    /// callee's first locals, word parameters copied and value parameters plane-copied, as Appendix A's
+    /// call row says: the caller's slots stay as they were, so a region of the caller whose entry
+    /// heights reach the arguments finds them unchanged when it lands, whatever the callee did to its
+    /// parameters. The entry unit's parameters are the family's to bind.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=3D3B8E
+    // Broiler-Falsified-If: a frame is pushed without its CallDepth and fuel charged first, a callee's parameter local is the caller's own slot, or a callee's non-parameter locals start holding anything but zero and the family's empty value
     // Broiler-Human:        PENDING
-    private bool Enter(UbcVerifiedProgram program, int unit, int wordBase, int valueBase, int returnWords, int returnValues)
+    private bool Enter(UbcVerifiedProgram program, int unit, int wordBase, int valueBase, int returnWords, int returnValues, bool copyParameters)
     {
         if (!meter.TryCharge(VmBudgetDimension.CallDepth, 1))
         {
@@ -684,6 +708,12 @@ internal sealed class UbcInterpreter<TFamily>
         }
 
         var code = program.Units[unit];
+
+        if (!meter.Spend(code.FrameFuel))
+        {
+            meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
+            return false;
+        }
 
         if (depth == frames.Length)
         {
@@ -703,6 +733,16 @@ internal sealed class UbcInterpreter<TFamily>
         {
             meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
             return false;
+        }
+
+        if (copyParameters)
+        {
+            System.Array.Copy(words, wordBase - code.ParameterWords, words, wordBase, code.ParameterWords);
+
+            for (var slot = 0; slot < code.ParameterValues; slot++)
+            {
+                values.Copy(valueBase - code.ParameterValues + slot, valueBase + slot);
+            }
         }
 
         System.Array.Clear(words, wordBase + code.ParameterWords, code.WordLocals - code.ParameterWords);
@@ -759,7 +799,7 @@ internal sealed class UbcInterpreter<TFamily>
     /// the first that covers the instruction, and otherwise pops the frame and searches its caller at
     /// the instruction that called. Answers false when no frame catches it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=FBB03A
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=3620FA
     // Broiler-Falsified-If: an outer region lands before an inner one covering the same instruction, or a landing leaves either plane above the region's entry height
     // Broiler-Human:        PENDING
     private Unwound Unwind(ref UbcActivation activation, object? pending)
@@ -779,6 +819,12 @@ internal sealed class UbcInterpreter<TFamily>
                 return Unwound.Stopped;
             }
 
+            // The most the frame's stack can hold here: the instruction's own height and whatever its
+            // row may have written above its arguments. Every such slot was pushed by a row that paid
+            // for it, and the locals by the frame's entry, so what is cleared below was paid for.
+            ref readonly var at = ref code.Instructions.ItemRef(frame.Index);
+            var live = stackValues + at.ValueHeight + at.ValuePushes;
+
             foreach (var region in code.Regions)
             {
                 if (!region.Covers(frame.Index))
@@ -787,7 +833,7 @@ internal sealed class UbcInterpreter<TFamily>
                 }
 
                 var valueTop = stackValues + region.ValueEntryHeight;
-                Discard(valueTop, stackValues + (int)code.Unit.MaxValueHeight - valueTop);
+                Discard(valueTop, live - valueTop);
 
                 activation.Program = frame.Program;
                 activation.Unit = frame.Unit;
@@ -803,7 +849,7 @@ internal sealed class UbcInterpreter<TFamily>
                 return Unwound.Landed;
             }
 
-            Discard(frame.ValueBase, code.ValueLocals + (int)code.Unit.MaxValueHeight);
+            Discard(frame.ValueBase, live - frame.ValueBase);
             depth--;
             meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
         }
@@ -830,8 +876,8 @@ internal sealed class UbcInterpreter<TFamily>
     }
 
     /// <summary>Captures every frame and both planes below the suspending row's arguments, through the family's codec.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=87A7E0
-    // Broiler-Falsified-If: a slot below the arguments is missing from the continuation, or the capture's bytes are not charged
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F91B21
+    // Broiler-Falsified-If: a slot below the arguments is missing from the continuation, the capture's bytes are not charged, or a parked continuation still holds CallDepth
     // Broiler-Human:        PENDING
     private VmExecutionStep Suspend(ref UbcActivation activation, int resumeIndex)
     {
@@ -860,7 +906,11 @@ internal sealed class UbcInterpreter<TFamily>
         var savedValues = TFamily.CaptureValues(values, 0, valueCount);
 
         var continuation = new UbcContinuation(instance, savedFrames, depth, savedWords, savedValues, valueCount, resumeIndex, reason);
-        return VmExecutionStep.Suspended(continuation, TFamily.SuspendProjection(ref activation));
+        var projection = TFamily.SuspendProjection(ref activation);
+
+        // The parked frames give their depth back now: the core may drop the continuation outside any
+        // step, where no release could reach the meter, and a resumption charges it again.
+        return Finish(VmExecutionStep.Suspended(continuation, projection));
     }
 
     /// <summary>A primitive's trap, answered with the family's code for it.</summary>

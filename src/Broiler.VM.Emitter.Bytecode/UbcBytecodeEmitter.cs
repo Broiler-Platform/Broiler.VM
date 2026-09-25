@@ -233,8 +233,10 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
 
     /// <inheritdoc/>
     /// <remarks>
-    /// Nothing to unwind: a suspended operation holds heap frames and copied planes and no resource the
-    /// runtime has to give back; dropping the continuation drops them.
+    /// Nothing to unwind: a suspended operation holds heap frames and copied planes, whose bytes were
+    /// charged to an allowance that is never given back, and no depth, which the suspension gave back
+    /// when it parked; dropping the continuation drops them. Nothing could be given back here in any
+    /// case, because the core calls this outside any step, where no meter answers.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5DBDBE
     // Broiler-Human:        PENDING

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
+// Relevant units:   12
+// Annotated:        12/12
 // Exempt:           44
-// Human-reviewed:   0/10
+// Human-reviewed:   0/12
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         5/3
+// Criteria:         6/4
 // Resource impact:  0/10 max
-// Unverified:       10
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -137,6 +137,9 @@ public sealed class UbcVerifiedProgram : IVmVerifiedState
 // Broiler-Human:        PENDING
 public sealed class UbcUnitCode
 {
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=High; Resources=0; Fingerprint=E385CE
+    // Broiler-Falsified-If: a unit's frame fuel is other than one unit for every LocalsPerFrameFuel of its declared locals, rounded down
+    // Broiler-Human:        PENDING
     internal UbcUnitCode(
         int index,
         UbcUnit unit,
@@ -161,7 +164,25 @@ public sealed class UbcUnitCode
         ResultValues = resultValues;
         Instructions = instructions;
         Regions = regions;
+        FrameFuel = ((ulong)wordLocals + (ulong)valueLocals) / LocalsPerFrameFuel;
     }
+
+    /// <summary>How many of a unit's locals one unit of <see cref="FrameFuel"/> pays for.</summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=53AEA1
+    // Broiler-Human:        PENDING
+    public const int LocalsPerFrameFuel = 32;
+
+    /// <summary>
+    /// The fuel a frame of this unit costs beyond the row that pushes it: one unit for every
+    /// <see cref="LocalsPerFrameFuel"/> locals the unit declares on both planes, rounded down.
+    /// </summary>
+    /// <remarks>
+    /// Entering a frame clears its locals and leaving it clears its value locals again, which is work
+    /// the artifact's declared layout decides rather than any row's count. Every form charges this
+    /// with the frame, before the frame stands, so that a call into a wide unit is not bought for the
+    /// one unit its row costs and the forms' fuel agrees at every ceiling.
+    /// </remarks>
+    public ulong FrameFuel { get; }
 
     /// <summary>The unit's index.</summary>
     public int Index { get; }
