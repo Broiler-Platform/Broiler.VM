@@ -171,3 +171,8 @@ stages JSV-2, JSV-3 and JSV-4 are reverted together in one new commit; whether s
 which make no speed claim, stay in the tree is the owner's to rule.** The population is not narrowed
 until the rule passes. This bundle, its rule, its manifest and its harness are evidence and are not
 among the commits the revert names.
+
+*(Recorded beside this section on 2026-09-25, and nothing above it is edited: **the owner ruled not to
+take the revert**, and to keep every stage in the tree as an unadopted, opt-in form. The verdict is
+unchanged - it is this measurement's and not the owner's - and JSD-0035's status paragraph says what the
+ruling keeps.)*

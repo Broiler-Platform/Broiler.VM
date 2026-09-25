@@ -8,10 +8,20 @@ measurement**, by the rule committed before stage JSV-2 existed. The measurement
 condition and the fuel parity held, under one effective configuration - and the value form is slower
 than bytecode beyond the A/A floor on every wide shape, so clauses 2 and 3 refuse; clause 4 refuses too,
 because the interpreter itself moved against the control commit on four shapes. The figures are in that
-bundle's README and nowhere else. **What the refusal does is the rule's**: the commits of stages JSV-2,
-JSV-3 and JSV-4 are reverted together in one new commit, and whether stages JSV-0 and JSV-1, which make
-no speed claim, stay in the tree is the owner's to rule. Until that commit, the tree is as the rest of
-this paragraph describes it, which is the record the bundle judged.
+bundle's README and nowhere else. **The rule's consequence** is that the commits of stages JSV-2, JSV-3
+and JSV-4 are reverted together in one new commit, with stages JSV-0 and JSV-1 left to the owner.
+
+**The owner ruled otherwise on 2026-09-25, and this is that ruling, not the verdict: every stage stays in
+the tree as an unadopted, opt-in form.** The form is reached only by asking for it (`--value`,
+`--value-flat`, `--form value`, `--form value-stress`, `--form value-flat`); every default stays
+bytecode. The refusal stands: the record is not adopted, it claims no speed, JSD-0011 and MVP-8 are not
+amended (section "What it amends, if adopted"), and nothing may cite the form as faster. What stays with
+the code is named rather than hidden: the architecture rules as JSV-1 to JSV-3 amended them, the gate
+each future change to the interpreter owes this form as it owes the baseline form, and the interpreter's
+own movement that clause 4 found against the control commit, which the ruling keeps together with the
+stages that made it and which this record does not attribute. A later record that wants the form adopted
+states a new rule before its own measurement; this bundle's population is not narrowed after the fact.
+The rest of this paragraph is the record as the bundle judged it.
 
 *As proposed on 2026-09-24:* **Stages JSV-0 to JSV-4 are implemented in the tree, which is every
 stage section 10 names.** JSV-0 is the word layout, the codec, the handle table, the slab scan and
@@ -558,7 +568,8 @@ the form is judged once and whole, at the end of JSV-4, and that the rule judges
 reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 to JSV-4 together.)*
 *(Collected on 2026-09-24 at the commit that completes JSV-4, as bundle `jsv-4-001`, whose
 [README](../evidence/jsv-4-001/README.md) carries every figure. **Its verdict is REFUSE**: clauses 1
-and 5 hold, and clauses 2, 3 and 4 do not.)*
+and 5 hold, and clauses 2, 3 and 4 do not. The owner ruled on 2026-09-25 to keep every stage in the tree
+as an unadopted, opt-in form rather than revert them; the status paragraph says what that keeps.)*
 
 ## What it amends, if adopted
 
@@ -568,7 +579,8 @@ and 5 hold, and clauses 2, 3 and 4 do not.)*
   rooting bug a corpus failure. Every other value-holding region stays a managed array of `JsValue`.
 - **MVP-8.** Its alternative branch is taken, on the measurement section 10 requires. Until then the
   route stands. *(The measurement refused the form, so the branch is not taken and the route stands;
-  none of this section's amendments takes effect.)*
+  JSD-0011 is not amended either. The architecture rules below stay as the stages amended them, because
+  the owner's ruling of 2026-09-25 keeps the code they hold.)*
 - **JSD-0025.** It is not amended. Its baseline form, its section 4, its section 5 and its clauses S1
   to S4 continue to bind that form. The value form states its own counterparts in sections 3, 4, 7 and
   9.
