@@ -358,7 +358,8 @@ the extraction verdict *accept*: the verdict is the gate's to give, and a refuse
 
 - **UBC-1.1 — The project shell and the graph.** `src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj`:
   references exactly `Broiler.VM.Abstractions` and `Broiler.VM.Binary`; `IsPackable=false` and no
-  `PackageId` during the MVP; `ImplicitUsings` off and nullable on as `Directory.Build.props` sets;
+  `PackageId` during the MVP *(the first of the two superseded 2026-09-25 at milestone UBC-4, when
+  decision UBC-D-5 was taken early: the assembly is packable, still with no `PackageId`)*; `ImplicitUsings` off and nullable on as `Directory.Build.props` sets;
   `AllowUnsafeBlocks` off (nothing here names a pointer). Listed in `Broiler.VM.slnx`;
   `graph.manifest.json` and ADR 0001's budget sentence revised. Rules **U1** (the reference set) and
   **U2** (no exported identifier from the banned vocabulary — `Js`, `JavaScript`, `Wasm`,
@@ -445,6 +446,7 @@ artifact by hash; the corpus replay log; the architecture-test run; the round-tr
 
 Nothing executes. No family exists. No descriptor is registered in any catalog, because the factory
 has nothing to build one for. The assembly is not packable and the packability question is UBC-9's.
+*(Superseded 2026-09-25 at milestone UBC-4: the assembly is packable, by decision UBC-D-5 taken early.)*
 
 ---
 
@@ -559,6 +561,8 @@ loop; the contract-test run; the hostile-neighbour test's log.
 No language runs. No native form exists. The fixture family proves the contract and is deliberately
 shaped to fit it (roadmap section 8's caveat about fixture agreement applies: it is evidence about the
 universal bytecode's own tests and not about a language). Nothing is packable.
+*(Superseded 2026-09-25 at milestone UBC-4: `Broiler.VM.Ubc` and the bytecode emitter are packable, by
+decision UBC-D-5 taken early; the fixture family and the fixture root are not.)*
 
 ---
 
@@ -967,6 +971,12 @@ whether the form's substrate may be retired is the owner's ruling and not this m
   commit, per assertion, retained in `docs/evidence/ubc-4-001/` beside the decision rule; the twelve
   float-comparison assertions named in the bundle as the class expected to change. *Done when* the
   bundle names the base commit and every file by hash.
+  *(Corrected 2026-09-25 at this milestone, and the package above is kept as written.)* "The twelve
+  float-comparison assertions" is read as the rule's class: the twelve float-comparison instructions,
+  whatever number of assertions exercises them. The specification's suite is not pinned and has no
+  reader, and on 2026-09-25 the WebAssembly profile owner decided that this milestone is carried out on
+  the rule's population B alone; bundle `ubc-4-001` retains that base run, and the harness gained float
+  comparisons at the base commit so that the class has members in it.
 - **UBC-4.2 — The translator.** `WasmTranslator`: from a validated `WasmModule` to a universal
   bytecode artifact through `UbcArtifactWriter`, walking each body's bytes with the validator's sealed
   jump table: labels to absolute offsets, block results to `squash` sequences, `if`/`else` to
@@ -999,6 +1009,14 @@ whether the form's substrate may be retired is the owner's ruling and not this m
   segment out of bounds, each with a code under that profile's registry rules. The entry-point argument
   grammar of route MVP-6 is unchanged. *Done when* the family's contract tests pass on all three modes
   under the bytecode emitter.
+  *(Corrected 2026-09-25 at this milestone, and the package above is kept as written.)* Two of its
+  refusals are answered elsewhere. A segment out of bounds is not a verification refusal: the
+  specification answers it at instantiation, the profile always trapped there, and the harness asserts
+  that no instance is published, so the family traps at instantiation as before. A type index out of
+  range is refused by the walk (universal code 3418) before the hook sees the instruction. The hook
+  refuses instead everything structurally wrong with the family's FamilyData, with codes in the
+  WebAssembly registry's 2850 band. The family's checks run in the WebAssembly harness and in the
+  fixture root under the three publish modes: no test project may reference a profile or an emitter.
 - **UBC-4.6 — The float-comparison negative control.** Obligation E2's differential check run over the
   `wasm.f32.*` and `wasm.f64.*` comparison rows against the unmodified arms of the checkout: it fails,
   naming the rows, and is retained failing; the arms are corrected; it passes and is retained passing.
@@ -1331,6 +1349,12 @@ project file keeps saying why. It adds no native form to the polyglot image (its
   existing assembly — or refusing; rules A6, C1 and C2 revised to say what the answer says, with
   witnesses; the packages' READMEs under `eng/nuget/` if packed; rule C3 confirmed over the new nuspecs
   (no language named). *Done when* the revision exists and the rules agree with it.
+  *(Added 2026-09-25 at milestone UBC-4.)* Decision UBC-D-5 was taken early for the two assemblies that
+  exist: `Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode` are packable, because the WebAssembly profile,
+  already packable, references `Broiler.VM.Ubc` from UBC-4 on (ADR 0013's section of that date and ADR
+  0001's revision). Rule U1 was revised with it. What stays for this package is `Broiler.VM.Ubc.Native`,
+  which does not exist, and rules A6, C1, C2 and C3, which still name three packages and are not yet
+  revised for the ones the profiles and this decision added.
 - **UBC-9.5 — The universal bytecode contract version (route UBC-R9).** A dated record in the core's
   ADR set (an ADR 0013 revision, or ADR 0014) minting universal bytecode contract version 1: what it
   covers (the container format, the common family, the slot types, the operand shapes, the table
@@ -1503,7 +1527,7 @@ clause is `Blocked` naming the holder, and the rest of the milestone proceeds.
 | UBC-D-2 | The WebAssembly memory representation a native form can address | (a) a pinned managed array reallocated on growth with the base republished; (b) native memory owned by a `SafeHandle`; either with growth invalidating every view | the WebAssembly profile owner with the security owner | UBC-4 clause 7 |
 | UBC-D-3 | Mint the WA-5 manifest (`broiler.webassembly.numeric1`) so that the family's tables are selected by the surface they admit | (a) mint it at UBC-4 with its own retained run; (b) keep the slice identity and record that the table admits more than the identity says, as the code does today | the WebAssembly profile owner | UBC-4 clause 7 |
 | UBC-D-4 | Whether the `arm64` emitter emits the handler-call form (the JavaScript wide table) | (a) emit it, pinned by golden bytes and the disassembler corpus like every other template; (b) refuse the wide table by name as the encoder does today | the core architecture owner | UBC-7 clause 6 |
-| UBC-D-5 | Packability of `Broiler.VM.Ubc` and `Broiler.VM.Ubc.Native` | (a) the fourth and fifth packages, each naming the boundary it enforces; (b) refused, with the split of UBC-10 thereby refused too | the release owner with the architecture owner | UBC-9 clause 4 |
+| UBC-D-5 | Packability of `Broiler.VM.Ubc` and `Broiler.VM.Ubc.Native` | (a) the fourth and fifth packages, each naming the boundary it enforces; (b) refused, with the split of UBC-10 thereby refused too | the release owner with the architecture owner | UBC-9 clause 4 *(taken early 2026-09-25, at UBC-4, for `Broiler.VM.Ubc` and the bytecode emitter; open for `Broiler.VM.Ubc.Native`)* |
 | UBC-D-6 | Whether to split the repository into components | (a) split, under UBC-10's gate; (b) keep one repository with the component names, which is complete at UBC-9 | the repository owner | UBC-10, if at all |
 | UBC-R1 | ADR 0011's P1 reading (a route, not a decision point, listed for completeness) | editorial revision versus amendment | the core contract owner | UBC-0; a ruling for amendment blocks the programme naming the core as holder |
 

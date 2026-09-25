@@ -84,3 +84,24 @@ A native form for this profile (the programme's UBC-6b) that measures the cost o
 after every call and growth, and finds it unacceptable, reopens decision 4; a guest need for memory
 beyond what one managed array holds reopens decision 1. Either is this profile owner's to take, with the
 security owner, in a later record of this series.
+
+## Added 2026-09-26: its limit on each runtime identifier, and section 17's boundary
+
+WA-5's exit gate asks the memory-representation decision to name its own limits per runtime identifier
+and not to foreclose [section 17](../roadmap.md)'s boundary, and the record above did neither in words.
+
+- **Per runtime identifier.** A pinned managed array is the same representation on every runtime
+  identifier the runtime supports, with no platform call, no reserved range and no page protection, so
+  its limit does not vary by identifier: a memory is bounded by this profile's own page ceiling
+  (`WasmMemoryInstance.ProfileMaximumPages`) on every one, and that ceiling sits below what a single
+  managed array can hold on any of them. No runtime identifier is claimed by this repository, and this
+  record claims none.
+- **Section 17.** The JavaScript API's `WebAssembly.Memory` exposes a buffer a script holds across
+  calls. This representation does not foreclose it: a host view of the memory is a view of the array the
+  store holds at the moment it is taken, and a successful growth invalidates it, which is what section 13
+  already rules and what that specification requires of a detached buffer. Nothing here decides that
+  boundary; it leaves it where section 17 put it.
+- **Decision 5's third bullet.** The store that was built charges its `LiveBytes` retention before it
+  allocates, with a charge that can be refused, rather than reporting it after the allocation;
+  [WAD-0003](0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md)'s correction of this
+  date says what that answers. The release on a failed instantiation is unchanged.

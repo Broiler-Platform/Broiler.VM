@@ -50,3 +50,18 @@ reserves would be a width every family pays for; the question belongs to the for
 A universal bytecode format version 2 that admits a `v128` slot type reopens row 2; the admission of a
 reference type into this profile's manifest reopens rows 3 and 4. Either is taken in a later record of
 this series.
+
+## Corrected 2026-09-26: rows 8 and 9, the store's retention
+
+When this record was taken the family's store was not yet written, and rows 8 and 9 were stated as
+carried over unchanged. Row 8 read "the store's charges and retention reports are this family's,
+unchanged", and row 9 read "**Carries over, unchanged**: retention is still reported and the report still
+returns nothing". Neither holds of the store that was built. The family's instance store charges each
+memory's and each table's allocation **and its `LiveBytes` retention** before it allocates, with a charge
+that can be refused, and each growth's the same way; a refused retention refuses the instantiation or
+ends the step at the growth, and the store releases what it retained on every path that publishes no
+instance. So row 8's store charges are this family's but not unchanged - retention moved from a report
+after the allocation to a charge before it - and row 9 is **answered rather than carried over**: a
+`LiveBytes` ceiling reached by the store is a refused charge the operation stops at, not a report the
+next charge observes. The guest-observable refusal of route MVP-1, against this profile's own page
+ceiling, is unchanged.
