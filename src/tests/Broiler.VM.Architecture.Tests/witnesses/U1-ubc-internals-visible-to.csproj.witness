@@ -1,0 +1,15 @@
+<!-- Violates U1: the universal bytecode opening its internals to an emitter. A family or an emitter
+     that can bind to an internal member is written against something the public surface rule U9
+     freezes does not promise, which is how a second family would stop being writable from the
+     outside. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <InternalsVisibleTo Include="Broiler.VM.Emitter.Bytecode" />
+  </ItemGroup>
+</Project>

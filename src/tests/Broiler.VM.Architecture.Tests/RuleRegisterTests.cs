@@ -359,10 +359,19 @@ public sealed class RuleRegisterTests
         // platform's regular expressions: its answer depends on the host's globalization mode, and
         // the one call that would silence normalize's refusal would leave every other test green.
         // Neither the Vacuous nor the Deferred count moves.
-        Assert.Equal(96, byStatus["Active"]);
+        // UBC-1 mints group U over the universal bytecode, Broiler.VM.Ubc, and adds four rows of the
+        // five its roadmap names: U1 holds its reference set to the core's two sinks and its project to
+        // unpackable and safe, U2 holds every identifier it exports to the banned vocabulary the UBC-0
+        // scan read and forbids a static family row on its surface, U4 holds the common family's one
+        // table to the concept's Appendix A and forbids a second statement of a common row anywhere a
+        // project that references the assembly could write one, and U9 freezes its public surface in its
+        // own baseline. The fifth, U8, holds the diagnostic registry and is minted with it. All four are
+        // Active from the moment they are minted, because the assembly they are about exists; neither the
+        // Vacuous nor the Deferred count moves.
+        Assert.Equal(100, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(98, Loaded.Rules.Count);
+        Assert.Equal(102, Loaded.Rules.Count);
     }
 
     private static Register Load()
