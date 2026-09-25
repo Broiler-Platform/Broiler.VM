@@ -28,11 +28,12 @@ namespace Broiler.VM.Architecture.Tests;
 /// schema and mechanism and no language concept, and every family is written against it - so neither
 /// group N nor group W reaches it, and its claims are not a family's claims. It is a second sink of the
 /// shared graph beside <c>Broiler.VM.Binary</c> (U1), it exports no language's name and no family's
-/// table (U2), the common family's rows are stated in one place (U4), and its public surface is frozen
-/// in its own baseline (U9). U8, the diagnostic registry, is minted with the registry it holds.
+/// table (U2), the common family's rows are stated in one place (U4), its diagnostic codes are
+/// published in a registry held to the vocabulary, the source and the corpus (U8, in
+/// <c>UbcRules.Registry.cs</c>), and its public surface is frozen in its own baseline (U9).
 /// </para>
 /// </remarks>
-internal static class UbcRules
+internal static partial class UbcRules
 {
     /// <summary>The universal bytecode assembly.</summary>
     internal const string UbcAssembly = "Broiler.VM.Ubc";

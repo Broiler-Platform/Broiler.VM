@@ -12,9 +12,11 @@ namespace Broiler.VM.Architecture.Tests;
 /// are, because a witness asserted with a bare non-empty check pins only whichever clause fires first.
 /// </para>
 /// <para>
-/// <b>U8 is not here.</b> It holds the universal bytecode's diagnostic registry, and it is minted in the
-/// change that writes the registry, because a rule over a file that does not exist yet would be a rule
-/// that could only fail or only pass vacuously.
+/// <b>U8 was minted with the registry it holds</b>, <c>docs/ubc/diagnostics/registry.txt</c>, because a
+/// rule over a file that did not exist yet would have been a rule that could only fail or only pass
+/// vacuously. Its three clauses are asserted as rule N5 to N7's are: over the checkout, over a witness
+/// file per clause, and over the real inputs with one thing altered, because a small witness shows the
+/// rule's shape and a doctored copy of the real input shows the rule reaches what ships.
 /// </para>
 /// </remarks>
 public sealed class UbcRuleTests
@@ -426,6 +428,289 @@ public sealed class UbcRuleTests
     }
 
     // =============================================================================================
+    // U8
+    // =============================================================================================
+
+    private static readonly UbcRules.Registry Registry = UbcRules.ReadRegistry(
+        File.ReadAllText(UbcRules.RootPath(UbcRules.RegistryFile)), UbcRules.RegistryFile);
+
+    private static readonly IReadOnlyList<(string Name, int Value)> Vocabulary = ReadCodeVocabulary();
+
+    private static readonly UbcRules.Emissions Emissions = UbcRules.ReadEmissions(UbcRules.UbcSourceFiles());
+
+    private static readonly UbcRules.CorpusManifest Corpus = UbcRules.ReadCorpusManifest(
+        File.ReadAllText(UbcRules.RootPath(UbcRules.CorpusManifestFile)));
+
+    private static readonly string[] CoreReasons = Enum.GetNames<VmReason>();
+
+    [Fact]
+    public void U8_The_Registry_And_The_Code_Vocabulary_Are_The_Same_Set()
+    {
+        Assert.Empty(UbcRules.U8Vocabulary(Registry, Vocabulary));
+
+        // Non-vacuous: both sides were read whole. Fifty-six members from the 3000 range to the 3900
+        // one, and a row for each, at the registry's first revision - so a clean result is a comparison
+        // of two real sets rather than of an empty one with another.
+        Assert.Empty(Registry.Problems);
+        Assert.Equal(56, Vocabulary.Count);
+        Assert.Equal(Vocabulary.Count, Registry.Rows.Count);
+        Assert.Equal(1, Registry.Revision);
+        Assert.Contains(Vocabulary, static member => member is ("WrongMagic", 3001));
+        Assert.Contains(Vocabulary, static member => member is ("VerifierDefect", 3904));
+
+        var witness = Witness("U8-registry-omits-a-declared-code.txt.witness", "diagnostics");
+        var reported = UbcRules.U8Vocabulary(UbcRules.ReadRegistry(File.ReadAllText(witness), witness), Vocabulary).ToArray();
+
+        Assert.Contains(reported, static message => message.Contains(
+            "UbcDiagnosticCode declares UnsupportedFormatVersion = 3003 and the registry has no row for it", StringComparison.Ordinal));
+        Assert.Contains(reported, static message => message.Contains(
+            "the row for 3003 names UnsupportedFormatVersionExtended, which is not a member of that number", StringComparison.Ordinal));
+        Assert.Contains(reported, static message => message.Contains(
+            "the row for 3002 dates from revision 2, and the registry is at revision 1", StringComparison.Ordinal));
+
+        // The real registry with one row taken out reports exactly that row's member and nothing else,
+        // which is the rule reaching the file that ships rather than a small file shaped like it.
+        Assert.Equal(
+            ["UbcDiagnosticCode declares EmissionUnexpected = 3701 and the registry has no row for it"],
+            UbcRules.U8Vocabulary(Registry with { Rows = Registry.Rows.Where(static row => row.Code != 3701).ToArray() }, Vocabulary));
+
+        // ...a row given twice is reported as twice rather than read as agreeing with itself...
+        Assert.Contains(
+            UbcRules.U8Vocabulary(Registry with { Rows = [.. Registry.Rows, Registry.Rows[0]] }, Vocabulary),
+            static message => message.Contains("the registry has 2 rows for code 3001", StringComparison.Ordinal));
+
+        // ...and a registry that states no revision is reported rather than read as one that happens to
+        // say nothing, as is a row the reader cannot split into the six columns.
+        Assert.Contains(
+            UbcRules.U8Vocabulary(Registry with { Revision = -1 }, Vocabulary),
+            static message => message.Contains("states no revision of its own", StringComparison.Ordinal));
+
+        Assert.Contains(
+            UbcRules.U8Vocabulary(UbcRules.ReadRegistry("# registry-revision: 1\n3001|WrongMagic|MalformedEncoding|corpus|a-wrong-magic\n", "inline"), Vocabulary),
+            static message => message.Contains("inline(2): a row has 5 columns rather than 6", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void U8_Every_Code_Maps_Onto_Exactly_One_Core_Reason()
+    {
+        Assert.Empty(UbcRules.U8Reasons(Registry, Vocabulary, Emissions, CoreReasons));
+
+        // Non-vacuous: the sites are read out of the assembly's own sources, there are more of them
+        // than there are codes, every one has a reason the rule read, and nothing naming the code type
+        // was left unfollowed.
+        Assert.True(Emissions.Sites.Count > Vocabulary.Count);
+        Assert.DoesNotContain(Emissions.Sites, static site => site.Reason == UbcRules.NoReason);
+        Assert.Empty(Emissions.Unreadable);
+
+        // Every shape the register row names is read, each shown by a code only that shape emits.
+        // JoinMismatch is emitted only through the walk's Or, whose reason is in Or's body, so a reader
+        // that stopped following the helper would leave it with no reason and fail the clean direction.
+        Assert.Equal(
+            ["InconsistentStructure"],
+            Emissions.Sites.Where(static site => site.Code == "JoinMismatch").Select(static site => site.Reason).Distinct());
+
+        // ReaderStopped is emitted only in the default arm of the reader's FromReader mapping.
+        Assert.Contains(Emissions.Sites, static site =>
+            site is { Code: "ReaderStopped", Reason: "InconsistentStructure", File: "src/Broiler.VM.Ubc/UbcArtifactReader.cs" });
+
+        // VerifierDefect is emitted only through the walk's own Invalid, and WrongMagic only through
+        // UbcRefusal.Invalid in the reader.
+        Assert.Contains(Emissions.Sites, static site =>
+            site is { Code: "VerifierDefect", File: "src/Broiler.VM.Ubc/UbcVerifier.cs" });
+        Assert.Contains(Emissions.Sites, static site =>
+            site is { Code: "WrongMagic", Reason: "MalformedEncoding", File: "src/Broiler.VM.Ubc/UbcArtifactReader.cs" });
+
+        // The witness: one code emitted with two reasons, the second through a forwarding helper of the
+        // witness's own. Read alone, it is exactly two sites and the helper's reason is the one read.
+        var witness = AssuranceSources.ReadFile(
+            Witness("U8-a-source-emitting-one-code-with-two-reasons.cs.witness", "diagnostics"), UbcRules.UbcAssembly);
+
+        Assert.Equal(
+            [("WrongMagic", "MalformedEncoding"), ("WrongMagic", "InconsistentStructure")],
+            UbcRules.ReadEmissions([witness]).Sites.Select(static site => (site.Code, site.Reason)));
+
+        // Read as a file of the assembly, beside the real ones, it is reported twice and nothing else is:
+        // once as the disagreement with the row, and once as the code with two reasons.
+        var reported = UbcRules.U8Reasons(
+                Registry, Vocabulary, UbcRules.ReadEmissions([.. UbcRules.UbcSourceFiles(), witness]), CoreReasons)
+            .ToArray();
+
+        Assert.Equal(2, reported.Length);
+        Assert.Contains(reported, static message =>
+            message.Contains("emits WrongMagic with InconsistentStructure, and the registry says MalformedEncoding", StringComparison.Ordinal));
+        Assert.Contains(reported, static message =>
+            message.StartsWith("WrongMagic is emitted with 2 reasons: InconsistentStructure at ", StringComparison.Ordinal) &&
+            message.Contains("; MalformedEncoding at src/Broiler.VM.Ubc/UbcArtifactReader.cs(", StringComparison.Ordinal));
+
+        // The registry's side: a reason the core does not have, and a row whose reason every site
+        // contradicts.
+        var doctored = Registry with
+        {
+            Rows = Registry.Rows
+                .Select(static row => row.Code switch
+                {
+                    3001 => row with { Reason = "MalformedBytes" },
+                    3401 => row with { Reason = "SemanticValidationFailed" },
+                    _ => row,
+                })
+                .ToArray(),
+        };
+
+        var disagreements = UbcRules.U8Reasons(doctored, Vocabulary, Emissions, CoreReasons).ToArray();
+
+        Assert.Contains(disagreements, static message => message.Contains(
+            "the row for 3001 WrongMagic names the reason MalformedBytes, which is not a member of VmReason", StringComparison.Ordinal));
+        Assert.Contains(disagreements, static message => message.Contains(
+            "emits UnknownOpcode with UnknownFeature, and the registry says SemanticValidationFailed", StringComparison.Ordinal));
+
+        // And a declared code nothing emits is reported, because a vocabulary may grow a member before
+        // anything can produce it.
+        Assert.Contains(
+            UbcRules.U8Reasons(Registry, [.. Vocabulary, ("NeverEmitted", 3999)], Emissions, CoreReasons),
+            static message => message.Contains("NeverEmitted is declared and no site in Broiler.VM.Ubc emits it", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// The reading of the source fails closed: every way of writing an emission the rule cannot read
+    /// the reason of is a message, so a second spelling of the same emission cannot hide a second
+    /// reason.
+    /// </summary>
+    [Fact]
+    public void U8_Reports_An_Emission_It_Cannot_Read_Rather_Than_Skipping_It()
+    {
+        foreach (var (text, expected) in new[]
+                 {
+                     ("static class C { static object M() { var code = UbcDiagnosticCode.WrongMagic; return code; } }",
+                         "uses UbcDiagnosticCode.WrongMagic outside the argument list of a call"),
+                     ("using static Broiler.VM.Ubc.UbcDiagnosticCode;",
+                         "names UbcDiagnosticCode in a using static directive"),
+                     ("using Code = Broiler.VM.Ubc.UbcDiagnosticCode;",
+                         "names UbcDiagnosticCode in an alias directive"),
+                     ("static class C { static UbcRefusal M() => UbcRefusal.Invalid((UbcDiagnosticCode)3001, VmReason.MalformedEncoding, default); }",
+                         "names UbcDiagnosticCode in a cast"),
+                     ("static class C { static UbcRefusal M(VmReason reason) => UbcRefusal.Invalid(UbcDiagnosticCode.WrongMagic, reason, default); }",
+                         "emits WrongMagic with no reason the rule can read"),
+                     ("static class C { static UbcRefusal M(bool late) => UbcRefusal.Invalid(UbcDiagnosticCode.WrongMagic, late ? VmReason.Truncated : VmReason.MalformedEncoding, default); }",
+                         "WrongMagic is emitted with 2 reasons"),
+                 })
+        {
+            var file = new AssuranceSourceFile(
+                "src/Broiler.VM.Ubc/C.cs", "src/Broiler.VM.Ubc/C.cs", UbcRules.UbcAssembly, text, "\n",
+                AssuranceSources.Parse(text, "src/Broiler.VM.Ubc/C.cs"));
+
+            Assert.Contains(
+                UbcRules.U8Reasons(Registry, Vocabulary, UbcRules.ReadEmissions([.. UbcRules.UbcSourceFiles(), file]), CoreReasons),
+                message => message.Contains(expected, StringComparison.Ordinal));
+        }
+    }
+
+    [Fact]
+    public void U8_Every_Registry_Row_Is_Reachable_From_A_Named_Case()
+    {
+        Assert.Empty(UbcRules.U8Reachability(Registry, Corpus, UbcRules.DefensiveCodes));
+
+        // Non-vacuous, and the figures that matter: every row but one names an Exact entry of the
+        // corpus, and the one is the row the rule lists - which is the count the rule fixes rather than
+        // the registry.
+        Assert.Equal(55, Registry.Rows.Count(static row => row.Reachability == "corpus"));
+        Assert.Equal(
+            [3903],
+            Registry.Rows.Where(static row => row.Reachability == "defensive").Select(static row => row.Code));
+        Assert.Single(UbcRules.DefensiveCodes);
+
+        // VerifierDefect is the row a reader of the enumeration would expect to be defensive, and it is
+        // not: an entry replayed under a hook that answers with a code of this range reaches it.
+        var defect = Registry.Rows.Single(static row => row.Code == 3904);
+
+        Assert.Equal("corpus", defect.Reachability);
+        Assert.Equal("a-hook-answering-a-universal-code", defect.Case);
+
+        var witness = Witness("U8-registry-names-an-entry-the-corpus-does-not-have.txt.witness", "diagnostics");
+        var reported = UbcRules.U8Reachability(
+                UbcRules.ReadRegistry(File.ReadAllText(witness), witness), Corpus, UbcRules.DefensiveCodes)
+            .ToArray();
+
+        Assert.Contains(reported, static message => message.Contains(
+            "the row for 3001 WrongMagic names the entry a-corpus-entry-nobody-wrote, and the corpus manifest has no entry of that id",
+            StringComparison.Ordinal));
+        Assert.Contains(reported, static message => message.Contains(
+            "the row for 3002 DescriptorFormatVersionMismatch names the entry a-wrong-magic, which expects InvalidArtifact with code 3001 rather than InvalidArtifact with code 3002",
+            StringComparison.Ordinal));
+        Assert.Contains(reported, static message => message.Contains(
+            "the row for 3003 UnsupportedFormatVersion names the entry truncated-at-003, which is pinned Recorded rather than Exact",
+            StringComparison.Ordinal));
+        Assert.Contains(reported, static message => message.Contains(
+            "the row for 3004 MalformedIdentity names the entry an-empty-profile-identity, which expects the reason MalformedEncoding rather than InconsistentStructure",
+            StringComparison.Ordinal));
+        Assert.Contains(reported, static message => message.Contains(
+            "the row for 3903 ReaderStopped is admitted as unreachable and claims to be reachable",
+            StringComparison.Ordinal));
+        Assert.Contains(reported, static message => message.Contains(
+            "the row for 3904 VerifierDefect claims to be unreachable and is not one of the rows this rule admits",
+            StringComparison.Ordinal));
+
+        // The defensive row's own words are the rule's: the real registry with the reason reworded
+        // fails, so the explanation a reader sees is the one the rule was written against.
+        Assert.Contains(
+            UbcRules.U8Reachability(
+                Registry with { Rows = Registry.Rows.Select(static row => row.Code == 3903 ? row with { Case = "It cannot happen." } : row).ToArray() },
+                Corpus,
+                UbcRules.DefensiveCodes),
+            static message => message.Contains(
+                "the row for 3903 ReaderStopped says why it is unreachable in words the rule's list does not", StringComparison.Ordinal));
+
+        // The manifest's side, with one thing altered each time: a manifest that stops listing the
+        // defensive code, and one in which an Exact entry reaches it - a row that quietly became
+        // reachable is good news and still has to be recorded, because the rule's list is what a
+        // reader trusts.
+        Assert.Contains(
+            UbcRules.U8Reachability(Registry, Corpus with { Defensive = [] }, UbcRules.DefensiveCodes),
+            static message => message.Contains(
+                "the rule admits 3903 ReaderStopped as unreachable, and the corpus manifest's defensiveCodes does not list it in the same words",
+                StringComparison.Ordinal));
+
+        Assert.Contains(
+            UbcRules.U8Reachability(
+                Registry,
+                Corpus with { Entries = Corpus.Entries.Select(static entry => entry.Id == "an-empty-payload" ? entry with { ExpectedCode = 3903 } : entry).ToArray() },
+                UbcRules.DefensiveCodes),
+            static message => message.Contains(
+                "the rule admits 3903 ReaderStopped as unreachable, and the corpus entry an-empty-payload reaches it", StringComparison.Ordinal));
+
+        // And an entry whose recorded answer has drifted from its expected one does not reach its row,
+        // whatever the person who wrote the expectation meant.
+        Assert.Contains(
+            UbcRules.U8Reachability(
+                Registry,
+                Corpus with { Entries = Corpus.Entries.Select(static entry => entry.Id == "a-wrong-magic" ? entry with { RecordedCode = 3902 } : entry).ToArray() },
+                UbcRules.DefensiveCodes),
+            static message => message.Contains(
+                "the row for 3001 WrongMagic names the entry a-wrong-magic, whose recorded answer (InvalidArtifact, 3902, MalformedEncoding) is not its expected one",
+                StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void U8_Holds_Its_Own_Register_Row_To_What_It_Proves()
+    {
+        var row = Row("U8");
+
+        Assert.Equal("Active", row.Status);
+        Assert.Equal("0013", row.OwningAdr);
+        Assert.Null(row.ActivationMilestone);
+
+        // The row must name the three inputs it binds the registry to, and the shapes of emission it
+        // reads, because a shape the row does not name is a shape a reader cannot know is read.
+        foreach (var clause in new[] { UbcRules.RegistryFile, UbcRules.CorpusManifestFile, "UbcDiagnosticCode", "VmReason", "UbcRefusal.Invalid", "FromReader", "the walk's Or", "defensive" })
+        {
+            Assert.Contains(clause, row.Statement, StringComparison.Ordinal);
+        }
+
+        // The defensive row and the one a reader would mistake for it must both be in the row.
+        Assert.Contains("ReaderStopped", row.NonVacuousWhen, StringComparison.Ordinal);
+        Assert.Contains("VerifierDefect", row.NonVacuousWhen, StringComparison.Ordinal);
+    }
+
+    // =============================================================================================
     // U9
     // =============================================================================================
 
@@ -541,6 +826,7 @@ public sealed class UbcRuleTests
                 .Concat(UbcRules.U2FamilyRows(UbcApiSurface.Describe()))),
             ("U4", () => UbcRules.U4AppendixViolations()
                 .Concat(UbcRules.U4SecondTables(UbcRules.U4Sources(), UbcRules.TableEnums()))),
+            ("U8", UbcRules.U8Violations),
             ("U9", () => Writing ? [] : U9Violations(UbcApiSurface.Describe())),
         ]);
 
@@ -555,6 +841,16 @@ public sealed class UbcRuleTests
     // =============================================================================================
     // Helpers
     // =============================================================================================
+
+    private static IReadOnlyList<(string Name, int Value)> ReadCodeVocabulary()
+    {
+        var problems = new List<string>();
+        var vocabulary = UbcRules.DiagnosticVocabulary(AssuranceSources.File(UbcRules.DiagnosticsFile).Tree, problems);
+
+        return problems.Count == 0
+            ? vocabulary
+            : throw new InvalidOperationException(string.Join(Environment.NewLine, problems));
+    }
 
     private static RuleRegisterTests.Rule Row(string id) =>
         RuleRegisterTests.Loaded.Rules.Single(rule => string.Equals(rule.Id, id, StringComparison.Ordinal));

@@ -1,0 +1,32 @@
+// A source that emits one diagnostic code with two core reasons.
+//
+// Not compiled by anything; rule U8 reads it as though it were a file of Broiler.VM.Ubc. The first
+// site is the real reader's own: a payload too short to hold the magic is refused with WrongMagic and
+// MalformedEncoding. The second is the defect, and it is written the way the walk writes its
+// structural refusals - through a helper that takes the code and supplies InconsistentStructure from
+// its own body - so the rule has to read the helper to see it. A code emitted with two reasons is two
+// rejections sharing a number: every corpus entry that recorded 3001 would record a triple that no
+// longer says which of the two happened.
+namespace Broiler.VM.Ubc;
+
+internal sealed class UbcMagicWitness
+{
+    internal UbcRefusal Refusal { get; private set; }
+
+    internal bool ReadMagic(ReadOnlySpan<byte> payload)
+    {
+        if (payload.Length < 4)
+        {
+            Refusal = UbcRefusal.Invalid(UbcDiagnosticCode.WrongMagic, VmReason.MalformedEncoding, UbcRefusal.InHeader(0));
+            return false;
+        }
+
+        return payload[0] == (byte)'B' || Refuse(UbcDiagnosticCode.WrongMagic, UbcRefusal.InHeader(0));
+    }
+
+    private bool Refuse(UbcDiagnosticCode code, VmSourcePosition position)
+    {
+        Refusal = UbcRefusal.Invalid(code, VmReason.InconsistentStructure, position);
+        return false;
+    }
+}

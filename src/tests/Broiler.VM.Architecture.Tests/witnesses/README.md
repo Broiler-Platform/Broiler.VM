@@ -105,4 +105,10 @@ perturbations, one per direction clause (a) decides, and
 width table for the common family, not compiled by anything, read at a path in a project that
 references the assembly, where every arm is reported, and at the one table's own path, where none is.
 The two `api/U9-*` witnesses are the universal bytecode's baseline with one member removed and one
-member that does not exist added, as W2's are.
+member that does not exist added, as W2's are. The three `diagnostics/U8-*` witnesses are one per clause
+of the registry rule, beside group N's registry witnesses: a registry omitting a declared code, whose
+other rows carry a name that is not its number's member and a revision the registry does not have; a
+registry whose rows name a corpus entry the manifest does not have, entries that expect another code
+or another reason, an entry of a sweep, and a defensive row the rule does not admit; and a source,
+read as though it were a file of the assembly, that emits one code with two reasons, the second
+through a forwarding helper of its own so the rule has to read the helper's body to see it.

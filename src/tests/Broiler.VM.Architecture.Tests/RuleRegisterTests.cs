@@ -365,13 +365,15 @@ public sealed class RuleRegisterTests
         // scan read and forbids a static family row on its surface, U4 holds the common family's one
         // table to the concept's Appendix A and forbids a second statement of a common row anywhere a
         // project that references the assembly could write one, and U9 freezes its public surface in its
-        // own baseline. The fifth, U8, holds the diagnostic registry and is minted with it. All four are
-        // Active from the moment they are minted, because the assembly they are about exists; neither the
-        // Vacuous nor the Deferred count moves.
-        Assert.Equal(100, byStatus["Active"]);
+        // own baseline. The fifth, U8, holds the diagnostic registry and was minted with it, in a later
+        // change: the registry against the code vocabulary, against the one reason every emission in the
+        // source carries, and against the corpus entry that reaches each row. All five are Active from the
+        // moment they are minted, because what they are about exists; neither the Vacuous nor the
+        // Deferred count moves.
+        Assert.Equal(101, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(102, Loaded.Rules.Count);
+        Assert.Equal(103, Loaded.Rules.Count);
     }
 
     private static Register Load()
