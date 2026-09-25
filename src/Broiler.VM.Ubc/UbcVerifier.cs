@@ -1148,7 +1148,7 @@ internal sealed class UbcWalk
     }
 
     /// <summary>Applies one instruction to the typed stack, records what the walk proved, and reaches its successors.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=05A7A7
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=2; Fingerprint=16C3A8
     // Broiler-Falsified-If: an instruction reaches a successor with a stack other than its effect applied, or is recorded with counts that differ from that effect
     // Broiler-Human:        PENDING
     private bool Step(
@@ -1236,7 +1236,7 @@ internal sealed class UbcWalk
                     return false;
                 }
 
-                wordPops = 1;
+                Count(common.Pops, out wordPops, out valuePops);
 
                 if (operand >= (ulong)artifact.JumpTables.Length || artifact.JumpTables[(int)operand].Unit != (uint)unitIndex)
                 {

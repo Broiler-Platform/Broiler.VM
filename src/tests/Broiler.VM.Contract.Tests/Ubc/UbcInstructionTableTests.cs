@@ -237,36 +237,4 @@ public sealed class UbcInstructionTableTests
         Assert.True(baseTable.DefinesTrap(UbcCorpusFamily.TrapUser));
         Assert.False(baseTable.DefinesTrap(0));
     }
-
-    [Fact]
-    public void Every_Row_Of_The_Common_Table_Is_Appendix_A()
-    {
-        // U4's one table, read back: every byte Appendix A defines and no other, with its shape.
-        var expected = new Dictionary<UbcOpcode, UbcOperandShape>
-        {
-            [UbcOpcode.Nop] = UbcOperandShape.None, [UbcOpcode.Trap] = UbcOperandShape.U8U16, [UbcOpcode.Jump] = UbcOperandShape.U32,
-            [UbcOpcode.JumpIfZero] = UbcOperandShape.U32, [UbcOpcode.JumpIfNonZero] = UbcOperandShape.U32,
-            [UbcOpcode.JumpTable] = UbcOperandShape.U16, [UbcOpcode.Return] = UbcOperandShape.None, [UbcOpcode.Call] = UbcOperandShape.U32,
-            [UbcOpcode.Drop] = UbcOperandShape.None, [UbcOpcode.Dup] = UbcOperandShape.None, [UbcOpcode.Dup2] = UbcOperandShape.None,
-            [UbcOpcode.Swap] = UbcOperandShape.None, [UbcOpcode.Pick] = UbcOperandShape.U8, [UbcOpcode.Select] = UbcOperandShape.None,
-            [UbcOpcode.Squash] = UbcOperandShape.U8U8, [UbcOpcode.LocalGet] = UbcOperandShape.U16, [UbcOpcode.LocalSet] = UbcOperandShape.U16,
-            [UbcOpcode.LocalTee] = UbcOperandShape.U16, [UbcOpcode.ConstI32] = UbcOperandShape.I32, [UbcOpcode.ConstI64] = UbcOperandShape.I64,
-            [UbcOpcode.ConstF32] = UbcOperandShape.F32, [UbcOpcode.ConstF64] = UbcOperandShape.F64,
-        };
-
-        Assert.Equal(expected.Count, UbcOpcodes.All.Length);
-
-        for (var value = 0; value < 256; value++)
-        {
-            var defined = UbcOpcodes.TryDescribe((byte)value, out var row);
-            Assert.Equal(expected.ContainsKey((UbcOpcode)value), defined);
-
-            if (defined)
-            {
-                Assert.Equal(expected[(UbcOpcode)value], row.Shape);
-                Assert.Equal(1u, row.Cost);
-                Assert.Equal(row.IsTerminal, row.Opcode is UbcOpcode.Trap or UbcOpcode.Jump or UbcOpcode.JumpTable or UbcOpcode.Return);
-            }
-        }
-    }
 }

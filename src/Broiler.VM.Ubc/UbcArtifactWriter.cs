@@ -525,10 +525,17 @@ public sealed class UbcCodeBuilder
     }
 
     /// <summary>A common instruction whose <c>U32</c> operand is <paramref name="label"/>'s absolute offset.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AE4C04
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=95671D
     // Broiler-Human:        PENDING
     public UbcCodeBuilder EmitTo(UbcOpcode opcode, int label)
     {
+        // The width comes from the one table like every other instruction's: a row that takes no code
+        // target is an author's mistake here, not a four-byte operand the table does not declare.
+        if (!UbcOpcodes.Row(opcode).HasCodeTarget)
+        {
+            throw new System.ArgumentException($"{opcode} takes no code target", nameof(opcode));
+        }
+
         bytes.Add((byte)opcode);
         fixups.Add((bytes.Count, label));
         Append(0, 4);

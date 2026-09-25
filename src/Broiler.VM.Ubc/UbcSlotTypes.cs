@@ -170,8 +170,8 @@ public static class UbcOperandShapes
     };
 
     /// <summary>
-    /// Reads an operand of <paramref name="shape"/> from <paramref name="bytes"/>, which must be exactly
-    /// its width, as a zero-extended little-endian value.
+    /// Reads an operand from <paramref name="bytes"/>, which must be exactly its shape's width, as a
+    /// zero-extended little-endian value.
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=739347
     // Broiler-Falsified-If: a byte beyond the shape's width contributes to the value, or the byte order is not little-endian

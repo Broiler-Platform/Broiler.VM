@@ -237,7 +237,7 @@
     { "file": "src/Broiler.VM.Ubc/AssemblyMarker.cs", "fingerprint": "D41D90" },
     { "file": "src/Broiler.VM.Ubc/UbcArtifact.cs", "fingerprint": "15CDBB" },
     { "file": "src/Broiler.VM.Ubc/UbcArtifactReader.cs", "fingerprint": "EE310C" },
-    { "file": "src/Broiler.VM.Ubc/UbcArtifactWriter.cs", "fingerprint": "957A74" },
+    { "file": "src/Broiler.VM.Ubc/UbcArtifactWriter.cs", "fingerprint": "346FD3" },
     { "file": "src/Broiler.VM.Ubc/UbcComposition.cs", "fingerprint": "112153" },
     { "file": "src/Broiler.VM.Ubc/UbcDiagnostics.cs", "fingerprint": "30C4F2" },
     { "file": "src/Broiler.VM.Ubc/UbcEffects.cs", "fingerprint": "6BCE09" },
@@ -250,7 +250,7 @@
     { "file": "src/Broiler.VM.Ubc/UbcRefusal.cs", "fingerprint": "9E69FF" },
     { "file": "src/Broiler.VM.Ubc/UbcSlotTypes.cs", "fingerprint": "623FA4" },
     { "file": "src/Broiler.VM.Ubc/UbcVerifiedProgram.cs", "fingerprint": "07252E" },
-    { "file": "src/Broiler.VM.Ubc/UbcVerifier.cs", "fingerprint": "B13DDD" }
+    { "file": "src/Broiler.VM.Ubc/UbcVerifier.cs", "fingerprint": "EDDF61" }
   ],
   "units": [
     { "name": "Broiler.VM.VmArtifactDescriptor", "file": "src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs", "exempt": false, "exemption": "None", "fingerprint": "06FA02" },
@@ -9237,7 +9237,7 @@
     { "name": "Broiler.VM.Ubc.UbcCodeBuilder.Emit(UbcOpcode, ulong)", "file": "src/Broiler.VM.Ubc/UbcArtifactWriter.cs", "exempt": false, "exemption": "None", "fingerprint": "B9B42F" },
     { "name": "Broiler.VM.Ubc.UbcCodeBuilder.EmitFamily(byte, byte, UbcOperandShape, ulong)", "file": "src/Broiler.VM.Ubc/UbcArtifactWriter.cs", "exempt": false, "exemption": "None", "fingerprint": "7527DA" },
     { "name": "Broiler.VM.Ubc.UbcCodeBuilder.EmitFamilyTo(byte, byte, int)", "file": "src/Broiler.VM.Ubc/UbcArtifactWriter.cs", "exempt": false, "exemption": "None", "fingerprint": "500B77" },
-    { "name": "Broiler.VM.Ubc.UbcCodeBuilder.EmitTo(UbcOpcode, int)", "file": "src/Broiler.VM.Ubc/UbcArtifactWriter.cs", "exempt": false, "exemption": "None", "fingerprint": "AE4C04" },
+    { "name": "Broiler.VM.Ubc.UbcCodeBuilder.EmitTo(UbcOpcode, int)", "file": "src/Broiler.VM.Ubc/UbcArtifactWriter.cs", "exempt": false, "exemption": "None", "fingerprint": "95671D" },
     { "name": "Broiler.VM.Ubc.UbcCodeBuilder.Mark(int)", "file": "src/Broiler.VM.Ubc/UbcArtifactWriter.cs", "exempt": false, "exemption": "None", "fingerprint": "79C23C" },
     { "name": "Broiler.VM.Ubc.UbcCodeBuilder.NewLabel()", "file": "src/Broiler.VM.Ubc/UbcArtifactWriter.cs", "exempt": false, "exemption": "None", "fingerprint": "BD3110" },
     { "name": "Broiler.VM.Ubc.UbcCodeBuilder.Offset", "file": "src/Broiler.VM.Ubc/UbcArtifactWriter.cs", "exempt": false, "exemption": "None", "fingerprint": "645A8F" },
@@ -10035,7 +10035,7 @@
     { "name": "Broiler.VM.Ubc.UbcWalk.ResolveRegions(int, UbcUnit, int[], Raw[], out ImmutableArray<UbcDecodedRegion>, out int[], out int[])", "file": "src/Broiler.VM.Ubc/UbcVerifier.cs", "exempt": false, "exemption": "None", "fingerprint": "1A4531" },
     { "name": "Broiler.VM.Ubc.UbcWalk.Run(out UbcVerifiedProgram?)", "file": "src/Broiler.VM.Ubc/UbcVerifier.cs", "exempt": false, "exemption": "None", "fingerprint": "B9F64F" },
     { "name": "Broiler.VM.Ubc.UbcWalk.Same(UbcStackNode?, UbcStackNode?)", "file": "src/Broiler.VM.Ubc/UbcVerifier.cs", "exempt": false, "exemption": "None", "fingerprint": "0D6F45" },
-    { "name": "Broiler.VM.Ubc.UbcWalk.Step(WalkState, int, int, UbcUnit, UbcSignature, LocalLayout, Raw[], UbcInstruction[], ImmutableArray<int>[])", "file": "src/Broiler.VM.Ubc/UbcVerifier.cs", "exempt": false, "exemption": "None", "fingerprint": "05A7A7" },
+    { "name": "Broiler.VM.Ubc.UbcWalk.Step(WalkState, int, int, UbcUnit, UbcSignature, LocalLayout, Raw[], UbcInstruction[], ImmutableArray<int>[])", "file": "src/Broiler.VM.Ubc/UbcVerifier.cs", "exempt": false, "exemption": "None", "fingerprint": "16C3A8" },
     { "name": "Broiler.VM.Ubc.UbcWalk.StepFamily(WalkState, int, int, UbcUnit, Raw[], UbcInstruction[], UbcInstructionRow, UbcStackNode?, VmSourcePosition, int)", "file": "src/Broiler.VM.Ubc/UbcVerifier.cs", "exempt": false, "exemption": "None", "fingerprint": "08DCB4" },
     { "name": "Broiler.VM.Ubc.UbcWalk.Take(UbcStackNode?, int, VmSourcePosition, out ImmutableArray<UbcSlotType>, out UbcStackNode?)", "file": "src/Broiler.VM.Ubc/UbcVerifier.cs", "exempt": false, "exemption": "None", "fingerprint": "C8FF1A" },
     { "name": "Broiler.VM.Ubc.UbcWalk.Target(Raw[], ulong, VmSourcePosition, out int)", "file": "src/Broiler.VM.Ubc/UbcVerifier.cs", "exempt": false, "exemption": "None", "fingerprint": "9DB159" },

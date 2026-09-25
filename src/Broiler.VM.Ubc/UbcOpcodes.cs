@@ -194,7 +194,7 @@ public sealed class UbcCommonRow
     /// <summary>How the row changes the stack.</summary>
     public UbcCommonEffect Effect { get; }
 
-    /// <summary>For a <see cref="UbcCommonEffect.Listed"/> row, its pops, bottom to top; otherwise empty.</summary>
+    /// <summary>The row's typed pops, bottom to top, where the row states them: a <see cref="UbcCommonEffect.Listed"/> row's, and <c>jump_table</c>'s selector; otherwise empty.</summary>
     public ImmutableArray<UbcSlotType> Pops { get; }
 
     /// <summary>For a <see cref="UbcCommonEffect.Listed"/> row, its pushes, bottom to top; otherwise empty.</summary>
