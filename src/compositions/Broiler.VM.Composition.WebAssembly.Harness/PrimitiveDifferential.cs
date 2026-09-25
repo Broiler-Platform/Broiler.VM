@@ -32,10 +32,11 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// </para>
 /// <para>
 /// <b>The twelve float comparisons, 0x5B to 0x66, are reported apart, as the control.</b> The arms the
-/// reference reads are the profile's unmodified ones, which route the comparison bytes to the integer
-/// arm and have no answer for them; the predeclared rule of milestone UBC-4 retains this lane failing on
-/// exactly those rows before the arms are corrected, and passing after. Every other row is counted and
-/// reported before them, so a disagreement outside the control can never hide inside it.
+/// reference reads are the profile's own. Until milestone UBC-4 corrected their routing they sent the
+/// comparison bytes to the integer arm and had no answer for them; the predeclared rule retained this
+/// lane failing on exactly those rows before the correction, and passing after (bundle
+/// <c>ubc-4-002</c>). Every other row is counted and reported before them, so a disagreement outside
+/// the control can never hide inside it.
 /// </para>
 /// <para>
 /// <b>It runs only under <c>--primitives &lt;file&gt;</c></b>, after every other lane, and its headers
@@ -156,7 +157,7 @@ internal static class PrimitiveDifferential
         Console.WriteLine(
             $"# primitive-differential control: {control.Length.ToString(CultureInfo.InvariantCulture)} rows, " +
             $"the float comparisons 0x{FirstComparison:X2}-0x{LastComparison:X2}, " +
-            "against the profile's unmodified reference arms");
+            "against the profile's reference arms");
 
         for (var opcode = FirstComparison; opcode <= LastComparison; opcode++)
         {

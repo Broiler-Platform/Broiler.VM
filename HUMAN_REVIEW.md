@@ -3592,7 +3592,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an arm here answers differently from the interpreter arm it was moved from, or the reference evaluation reads an operand the row does not pop
 - `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryEvaluate(byte, ulong, ulong, out ulong, out WasmTrapKind)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, Spec=ADR-0013, `39575B`, PENDING
   - Falsified if: an answer is given for a byte that is no numeric row, or a row's arm is run over more operands than its effect pops
-- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryNumeric(byte, Operand[], ref int, out WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, Spec=none cited, `2C155E`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryNumeric(byte, Operand[], ref int, out WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, Spec=none cited, `7C9357`, PENDING
   - Falsified if: an opcode inside these ranges answers false, or one outside them answers true
 - `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.Integer(byte, Operand[], ref int, ref WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=Critical, Spec=none cited, `FAE92E`, PENDING
   - Falsified if: a signed remainder by minus one traps, or a shift count is used unmasked

@@ -23,17 +23,18 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>THE ARMS WERE MOVED HERE VERBATIM, AND THAT INCLUDES THEIR DEFECT.</b> They were the
+/// <b>THE ARMS WERE MOVED HERE VERBATIM, THEIR DEFECT WITH THEM, AND THE DEFECT WAS THEN CORRECTED.</b> They were the
 /// bare-module interpreter's private members, and they were this type's while that interpreter
 /// delegated its numeric dispatch here, so the arms that produced the base run's answers are the arms
 /// the universal bytecode's obligation E2 compares with the primitive table. Milestone UBC-4 retired
 /// the interpreter and its sixteen-byte slot with it; the arms now run over a slot of this type's own,
 /// <see cref="Operand"/>, which holds the same untyped bits the retired slot held in its low half,
-/// and not one arm's body changed but for the slot's name. The routing defect travels with them:
-/// <see cref="TryNumeric"/> sends 0x45 to 0x8A to the integer arm, which has no case for the twelve
-/// float comparisons 0x5B to 0x66 and answers that it has no answer, and the comparison arm below is
-/// never called. The negative control of milestone UBC-4 is that defect, retained failing before the
-/// routing is corrected, and the correction is the lead's to make.
+/// and not one arm's body changed but for the slot's name. The routing defect travelled with them:
+/// <see cref="TryNumeric"/> sent 0x45 to 0x8A to the integer arm, which has no case for the twelve
+/// float comparisons 0x5B to 0x66 and answered that it had no answer, so the comparison arm below was
+/// never called. The negative control of milestone UBC-4 is that defect, retained failing against the
+/// unmodified arms (bundle <c>ubc-4-002</c>, <c>control-failing.log</c>); the routing now sends the
+/// twelve to the comparison arm, and the same check is retained passing (<c>control-passing.log</c>).
 /// </para>
 /// <para>
 /// <b>Nothing here canonicalises a NaN</b>, and the two unsigned sixty-four-bit conversions are the C#
@@ -59,8 +60,7 @@ internal static class WasmReferenceNumerics
     /// <remarks>
     /// Answers true with the result's bits, or with the trap it raised in <paramref name="trap"/> and
     /// zero bits; <paramref name="trap"/> is zero, which names no trap, when none was raised. Answers
-    /// false when the arms have no answer - the routing defect for 0x5B to 0x66 - and for a byte that
-    /// is not a numeric row of the family's table.
+    /// false for a byte that is not a numeric row of the family's table.
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=39575B
     // Broiler-Falsified-If: an answer is given for a byte that is no numeric row, or a row's arm is run over more operands than its effect pops
@@ -105,15 +105,19 @@ internal static class WasmReferenceNumerics
     /// lays them out, and a reader checking this against the specification's own instruction table
     /// reads the two in the same order.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=2C155E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=7C9357
     // Broiler-Falsified-If: an opcode inside these ranges answers false, or one outside them answers true
     // Broiler-Human:        PENDING
     private static bool TryNumeric(byte opcode, Operand[] stack, ref int top, out WasmTrapKind? trap)
     {
         trap = null;
 
+        // The twelve float comparisons sit inside the integer range of the opcode table and are routed
+        // to their own arm first; before milestone UBC-4 corrected it, this routing sent them to the
+        // integer arm, which has no case for them.
         return opcode switch
         {
+            >= 0x5B and <= 0x66 => FloatComparison(opcode, stack, ref top),
             >= 0x45 and <= 0x8A => Integer(opcode, stack, ref top, ref trap),
             >= 0x8B and <= 0xA6 => Float(opcode, stack, ref top),
             >= 0xA7 and <= 0xBF => Convert(opcode, stack, ref top, ref trap),
