@@ -1,0 +1,92 @@
+# condition-after: every build and form over every shape, untimed, with --runtime
+# 2026-09-24T22:09:58Z
+condition-after    control   bytecode run   exit 0 stdout 850cebc739ddaca9c95c84b799bdf187e1030fef3ac07fc019effc67a78da6e4
+condition-after    candidate bytecode run   exit 0 stdout 850cebc739ddaca9c95c84b799bdf187e1030fef3ac07fc019effc67a78da6e4
+condition-after    candidate value    run   exit 0 stdout 850cebc739ddaca9c95c84b799bdf187e1030fef3ac07fc019effc67a78da6e4
+condition-after    candidate native   run   exit 0 stdout 850cebc739ddaca9c95c84b799bdf187e1030fef3ac07fc019effc67a78da6e4
+condition-after    control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+array-loop.js: every combination answers 850cebc739ddaca9c95c84b799bdf187e1030fef3ac07fc019effc67a78da6e4
+condition-after    control   bytecode run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-after    candidate bytecode run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-after    candidate value    run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-after    candidate native   run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-after    control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+call-loop.js: every combination answers a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-after    control   bytecode run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-after    candidate bytecode run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-after    candidate value    run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-after    candidate native   run   exit 0 stdout a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-after    control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+closure-loop.js: every combination answers a92373742eac3ba9e17aa3c09b8bcb19aefda9be4f665a6a94048ab1ae6247c8
+condition-after    control   bytecode run   exit 0 stdout c57b376ca4883de409932a8847c48e75c39e0c17ffe579e7b01cae10348fc264
+condition-after    candidate bytecode run   exit 0 stdout c57b376ca4883de409932a8847c48e75c39e0c17ffe579e7b01cae10348fc264
+condition-after    candidate value    run   exit 0 stdout c57b376ca4883de409932a8847c48e75c39e0c17ffe579e7b01cae10348fc264
+condition-after    candidate native   run   exit 0 stdout c57b376ca4883de409932a8847c48e75c39e0c17ffe579e7b01cae10348fc264
+condition-after    control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+fib.js: every combination answers c57b376ca4883de409932a8847c48e75c39e0c17ffe579e7b01cae10348fc264
+condition-after    control   bytecode run   exit 0 stdout 420002158111bff8adb3347d84029e480f45e60e1869b454b6adac3345f9f7d4
+condition-after    candidate bytecode run   exit 0 stdout 420002158111bff8adb3347d84029e480f45e60e1869b454b6adac3345f9f7d4
+condition-after    candidate value    run   exit 0 stdout 420002158111bff8adb3347d84029e480f45e60e1869b454b6adac3345f9f7d4
+condition-after    candidate native   run   exit 0 stdout 420002158111bff8adb3347d84029e480f45e60e1869b454b6adac3345f9f7d4
+condition-after    control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+generator-loop.js: every combination answers 420002158111bff8adb3347d84029e480f45e60e1869b454b6adac3345f9f7d4
+condition-after    control   bytecode run   exit 0 stdout f60260e656ad57721144aa337d701695322e53d2973b6ff8b384cd0d331bc382
+condition-after    candidate bytecode run   exit 0 stdout f60260e656ad57721144aa337d701695322e53d2973b6ff8b384cd0d331bc382
+condition-after    candidate value    run   exit 0 stdout f60260e656ad57721144aa337d701695322e53d2973b6ff8b384cd0d331bc382
+condition-after    candidate native   run   exit 0 stdout f60260e656ad57721144aa337d701695322e53d2973b6ff8b384cd0d331bc382
+condition-after    control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+numeric-loop.js: every combination answers f60260e656ad57721144aa337d701695322e53d2973b6ff8b384cd0d331bc382
+condition-after    control   bytecode run   exit 0 stdout 3f3ea8a1afc0f5a6ce7ace3152abfdaa52ea3726c4f66e728790f42cbc005901
+condition-after    candidate bytecode run   exit 0 stdout 3f3ea8a1afc0f5a6ce7ace3152abfdaa52ea3726c4f66e728790f42cbc005901
+condition-after    candidate value    run   exit 0 stdout 3f3ea8a1afc0f5a6ce7ace3152abfdaa52ea3726c4f66e728790f42cbc005901
+condition-after    candidate native   run   exit 0 stdout 3f3ea8a1afc0f5a6ce7ace3152abfdaa52ea3726c4f66e728790f42cbc005901
+condition-after    control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+property-loop.js: every combination answers 3f3ea8a1afc0f5a6ce7ace3152abfdaa52ea3726c4f66e728790f42cbc005901
+condition-after    control   bytecode run   exit 0 stdout f4ccd05b3271c386ee55d9876c7450012a3b361e5065c09dc22075e38b3cc35c
+condition-after    candidate bytecode run   exit 0 stdout f4ccd05b3271c386ee55d9876c7450012a3b361e5065c09dc22075e38b3cc35c
+condition-after    candidate value    run   exit 0 stdout f4ccd05b3271c386ee55d9876c7450012a3b361e5065c09dc22075e38b3cc35c
+condition-after    candidate native   run   exit 0 stdout f4ccd05b3271c386ee55d9876c7450012a3b361e5065c09dc22075e38b3cc35c
+condition-after    control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+string-loop.js: every combination answers f4ccd05b3271c386ee55d9876c7450012a3b361e5065c09dc22075e38b3cc35c
+condition-after    control   bytecode run   exit 0 stdout 86462511f5bae5ed2d407ecc8d2699a032b2ee003e4d10c3e38511780dd6d016
+condition-after    candidate bytecode run   exit 0 stdout 86462511f5bae5ed2d407ecc8d2699a032b2ee003e4d10c3e38511780dd6d016
+condition-after    candidate value    run   exit 0 stdout 86462511f5bae5ed2d407ecc8d2699a032b2ee003e4d10c3e38511780dd6d016
+condition-after    candidate native   run   exit 0 stdout 86462511f5bae5ed2d407ecc8d2699a032b2ee003e4d10c3e38511780dd6d016
+condition-after    control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+throw-loop.js: every combination answers 86462511f5bae5ed2d407ecc8d2699a032b2ee003e4d10c3e38511780dd6d016
+condition-after    control   bytecode run   exit 0 stdout b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784
+condition-after    candidate bytecode run   exit 0 stdout b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784
+condition-after    candidate value    run   exit 0 stdout b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784
+condition-after    candidate native   run   exit 0 stdout b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784
+condition-after    control   bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate bytecode check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate value    check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+condition-after    candidate native   check exit 0 stdout e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+try-loop.js: every combination answers b03c70ff0d641a363f1a021413a098dce02e4c68b75f3a47aa10044f42ee1784

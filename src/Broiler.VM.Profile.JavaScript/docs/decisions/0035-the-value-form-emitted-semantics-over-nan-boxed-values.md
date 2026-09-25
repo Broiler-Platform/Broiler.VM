@@ -3,7 +3,17 @@
 
 # JSD-0035 - The value form: emitted instruction semantics over NaN-boxed values and a per-instance handle table
 
-**Status:** Proposed. 2026-09-24. **Stages JSV-0 to JSV-4 are implemented in the tree, which is every
+**Status:** **Refused, 2026-09-25, on bundle [`jsv-4-001`](../evidence/jsv-4-001/README.md)'s
+measurement**, by the rule committed before stage JSV-2 existed. The measurement is valid - every
+condition and the fuel parity held, under one effective configuration - and the value form is slower
+than bytecode beyond the A/A floor on every wide shape, so clauses 2 and 3 refuse; clause 4 refuses too,
+because the interpreter itself moved against the control commit on four shapes. The figures are in that
+bundle's README and nowhere else. **What the refusal does is the rule's**: the commits of stages JSV-2,
+JSV-3 and JSV-4 are reverted together in one new commit, and whether stages JSV-0 and JSV-1, which make
+no speed claim, stay in the tree is the owner's to rule. Until that commit, the tree is as the rest of
+this paragraph describes it, which is the record the bundle judged.
+
+*As proposed on 2026-09-24:* **Stages JSV-0 to JSV-4 are implemented in the tree, which is every
 stage section 10 names.** JSV-0 is the word layout, the codec, the handle table, the slab scan and
 handle-stress. JSV-1 puts them on an execution path: a compilation can ask for the value form, the
 artifact records it, the verifier scans and re-emits it, and an instance runs it, with every
@@ -22,10 +32,9 @@ the value form, under handle-stress and in the control with every binding non-re
 async and exception subtrees under handle-stress among them; all fifteen Octane benchmarks report a
 score; the fuel-parity twins give one verdict at every ceiling the rows try; every inline kind answers
 as its arm, bit for bit; and a recursion answers the interpreter's `RangeError` at the interpreter's
-depth rather than meeting the machine stack. **The form is now judged, once**, by bundle `jsv-4-001`'s
-rule at the commit that completes this stage (section 10). Until that bundle's README carries the
-measurement, no bundle retains a measurement of the form, and this record makes no speed claim. Nobody
-has signed the record, so it claims no approval. Approvals are deferred under the MVP terms.
+depth rather than meeting the machine stack. **The form is judged once**, by bundle `jsv-4-001`'s rule
+at the commit that completes this stage (section 10), and this record makes no speed claim of its own.
+Nobody has signed the record, so it claims no approval. Approvals are deferred under the MVP terms.
 
 **Owner:** JavaScript profile owner. **Co-signer:** the core's security owner, because the design adds
 a rooting mechanism and a new class of emitted template. **Both roles are held by one person**, and
@@ -547,6 +556,9 @@ passes. *(Committed on 2026-09-24, before JSV-2's first commit, as bundle `jsv-4
 [decision rule](../evidence/jsv-4-001/decision-rule.md). The owner fixed its thresholds and ruled that
 the form is judged once and whole, at the end of JSV-4, and that the rule judges the wide shapes and
 reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 to JSV-4 together.)*
+*(Collected on 2026-09-24 at the commit that completes JSV-4, as bundle `jsv-4-001`, whose
+[README](../evidence/jsv-4-001/README.md) carries every figure. **Its verdict is REFUSE**: clauses 1
+and 5 hold, and clauses 2, 3 and 4 do not.)*
 
 ## What it amends, if adopted
 
@@ -555,7 +567,8 @@ reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 
   is a per-instance handle table, a precise tag scan, generation checks and a stress mode that makes a
   rooting bug a corpus failure. Every other value-holding region stays a managed array of `JsValue`.
 - **MVP-8.** Its alternative branch is taken, on the measurement section 10 requires. Until then the
-  route stands.
+  route stands. *(The measurement refused the form, so the branch is not taken and the route stands;
+  none of this section's amendments takes effect.)*
 - **JSD-0025.** It is not amended. Its baseline form, its section 4, its section 5 and its clauses S1
   to S4 continue to bind that form. The value form states its own counterparts in sections 3, 4, 7 and
   9.
@@ -649,7 +662,7 @@ reports the Octane benchmarks beside its verdict; a REFUSE reverts stages JSV-2 
 ## What this does not decide
 
 - **Whether the value form is faster.** That is the measurement's to answer, and this record makes no
-  speed claim.
+  speed claim. *(Answered by bundle `jsv-4-001`, on its wide shapes and its one machine: it is not.)*
 - Register allocation, which is left out on purpose: every word lives in the slab, as in the numeric
   form.
 - Inline caches, shapes or any other per-instance optimisation state.

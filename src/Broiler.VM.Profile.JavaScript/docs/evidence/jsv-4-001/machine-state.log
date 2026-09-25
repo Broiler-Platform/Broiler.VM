@@ -1,0 +1,21 @@
+# machine state before and after every repetition
+2026-09-24T21:07:36Z repetition 1 before: loadavg 1.00 1.19 1.72 2/106 18174 | processes 77
+2026-09-24T21:13:52Z repetition 1 after: loadavg 1.00 1.05 1.47 1/106 19274 | processes 77
+2026-09-24T21:13:52Z repetition 2 before: loadavg 1.00 1.05 1.47 2/106 19274 | processes 77
+2026-09-24T21:20:08Z repetition 2 after: loadavg 1.00 1.02 1.31 1/105 20361 | processes 77
+2026-09-24T21:20:08Z repetition 3 before: loadavg 1.00 1.02 1.31 2/105 20361 | processes 77
+2026-09-24T21:26:26Z repetition 3 after: loadavg 1.00 1.01 1.20 1/104 21444 | processes 77
+2026-09-24T21:26:26Z repetition 4 before: loadavg 1.00 1.01 1.20 2/104 21444 | processes 77
+2026-09-24T21:32:42Z repetition 4 after: loadavg 1.00 1.00 1.12 1/104 22560 | processes 77
+2026-09-24T21:32:42Z repetition 5 before: loadavg 1.00 1.00 1.12 2/104 22560 | processes 77
+2026-09-24T21:38:55Z repetition 5 after: loadavg 1.01 1.00 1.08 1/105 23644 | processes 77
+2026-09-24T21:38:55Z repetition 6 before: loadavg 1.01 1.00 1.08 2/105 23644 | processes 77
+2026-09-24T21:45:09Z repetition 6 after: loadavg 0.99 1.00 1.04 1/105 24727 | processes 77
+2026-09-24T21:45:09Z repetition 7 before: loadavg 0.99 1.00 1.04 2/105 24727 | processes 77
+2026-09-24T21:51:23Z repetition 7 after: loadavg 1.05 1.03 1.03 1/105 25812 | processes 77
+2026-09-24T21:51:23Z repetition 8 before: loadavg 1.05 1.03 1.03 1/105 25812 | processes 77
+2026-09-24T21:57:34Z repetition 8 after: loadavg 1.01 1.02 1.00 1/104 26895 | processes 77
+2026-09-24T21:57:34Z repetition 9 before: loadavg 1.01 1.02 1.00 2/104 26895 | processes 77
+2026-09-24T22:03:47Z repetition 9 after: loadavg 1.00 1.00 1.00 1/104 28014 | processes 77
+2026-09-24T22:03:47Z repetition 10 before: loadavg 1.00 1.00 1.00 1/104 28014 | processes 77
+2026-09-24T22:09:58Z repetition 10 after: loadavg 1.00 1.00 1.00 1/106 29096 | processes 77

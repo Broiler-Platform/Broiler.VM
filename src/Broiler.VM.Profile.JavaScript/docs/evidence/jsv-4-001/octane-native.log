@@ -1,0 +1,107 @@
+# octane chromium/octane at 570ad1ccfe86e3eecba0636c8f932ac08edec517
+# 37 files, content aab618b86ebe2f18229c18f0147943e9a1bac69967582563e120d4cea273b4c4
+# judging /tmp/claude-0/-home-user-Broiler-VM/aaa35499-04c0-537e-883f-b8cea93d4967/scratchpad/arm-candidate/Broiler.VM.Composition.JavaScript.Cli
+# form native (x86-64-sysv)
+# allowances: artifact bytes 134217728, nested-load bytes 134217728
+--- richards (exit 0, 5s)
+    start Richards
+    result Richards 46.5
+    score 46.5
+    component 0.4646455656534002
+--- deltablue (exit 0, 7s)
+    start DeltaBlue
+    result DeltaBlue 46.9
+    score 46.9
+    component 0.4693599850551097
+--- crypto (exit 0, 77s)
+    start Crypto
+    result Crypto 51.7
+    score 51.7
+    component 0.5170977047400493
+--- raytrace (exit 0, 18s)
+    start RayTrace
+    result RayTrace 144
+    score 144
+    component 1.4383555852517784
+--- earley-boyer (exit 0, 70s)
+    start EarleyBoyer
+    result EarleyBoyer 157
+    score 157
+    component 1.5742943778026013
+--- regexp (exit 0, 18s)
+    start RegExp
+    result RegExp 108
+    score 108
+    component 1.0790464909683166
+--- splay (exit 0, 8s)
+    start Splay
+    result Splay 235
+    result SplayLatency 1295
+    score 552
+    component 2.34993597262952
+    component 12.946847072501033
+--- navier-stokes (exit 0, 26s)
+    start NavierStokes
+    result NavierStokes 100
+    score 100
+    component 1.002745048355083
+--- pdfjs (exit 0, 24s)
+    start PdfJS
+    result PdfJS 229
+    score 229
+    component 2.2894111927642746
+--- mandreel (exit 0, 272s)
+    start Mandreel
+    result Mandreel 30.2
+    result MandreelLatency 211
+    score 79.9
+    component 0.3022314156431808
+    component 2.1135371179039324
+--- gbemu (exit 0, 40s)
+    start Gameboy
+    result Gameboy 271
+    score 271
+    component 2.711473350351981
+--- code-load (exit 0, 5s)
+    start CodeLoad
+    result CodeLoad 726
+    score 726
+    component 7.25961777293143
+--- box2d (exit 0, 19s)
+    start Box2D
+    result Box2D 238
+    score 238
+    component 2.378498549772889
+--- zlib (exit 0, 2219s)
+    start zlib
+    result zlib 68.9
+    score 68.9
+    component 0.6889604491144052
+--- typescript (exit 0, 152s)
+    start Typescript
+    result Typescript 846
+    score 846
+    component 8.463308110476124
+# 15 of 15 benchmarks reported a score and exited zero
+# 2961s over 15 benchmarks, under a REQUESTED wall of 3600s each
+#
+# benchmark         score  ratios  seconds
+# richards           46.5       1      4.7
+# deltablue          46.9       1      6.9
+# crypto             51.7       1     77.4
+# raytrace            144       1     18.3
+# earley-boyer        157       1     70.3
+# regexp              108       1     17.6
+# splay               552       2      7.7
+# navier-stokes       100       1     26.2
+# pdfjs               229       1     24.2
+# mandreel           79.9       2    271.9
+# gbemu               271       1     40.5
+# code-load           726       1      4.7
+# box2d               238       1     19.3
+# zlib               68.9       1   2218.5
+# typescript          846       1    152.4
+# AGGREGATE 161.2 - Octane's own score, 100 x the geometric mean of 17 ratios over all 15 benchmarks
+# It is a number about this machine and this configuration. There is no baseline register
+# for it, no control and no repetition; no document may retain it (roadmap section 17).
+# report /tmp/claude-0/-home-user-Broiler-VM/aaa35499-04c0-537e-883f-b8cea93d4967/scratchpad/bundle-run/octane-native.json

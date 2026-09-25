@@ -1,0 +1,323 @@
+{
+  "schema": "broiler-js octane report",
+  "version": 2,
+  "produced-at": "2026-09-24T23:46:22Z",
+  "retained": false,
+  "not-a-baseline": "Produced by one run, with no predeclared rule, no control, no A/A lane and no repetitions. Roadmap section 17 and rule L1 govern any figure a document retains; no figure in this file may be written into one.",
+  "pin": {
+    "suite": "octane",
+    "upstream": "chromium/octane",
+    "revision": "570ad1ccfe86e3eecba0636c8f932ac08edec517",
+    "archive-sha256": "7bcf54bdaa32475eadb09bbed4283f46cb2e11ee69c10b3b79524d568db841c4",
+    "content-sha256": "aab618b86ebe2f18229c18f0147943e9a1bac69967582563e120d4cea273b4c4",
+    "files": 37
+  },
+  "host": {
+    "path": "/tmp/claude-0/-home-user-Broiler-VM/aaa35499-04c0-537e-883f-b8cea93d4967/scratchpad/arm-candidate/Broiler.VM.Composition.JavaScript.Cli",
+    "bytes": 78256,
+    "version": [
+      "broiler-js broiler.javascript manifest broiler.javascript.wide format 2",
+      "edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html"
+    ]
+  },
+  "form": {
+    "form": "native",
+    "backend": "x86-64-sysv"
+  },
+  "allowances": {
+    "fuel": 1000000000000,
+    "wall-ms-requested": 3600000,
+    "live-bytes": 1000000000,
+    "artifact-bytes": 134217728,
+    "nested-load-bytes": 134217728,
+    "max-depth": 512
+  },
+  "selection": {
+    "attempted": [
+      "richards",
+      "deltablue",
+      "crypto",
+      "raytrace",
+      "earley-boyer",
+      "regexp",
+      "splay",
+      "navier-stokes",
+      "pdfjs",
+      "mandreel",
+      "gbemu",
+      "code-load",
+      "box2d",
+      "zlib",
+      "typescript"
+    ],
+    "excluded": [],
+    "of": 15
+  },
+  "benchmarks": [
+    {
+      "benchmark": "richards",
+      "exit": 0,
+      "score": "46.5",
+      "results": [
+        {
+          "name": "Richards",
+          "score": "46.5"
+        }
+      ],
+      "components": [
+        0.4646455656534002
+      ],
+      "seconds": 4.729,
+      "detail": null
+    },
+    {
+      "benchmark": "deltablue",
+      "exit": 0,
+      "score": "46.9",
+      "results": [
+        {
+          "name": "DeltaBlue",
+          "score": "46.9"
+        }
+      ],
+      "components": [
+        0.4693599850551097
+      ],
+      "seconds": 6.913,
+      "detail": null
+    },
+    {
+      "benchmark": "crypto",
+      "exit": 0,
+      "score": "51.7",
+      "results": [
+        {
+          "name": "Crypto",
+          "score": "51.7"
+        }
+      ],
+      "components": [
+        0.5170977047400493
+      ],
+      "seconds": 77.421,
+      "detail": null
+    },
+    {
+      "benchmark": "raytrace",
+      "exit": 0,
+      "score": "144",
+      "results": [
+        {
+          "name": "RayTrace",
+          "score": "144"
+        }
+      ],
+      "components": [
+        1.4383555852517784
+      ],
+      "seconds": 18.328,
+      "detail": null
+    },
+    {
+      "benchmark": "earley-boyer",
+      "exit": 0,
+      "score": "157",
+      "results": [
+        {
+          "name": "EarleyBoyer",
+          "score": "157"
+        }
+      ],
+      "components": [
+        1.5742943778026013
+      ],
+      "seconds": 70.268,
+      "detail": null
+    },
+    {
+      "benchmark": "regexp",
+      "exit": 0,
+      "score": "108",
+      "results": [
+        {
+          "name": "RegExp",
+          "score": "108"
+        }
+      ],
+      "components": [
+        1.0790464909683166
+      ],
+      "seconds": 17.572,
+      "detail": null
+    },
+    {
+      "benchmark": "splay",
+      "exit": 0,
+      "score": "552",
+      "results": [
+        {
+          "name": "Splay",
+          "score": "235"
+        },
+        {
+          "name": "SplayLatency",
+          "score": "1295"
+        }
+      ],
+      "components": [
+        2.34993597262952,
+        12.946847072501033
+      ],
+      "seconds": 7.657,
+      "detail": null
+    },
+    {
+      "benchmark": "navier-stokes",
+      "exit": 0,
+      "score": "100",
+      "results": [
+        {
+          "name": "NavierStokes",
+          "score": "100"
+        }
+      ],
+      "components": [
+        1.002745048355083
+      ],
+      "seconds": 26.195,
+      "detail": null
+    },
+    {
+      "benchmark": "pdfjs",
+      "exit": 0,
+      "score": "229",
+      "results": [
+        {
+          "name": "PdfJS",
+          "score": "229"
+        }
+      ],
+      "components": [
+        2.2894111927642746
+      ],
+      "seconds": 24.164,
+      "detail": null
+    },
+    {
+      "benchmark": "mandreel",
+      "exit": 0,
+      "score": "79.9",
+      "results": [
+        {
+          "name": "Mandreel",
+          "score": "30.2"
+        },
+        {
+          "name": "MandreelLatency",
+          "score": "211"
+        }
+      ],
+      "components": [
+        0.3022314156431808,
+        2.1135371179039324
+      ],
+      "seconds": 271.898,
+      "detail": null
+    },
+    {
+      "benchmark": "gbemu",
+      "exit": 0,
+      "score": "271",
+      "results": [
+        {
+          "name": "Gameboy",
+          "score": "271"
+        }
+      ],
+      "components": [
+        2.711473350351981
+      ],
+      "seconds": 40.47,
+      "detail": null
+    },
+    {
+      "benchmark": "code-load",
+      "exit": 0,
+      "score": "726",
+      "results": [
+        {
+          "name": "CodeLoad",
+          "score": "726"
+        }
+      ],
+      "components": [
+        7.25961777293143
+      ],
+      "seconds": 4.728,
+      "detail": null
+    },
+    {
+      "benchmark": "box2d",
+      "exit": 0,
+      "score": "238",
+      "results": [
+        {
+          "name": "Box2D",
+          "score": "238"
+        }
+      ],
+      "components": [
+        2.378498549772889
+      ],
+      "seconds": 19.268,
+      "detail": null
+    },
+    {
+      "benchmark": "zlib",
+      "exit": 0,
+      "score": "68.9",
+      "results": [
+        {
+          "name": "zlib",
+          "score": "68.9"
+        }
+      ],
+      "components": [
+        0.6889604491144052
+      ],
+      "seconds": 2218.543,
+      "detail": null
+    },
+    {
+      "benchmark": "typescript",
+      "exit": 0,
+      "score": "846",
+      "results": [
+        {
+          "name": "Typescript",
+          "score": "846"
+        }
+      ],
+      "components": [
+        8.463308110476124
+      ],
+      "seconds": 152.433,
+      "detail": null
+    }
+  ],
+  "aggregate": {
+    "score": 161.2137,
+    "definition": "100 * exp(sum(ln(r)) / n) over every ratio BenchmarkSuite.scores collected, which is what BenchmarkSuite.RunSuites computes for a whole-suite run.",
+    "ratios": 17,
+    "coverage": "whole",
+    "whole": true,
+    "is-octane-score": true
+  },
+  "seconds": 2960.588,
+  "environment": {
+    "platform": "Linux-6.18.44-fc-v37-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "python": "3.11.15"
+  }
+}

@@ -1,0 +1,13 @@
+# 2026-09-24T20:59:48Z
+# eng/measure-value-form.py --control /tmp/claude-0/-home-user-Broiler-VM/aaa35499-04c0-537e-883f-b8cea93d4967/scratchpad/arm-control --candidate /tmp/claude-0/-home-user-Broiler-VM/aaa35499-04c0-537e-883f-b8cea93d4967/scratchpad/arm-candidate --dotnet /root/.dotnet/dotnet --manifest src/Broiler.VM.Profile.JavaScript/docs/evidence/jsv-4-001/manifest.json --rule src/Broiler.VM.Profile.JavaScript/docs/evidence/jsv-4-001/decision-rule.md --out /tmp/claude-0/-home-user-Broiler-VM/aaa35499-04c0-537e-883f-b8cea93d4967/scratchpad/bundle-run/runs.jsonl
+# Linux-6.18.44-fc-v37-x86_64-with-glibc2.39, x86_64, 4 processors
+manifest: src/Broiler.VM.Profile.JavaScript/docs/evidence/jsv-4-001/manifest.json sha256 f8785c828847811948fb1968bef3b0fd3cb6e07e9d5de21c426e81b55cc1d726
+rule: src/Broiler.VM.Profile.JavaScript/docs/evidence/jsv-4-001/decision-rule.md sha256 106ae8e5c56368d49114873f9af99d02e00e0a32eae663373ddaa5f5c6ad5aa1
+rule population: population: every shape in src/tests/forms/wide as committed with this file, except the *.small.js fuel-parity twins and fresh-small.js; each in the bytecode form, the baseline native form and the value form, the two native forms under the x86-64 convention of the machine's runtime identifier; the JIT Release command-line host; one machine, named in the manifest
+host: /root/.dotnet/dotnet
+control: /tmp/claude-0/-home-user-Broiler-VM/aaa35499-04c0-537e-883f-b8cea93d4967/scratchpad/arm-control/Broiler.VM.Composition.JavaScript.Cli.dll (f490be0db065f827c598930d22d5b04f635fcee6)
+candidate: /tmp/claude-0/-home-user-Broiler-VM/aaa35499-04c0-537e-883f-b8cea93d4967/scratchpad/arm-candidate/Broiler.VM.Composition.JavaScript.Cli.dll (99a849f0a3b7c6bf617ff5d1235eae1966f3cadf)
+shapes: array-loop.js, call-loop.js, closure-loop.js, fib.js, generator-loop.js, numeric-loop.js, property-loop.js, string-loop.js, throw-loop.js, try-loop.js
+scrubbed from every child's environment: DOTNET_CLI_TELEMETRY_OPTOUT, DOTNET_NOLOGO, DOTNET_ROOT
+effective configuration, from the first child: runtime-identifier=linux-x64 process-architecture=X64 gc-server=False gc-latency=Interactive tiered-compilation-env=unset tiered-compilation-config=unset tiered-pgo-env=unset tiered-pgo-config=unset dynamic-code=True native-arming=installed
+VERDICT: REFUSE the value form, by the rule above and by nothing else.
