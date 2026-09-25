@@ -4,7 +4,10 @@
 nothing, mints no identifier in any decision series, moves no ledger row, and schedules no work.**
 Its stages are `UBC-n`, a namespace of its own for the reason every proposal document in this
 repository gives for theirs: a `VM-`, `JS-` or `WA-` identifier with no ledger row would read as a
-milestone somebody is tracking.
+milestone somebody is tracking. *(Added 2026-09-25, later the same day: the scheduling this document
+declines is done beside it by [the programme roadmap](universal-bytecode.roadmap.md), whose milestones
+are these stages, and recorded in [the programme ledger](universal-bytecode.status.md), where every row
+is `Not started`. This document is unchanged in what it decides, which is nothing.)*
 
 **Owner:** the Broiler.VM architecture owner, who also holds the release, security, contract-minting
 and review roles [ADR 0012](adr/0012-security-ownership-and-support-matrix.md) names — six roles held
@@ -1464,10 +1467,17 @@ recorded rather than argued away.
 ## 13. The programme: stages UBC-0 to UBC-10
 
 Each stage states an objective, what it waits on, and an exit gate written as conditions a run can
-decide. **None is scheduled, none has an owner, and none has a ledger row**; assigning any of the
-three is the act that would make a stage a milestone somebody is tracking. Owning code is not
-acceptance: a stage whose every clause were met would still be a stage. Where a stage would file a
-record, the record is named and not written here.
+decide. **As written on 2026-09-25 none was scheduled, none had an owner, and none had a ledger
+row.** Later the same day [the programme roadmap](universal-bytecode.roadmap.md) promoted every stage
+here to a milestone with work packages and a row in [the programme ledger](universal-bytecode.status.md),
+on the request that document quotes; the stages below remain the concept's statement of what each
+would take, and the roadmap is the authority on order, on work packages and on what counts. **The
+roadmap's delivery order is not this section's numeric order**: it builds the native contracts and the
+`x86-64` emitter over the fixture family (UBC-5, UBC-6a) before the JavaScript family is cut over
+(UBC-3), so that no form the tree has today is absent between two milestones, and it splits UBC-6 into
+6a (the emitter over the fixture family) and 6b (the language families in that form). Owning code is
+not acceptance: a milestone whose every clause were met would still be unaccepted under
+[`docs/mvp.md`](mvp.md). Where a stage would file a record, the record is named and not written here.
 
 ### UBC-0 — The extraction record, the correspondence table and the records that move
 
@@ -1486,9 +1496,13 @@ record, the record is named and not written here.
   non-goal and section 8 table row revised with the superseded text quoted, through ADR 0003 section
   11's roadmap-amendment register; P1's route filed as an MVP row; the JavaScript plan's section 9
   intermediate-form sentence discharged in a dated decision (**JSD-0036**) that names the universal
-  bytecode as the form, closing JSB-3's open clause; the WebAssembly plan's compiler, framing and
-  second-execution-arm entries amended with `WAC-nn` corrections; and the composition register's
-  missing explanation of the MachineCode extraction supplied in the same ADR. **A verdict of refuse on
+  bytecode as the form, closing JSB-3's open clause; the WebAssembly plan's non-goals given a dated
+  paragraph naming this concept as a proposal standing beside the plan, with its compiler, framing and
+  second-execution-arm entries standing until UBC-4 amends them with `WAC-nn` corrections *(corrected
+  2026-09-25: this clause read "amended with `WAC-nn` corrections" here, which contradicted section
+  3.5's "filed by stage UBC-4 and not before"; a correction records what a tree changed, and nothing in
+  that tree changes before UBC-4)*; and the composition register's missing explanation of the
+  MachineCode extraction supplied in the same ADR. **A verdict of refuse on
   any condition ends the programme here with the record filed**, which is a passing gate.
 
 ### UBC-1 — `Broiler.VM.Ubc`: the format, the common family, the tables' schema, the walk
@@ -2252,6 +2266,8 @@ means a rule this concept mints, each with a negative control watched failing an
 | **U5** *(new)* | | a family table version is bound to the manifest that selects it, and one walk reads every table |
 | **U6** *(new)* | | every `Primitive` row of every composed family has a retained input corpus and a passing differential check per emitter |
 | **U7** *(new)* | | the thread-static activation slot is written only by `Broiler.VM.Ubc.Native`'s managed entry and read only after the cookie check |
+| **U8** *(new)* | | the universal diagnostic registry at `docs/ubc/diagnostics/registry.txt` and the code vocabulary agree in both directions, every code maps to exactly one core reason, and every row is reachable from a named corpus entry — the shape N5 to N7 give the JavaScript registry |
+| **U9** *(new)* | | `Broiler.VM.Ubc` and `Broiler.VM.Ubc.Native` export exactly what `docs/ubc/api/public-api.txt` declares, compared in both directions |
 | D1 | no project outside the component references into `Broiler.VM` | unchanged until section 16's split; revised there to key on the legacy components it exists for, because every `Broiler.VM.*` component then references the core |
 | E2, E4 | the ADR index and the contract-bearing set | unchanged: ADR 0013 is not contract-bearing and the index gains its row |
 | H1–H5, J1–J12 | review documents and assurance | unchanged; every moved unit is re-annotated and re-fingerprinted by the generator |

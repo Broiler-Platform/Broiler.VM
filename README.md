@@ -342,3 +342,7 @@ A concept for one **universal bytecode** that both language profiles lower to an
 written up in [docs/universal-bytecode.md](docs/universal-bytecode.md). It is a proposal document in
 the sense the profile plans use the term: it decides nothing, moves no ledger row, mints no identifier
 in any decision series and schedules no work, and it names every published rule it would ask to move.
+The work it would take is planned in [docs/universal-bytecode.roadmap.md](docs/universal-bytecode.roadmap.md)
+and its state is recorded in [docs/universal-bytecode.status.md](docs/universal-bytecode.status.md),
+where every milestone is `Not started`; the split of the profiles and emitters into components of
+their own is that roadmap's optional last milestone and nothing before it depends on it.
