@@ -347,7 +347,7 @@ internal sealed class UbcWalk
 
     // ---- the structural layer ----------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=C8E773
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=07A0F7
     // Broiler-Falsified-If: a header naming another profile, another manifest or a form the image does not compose passes
     // Broiler-Human:        PENDING
     private bool CheckHeader()
@@ -363,6 +363,12 @@ internal sealed class UbcWalk
         if (!string.Equals(header.ManifestIdentity, descriptorManifest.ToString(), System.StringComparison.Ordinal))
         {
             return Invalid(UbcDiagnosticCode.DescriptorManifestMismatch, VmReason.DescriptorMismatch, UbcRefusal.InHeader(0));
+        }
+
+        // The two lookups below scan the composition's tables and forms, one unit a row, before they run.
+        if (!Work((ulong)family.Tables.Length + (ulong)forms.Forms.Length))
+        {
+            return false;
         }
 
         if (!family.TryGetTable(descriptorManifest, out table))
@@ -2220,13 +2226,29 @@ internal sealed class UbcWalk
     // Broiler-Human:        PENDING
     private sealed class HookMeter(UbcWalk walk) : IVmMeter
     {
-        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=B96125
-        // Broiler-Falsified-If: verifier work or fuel the hook charges escapes the walk's count of work since the last poll, or its refusal names another dimension
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=F8C5E1
+        // Broiler-Falsified-If: verifier work or fuel the hook charges escapes the walk's count of work since the last poll, its refusal names another dimension, or a refused charge of any dimension leaves the walk able to admit
         // Broiler-Human:        PENDING
-        public bool TryCharge(VmBudgetDimension dimension, ulong amount) =>
-            dimension is VmBudgetDimension.VerifierWork or VmBudgetDimension.Fuel
-                ? walk.Work(amount, dimension)
-                : walk.meter.TryCharge(dimension, amount);
+        public bool TryCharge(VmBudgetDimension dimension, ulong amount)
+        {
+            if (dimension is VmBudgetDimension.VerifierWork or VmBudgetDimension.Fuel)
+            {
+                return walk.Work(amount, dimension);
+            }
+
+            if (walk.meter.TryCharge(dimension, amount))
+            {
+                return true;
+            }
+
+            // A refusal of any dimension stops the walk, whatever the hook answers after it.
+            if (!walk.Refused())
+            {
+                walk.Refusal = UbcRefusal.Exhausted(dimension);
+            }
+
+            return false;
+        }
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3E81D7
         // Broiler-Human:        PENDING

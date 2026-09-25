@@ -747,8 +747,8 @@ internal static class ArchitectureRules
 
     /// <summary>
     /// What stops a project file showing it does not pack: no <c>IsPackable</c> definition at all, one
-    /// that is conditional or whose value is not literally <c>false</c>, or a target that sets it to
-    /// anything but <c>false</c>.
+    /// that is conditional or whose value is not literally <c>false</c>, or a property group inside a
+    /// target that sets it to anything but <c>false</c>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -769,9 +769,10 @@ internal static class ArchitectureRules
     /// that follows it.
     /// </para>
     /// <para>
-    /// A value set by an import - <c>Directory.Build.props</c> or the vendored packaging props - is
-    /// not seen, because the rule reads the project file's own elements. Rules N4 and U1 read this;
-    /// rule A5 still reads the text.
+    /// The property's name is matched without regard to case, as MSBuild matches it. A value set by an
+    /// import - <c>Directory.Build.props</c> or the vendored packaging props - is not seen, because the
+    /// rule reads the project file's own elements, and neither is one a target sets through a task's
+    /// output rather than a property group. Rules N4 and U1 read this; rule A5 still reads the text.
     /// </para>
     /// </remarks>
     internal static IEnumerable<string> NotLiterallyUnpackable(ComponentGraph.ProjectFile project, string decision)
@@ -779,7 +780,7 @@ internal static class ArchitectureRules
         var properties = XDocument.Parse(project.RawText)
             .Descendants()
             .Where(static element =>
-                element.Name.LocalName == "IsPackable" &&
+                string.Equals(element.Name.LocalName, "IsPackable", StringComparison.OrdinalIgnoreCase) &&
                 element.Parent?.Name.LocalName == "PropertyGroup" &&
                 !element.Ancestors().Any(static ancestor => ancestor.Name.LocalName == "ProjectExtensions"))
             .ToArray();

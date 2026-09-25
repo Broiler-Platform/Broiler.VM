@@ -1804,6 +1804,14 @@ root that composes the fixture family over the bytecode emitter beside
 `Com.Example.Ledger`, and is published and run under the three publish modes.
 Rules A11 and A12 gain the `Broiler.VM.Emitter.<Architecture>` family pattern.
 
+*(Added later on 2026-09-25, when a review found a test project could carry an
+emitter's name.)* Rule A12 admits `Broiler.VM.Ubc` or an emitter in a root only
+at its product path, `src/<Name>/<Name>.csproj`, so a test project named like
+one is refused by where it lives. Section 4's sentence that every test project
+is forbidden "by name" stands as written: it was true of the names A12 admitted
+when it was written, and for the universal bytecode's siblings the path now
+decides.
+
 **What is now true.** The graph goes from 28 projects and 93 edges to 31 and 106.
 The packable set is unchanged and still holds exactly three: none of the three
 projects is packable or carries a package identity, and section 1 of the

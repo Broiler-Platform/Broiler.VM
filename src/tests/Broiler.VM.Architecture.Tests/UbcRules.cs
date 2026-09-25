@@ -86,7 +86,7 @@ internal static partial class UbcRules
     /// would PASS on a comment that quotes it and on a false definition a later one overrides, and
     /// the project would pack in both cases. Every <c>IsPackable</c> definition - a property group's
     /// element outside any target and outside <c>ProjectExtensions</c> - must be unconditional and
-    /// literally <c>false</c>, and no target may set it to anything else, which
+    /// literally <c>false</c>, and no property group inside a target may set it to anything else, which
     /// <see cref="ArchitectureRules.NotLiterallyUnpackable"/> decides for this rule and for rule N4
     /// alike.
     /// </para>

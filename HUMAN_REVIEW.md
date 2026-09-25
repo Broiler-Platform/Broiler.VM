@@ -3800,7 +3800,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a stage runs after an earlier stage refused, an instruction is admitted without its effect applied to the typed stack, or work is performed without being charged first
 - `Broiler.VM.Ubc.UbcWalk.Run(out UbcVerifiedProgram?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, Spec=ADR-0013, `163230`, PENDING
   - Falsified if: the stages run in another order than the concept's, or a program is answered after any stage refused
-- `Broiler.VM.Ubc.UbcWalk.CheckHeader()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `C8E773`, PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckHeader()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `07A0F7`, PENDING
   - Falsified if: a header naming another profile, another manifest or a form the image does not compose passes
 - `Broiler.VM.Ubc.UbcWalk.CheckFamilies()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `CF7046`, PENDING
   - Falsified if: an artifact declaring a family the image does not compose, a family twice, or FamilyData for an undeclared slot passes
@@ -3856,8 +3856,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a refusal of the hook is answered as an admission, or a hook code in the universal range reaches the outcome as the hook's
 - `Broiler.VM.Ubc.UbcWalk.HookMeter` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `922DD1`, PENDING
   - Falsified if: a charge of work the hook makes reaches the meter without passing the walk's count of work since the last poll
-- `Broiler.VM.Ubc.UbcWalk.HookMeter.TryCharge(VmBudgetDimension, ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `B96125`, PENDING
-  - Falsified if: verifier work or fuel the hook charges escapes the walk's count of work since the last poll, or its refusal names another dimension
+- `Broiler.VM.Ubc.UbcWalk.HookMeter.TryCharge(VmBudgetDimension, ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `F8C5E1`, PENDING
+  - Falsified if: verifier work or fuel the hook charges escapes the walk's count of work since the last poll, its refusal names another dimension, or a refused charge of any dimension leaves the walk able to admit
 - `Broiler.VM.Ubc.UbcWalk.Work(ulong, VmBudgetDimension)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=ADR-0007, `392571`, PENDING
   - Falsified if: work since the last poll can exceed the family's uncharged-work bound, or a refused charge is answered as success or as an exhaustion of another dimension
 - `Broiler.VM.Ubc.UbcWalk.Reserve(ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, Spec=none cited, `6BCE88`, PENDING

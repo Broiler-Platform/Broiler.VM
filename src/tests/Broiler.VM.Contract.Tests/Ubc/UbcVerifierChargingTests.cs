@@ -85,6 +85,22 @@ public sealed class UbcVerifierChargingTests
         Assert.False(meter.PollBoundExceeded);
     }
 
+    [Fact]
+    public void A_Refused_Hook_Charge_Of_Any_Other_Dimension_Stops_The_Walk()
+    {
+        // The hook charges a dimension the walk never charges itself, the meter refuses it, and the hook
+        // admits anyway: the refusal is the walk's, named for the dimension, not the hook's to ignore.
+        var bound = UbcCorpusFamily.MaxUnchargedWork;
+        var hook = new IgnoringHook(new UbcCorpusHook(), VmBudgetDimension.HostCalls, 1);
+        var meter = new RecordingMeter(pollBound: bound, refused: VmBudgetDimension.HostCalls);
+
+        var outcome = Verify(Profile(hook, bound), UbcCorpus.SmallestWithFamily().Bytes(), meter);
+
+        Assert.True(hook.Refused, "the meter admitted the hook's charge, so the hook had no refusal to ignore");
+        Assert.Equal(VmOutcome.ResourceExhaustion, outcome.Category);
+        Assert.Equal(VmBudgetDimension.HostCalls, outcome.ExhaustedDimension);
+    }
+
     // ---- passes and searches paid before they run (findings 1, 2 and 4) --------------------------
 
     [Fact]
@@ -481,7 +497,7 @@ public sealed class UbcVerifierChargingTests
     /// the poll bound as the core's meter does, refuses a poll once more than the bound was charged
     /// since the last, and remembers the first verifier-work charge it refused.
     /// </summary>
-    private sealed class RecordingMeter(ulong workAllowance = ulong.MaxValue, ulong fuelAllowance = ulong.MaxValue, ulong pollBound = 0) : IVmMeter
+    private sealed class RecordingMeter(ulong workAllowance = ulong.MaxValue, ulong fuelAllowance = ulong.MaxValue, ulong pollBound = 0, VmBudgetDimension? refused = null) : IVmMeter
     {
         private ulong sinceLastPoll;
 
@@ -499,6 +515,11 @@ public sealed class UbcVerifierChargingTests
 
         public bool TryCharge(VmBudgetDimension dimension, ulong amount)
         {
+            if (dimension == refused)
+            {
+                return false;
+            }
+
             switch (dimension)
             {
                 case VmBudgetDimension.VerifierWork:
