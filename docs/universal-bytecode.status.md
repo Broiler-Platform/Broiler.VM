@@ -102,8 +102,8 @@ wants to know what is next reads down.
 | Decision | State | Holder |
 |---|---|---|
 | UBC-D-1 — retire the value form's substrate with the old JavaScript pipeline, or keep it behind opt-in roots | open | the JavaScript profile owner |
-| UBC-D-2 — the WebAssembly memory representation for a region a native form addresses | open | the WebAssembly profile owner with the security owner |
-| UBC-D-3 — mint the WA-5 manifest or record its absence | open | the WebAssembly profile owner |
+| UBC-D-2 — the WebAssembly memory representation for a region a native form addresses | **taken 2026-09-25**: a pinned managed array reallocated on growth with its base republished, recorded as [WAD-0001](../src/Broiler.VM.Profile.WebAssembly/docs/decisions/0001-the-memory-representation.md) | the WebAssembly profile owner with the security owner |
+| UBC-D-3 — mint the WA-5 manifest or record its absence | **taken 2026-09-25**: the absence is recorded; the family's table stays under `broiler.webassembly.slice`, [WAD-0002](../src/Broiler.VM.Profile.WebAssembly/docs/decisions/0002-the-family-table-stays-under-the-slice-identity.md) | the WebAssembly profile owner |
 | UBC-D-4 — whether the `arm64` emitter emits the handler-call form | open | the core architecture owner |
 | UBC-D-5 — packability of `Broiler.VM.Ubc` and `Broiler.VM.Ubc.Native` | open | the release owner with the architecture owner |
 | UBC-D-6 — whether to split the repository into components | open | the repository owner |
