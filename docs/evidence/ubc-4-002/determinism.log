@@ -1,0 +1,34 @@
+$ dotnet src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0\Broiler.VM.Composition.WebAssembly.Harness.dll --determinism
+# module: 99 bytes, hand-encoded in this root
+verification Normal/NormalCompleted
+types                  1
+functions              1
+tables                 1
+memories               1
+globals                1
+exports                2
+element segments       1
+data segments          1
+custom sections        1 (skipped)
+start function         -1
+declares data count    False
+total code bytes       6
+execution bounds       computed by validation
+  export[0]          "add" Function #0
+  export[1]          "mem" Memory #0
+  body[0]            0 locals, 6 code bytes
+instantiation          Normal/NormalCompleted
+invocation             Normal/NormalCompleted, add(2, 3) = 5
+
+# retained corpus: not replayed - no --corpus <directory> was given, and the retained one is at src/tests/wasm/corpus
+
+# execution: 117 checks
+# execution: 117 of 117 checks passed
+# differential: 43 checks
+# differential: 43 of 43 checks passed
+
+# determinism: 305 modules translated twice - the canonical module, 290 corpus entries and 14 modules the execution and differential lanes built
+# determinism: 305 of 305 modules answered alike twice, 44 artifacts of 13636 bytes compared byte for byte
+broiler-wasm-harness: every check passed, core contract version 1
+
+exit 0

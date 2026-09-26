@@ -1,0 +1,10 @@
+$ D:\wt\ubc-4\artifacts\publish-ubc4-execution-trimmed\Broiler.VM.Composition.WebAssembly.Execution.exe --verbose
+ok   catalog-admits-the-descriptor: broiler.webassembly revision 2
+ok   a-well-formed-module-verifies: Normal/NormalCompleted, universal bytecode program carried: True
+ok   a-malformed-module-is-refused: InvalidArtifact/MalformedEncoding/2001 at offset 0
+ok   an-invalid-module-is-refused-by-validation: InvalidArtifact/SemanticValidationFailed/2803 at body offset 1
+ok   a-verified-module-instantiates-and-runs: Normal/NormalCompleted returned 42
+ok   unaccepted-manifest-is-refused: translated, then InvalidArtifact/UnsupportedFeatureManifest
+broiler-wasm-execution: 6 checks passed, core contract version 1
+
+exit 0

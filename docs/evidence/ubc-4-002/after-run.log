@@ -1,0 +1,499 @@
+$ dotnet src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0\Broiler.VM.Composition.WebAssembly.Harness.dll --verbose --corpus src/tests/wasm/corpus
+# module: 99 bytes, hand-encoded in this root
+verification Normal/NormalCompleted
+types                  1
+functions              1
+tables                 1
+memories               1
+globals                1
+exports                2
+element segments       1
+data segments          1
+custom sections        1 (skipped)
+start function         -1
+declares data count    False
+total code bytes       6
+execution bounds       computed by validation
+  export[0]          "add" Function #0
+  export[1]          "mem" Memory #0
+  body[0]            0 locals, 6 code bytes
+instantiation          Normal/NormalCompleted
+invocation             Normal/NormalCompleted, add(2, 3) = 5
+
+# retained corpus: 290 entries under src/tests/wasm/corpus
+ok   control-preamble-only: Normal/NormalCompleted/0/-/- [derived]
+ok   control-canonical-module-with-a-padded-section-length: Normal/NormalCompleted/0/-/- [derived]
+ok   control-two-custom-sections: Normal/NormalCompleted/0/-/- [derived]
+ok   control-a-function-that-adds-its-two-parameters: Normal/NormalCompleted/0/-/- [derived]
+ok   control-unreachable-code-that-could-not-type-if-it-were-reachable: Normal/NormalCompleted/0/-/- [derived]
+ok   control-unreachable-code-after-an-unconditional-branch: Normal/NormalCompleted/0/-/- [derived]
+ok   control-unreachable-code-after-a-return: Normal/NormalCompleted/0/-/- [derived]
+ok   control-a-block-a-loop-and-a-branch-out-of-both: Normal/NormalCompleted/0/-/- [derived]
+ok   control-a-conditional-with-both-arms-producing-a-result: Normal/NormalCompleted/0/-/- [derived]
+ok   preamble-wrong-magic: InvalidArtifact/MalformedEncoding/2001/-/- [derived]
+ok   preamble-wrong-binary-version: InvalidArtifact/UnknownFormatVersion/2002/-/- [derived]
+ok   preamble-truncated: InvalidArtifact/Truncated/2106/-/- [derived]
+ok   varint-section-length-over-long: InvalidArtifact/MalformedEncoding/2201/-/- [derived]
+ok   varint-section-length-terminal-byte-has-unused-bits-set: InvalidArtifact/MalformedEncoding/2202/-/- [derived]
+ok   varint-a-vector-count-over-long: InvalidArtifact/MalformedEncoding/2201/-/- [derived]
+ok   varint-a-padded-vector-count-inside-a-body-is-accepted: Normal/NormalCompleted/0/-/- [derived]
+ok   varint-a-padded-signed-constant-immediate-is-accepted: Normal/NormalCompleted/0/-/- [derived]
+ok   varint-a-signed-constant-immediate-over-long: InvalidArtifact/MalformedEncoding/2201/-/- [derived]
+ok   varint-a-signed-constant-immediate-with-an-invalid-sign-extension: InvalidArtifact/MalformedEncoding/2203/-/- [derived]
+ok   section-unknown-identifier: InvalidArtifact/InconsistentStructure/2101/-/- [derived]
+ok   section-out-of-canonical-order: InvalidArtifact/InconsistentStructure/2102/-/- [derived]
+ok   section-out-of-order-by-one-identifier: InvalidArtifact/InconsistentStructure/2102/-/- [derived]
+ok   section-duplicated: InvalidArtifact/InconsistentStructure/2103/-/- [derived]
+ok   section-duplicated-with-another-section-between: InvalidArtifact/InconsistentStructure/2103/-/- [derived]
+ok   section-body-shorter-than-its-declared-length: InvalidArtifact/InconsistentStructure/2104/-/- [derived]
+ok   section-body-longer-than-its-declared-length: InvalidArtifact/InconsistentStructure/2104/-/- [derived]
+ok   section-declares-a-length-past-the-end-of-the-artifact: InvalidArtifact/Truncated/2106/-/- [derived]
+ok   name-overlong-two-byte-form: InvalidArtifact/MalformedEncoding/2401/-/- [derived]
+ok   name-encodes-a-surrogate: InvalidArtifact/MalformedEncoding/2401/-/- [derived]
+ok   name-encodes-a-value-above-the-last-code-point: InvalidArtifact/MalformedEncoding/2401/-/- [derived]
+ok   name-truncated-multi-byte-sequence-at-the-names-end: InvalidArtifact/MalformedEncoding/2401/-/- [derived]
+ok   name-a-lone-continuation-byte: InvalidArtifact/MalformedEncoding/2401/-/- [derived]
+ok   name-a-five-byte-lead-byte: InvalidArtifact/MalformedEncoding/2401/-/- [derived]
+ok   name-a-four-byte-scalar-value-is-accepted: Normal/NormalCompleted/0/-/- [derived]
+ok   name-of-no-bytes-is-accepted: Normal/NormalCompleted/0/-/- [derived]
+ok   name-export-kind-byte-names-nothing: InvalidArtifact/MalformedEncoding/2402/-/- [derived]
+ok   type-function-tag-is-not-0x60: InvalidArtifact/MalformedEncoding/2301/-/- [derived]
+ok   type-value-type-byte-names-nothing: InvalidArtifact/MalformedEncoding/2302/-/- [derived]
+ok   limits-flag-is-neither-form: InvalidArtifact/MalformedEncoding/2304/-/- [derived]
+ok   limits-minimum-above-maximum: InvalidArtifact/InconsistentStructure/2305/-/- [derived]
+ok   limits-memory-minimum-above-the-formats-own-maximum: InvalidArtifact/InconsistentStructure/2306/-/- [derived]
+ok   type-table-element-type-is-not-funcref: InvalidArtifact/MalformedEncoding/2307/-/- [derived]
+ok   type-global-mutability-flag-is-neither-form: InvalidArtifact/MalformedEncoding/2308/-/- [derived]
+ok   feature-a-vector-value-type: InvalidArtifact/UnknownFeature/2303/-/- [derived]
+ok   feature-an-import: InvalidArtifact/UnknownFeature/2403/-/- [derived]
+ok   feature-two-memories: InvalidArtifact/UnknownFeature/2504/-/- [derived]
+ok   feature-two-tables: InvalidArtifact/UnknownFeature/2505/-/- [derived]
+ok   feature-a-bulk-memory-prefixed-instruction: InvalidArtifact/UnknownFeature/2822/-/- [derived]
+ok   feature-a-block-type-in-the-type-index-form: InvalidArtifact/UnknownFeature/2820/-/- [derived]
+ok   constant-expression-is-not-a-constant-instruction: InvalidArtifact/UnknownFeature/2601/-/- [derived]
+ok   constant-expression-is-not-terminated: InvalidArtifact/InconsistentStructure/2602/-/- [derived]
+ok   constant-expression-of-another-type-than-the-global: InvalidArtifact/SemanticValidationFailed/2709/-/- [derived]
+ok   constant-expression-reading-a-global: InvalidArtifact/SemanticValidationFailed/2710/-/- [derived]
+ok   ceiling-a-vector-length-above-the-declared-count-ceiling: ResourceExhaustion/CeilingReached/0/DeclaredCount/Artifact [derived]
+ok   ceiling-a-code-section-count-above-the-declared-count-ceiling: ResourceExhaustion/CeilingReached/0/DeclaredCount/Artifact [derived]
+ok   ceiling-nesting-at-the-structural-depth-ceiling: Normal/NormalCompleted/0/-/- [derived]
+ok   ceiling-nesting-one-level-beyond-the-structural-depth-ceiling: ResourceExhaustion/CeilingReached/0/StructuralDepth/Artifact [derived]
+ok   ceiling-more-sections-than-the-section-count-ceiling: ResourceExhaustion/CeilingReached/0/SectionCount/Artifact [derived]
+ok   validation-an-operand-stack-underflow-in-reachable-code: InvalidArtifact/SemanticValidationFailed/2803/-/- [derived]
+ok   validation-a-branch-to-a-label-depth-that-does-not-exist: InvalidArtifact/SemanticValidationFailed/2810/-/- [derived]
+ok   validation-a-branch-one-depth-past-the-last-open-label: InvalidArtifact/SemanticValidationFailed/2810/-/- [derived]
+ok   validation-a-block-whose-declared-result-type-is-unmet: InvalidArtifact/SemanticValidationFailed/2804/-/- [derived]
+ok   validation-a-block-that-leaves-an-operand-above-its-entry-height: InvalidArtifact/SemanticValidationFailed/2805/-/- [derived]
+ok   validation-an-else-where-no-if-is-open: InvalidArtifact/SemanticValidationFailed/2806/-/- [derived]
+ok   validation-a-conditional-with-a-result-and-no-else-arm: InvalidArtifact/SemanticValidationFailed/2807/-/- [derived]
+ok   validation-a-function-body-that-ends-with-a-block-still-open: InvalidArtifact/SemanticValidationFailed/2808/-/- [derived]
+ok   validation-a-body-carrying-bytes-after-the-end-that-closed-it: InvalidArtifact/SemanticValidationFailed/2809/-/- [derived]
+ok   validation-a-branch-table-whose-labels-carry-different-arities: InvalidArtifact/SemanticValidationFailed/2811/-/- [derived]
+ok   validation-a-byte-that-names-no-instruction: InvalidArtifact/MalformedEncoding/2801/-/- [derived]
+ok   validation-a-reserved-immediate-that-is-not-zero: InvalidArtifact/MalformedEncoding/2821/-/- [derived]
+ok   validation-a-type-mismatch-between-an-operand-and-its-instruction: InvalidArtifact/SemanticValidationFailed/2802/-/- [derived]
+ok   validation-a-type-mismatch-in-the-lower-operand-position: InvalidArtifact/SemanticValidationFailed/2802/-/- [derived]
+ok   validation-a-body-leaving-a-value-of-the-wrong-result-type: InvalidArtifact/SemanticValidationFailed/2804/-/- [derived]
+ok   validation-a-load-whose-alignment-is-above-its-natural-alignment: InvalidArtifact/SemanticValidationFailed/2819/-/- [derived]
+ok   validation-a-load-at-its-natural-alignment-is-accepted: Normal/NormalCompleted/0/-/- [derived]
+ok   validation-a-byte-load-declaring-a-two-byte-alignment: InvalidArtifact/SemanticValidationFailed/2819/-/- [derived]
+ok   validation-a-local-index-past-the-parameters-and-locals: InvalidArtifact/SemanticValidationFailed/2812/-/- [derived]
+ok   validation-a-global-index-the-module-does-not-declare: InvalidArtifact/SemanticValidationFailed/2813/-/- [derived]
+ok   validation-a-write-to-a-global-the-module-declared-immutable: InvalidArtifact/SemanticValidationFailed/2814/-/- [derived]
+ok   validation-a-call-whose-index-addresses-no-function: InvalidArtifact/SemanticValidationFailed/2815/-/- [derived]
+ok   validation-a-memory-instruction-with-no-memory-declared: InvalidArtifact/SemanticValidationFailed/2817/-/- [derived]
+ok   validation-an-indirect-call-with-no-table-declared: InvalidArtifact/SemanticValidationFailed/2818/-/- [derived]
+ok   validation-an-indirect-call-naming-no-declared-type: InvalidArtifact/SemanticValidationFailed/2816/-/- [derived]
+ok   module-a-function-section-without-a-code-section: InvalidArtifact/InconsistentStructure/2501/-/- [derived]
+ok   module-a-function-whose-type-index-addresses-no-type: InvalidArtifact/SemanticValidationFailed/2701/-/- [derived]
+ok   module-a-start-section-naming-a-function-that-does-not-exist: InvalidArtifact/SemanticValidationFailed/2702/-/- [derived]
+ok   module-a-start-function-that-takes-a-parameter: InvalidArtifact/SemanticValidationFailed/2703/-/- [derived]
+ok   module-two-exports-publishing-one-name: InvalidArtifact/SemanticValidationFailed/2705/-/- [derived]
+ok   module-an-export-naming-an-index-its-kind-does-not-have: InvalidArtifact/SemanticValidationFailed/2704/-/- [derived]
+ok   module-an-element-segment-with-no-table-declared: InvalidArtifact/SemanticValidationFailed/2706/-/- [derived]
+ok   module-an-element-segment-writing-an-unknown-function-index: InvalidArtifact/SemanticValidationFailed/2707/-/- [derived]
+ok   module-a-data-segment-with-no-memory-declared: InvalidArtifact/SemanticValidationFailed/2708/-/- [derived]
+ok   truncation-0000: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0001: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0002: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0003: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0004: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0005: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0006: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0007: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0008: Normal/NormalCompleted/0/-/- [derived]
+ok   truncation-0009: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0010: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0011: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0012: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0013: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0014: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0015: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0016: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0017: Normal/NormalCompleted/0/-/- [derived]
+ok   truncation-0018: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0019: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0020: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0021: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0022: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0023: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0024: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0025: InvalidArtifact/InconsistentStructure/2501/-/- [recorded]
+ok   truncation-0026: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0027: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0028: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0029: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0030: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0031: InvalidArtifact/InconsistentStructure/2501/-/- [recorded]
+ok   truncation-0032: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0033: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0034: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0035: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0036: InvalidArtifact/InconsistentStructure/2501/-/- [recorded]
+ok   truncation-0037: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0038: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0039: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0040: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0041: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0042: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0043: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0044: InvalidArtifact/InconsistentStructure/2501/-/- [recorded]
+ok   truncation-0045: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0046: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0047: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0048: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0049: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0050: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0051: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0052: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0053: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0054: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0055: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0056: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0057: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0058: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0059: InvalidArtifact/InconsistentStructure/2501/-/- [recorded]
+ok   truncation-0060: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0061: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0062: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0063: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0064: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0065: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0066: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0067: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0068: InvalidArtifact/InconsistentStructure/2501/-/- [recorded]
+ok   truncation-0069: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0070: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0071: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0072: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0073: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0074: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0075: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0076: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0077: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0078: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0079: Normal/NormalCompleted/0/-/- [derived]
+ok   truncation-0080: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0081: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0082: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0083: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0084: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0085: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0086: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0087: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0088: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0089: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0090: Normal/NormalCompleted/0/-/- [derived]
+ok   truncation-0091: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0092: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0093: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0094: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0095: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0096: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0097: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   truncation-0098: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0000: InvalidArtifact/MalformedEncoding/2001/-/- [recorded]
+ok   inversion-0001: InvalidArtifact/MalformedEncoding/2001/-/- [recorded]
+ok   inversion-0002: InvalidArtifact/MalformedEncoding/2001/-/- [recorded]
+ok   inversion-0003: InvalidArtifact/MalformedEncoding/2001/-/- [recorded]
+ok   inversion-0004: InvalidArtifact/UnknownFormatVersion/2002/-/- [recorded]
+ok   inversion-0005: InvalidArtifact/UnknownFormatVersion/2002/-/- [recorded]
+ok   inversion-0006: InvalidArtifact/UnknownFormatVersion/2002/-/- [recorded]
+ok   inversion-0007: InvalidArtifact/UnknownFormatVersion/2002/-/- [recorded]
+ok   inversion-0008: InvalidArtifact/InconsistentStructure/2101/-/- [recorded]
+ok   inversion-0009: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0010: InvalidArtifact/MalformedEncoding/2301/-/- [recorded]
+ok   inversion-0011: InvalidArtifact/MalformedEncoding/2301/-/- [recorded]
+ok   inversion-0012: InvalidArtifact/MalformedEncoding/2302/-/- [recorded]
+ok   inversion-0013: InvalidArtifact/MalformedEncoding/2302/-/- [recorded]
+ok   inversion-0014: InvalidArtifact/MalformedEncoding/2302/-/- [recorded]
+ok   inversion-0015: InvalidArtifact/MalformedEncoding/2302/-/- [recorded]
+ok   inversion-0016: InvalidArtifact/MalformedEncoding/2302/-/- [recorded]
+ok   inversion-0017: InvalidArtifact/InconsistentStructure/2101/-/- [recorded]
+ok   inversion-0018: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0019: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0020: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0021: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0022: InvalidArtifact/MalformedEncoding/2201/-/- [recorded]
+ok   inversion-0023: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0024: InvalidArtifact/InconsistentStructure/2104/-/- [recorded]
+ok   inversion-0025: InvalidArtifact/InconsistentStructure/2101/-/- [recorded]
+ok   inversion-0026: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0027: InvalidArtifact/UnknownFeature/2505/-/- [recorded]
+ok   inversion-0028: InvalidArtifact/MalformedEncoding/2307/-/- [recorded]
+ok   inversion-0029: InvalidArtifact/MalformedEncoding/2304/-/- [recorded]
+ok   inversion-0030: InvalidArtifact/InconsistentStructure/2104/-/- [recorded]
+ok   inversion-0031: InvalidArtifact/InconsistentStructure/2101/-/- [recorded]
+ok   inversion-0032: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0033: InvalidArtifact/UnknownFeature/2504/-/- [recorded]
+ok   inversion-0034: InvalidArtifact/MalformedEncoding/2304/-/- [recorded]
+ok   inversion-0035: InvalidArtifact/InconsistentStructure/2104/-/- [recorded]
+ok   inversion-0036: InvalidArtifact/InconsistentStructure/2101/-/- [recorded]
+ok   inversion-0037: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0038: InvalidArtifact/MalformedEncoding/2302/-/- [recorded]
+ok   inversion-0039: InvalidArtifact/MalformedEncoding/2302/-/- [recorded]
+ok   inversion-0040: InvalidArtifact/MalformedEncoding/2308/-/- [recorded]
+ok   inversion-0041: InvalidArtifact/UnknownFeature/2601/-/- [recorded]
+ok   inversion-0042: InvalidArtifact/InconsistentStructure/2602/-/- [recorded]
+ok   inversion-0043: InvalidArtifact/InconsistentStructure/2602/-/- [recorded]
+ok   inversion-0044: InvalidArtifact/InconsistentStructure/2101/-/- [recorded]
+ok   inversion-0045: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0046: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0047: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0048: InvalidArtifact/MalformedEncoding/2401/-/- [recorded]
+ok   inversion-0049: InvalidArtifact/MalformedEncoding/2401/-/- [recorded]
+ok   inversion-0050: InvalidArtifact/MalformedEncoding/2401/-/- [recorded]
+ok   inversion-0051: InvalidArtifact/MalformedEncoding/2402/-/- [recorded]
+ok   inversion-0052: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0053: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0054: InvalidArtifact/MalformedEncoding/2401/-/- [recorded]
+ok   inversion-0055: InvalidArtifact/MalformedEncoding/2401/-/- [recorded]
+ok   inversion-0056: InvalidArtifact/MalformedEncoding/2401/-/- [recorded]
+ok   inversion-0057: InvalidArtifact/MalformedEncoding/2402/-/- [recorded]
+ok   inversion-0058: InvalidArtifact/InconsistentStructure/2104/-/- [recorded]
+ok   inversion-0059: InvalidArtifact/InconsistentStructure/2101/-/- [recorded]
+ok   inversion-0060: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0061: InvalidArtifact/UnknownFeature/2603/-/- [recorded]
+ok   inversion-0062: InvalidArtifact/UnknownFeature/2603/-/- [recorded]
+ok   inversion-0063: InvalidArtifact/UnknownFeature/2601/-/- [recorded]
+ok   inversion-0064: InvalidArtifact/InconsistentStructure/2602/-/- [recorded]
+ok   inversion-0065: InvalidArtifact/InconsistentStructure/2602/-/- [recorded]
+ok   inversion-0066: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0067: InvalidArtifact/InconsistentStructure/2104/-/- [recorded]
+ok   inversion-0068: InvalidArtifact/InconsistentStructure/2101/-/- [recorded]
+ok   inversion-0069: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0070: InvalidArtifact/MalformedEncoding/2302/-/- [recorded]
+ok   inversion-0071: InvalidArtifact/Truncated/2503/-/- [recorded]
+ok   inversion-0072: InvalidArtifact/MalformedEncoding/2302/-/- [recorded]
+ok   inversion-0073: InvalidArtifact/MalformedEncoding/2801/-/- [recorded]
+ok   inversion-0074: InvalidArtifact/SemanticValidationFailed/2812/-/- [recorded]
+ok   inversion-0075: InvalidArtifact/MalformedEncoding/2801/-/- [recorded]
+ok   inversion-0076: InvalidArtifact/SemanticValidationFailed/2812/-/- [recorded]
+ok   inversion-0077: InvalidArtifact/SemanticValidationFailed/2802/-/- [recorded]
+ok   inversion-0078: InvalidArtifact/MalformedEncoding/2801/-/- [recorded]
+ok   inversion-0079: InvalidArtifact/InconsistentStructure/2101/-/- [recorded]
+ok   inversion-0080: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0081: InvalidArtifact/UnknownFeature/2603/-/- [recorded]
+ok   inversion-0082: InvalidArtifact/UnknownFeature/2603/-/- [recorded]
+ok   inversion-0083: InvalidArtifact/UnknownFeature/2601/-/- [recorded]
+ok   inversion-0084: InvalidArtifact/InconsistentStructure/2602/-/- [recorded]
+ok   inversion-0085: InvalidArtifact/InconsistentStructure/2602/-/- [recorded]
+ok   inversion-0086: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0087: Normal/NormalCompleted/0/-/- [recorded]
+ok   inversion-0088: Normal/NormalCompleted/0/-/- [recorded]
+ok   inversion-0089: Normal/NormalCompleted/0/-/- [recorded]
+ok   inversion-0090: InvalidArtifact/InconsistentStructure/2101/-/- [recorded]
+ok   inversion-0091: InvalidArtifact/Truncated/2106/-/- [recorded]
+ok   inversion-0092: Normal/NormalCompleted/0/-/- [recorded]
+ok   inversion-0093: Normal/NormalCompleted/0/-/- [recorded]
+ok   inversion-0094: Normal/NormalCompleted/0/-/- [recorded]
+ok   inversion-0095: Normal/NormalCompleted/0/-/- [recorded]
+ok   inversion-0096: Normal/NormalCompleted/0/-/- [recorded]
+ok   inversion-0097: Normal/NormalCompleted/0/-/- [recorded]
+ok   inversion-0098: Normal/NormalCompleted/0/-/- [recorded]
+  ceiling                   5 entries     5 derived     0 recorded  invariants accepts,exhausts
+  constant-expression       4 entries     4 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  control                   9 entries     9 derived     0 recorded  invariants accepts
+  feature                   6 entries     6 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  inversion-sweep          99 entries     0 derived    99 recorded  invariants sound-either-way
+  limits                    3 entries     3 derived     0 recorded  invariants refuses-decoding
+  name                      9 entries     9 derived     0 recorded  invariants accepts,refuses-decoding
+  preamble                  3 entries     3 derived     0 recorded  invariants refuses-decoding
+  section                   8 entries     8 derived     0 recorded  invariants refuses-decoding
+  truncation-sweep         99 entries     4 derived    95 recorded  invariants accepts,refuses
+  type                      4 entries     4 derived     0 recorded  invariants refuses-decoding
+  validation-control       12 entries    12 derived     0 recorded  invariants refuses-validation
+  validation-index          7 entries     7 derived     0 recorded  invariants refuses-validation
+  validation-module         9 entries     9 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  validation-type           6 entries     6 derived     0 recorded  invariants accepts,refuses-validation
+  varint                    7 entries     7 derived     0 recorded  invariants accepts,refuses-decoding
+# retained corpus: 290 of 290 entries reproduced, 290 hashes re-computed and matched, 29 entries verify, replayed twice with no residue
+# retained corpus: 261 entries answered by the translator, 29 translated and answered by the core, 0 of them refused - class (r) is empty
+
+# execution: 117 checks
+ok   numeric: verification: Normal/NormalCompleted, 273 bytes
+ok   numeric: instantiation: Normal/NormalCompleted
+ok   numeric: 3:addi32:1:7i32:2:35: Normal/NormalCompleted i32 42
+ok   numeric: 4:divsi32:2:-7i32:1:2: Normal/NormalCompleted i32 -3
+ok   numeric: 4:remsi32:2:-7i32:1:2: Normal/NormalCompleted i32 -1
+ok   numeric: 3:shli32:1:1i32:1:4: Normal/NormalCompleted i32 16
+ok   numeric: 4:rotli32:11:-2147483647i32:1:1: Normal/NormalCompleted i32 3
+ok   numeric: 6:i64muli64:2:11i64:1:3: Normal/NormalCompleted i64 33
+ok   numeric: 6:i64shri64:2:-1i64:2:60: Normal/NormalCompleted i64 15
+ok   numeric: 6:f32divf32:8:3F800000f32:8:40800000: Normal/NormalCompleted f32 0.25 (0x3E800000)
+ok   numeric: 6:f32minf32:8:80000000f32:8:00000000: Normal/NormalCompleted f32 -0 (0x80000000)
+ok   numeric: 6:f64addf64:16:3FF8000000000000f64:16:4002000000000000: Normal/NormalCompleted f64 3.75 (0x400E000000000000)
+ok   numeric: 7:f64sqrtf64:16:4000000000000000: Normal/NormalCompleted f64 1.4142135623730951 (0x3FF6A09E667F3BCD)
+ok   numeric: 5:truncf64:16:C00F333333333333: Normal/NormalCompleted i32 -3
+ok   numeric: 4:convi32:2:-5: Normal/NormalCompleted f64 -5 (0xC014000000000000)
+ok   float-comparison: verification: Normal/NormalCompleted, 236 bytes
+ok   float-comparison: instantiation: Normal/NormalCompleted
+ok   float-comparison: 5:f32eqf32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32nef32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32ltf32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32gtf32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32lef32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32gef32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32eqf32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32nef32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32ltf32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32gtf32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32lef32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32gef32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32eqf32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32nef32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32ltf32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32gtf32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32lef32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32gef32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32eqf32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32nef32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32ltf32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32gtf32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32lef32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32gef32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64eqf64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64nef64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64ltf64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64gtf64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64lef64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64gef64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64eqf64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64nef64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64ltf64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64gtf64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64lef64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64gef64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64eqf64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64nef64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64ltf64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64gtf64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64lef64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64gef64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64eqf64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64nef64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64ltf64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64gtf64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64lef64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64gef64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 1
+ok   control: verification: Normal/NormalCompleted, 174 bytes
+ok   control: instantiation: Normal/NormalCompleted
+ok   control: 3:sumi32:1:5: Normal/NormalCompleted i32 15
+ok   control: 3:sumi32:1:0: Normal/NormalCompleted i32 0
+ok   control: 8:classifyi32:1:0: Normal/NormalCompleted i32 10
+ok   control: 8:classifyi32:1:1: Normal/NormalCompleted i32 20
+ok   control: 8:classifyi32:1:2: Normal/NormalCompleted i32 30
+ok   control: 8:classifyi32:1:7: Normal/NormalCompleted i32 99
+ok   control: 3:iffi32:1:1: Normal/NormalCompleted i32 111
+ok   control: 3:iffi32:1:0: Normal/NormalCompleted i32 222
+ok   control: 3:seli32:1:1: Normal/NormalCompleted i32 5
+ok   control: 3:seli32:1:0: Normal/NormalCompleted i32 6
+ok   control: 3:teei32:1:4: Normal/NormalCompleted i32 24
+ok   memory: verification: Normal/NormalCompleted, 142 bytes
+ok   memory: instantiation: Normal/NormalCompleted
+ok   memory: 9:roundtrip: Normal/NormalCompleted i32 123456
+ok   memory: 8:readbytei32:1:0: Normal/NormalCompleted i32 65
+ok   memory: 8:readbytei32:1:2: Normal/NormalCompleted i32 67
+ok   memory: 4:size: Normal/NormalCompleted i32 1
+ok   memory: 4:growi32:1:1: Normal/NormalCompleted i32 1
+ok   memory: 4:size: Normal/NormalCompleted i32 2
+ok   memory: 4:growi32:4:2000: Normal/NormalCompleted i32 -1
+ok   memory: 4:size: Normal/NormalCompleted i32 2
+ok   memory: 3:oob: ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess/3005 expected trap=OutOfBoundsMemoryAccess
+ok   calls: verification: Normal/NormalCompleted, 138 bytes
+ok   calls: instantiation: Normal/NormalCompleted
+ok   calls: 6:direct: Normal/NormalCompleted i32 8
+ok   calls: 8:indirecti32:2:21i32:1:0: Normal/NormalCompleted i32 42
+ok   calls: 8:indirecti32:2:21i32:1:1: ProfileFault/ProfileFaultUnspecified trap=IndirectCallTypeMismatch/3008 expected trap=IndirectCallTypeMismatch
+ok   calls: 8:indirecti32:2:21i32:1:2: ProfileFault/ProfileFaultUnspecified trap=UninitializedElement/3009 expected trap=UninitializedElement
+ok   calls: 8:indirecti32:2:21i32:1:9: ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsTableAccess/3006 expected trap=OutOfBoundsTableAccess
+ok   calls: 4:deepi32:3:100: Normal/NormalCompleted i32 5050
+ok   traps: verification: Normal/NormalCompleted, 83 bytes
+ok   traps: instantiation: Normal/NormalCompleted
+ok   traps: 7:unreach: ProfileFault/ProfileFaultUnspecified trap=Unreachable/3001 expected trap=Unreachable
+ok   traps: 4:divsi32:1:1i32:1:0: ProfileFault/ProfileFaultUnspecified trap=IntegerDivideByZero/3002 expected trap=IntegerDivideByZero
+ok   traps: 4:divsi32:11:-2147483648i32:2:-1: ProfileFault/ProfileFaultUnspecified trap=IntegerOverflow/3003 expected trap=IntegerOverflow
+ok   traps: 4:divsi32:11:-2147483648i32:1:1: Normal/NormalCompleted i32 -2147483648
+ok   traps: 7:badconvf64:16:FFF8000000000000: ProfileFault/ProfileFaultUnspecified trap=InvalidConversionToInteger/3004 expected trap=InvalidConversionToInteger
+ok   traps: 7:badconvf64:16:7E37E43C8800759C: ProfileFault/ProfileFaultUnspecified trap=IntegerOverflow/3003 expected trap=IntegerOverflow
+ok   globals-and-start: verification: Normal/NormalCompleted, 87 bytes
+ok   globals-and-start: instantiation: Normal/NormalCompleted
+ok   globals-and-start: 10:readglobal: Normal/NormalCompleted i32 777
+ok   globals-and-start: 4:bump: Normal/NormalCompleted i32 778
+ok   globals-and-start: 4:bump: Normal/NormalCompleted i32 779
+ok   a-trapping-start-function-publishes-no-instance: ProfileFault/ProfileFaultUnspecified trap=Unreachable instance-published=False
+ok   an-overrunning-data-segment-publishes-no-instance: ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess instance-published=False
+ok   entry-point-encoding: verification: Normal/NormalCompleted, 63 bytes
+ok   entry-point-encoding: instantiation: Normal/NormalCompleted
+ok   entry-point-encoding: 6:f(i32)i32:2:41: Normal/NormalCompleted i32 42
+ok   entry-point-encoding: 7:a:3:i32: Normal/NormalCompleted i32 5
+ok   an-unknown-entry-point-is-a-typed-fault-and-not-a-trap: ProfileFault/ProfileFaultUnspecified problem=UnknownExport
+# execution: 117 of 117 checks passed
+# differential: 43 checks
+ok   integer: the module verifies and instantiates: 600 bytes
+ok   i32.add: 361 cases agreed with the oracle
+ok   i32.sub: 361 cases agreed with the oracle
+ok   i32.mul: 361 cases agreed with the oracle
+ok   i32.div_s: 361 cases agreed with the oracle
+ok   i32.div_u: 361 cases agreed with the oracle
+ok   i32.rem_s: 361 cases agreed with the oracle
+ok   i32.rem_u: 361 cases agreed with the oracle
+ok   i32.and: 361 cases agreed with the oracle
+ok   i32.or: 361 cases agreed with the oracle
+ok   i32.xor: 361 cases agreed with the oracle
+ok   i32.shl: 361 cases agreed with the oracle
+ok   i32.shr_s: 361 cases agreed with the oracle
+ok   i32.shr_u: 361 cases agreed with the oracle
+ok   i32.rotl: 361 cases agreed with the oracle
+ok   i32.rotr: 361 cases agreed with the oracle
+ok   i32.clz: 19 cases agreed with the oracle
+ok   i32.ctz: 19 cases agreed with the oracle
+ok   i32.popcnt: 19 cases agreed with the oracle
+ok   i32.eqz: 19 cases agreed with the oracle
+ok   i64.i64add: 256 cases agreed with the oracle
+ok   i64.i64mul: 256 cases agreed with the oracle
+ok   i64.i64div_s: 256 cases agreed with the oracle
+ok   i64.i64div_u: 256 cases agreed with the oracle
+ok   i64.i64rem_s: 256 cases agreed with the oracle
+ok   i64.i64rem_u: 256 cases agreed with the oracle
+ok   i64.i64shl: 256 cases agreed with the oracle
+ok   i64.i64shr_s: 256 cases agreed with the oracle
+ok   i64.i64shr_u: 256 cases agreed with the oracle
+ok   i64.i64rotl: 256 cases agreed with the oracle
+ok   i64.i64rotr: 256 cases agreed with the oracle
+ok   i64.i64clz: 16 cases agreed with the oracle
+ok   i64.i64ctz: 16 cases agreed with the oracle
+ok   i64.i64popcnt: 16 cases agreed with the oracle
+ok   floating-point: the module verifies and instantiates: 268 bytes
+ok   f64 binary operations against hand-derived bit patterns: 27 cases agreed with the oracle
+ok   f64 unary operations against hand-derived bit patterns: 21 cases agreed with the oracle
+ok   f64 operations that must produce a NaN: 8 cases agreed with the oracle
+ok   algorithm: the module verifies and instantiates: 300 bytes
+ok   an iterative Fibonacci against the same loop in C#: 41 cases agreed with the oracle
+ok   Euclid's algorithm against the same loop in C#: 189 cases agreed with the oracle
+ok   a memory write-then-read scan against the same sum in C#: 65 cases agreed with the oracle
+ok   an indirect dispatch against the three functions written in C#: 20 cases agreed with the oracle
+# differential: 43 of 43 checks passed
+broiler-wasm-harness: every check passed, core contract version 1
+
+exit 0

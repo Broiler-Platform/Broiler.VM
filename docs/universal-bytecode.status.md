@@ -1,6 +1,6 @@
 # The universal bytecode programme — status ledger
 
-**Last updated:** 2026-09-25 (UBC-0 recorded; UBC-3 and UBC-5 to UBC-10 given the reason they cannot meet their gates; UBC-1 and UBC-2 moved to `In progress` on bundles `ubc-1-001` and `ubc-2-001`)
+**Last updated:** 2026-09-26 (UBC-4 moved to `In progress` on bundles `ubc-4-001` and `ubc-4-002`, with clauses 3, 4, 5 and 6 unmet; decision UBC-D-5 recorded as taken early for `Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode`). Before that: 2026-09-25 (UBC-0 recorded; UBC-3 and UBC-5 to UBC-10 given the reason they cannot meet their gates; UBC-1 and UBC-2 moved to `In progress` on bundles `ubc-1-001` and `ubc-2-001`)
 
 **Authority:** this file is the authoritative current-evidence ledger for the milestones in
 [the universal bytecode roadmap](universal-bytecode.roadmap.md). The roadmap defines planned work
@@ -30,6 +30,28 @@ bundle, and neither is accepted, because review is deferred. UBC-4, the one othe
 meet its gate, waits on UBC-2 and on the WebAssembly profile owner's decisions UBC-D-2 and UBC-D-3 for
 its clause 7, and has not started. Every milestone after them still cannot meet its gate while ADR
 0013's note on candidate B stands, for the reason the UBC-5 row gives.
+
+*(Moved on 2026-09-26, and the paragraph above is kept as what this file said when UBC-1 and UBC-2 were
+recorded.)* UBC-4 now owns code, records and bundles `ubc-4-001` and `ubc-4-002`. The WebAssembly profile translates a module
+into universal bytecode, its family executes through the bytecode emitter, and the profile's own
+interpreter is retired; decisions UBC-D-2 and UBC-D-3 are taken in that profile's own decision series.
+UBC-4 is `In progress` and not accepted, and clauses 3, 4, 5 and 6 of its exit gate are unmet, each
+named in its row: clause 3 for the region-access primitive rows, which the E2 check does not reach; clauses 4 and 5,
+which the predeclared rule judges with one decision that cannot be MET while the specification's test
+suite is not pinned and has no reader; and clause 6, because this milestone changed the store's
+retention report. So the paragraphs above that count UBC-4 among the milestones that can meet their
+gates no longer hold of it as things stand: clauses 4 and 5 now need a new dated rule and a base run that
+only a commit with the retired path can give. Decision UBC-D-5 was taken early for `Broiler.VM.Ubc` and
+`Broiler.VM.Emitter.Bytecode`, which are packable, because the WebAssembly profile, already packable,
+now references the first; the fixture family and its root stay unpackable. Every milestone other than
+UBC-0, UBC-1, UBC-2 and UBC-4 still cannot meet its gate while ADR 0013's note on candidate B stands,
+for the reason the UBC-5 row gives. **This move is late.** Under update rules 1 and 4 the UBC-4 row
+should have moved to `In progress` on 2026-09-25, in the change that first gave the milestone code, a
+bundle or a record - at the latest in `9d160d6`, which filed its decision records and edited this file's
+decision rows - and it stood at `Not started` until this change. Bundle `ubc-4-001`'s README, committed
+in `0837208`, describes this row's naming of clause 5's holder before the row said it. The decision
+row UBC-D-5 is late in the same way: the decision took effect in code in `1b55423` and was recorded in
+`9ccc9c5`, and its row stood at `open` until this change.
 
 ---
 
@@ -86,7 +108,7 @@ should read the words in the State column and nothing else.
 | UBC-5 | `Broiler.VM.Ubc.Native`, the `x86` pivot and the execution half | `Not started` | all; **it cannot meet clause 1 while ADR 0013's note that G1 is unsatisfied for the native-form mechanism stands**, because clause 1 writes that mechanism's assembly. Holder: the core architecture owner. Unblock condition, in ADR 0011's words: the second product profile - a second product profile's own emitted code over its bytecode, in merged code - or a ruling by that owner that moving one profile's native machinery into an emitter family is not an extraction between profiles | none | 2026-09-25 (reason recorded) |
 | UBC-6a | The `x86-64` emitter over the fixture family | `Not started` | all; it cannot meet its gate while UBC-5 cannot, for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
 | UBC-3 | The JavaScript family | `Not started` | all; clause 10 is gated on decision UBC-D-1; **the whole milestone waits on UBC-6a** (roadmap section 10, "Waits on"), so it cannot meet its gate while UBC-5 cannot, for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
-| UBC-4 | The WebAssembly family | `Not started` | all; clause 7 is gated on decisions UBC-D-2 and UBC-D-3 | none | 2026-09-25 (row created) |
+| UBC-4 | The WebAssembly family | `In progress` | **clauses 3, 4, 5 and 6 unmet; not accepted**, because `docs/mvp.md` defers review (update rule 7). **Clause 3**: the region-access `Primitive` rows - the loads, the stores and `memory.size` - have no reference handler the E2 corpus reaches, because the E2 lane and the programme's primitive corpus cover the numeric rows only; holder: the WebAssembly profile owner, for a region input corpus and a lane. **Clauses 4 and 5**: the predeclared rule judges both with one decision, which is NOT MET because population A is not judged - the specification's test suite is not pinned and has no reader, and the rule's precondition asks for both at the base commit, which had neither; population B differs from the base run only in the rule's class (f), and `ubc-4-002` retains that comparison and the negative control, failing and then passing, as partial evidence, named as such. Holder: the WebAssembly profile owner, for the suite's pin, its reader, a new dated rule quoting this one, and a base run of population A taken again under it on a commit that still has the retired path. **Clause 6**: `memory.grow`'s guest-observable refusal is unchanged, but the `LiveBytes` retention report is not - the store charges retention before its allocation, and a growth a core budget refuses ends the step at the growth - and no test asserts the amounts; holder: the WebAssembly profile owner, who either accepts the change through a gate revision under update rule 5 or has the store report after the allocation again. Clauses 1, 2, 7, 8, 9 and 10 are met on retained evidence. The RID `win-x64` only, which is not a supported one; translation runs outside the core's accounts (route MVP-15); the move of a counterweight position that `WAC-41` records waits on that owner's confirmation | [bundle ubc-4-001](evidence/ubc-4-001/README.md), the base run and [the rule](evidence/ubc-4-001/decision-rule.md); [bundle ubc-4-002](evidence/ubc-4-002/README.md), the run after, the comparison, the negative control failing and passing, and the roots published and run in each mode; [WAD-0001 to WAD-0003](../src/Broiler.VM.Profile.WebAssembly/docs/decisions/README.md); that profile's `WAC-30` to `WAC-41` and `WAC-43`; route MVP-15; the register rows of `docs/compositions.md`; rules W1 and W2 revised | 2026-09-26 (code landed, interpreter retired, bundles retained) |
 | UBC-6b | The language families in the `x86-64` form | `Not started` | all; it waits on UBC-3 and UBC-4, and UBC-3 cannot meet its gate while UBC-5 cannot, for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
 | UBC-7 | The `arm64` emitter, emitting-only | `Not started` | all; clause 6 is gated on decision UBC-D-4; it waits on UBC-6b, and its pivot references `Broiler.VM.Ubc.Native`, so it cannot meet its gate for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
 | UBC-8 | The polyglot composition | `Not started` | all; it waits on UBC-3, which cannot meet its gate for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
@@ -105,7 +127,7 @@ wants to know what is next reads down.
 | UBC-D-2 — the WebAssembly memory representation for a region a native form addresses | **taken 2026-09-25**: a pinned managed array reallocated on growth with its base republished, recorded as [WAD-0001](../src/Broiler.VM.Profile.WebAssembly/docs/decisions/0001-the-memory-representation.md) | the WebAssembly profile owner with the security owner |
 | UBC-D-3 — mint the WA-5 manifest or record its absence | **taken 2026-09-25**: the absence is recorded; the family's table stays under `broiler.webassembly.slice`, [WAD-0002](../src/Broiler.VM.Profile.WebAssembly/docs/decisions/0002-the-family-table-stays-under-the-slice-identity.md) | the WebAssembly profile owner |
 | UBC-D-4 — whether the `arm64` emitter emits the handler-call form | open | the core architecture owner |
-| UBC-D-5 — packability of `Broiler.VM.Ubc` and `Broiler.VM.Ubc.Native` | open | the release owner with the architecture owner |
+| UBC-D-5 — packability of `Broiler.VM.Ubc` and `Broiler.VM.Ubc.Native` | **taken early 2026-09-25, at UBC-4, for `Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode`**, which are packable, recorded in [ADR 0013](adr/0013-the-universal-bytecode-extraction-record.md)'s section of that date and [ADR 0001](adr/0001-component-topology-and-dependency-graph.md)'s revision; the fixture family and its root stay unpackable; **open** for `Broiler.VM.Ubc.Native`, which does not exist | the release owner with the architecture owner |
 | UBC-D-6 — whether to split the repository into components | open | the repository owner |
 
 All six holders are one person, recorded as EX-30.

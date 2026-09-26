@@ -1,0 +1,12 @@
+# closure Broiler.VM.Composition.WebAssembly.Execution rid=win-x64
+
+[trimmed] 7 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.WebAssembly.Execution
+Broiler.VM.Emitter.Bytecode
+Broiler.VM.Profile.WebAssembly
+Broiler.VM.Runtime
+Broiler.VM.Ubc
+
+[aot] 0 non-framework assemblies
