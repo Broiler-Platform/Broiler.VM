@@ -11,7 +11,11 @@ is named, and no gate below is independently confirmed until then.
 [the universal bytecode concept](universal-bytecode.md). **Nothing here is done, and nothing here is
 accepted.** [The programme's ledger](universal-bytecode.status.md) is the only authority on what has
 happened; this document is the authority on what is planned and on what would count. Every milestone
-below is `Not started` on this document's date.
+below is `Not started` on this document's date *(corrected 2026-09-25, later the same day: milestone
+UBC-0 moved once its records were filed, and [ADR 0013](adr/0013-the-universal-bytecode-extraction-record.md)
+accepts candidate A and notes that G1 is unsatisfied for the native-form mechanism, which keeps UBC-3 and
+UBC-5 to UBC-10 from meeting their gates for the reason the ledger gives; the ledger is the authority on
+every row, and no plan below is edited by this note)*.
 
 **What this document is.** The concept says what the universal bytecode, the emitter profiles and the
 language profiles are and why; this roadmap says in what order they are built, by which work packages,

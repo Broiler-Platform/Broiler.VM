@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Com.Example.Tally</RootNamespace>
+    <AssemblyName>Com.Example.Tally</AssemblyName>
+    <Description>The universal bytecode's fixture family: an application-local family that is not a language, written against the public surface of Broiler.VM.Ubc and nothing else, so the universal bytecode's contract and every emitter's obligations can be demonstrated before any language family exists on the new graph.</Description>
+    <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!-- THE CONSUMER-FAMILY REFERENCE SET (rule A13 as revised at UBC-2): the two core sinks and the
+       universal bytecode, and nothing else. No emitter: a family never names one; a composition root
+       hands the family's registration to the emitter it composes. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,15 @@
+<!-- Violates A11: an emitter referencing a language family. An emitter receives a family's tables
+     and handlers as values at composition, through the contracts of Broiler.VM.Ubc; it never names
+     a profile, and only a composition root may reference one. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Emitter.Witness</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+  </ItemGroup>
+</Project>

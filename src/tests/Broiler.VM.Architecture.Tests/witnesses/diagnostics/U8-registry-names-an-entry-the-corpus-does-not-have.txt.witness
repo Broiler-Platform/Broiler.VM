@@ -1,0 +1,18 @@
+# A universal bytecode registry whose rows claim reachability the corpus does not give them.
+#
+# Six defects, one per way a row's case can be wrong: an entry id the manifest does not have; an
+# entry that exists and expects another code; an entry of the truncation sweep, pinned Recorded, whose
+# answer is an observation rather than an expectation; an entry that expects the right code with
+# another reason; a row the rule admits as unreachable claiming a case; and a row claiming to be
+# unreachable that the rule does not admit - VerifierDefect, which the enumeration's comment calls
+# defensive and which the corpus reaches through hooks that break the hook contract.
+#
+# registry-revision: 1
+#
+# code|name|reason|reachability|case|since
+3001|WrongMagic|MalformedEncoding|corpus|a-corpus-entry-nobody-wrote|1
+3002|DescriptorFormatVersionMismatch|DescriptorMismatch|corpus|a-wrong-magic|1
+3003|UnsupportedFormatVersion|UnsupportedProfileFormatVersion|corpus|truncated-at-003|1
+3004|MalformedIdentity|InconsistentStructure|corpus|an-empty-profile-identity|1
+3903|ReaderStopped|InconsistentStructure|corpus|an-empty-payload|1
+3904|VerifierDefect|InconsistentStructure|defensive|The walk cannot fail.|1

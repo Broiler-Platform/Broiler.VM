@@ -7,7 +7,18 @@ repository gives for theirs: a `VM-`, `JS-` or `WA-` identifier with no ledger r
 milestone somebody is tracking. *(Added 2026-09-25, later the same day: the scheduling this document
 declines is done beside it by [the programme roadmap](universal-bytecode.roadmap.md), whose milestones
 are these stages, and recorded in [the programme ledger](universal-bytecode.status.md), where every row
-is `Not started`. This document is unchanged in what it decides, which is nothing.)*
+is `Not started`. This document is unchanged in what it decides, which is nothing.)* *(Added again
+2026-09-25: "where every row is `Not started`" stopped being true when stage UBC-0's record,
+[ADR 0013](adr/0013-the-universal-bytecode-extraction-record.md), was filed. It accepts the universal
+bytecode and its one loop, and for the native-form mechanism of section 7.3 it notes that the extraction
+gate's G1 is unsatisfied - one product profile has emitted code and the other has none - so the gate
+cannot yet be invoked for it. Section 3.1's argument that G1 "holds ... for the behaviour actually being
+extracted" is true of the bytecode half and not of the native half, and the ledger says what that
+keeps from meeting its gate. Section 3.1's reliance on the standing refusal's "reopening clause" is
+also not borne out: the clause it quotes belongs to refused extraction records, and the reopening is
+filed as route MVP-12 instead.)* *(Added 2026-09-25 by milestones UBC-1 and UBC-2: where the code of the
+universal bytecode, its bytecode emitter and its fixture family departs from this text, Appendix G says
+where and why; the text above is not edited.)*
 
 **Owner:** the Broiler.VM architecture owner, who also holds the release, security, contract-minting
 and review roles [ADR 0012](adr/0012-security-ownership-and-support-matrix.md) names — six roles held
@@ -68,7 +79,8 @@ Appendices: [A. The common family](#appendix-a--the-common-family), [B. The Java
 family](#appendix-b--the-javascript-family), [C. The WebAssembly family](#appendix-c--the-webassembly-family),
 [D. The primitive table](#appendix-d--the-primitive-table), [E. The container, field by
 field](#appendix-e--the-container-field-by-field), [F. Every rule and record this concept
-touches](#appendix-f--every-rule-and-record-this-concept-touches).
+touches](#appendix-f--every-rule-and-record-this-concept-touches), [G. Where the code departs from this
+text](#appendix-g--where-the-code-departs-from-this-text) *(added 2026-09-25)*.
 
 ---
 
@@ -2293,3 +2305,32 @@ means a rule this concept mints, each with a negative control watched failing an
 | ADR 0001's ruling of 2026-08-31 that a language profile is a set of product projects rather than a component of its own; the README's corrected sentence and roadmap section 1's *VM profile* row that restate it | reversed by a dated revision with the superseded text quoted; the one-way reference direction restated | UBC-10 |
 | ADR 0011's standing refusals of the assurance tooling and the conformance-harness method | their reopening condition, a second component's own implementation, is met by the split; the verdicts are theirs to give | UBC-10 |
 | `HUMAN_REVIEW.md`, `CODE-ASSURANCE.md`, `assurance.manifest.json` | regenerated at every stage; every moved unit `HUMAN_PENDING` | every stage |
+
+## Appendix G — Where the code departs from this text
+
+*(Added 2026-09-25, by the programme's milestones UBC-1 and UBC-2.)* The text above is left as it was
+written. Where the code of `Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode` and the fixture family does
+something else, the difference is recorded here rather than by editing the sentence it departs from,
+and each milestone's evidence bundle repeats the list it is responsible for.
+
+| Where the text says | What the code does | Why |
+|---|---|---|
+| 5.4: family prefixes `0xF0 + slot` for slots up to fifteen | Slots one to fourteen; `0xF0` and `0xFF` are both refused as reserved prefixes | `0xF0 + 15` is `0xFF`, which the same section reserves as the extended prefix |
+| 5.6: an effect is fixed pops and pushes, or `pops = operand + k` | A *listed* effect, and a *counted* one that carries a multiplier, so a run of `operand x multiplier` slots of one type sits above the fixed pops | Appendix B's template-object row pops two slots per counted element; the identifier `Fixed` is refused by rule X4, which confines that name to the JavaScript native template, so the form is spelled `Listed` |
+| 5.10: the landing pushes what the family's lowering expects | A region kind is table data carrying its landing pushes | The walk has to type the handler's entry, and a callback the walk could not read would be a second verifier |
+| 6.2: the hook is called at every family instruction and over every FamilyData section | Three calls: over the FamilyData section before the walk, at every family instruction the walk admitted, and once at the end; its refusal carries the family's code, and a code in the universal range is answered as a verifier defect | A hook that sees FamilyData only after the instructions could not check an instruction against it |
+| 6.3 and 7.1: the emitter set composes forms, each with its form verifier | `UbcForm` carries an identity, a version and an executor factory; the emitter set admits the bytecode form alone, and the walk's form layer has one code, an Emission section on a bytecode artifact | ADR 0013 accepted candidate A and noted candidate B's G1 as unsatisfied, so no form verifier over emitted code, and no emitting half of a native emitter, exists |
+| 7.2: `Handle(ref UbcActivation, byte, uint operand)` | The operand is a `ulong` | `U8U32`, `I64` and `F64` operands do not fit thirty-two bits |
+| 5.9: a family call request names the unit and where its parameters are | A request names a unit of the calling program or of another verified program of the same family; the parameters are the top slots of the row's inputs, and the results must be exactly the row's pushes | A guest-loaded program runs in the same emitter only if a request can name it; checking a request's fit is the emitter's, at the request |
+| 7.2: the family struct supplies the plane operations | The loop reaches the value plane through `IUbcValuePlane`, one indirect call per plane operation; the family's other members are static and fold | Recorded as route MVP-13's cost, shown by the fixture composition's retained disassemblies |
+| Appendix A: `jump_table`'s effect is `[i32] → []`, and "`jump`, `trap` and `return` are the terminal rows" | `jump_table` is terminal as well; rule U4 compares the table with Appendix A and names this as the one disagreement it expects | The row always transfers - to a table row, or to the last when the index is out of range - so a fall-through successor would be typed by the walk and never executed |
+| Appendix D: every entry has "a stated result for every input", and NaN canonicalisation is a per-family flag | With the flag off, the NaN result of an entry the flag governs - add, sub, mul, div, min, max, sqrt, ceil, floor, trunc, nearest, demote and promote, on either width - is the first operand of its own type that is a NaN, made quiet, or the canonical NaN when none is | The hardware disagrees - an invalid operation's default NaN is negative on `x86-64` and positive on `arm64` - so a result left to the host would not be stated, and the primitive input corpus would record one architecture's answers |
+| Appendix C marks `f32` and `f64` `abs`, `neg` and `copysign` "NaN canonicalised", and Appendix D puts them under the family's flag | They act on the sign bit alone and keep a NaN's payload, quiet or signalling, under either setting of the flag; `UbcPrimitives.Canonicalises` does not name them, and neither does the flag | WebAssembly states the three as bit operations outside its NaN rules, so canonicalising them would change a sign or a payload the language guarantees; the primitive input corpus records their answers under both settings |
+| Appendix A: every row costs one fuel unit | A call, a family call request and an invocation's entry also cost the entered unit's frame fuel - one unit for every 32 locals it declares on both planes, rounded down (`UbcUnitCode.FrameFuel`) - charged with the frame before it stands; an unwinding costs a unit for every region it looks at and every frame it leaves | A frame's locals are cleared when it is entered and its value locals again when it is left, and a throw searches every frame it passes: work the artifact's declared layout decides rather than any row's count, which one unit a row would leave unbounded by fuel, against ADR 0007's CO-1. The amounts are the universal bytecode's, so every form charges the same at the same points and the fuel-parity obligation is unchanged |
+| Not stated: what a suspended operation holds | A suspension gives its frames' `CallDepth` back once the continuation is captured, and a resumption charges it again before any frame stands; the captured planes' bytes stay charged | The core may drop a parked continuation outside any step, where no release reaches a meter, so depth held across the suspension would refuse the instance's siblings until the instance was disposed |
+| Appendix E: identities are length-prefixed UTF-8 | Identity fields admit ASCII letters, digits, `.`, `-` and `_`, one to 128 bytes; entry names are UTF-8 up to 1024 bytes | An identity is compared with the core's identity grammar, which admits no other character; an entry name is the core's entry-point bytes and is not an identity |
+| Appendix E: a unit's landings are its resume points | A unit's landings are exactly its resume points and its regions' handlers, ascending | A native form enters a unit at both, and a list the walk did not check exactly would be a second statement the emitter trusted |
+| 8.3: the fixture family has three rows | It has a row for every instruction kind and four primitive rows | The program corpus the roadmap asks for needs a branch, a call request, a suspension and a guest load |
+| 13, UBC-2: the version refusal happens at catalog construction | `UbcDescriptors.Build` throws `UbcCompositionException` while a composition root builds its catalog | The core catalog cannot see the universal bytecode's contract integers |
+| 6: the verifier's semantic version is the universal bytecode's | It is the walk's version; a change to a family's table or hook is announced by the family's descriptor revision | A family's table is data the walk reads, and the descriptor revision is the row the core already reads for exactly that |
+| Not stated | An artifact declares at most one family; a unit's landings are exactly its resume points and its regions' handlers; of two overlapping regions of a unit the inner is listed first; the entry frame is charged to `CallDepth` like every other | Each is what the walk and the loop need to be total and deterministic, and each has a refusal of its own |

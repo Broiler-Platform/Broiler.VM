@@ -1,0 +1,9 @@
+<!-- Violates N4: a JavaScript-family project whose only mention of IsPackable is inside a comment.
+     A comment is not a definition, so the vendored packaging props' default of true stands and the
+     project packs, while a search of the file's text finds the words. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+    <!-- Until JS-10 this read <IsPackable>false</IsPackable>. -->
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.Ubc.Fixture</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.Ubc.Fixture</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- A demonstration composition: the universal bytecode's fixture family over the bytecode
+         emitter, beside a second application-local profile. Not packable, advertised by nobody. -->
+    <IsPackable>false</IsPackable>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!-- The closure, stated as a reference set: the core's three assemblies, the universal bytecode and
+       its bytecode emitter as siblings, the fixture family, and the ledger as the neighbour the
+       hostile-neighbour check composes beside it. No language profile, no native emitter, no
+       testing framework. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Emitter.Bytecode\Broiler.VM.Emitter.Bytecode.csproj" />
+    <ProjectReference Include="..\..\tests\Com.Example.Tally\Com.Example.Tally.csproj" />
+    <ProjectReference Include="..\..\tests\Com.Example.Ledger\Com.Example.Ledger.csproj" />
+  </ItemGroup>
+
+  <!-- The universal bytecode's malformed corpus family and its replayer, compiled from the one copy
+       the contract suite also compiles, so that the ubc1-corpus mode replays the UBC-1 corpus in every
+       publish mode with no test project in the closure. Neither file references a test framework
+       or Broiler.VM.Fixtures; the corpus's recorded answers bind both compilations. -->
+  <ItemGroup>
+    <Compile Include="..\..\tests\Broiler.VM.Contract.Tests\Ubc\UbcCorpusFamily.cs" Link="Ubc1Corpus\UbcCorpusFamily.cs" />
+    <Compile Include="..\..\tests\Broiler.VM.Contract.Tests\Ubc\UbcCorpusRunner.cs" Link="Ubc1Corpus\UbcCorpusRunner.cs" />
+  </ItemGroup>
+
+</Project>

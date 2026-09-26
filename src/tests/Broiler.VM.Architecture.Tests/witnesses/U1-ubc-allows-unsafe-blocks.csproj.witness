@@ -1,0 +1,15 @@
+<!-- Violates U1: the universal bytecode allowing unsafe blocks. It holds a format, a schema and a
+     verifier walk over a bounded reader, and no emitter, so it has no pointer to name; an unsafe
+     block here would be a parser over untrusted bytes stepping outside the bounds checks the reader
+     exists to make. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+</Project>

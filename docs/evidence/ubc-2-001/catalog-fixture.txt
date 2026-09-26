@@ -1,0 +1,6 @@
+# broiler-vm-composition core-contract-version=1 ubc-contract-version=1
+composition Broiler.VM.Composition.Ubc.Fixture
+profiles 2
+profile com.example.tally Com.Example.Tally 1 1
+profile com.example.ledger Com.Example.Ledger 1 1
+form bytecode 1

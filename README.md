@@ -3,8 +3,11 @@
 Broiler.VM is a new, planned NativeAOT-compatible component that executes verified bytecode
 artifacts. It is a **host for language profiles, not a language**: it owns profile selection,
 bounded loading, the verification boundary, the execution lifecycle, resource authority,
-diagnostics, and composition evidence, and it owns no opcode set, value representation, or
-language semantics of its own.
+diagnostics, and composition evidence, and it owns no value representation or language semantics
+of its own; its core owns no opcode set, and the universal bytecode's common family - an instruction
+encoding whose meanings name no language - lives in `Broiler.VM.Ubc`, outside the core contract
+*(corrected 2026-09-25, milestone UBC-1: this sentence read "it owns no opcode set, value
+representation, or language semantics of its own")*.
 
 Profiles are **product project families in this component**, at
 `src/Broiler.VM.Profile.<Language>*`, and the core never references a profile: a composition root
@@ -98,7 +101,8 @@ a design route that an unmade decision would have chosen between, the route is r
 taken-without-a-decision at the place its consequence lands, and a reader who wants the list of what
 is unmade reads `docs/mvp.md` rather than inferring it from confident prose.
 
-What exists is [twelve boundary records](docs/adr/README.md) and an implementation of core
+What exists is [thirteen boundary records](docs/adr/README.md) *(corrected 2026-09-25: this read
+"twelve boundary records"; ADR 0013 is the thirteenth)* and an implementation of core
 contract version 1: the profile-neutral contracts, the bounded binary primitives, the immutable
 catalog, the runtime and its lifecycle, resource authority including shared aggregate budgets and
 the full limit-precedence algorithm, guest-initiated-load mediation with its bounds, external
@@ -321,6 +325,20 @@ Redundancy between profiles is avoided by sharing **mechanism** — how bytes ar
 budget is charged — and never **semantics**. Values, frames, opcodes, and syntax trees are not
 shared, and a new shared component is opened only through the extraction gate in
 [section 8 of the roadmap](docs/roadmap.md).
+
+*(Corrected 2026-09-25. These two paragraphs are unchanged in what they say of the core, and
+they are no longer the whole of what the component holds. The extraction gate they name has fired
+once: [ADR 0013](docs/adr/0013-the-universal-bytecode-extraction-record.md) admits the **universal
+bytecode** - one instruction encoding, a common family whose rows mean the same in every language,
+a family-table schema, a primitive table of machine operations and one verifier walk, in an assembly
+`Broiler.VM.Ubc` that is not part of the core contract and that no core assembly references - and
+one dispatch loop that executes it. So opcodes are now shared **as an encoding**: a profile's own
+instructions keep the meanings the profile gives them, and the profile still owns its values, its
+semantics, its payloads and its conformance suite, while its verifier walk and its dispatch loop
+move to the shared mechanism when [the programme](docs/universal-bytecode.roadmap.md) reaches it.
+Values and frame layouts are still not shared. For the native-form mechanism the concept placed
+beside it the same record notes that G1 is unsatisfied, so the gate cannot yet be invoked for it;
+nothing is refused. Nothing of either exists in the tree on this date.)*
 
 ## Relationship to Broiler.JS
 

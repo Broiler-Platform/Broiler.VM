@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 211 |
-| Files carrying an annotation | 211 |
-| Code units | 8814 |
-| Relevant | 5190 |
-| Exempt by predicate | 3624 |
-| Annotated | 5190 of 5190 (100%) |
-| Human reviewed | 0 of 5190 (0%) |
-| Unverified | 5190 |
+| Files scanned | 230 |
+| Files carrying an annotation | 230 |
+| Code units | 9896 |
+| Relevant | 5578 |
+| Exempt by predicate | 4318 |
+| Annotated | 5578 of 5578 (100%) |
+| Human reviewed | 0 of 5578 (0%) |
+| Unverified | 5578 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5190 |
+| HUMAN_PENDING | 5578 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 3624 |
+| EXEMPT | 4318 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1538 |
-| Low | 4792 |
+| None | 1539 |
+| Low | 5188 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -49,11 +49,11 @@ figures below are the measurement of how far from that claim the component is.
 
 | Value | Units |
 |---|---:|
-| None | 7 |
-| Low | 748 |
-| Medium | 4026 |
-| High | 1424 |
-| Critical | 206 |
+| None | 9 |
+| Low | 889 |
+| Medium | 4159 |
+| High | 1525 |
+| Critical | 226 |
 | *not annotated* | 0 |
 
 ## Resource impact
@@ -61,8 +61,8 @@ figures below are the measurement of how far from that claim the component is.
 | Metric | Value |
 |---|---:|
 | Maximum | 9 / 10 |
-| Average over annotated units | 1.9 / 10 |
-| Units scored | 5190 |
+| Average over annotated units | 1.7 / 10 |
+| Units scored | 5578 |
 
 ## High-security review areas
 
@@ -106,6 +106,24 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.VmBoundedReader.TryConsume(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader.TryReadVarUInt64Core(int, out ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcBytecodeExecutorFactory.Create<TFamily>(UbcFamilyRegistration<TFamily>, UbcFamilyDeclaration, IVmExecutionEnvironment)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcContinuation` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcExecutor<TFamily>` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcExecutor.Instantiate(VmVerifiedArtifact, System.Threading.CancellationToken)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcExecutor.Invoke(IVmInstanceState, in VmInvocationRequest, System.Threading.CancellationToken)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcExecutor.Resume(IVmInstanceState, IVmProfileContinuation, System.Threading.CancellationToken)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcLoopMeter` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcLoopMeter.Spend(ulong)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcLoopMeter.TryCharge(VmBudgetDimension, ulong)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter<TFamily>` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Start(int, System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Resume(UbcContinuation)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Run()` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Enter(UbcVerifiedProgram, int, int, int, int, int, bool)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Grow(int, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Unwind(ref UbcActivation, object?)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Suspend(ref UbcActivation, int)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Emitter.Bytecode.UbcInterpreter.Fits(UbcInstructionRow, in UbcInstruction, UbcUnitCode)` in `src/Broiler.VM.Emitter.Bytecode/UbcInterpreter.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.CompilationStack.Run<T>(System.Func<T>)` in `src/Broiler.VM.Profile.JavaScript.Compiler/CompilationStack.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.JsArm64Assembler` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` - Security=High, human line PENDING
@@ -1696,13 +1714,116 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.VmRuntime` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmRuntime.VerifyCore(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryRead(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter, ulong, uint?, out UbcArtifact?, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.FromReader(ref VmBoundedReader, VmSourcePosition)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadSection(ref VmBoundedReader, Context, ref uint, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadFamilies(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadTypes(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadUnits(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadCode(ref VmBoundedReader, Context, Sections, ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadJumpTables(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadRegions(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadEntries(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadPositions(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadFamilyData(ref VmBoundedReader, Context, Sections, byte, ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadEmission(ref VmBoundedReader, Context, Sections, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadCount(ref VmBoundedReader, Context, UbcSectionKind, ulong, out uint, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadSlotTypes(ref VmBoundedReader, Context, UbcSectionKind, out ImmutableArray<UbcSlotType>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadOffsets(ref VmBoundedReader, Context, UbcSectionKind, out ImmutableArray<uint>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadIdentity(ref VmBoundedReader, Context, int, out string, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadRun(ref VmBoundedReader, Context, UbcSectionKind, ulong, out ImmutableArray<byte>, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.ReadWindow(ulong)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.TryReadExact(ref VmBoundedReader, Context, scoped System.Span<byte>)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.Capacity(uint, ref VmBoundedReader)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.Context` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.Context.TryReserve(ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcArtifactReader.Context.TryReserveEstimate(ulong, out UbcRefusal)` in `src/Broiler.VM.Ubc/UbcArtifactReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcFamilyRegistration` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcFamilyRegistration.UbcFamilyRegistration(string, System.Collections.Generic.IEnumerable<UbcInstructionTable>, IUbcFamilyVerifier, int, int)` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.IUbcExecutorFactory` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.IUbcExecutorFactory.Create<TFamily>(UbcFamilyRegistration<TFamily>, UbcFamilyDeclaration, IVmExecutionEnvironment)` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcEmitterSet` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcEmitterSet.Create(params UbcForm[])` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcDescriptors` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcDescriptors.Build<TFamily>(UbcFamilyRegistration<TFamily>, UbcFamilyDeclaration, UbcEmitterSet)` in `src/Broiler.VM.Ubc/UbcComposition.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcDiagnosticCode` in `src/Broiler.VM.Ubc/UbcDiagnostics.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcEffect` in `src/Broiler.VM.Ubc/UbcEffects.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcEffect.TryGetPopCount(ulong, out int)` in `src/Broiler.VM.Ubc/UbcEffects.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.IUbcFamily` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.IUbcFamily.Handle(ref UbcActivation, byte, ulong)` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcCallRequest` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcActivation` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.IUbcFamilyVerifier` in `src/Broiler.VM.Ubc/UbcFamilyContracts.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcInstructionRow` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcInstructionTable` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcInstructionTable.TryGetRow(byte, out UbcInstructionRow)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcInstructionTable.TryCreate(string, uint, VmFeatureManifestId, System.Collections.Generic.IEnumerable<UbcInstructionRow>, System.Collections.Generic.IEnumerable<UbcRegionKindRow>, System.Collections.Generic.IEnumerable<UbcRegionDeclaration>, System.Collections.Generic.IEnumerable<UbcFamilyTrap>, bool, out UbcInstructionTable?, out string?)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcInstructionTable.CheckRow(UbcInstructionRow, System.Collections.Generic.HashSet<ushort>, System.Collections.Generic.HashSet<byte>)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcInstructionTable.CheckPrimitive(UbcInstructionRow, System.Collections.Generic.HashSet<ushort>, System.Collections.Generic.HashSet<byte>)` in `src/Broiler.VM.Ubc/UbcInstructionTable.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcOpcodes` in `src/Broiler.VM.Ubc/UbcOpcodes.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcOpcodes.TryDescribe(byte, out UbcCommonRow)` in `src/Broiler.VM.Ubc/UbcOpcodes.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcPrimitives` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcPrimitives.TrapsOf(UbcPrimitive)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcPrimitives.TryGetSignature(UbcPrimitive, out ImmutableArray<UbcSlotType>, out ImmutableArray<UbcSlotType>)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcPrimitives.AccessWidth(UbcPrimitive)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcPrimitives.Evaluate(UbcPrimitive, ulong, ulong, bool)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcPrimitives.EvaluateRegion(UbcPrimitive, System.Span<byte>, uint, uint, ulong, uint)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcPrimitives.EvaluateCore(UbcPrimitive, ulong, ulong)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcPrimitives.EvaluateFloat(UbcPrimitive, ulong, ulong)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcPrimitives.TruncToI32(double, bool)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcPrimitives.TruncToI64(double, bool)` in `src/Broiler.VM.Ubc/UbcPrimitives.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcReadAdapter` in `src/Broiler.VM.Ubc/UbcRefusal.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcReadAdapter.ToReadBounds(VmLimitVector)` in `src/Broiler.VM.Ubc/UbcRefusal.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcReadAdapter.TryReserve(ulong)` in `src/Broiler.VM.Ubc/UbcRefusal.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcReadAdapter.TryChargeWork(ulong)` in `src/Broiler.VM.Ubc/UbcRefusal.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcOperandShapes.Read(System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Ubc/UbcSlotTypes.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcVerifiedProgram` in `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcUnitCode` in `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcUnitCode.UbcUnitCode(int, UbcUnit, UbcSignature, int, int, int, int, int, int, ImmutableArray<UbcInstruction>, ImmutableArray<UbcDecodedRegion>)` in `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcInstruction` in `src/Broiler.VM.Ubc/UbcVerifiedProgram.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcVerifier` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcVerifier.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, IVmVerificationContext, System.Threading.CancellationToken)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Run(out UbcVerifiedProgram?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckHeader()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckFamilies()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckTypesAndUnits()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckJumpTables()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckRegionRows()` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckEntries(out ImmutableArray<int>)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.WalkUnit(int, int[], int[], ImmutableArray<int>[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Decode(int, UbcUnit, out Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.ResolveRegions(int, UbcUnit, int[], Raw[], out ImmutableArray<UbcDecodedRegion>, out int[], out int[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Arrive(WalkState, int, UbcStackNode?, int, UbcUnit, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.EnterRegions(WalkState, int, int[], int[], ImmutableArray<UbcDecodedRegion>, int, UbcUnit, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckRegionPrefixes(WalkState, ImmutableArray<UbcDecodedRegion>, int, Raw[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Prefix(UbcStackNode?, UbcDecodedRegion, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.CheckLandings(int, UbcUnit, Raw[], ImmutableArray<UbcDecodedRegion>)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Require(ImmutableArray<uint>, bool[], ulong, uint, int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Step(WalkState, int, int, UbcUnit, UbcSignature, LocalLayout, Raw[], UbcInstruction[], ImmutableArray<int>[])` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.StepFamily(WalkState, int, int, UbcUnit, Raw[], UbcInstruction[], UbcInstructionRow, UbcStackNode?, VmSourcePosition, int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Pop(UbcStackNode?, ImmutableArray<UbcSlotType>, VmSourcePosition, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Repeat(UbcStackNode?, UbcSlotType, int, VmSourcePosition, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Take(UbcStackNode?, int, VmSourcePosition, out ImmutableArray<UbcSlotType>, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Push(UbcStackNode?, ImmutableArray<UbcSlotType>, UbcUnit, VmSourcePosition, out UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Same(UbcStackNode?, UbcStackNode?)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Target(Raw[], ulong, VmSourcePosition, out int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.LocalLayout` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.LocalLayout.LocalLayout(UbcSignature, UbcUnit)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.LocalLayout.TryGet(ulong, out UbcSlotType, out int)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Hook(UbcHookAnswer, VmSourcePosition)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.HookMeter` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.HookMeter.TryCharge(VmBudgetDimension, ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Work(ulong, VmBudgetDimension)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Ubc.UbcWalk.Reserve(ulong)` in `src/Broiler.VM.Ubc/UbcVerifier.cs` - Security=High, human line PENDING
 
 ## Falsification criteria
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1714 |
-| Units required to carry one | 1630 |
+| Units carrying a criterion | 1863 |
+| Units required to carry one | 1751 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1729,14 +1850,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1064 |
-| ParameterAssigningConstructor | 114 |
-| TrivialExpressionBodiedMember | 53 |
+| TrivialPropertyOrAccessor | 1327 |
+| ParameterAssigningConstructor | 153 |
+| TrivialExpressionBodiedMember | 56 |
 | CompilerSuppliedRecordOrEnumMember | 15 |
-| DelegatingOverrideOrOperator | 106 |
+| DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 687 |
-| EnumMemberOfADeclaredVocabulary | 1554 |
+| FieldDeclaringStorage | 754 |
+| EnumMemberOfADeclaredVocabulary | 1861 |
 | DeclaredInSource | 31 |
 
 ## Per-unit exemptions
@@ -1786,7 +1907,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-8814 of them, exempt and relevant alike - with the fingerprint of its declaration.
+9896 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -1794,7 +1915,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 211 of them - with a
+Beside the units it lists **every covered file** - 230 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

@@ -1767,3 +1767,54 @@ reader deciding whether to give them the edge should read it as restoring what
 they had, not as granting something new.**
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-09-25 - the universal bytecode, UBC-1
+
+**What changes.** `Broiler.VM.Ubc` is added under `src/`: the universal bytecode's
+container, its common family, the schema of a family's instruction table, the
+contracts a family implements, the descriptor factory and the one verifier.
+[ADR 0013](0013-the-universal-bytecode-extraction-record.md) accepted it as
+candidate A and printed its two edges before it existed; this revision is the
+milestone that declares them. It references `Broiler.VM.Abstractions` and
+`Broiler.VM.Binary` and nothing else, which rule U1 holds it to.
+`Broiler.VM.Contract.Tests` gains an edge to it, because the universal bytecode's
+malformed corpus is replayed in the behavioural contract suite.
+
+**What is now true.** The graph goes from 27 projects and 90 edges to 28 and 93.
+The packable set is unchanged and still holds exactly three: the new assembly
+declares `IsPackable false` and carries no package identity, and whether it
+becomes a package is the programme's UBC-9 question. No edge runs from the core's
+three assemblies to it, so rules B1 and B2 stand and the core's public API
+baseline does not move; no edge runs from it to any profile.
+
+**What is not edited.** Every revision above stands as written.
+
+### 2026-09-25 - the bytecode emitter and the fixture family, UBC-2
+
+**What changes.** Three projects are added. `Broiler.VM.Emitter.Bytecode` under
+`src/`: the bytecode emitter, whose emitting half emits nothing and whose
+executing half is one dispatch loop generic over the family. It references
+`Broiler.VM.Abstractions`, `Broiler.VM.Binary` and `Broiler.VM.Ubc`, and no
+profile. `Com.Example.Tally` under `src/tests/`: the universal bytecode's fixture
+family, an application-local consumer family in the position the two consumer
+profiles occupy, referencing the same three assemblies and nothing else - rule
+A13 is revised to admit `Broiler.VM.Ubc` for a consumer family. And
+`Broiler.VM.Composition.Ubc.Fixture` under `src/compositions/`: the demonstration
+root that composes the fixture family over the bytecode emitter beside
+`Com.Example.Ledger`, and is published and run under the three publish modes.
+Rules A11 and A12 gain the `Broiler.VM.Emitter.<Architecture>` family pattern.
+
+*(Added later on 2026-09-25, when a review found a test project could carry an
+emitter's name.)* Rule A12 admits `Broiler.VM.Ubc` or an emitter in a root only
+at its product path, `src/<Name>/<Name>.csproj`, so a test project named like
+one is refused by where it lives. Section 4's sentence that every test project
+is forbidden "by name" stands as written: it was true of the names A12 admitted
+when it was written, and for the universal bytecode's siblings the path now
+decides.
+
+**What is now true.** The graph goes from 28 projects and 93 edges to 31 and 106.
+The packable set is unchanged and still holds exactly three: none of the three
+projects is packable or carries a package identity, and section 1 of the
+composition register still advertises nothing.
+
+**What is not edited.** Every revision above stands as written.

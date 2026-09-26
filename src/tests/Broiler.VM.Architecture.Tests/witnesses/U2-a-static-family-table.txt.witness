@@ -1,0 +1,16 @@
+# Witness: a universal bytecode surface that ships a family's table.
+#
+# Four member lines in the describer's own format, as rule U9's baseline writes them. The first two
+# are family rows the assembly would be exporting: a static property of type UbcInstructionTable, and
+# a static field holding an ImmutableArray of UbcInstructionRow - the table a fixture family would
+# need, parked in the shared assembly where every composition would carry it and no family would own
+# it. Rule U2 must report both.
+#
+# The last two are NOT family rows, and rule U2 must stay silent on them: an instance property of the
+# table's type, which is how the walk hands a family's hook the table that family registered, and a
+# static method taking rows, which is the schema's constructor and not data.
+#
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonFamilies.Fixture : static Broiler.VM.Ubc.UbcInstructionTable { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonFamilies.FixtureRows : static readonly System.Collections.Immutable.ImmutableArray<Broiler.VM.Ubc.UbcInstructionRow>
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcHookArtifact.Table : Broiler.VM.Ubc.UbcInstructionTable { get; }
+  Broiler.VM.Ubc Broiler.VM.Ubc.UbcCommonFamilies.Validate(System.Collections.Generic.IEnumerable<Broiler.VM.Ubc.UbcInstructionRow> rows) : static System.Boolean

@@ -1,0 +1,14 @@
+<!-- Violates N4: a JavaScript-family project whose only IsPackable false sits inside
+     ProjectExtensions. MSBuild does not evaluate what ProjectExtensions holds, so the vendored
+     packaging props' default of true stands and the project packs, while a reader that counts
+     every element of that name, the property group around it included, finds a definition. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <PropertyGroup>
+      <IsPackable>false</IsPackable>
+    </PropertyGroup>
+  </ProjectExtensions>
+</Project>

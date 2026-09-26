@@ -1,0 +1,1808 @@
+Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Run:
+  00000001400C6720: push        rbp
+  00000001400C6721: push        r15
+  00000001400C6723: push        r14
+  00000001400C6725: push        r13
+  00000001400C6727: push        r12
+  00000001400C6729: push        rdi
+  00000001400C672A: push        rsi
+  00000001400C672B: push        rbx
+  00000001400C672C: sub         rsp,2B8h
+  00000001400C6733: lea         rbp,[rsp+2F0h]
+  00000001400C673B: xorps       xmm4,xmm4
+  00000001400C673E: mov         rax,0FFFFFFFFFFFFFDF0h
+  00000001400C6748: movaps      xmmword ptr [rbp+rax-40h],xmm4
+  00000001400C674D: movaps      xmmword ptr [rbp+rax-30h],xmm4
+  00000001400C6752: movaps      xmmword ptr [rbp+rax-20h],xmm4
+  00000001400C6757: add         rax,30h
+  00000001400C675B: jne         00000001400C6748
+  00000001400C675D: mov         qword ptr [rbp-40h],rax
+  00000001400C6761: mov         qword ptr [rbp+18h],rdx
+  00000001400C6765: mov         rbx,rcx
+  00000001400C6768: lea         rdx,[rbp-98h]
+  00000001400C676F: mov         rcx,rbx
+  00000001400C6772: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Activation
+  00000001400C6777: jmp         00000001400C777A
+  00000001400C677C: mov         r8d,1
+  00000001400C6782: mov         edx,r8d
+  00000001400C6785: mov         rcx,rax
+  00000001400C6788: cmp         dword ptr [rcx],ecx
+  00000001400C678A: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcLoopMeter__Spend
+  00000001400C678F: test        eax,eax
+  00000001400C6791: je          00000001400C6BAF
+  00000001400C6797: mov         eax,dword ptr [rbp-9Ch]
+  00000001400C679D: mov         r8,qword ptr [rbp-280h]
+  00000001400C67A4: mov         r10d,eax
+  00000001400C67A7: add         r10d,dword ptr [r8+20h]
+  00000001400C67AB: mov         dword ptr [rbp-0A4h],r10d
+  00000001400C67B2: mov         r9d,dword ptr [rbp-0A0h]
+  00000001400C67B9: mov         r11d,r9d
+  00000001400C67BC: add         r11d,dword ptr [r8+24h]
+  00000001400C67C0: mov         edx,r11d
+  00000001400C67C3: mov         dword ptr [rbp-0A8h],edx
+  00000001400C67C9: test        rsi,rsi
+  00000001400C67CC: jne         00000001400C6D3C
+  00000001400C67D2: movzx       ecx,byte ptr [r8+40h]
+  00000001400C67D7: cmp         ecx,23h
+  00000001400C67DA: ja          00000001400C6961
+  00000001400C67E0: mov         ecx,ecx
+  00000001400C67E2: lea         r11,[__readonlydata_Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Run]
+  00000001400C67E9: mov         r11d,dword ptr [r11+rcx*4]
+  00000001400C67ED: lea         rsi,[1400C6768h]
+  00000001400C67F4: add         r11,rsi
+  00000001400C67F7: jmp         r11
+  00000001400C67FA: mov         rsi,qword ptr [rbp+18h]
+  00000001400C67FE: mov         dword ptr [rbp-238h],4
+  00000001400C6808: xor         r8d,r8d
+  00000001400C680B: mov         qword ptr [rbp-250h],r8
+  00000001400C6812: mov         qword ptr [rbp-248h],r8
+  00000001400C6819: mov         qword ptr [rbp-240h],r8
+  00000001400C6820: mov         dword ptr [rbp-234h],1F5h
+  00000001400C682A: lea         r8,[rbp-250h]
+  00000001400C6831: mov         rcx,rbx
+  00000001400C6834: mov         rdx,rsi
+  00000001400C6837: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C683C: mov         qword ptr [rbp+18h],rsi
+  00000001400C6840: jmp         00000001400C6BD1
+  00000001400C6845: mov         qword ptr [rbp-70h],rdi
+  00000001400C6849: mov         r14d,dword ptr [rbp-25Ch]
+  00000001400C6850: mov         dword ptr [rbp-60h],r14d
+  00000001400C6854: mov         r15,qword ptr [rbp-280h]
+  00000001400C685B: mov         ecx,dword ptr [r15+10h]
+  00000001400C685F: mov         dword ptr [rbp-5Ch],ecx
+  00000001400C6862: mov         dword ptr [rbp-50h],esi
+  00000001400C6865: mov         dword ptr [rbp-4Ch],r13d
+  00000001400C6869: mov         rcx,qword ptr [rbx+20h]
+  00000001400C686D: mov         qword ptr [rbp-80h],rcx
+  00000001400C6871: mov         rcx,qword ptr [rbx+28h]
+  00000001400C6875: mov         qword ptr [rbp-78h],rcx
+  00000001400C6879: lea         rcx,[rbp-98h]
+  00000001400C6880: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__Completion
+  00000001400C6885: xor         ecx,ecx
+  00000001400C6887: mov         rsi,qword ptr [rbp+18h]
+  00000001400C688B: mov         qword ptr [rsi],rcx
+  00000001400C688E: mov         qword ptr [rsi+8],rcx
+  00000001400C6892: lea         rcx,[rsi+10h]
+  00000001400C6896: mov         rdx,rax
+  00000001400C6899: call        RhpCheckedAssignRef
+  00000001400C689E: xor         ecx,ecx
+  00000001400C68A0: mov         qword ptr [rsi+18h],rcx
+  00000001400C68A4: mov         qword ptr [rbp+18h],rsi
+  00000001400C68A8: jmp         00000001400C6BD1
+  00000001400C68AD: mov         rsi,qword ptr [rbp+18h]
+  00000001400C68B1: mov         ecx,1
+  00000001400C68B6: call        Broiler_VM_Ubc_Broiler_VM_Ubc_UbcOpcodes__Row
+  00000001400C68BB: movzx       r15d,byte ptr [rax+11h]
+  00000001400C68C0: mov         qword ptr [rbp-70h],rdi
+  00000001400C68C4: mov         r14d,dword ptr [rbp-25Ch]
+  00000001400C68CB: mov         dword ptr [rbp-60h],r14d
+  00000001400C68CF: mov         r14,qword ptr [rbp-280h]
+  00000001400C68D6: mov         edx,dword ptr [r14+10h]
+  00000001400C68DA: mov         dword ptr [rbp-5Ch],edx
+  00000001400C68DD: mov         edi,dword ptr [rbp-0A4h]
+  00000001400C68E3: mov         dword ptr [rbp-50h],edi
+  00000001400C68E6: mov         edi,dword ptr [rbp-0A8h]
+  00000001400C68EC: mov         dword ptr [rbp-4Ch],edi
+  00000001400C68EF: mov         rdx,qword ptr [r14+8]
+  00000001400C68F3: mov         ecx,r15d
+  00000001400C68F6: call        Broiler_VM_Ubc_Broiler_VM_Ubc_UbcOperandShapes__First
+  00000001400C68FB: movzx       edi,al
+  00000001400C68FF: mov         rdx,qword ptr [r14+8]
+  00000001400C6903: mov         ecx,r15d
+  00000001400C6906: call        Broiler_VM_Ubc_Broiler_VM_Ubc_UbcOperandShapes__Second
+  00000001400C690B: movzx       r8d,ax
+  00000001400C690F: mov         edx,edi
+  00000001400C6911: lea         rcx,[rbp-98h]
+  00000001400C6918: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__Fault
+  00000001400C691D: mov         dword ptr [rbp-218h],3
+  00000001400C6927: xor         r8d,r8d
+  00000001400C692A: mov         qword ptr [rbp-230h],r8
+  00000001400C6931: mov         qword ptr [rbp-228h],r8
+  00000001400C6938: mov         qword ptr [rbp-220h],rax
+  00000001400C693F: mov         dword ptr [rbp-214h],r8d
+  00000001400C6946: lea         r8,[rbp-230h]
+  00000001400C694D: mov         rcx,rbx
+  00000001400C6950: mov         rdx,rsi
+  00000001400C6953: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C6958: mov         qword ptr [rbp+18h],rsi
+  00000001400C695C: jmp         00000001400C6BD1
+  00000001400C6961: mov         rsi,qword ptr [rbp+18h]
+  00000001400C6965: jmp         00000001400C67FE
+  00000001400C696A: mov         rsi,qword ptr [rbp+18h]
+  00000001400C696E: mov         rcx,qword ptr [rdi+10h]
+  00000001400C6972: movzx       edx,word ptr [rbp-0AEh]
+  00000001400C6979: cmp         dword ptr [rcx],ecx
+  00000001400C697B: call        Broiler_VM_Ubc_Broiler_VM_Ubc_UbcInstructionTable__DefinesTrap
+  00000001400C6980: test        eax,eax
+  00000001400C6982: jne         00000001400C69CC
+  00000001400C6984: mov         qword ptr [rbp+18h],rsi
+  00000001400C6988: mov         dword ptr [rbp-1F8h],4
+  00000001400C6992: xor         r8d,r8d
+  00000001400C6995: mov         qword ptr [rbp-210h],r8
+  00000001400C699C: mov         qword ptr [rbp-208h],r8
+  00000001400C69A3: mov         qword ptr [rbp-200h],r8
+  00000001400C69AA: mov         dword ptr [rbp-1F4h],1F5h
+  00000001400C69B4: lea         r8,[rbp-210h]
+  00000001400C69BB: mov         rcx,rbx
+  00000001400C69BE: mov         rdx,qword ptr [rbp+18h]
+  00000001400C69C2: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C69C7: jmp         00000001400C6BD1
+  00000001400C69CC: movzx       edx,byte ptr [rdi+20h]
+  00000001400C69D0: movzx       r8d,word ptr [rbp-0AEh]
+  00000001400C69D8: lea         rcx,[rbp-98h]
+  00000001400C69DF: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__Fault
+  00000001400C69E4: mov         dword ptr [rbp-1D8h],3
+  00000001400C69EE: xor         r8d,r8d
+  00000001400C69F1: mov         qword ptr [rbp-1F0h],r8
+  00000001400C69F8: mov         qword ptr [rbp-1E8h],r8
+  00000001400C69FF: mov         qword ptr [rbp-1E0h],rax
+  00000001400C6A06: mov         dword ptr [rbp-1D4h],r8d
+  00000001400C6A0D: lea         r8,[rbp-1F0h]
+  00000001400C6A14: mov         rcx,rbx
+  00000001400C6A17: mov         rdx,rsi
+  00000001400C6A1A: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C6A1F: mov         qword ptr [rbp+18h],rsi
+  00000001400C6A23: jmp         00000001400C6BD1
+  00000001400C6A28: mov         rsi,qword ptr [rbp+18h]
+  00000001400C6A2C: lea         rcx,[rbp-98h]
+  00000001400C6A33: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__Uncaught
+  00000001400C6A38: mov         dword ptr [rbp-1B8h],3
+  00000001400C6A42: xor         r8d,r8d
+  00000001400C6A45: mov         qword ptr [rbp-1D0h],r8
+  00000001400C6A4C: mov         qword ptr [rbp-1C8h],r8
+  00000001400C6A53: mov         qword ptr [rbp-1C0h],rax
+  00000001400C6A5A: mov         dword ptr [rbp-1B4h],r8d
+  00000001400C6A61: lea         r8,[rbp-1D0h]
+  00000001400C6A68: mov         rcx,rbx
+  00000001400C6A6B: mov         rdx,rsi
+  00000001400C6A6E: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C6A73: mov         qword ptr [rbp+18h],rsi
+  00000001400C6A77: jmp         00000001400C6BD1
+  00000001400C6A7C: cmp         byte ptr [rsi+26h],4
+  00000001400C6A80: jne         00000001400C6988
+  00000001400C6A86: cmp         byte ptr [rsi+27h],0
+  00000001400C6A8A: jne         00000001400C6988
+  00000001400C6A90: mov         r9,qword ptr [rbx+30h]
+  00000001400C6A94: mov         r8d,dword ptr [rbx+38h]
+  00000001400C6A98: dec         r8d
+  00000001400C6A9B: cmp         r8d,dword ptr [r9+8]
+  00000001400C6A9F: jae         00000001400C7991
+  00000001400C6AA5: shl         r8,5
+  00000001400C6AA9: mov         dword ptr [r9+r8+1Ch],r15d
+  00000001400C6AAE: mov         r14,qword ptr [rbp-280h]
+  00000001400C6AB5: mov         r9d,dword ptr [r14+14h]
+  00000001400C6AB9: lea         r8,[rbp-98h]
+  00000001400C6AC0: mov         rcx,rbx
+  00000001400C6AC3: mov         rdx,qword ptr [rbp+18h]
+  00000001400C6AC7: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Suspend
+  00000001400C6ACC: jmp         00000001400C6BD1
+  00000001400C6AD1: lea         rdx,[rbp-130h]
+  00000001400C6AD8: mov         rcx,rbx
+  00000001400C6ADB: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Broiler_VM_Composition_Ubc_Fixture_Broiler_VM_Contract_Tests_UbcCorpusHandlers>__Stop
+  00000001400C6AE0: lea         r8,[rbp-130h]
+  00000001400C6AE7: mov         rcx,rbx
+  00000001400C6AEA: mov         rdx,qword ptr [rbp+18h]
+  00000001400C6AEE: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C6AF3: jmp         00000001400C6BD1
+  00000001400C6AF8: mov         dword ptr [rbp-198h],4
+  00000001400C6B02: xor         r8d,r8d
+  00000001400C6B05: mov         qword ptr [rbp-1B0h],r8
+  00000001400C6B0C: mov         qword ptr [rbp-1A8h],r8
+  00000001400C6B13: mov         qword ptr [rbp-1A0h],r8
+  00000001400C6B1A: mov         dword ptr [rbp-194h],1F5h
+  00000001400C6B24: lea         r8,[rbp-1B0h]
+  00000001400C6B2B: mov         rcx,rbx
+  00000001400C6B2E: mov         rdx,qword ptr [rbp+18h]
+  00000001400C6B32: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C6B37: jmp         00000001400C6BD1
+  00000001400C6B3C: mov         dword ptr [rbp-178h],4
+  00000001400C6B46: xor         r8d,r8d
+  00000001400C6B49: mov         qword ptr [rbp-190h],r8
+  00000001400C6B50: mov         qword ptr [rbp-188h],r8
+  00000001400C6B57: mov         qword ptr [rbp-180h],r8
+  00000001400C6B5E: mov         dword ptr [rbp-174h],1F5h
+  00000001400C6B68: lea         r8,[rbp-190h]
+  00000001400C6B6F: mov         rcx,rbx
+  00000001400C6B72: mov         rdx,qword ptr [rbp+18h]
+  00000001400C6B76: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C6B7B: jmp         00000001400C6BD1
+  00000001400C6B7D: mov         dword ptr [rsp+20h],eax
+  00000001400C6B81: lea         rcx,[rbp-150h]
+  00000001400C6B88: lea         rdx,[rbp-98h]
+  00000001400C6B8F: mov         r8,rdi
+  00000001400C6B92: mov         r9,rsi
+  00000001400C6B95: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Trapped
+  00000001400C6B9A: lea         r8,[rbp-150h]
+  00000001400C6BA1: mov         rcx,rbx
+  00000001400C6BA4: mov         rdx,qword ptr [rbp+18h]
+  00000001400C6BA8: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C6BAD: jmp         00000001400C6BD1
+  00000001400C6BAF: lea         rdx,[rbp-170h]
+  00000001400C6BB6: mov         rcx,rbx
+  00000001400C6BB9: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Broiler_VM_Composition_Ubc_Fixture_Broiler_VM_Contract_Tests_UbcCorpusHandlers>__Stop
+  00000001400C6BBE: lea         r8,[rbp-170h]
+  00000001400C6BC5: mov         rcx,rbx
+  00000001400C6BC8: mov         rdx,qword ptr [rbp+18h]
+  00000001400C6BCC: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C6BD1: mov         rsi,qword ptr [rbp+18h]
+  00000001400C6BD5: mov         rax,rsi
+  00000001400C6BD8: add         rsp,2B8h
+  00000001400C6BDF: pop         rbx
+  00000001400C6BE0: pop         rsi
+  00000001400C6BE1: pop         rdi
+  00000001400C6BE2: pop         r12
+  00000001400C6BE4: pop         r13
+  00000001400C6BE6: pop         r14
+  00000001400C6BE8: pop         r15
+  00000001400C6BEA: pop         rbp
+  00000001400C6BEB: ret
+  00000001400C6BEC: mov         esi,dword ptr [r8+2Ch]
+  00000001400C6BF0: sub         edx,esi
+  00000001400C6BF2: test        esi,esi
+  00000001400C6BF4: jg          00000001400C6C02
+  00000001400C6BF6: mov         r15,qword ptr [rbp-280h]
+  00000001400C6BFD: jmp         00000001400C758A
+  00000001400C6C02: mov         rcx,qword ptr [rbx+28h]
+  00000001400C6C06: mov         r15,qword ptr [rcx+8]
+  00000001400C6C0A: mov         rcx,r15
+  00000001400C6C0D: mov         r8d,esi
+  00000001400C6C10: call        S_P_CoreLib_System_Array__Clear_0
+  00000001400C6C15: mov         r15,qword ptr [rbp-280h]
+  00000001400C6C1C: jmp         00000001400C758A
+  00000001400C6C21: mov         rdx,qword ptr [rdi+38h]
+  00000001400C6C25: mov         r8d,dword ptr [r8+1Ch]
+  00000001400C6C29: cmp         r8d,dword ptr [rdx+8]
+  00000001400C6C2D: jae         00000001400C7991
+  00000001400C6C33: mov         rdx,qword ptr [rdx+r8*8+10h]
+  00000001400C6C38: mov         qword ptr [rbp-0C8h],rdx
+  00000001400C6C3F: mov         r11,qword ptr [rbx+20h]
+  00000001400C6C43: lea         esi,[r10-1]
+  00000001400C6C47: mov         r10d,dword ptr [r11+8]
+  00000001400C6C4B: cmp         esi,r10d
+  00000001400C6C4E: jae         00000001400C7991
+  00000001400C6C54: mov         r10d,esi
+  00000001400C6C57: mov         edx,dword ptr [r11+r10*8+10h]
+  00000001400C6C5C: mov         r8,qword ptr [rbp-0C8h]
+  00000001400C6C63: cmp         dword ptr [r8+8],edx
+  00000001400C6C67: jbe         00000001400C6CBE
+  00000001400C6C69: mov         r8,qword ptr [rbp-0C8h]
+  00000001400C6C70: cmp         edx,dword ptr [r8+8]
+  00000001400C6C74: jae         00000001400C7991
+  00000001400C6C7A: mov         edx,edx
+  00000001400C6C7C: mov         r15d,dword ptr [r8+rdx*4+10h]
+  00000001400C6C81: mov         r9,qword ptr [rbp-298h]
+  00000001400C6C88: cmp         r15d,dword ptr [r9+8]
+  00000001400C6C8C: jae         00000001400C7991
+  00000001400C6C92: mov         edx,r15d
+  00000001400C6C95: lea         rdx,[rdx+rdx*8]
+  00000001400C6C99: lea         rdx,[r9+rdx*8+10h]
+  00000001400C6C9E: mov         qword ptr [rbp-280h],rdx
+  00000001400C6CA5: mov         rsi,qword ptr [rdx]
+  00000001400C6CA8: mov         rax,qword ptr [rbx+10h]
+  00000001400C6CAC: test        rsi,rsi
+  00000001400C6CAF: je          00000001400C677C
+  00000001400C6CB5: mov         r8d,dword ptr [rsi+20h]
+  00000001400C6CB9: jmp         00000001400C6782
+  00000001400C6CBE: mov         rdx,qword ptr [rbp-0C8h]
+  00000001400C6CC5: mov         edx,dword ptr [rdx+8]
+  00000001400C6CC8: dec         edx
+  00000001400C6CCA: jmp         00000001400C6C69
+  00000001400C6CCC: mov         r11,qword ptr [rbx+20h]
+  00000001400C6CD0: lea         esi,[r10-1]
+  00000001400C6CD4: mov         r10d,dword ptr [r11+8]
+  00000001400C6CD8: cmp         esi,r10d
+  00000001400C6CDB: jae         00000001400C7991
+  00000001400C6CE1: mov         r10d,esi
+  00000001400C6CE4: cmp         dword ptr [r11+r10*8+10h],0
+  00000001400C6CEA: je          00000001400C6CF2
+  00000001400C6CEC: mov         r15d,dword ptr [r8+18h]
+  00000001400C6CF0: jmp         00000001400C6CF6
+  00000001400C6CF2: mov         r15d,dword ptr [r8+14h]
+  00000001400C6CF6: mov         r9,qword ptr [rbp-298h]
+  00000001400C6CFD: jmp         00000001400C6C88
+  00000001400C6CFF: mov         r11,qword ptr [rbx+20h]
+  00000001400C6D03: lea         esi,[r10-1]
+  00000001400C6D07: mov         r10d,dword ptr [r11+8]
+  00000001400C6D0B: cmp         esi,r10d
+  00000001400C6D0E: jae         00000001400C7991
+  00000001400C6D14: mov         edx,esi
+  00000001400C6D16: cmp         dword ptr [r11+rdx*8+10h],0
+  00000001400C6D1C: jne         00000001400C6D24
+  00000001400C6D1E: mov         r15d,dword ptr [r8+18h]
+  00000001400C6D22: jmp         00000001400C6D28
+  00000001400C6D24: mov         r15d,dword ptr [r8+14h]
+  00000001400C6D28: mov         r9,qword ptr [rbp-298h]
+  00000001400C6D2F: jmp         00000001400C6C88
+  00000001400C6D34: mov         r15,r8
+  00000001400C6D37: jmp         00000001400C758A
+  00000001400C6D3C: mov         qword ptr [rbp-70h],rdi
+  00000001400C6D40: mov         r14d,dword ptr [rbp-25Ch]
+  00000001400C6D47: mov         dword ptr [rbp-60h],r14d
+  00000001400C6D4B: mov         ecx,dword ptr [r8+10h]
+  00000001400C6D4F: mov         dword ptr [rbp-5Ch],ecx
+  00000001400C6D52: mov         dword ptr [rbp-58h],r13d
+  00000001400C6D56: mov         dword ptr [rbp-54h],r12d
+  00000001400C6D5A: mov         ecx,dword ptr [r8+28h]
+  00000001400C6D5E: mov         r11d,r10d
+  00000001400C6D61: sub         r11d,ecx
+  00000001400C6D64: mov         dword ptr [rbp-50h],r11d
+  00000001400C6D68: mov         r11d,dword ptr [r8+2Ch]
+  00000001400C6D6C: mov         eax,edx
+  00000001400C6D6E: sub         eax,r11d
+  00000001400C6D71: mov         dword ptr [rbp-4Ch],eax
+  00000001400C6D74: mov         r11,qword ptr [rbx+20h]
+  00000001400C6D78: mov         qword ptr [rbp-80h],r11
+  00000001400C6D7C: mov         rax,qword ptr [rbx+28h]
+  00000001400C6D80: mov         qword ptr [rbp-78h],rax
+  00000001400C6D84: cmp         byte ptr [rsi+26h],1
+  00000001400C6D88: jne         00000001400C6DC5
+  00000001400C6D8A: movzx       eax,byte ptr [rsi+2Ah]
+  00000001400C6D8E: mov         byte ptr [rbp-254h],al
+  00000001400C6D94: movzx       eax,word ptr [rsi+2Ch]
+  00000001400C6D98: mov         word ptr [rbp-258h],ax
+  00000001400C6D9F: movzx       eax,byte ptr [rbp-254h]
+  00000001400C6DA6: test        eax,eax
+  00000001400C6DA8: je          00000001400C6DC5
+  00000001400C6DAA: movzx       eax,word ptr [rbp-258h]
+  00000001400C6DB1: cmp         eax,7Ch
+  00000001400C6DB4: jl          00000001400C6EC5
+  00000001400C6DBA: cmp         eax,93h
+  00000001400C6DBF: jg          00000001400C6EC5
+  00000001400C6DC5: xor         ecx,ecx
+  00000001400C6DC7: mov         qword ptr [rbp-48h],rcx
+  00000001400C6DCB: mov         dword ptr [rbp-40h],0FFFFFFFFh
+  00000001400C6DD2: mov         qword ptr [rbp-68h],rcx
+  00000001400C6DD6: movzx       edx,byte ptr [r8+40h]
+  00000001400C6DDB: mov         r8,qword ptr [r8+8]
+  00000001400C6DDF: lea         rcx,[rbp-98h]
+  00000001400C6DE6: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__Handle
+  00000001400C6DEB: mov         dword ptr [rbp-0B0h],eax
+  00000001400C6DF1: mov         rcx,qword ptr [rbp-80h]
+  00000001400C6DF5: cmp         rcx,qword ptr [rbx+20h]
+  00000001400C6DF9: jne         00000001400C6B3C
+  00000001400C6DFF: mov         rax,qword ptr [rbx+28h]
+  00000001400C6E03: cmp         qword ptr [rbp-78h],rax
+  00000001400C6E07: jne         00000001400C6B3C
+  00000001400C6E0D: movzx       ecx,byte ptr [rbp-0B0h]
+  00000001400C6E14: cmp         ecx,5
+  00000001400C6E17: ja          00000001400C6988
+  00000001400C6E1D: mov         ecx,ecx
+  00000001400C6E1F: lea         rdx,[1401DB0F0h]
+  00000001400C6E26: mov         edx,dword ptr [rdx+rcx*4]
+  00000001400C6E29: lea         r8,[1400C6768h]
+  00000001400C6E30: add         rdx,r8
+  00000001400C6E33: jmp         rdx
+  00000001400C6E35: cmp         byte ptr [rsi+26h],2
+  00000001400C6E39: jne         00000001400C6988
+  00000001400C6E3F: mov         rsi,qword ptr [rbp-280h]
+  00000001400C6E46: mov         ecx,dword ptr [rsi+3Ch]
+  00000001400C6E49: mov         edx,ecx
+  00000001400C6E4B: add         edx,dword ptr [rbp-4Ch]
+  00000001400C6E4E: mov         r8d,dword ptr [rsi+2Ch]
+  00000001400C6E52: sub         r8d,ecx
+  00000001400C6E55: test        r8d,r8d
+  00000001400C6E58: jg          00000001400C6E5F
+  00000001400C6E5A: mov         r8,rsi
+  00000001400C6E5D: jmp         00000001400C6E6B
+  00000001400C6E5F: mov         rcx,qword ptr [rax+8]
+  00000001400C6E63: call        S_P_CoreLib_System_Array__Clear_0
+  00000001400C6E68: mov         r8,rsi
+  00000001400C6E6B: mov         r15d,dword ptr [r8+18h]
+  00000001400C6E6F: mov         r9,qword ptr [rbp-298h]
+  00000001400C6E76: jmp         00000001400C6C88
+  00000001400C6E7B: cmp         byte ptr [rsi+27h],0
+  00000001400C6E7F: jne         00000001400C6988
+  00000001400C6E85: mov         r8,qword ptr [rbp-280h]
+  00000001400C6E8C: mov         ecx,dword ptr [r8+34h]
+  00000001400C6E90: mov         edx,ecx
+  00000001400C6E92: add         edx,dword ptr [rbp-4Ch]
+  00000001400C6E95: mov         r10d,dword ptr [r8+2Ch]
+  00000001400C6E99: sub         r10d,ecx
+  00000001400C6E9C: test        r10d,r10d
+  00000001400C6E9F: jg          00000001400C6EAD
+  00000001400C6EA1: mov         r15,qword ptr [rbp-280h]
+  00000001400C6EA8: jmp         00000001400C758A
+  00000001400C6EAD: mov         rcx,qword ptr [rax+8]
+  00000001400C6EB1: mov         r8d,r10d
+  00000001400C6EB4: call        S_P_CoreLib_System_Array__Clear_0
+  00000001400C6EB9: mov         r15,qword ptr [rbp-280h]
+  00000001400C6EC0: jmp         00000001400C758A
+  00000001400C6EC5: mov         r15d,dword ptr [rbp-50h]
+  00000001400C6EC9: mov         rdx,r11
+  00000001400C6ECC: mov         r10d,dword ptr [rdx+8]
+  00000001400C6ED0: cmp         r15d,r10d
+  00000001400C6ED3: jae         00000001400C7991
+  00000001400C6ED9: mov         r9d,r15d
+  00000001400C6EDC: mov         r9,qword ptr [rdx+r9*8+10h]
+  00000001400C6EE1: cmp         ecx,1
+  00000001400C6EE4: jle         00000001400C6F01
+  00000001400C6EE6: mov         rdx,r11
+  00000001400C6EE9: lea         ecx,[r15+1]
+  00000001400C6EED: cmp         ecx,r10d
+  00000001400C6EF0: jae         00000001400C7991
+  00000001400C6EF6: lea         ecx,[r15+1]
+  00000001400C6EFA: mov         r10,qword ptr [rdx+rcx*8+10h]
+  00000001400C6EFF: jmp         00000001400C6F04
+  00000001400C6F01: xor         r10d,r10d
+  00000001400C6F04: mov         rdx,qword ptr [rdi+10h]
+  00000001400C6F08: movzx       edx,byte ptr [rdx+1Ch]
+  00000001400C6F0C: mov         dword ptr [rsp+20h],edx
+  00000001400C6F10: movzx       edx,ax
+  00000001400C6F13: lea         rcx,[rbp-0C0h]
+  00000001400C6F1A: mov         r8,r9
+  00000001400C6F1D: mov         r9,r10
+  00000001400C6F20: call        Broiler_VM_Ubc_Broiler_VM_Ubc_UbcPrimitives__Evaluate
+  00000001400C6F25: movzx       eax,byte ptr [rbp-0B8h]
+  00000001400C6F2C: test        eax,eax
+  00000001400C6F2E: jne         00000001400C6B7D
+  00000001400C6F34: mov         r8,qword ptr [rbx+20h]
+  00000001400C6F38: cmp         r15d,dword ptr [r8+8]
+  00000001400C6F3C: jae         00000001400C7991
+  00000001400C6F42: mov         ecx,r15d
+  00000001400C6F45: mov         rdx,qword ptr [rbp-0C0h]
+  00000001400C6F4C: mov         qword ptr [r8+rcx*8+10h],rdx
+  00000001400C6F51: mov         r15,qword ptr [rbp-280h]
+  00000001400C6F58: jmp         00000001400C758A
+  00000001400C6F5D: mov         rcx,qword ptr [rbx+20h]
+  00000001400C6F61: mov         rdx,qword ptr [r8+8]
+  00000001400C6F65: mov         esi,dword ptr [rcx+8]
+  00000001400C6F68: cmp         r10d,esi
+  00000001400C6F6B: jae         00000001400C7991
+  00000001400C6F71: mov         r10d,r10d
+  00000001400C6F74: mov         qword ptr [rcx+r10*8+10h],rdx
+  00000001400C6F79: mov         r15,r8
+  00000001400C6F7C: jmp         00000001400C758A
+  00000001400C6F81: cmp         byte ptr [r8+41h],0
+  00000001400C6F86: je          00000001400C6FE5
+  00000001400C6F88: mov         rcx,qword ptr [rbx+28h]
+  00000001400C6F8C: mov         r10d,r12d
+  00000001400C6F8F: add         r10d,dword ptr [r8+1Ch]
+  00000001400C6F93: mov         r15,qword ptr [rcx+8]
+  00000001400C6F97: mov         rcx,r15
+  00000001400C6F9A: lea         esi,[rdx-1]
+  00000001400C6F9D: mov         r11d,dword ptr [r15+8]
+  00000001400C6FA1: cmp         esi,r11d
+  00000001400C6FA4: jae         00000001400C7991
+  00000001400C6FAA: mov         rsi,qword ptr [r15+rsi*8+10h]
+  00000001400C6FAF: cmp         r10d,r11d
+  00000001400C6FB2: jae         00000001400C7991
+  00000001400C6FB8: lea         rcx,[rcx+r10*8+10h]
+  00000001400C6FBD: mov         rdx,rsi
+  00000001400C6FC0: call        RhpAssignRef
+  00000001400C6FC5: mov         rsi,qword ptr [rbp-280h]
+  00000001400C6FCC: cmp         byte ptr [rsi+40h],11h
+  00000001400C6FD0: mov         edx,dword ptr [rbp-0A8h]
+  00000001400C6FD6: je          00000001400C6FE0
+  00000001400C6FD8: mov         r15,rsi
+  00000001400C6FDB: jmp         00000001400C758A
+  00000001400C6FE0: jmp         00000001400C72B8
+  00000001400C6FE5: mov         rcx,qword ptr [rbx+20h]
+  00000001400C6FE9: mov         rdx,rcx
+  00000001400C6FEC: mov         r11d,r13d
+  00000001400C6FEF: add         r11d,dword ptr [r8+1Ch]
+  00000001400C6FF3: dec         r10d
+  00000001400C6FF6: mov         esi,dword ptr [rcx+8]
+  00000001400C6FF9: cmp         r10d,esi
+  00000001400C6FFC: jae         00000001400C7991
+  00000001400C7002: mov         rcx,qword ptr [rcx+r10*8+10h]
+  00000001400C7007: cmp         r11d,esi
+  00000001400C700A: jae         00000001400C7991
+  00000001400C7010: mov         r10d,r11d
+  00000001400C7013: mov         qword ptr [rdx+r10*8+10h],rcx
+  00000001400C7018: mov         r15,r8
+  00000001400C701B: jmp         00000001400C758A
+  00000001400C7020: cmp         byte ptr [r8+41h],0
+  00000001400C7025: je          00000001400C7078
+  00000001400C7027: mov         rcx,qword ptr [rbx+28h]
+  00000001400C702B: mov         r10d,r12d
+  00000001400C702E: add         r10d,dword ptr [r8+1Ch]
+  00000001400C7032: mov         r15,qword ptr [rcx+8]
+  00000001400C7036: mov         rcx,r15
+  00000001400C7039: mov         r11,r15
+  00000001400C703C: mov         esi,dword ptr [r11+8]
+  00000001400C7040: cmp         r10d,esi
+  00000001400C7043: jae         00000001400C7991
+  00000001400C7049: mov         r10,qword ptr [r11+r10*8+10h]
+  00000001400C704E: cmp         edx,esi
+  00000001400C7050: jae         00000001400C7991
+  00000001400C7056: mov         edx,edx
+  00000001400C7058: lea         rcx,[rcx+rdx*8+10h]
+  00000001400C705D: mov         rdx,r10
+  00000001400C7060: call        RhpAssignRef
+  00000001400C7065: mov         r12d,dword ptr [rbp-260h]
+  00000001400C706C: mov         r15,qword ptr [rbp-280h]
+  00000001400C7073: jmp         00000001400C758A
+  00000001400C7078: mov         rcx,qword ptr [rbx+20h]
+  00000001400C707C: mov         rdx,rcx
+  00000001400C707F: mov         r11d,r13d
+  00000001400C7082: add         r11d,dword ptr [r8+1Ch]
+  00000001400C7086: mov         esi,dword ptr [rcx+8]
+  00000001400C7089: cmp         r11d,esi
+  00000001400C708C: jae         00000001400C7991
+  00000001400C7092: mov         rcx,qword ptr [rcx+r11*8+10h]
+  00000001400C7097: cmp         r10d,esi
+  00000001400C709A: jae         00000001400C7991
+  00000001400C70A0: mov         r10d,r10d
+  00000001400C70A3: mov         qword ptr [rdx+r10*8+10h],rcx
+  00000001400C70A8: mov         r15,r8
+  00000001400C70AB: jmp         00000001400C758A
+  00000001400C70B0: mov         ecx,dword ptr [r8+30h]
+  00000001400C70B4: mov         dword ptr [rsp+20h],ecx
+  00000001400C70B8: mov         r11d,r10d
+  00000001400C70BB: sub         r11d,ecx
+  00000001400C70BE: mov         esi,dword ptr [r8+28h]
+  00000001400C70C2: sub         esi,ecx
+  00000001400C70C4: sub         r11d,esi
+  00000001400C70C7: mov         r9d,r11d
+  00000001400C70CA: sub         r10d,ecx
+  00000001400C70CD: mov         edx,r10d
+  00000001400C70D0: mov         rcx,qword ptr [rbx+20h]
+  00000001400C70D4: mov         r8,rcx
+  00000001400C70D7: call        S_P_CoreLib_System_Array__Copy_2
+  00000001400C70DC: mov         rsi,qword ptr [rbp-280h]
+  00000001400C70E3: mov         r15d,dword ptr [rsi+34h]
+  00000001400C70E7: mov         eax,dword ptr [rsi+2Ch]
+  00000001400C70EA: sub         eax,r15d
+  00000001400C70ED: mov         dword ptr [rbp-0CCh],eax
+  00000001400C70F3: xor         r8d,r8d
+  00000001400C70F6: test        r15d,r15d
+  00000001400C70F9: jg          00000001400C7100
+  00000001400C70FB: jmp         00000001400C719E
+  00000001400C7100: mov         r10,qword ptr [rbx+28h]
+  00000001400C7104: mov         edx,dword ptr [rbp-0A8h]
+  00000001400C710A: mov         r9d,edx
+  00000001400C710D: sub         r9d,r15d
+  00000001400C7110: mov         dword ptr [rbp-274h],r9d
+  00000001400C7117: mov         r11d,r9d
+  00000001400C711A: sub         r11d,eax
+  00000001400C711D: mov         dword ptr [rbp-26Ch],r11d
+  00000001400C7124: mov         qword ptr [rbp-2A0h],r10
+  00000001400C712B: mov         rcx,r10
+  00000001400C712E: mov         rcx,qword ptr [rcx+8]
+  00000001400C7132: mov         rax,rcx
+  00000001400C7135: lea         r14d,[r9+r8]
+  00000001400C7139: mov         r12d,dword ptr [rcx+8]
+  00000001400C713D: cmp         r14d,r12d
+  00000001400C7140: jae         00000001400C7991
+  00000001400C7146: mov         rcx,qword ptr [rcx+r14*8+10h]
+  00000001400C714B: mov         qword ptr [rbp-288h],rcx
+  00000001400C7152: mov         dword ptr [rbp-0D0h],r8d
+  00000001400C7159: lea         r14d,[r11+r8]
+  00000001400C715D: cmp         r14d,r12d
+  00000001400C7160: jae         00000001400C7991
+  00000001400C7166: lea         rcx,[rax+r14*8+10h]
+  00000001400C716B: mov         rdx,qword ptr [rbp-288h]
+  00000001400C7172: call        RhpAssignRef
+  00000001400C7177: mov         r14d,dword ptr [rbp-0D0h]
+  00000001400C717E: inc         r14d
+  00000001400C7181: cmp         r14d,r15d
+  00000001400C7184: mov         r8d,r14d
+  00000001400C7187: mov         r9d,dword ptr [rbp-274h]
+  00000001400C718E: mov         r10,qword ptr [rbp-2A0h]
+  00000001400C7195: mov         r11d,dword ptr [rbp-26Ch]
+  00000001400C719C: jl          00000001400C7124
+  00000001400C719E: mov         r14d,dword ptr [rbp-0CCh]
+  00000001400C71A5: test        r14d,r14d
+  00000001400C71A8: jg          00000001400C71BF
+  00000001400C71AA: mov         r15,rsi
+  00000001400C71AD: mov         r12d,dword ptr [rbp-260h]
+  00000001400C71B4: jmp         00000001400C758A
+  00000001400C71B9: nop         word ptr [rax+rax]
+  00000001400C71BF: mov         r10,qword ptr [rbx+28h]
+  00000001400C71C3: mov         r15,r10
+  00000001400C71C6: mov         rcx,qword ptr [r15+8]
+  00000001400C71CA: mov         r15d,dword ptr [rbp-0A8h]
+  00000001400C71D1: mov         edx,r15d
+  00000001400C71D4: sub         edx,r14d
+  00000001400C71D7: mov         r8d,r14d
+  00000001400C71DA: call        S_P_CoreLib_System_Array__Clear_0
+  00000001400C71DF: mov         r15,rsi
+  00000001400C71E2: mov         r12d,dword ptr [rbp-260h]
+  00000001400C71E9: jmp         00000001400C758A
+  00000001400C71EE: mov         rcx,qword ptr [rbx+20h]
+  00000001400C71F2: mov         r11,rcx
+  00000001400C71F5: lea         esi,[r10-1]
+  00000001400C71F9: mov         r15d,dword ptr [r11+8]
+  00000001400C71FD: cmp         esi,r15d
+  00000001400C7200: jae         00000001400C7991
+  00000001400C7206: cmp         dword ptr [r11+rsi*8+10h],0
+  00000001400C720C: setne       r11b
+  00000001400C7210: movzx       r11d,r11b
+  00000001400C7214: mov         esi,dword ptr [r8+2Ch]
+  00000001400C7218: cmp         esi,2
+  00000001400C721B: je          00000001400C7268
+  00000001400C721D: test        r11d,r11d
+  00000001400C7220: je          00000001400C722E
+  00000001400C7222: mov         r15,qword ptr [rbp-280h]
+  00000001400C7229: jmp         00000001400C758A
+  00000001400C722E: mov         r11,rcx
+  00000001400C7231: mov         rdx,rcx
+  00000001400C7234: lea         ecx,[r10-2]
+  00000001400C7238: cmp         ecx,r15d
+  00000001400C723B: jae         00000001400C7991
+  00000001400C7241: mov         rcx,qword ptr [rdx+rcx*8+10h]
+  00000001400C7246: lea         edx,[r10-3]
+  00000001400C724A: cmp         edx,r15d
+  00000001400C724D: jae         00000001400C7991
+  00000001400C7253: lea         edx,[r10-3]
+  00000001400C7257: mov         qword ptr [r11+rdx*8+10h],rcx
+  00000001400C725C: mov         r15,qword ptr [rbp-280h]
+  00000001400C7263: jmp         00000001400C758A
+  00000001400C7268: test        r11d,r11d
+  00000001400C726B: jne         00000001400C72B8
+  00000001400C726D: mov         rcx,qword ptr [rbx+28h]
+  00000001400C7271: mov         r15,qword ptr [rcx+8]
+  00000001400C7275: mov         rcx,r15
+  00000001400C7278: mov         r10,r15
+  00000001400C727B: lea         esi,[rdx-1]
+  00000001400C727E: mov         r11d,dword ptr [r10+8]
+  00000001400C7282: mov         r15d,r11d
+  00000001400C7285: cmp         esi,r15d
+  00000001400C7288: jae         00000001400C7991
+  00000001400C728E: mov         r11d,esi
+  00000001400C7291: mov         r10,qword ptr [r10+r11*8+10h]
+  00000001400C7296: lea         esi,[rdx-2]
+  00000001400C7299: cmp         esi,r15d
+  00000001400C729C: jae         00000001400C7991
+  00000001400C72A2: mov         r11d,esi
+  00000001400C72A5: lea         rcx,[rcx+r11*8+10h]
+  00000001400C72AA: mov         rdx,r10
+  00000001400C72AD: call        RhpAssignRef
+  00000001400C72B2: mov         edx,dword ptr [rbp-0A8h]
+  00000001400C72B8: mov         rcx,qword ptr [rbx+28h]
+  00000001400C72BC: mov         r15,qword ptr [rcx+8]
+  00000001400C72C0: mov         rcx,r15
+  00000001400C72C3: lea         esi,[rdx-1]
+  00000001400C72C6: mov         edx,esi
+  00000001400C72C8: mov         r8d,1
+  00000001400C72CE: call        S_P_CoreLib_System_Array__Clear_0
+  00000001400C72D3: mov         r15,qword ptr [rbp-280h]
+  00000001400C72DA: jmp         00000001400C758A
+  00000001400C72DF: cmp         byte ptr [r8+41h],0
+  00000001400C72E4: je          00000001400C7334
+  00000001400C72E6: mov         rcx,qword ptr [rbx+28h]
+  00000001400C72EA: lea         esi,[rdx-1]
+  00000001400C72ED: sub         esi,dword ptr [r8+1Ch]
+  00000001400C72F1: mov         r15,qword ptr [rcx+8]
+  00000001400C72F5: mov         rcx,r15
+  00000001400C72F8: mov         r10,r15
+  00000001400C72FB: mov         r15d,dword ptr [r10+8]
+  00000001400C72FF: cmp         esi,r15d
+  00000001400C7302: jae         00000001400C7991
+  00000001400C7308: mov         r11d,esi
+  00000001400C730B: mov         r10,qword ptr [r10+r11*8+10h]
+  00000001400C7310: cmp         edx,r15d
+  00000001400C7313: jae         00000001400C7991
+  00000001400C7319: mov         edx,edx
+  00000001400C731B: lea         rcx,[rcx+rdx*8+10h]
+  00000001400C7320: mov         rdx,r10
+  00000001400C7323: call        RhpAssignRef
+  00000001400C7328: mov         r15,qword ptr [rbp-280h]
+  00000001400C732F: jmp         00000001400C758A
+  00000001400C7334: mov         rcx,qword ptr [rbx+20h]
+  00000001400C7338: mov         rdx,rcx
+  00000001400C733B: lea         esi,[r10-1]
+  00000001400C733F: sub         esi,dword ptr [r8+1Ch]
+  00000001400C7343: mov         r15d,dword ptr [rcx+8]
+  00000001400C7347: cmp         esi,r15d
+  00000001400C734A: jae         00000001400C7991
+  00000001400C7350: mov         r11d,esi
+  00000001400C7353: mov         rcx,qword ptr [rcx+r11*8+10h]
+  00000001400C7358: cmp         r10d,r15d
+  00000001400C735B: jae         00000001400C7991
+  00000001400C7361: mov         r10d,r10d
+  00000001400C7364: mov         qword ptr [rdx+r10*8+10h],rcx
+  00000001400C7369: mov         r15,r8
+  00000001400C736C: jmp         00000001400C758A
+  00000001400C7371: mov         esi,dword ptr [r8+28h]
+  00000001400C7375: cmp         esi,2
+  00000001400C7378: je          00000001400C747F
+  00000001400C737E: mov         esi,dword ptr [r8+2Ch]
+  00000001400C7382: cmp         esi,2
+  00000001400C7385: je          00000001400C7393
+  00000001400C7387: mov         r15,qword ptr [rbp-280h]
+  00000001400C738E: jmp         00000001400C758A
+  00000001400C7393: mov         rcx,qword ptr [rbx+28h]
+  00000001400C7397: mov         r15,qword ptr [rcx+8]
+  00000001400C739B: mov         rcx,r15
+  00000001400C739E: mov         r10,r15
+  00000001400C73A1: lea         esi,[rdx-1]
+  00000001400C73A4: mov         r11d,dword ptr [r10+8]
+  00000001400C73A8: cmp         esi,r11d
+  00000001400C73AB: jae         00000001400C7991
+  00000001400C73B1: mov         eax,esi
+  00000001400C73B3: mov         rax,qword ptr [r10+rax*8+10h]
+  00000001400C73B8: mov         dword ptr [rbp-270h],r11d
+  00000001400C73BF: cmp         edx,r11d
+  00000001400C73C2: jae         00000001400C7991
+  00000001400C73C8: mov         r10d,edx
+  00000001400C73CB: lea         rcx,[rcx+r10*8+10h]
+  00000001400C73D0: mov         rdx,rax
+  00000001400C73D3: call        RhpAssignRef
+  00000001400C73D8: mov         rcx,r15
+  00000001400C73DB: mov         rdx,r15
+  00000001400C73DE: mov         eax,dword ptr [rbp-0A8h]
+  00000001400C73E4: lea         r8d,[rax-2]
+  00000001400C73E8: mov         r10d,dword ptr [rbp-270h]
+  00000001400C73EF: cmp         r8d,r10d
+  00000001400C73F2: jae         00000001400C7991
+  00000001400C73F8: mov         dword ptr [rbp-278h],r8d
+  00000001400C73FF: mov         r9d,r8d
+  00000001400C7402: mov         rdx,qword ptr [rdx+r9*8+10h]
+  00000001400C7407: mov         dword ptr [rbp-270h],r10d
+  00000001400C740E: cmp         esi,r10d
+  00000001400C7411: jae         00000001400C7991
+  00000001400C7417: mov         r9d,esi
+  00000001400C741A: lea         rcx,[rcx+r9*8+10h]
+  00000001400C741F: call        RhpAssignRef
+  00000001400C7424: mov         rcx,r15
+  00000001400C7427: mov         rdx,r15
+  00000001400C742A: mov         esi,dword ptr [rbp-0A8h]
+  00000001400C7430: mov         eax,dword ptr [rbp-270h]
+  00000001400C7436: cmp         esi,eax
+  00000001400C7438: jae         00000001400C7991
+  00000001400C743E: mov         r8d,esi
+  00000001400C7441: mov         rdx,qword ptr [rdx+r8*8+10h]
+  00000001400C7446: mov         r8d,dword ptr [rbp-278h]
+  00000001400C744D: cmp         r8d,eax
+  00000001400C7450: jae         00000001400C7991
+  00000001400C7456: mov         eax,r8d
+  00000001400C7459: lea         rcx,[rcx+rax*8+10h]
+  00000001400C745E: call        RhpAssignRef
+  00000001400C7463: mov         rcx,r15
+  00000001400C7466: mov         edx,esi
+  00000001400C7468: mov         r8d,1
+  00000001400C746E: call        S_P_CoreLib_System_Array__Clear_0
+  00000001400C7473: mov         r15,qword ptr [rbp-280h]
+  00000001400C747A: jmp         00000001400C758A
+  00000001400C747F: mov         rcx,qword ptr [rbx+20h]
+  00000001400C7483: mov         rdx,rcx
+  00000001400C7486: lea         esi,[r10-1]
+  00000001400C748A: mov         r15d,dword ptr [rdx+8]
+  00000001400C748E: cmp         esi,r15d
+  00000001400C7491: jae         00000001400C7991
+  00000001400C7497: mov         r11d,esi
+  00000001400C749A: lea         rdx,[rdx+r11*8+10h]
+  00000001400C749F: mov         r11,rcx
+  00000001400C74A2: add         r10d,0FFFFFFFEh
+  00000001400C74A6: cmp         r10d,r15d
+  00000001400C74A9: jae         00000001400C7991
+  00000001400C74AF: mov         r15d,r10d
+  00000001400C74B2: lea         r11,[r11+r15*8+10h]
+  00000001400C74B7: mov         r15,rcx
+  00000001400C74BA: mov         r10,qword ptr [r15+r10*8+10h]
+  00000001400C74BF: mov         rcx,qword ptr [rcx+rsi*8+10h]
+  00000001400C74C4: mov         qword ptr [rdx],r10
+  00000001400C74C7: mov         qword ptr [r11],rcx
+  00000001400C74CA: mov         r15,r8
+  00000001400C74CD: jmp         00000001400C758A
+  00000001400C74D2: xor         ecx,ecx
+  00000001400C74D4: mov         esi,dword ptr [r8+28h]
+  00000001400C74D8: test        esi,esi
+  00000001400C74DA: jle         00000001400C751C
+  00000001400C74DC: mov         r11,qword ptr [rbx+20h]
+  00000001400C74E0: mov         r15,qword ptr [rbx+20h]
+  00000001400C74E4: mov         rax,r11
+  00000001400C74E7: mov         r9d,r10d
+  00000001400C74EA: sub         r9d,esi
+  00000001400C74ED: add         r9d,ecx
+  00000001400C74F0: mov         r14d,dword ptr [rax+8]
+  00000001400C74F4: cmp         r9d,r14d
+  00000001400C74F7: jae         00000001400C7991
+  00000001400C74FD: mov         rax,qword ptr [rax+r9*8+10h]
+  00000001400C7502: lea         r9d,[r10+rcx]
+  00000001400C7506: cmp         r9d,r14d
+  00000001400C7509: jae         00000001400C7991
+  00000001400C750F: mov         qword ptr [r15+r9*8+10h],rax
+  00000001400C7514: inc         ecx
+  00000001400C7516: cmp         ecx,dword ptr [r8+28h]
+  00000001400C751A: jl          00000001400C74E0
+  00000001400C751C: xor         r14d,r14d
+  00000001400C751F: mov         esi,dword ptr [r8+2Ch]
+  00000001400C7523: test        esi,esi
+  00000001400C7525: jg          00000001400C7530
+  00000001400C7527: mov         r15,qword ptr [rbp-280h]
+  00000001400C752E: jmp         00000001400C758A
+  00000001400C7530: mov         rcx,qword ptr [rbx+28h]
+  00000001400C7534: mov         eax,edx
+  00000001400C7536: sub         eax,esi
+  00000001400C7538: add         eax,r14d
+  00000001400C753B: mov         r15,qword ptr [rcx+8]
+  00000001400C753F: mov         rcx,r15
+  00000001400C7542: mov         r10,r15
+  00000001400C7545: mov         r9d,dword ptr [r10+8]
+  00000001400C7549: mov         r15d,r9d
+  00000001400C754C: cmp         eax,r15d
+  00000001400C754F: jae         00000001400C7991
+  00000001400C7555: mov         rax,qword ptr [r10+rax*8+10h]
+  00000001400C755A: lea         r10d,[rdx+r14]
+  00000001400C755E: cmp         r10d,r15d
+  00000001400C7561: jae         00000001400C7991
+  00000001400C7567: lea         rcx,[rcx+r10*8+10h]
+  00000001400C756C: mov         rdx,rax
+  00000001400C756F: call        RhpAssignRef
+  00000001400C7574: inc         r14d
+  00000001400C7577: mov         r15,qword ptr [rbp-280h]
+  00000001400C757E: cmp         r14d,dword ptr [r15+2Ch]
+  00000001400C7582: mov         edx,dword ptr [rbp-0A8h]
+  00000001400C7588: jl          00000001400C7530
+  00000001400C758A: mov         r15d,dword ptr [r15+14h]
+  00000001400C758E: mov         r9,qword ptr [rbp-298h]
+  00000001400C7595: jmp         00000001400C6C88
+  00000001400C759A: mov         ecx,dword ptr [r8+1Ch]
+  00000001400C759E: mov         rsi,qword ptr [rbp-290h]
+  00000001400C75A5: cmp         ecx,dword ptr [rsi+8]
+  00000001400C75A8: jae         00000001400C7991
+  00000001400C75AE: mov         rcx,qword ptr [rsi+rcx*8+10h]
+  00000001400C75B3: mov         r9,qword ptr [rbx+30h]
+  00000001400C75B7: mov         eax,dword ptr [rbx+38h]
+  00000001400C75BA: dec         eax
+  00000001400C75BC: cmp         eax,dword ptr [r9+8]
+  00000001400C75C0: jae         00000001400C7991
+  00000001400C75C6: shl         rax,5
+  00000001400C75CA: mov         dword ptr [r9+rax+1Ch],r15d
+  00000001400C75CF: mov         dword ptr [rsp+20h],edx
+  00000001400C75D3: mov         r9d,r10d
+  00000001400C75D6: sub         r9d,dword ptr [rcx+2Ch]
+  00000001400C75DA: mov         dword ptr [rsp+28h],r9d
+  00000001400C75DF: sub         edx,dword ptr [rcx+30h]
+  00000001400C75E2: mov         dword ptr [rsp+30h],edx
+  00000001400C75E6: mov         dword ptr [rsp+38h],1
+  00000001400C75EE: mov         r8d,dword ptr [r8+1Ch]
+  00000001400C75F2: mov         rcx,rbx
+  00000001400C75F5: mov         rdx,rdi
+  00000001400C75F8: mov         r9d,r10d
+  00000001400C75FB: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Enter
+  00000001400C7600: test        eax,eax
+  00000001400C7602: jne         00000001400C797C
+  00000001400C7608: lea         rdx,[rbp-0F0h]
+  00000001400C760F: mov         rcx,rbx
+  00000001400C7612: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Broiler_VM_Composition_Ubc_Fixture_Broiler_VM_Contract_Tests_UbcCorpusHandlers>__Stop
+  00000001400C7617: lea         r8,[rbp-0F0h]
+  00000001400C761E: mov         rcx,rbx
+  00000001400C7621: mov         rdx,qword ptr [rbp+18h]
+  00000001400C7625: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C762A: jmp         00000001400C6BD1
+  00000001400C762F: mov         ecx,dword ptr [r8+28h]
+  00000001400C7633: mov         r11d,dword ptr [r8+2Ch]
+  00000001400C7637: mov         esi,r11d
+  00000001400C763A: mov         r15d,esi
+  00000001400C763D: mov         esi,dword ptr [rbp-264h]
+  00000001400C7643: mov         r13d,dword ptr [rbp-268h]
+  00000001400C764A: mov         dword ptr [rsp+20h],ecx
+  00000001400C764E: mov         r9d,r10d
+  00000001400C7651: sub         r9d,ecx
+  00000001400C7654: mov         edx,r9d
+  00000001400C7657: mov         r11,qword ptr [rbx+20h]
+  00000001400C765B: mov         rcx,r11
+  00000001400C765E: mov         r8,r11
+  00000001400C7661: mov         r9d,esi
+  00000001400C7664: call        S_P_CoreLib_System_Array__Copy_2
+  00000001400C7669: xor         r12d,r12d
+  00000001400C766C: test        r15d,r15d
+  00000001400C766F: jle         00000001400C76D3
+  00000001400C7671: mov         rax,qword ptr [rbx+28h]
+  00000001400C7675: mov         qword ptr [rbp-2A8h],rax
+  00000001400C767C: mov         rcx,rax
+  00000001400C767F: mov         rdx,qword ptr [rcx+8]
+  00000001400C7683: mov         rcx,qword ptr [rcx+8]
+  00000001400C7687: mov         r8d,dword ptr [rbp-0A8h]
+  00000001400C768E: mov         r10d,r8d
+  00000001400C7691: sub         r10d,r15d
+  00000001400C7694: add         r10d,r12d
+  00000001400C7697: cmp         r10d,dword ptr [rcx+8]
+  00000001400C769B: jae         00000001400C7991
+  00000001400C76A1: mov         r10,qword ptr [rcx+r10*8+10h]
+  00000001400C76A6: lea         ecx,[r12+r13]
+  00000001400C76AA: cmp         ecx,dword ptr [rdx+8]
+  00000001400C76AD: jae         00000001400C7991
+  00000001400C76B3: lea         ecx,[r12+r13]
+  00000001400C76B7: lea         rcx,[rdx+rcx*8+10h]
+  00000001400C76BC: mov         rdx,r10
+  00000001400C76BF: call        RhpAssignRef
+  00000001400C76C4: inc         r12d
+  00000001400C76C7: cmp         r12d,r15d
+  00000001400C76CA: mov         rax,qword ptr [rbp-2A8h]
+  00000001400C76D1: jl          00000001400C7675
+  00000001400C76D3: lea         ecx,[r15+r13]
+  00000001400C76D7: mov         r12d,dword ptr [rbp-0A8h]
+  00000001400C76DE: mov         r8d,r12d
+  00000001400C76E1: sub         r8d,ecx
+  00000001400C76E4: test        r8d,r8d
+  00000001400C76E7: jle         00000001400C76FE
+  00000001400C76E9: mov         rax,qword ptr [rbx+28h]
+  00000001400C76ED: mov         r12,rax
+  00000001400C76F0: mov         rcx,qword ptr [r12+8]
+  00000001400C76F5: lea         edx,[r15+r13]
+  00000001400C76F9: call        S_P_CoreLib_System_Array__Clear_0
+  00000001400C76FE: dec         dword ptr [rbx+38h]
+  00000001400C7701: mov         rcx,qword ptr [rbx+10h]
+  00000001400C7705: mov         rcx,qword ptr [rcx+8]
+  00000001400C7709: lea         r11,[__InterfaceDispatchCell_Broiler_VM_Abstractions_Broiler_VM_IVmMeter__ReportReleased_Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Run]
+  00000001400C7710: mov         edx,8
+  00000001400C7715: mov         r8d,1
+  00000001400C771B: call        qword ptr [r11]
+  00000001400C771E: cmp         dword ptr [rbx+38h],0
+  00000001400C7722: je          00000001400C6845
+  00000001400C7728: mov         rdx,qword ptr [rbx+30h]
+  00000001400C772C: mov         ecx,dword ptr [rbx+38h]
+  00000001400C772F: dec         ecx
+  00000001400C7731: cmp         ecx,dword ptr [rdx+8]
+  00000001400C7734: jae         00000001400C7991
+  00000001400C773A: shl         rcx,5
+  00000001400C773E: lea         rdx,[rdx+rcx+10h]
+  00000001400C7743: mov         rcx,qword ptr [rdx]
+  00000001400C7746: mov         r14,qword ptr [rcx+30h]
+  00000001400C774A: mov         ecx,dword ptr [rdx+8]
+  00000001400C774D: cmp         ecx,dword ptr [r14+8]
+  00000001400C7751: jae         00000001400C7991
+  00000001400C7757: mov         rcx,qword ptr [r14+rcx*8+10h]
+  00000001400C775C: mov         rcx,qword ptr [rcx+40h]
+  00000001400C7760: mov         r8d,dword ptr [rdx+0Ch]
+  00000001400C7764: cmp         r8d,dword ptr [rcx+8]
+  00000001400C7768: jae         00000001400C7991
+  00000001400C776E: lea         r8,[r8+r8*8]
+  00000001400C7772: mov         ecx,dword ptr [rcx+r8*8+24h]
+  00000001400C7777: mov         dword ptr [rdx+0Ch],ecx
+  00000001400C777A: mov         rdx,qword ptr [rbx+30h]
+  00000001400C777E: mov         ecx,dword ptr [rbx+38h]
+  00000001400C7781: dec         ecx
+  00000001400C7783: cmp         ecx,dword ptr [rdx+8]
+  00000001400C7786: jae         00000001400C7991
+  00000001400C778C: shl         rcx,5
+  00000001400C7790: lea         rdx,[rdx+rcx+10h]
+  00000001400C7795: mov         rdi,qword ptr [rdx]
+  00000001400C7798: mov         r14d,dword ptr [rdx+8]
+  00000001400C779C: mov         dword ptr [rbp-25Ch],r14d
+  00000001400C77A3: mov         r15d,dword ptr [rdx+0Ch]
+  00000001400C77A7: mov         r13d,dword ptr [rdx+10h]
+  00000001400C77AB: mov         r12d,dword ptr [rdx+14h]
+  00000001400C77AF: mov         dword ptr [rbp-260h],r12d
+  00000001400C77B6: mov         eax,dword ptr [rdx+18h]
+  00000001400C77B9: mov         dword ptr [rbp-264h],eax
+  00000001400C77BF: mov         r8d,dword ptr [rdx+1Ch]
+  00000001400C77C3: mov         dword ptr [rbp-268h],r8d
+  00000001400C77CA: mov         r10,qword ptr [rdi+30h]
+  00000001400C77CE: mov         qword ptr [rbp-290h],r10
+  00000001400C77D5: cmp         r14d,dword ptr [r10+8]
+  00000001400C77D9: jae         00000001400C7991
+  00000001400C77DF: mov         edx,r14d
+  00000001400C77E2: mov         rdx,qword ptr [r10+rdx*8+10h]
+  00000001400C77E7: mov         r9,qword ptr [rdx+40h]
+  00000001400C77EB: mov         qword ptr [rbp-298h],r9
+  00000001400C77F2: mov         r11d,r13d
+  00000001400C77F5: add         r11d,dword ptr [rdx+24h]
+  00000001400C77F9: mov         dword ptr [rbp-9Ch],r11d
+  00000001400C7800: mov         ecx,r12d
+  00000001400C7803: add         ecx,dword ptr [rdx+28h]
+  00000001400C7806: mov         dword ptr [rbp-0A0h],ecx
+  00000001400C780C: jmp         00000001400C6C88
+  00000001400C7811: cmp         byte ptr [rsi+26h],1
+  00000001400C7815: je          00000001400C6988
+  00000001400C781B: mov         rdx,qword ptr [rbx+30h]
+  00000001400C781F: mov         ecx,dword ptr [rbx+38h]
+  00000001400C7822: dec         ecx
+  00000001400C7824: cmp         ecx,dword ptr [rdx+8]
+  00000001400C7827: jae         00000001400C7991
+  00000001400C782D: shl         rcx,5
+  00000001400C7831: mov         dword ptr [rdx+rcx+1Ch],r15d
+  00000001400C7836: lea         rdx,[rbp-98h]
+  00000001400C783D: mov         rcx,rbx
+  00000001400C7840: mov         r8,qword ptr [rbp-68h]
+  00000001400C7844: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Unwind
+  00000001400C7849: cmp         eax,1
+  00000001400C784C: je          00000001400C6A28
+  00000001400C7852: cmp         eax,2
+  00000001400C7855: jne         00000001400C777A
+  00000001400C785B: mov         rsi,qword ptr [rbp+18h]
+  00000001400C785F: lea         rdx,[rbp-110h]
+  00000001400C7866: mov         rcx,rbx
+  00000001400C7869: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Broiler_VM_Composition_Ubc_Fixture_Broiler_VM_Contract_Tests_UbcCorpusHandlers>__Stop
+  00000001400C786E: lea         r8,[rbp-110h]
+  00000001400C7875: mov         rcx,rbx
+  00000001400C7878: mov         rdx,rsi
+  00000001400C787B: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C7880: mov         qword ptr [rbp+18h],rsi
+  00000001400C7884: jmp         00000001400C6BD1
+  00000001400C7889: cmp         byte ptr [rsi+26h],3
+  00000001400C788D: jne         00000001400C6988
+  00000001400C7893: cmp         byte ptr [rsi+27h],0
+  00000001400C7897: jne         00000001400C6988
+  00000001400C789D: mov         r13d,dword ptr [rbp-40h]
+  00000001400C78A1: mov         r12,qword ptr [rbp-48h]
+  00000001400C78A5: test        r12,r12
+  00000001400C78A8: jne         00000001400C78AD
+  00000001400C78AA: mov         r12,rdi
+  00000001400C78AD: mov         rdx,qword ptr [rbx+8]
+  00000001400C78B1: mov         rdx,qword ptr [rdx+8]
+  00000001400C78B5: mov         rdx,qword ptr [rdx+10h]
+  00000001400C78B9: mov         rdx,qword ptr [rdx+10h]
+  00000001400C78BD: mov         rcx,qword ptr [r12+10h]
+  00000001400C78C2: mov         rcx,qword ptr [rcx+10h]
+  00000001400C78C6: mov         r8d,4
+  00000001400C78CC: call        String__Equals_3
+  00000001400C78D1: test        eax,eax
+  00000001400C78D3: je          00000001400C6AF8
+  00000001400C78D9: mov         r14,qword ptr [r12+30h]
+  00000001400C78DE: mov         r8,r14
+  00000001400C78E1: cmp         dword ptr [r8+8],r13d
+  00000001400C78E5: jbe         00000001400C6AF8
+  00000001400C78EB: mov         r8,r14
+  00000001400C78EE: cmp         r13d,dword ptr [r8+8]
+  00000001400C78F2: jae         00000001400C7991
+  00000001400C78F8: mov         ecx,r13d
+  00000001400C78FB: mov         r8,qword ptr [r8+rcx*8+10h]
+  00000001400C7900: mov         rcx,rsi
+  00000001400C7903: mov         rdx,qword ptr [rbp-280h]
+  00000001400C790A: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Fits
+  00000001400C790F: test        eax,eax
+  00000001400C7911: je          00000001400C6AF8
+  00000001400C7917: mov         rcx,qword ptr [rbx+30h]
+  00000001400C791B: mov         edx,dword ptr [rbx+38h]
+  00000001400C791E: dec         edx
+  00000001400C7920: cmp         edx,dword ptr [rcx+8]
+  00000001400C7923: jae         00000001400C7991
+  00000001400C7925: shl         rdx,5
+  00000001400C7929: mov         dword ptr [rcx+rdx+1Ch],r15d
+  00000001400C792E: mov         esi,dword ptr [rbp-0A8h]
+  00000001400C7934: mov         dword ptr [rsp+20h],esi
+  00000001400C7938: mov         r15d,dword ptr [rbp-0A4h]
+  00000001400C793F: mov         r14,qword ptr [rbp-280h]
+  00000001400C7946: mov         ecx,r15d
+  00000001400C7949: sub         ecx,dword ptr [r14+28h]
+  00000001400C794D: mov         dword ptr [rsp+28h],ecx
+  00000001400C7951: mov         ecx,esi
+  00000001400C7953: sub         ecx,dword ptr [r14+2Ch]
+  00000001400C7957: mov         dword ptr [rsp+30h],ecx
+  00000001400C795B: mov         dword ptr [rsp+38h],1
+  00000001400C7963: mov         rcx,rbx
+  00000001400C7966: mov         rdx,r12
+  00000001400C7969: mov         r8d,r13d
+  00000001400C796C: mov         r9d,r15d
+  00000001400C796F: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Enter
+  00000001400C7974: test        eax,eax
+  00000001400C7976: je          00000001400C6AD1
+  00000001400C797C: mov         rdx,qword ptr [rbx+20h]
+  00000001400C7980: mov         qword ptr [rbp-80h],rdx
+  00000001400C7984: mov         rdx,qword ptr [rbx+28h]
+  00000001400C7988: mov         qword ptr [rbp-78h],rdx
+  00000001400C798C: jmp         00000001400C777A
+  00000001400C7991: call        S_P_CoreLib_Internal_Runtime_CompilerHelpers_ThrowHelpers__ThrowIndexOutOfRangeException
+  00000001400C7996: int         3
+  00000001400C7997: nop
+  00000001400C7998: nop
+  00000001400C7999: nop
+  00000001400C799A: nop
+  00000001400C799B: nop
+  00000001400C799C: nop
+  00000001400C799D: nop
+  00000001400C799E: nop
+  00000001400C799F: nop
+
+Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Start:
+  00000001400C61B0: push        rbp
+  00000001400C61B1: push        r15
+  00000001400C61B3: push        r14
+  00000001400C61B5: push        rdi
+  00000001400C61B6: push        rsi
+  00000001400C61B7: push        rbx
+  00000001400C61B8: sub         rsp,0E8h
+  00000001400C61BF: lea         rbp,[rsp+110h]
+  00000001400C61C7: xor         eax,eax
+  00000001400C61C9: mov         qword ptr [rbp-0C8h],rax
+  00000001400C61D0: xorps       xmm4,xmm4
+  00000001400C61D3: mov         rax,0FFFFFFFFFFFFFF70h
+  00000001400C61DD: movaps      xmmword ptr [rbp+rax-30h],xmm4
+  00000001400C61E2: movaps      xmmword ptr [rbp+rax-20h],xmm4
+  00000001400C61E7: movaps      xmmword ptr [rbp+rax-10h],xmm4
+  00000001400C61EC: add         rax,30h
+  00000001400C61F0: jne         00000001400C61DD
+  00000001400C61F2: mov         qword ptr [rbp-30h],rax
+  00000001400C61F6: mov         rbx,rcx
+  00000001400C61F9: mov         rsi,rdx
+  00000001400C61FC: mov         r14d,r8d
+  00000001400C61FF: mov         rdi,r9
+  00000001400C6202: mov         rcx,qword ptr [rbx+10h]
+  00000001400C6206: cmp         dword ptr [rcx],ecx
+  00000001400C6208: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcLoopMeter__Poll
+  00000001400C620D: test        eax,eax
+  00000001400C620F: je          00000001400C6353
+  00000001400C6215: lea         rcx,[??_7Com_Example_Tally_Com_Example_Tally_TallyPlane@@6B@]
+  00000001400C621C: call        RhpNewFast
+  00000001400C6221: mov         r15,rax
+  00000001400C6224: lea         rcx,[??_7__Array<Com_Example_Tally_Com_Example_Tally_TallyValue>@@6B@]
+  00000001400C622B: xor         edx,edx
+  00000001400C622D: call        RhpNewPtrArrayFast
+  00000001400C6232: lea         rcx,[r15+8]
+  00000001400C6236: mov         rdx,rax
+  00000001400C6239: call        RhpAssignRef
+  00000001400C623E: lea         rcx,[rbx+28h]
+  00000001400C6242: mov         rdx,r15
+  00000001400C6245: call        RhpAssignRef
+  00000001400C624A: xor         edx,edx
+  00000001400C624C: mov         dword ptr [rsp+20h],edx
+  00000001400C6250: mov         dword ptr [rsp+28h],edx
+  00000001400C6254: mov         dword ptr [rsp+30h],edx
+  00000001400C6258: mov         dword ptr [rsp+38h],edx
+  00000001400C625C: mov         rdx,qword ptr [rbx+8]
+  00000001400C6260: mov         rdx,qword ptr [rdx+8]
+  00000001400C6264: mov         rcx,rbx
+  00000001400C6267: mov         r8d,r14d
+  00000001400C626A: xor         r9d,r9d
+  00000001400C626D: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Enter
+  00000001400C6272: test        eax,eax
+  00000001400C6274: je          00000001400C6330
+  00000001400C627A: lea         rdx,[rbp-88h]
+  00000001400C6281: mov         rcx,rbx
+  00000001400C6284: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Activation
+  00000001400C6289: mov         rcx,qword ptr [rbx+8]
+  00000001400C628D: mov         rcx,qword ptr [rcx+8]
+  00000001400C6291: mov         qword ptr [rbp-60h],rcx
+  00000001400C6295: mov         dword ptr [rbp-50h],r14d
+  00000001400C6299: xor         ecx,ecx
+  00000001400C629B: mov         dword ptr [rbp-40h],ecx
+  00000001400C629E: mov         dword ptr [rbp-3Ch],ecx
+  00000001400C62A1: lea         rcx,[rbp-88h]
+  00000001400C62A8: mov         rdx,rdi
+  00000001400C62AB: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__BindParameters
+  00000001400C62B0: test        eax,eax
+  00000001400C62B2: je          00000001400C62C4
+  00000001400C62B4: mov         rcx,rbx
+  00000001400C62B7: mov         rdx,rsi
+  00000001400C62BA: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Run
+  00000001400C62BF: jmp         00000001400C635E
+  00000001400C62C4: mov         rcx,qword ptr [rbx+8]
+  00000001400C62C8: mov         ecx,dword ptr [rcx+10h]
+  00000001400C62CB: lea         rcx,[??_7Com_Example_Tally_Com_Example_Tally_TallyFault@@6B@]
+  00000001400C62D2: call        RhpNewFast
+  00000001400C62D7: mov         rdi,rax
+  00000001400C62DA: xor         ecx,ecx
+  00000001400C62DC: mov         dword ptr [rsp+20h],ecx
+  00000001400C62E0: mov         rcx,rdi
+  00000001400C62E3: mov         edx,4
+  00000001400C62E8: xor         r8d,r8d
+  00000001400C62EB: xor         r9d,r9d
+  00000001400C62EE: call        Com_Example_Tally_Com_Example_Tally_TallyFault___ctor
+  00000001400C62F3: mov         dword ptr [rbp-0B0h],3
+  00000001400C62FD: xor         r8d,r8d
+  00000001400C6300: mov         qword ptr [rbp-0C8h],r8
+  00000001400C6307: mov         qword ptr [rbp-0C0h],r8
+  00000001400C630E: mov         qword ptr [rbp-0B8h],rdi
+  00000001400C6315: mov         dword ptr [rbp-0ACh],r8d
+  00000001400C631C: lea         r8,[rbp-0C8h]
+  00000001400C6323: mov         rcx,rbx
+  00000001400C6326: mov         rdx,rsi
+  00000001400C6329: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C632E: jmp         00000001400C635E
+  00000001400C6330: lea         rdx,[rbp-0A8h]
+  00000001400C6337: mov         rcx,rbx
+  00000001400C633A: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Broiler_VM_Composition_Ubc_Fixture_Broiler_VM_Contract_Tests_UbcCorpusHandlers>__Stop
+  00000001400C633F: lea         r8,[rbp-0A8h]
+  00000001400C6346: mov         rcx,rbx
+  00000001400C6349: mov         rdx,rsi
+  00000001400C634C: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C6351: jmp         00000001400C635E
+  00000001400C6353: mov         rcx,rbx
+  00000001400C6356: mov         rdx,rsi
+  00000001400C6359: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Broiler_VM_Composition_Ubc_Fixture_Broiler_VM_Contract_Tests_UbcCorpusHandlers>__Stop
+  00000001400C635E: mov         rax,rsi
+  00000001400C6361: add         rsp,0E8h
+  00000001400C6368: pop         rbx
+  00000001400C6369: pop         rsi
+  00000001400C636A: pop         rdi
+  00000001400C636B: pop         r14
+  00000001400C636D: pop         r15
+  00000001400C636F: pop         rbp
+  00000001400C6370: ret
+  00000001400C6371: nop
+  00000001400C6372: nop
+  00000001400C6373: nop
+  00000001400C6374: nop
+  00000001400C6375: nop
+  00000001400C6376: nop
+  00000001400C6377: nop
+  00000001400C6378: nop
+  00000001400C6379: nop
+  00000001400C637A: nop
+  00000001400C637B: nop
+  00000001400C637C: nop
+  00000001400C637D: nop
+  00000001400C637E: nop
+  00000001400C637F: nop
+
+Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Resume:
+  00000001400C6380: push        r15
+  00000001400C6382: push        r14
+  00000001400C6384: push        r13
+  00000001400C6386: push        r12
+  00000001400C6388: push        rdi
+  00000001400C6389: push        rsi
+  00000001400C638A: push        rbp
+  00000001400C638B: push        rbx
+  00000001400C638C: sub         rsp,0E8h
+  00000001400C6393: xor         eax,eax
+  00000001400C6395: mov         qword ptr [rsp+48h],rax
+  00000001400C639A: xorps       xmm4,xmm4
+  00000001400C639D: mov         rax,0FFFFFFFFFFFFFF70h
+  00000001400C63A7: movaps      xmmword ptr [rsp+rax+0E0h],xmm4
+  00000001400C63AF: movaps      xmmword ptr [rsp+rax+0F0h],xmm4
+  00000001400C63B7: movaps      xmmword ptr [rsp+rax+100h],xmm4
+  00000001400C63BF: add         rax,30h
+  00000001400C63C3: jne         00000001400C63A7
+  00000001400C63C5: mov         qword ptr [rsp+0E0h],rax
+  00000001400C63CD: mov         rbx,rcx
+  00000001400C63D0: mov         rdi,rdx
+  00000001400C63D3: mov         rsi,r8
+  00000001400C63D6: mov         rcx,qword ptr [rbx+10h]
+  00000001400C63DA: cmp         dword ptr [rcx],ecx
+  00000001400C63DC: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcLoopMeter__Poll
+  00000001400C63E1: test        eax,eax
+  00000001400C63E3: je          00000001400C66E0
+  00000001400C63E9: mov         rbp,qword ptr [rbx+10h]
+  00000001400C63ED: movsxd      r8,dword ptr [rsi+30h]
+  00000001400C63F1: mov         rcx,qword ptr [rbp+8]
+  00000001400C63F5: lea         r11,[__InterfaceDispatchCell_Broiler_VM_Abstractions_Broiler_VM_IVmMeter__TryCharge_Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Resume]
+  00000001400C63FC: mov         edx,8
+  00000001400C6401: call        qword ptr [r11]
+  00000001400C6404: mov         byte ptr [rbp+20h],0
+  00000001400C6408: test        eax,eax
+  00000001400C640A: je          00000001400C66E0
+  00000001400C6410: mov         r8d,dword ptr [rsi+30h]
+  00000001400C6414: mov         dword ptr [rbx+38h],r8d
+  00000001400C6418: mov         ecx,4
+  00000001400C641D: cmp         r8d,4
+  00000001400C6421: cmovl       r8d,ecx
+  00000001400C6425: mov         rcx,qword ptr [rbx+10h]
+  00000001400C6429: mov         rcx,qword ptr [rcx+8]
+  00000001400C642D: movsxd      rbp,r8d
+  00000001400C6430: mov         r8,rbp
+  00000001400C6433: shl         r8,5
+  00000001400C6437: lea         r11,[__InterfaceDispatchCell_Broiler_VM_Abstractions_Broiler_VM_IVmMeter__TryCharge_Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Resume]
+  00000001400C643E: mov         edx,2
+  00000001400C6443: call        qword ptr [r11]
+  00000001400C6446: test        eax,eax
+  00000001400C6448: je          00000001400C66C1
+  00000001400C644E: movsxd      rdx,dword ptr [rbx+38h]
+  00000001400C6452: mov         rcx,qword ptr [rbx+10h]
+  00000001400C6456: cmp         dword ptr [rcx],ecx
+  00000001400C6458: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcLoopMeter__Spend
+  00000001400C645D: test        eax,eax
+  00000001400C645F: je          00000001400C66C1
+  00000001400C6465: mov         rdx,rbp
+  00000001400C6468: lea         rcx,[??_7__Array<Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcFrame>@@6B@]
+  00000001400C646F: call        RhpNewArrayFast
+  00000001400C6474: lea         rcx,[rbx+30h]
+  00000001400C6478: mov         rdx,rax
+  00000001400C647B: call        RhpAssignRef
+  00000001400C6480: mov         rcx,qword ptr [rsi+10h]
+  00000001400C6484: mov         rdx,qword ptr [rbx+30h]
+  00000001400C6488: mov         r8d,dword ptr [rbx+38h]
+  00000001400C648C: call        S_P_CoreLib_System_Array__Copy_1
+  00000001400C6491: mov         rbp,qword ptr [rbx+30h]
+  00000001400C6495: mov         rcx,rbp
+  00000001400C6498: mov         eax,dword ptr [rbx+38h]
+  00000001400C649B: dec         eax
+  00000001400C649D: mov         r14d,dword ptr [rcx+8]
+  00000001400C64A1: cmp         eax,r14d
+  00000001400C64A4: jae         00000001400C6702
+  00000001400C64AA: shl         rax,5
+  00000001400C64AE: lea         rcx,[rcx+rax+10h]
+  00000001400C64B3: mov         r15,qword ptr [rcx]
+  00000001400C64B6: mov         qword ptr [rsp+20h],r15
+  00000001400C64BB: mov         r13d,dword ptr [rcx+8]
+  00000001400C64BF: mov         r12d,dword ptr [rcx+0Ch]
+  00000001400C64C3: mov         dword ptr [rsp+44h],r12d
+  00000001400C64C8: mov         eax,dword ptr [rcx+10h]
+  00000001400C64CB: mov         dword ptr [rsp+40h],eax
+  00000001400C64CF: mov         edx,dword ptr [rcx+14h]
+  00000001400C64D2: mov         dword ptr [rsp+3Ch],edx
+  00000001400C64D6: mov         r8,qword ptr [r15+30h]
+  00000001400C64DA: cmp         r13d,dword ptr [r8+8]
+  00000001400C64DE: jae         00000001400C6702
+  00000001400C64E4: mov         ecx,r13d
+  00000001400C64E7: mov         r10,qword ptr [r8+rcx*8+10h]
+  00000001400C64EC: mov         qword ptr [rsp+30h],r10
+  00000001400C64F1: lea         rcx,[??_7Com_Example_Tally_Com_Example_Tally_TallyPlane@@6B@]
+  00000001400C64F8: call        RhpNewFast
+  00000001400C64FD: mov         qword ptr [rsp+28h],rax
+  00000001400C6502: lea         rcx,[??_7__Array<Com_Example_Tally_Com_Example_Tally_TallyValue>@@6B@]
+  00000001400C6509: xor         edx,edx
+  00000001400C650B: call        RhpNewPtrArrayFast
+  00000001400C6510: mov         r8,qword ptr [rsp+28h]
+  00000001400C6515: lea         rcx,[r8+8]
+  00000001400C6519: mov         rdx,rax
+  00000001400C651C: call        RhpAssignRef
+  00000001400C6521: lea         rcx,[rbx+28h]
+  00000001400C6525: mov         rdx,qword ptr [rsp+28h]
+  00000001400C652A: call        RhpAssignRef
+  00000001400C652F: xor         edx,edx
+  00000001400C6531: xor         r8d,r8d
+  00000001400C6534: mov         ecx,dword ptr [rbx+38h]
+  00000001400C6537: xor         eax,eax
+  00000001400C6539: cmp         eax,ecx
+  00000001400C653B: jge         00000001400C65B6
+  00000001400C653D: mov         r10,rbp
+  00000001400C6540: cmp         eax,r14d
+  00000001400C6543: jae         00000001400C6702
+  00000001400C6549: mov         r9,rax
+  00000001400C654C: shl         r9,5
+  00000001400C6550: mov         r10,qword ptr [r10+r9+10h]
+  00000001400C6555: mov         r10,qword ptr [r10+30h]
+  00000001400C6559: mov         r11,rbp
+  00000001400C655C: lea         r9,[r11+r9+10h]
+  00000001400C6561: mov         r11d,dword ptr [r9+8]
+  00000001400C6565: cmp         r11d,dword ptr [r10+8]
+  00000001400C6569: jae         00000001400C6702
+  00000001400C656F: mov         r10,qword ptr [r10+r11*8+10h]
+  00000001400C6574: mov         r11d,dword ptr [r9+10h]
+  00000001400C6578: add         r11d,dword ptr [r10+24h]
+  00000001400C657C: mov         r12,qword ptr [r10+8]
+  00000001400C6580: mov         r15d,dword ptr [r12+0Ch]
+  00000001400C6585: lea         r11d,[r11+r15+1]
+  00000001400C658A: cmp         edx,r11d
+  00000001400C658D: jl          00000001400C6591
+  00000001400C658F: jmp         00000001400C6594
+  00000001400C6591: mov         edx,r11d
+  00000001400C6594: mov         r9d,dword ptr [r9+14h]
+  00000001400C6598: add         r9d,dword ptr [r10+28h]
+  00000001400C659C: mov         r10d,dword ptr [r12+10h]
+  00000001400C65A1: lea         r10d,[r9+r10+1]
+  00000001400C65A6: cmp         r8d,r10d
+  00000001400C65A9: jl          00000001400C65AD
+  00000001400C65AB: jmp         00000001400C65B0
+  00000001400C65AD: mov         r8d,r10d
+  00000001400C65B0: inc         eax
+  00000001400C65B2: cmp         eax,ecx
+  00000001400C65B4: jl          00000001400C653D
+  00000001400C65B6: mov         rcx,rbx
+  00000001400C65B9: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Grow
+  00000001400C65BE: test        eax,eax
+  00000001400C65C0: je          00000001400C66A2
+  00000001400C65C6: mov         rcx,qword ptr [rsi+18h]
+  00000001400C65CA: mov         r8d,dword ptr [rcx+8]
+  00000001400C65CE: mov         rdx,qword ptr [rbx+20h]
+  00000001400C65D2: call        S_P_CoreLib_System_Array__Copy_1
+  00000001400C65D7: mov         rcx,qword ptr [rbx+28h]
+  00000001400C65DB: mov         r8,qword ptr [rsi+20h]
+  00000001400C65DF: xor         edx,edx
+  00000001400C65E1: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__RestoreValues
+  00000001400C65E6: lea         rdx,[rsp+88h]
+  00000001400C65EE: mov         rcx,rbx
+  00000001400C65F1: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Activation
+  00000001400C65F6: mov         r15,qword ptr [rsp+20h]
+  00000001400C65FB: mov         qword ptr [rsp+0B0h],r15
+  00000001400C6603: mov         dword ptr [rsp+0C0h],r13d
+  00000001400C660B: mov         rbp,qword ptr [rsp+30h]
+  00000001400C6610: mov         rdx,qword ptr [rbp+40h]
+  00000001400C6614: mov         r12d,dword ptr [rsp+44h]
+  00000001400C6619: cmp         r12d,dword ptr [rdx+8]
+  00000001400C661D: jae         00000001400C6702
+  00000001400C6623: mov         ecx,r12d
+  00000001400C6626: lea         rcx,[rcx+rcx*8]
+  00000001400C662A: mov         edx,dword ptr [rdx+rcx*8+20h]
+  00000001400C662E: mov         dword ptr [rsp+0C4h],edx
+  00000001400C6635: mov         ebp,dword ptr [rsp+40h]
+  00000001400C6639: mov         dword ptr [rsp+0C8h],ebp
+  00000001400C6640: mov         ebp,dword ptr [rsp+3Ch]
+  00000001400C6644: mov         dword ptr [rsp+0CCh],ebp
+  00000001400C664B: mov         rdx,qword ptr [rsi+18h]
+  00000001400C664F: mov         edx,dword ptr [rdx+8]
+  00000001400C6652: mov         dword ptr [rsp+0D0h],edx
+  00000001400C6659: mov         edx,dword ptr [rsi+34h]
+  00000001400C665C: mov         dword ptr [rsp+0D4h],edx
+  00000001400C6663: mov         rdx,qword ptr [rsi+28h]
+  00000001400C6667: mov         qword ptr [rsp+0B8h],rdx
+  00000001400C666F: lea         rcx,[rsp+88h]
+  00000001400C6677: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__OnResume
+  00000001400C667C: mov         rcx,qword ptr [rbx+30h]
+  00000001400C6680: mov         edx,dword ptr [rbx+38h]
+  00000001400C6683: dec         edx
+  00000001400C6685: cmp         edx,dword ptr [rcx+8]
+  00000001400C6688: jae         00000001400C6702
+  00000001400C668A: shl         rdx,5
+  00000001400C668E: mov         eax,dword ptr [rsi+38h]
+  00000001400C6691: mov         dword ptr [rcx+rdx+1Ch],eax
+  00000001400C6695: mov         rcx,rbx
+  00000001400C6698: mov         rdx,rdi
+  00000001400C669B: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Run
+  00000001400C66A0: jmp         00000001400C66EB
+  00000001400C66A2: lea         rdx,[rsp+48h]
+  00000001400C66A7: mov         rcx,rbx
+  00000001400C66AA: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Broiler_VM_Composition_Ubc_Fixture_Broiler_VM_Contract_Tests_UbcCorpusHandlers>__Stop
+  00000001400C66AF: lea         r8,[rsp+48h]
+  00000001400C66B4: mov         rcx,rbx
+  00000001400C66B7: mov         rdx,rdi
+  00000001400C66BA: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C66BF: jmp         00000001400C66EB
+  00000001400C66C1: lea         rdx,[rsp+68h]
+  00000001400C66C6: mov         rcx,rbx
+  00000001400C66C9: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Broiler_VM_Composition_Ubc_Fixture_Broiler_VM_Contract_Tests_UbcCorpusHandlers>__Stop
+  00000001400C66CE: lea         r8,[rsp+68h]
+  00000001400C66D3: mov         rcx,rbx
+  00000001400C66D6: mov         rdx,rdi
+  00000001400C66D9: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C66DE: jmp         00000001400C66EB
+  00000001400C66E0: mov         rcx,rbx
+  00000001400C66E3: mov         rdx,rdi
+  00000001400C66E6: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Broiler_VM_Composition_Ubc_Fixture_Broiler_VM_Contract_Tests_UbcCorpusHandlers>__Stop
+  00000001400C66EB: mov         rax,rdi
+  00000001400C66EE: add         rsp,0E8h
+  00000001400C66F5: pop         rbx
+  00000001400C66F6: pop         rbp
+  00000001400C66F7: pop         rsi
+  00000001400C66F8: pop         rdi
+  00000001400C66F9: pop         r12
+  00000001400C66FB: pop         r13
+  00000001400C66FD: pop         r14
+  00000001400C66FF: pop         r15
+  00000001400C6701: ret
+  00000001400C6702: call        S_P_CoreLib_Internal_Runtime_CompilerHelpers_ThrowHelpers__ThrowIndexOutOfRangeException
+  00000001400C6707: int         3
+  00000001400C6708: nop
+  00000001400C6709: nop
+  00000001400C670A: nop
+  00000001400C670B: nop
+  00000001400C670C: nop
+  00000001400C670D: nop
+  00000001400C670E: nop
+  00000001400C670F: nop
+  00000001400C6710: nop
+  00000001400C6711: nop
+  00000001400C6712: nop
+  00000001400C6713: nop
+  00000001400C6714: nop
+  00000001400C6715: nop
+  00000001400C6716: nop
+  00000001400C6717: nop
+  00000001400C6718: nop
+  00000001400C6719: nop
+  00000001400C671A: nop
+  00000001400C671B: nop
+  00000001400C671C: nop
+  00000001400C671D: nop
+  00000001400C671E: nop
+  00000001400C671F: nop
+
+Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Unwind:
+  00000001400C7D20: push        r15
+  00000001400C7D22: push        r14
+  00000001400C7D24: push        r13
+  00000001400C7D26: push        r12
+  00000001400C7D28: push        rdi
+  00000001400C7D29: push        rsi
+  00000001400C7D2A: push        rbp
+  00000001400C7D2B: push        rbx
+  00000001400C7D2C: sub         rsp,28h
+  00000001400C7D30: mov         qword ptr [rsp+78h],rdx
+  00000001400C7D35: mov         qword ptr [rsp+80h],r8
+  00000001400C7D3D: mov         rbx,rcx
+  00000001400C7D40: jmp         00000001400C7D8C
+  00000001400C7D42: lea         eax,[r10+1]
+  00000001400C7D46: mov         r10d,eax
+  00000001400C7D49: cmp         edx,r10d
+  00000001400C7D4C: jg          00000001400C7E36
+  00000001400C7D52: mov         ecx,dword ptr [rbp+14h]
+  00000001400C7D55: mov         edx,ecx
+  00000001400C7D57: sub         r8d,ecx
+  00000001400C7D5A: test        r8d,r8d
+  00000001400C7D5D: jle         00000001400C7D6C
+  00000001400C7D5F: mov         rcx,qword ptr [rbx+28h]
+  00000001400C7D63: mov         rcx,qword ptr [rcx+8]
+  00000001400C7D67: call        S_P_CoreLib_System_Array__Clear_0
+  00000001400C7D6C: dec         dword ptr [rbx+38h]
+  00000001400C7D6F: mov         rcx,qword ptr [rbx+10h]
+  00000001400C7D73: mov         rcx,qword ptr [rcx+8]
+  00000001400C7D77: lea         r11,[__InterfaceDispatchCell_Broiler_VM_Abstractions_Broiler_VM_IVmMeter__ReportReleased_Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Unwind]
+  00000001400C7D7E: mov         edx,8
+  00000001400C7D83: mov         r8d,1
+  00000001400C7D89: call        qword ptr [r11]
+  00000001400C7D8C: cmp         dword ptr [rbx+38h],0
+  00000001400C7D90: jle         00000001400C7F20
+  00000001400C7D96: mov         rdx,qword ptr [rbx+30h]
+  00000001400C7D9A: mov         ecx,dword ptr [rbx+38h]
+  00000001400C7D9D: dec         ecx
+  00000001400C7D9F: cmp         ecx,dword ptr [rdx+8]
+  00000001400C7DA2: jae         00000001400C7F57
+  00000001400C7DA8: shl         rcx,5
+  00000001400C7DAC: lea         rbp,[rdx+rcx+10h]
+  00000001400C7DB1: mov         rdx,qword ptr [rbp]
+  00000001400C7DB5: mov         rdx,qword ptr [rdx+30h]
+  00000001400C7DB9: mov         ecx,dword ptr [rbp+8]
+  00000001400C7DBC: cmp         ecx,dword ptr [rdx+8]
+  00000001400C7DBF: jae         00000001400C7F57
+  00000001400C7DC5: mov         r14,qword ptr [rdx+rcx*8+10h]
+  00000001400C7DCA: mov         r15d,dword ptr [rbp+10h]
+  00000001400C7DCE: add         r15d,dword ptr [r14+24h]
+  00000001400C7DD2: mov         dword ptr [rsp+24h],r15d
+  00000001400C7DD7: mov         r13d,dword ptr [rbp+14h]
+  00000001400C7DDB: add         r13d,dword ptr [r14+28h]
+  00000001400C7DDF: mov         rcx,qword ptr [rbx+10h]
+  00000001400C7DE3: mov         rdx,qword ptr [r14+48h]
+  00000001400C7DE7: mov         edx,dword ptr [rdx+8]
+  00000001400C7DEA: inc         rdx
+  00000001400C7DED: cmp         dword ptr [rcx],ecx
+  00000001400C7DEF: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcLoopMeter__Spend
+  00000001400C7DF4: test        eax,eax
+  00000001400C7DF6: je          00000001400C7F0A
+  00000001400C7DFC: mov         r12,qword ptr [r14+40h]
+  00000001400C7E00: mov         ecx,dword ptr [rbp+0Ch]
+  00000001400C7E03: cmp         ecx,dword ptr [r12+8]
+  00000001400C7E08: jae         00000001400C7F57
+  00000001400C7E0E: lea         rcx,[rcx+rcx*8]
+  00000001400C7E12: lea         rcx,[r12+rcx*8+10h]
+  00000001400C7E17: mov         r8d,r13d
+  00000001400C7E1A: add         r8d,dword ptr [rcx+24h]
+  00000001400C7E1E: add         r8d,dword ptr [rcx+34h]
+  00000001400C7E22: mov         rcx,qword ptr [r14+48h]
+  00000001400C7E26: mov         edx,dword ptr [rcx+8]
+  00000001400C7E29: xor         eax,eax
+  00000001400C7E2B: xor         r10d,r10d
+  00000001400C7E2E: test        edx,edx
+  00000001400C7E30: jle         00000001400C7D52
+  00000001400C7E36: mov         eax,eax
+  00000001400C7E38: lea         rax,[rax+rax*2]
+  00000001400C7E3C: lea         rax,[rcx+rax*8+10h]
+  00000001400C7E41: mov         r9d,dword ptr [rax]
+  00000001400C7E44: mov         r11d,dword ptr [rax+4]
+  00000001400C7E48: mov         r12d,dword ptr [rax+8]
+  00000001400C7E4C: mov         edi,dword ptr [rax+0Ch]
+  00000001400C7E4F: mov         r15d,dword ptr [rax+10h]
+  00000001400C7E53: movzx       eax,byte ptr [rax+14h]
+  00000001400C7E57: mov         dword ptr [rsp+20h],eax
+  00000001400C7E5B: mov         esi,dword ptr [rbp+0Ch]
+  00000001400C7E5E: cmp         esi,r9d
+  00000001400C7E61: jl          00000001400C7D42
+  00000001400C7E67: cmp         esi,r11d
+  00000001400C7E6A: jge         00000001400C7D42
+  00000001400C7E70: add         r15d,r13d
+  00000001400C7E73: sub         r8d,r15d
+  00000001400C7E76: test        r8d,r8d
+  00000001400C7E79: jle         00000001400C7E8B
+  00000001400C7E7B: mov         rcx,qword ptr [rbx+28h]
+  00000001400C7E7F: mov         rcx,qword ptr [rcx+8]
+  00000001400C7E83: mov         edx,r15d
+  00000001400C7E86: call        S_P_CoreLib_System_Array__Clear_0
+  00000001400C7E8B: mov         rdx,qword ptr [rbp]
+  00000001400C7E8F: mov         rsi,qword ptr [rsp+78h]
+  00000001400C7E94: lea         rcx,[rsi+28h]
+  00000001400C7E98: call        RhpCheckedAssignRef
+  00000001400C7E9D: mov         ecx,dword ptr [rbp+8]
+  00000001400C7EA0: mov         dword ptr [rsi+38h],ecx
+  00000001400C7EA3: mov         rcx,qword ptr [r14+40h]
+  00000001400C7EA7: cmp         r12d,dword ptr [rcx+8]
+  00000001400C7EAB: jae         00000001400C7F57
+  00000001400C7EB1: mov         edx,r12d
+  00000001400C7EB4: lea         rdx,[rdx+rdx*8]
+  00000001400C7EB8: mov         ecx,dword ptr [rcx+rdx*8+20h]
+  00000001400C7EBC: mov         dword ptr [rsi+3Ch],ecx
+  00000001400C7EBF: mov         ecx,dword ptr [rbp+10h]
+  00000001400C7EC2: mov         dword ptr [rsi+40h],ecx
+  00000001400C7EC5: mov         ecx,dword ptr [rbp+14h]
+  00000001400C7EC8: mov         dword ptr [rsi+44h],ecx
+  00000001400C7ECB: add         edi,dword ptr [rsp+24h]
+  00000001400C7ECF: mov         dword ptr [rsi+48h],edi
+  00000001400C7ED2: mov         dword ptr [rsi+4Ch],r15d
+  00000001400C7ED6: lea         rcx,[rsi+30h]
+  00000001400C7EDA: mov         rdx,qword ptr [rsp+80h]
+  00000001400C7EE2: call        RhpCheckedAssignRef
+  00000001400C7EE7: mov         rcx,rsi
+  00000001400C7EEA: mov         edx,dword ptr [rsp+20h]
+  00000001400C7EEE: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__OnLand
+  00000001400C7EF3: mov         dword ptr [rbp+0Ch],r12d
+  00000001400C7EF7: xor         eax,eax
+  00000001400C7EF9: add         rsp,28h
+  00000001400C7EFD: pop         rbx
+  00000001400C7EFE: pop         rbp
+  00000001400C7EFF: pop         rsi
+  00000001400C7F00: pop         rdi
+  00000001400C7F01: pop         r12
+  00000001400C7F03: pop         r13
+  00000001400C7F05: pop         r14
+  00000001400C7F07: pop         r15
+  00000001400C7F09: ret
+  00000001400C7F0A: mov         eax,2
+  00000001400C7F0F: add         rsp,28h
+  00000001400C7F13: pop         rbx
+  00000001400C7F14: pop         rbp
+  00000001400C7F15: pop         rsi
+  00000001400C7F16: pop         rdi
+  00000001400C7F17: pop         r12
+  00000001400C7F19: pop         r13
+  00000001400C7F1B: pop         r14
+  00000001400C7F1D: pop         r15
+  00000001400C7F1F: ret
+  00000001400C7F20: mov         rdi,qword ptr [rsp+80h]
+  00000001400C7F28: xor         ecx,ecx
+  00000001400C7F2A: mov         rsi,qword ptr [rsp+78h]
+  00000001400C7F2F: mov         dword ptr [rsi+48h],ecx
+  00000001400C7F32: mov         dword ptr [rsi+4Ch],ecx
+  00000001400C7F35: lea         rcx,[rsi+30h]
+  00000001400C7F39: mov         rdx,rdi
+  00000001400C7F3C: call        RhpCheckedAssignRef
+  00000001400C7F41: mov         eax,1
+  00000001400C7F46: add         rsp,28h
+  00000001400C7F4A: pop         rbx
+  00000001400C7F4B: pop         rbp
+  00000001400C7F4C: pop         rsi
+  00000001400C7F4D: pop         rdi
+  00000001400C7F4E: pop         r12
+  00000001400C7F50: pop         r13
+  00000001400C7F52: pop         r14
+  00000001400C7F54: pop         r15
+  00000001400C7F56: ret
+  00000001400C7F57: call        S_P_CoreLib_Internal_Runtime_CompilerHelpers_ThrowHelpers__ThrowIndexOutOfRangeException
+  00000001400C7F5C: int         3
+  00000001400C7F5D: nop
+  00000001400C7F5E: nop
+  00000001400C7F5F: nop
+
+Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Suspend:
+  00000001400C7F60: push        r15
+  00000001400C7F62: push        r14
+  00000001400C7F64: push        r13
+  00000001400C7F66: push        r12
+  00000001400C7F68: push        rdi
+  00000001400C7F69: push        rsi
+  00000001400C7F6A: push        rbp
+  00000001400C7F6B: push        rbx
+  00000001400C7F6C: sub         rsp,0A8h
+  00000001400C7F73: xorps       xmm4,xmm4
+  00000001400C7F76: mov         rax,0FFFFFFFFFFFFFFA0h
+  00000001400C7F80: movaps      xmmword ptr [rsp+rax+0A0h],xmm4
+  00000001400C7F88: movaps      xmmword ptr [rsp+rax+0B0h],xmm4
+  00000001400C7F90: movaps      xmmword ptr [rsp+rax+0C0h],xmm4
+  00000001400C7F98: add         rax,30h
+  00000001400C7F9C: jne         00000001400C7F80
+  00000001400C7F9E: mov         qword ptr [rsp+0A0h],rax
+  00000001400C7FA6: mov         rbx,rcx
+  00000001400C7FA9: mov         rdi,rdx
+  00000001400C7FAC: mov         rsi,r8
+  00000001400C7FAF: mov         ebp,r9d
+  00000001400C7FB2: mov         r14d,dword ptr [rsi+48h]
+  00000001400C7FB6: mov         r15d,dword ptr [rsi+4Ch]
+  00000001400C7FBA: mov         r13,qword ptr [rsi+30h]
+  00000001400C7FBE: test        r13,r13
+  00000001400C7FC1: je          00000001400C8143
+  00000001400C7FC7: movsxd      r12,r14d
+  00000001400C7FCA: movsxd      rcx,dword ptr [rbx+38h]
+  00000001400C7FCE: shl         rcx,5
+  00000001400C7FD2: lea         rcx,[rcx+r12*8]
+  00000001400C7FD6: mov         r8,qword ptr [rbx+28h]
+  00000001400C7FDA: cmp         byte ptr [r8],r8b
+  00000001400C7FDD: movsxd      r8,r15d
+  00000001400C7FE0: lea         r8,[rcx+r8*8]
+  00000001400C7FE4: mov         rax,qword ptr [rbx+10h]
+  00000001400C7FE8: mov         qword ptr [rsp+28h],rax
+  00000001400C7FED: mov         rcx,qword ptr [rax+8]
+  00000001400C7FF1: lea         r11,[__InterfaceDispatchCell_Broiler_VM_Abstractions_Broiler_VM_IVmMeter__TryCharge_Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Suspend]
+  00000001400C7FF8: mov         edx,2
+  00000001400C7FFD: call        qword ptr [r11]
+  00000001400C8000: mov         rdx,qword ptr [rsp+28h]
+  00000001400C8005: mov         byte ptr [rdx+20h],0
+  00000001400C8009: test        eax,eax
+  00000001400C800B: je          00000001400C811E
+  00000001400C8011: mov         rdx,r12
+  00000001400C8014: lea         rcx,[??_7__Array<UInt64>@@6B@]
+  00000001400C801B: call        RhpNewPtrArrayFast
+  00000001400C8020: mov         r12,rax
+  00000001400C8023: mov         rcx,qword ptr [rbx+20h]
+  00000001400C8027: mov         rdx,r12
+  00000001400C802A: mov         r8d,r14d
+  00000001400C802D: call        S_P_CoreLib_System_Array__Copy_1
+  00000001400C8032: mov         r14d,dword ptr [rbx+38h]
+  00000001400C8036: movsxd      rdx,r14d
+  00000001400C8039: lea         rcx,[??_7__Array<Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcFrame>@@6B@]
+  00000001400C8040: call        RhpNewArrayFast
+  00000001400C8045: mov         qword ptr [rsp+38h],rax
+  00000001400C804A: mov         rcx,qword ptr [rbx+30h]
+  00000001400C804E: mov         r8d,r14d
+  00000001400C8051: mov         rdx,rax
+  00000001400C8054: call        S_P_CoreLib_System_Array__Copy_1
+  00000001400C8059: mov         rcx,qword ptr [rbx+28h]
+  00000001400C805D: mov         r8d,r15d
+  00000001400C8060: xor         edx,edx
+  00000001400C8062: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__CaptureValues
+  00000001400C8067: mov         r14,rax
+  00000001400C806A: lea         rcx,[??_7Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcContinuation@@6B@]
+  00000001400C8071: call        RhpNewFast
+  00000001400C8076: mov         qword ptr [rsp+30h],rax
+  00000001400C807B: mov         rdx,qword ptr [rbx+8]
+  00000001400C807F: mov         r8d,dword ptr [rbx+38h]
+  00000001400C8083: mov         dword ptr [rsp+64h],r8d
+  00000001400C8088: lea         rcx,[rax+8]
+  00000001400C808C: call        RhpAssignRef
+  00000001400C8091: mov         rax,qword ptr [rsp+30h]
+  00000001400C8096: lea         rcx,[rax+10h]
+  00000001400C809A: mov         rdx,qword ptr [rsp+38h]
+  00000001400C809F: call        RhpAssignRef
+  00000001400C80A4: mov         rax,qword ptr [rsp+30h]
+  00000001400C80A9: mov         ecx,dword ptr [rsp+64h]
+  00000001400C80AD: mov         dword ptr [rax+30h],ecx
+  00000001400C80B0: lea         rcx,[rax+18h]
+  00000001400C80B4: mov         rdx,r12
+  00000001400C80B7: call        RhpAssignRef
+  00000001400C80BC: mov         r12,qword ptr [rsp+30h]
+  00000001400C80C1: lea         rcx,[r12+20h]
+  00000001400C80C6: mov         rdx,r14
+  00000001400C80C9: call        RhpAssignRef
+  00000001400C80CE: mov         dword ptr [r12+34h],r15d
+  00000001400C80D3: mov         dword ptr [r12+38h],ebp
+  00000001400C80D8: lea         rcx,[r12+28h]
+  00000001400C80DD: mov         rdx,r13
+  00000001400C80E0: call        RhpAssignRef
+  00000001400C80E5: mov         rcx,rsi
+  00000001400C80E8: call        Com_Example_Tally_Com_Example_Tally_TallyFamily__SuspendProjection
+  00000001400C80ED: mov         dword ptr [rsp+58h],2
+  00000001400C80F5: xor         r8d,r8d
+  00000001400C80F8: mov         qword ptr [rsp+40h],r8
+  00000001400C80FD: mov         qword ptr [rsp+48h],r12
+  00000001400C8102: mov         qword ptr [rsp+50h],rax
+  00000001400C8107: mov         dword ptr [rsp+5Ch],r8d
+  00000001400C810C: lea         r8,[rsp+40h]
+  00000001400C8111: mov         rcx,rbx
+  00000001400C8114: mov         rdx,rdi
+  00000001400C8117: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C811C: jmp         00000001400C817B
+  00000001400C811E: lea         rdx,[rsp+88h]
+  00000001400C8126: mov         rcx,rbx
+  00000001400C8129: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Broiler_VM_Composition_Ubc_Fixture_Broiler_VM_Contract_Tests_UbcCorpusHandlers>__Stop
+  00000001400C812E: lea         r8,[rsp+88h]
+  00000001400C8136: mov         rcx,rbx
+  00000001400C8139: mov         rdx,rdi
+  00000001400C813C: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C8141: jmp         00000001400C817B
+  00000001400C8143: mov         dword ptr [rsp+80h],4
+  00000001400C814E: xor         r8d,r8d
+  00000001400C8151: mov         qword ptr [rsp+68h],r8
+  00000001400C8156: mov         qword ptr [rsp+70h],r8
+  00000001400C815B: mov         qword ptr [rsp+78h],r8
+  00000001400C8160: mov         dword ptr [rsp+84h],1F5h
+  00000001400C816B: lea         r8,[rsp+68h]
+  00000001400C8170: mov         rcx,rbx
+  00000001400C8173: mov         rdx,rdi
+  00000001400C8176: call        Broiler_VM_Emitter_Bytecode_Broiler_VM_Emitter_Bytecode_UbcInterpreter_1<Com_Example_Tally_Com_Example_Tally_TallyFamily>__Finish
+  00000001400C817B: mov         rax,rdi
+  00000001400C817E: add         rsp,0A8h
+  00000001400C8185: pop         rbx
+  00000001400C8186: pop         rbp
+  00000001400C8187: pop         rsi
+  00000001400C8188: pop         rdi
+  00000001400C8189: pop         r12
+  00000001400C818B: pop         r13
+  00000001400C818D: pop         r14
+  00000001400C818F: pop         r15
+  00000001400C8191: ret
+  00000001400C8192: nop
+  00000001400C8193: nop
+  00000001400C8194: nop
+  00000001400C8195: nop
+  00000001400C8196: nop
+  00000001400C8197: nop
+  00000001400C8198: nop
+  00000001400C8199: nop
+  00000001400C819A: nop
+  00000001400C819B: nop
+  00000001400C819C: nop
+  00000001400C819D: nop
+  00000001400C819E: nop
+  00000001400C819F: nop

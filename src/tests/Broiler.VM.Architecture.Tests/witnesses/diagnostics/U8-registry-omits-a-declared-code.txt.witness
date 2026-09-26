@@ -1,0 +1,14 @@
+# A universal bytecode registry that is not the vocabulary it publishes.
+#
+# Three defects, each one a real edit could introduce: a declared code with no row at all
+# (UnsupportedFormatVersion, 3003), a row whose name does not belong to its number, and a row dated
+# from a revision the registry does not have. The rows it does carry are otherwise the real
+# registry's, so the only other thing rule U8 reports about this file is the omission of every code
+# the witness leaves out, which the test does not count.
+#
+# registry-revision: 1
+#
+# code|name|reason|reachability|case|since
+3001|WrongMagic|MalformedEncoding|corpus|a-wrong-magic|1
+3002|DescriptorFormatVersionMismatch|DescriptorMismatch|corpus|a-payload-version-the-descriptor-does-not-name|2
+3003|UnsupportedFormatVersionExtended|UnsupportedProfileFormatVersion|corpus|a-format-version-this-build-does-not-define|1

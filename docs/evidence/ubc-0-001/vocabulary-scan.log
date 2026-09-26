@@ -1,0 +1,184 @@
+$ python eng/ubc-vocabulary-scan.py --table docs/adr/0013-the-universal-bytecode-extraction-record.md --heading "The correspondence table" --column "Shared part"
+# ubc-vocabulary-scan: docs/adr/0013-the-universal-bytecode-extraction-record.md, heading containing 'The correspondence table', column 'Shared part'
+# vocabulary: docs/ubc/banned-vocabulary.txt, terms: js, javascript, wasm, webassembly, js., wasm.
+ok    row a
+ok    row b
+ok    row c
+ok    row d
+ok    row e
+ok    row f
+ok    row g
+ok    row h
+# scanned 8 item(s); 0 matched
+exit 0
+
+$ python eng/ubc-vocabulary-scan.py --identifiers docs/evidence/ubc-0-001/proposed-surface.txt
+# ubc-vocabulary-scan: docs/evidence/ubc-0-001/proposed-surface.txt
+# vocabulary: docs/ubc/banned-vocabulary.txt, terms: js, javascript, wasm, webassembly, js., wasm.
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+# scanned 64 item(s); 0 matched
+exit 0
+
+--- negative control 1: 'the JsValue array of each activation' injected into row c's shared-part cell of the record
+# ubc-vocabulary-scan: docs/adr/0013-the-universal-bytecode-extraction-record.md, heading containing 'The correspondence table', column 'Shared part'
+# vocabulary: docs/ubc/banned-vocabulary.txt, terms: js, javascript, wasm, webassembly, js., wasm.
+ok    row a
+ok    row b
+MATCH row c: js (word)
+      the JsValue array of each activation, and A verified unit is executed by a loop over its code bytes with an explicit program counter. At each instruction the loop records the offset for fault attribution, charges the instruction's fixed cost before its effect, reads the opcode byte, dispatches once through one switch, and lets the arm read its immediates and advance the counter or replace it with a target verification checked. An opcode verification admitted and the loop has no arm for is an internal defect of the executor, never a guest-visible fault. A call hands control to a new activation, and a return resumes the caller at the counter its activation saved.
+ok    row d
+ok    row e
+ok    row f
+ok    row g
+ok    row h
+# scanned 8 item(s); 1 matched
+exit 1 (a match must fail the scan)
+
+--- after revert: record restored byte for byte: True
+# ubc-vocabulary-scan: docs/adr/0013-the-universal-bytecode-extraction-record.md, heading containing 'The correspondence table', column 'Shared part'
+# vocabulary: docs/ubc/banned-vocabulary.txt, terms: js, javascript, wasm, webassembly, js., wasm.
+ok    row a
+ok    row b
+ok    row c
+ok    row d
+ok    row e
+ok    row f
+ok    row g
+ok    row h
+# scanned 8 item(s); 0 matched
+exit 0
+
+--- negative control 2: 'WasmModule' added to a copy of the names
+# ubc-vocabulary-scan: docs/evidence/ubc-0-001/proposed-surface.injected.tmp
+# vocabulary: docs/ubc/banned-vocabulary.txt, terms: js, javascript, wasm, webassembly, js., wasm.
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+ok    identifier
+MATCH identifier: wasm (substring)
+      WasmModule
+# scanned 65 item(s); 1 matched
+exit 1 (a match must fail the scan)

@@ -1,0 +1,18 @@
+<!-- Violates A12: a composition root linking a test project whose name matches the emitter
+     pattern. The universal bytecode and its emitters are admitted as siblings because they are
+     product projects; a project under src/tests/ is a test project whatever it is named, because
+     the path, not the name, decides that partition. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Composition.Witness</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\tests\Com.Example.Tally\Com.Example.Tally.csproj" />
+    <ProjectReference Include="..\tests\Broiler.VM.Emitter.Bytecode.Tests\Broiler.VM.Emitter.Bytecode.Tests.csproj" />
+  </ItemGroup>
+</Project>

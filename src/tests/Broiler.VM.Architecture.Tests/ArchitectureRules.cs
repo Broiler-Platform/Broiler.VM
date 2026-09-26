@@ -1,3 +1,5 @@
+using System.Xml.Linq;
+
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>
@@ -119,8 +121,10 @@ internal static class ArchitectureRules
     /// A composition root is exempt because it is not a product project - ADR 0001 revision 1 puts
     /// it in its own partition - and because the reference it needs is to a consumer profile, which
     /// lives at a test-only path for want of any other shape that fits. The exemption is not a hole:
-    /// A12 states what a composition root may reference, and it forbids the fixture profile and
-    /// every test project by name.
+    /// A12 states what a composition root may reference. It admits a consumer profile by name, and A13
+    /// holds a test-only project with such a name to a profile's shape; it admits a universal bytecode
+    /// sibling only at its product path; and it refuses the fixture profile and every other test
+    /// project.
     /// </remarks>
     internal static IEnumerable<string> A4(ComponentGraph.ProjectFile project)
     {
@@ -255,11 +259,77 @@ internal static class ArchitectureRules
             return [];
         }
 
-        return project.ReferencedAssemblyNames
+        // Revised 2026-09-25 for the universal bytecode programme's UBC-2: the emitter family pattern
+        // Broiler.VM.Emitter.<Architecture> joins the profile families under the same no-cross-family
+        // rule. Only a composition root may reference an emitter, save a sibling of the same emitter
+        // family; and an emitter, which is not a composition root, may reference no profile - the
+        // clause above already refuses that half, because an emitter is a project like any other.
+        var profiles = project.ReferencedAssemblyNames
             .Where(IsComposableProfile)
-            .Where(name => !IsSameProfileFamily(project.AssemblyName, name))
-            .Select(name => $"{project.RelativePath} -> {name}");
+            .Where(name => !IsSameProfileFamily(project.AssemblyName, name));
+
+        var emitters = project.ReferencedAssemblyNames
+            .Where(IsEmitter)
+            .Where(name => !IsSameEmitterFamily(project.AssemblyName, name));
+
+        return profiles.Concat(emitters).Select(name => $"{project.RelativePath} -> {name}");
     }
+
+    /// <summary>Whether an assembly name is an emitter: <c>Broiler.VM.Emitter.&lt;Architecture&gt;</c> or one of its siblings.</summary>
+    internal static bool IsEmitter(string assemblyName) => EmitterFamily(assemblyName) is not null;
+
+    /// <summary>
+    /// Whether two assembly names belong to the same emitter family, keyed on the architecture
+    /// segment exactly as <see cref="IsSameProfileFamily"/> keys on the language: an emitter's pivot
+    /// and its execution half are family, and two architectures are not.
+    /// </summary>
+    internal static bool IsSameEmitterFamily(string left, string right)
+    {
+        var leftFamily = EmitterFamily(left);
+
+        return leftFamily is not null &&
+            string.Equals(leftFamily, EmitterFamily(right), StringComparison.Ordinal);
+    }
+
+    /// <summary>The <c>Broiler.VM.Emitter.&lt;Architecture&gt;</c> prefix of an assembly name, or null.</summary>
+    internal static string? EmitterFamily(string assemblyName)
+    {
+        const string Prefix = "Broiler.VM.Emitter.";
+
+        if (!assemblyName.StartsWith(Prefix, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        var architecture = assemblyName[Prefix.Length..].Split('.')[0];
+
+        return architecture.Length == 0 ? null : Prefix + architecture;
+    }
+
+    /// <summary>
+    /// Whether an assembly name is one a composition root may link beside its profiles for the
+    /// universal bytecode: <c>Broiler.VM.Ubc</c> or an emitter. Neither is a profile, so neither
+    /// counts toward A12's "at least one profile".
+    /// </summary>
+    internal static bool IsUniversalBytecodeSibling(string assemblyName) =>
+        string.Equals(assemblyName, "Broiler.VM.Ubc", StringComparison.Ordinal) || IsEmitter(assemblyName);
+
+    /// <summary>
+    /// Whether a resolved project reference is the product slot for its name:
+    /// <c>src/&lt;Name&gt;/&lt;Name&gt;.csproj</c> under the component root.
+    /// </summary>
+    /// <remarks>
+    /// ADR 0001 makes the path, not the name, the authority for the product/test partition, so a
+    /// rule that admits a reference because it is a product project reads the path. A witness's
+    /// references resolve as though the witness sat in the product tree, so a witness naming a
+    /// sibling at <c>..\&lt;Name&gt;\</c> names the product slot and one naming it under
+    /// <c>..\tests\</c> does not.
+    /// </remarks>
+    internal static bool IsProductSlot(string reference, string name) =>
+        string.Equals(
+            reference,
+            Path.Combine(ComponentGraph.Root, "src", name, name + ".csproj"),
+            StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Whether two assembly names belong to the same profile family: the same language under
@@ -316,10 +386,21 @@ internal static class ArchitectureRules
     /// assemblies, and nothing else at all.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This is the project-file half of the exact-closure claim, and it is the half that can be
     /// checked without publishing anything. The published closure is the other half: a root whose
     /// reference set is clean here can still drag something in through a package, so both are
     /// asserted and neither is taken for the other.
+    /// </para>
+    /// <para>
+    /// <b>What is admitted, and how each is recognised.</b> The core packages and the consumer
+    /// profiles are admitted by name - a consumer profile lives under <c>src/tests/</c>, so its path
+    /// cannot be what admits it, and A13 holds a test-only project with a profile's name to a
+    /// profile's shape. The universal bytecode and its emitters, revised in at UBC-2, are product
+    /// projects, so a reference with one of their names is admitted only at its product path
+    /// (<see cref="IsProductSlot"/>). Every other reference is refused, the fixture profile and
+    /// every other test project with it.
+    /// </para>
     /// </remarks>
     internal static IEnumerable<string> A12(ComponentGraph.ProjectFile project)
     {
@@ -333,8 +414,10 @@ internal static class ArchitectureRules
 
         var profiles = 0;
 
-        foreach (var name in project.ReferencedAssemblyNames)
+        foreach (var reference in project.ProjectReferences)
         {
+            var name = Path.GetFileNameWithoutExtension(reference);
+
             if (DeclaredPackageIds.Contains(name, StringComparer.Ordinal))
             {
                 continue;
@@ -346,7 +429,25 @@ internal static class ArchitectureRules
                 continue;
             }
 
-            yield return $"{project.RelativePath} -> {name}, which is neither a core package nor a composable profile";
+            // Revised 2026-09-25 (UBC-2): the universal bytecode and its emitters are siblings a root
+            // links beside the families it composes; they are not profiles and do not count as one.
+            // A sibling is a product project, so it is admitted at its product path and nowhere else:
+            // a test project named as an emitter is still a test project.
+            if (IsUniversalBytecodeSibling(name) && IsProductSlot(reference, name))
+            {
+                continue;
+            }
+
+            if (IsUniversalBytecodeSibling(name))
+            {
+                yield return
+                    $"{project.RelativePath} -> {name}, which is named as a universal bytecode sibling but " +
+                    $"is not the product project src/{name}/{name}.csproj";
+
+                continue;
+            }
+
+            yield return $"{project.RelativePath} -> {name}, which is neither a core package, a composable profile nor a universal bytecode sibling";
         }
 
         if (profiles == 0)
@@ -385,11 +486,15 @@ internal static class ArchitectureRules
             .OrderBy(static name => name, StringComparer.Ordinal)
             .ToArray();
 
-        if (!referenced.SequenceEqual(ConsumerProfileReferences, StringComparer.Ordinal))
+        // Revised 2026-09-25 (UBC-2): a consumer family that lowers to the universal bytecode takes a
+        // third edge, to Broiler.VM.Ubc - exactly that one, and never to an emitter, which a family
+        // does not name; the composition root hands the family to the emitter it composes.
+        if (!referenced.SequenceEqual(ConsumerProfileReferences, StringComparer.Ordinal) &&
+            !referenced.SequenceEqual(ConsumerFamilyReferences, StringComparer.Ordinal))
         {
             yield return
                 $"{project.RelativePath} references [{string.Join(", ", referenced)}] rather than " +
-                $"[{string.Join(", ", ConsumerProfileReferences)}]";
+                $"[{string.Join(", ", ConsumerProfileReferences)}], or [{string.Join(", ", ConsumerFamilyReferences)}] for a universal bytecode family";
         }
 
         foreach (var package in project.PackageReferences)
@@ -406,6 +511,13 @@ internal static class ArchitectureRules
     /// <summary>The exact reference set ADR 0011's obligation P1 allows a profile package.</summary>
     internal static readonly string[] ConsumerProfileReferences =
         ["Broiler.VM.Abstractions", "Broiler.VM.Binary"];
+
+    /// <summary>
+    /// The exact reference set a consumer family of the universal bytecode takes: P1's two, and the
+    /// universal bytecode, which ADR 0013's verdict adds and route MVP-10 records.
+    /// </summary>
+    internal static readonly string[] ConsumerFamilyReferences =
+        ["Broiler.VM.Abstractions", "Broiler.VM.Binary", "Broiler.VM.Ubc"];
 
     /// <summary>
     /// Whether an assembly name is a profile a composition may name: a Broiler-owned language
@@ -610,7 +722,9 @@ internal static class ArchitectureRules
     /// <para>
     /// The literal element is asserted rather than the evaluated property, which is rule A5's
     /// discipline applied to a second partition and for the same reason: an evaluated property can
-    /// be true because of an import a reader of the project file cannot see.
+    /// be true because of an import a reader of the project file cannot see. Unlike A5, the element
+    /// is read as an element and not as text, because a comment quoting it and a later definition
+    /// overriding it both satisfy a text search; <see cref="NotLiterallyUnpackable"/> says how.
     /// </para>
     /// </remarks>
     internal static IEnumerable<string> N4(ComponentGraph.ProjectFile project)
@@ -625,10 +739,88 @@ internal static class ArchitectureRules
             yield return $"{project.RelativePath} declares PackageId {project.PackageId}";
         }
 
-        if (!project.RawText.Contains("<IsPackable>false</IsPackable>", StringComparison.Ordinal))
+        foreach (var message in NotLiterallyUnpackable(project, "whether a profile family packs is JS-10's decision"))
+        {
+            yield return message;
+        }
+    }
+
+    /// <summary>
+    /// What stops a project file showing it does not pack: no <c>IsPackable</c> definition at all, one
+    /// that is conditional or whose value is not literally <c>false</c>, or a property group inside a
+    /// target that sets it to anything but <c>false</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Elements, not text.</b> A search of the file's text for the element is satisfied by a
+    /// comment that quotes it and by a false definition a later one overrides, and in both cases
+    /// the project packs. MSBuild takes the last definition that applies, and a condition - on the
+    /// element, on its group or on an enclosing <c>Choose</c> - depends on properties this reader
+    /// does not evaluate, so the only file that shows the property is off is one in which every
+    /// definition is unconditional and literally false.
+    /// </para>
+    /// <para>
+    /// <b>Only a property group's element is a definition.</b> An element of that name that is not a
+    /// property group's child - item metadata - or that sits inside <c>ProjectExtensions</c>, whose
+    /// content MSBuild does not evaluate, sets no property, so it neither shows the property is off
+    /// nor is reported. A property group inside a <c>Target</c> sets the property only if the target
+    /// runs and only for what runs after it, so a false one there is not the definition either; one
+    /// that sets anything but false is reported, because it can turn the property on for the pack
+    /// that follows it.
+    /// </para>
+    /// <para>
+    /// The property's name is matched without regard to case, as MSBuild matches it. A value set by an
+    /// import - <c>Directory.Build.props</c> or the vendored packaging props - is not seen, because the
+    /// rule reads the project file's own elements, and neither is one a target sets through a task's
+    /// output rather than a property group. Rules N4 and U1 read this; rule A5 still reads the text.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> NotLiterallyUnpackable(ComponentGraph.ProjectFile project, string decision)
+    {
+        var properties = XDocument.Parse(project.RawText)
+            .Descendants()
+            .Where(static element =>
+                string.Equals(element.Name.LocalName, "IsPackable", StringComparison.OrdinalIgnoreCase) &&
+                element.Parent?.Name.LocalName == "PropertyGroup" &&
+                !element.Ancestors().Any(static ancestor => ancestor.Name.LocalName == "ProjectExtensions"))
+            .ToArray();
+
+        var definitions = properties.Where(static element => !InsideTarget(element)).ToArray();
+
+        if (definitions.Length == 0)
         {
             yield return $"{project.RelativePath} does not carry the literal <IsPackable>false</IsPackable>";
         }
+
+        foreach (var definition in definitions)
+        {
+            var value = definition.Value.Trim();
+
+            if (definition.AncestorsAndSelf().Any(static element =>
+                    element.Attribute("Condition") is not null || element.Name.LocalName == "Choose"))
+            {
+                yield return
+                    $"{project.RelativePath} sets IsPackable under a condition, which this rule cannot " +
+                    "evaluate and so cannot show is off";
+            }
+            else if (!string.Equals(value, "false", StringComparison.Ordinal))
+            {
+                yield return $"{project.RelativePath} sets IsPackable to {value}, and {decision}";
+            }
+        }
+
+        foreach (var scoped in properties.Where(InsideTarget))
+        {
+            var value = scoped.Value.Trim();
+
+            if (!string.Equals(value, "false", StringComparison.Ordinal))
+            {
+                yield return $"{project.RelativePath} sets IsPackable to {value}, and {decision}";
+            }
+        }
+
+        static bool InsideTarget(XElement element) =>
+            element.Ancestors().Any(static ancestor => ancestor.Name.LocalName == "Target");
     }
 
     // ---- Group N, second half: the published diagnostic registry ------------------------------

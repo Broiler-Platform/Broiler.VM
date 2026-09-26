@@ -1,0 +1,14 @@
+<!-- Violates U1: the universal bytecode without the literal element IsPackable false. The vendored
+     packaging props default IsPackable to true for a project whose name matches none of their
+     test-and-tooling suffixes, so this project would pack under its assembly name - and whether
+     it becomes a package is milestone UBC-9's decision, not an omission's. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+</Project>

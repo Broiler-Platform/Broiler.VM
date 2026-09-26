@@ -1,0 +1,47 @@
+// Witness for rule U4's second clause. Not compiled by anything.
+//
+// A second statement of every common instruction's width, written the way an encoder writes one when
+// it does not read UbcOpcodes: a switch over the opcode that returns the whole instruction's width in
+// bytes. Every arm agrees with the one table in src/Broiler.VM.Ubc/UbcOpcodes.cs except Jump, which is
+// three bytes here - its target written as a sixteen-bit field - and five there. An encoder reading this
+// table writes a jump the verifier, reading the one table, decodes with a target that runs two bytes
+// into the next instruction: the verifier and an encoder disagree about the same byte stream.
+//
+// Rule U4 reports this table whether or not a row in it is perturbed. A copy that agrees today is a copy
+// that disagrees the day a row of the one table changes, and the rule's test reads this file at a path
+// in a project that references Broiler.VM.Ubc, where every arm is reported, and at the one table's own
+// path, where none is.
+
+using Broiler.VM.Ubc;
+
+namespace Broiler.VM.Contract.Tests;
+
+internal static class UbcEncodingWidths
+{
+    internal static int InstructionWidth(UbcOpcode opcode) => opcode switch
+    {
+        UbcOpcode.Nop => 1,
+        UbcOpcode.Trap => 4,
+        UbcOpcode.Jump => 3,
+        UbcOpcode.JumpIfZero => 5,
+        UbcOpcode.JumpIfNonZero => 5,
+        UbcOpcode.JumpTable => 3,
+        UbcOpcode.Return => 1,
+        UbcOpcode.Call => 5,
+        UbcOpcode.Drop => 1,
+        UbcOpcode.Dup => 1,
+        UbcOpcode.Dup2 => 1,
+        UbcOpcode.Swap => 1,
+        UbcOpcode.Pick => 2,
+        UbcOpcode.Select => 1,
+        UbcOpcode.Squash => 3,
+        UbcOpcode.LocalGet => 3,
+        UbcOpcode.LocalSet => 3,
+        UbcOpcode.LocalTee => 3,
+        UbcOpcode.ConstI32 => 5,
+        UbcOpcode.ConstI64 => 9,
+        UbcOpcode.ConstF32 => 5,
+        UbcOpcode.ConstF64 => 9,
+        _ => -1,
+    };
+}

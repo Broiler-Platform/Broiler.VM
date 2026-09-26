@@ -1,0 +1,39 @@
+ok   sum completed words=[5] tallies=[]
+ok   arithmetic completed words=[40] tallies=[]
+ok   divide-by-zero faulted Trap code=1 amount=0
+ok   overflow faulted Trap code=2 amount=0
+ok   unreachable faulted Unreachable code=0 amount=0
+ok   explicit-trap faulted Trap code=3 amount=0
+ok   catch completed words=[5] tallies=[]
+ok   uncaught faulted Uncaught code=0 amount=7
+ok   throw-across-frames completed words=[9] tallies=[]
+ok   recursion exhausted CallDepth
+ok   suspend suspended amount=1 | completed words=[121] tallies=[]
+ok   suspend-in-callee suspended amount=5 | completed words=[26] tallies=[]
+ok   call-request completed words=[14] tallies=[]
+ok   branch completed words=[1] tallies=[]
+ok   branch-not-taken completed words=[0] tallies=[]
+ok   guest-load completed words=[105] tallies=[]
+ok   guest-foreign faulted Trap code=4 amount=0 load=ProviderProfileMismatch
+ok   common-tour completed words=[84] tallies=[]
+ok   value-tour completed words=[24] tallies=[]
+ok   twin-inline completed words=[12] tallies=[]
+ok   twin-dynamic completed words=[12] tallies=[]
+ok   countdown completed words=[20] tallies=[]
+ok   bad-request ProfileFault ProfileContractViolation
+ok   spin exhausted Fuel
+ok   long-code completed words=[7] tallies=[]
+ok   long-entry completed words=[7] tallies=[]
+ok   resume-long suspended amount=1 | completed words=[1] tallies=[]
+ok   load-then-run completed words=[105] tallies=[]
+ok   hook-refusal refused InvalidArtifact SemanticValidationFailed 7001
+ok   no-such-entry faulted NoSuchEntry code=0 amount=0
+ok   arguments-kept completed words=[11] tallies=[]
+ok   nested-regions completed words=[49] tallies=[]
+ok   common-edges completed words=[20] tallies=[]
+ok   mixed-call completed words=[1012] tallies=[]
+ok   wide-frame completed words=[10] tallies=[]
+ok   guest-1.bubc intact
+ok   primitives.txt 28139 inputs, 0 answers differ
+broiler-vm-composition-ubc-fixture corpus: 37 entries, 0 failures
+exit 0

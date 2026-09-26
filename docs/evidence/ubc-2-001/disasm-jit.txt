@@ -1,0 +1,2354 @@
+; Assembly listing for method Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Run():Broiler.VM.VmExecutionStep:this (FullOpts)
+; Emitting BLENDED_CODE for generic X64 + VEX on Windows
+; FullOpts code
+; optimized code
+; rbp based frame
+; fully interruptible
+; No PGO data
+; 0 inlinees with PGO data; 162 single block inlinees; 21 inlinees without PGO data
+
+G_M000_IG01:                ;; offset=0x0000
+       push     rbp
+       push     r15
+       push     r14
+       push     r13
+       push     r12
+       push     rdi
+       push     rsi
+       push     rbx
+       sub      rsp, 360
+       lea      rbp, [rsp+0x1A0]
+       xor      eax, eax
+       mov      qword ptr [rbp-0x118], rax
+       vxorps   xmm4, xmm4, xmm4
+       vmovdqa  xmmword ptr [rbp-0x110], xmm4
+       mov      rax, -192
+       vmovdqa  xmmword ptr [rbp+rax-0x40], xmm4
+       vmovdqa  xmmword ptr [rbp+rax-0x30], xmm4
+       vmovdqa  xmmword ptr [rbp+rax-0x20], xmm4
+       add      rax, 48
+       jne      SHORT  -5 instr
+       mov      qword ptr [rbp-0x40], rax
+       mov      qword ptr [rbp+0x18], rdx
+       mov      rbx, rcx
+ 
+G_M000_IG02:                ;; offset=0x005D
+       lea      rdx, [rbp-0x98]
+       mov      rcx, rbx
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Activation():Broiler.VM.Ubc.UbcActivation:this]
+       jmp      G_M000_IG12
+ 
+G_M000_IG03:                ;; offset=0x0072
+       mov      rcx, gword ptr [rbx+0x30]
+       dec      edx
+       cmp      edx, dword ptr [rcx+0x08]
+       jae      G_M000_IG126
+       shl      rdx, 5
+       lea      rdx, bword ptr [rcx+rdx+0x10]
+       mov      rcx, gword ptr [rdx]
+       mov      r12, gword ptr [rcx+0x30]
+       mov      ecx, dword ptr [rdx+0x08]
+       cmp      ecx, dword ptr [r12+0x08]
+       jae      G_M000_IG126
+       mov      rcx, gword ptr [r12+8*rcx+0x10]
+       mov      rcx, gword ptr [rcx+0x40]
+       mov      r8d, dword ptr [rdx+0x0C]
+       cmp      r8d, dword ptr [rcx+0x08]
+       jae      G_M000_IG126
+       lea      r8, [r8+8*r8]
+       mov      ecx, dword ptr [rcx+8*r8+0x24]
+       mov      dword ptr [rdx+0x0C], ecx
+       jmp      G_M000_IG12
+ 
+G_M000_IG04:                ;; offset=0x00C7
+       mov      rsi, gword ptr [rbp-0x148]
+       cmp      byte  ptr [rsi+0x26], 1
+       je       G_M000_IG26
+       mov      rdx, gword ptr [rbx+0x30]
+       mov      ecx, dword ptr [rbx+0x38]
+       dec      ecx
+       cmp      ecx, dword ptr [rdx+0x08]
+       jae      G_M000_IG126
+       shl      rcx, 5
+       mov      dword ptr [rdx+rcx+0x1C], r15d
+       lea      rdx, [rbp-0x98]
+       mov      rcx, rbx
+       mov      r8, gword ptr [rbp-0x68]
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Unwind(byref,System.Object):int:this]
+       cmp      eax, 1
+       je       G_M000_IG21
+       cmp      eax, 2
+       jne      G_M000_IG12
+ 
+G_M000_IG05:                ;; offset=0x0119
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      edi, 701
+       mov      r8d, 804
+       cmp      byte  ptr [rcx+0x20], 0
+       cmove    edi, r8d
+       cmp      dword ptr [rbx+0x38], 0
+       jle      SHORT G_M000_IG06
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, dword ptr [rbx+0x38]
+       mov      r11, 0x7FF9F1460848
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      r9d, r9d
+       mov      dword ptr [rbx+0x38], r9d
+ 
+G_M000_IG06:                ;; offset=0x015B
+       xor      r9, r9
+       mov      rsi, qword ptr [rbp+0x18]
+       mov      gword ptr [rsi], r9
+ 
+G_M000_IG07:                ;; offset=0x0165
+       mov      gword ptr [rsi+0x08], r9
+ 
+G_M000_IG08:                ;; offset=0x0169
+       mov      gword ptr [rsi+0x10], r9
+       mov      dword ptr [rsi+0x18], 4
+       mov      dword ptr [rsi+0x1C], edi
+       jmp      G_M000_IG45
+ 
+G_M000_IG09:                ;; offset=0x017C
+       mov      rsi, gword ptr [rbp-0x148]
+       cmp      byte  ptr [rsi+0x26], 3
+       jne      G_M000_IG26
+       cmp      byte  ptr [rsi+0x27], 0
+       jne      G_M000_IG26
+       mov      r14d, dword ptr [rbp-0x40]
+       mov      r13, gword ptr [rbp-0x48]
+       test     r13, r13
+       jne      SHORT G_M000_IG10
+       mov      r13, rdi
+ 
+G_M000_IG10:                ;; offset=0x01A7
+       mov      rdx, gword ptr [rbx+0x08]
+       mov      rdx, gword ptr [rdx+0x08]
+       mov      rdx, gword ptr [rdx+0x10]
+       mov      rdx, gword ptr [rdx+0x10]
+       mov      rcx, gword ptr [r13+0x10]
+       mov      rcx, gword ptr [rcx+0x10]
+       mov      r8d, 4
+       call     [System.String:Equals(System.String,System.String,int):bool]
+       test     eax, eax
+       je       G_M000_IG34
+       mov      r12, gword ptr [r13+0x30]
+       mov      r8, r12
+       cmp      dword ptr [r8+0x08], r14d
+       jbe      G_M000_IG34
+       mov      r8, r12
+       cmp      r14d, dword ptr [r8+0x08]
+       jae      G_M000_IG126
+       mov      ecx, r14d
+       mov      r8, gword ptr [r8+8*rcx+0x10]
+       mov      rcx, rsi
+       mov      rdx, bword ptr [rbp-0x140]
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Fits(Broiler.VM.Ubc.UbcInstructionRow,byref,Broiler.VM.Ubc.UbcUnitCode):bool]
+       test     eax, eax
+       je       G_M000_IG34
+       mov      rcx, gword ptr [rbx+0x30]
+       mov      edx, dword ptr [rbx+0x38]
+       dec      edx
+       cmp      edx, dword ptr [rcx+0x08]
+       jae      G_M000_IG126
+       shl      rdx, 5
+       mov      dword ptr [rcx+rdx+0x1C], r15d
+       mov      esi, dword ptr [rbp-0xA8]
+       mov      dword ptr [rsp+0x20], esi
+       mov      r15d, dword ptr [rbp-0xA4]
+       mov      r12, bword ptr [rbp-0x140]
+       mov      ecx, r15d
+       sub      ecx, dword ptr [r12+0x28]
+       mov      dword ptr [rsp+0x28], ecx
+       mov      ecx, esi
+       sub      ecx, dword ptr [r12+0x2C]
+       mov      dword ptr [rsp+0x30], ecx
+       mov      dword ptr [rsp+0x38], 1
+       mov      rcx, rbx
+       mov      rdx, r13
+       mov      r8d, r14d
+       mov      r9d, r15d
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Enter(Broiler.VM.Ubc.UbcVerifiedProgram,int,int,int,int,int,bool):bool:this]
+       test     eax, eax
+       je       G_M000_IG30
+ 
+G_M000_IG11:                ;; offset=0x027D
+       mov      rdx, gword ptr [rbx+0x20]
+       mov      gword ptr [rbp-0x80], rdx
+       mov      rdx, gword ptr [rbx+0x28]
+       mov      gword ptr [rbp-0x78], rdx
+ 
+G_M000_IG12:                ;; offset=0x028D
+       mov      rdx, gword ptr [rbx+0x30]
+       mov      ecx, dword ptr [rbx+0x38]
+       dec      ecx
+       cmp      ecx, dword ptr [rdx+0x08]
+       jae      G_M000_IG126
+       shl      rcx, 5
+       lea      rdx, bword ptr [rdx+rcx+0x10]
+       mov      rdi, gword ptr [rdx]
+       mov      r14d, dword ptr [rdx+0x08]
+       mov      dword ptr [rbp-0x124], r14d
+       mov      r15d, dword ptr [rdx+0x0C]
+       mov      r13d, dword ptr [rdx+0x10]
+       mov      r12d, dword ptr [rdx+0x14]
+       mov      eax, dword ptr [rdx+0x18]
+       mov      dword ptr [rbp-0x128], eax
+       mov      r8d, dword ptr [rdx+0x1C]
+       mov      dword ptr [rbp-0x12C], r8d
+       mov      r10, gword ptr [rdi+0x30]
+       mov      gword ptr [rbp-0x150], r10
+       cmp      r14d, dword ptr [r10+0x08]
+       jae      G_M000_IG126
+       mov      edx, r14d
+       mov      rdx, gword ptr [r10+8*rdx+0x10]
+       mov      r9, gword ptr [rdx+0x40]
+       mov      gword ptr [rbp-0x158], r9
+       mov      r11d, r13d
+       add      r11d, dword ptr [rdx+0x24]
+       mov      dword ptr [rbp-0x9C], r11d
+       mov      ecx, r12d
+       add      ecx, dword ptr [rdx+0x28]
+       mov      dword ptr [rbp-0xA0], ecx
+       jmp      G_M000_IG52
+ 
+G_M000_IG13:                ;; offset=0x031D
+       mov      esi, 1
+ 
+G_M000_IG14:                ;; offset=0x0322
+       mov      edx, esi
+       mov      rcx, r8
+       cmp      dword ptr [rcx], ecx
+       call     [Broiler.VM.Emitter.Bytecode.UbcLoopMeter:Spend(ulong):bool:this]
+       test     eax, eax
+       je       G_M000_IG41
+ 
+G_M000_IG15:                ;; offset=0x0337
+       mov      esi, dword ptr [rbp-0x9C]
+       mov      rax, bword ptr [rbp-0x140]
+       mov      r10d, esi
+       add      r10d, dword ptr [rax+0x20]
+       mov      dword ptr [rbp-0xA4], r10d
+       mov      r9d, dword ptr [rbp-0xA0]
+       mov      r11d, r9d
+       add      r11d, dword ptr [rax+0x24]
+       mov      edx, r11d
+       mov      dword ptr [rbp-0xA8], edx
+       mov      r11, gword ptr [rbp-0x148]
+       test     r11, r11
+       jne      G_M000_IG64
+       movzx    r8, byte  ptr [rax+0x40]
+       cmp      r8d, 35
+       ja       SHORT G_M000_IG17
+ 
+G_M000_IG16:                ;; offset=0x0384
+       mov      r8d, r8d
+       lea      rcx, [reloc @RWD00]
+       mov      ecx, dword ptr [rcx+4*r8]
+       lea      r11, G_M000_IG02
+       add      rcx, r11
+       jmp      rcx
+ 
+G_M000_IG17:                ;; offset=0x039E
+       cmp      dword ptr [rbx+0x38], 0
+       jle      G_M000_IG35
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, dword ptr [rbx+0x38]
+       mov      r11, 0x7FF9F1460890
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+       jmp      G_M000_IG35
+ 
+G_M000_IG18:                ;; offset=0x03D0
+       mov      rcx, gword ptr [rdi+0x10]
+       movzx    rdx, word  ptr [rbp-0xAE]
+       cmp      dword ptr [rcx], ecx
+       call     [Broiler.VM.Ubc.UbcInstructionTable:DefinesTrap(ushort):bool:this]
+       test     eax, eax
+       je       G_M000_IG26
+       movzx    rdx, byte  ptr [rdi+0x20]
+       movzx    r8, word  ptr [rbp-0xAE]
+       lea      rcx, [rbp-0x98]
+       call     [Com.Example.Tally.TallyFamily:Fault(byref,byte,ushort):Broiler.VM.IVmProfilePayload]
+       mov      rdi, rax
+       cmp      dword ptr [rbx+0x38], 0
+       jle      SHORT G_M000_IG19
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, dword ptr [rbx+0x38]
+       mov      r11, 0x7FF9F1460850
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+ 
+G_M000_IG19:                ;; offset=0x0430
+       xor      rcx, rcx
+       mov      rsi, qword ptr [rbp+0x18]
+       mov      gword ptr [rsi], rcx
+ 
+G_M000_IG20:                ;; offset=0x0439
+       mov      gword ptr [rsi+0x08], rcx
+       lea      rcx, [rsi+0x10]
+       mov      rdx, rdi
+       call     CORINFO_HELP_CHECKED_ASSIGN_REF
+       mov      qword ptr [rsi+0x18], 3
+       jmp      G_M000_IG45
+ 
+G_M000_IG21:                ;; offset=0x0456
+       lea      rcx, [rbp-0x98]
+       call     [Com.Example.Tally.TallyFamily:Uncaught(byref):Broiler.VM.IVmProfilePayload]
+       mov      rdi, rax
+       cmp      dword ptr [rbx+0x38], 0
+       jle      SHORT G_M000_IG22
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, dword ptr [rbx+0x38]
+       mov      r11, 0x7FF9F1460840
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+ 
+G_M000_IG22:                ;; offset=0x048F
+       xor      rcx, rcx
+       mov      rsi, qword ptr [rbp+0x18]
+       mov      gword ptr [rsi], rcx
+ 
+G_M000_IG23:                ;; offset=0x0498
+       mov      gword ptr [rsi+0x08], rcx
+       lea      rcx, [rsi+0x10]
+       mov      rdx, rdi
+       call     CORINFO_HELP_CHECKED_ASSIGN_REF
+       mov      qword ptr [rsi+0x18], 3
+       jmp      G_M000_IG45
+ 
+G_M000_IG24:                ;; offset=0x04B5
+       mov      rsi, qword ptr [rbp+0x18]
+       mov      rdi, gword ptr [rbp-0x148]
+       cmp      byte  ptr [rdi+0x26], 4
+       je       SHORT G_M000_IG27
+ 
+G_M000_IG25:                ;; offset=0x04C6
+       mov      qword ptr [rbp+0x18], rsi
+ 
+G_M000_IG26:                ;; offset=0x04CA
+       cmp      dword ptr [rbx+0x38], 0
+       jle      G_M000_IG35
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, dword ptr [rbx+0x38]
+       mov      r11, 0x7FF9F1460858
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+       jmp      G_M000_IG35
+ 
+G_M000_IG27:                ;; offset=0x04FC
+       cmp      byte  ptr [rdi+0x27], 0
+       je       SHORT G_M000_IG29
+ 
+G_M000_IG28:                ;; offset=0x0502
+       mov      qword ptr [rbp+0x18], rsi
+       jmp      SHORT G_M000_IG26
+       align    [0 bytes for IG106]
+ 
+G_M000_IG29:                ;; offset=0x0508
+       mov      r9, gword ptr [rbx+0x30]
+       mov      r8d, dword ptr [rbx+0x38]
+       dec      r8d
+       cmp      r8d, dword ptr [r9+0x08]
+       jae      G_M000_IG126
+       shl      r8, 5
+       mov      dword ptr [r9+r8+0x1C], r15d
+       mov      r14, bword ptr [rbp-0x140]
+       mov      r9d, dword ptr [r14+0x14]
+       lea      r8, [rbp-0x98]
+       mov      rcx, rbx
+       mov      rdx, rsi
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Suspend(byref,int):Broiler.VM.VmExecutionStep:this]
+       jmp      G_M000_IG45
+ 
+G_M000_IG30:                ;; offset=0x0549
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      edi, 701
+       mov      r8d, 804
+       cmp      byte  ptr [rcx+0x20], 0
+       cmove    edi, r8d
+       mov      r8d, dword ptr [rbx+0x38]
+       test     r8d, r8d
+       jle      SHORT G_M000_IG31
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, r8d
+       mov      r11, 0x7FF9F1460838
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+ 
+G_M000_IG31:                ;; offset=0x0587
+       xor      rcx, rcx
+       mov      rsi, qword ptr [rbp+0x18]
+       mov      gword ptr [rsi], rcx
+ 
+G_M000_IG32:                ;; offset=0x0590
+       mov      gword ptr [rsi+0x08], rcx
+ 
+G_M000_IG33:                ;; offset=0x0594
+       mov      gword ptr [rsi+0x10], rcx
+       mov      dword ptr [rsi+0x18], 4
+       mov      dword ptr [rsi+0x1C], edi
+       jmp      G_M000_IG45
+ 
+G_M000_IG34:                ;; offset=0x05A7
+       mov      r8d, dword ptr [rbx+0x38]
+       test     r8d, r8d
+       jle      SHORT G_M000_IG35
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, r8d
+       mov      r11, 0x7FF9F1460830
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+ 
+G_M000_IG35:                ;; offset=0x05D2
+       xor      rcx, rcx
+       mov      rsi, qword ptr [rbp+0x18]
+       mov      gword ptr [rsi], rcx
+ 
+G_M000_IG36:                ;; offset=0x05DB
+       mov      gword ptr [rsi+0x08], rcx
+ 
+G_M000_IG37:                ;; offset=0x05DF
+       mov      gword ptr [rsi+0x10], rcx
+       mov      rcx, 0x1F500000004
+       mov      qword ptr [rsi+0x18], rcx
+       jmp      G_M000_IG45
+ 
+G_M000_IG38:                ;; offset=0x05F6
+       mov      dword ptr [rsp+0x20], esi
+       lea      rcx, [rbp-0x118]
+       lea      rdx, [rbp-0x98]
+       mov      r8, rdi
+       mov      r9, gword ptr [rbp-0x148]
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Trapped(byref,Broiler.VM.Ubc.UbcVerifiedProgram,Broiler.VM.Ubc.UbcInstructionRow,byte):Broiler.VM.VmExecutionStep]
+       mov      r8d, dword ptr [rbx+0x38]
+       test     r8d, r8d
+       jle      SHORT G_M000_IG39
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, r8d
+       mov      r11, 0x7FF9F1460810
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+ 
+G_M000_IG39:                ;; offset=0x0643
+       mov      rsi, qword ptr [rbp+0x18]
+       vmovdqu  ymm0, ymmword ptr [rbp-0x118]
+       vmovdqu  ymmword ptr [rsi], ymm0
+ 
+G_M000_IG40:                ;; offset=0x0653
+       jmp      SHORT G_M000_IG45
+ 
+G_M000_IG41:                ;; offset=0x0655
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      edi, 701
+       mov      r8d, 804
+       cmp      byte  ptr [rcx+0x20], 0
+       cmove    edi, r8d
+       cmp      dword ptr [rbx+0x38], 0
+       jle      SHORT G_M000_IG42
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, dword ptr [rbx+0x38]
+       mov      r11, 0x7FF9F1460808
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      eax, eax
+       mov      dword ptr [rbx+0x38], eax
+ 
+G_M000_IG42:                ;; offset=0x0695
+       xor      rax, rax
+       mov      rsi, qword ptr [rbp+0x18]
+       mov      gword ptr [rsi], rax
+ 
+G_M000_IG43:                ;; offset=0x069E
+       mov      gword ptr [rsi+0x08], rax
+ 
+G_M000_IG44:                ;; offset=0x06A2
+       mov      gword ptr [rsi+0x10], rax
+       mov      dword ptr [rsi+0x18], 4
+       mov      dword ptr [rsi+0x1C], edi
+ 
+G_M000_IG45:                ;; offset=0x06B0
+       mov      rax, rsi
+ 
+G_M000_IG46:                ;; offset=0x06B3
+       vzeroupper 
+       add      rsp, 360
+       pop      rbx
+       pop      rsi
+       pop      rdi
+       pop      r12
+       pop      r13
+       pop      r14
+       pop      r15
+       pop      rbp
+       ret      
+ 
+G_M000_IG47:                ;; offset=0x06CA
+       sub      edx, dword ptr [rax+0x2C]
+       mov      r8d, dword ptr [rax+0x2C]
+       test     r8d, r8d
+       jg       SHORT G_M000_IG49
+ 
+G_M000_IG48:                ;; offset=0x06D6
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG49:                ;; offset=0x06E2
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r11, 0x7FF9F1460880
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Clear(int,int):this
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG50:                ;; offset=0x06FF
+       mov      rdx, gword ptr [rdi+0x38]
+       mov      eax, dword ptr [rax+0x1C]
+       cmp      eax, dword ptr [rdx+0x08]
+       jae      G_M000_IG126
+       mov      r8d, eax
+       mov      rdx, gword ptr [rdx+8*r8+0x10]
+       mov      gword ptr [rbp-0xC8], rdx
+       mov      rcx, gword ptr [rbx+0x20]
+       lea      r11d, [r10-0x01]
+       mov      r10d, dword ptr [rcx+0x08]
+       cmp      r11d, r10d
+       jae      G_M000_IG126
+       mov      r10d, dword ptr [rcx+8*r11+0x10]
+       mov      rdx, gword ptr [rbp-0xC8]
+       cmp      dword ptr [rdx+0x08], r10d
+       jbe      SHORT G_M000_IG54
+ 
+G_M000_IG51:                ;; offset=0x0745
+       mov      rdx, gword ptr [rbp-0xC8]
+       cmp      r10d, dword ptr [rdx+0x08]
+       jae      G_M000_IG126
+       mov      r8d, r10d
+       mov      r15d, dword ptr [rdx+4*r8+0x10]
+       mov      r9, gword ptr [rbp-0x158]
+ 
+G_M000_IG52:                ;; offset=0x0765
+       cmp      r15d, dword ptr [r9+0x08]
+       jae      G_M000_IG126
+       mov      edx, r15d
+       lea      rdx, [rdx+8*rdx]
+       lea      rdx, bword ptr [r9+8*rdx+0x10]
+       mov      bword ptr [rbp-0x140], rdx
+       mov      rax, gword ptr [rdx]
+       mov      gword ptr [rbp-0x148], rax
+       mov      r8, gword ptr [rbx+0x10]
+       test     rax, rax
+       je       G_M000_IG13
+ 
+G_M000_IG53:                ;; offset=0x0799
+       mov      esi, dword ptr [rax+0x20]
+       jmp      G_M000_IG14
+ 
+G_M000_IG54:                ;; offset=0x07A1
+       mov      r10, gword ptr [rbp-0xC8]
+       mov      r10d, dword ptr [r10+0x08]
+       dec      r10d
+       jmp      SHORT G_M000_IG51
+ 
+G_M000_IG55:                ;; offset=0x07B1
+       mov      rcx, gword ptr [rbx+0x20]
+       lea      r11d, [r10-0x01]
+       mov      r10d, dword ptr [rcx+0x08]
+       cmp      r11d, r10d
+       jae      G_M000_IG126
+       cmp      dword ptr [rcx+8*r11+0x10], 0
+       je       SHORT G_M000_IG57
+ 
+G_M000_IG56:                ;; offset=0x07CE
+       mov      r15d, dword ptr [rax+0x18]
+       jmp      SHORT G_M000_IG58
+ 
+G_M000_IG57:                ;; offset=0x07D4
+       mov      r15d, dword ptr [rax+0x14]
+ 
+G_M000_IG58:                ;; offset=0x07D8
+       mov      r9, gword ptr [rbp-0x158]
+       jmp      SHORT G_M000_IG52
+ 
+G_M000_IG59:                ;; offset=0x07E1
+       mov      rcx, gword ptr [rbx+0x20]
+       lea      r11d, [r10-0x01]
+       mov      r10d, dword ptr [rcx+0x08]
+       cmp      r11d, r10d
+       jae      G_M000_IG126
+       mov      edx, r11d
+       cmp      dword ptr [rcx+8*rdx+0x10], 0
+       jne      SHORT G_M000_IG61
+ 
+G_M000_IG60:                ;; offset=0x0800
+       mov      r15d, dword ptr [rax+0x18]
+       jmp      SHORT G_M000_IG62
+ 
+G_M000_IG61:                ;; offset=0x0806
+       mov      r15d, dword ptr [rax+0x14]
+ 
+G_M000_IG62:                ;; offset=0x080A
+       mov      r9, gword ptr [rbp-0x158]
+       jmp      G_M000_IG52
+ 
+G_M000_IG63:                ;; offset=0x0816
+       mov      r14, rax
+       jmp      G_M000_IG111
+ 
+G_M000_IG64:                ;; offset=0x081E
+       mov      gword ptr [rbp-0x70], rdi
+       mov      r14d, dword ptr [rbp-0x124]
+       mov      dword ptr [rbp-0x60], r14d
+       mov      r8d, dword ptr [rax+0x10]
+       mov      dword ptr [rbp-0x5C], r8d
+       mov      dword ptr [rbp-0x58], r13d
+       mov      dword ptr [rbp-0x54], r12d
+       mov      r8d, dword ptr [rax+0x28]
+       mov      ecx, r10d
+       sub      ecx, r8d
+       mov      dword ptr [rbp-0x50], ecx
+       mov      ecx, edx
+       sub      ecx, dword ptr [rax+0x2C]
+       mov      dword ptr [rbp-0x4C], ecx
+       mov      rcx, gword ptr [rbx+0x20]
+       mov      gword ptr [rbp-0x80], rcx
+       mov      rsi, gword ptr [rbx+0x28]
+       mov      gword ptr [rbp-0x78], rsi
+       cmp      byte  ptr [r11+0x26], 1
+       je       SHORT G_M000_IG68
+ 
+G_M000_IG65:                ;; offset=0x0869
+       xor      r8, r8
+       mov      gword ptr [rbp-0x48], r8
+       mov      dword ptr [rbp-0x40], -1
+ 
+G_M000_IG66:                ;; offset=0x0877
+       mov      gword ptr [rbp-0x68], r8
+       movzx    rdx, byte  ptr [rax+0x40]
+       mov      r8, qword ptr [rax+0x08]
+       lea      rcx, [rbp-0x98]
+       call     [Com.Example.Tally.TallyFamily:Handle(byref,byte,ulong):Broiler.VM.Ubc.UbcStatus]
+       mov      dword ptr [rbp-0xB0], eax
+       mov      rcx, gword ptr [rbp-0x80]
+       cmp      rcx, gword ptr [rbx+0x20]
+       jne      SHORT G_M000_IG67
+       mov      rcx, gword ptr [rbx+0x28]
+       cmp      gword ptr [rbp-0x78], rcx
+       je       G_M000_IG70
+ 
+G_M000_IG67:                ;; offset=0x08AE
+       cmp      dword ptr [rbx+0x38], 0
+       jle      G_M000_IG35
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, dword ptr [rbx+0x38]
+       mov      r11, 0x7FF9F1460818
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+       jmp      G_M000_IG35
+ 
+G_M000_IG68:                ;; offset=0x08E0
+       movzx    rsi, byte  ptr [r11+0x2A]
+       mov      byte  ptr [rbp-0x11C], sil
+       movzx    rsi, word  ptr [r11+0x2C]
+       mov      word  ptr [rbp-0x120], si
+       movzx    rsi, byte  ptr [rbp-0x11C]
+       test     esi, esi
+       je       G_M000_IG65
+       movzx    rsi, word  ptr [rbp-0x120]
+       cmp      esi, 124
+       jl       SHORT G_M000_IG69
+       cmp      esi, 147
+       jle      G_M000_IG65
+ 
+G_M000_IG69:                ;; offset=0x0920
+       mov      r15d, dword ptr [rbp-0x50]
+       mov      rdx, rcx
+       mov      r10d, dword ptr [rdx+0x08]
+       cmp      r15d, r10d
+       jae      G_M000_IG126
+       mov      r9d, r15d
+       mov      r9, qword ptr [rdx+8*r9+0x10]
+       cmp      r8d, 1
+       jg       G_M000_IG79
+       xor      r10d, r10d
+       jmp      G_M000_IG80
+ 
+G_M000_IG70:                ;; offset=0x094E
+       movzx    r8, byte  ptr [rbp-0xB0]
+       cmp      r8d, 5
+       ja       G_M000_IG26
+ 
+G_M000_IG71:                ;; offset=0x0960
+       mov      r8d, r8d
+       lea      rdx, [reloc @RWD144]
+       mov      edx, dword ptr [rdx+4*r8]
+       lea      r11, G_M000_IG02
+       add      rdx, r11
+       jmp      rdx
+ 
+G_M000_IG72:                ;; offset=0x097A
+       mov      rsi, gword ptr [rbp-0x148]
+       cmp      byte  ptr [rsi+0x26], 2
+       jne      G_M000_IG26
+       mov      r15, bword ptr [rbp-0x140]
+       mov      r8d, dword ptr [r15+0x3C]
+       mov      edx, r8d
+       add      edx, dword ptr [rbp-0x4C]
+       mov      r11d, dword ptr [r15+0x2C]
+       sub      r11d, r8d
+       test     r11d, r11d
+       jg       SHORT G_M000_IG74
+ 
+G_M000_IG73:                ;; offset=0x09A8
+       mov      rax, r15
+       jmp      SHORT G_M000_IG75
+ 
+G_M000_IG74:                ;; offset=0x09AD
+       mov      r8d, r11d
+       mov      r11, 0x7FF9F1460828
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Clear(int,int):this
+       mov      rax, r15
+ 
+G_M000_IG75:                ;; offset=0x09C0
+       mov      r15d, dword ptr [rax+0x18]
+       mov      r9, gword ptr [rbp-0x158]
+       jmp      G_M000_IG52
+ 
+G_M000_IG76:                ;; offset=0x09D0
+       mov      r15, gword ptr [rbp-0x148]
+       cmp      byte  ptr [r15+0x27], 0
+       jne      G_M000_IG26
+       mov      rax, bword ptr [rbp-0x140]
+       mov      r8d, dword ptr [rax+0x34]
+       mov      edx, r8d
+       add      edx, dword ptr [rbp-0x4C]
+       mov      r11d, dword ptr [rax+0x2C]
+       sub      r11d, r8d
+       test     r11d, r11d
+       jg       SHORT G_M000_IG78
+ 
+G_M000_IG77:                ;; offset=0x09FF
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG78:                ;; offset=0x0A0B
+       mov      r8d, r11d
+       mov      r11, 0x7FF9F1460820
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Clear(int,int):this
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG79:                ;; offset=0x0A27
+       mov      rdx, rcx
+       lea      ecx, [r15+0x01]
+       cmp      ecx, r10d
+       jae      G_M000_IG126
+       lea      ecx, [r15+0x01]
+       mov      r10, qword ptr [rdx+8*rcx+0x10]
+ 
+G_M000_IG80:                ;; offset=0x0A40
+       mov      rdx, gword ptr [rdi+0x10]
+       movzx    rdx, byte  ptr [rdx+0x1C]
+       mov      dword ptr [rsp+0x20], edx
+       movzx    rdx, si
+       lea      rcx, [rbp-0xC0]
+       mov      r8, r9
+       mov      r9, r10
+       call     [Broiler.VM.Ubc.UbcPrimitives:Evaluate(ushort,ulong,ulong,bool):Broiler.VM.Ubc.UbcPrimitiveResult]
+       movzx    rsi, byte  ptr [rbp-0xB8]
+       test     esi, esi
+       jne      G_M000_IG38
+       mov      r8, gword ptr [rbx+0x20]
+       cmp      r15d, dword ptr [r8+0x08]
+       jae      G_M000_IG126
+       mov      ecx, r15d
+       mov      rdx, qword ptr [rbp-0xC0]
+       mov      qword ptr [r8+8*rcx+0x10], rdx
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG81:                ;; offset=0x0A9B
+       mov      r8, gword ptr [rbx+0x20]
+       mov      rcx, qword ptr [rax+0x08]
+       mov      r11d, dword ptr [r8+0x08]
+       cmp      r10d, r11d
+       jae      G_M000_IG126
+       mov      edx, r10d
+       mov      qword ptr [r8+8*rdx+0x10], rcx
+       mov      r14, rax
+       jmp      G_M000_IG111
+ 
+G_M000_IG82:                ;; offset=0x0AC0
+       cmp      byte  ptr [rax+0x41], 0
+       je       SHORT G_M000_IG85
+       mov      r8d, r12d
+       add      r8d, dword ptr [rax+0x1C]
+       mov      rcx, gword ptr [rbx+0x28]
+       dec      edx
+       mov      r11, 0x7FF9F14607A0
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Copy(int,int):this
+       mov      r15, bword ptr [rbp-0x140]
+       cmp      byte  ptr [r15+0x40], 17
+       je       SHORT G_M000_IG84
+ 
+G_M000_IG83:                ;; offset=0x0AEE
+       mov      r14, r15
+       jmp      G_M000_IG111
+ 
+G_M000_IG84:                ;; offset=0x0AF6
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      edx, dword ptr [rbp-0xA8]
+       dec      edx
+       mov      r11, 0x7FF9F14607A8
+       mov      r8d, 1
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Clear(int,int):this
+       mov      r14, r15
+       jmp      G_M000_IG111
+ 
+G_M000_IG85:                ;; offset=0x0B1D
+       mov      r8, gword ptr [rbx+0x20]
+       mov      rdx, r8
+       mov      ecx, r13d
+       add      ecx, dword ptr [rax+0x1C]
+       dec      r10d
+       mov      r11d, dword ptr [r8+0x08]
+       cmp      r10d, r11d
+       jae      G_M000_IG126
+       mov      r8, qword ptr [r8+8*r10+0x10]
+       cmp      ecx, r11d
+       jae      G_M000_IG126
+       mov      qword ptr [rdx+8*rcx+0x10], r8
+       mov      r14, rax
+       jmp      G_M000_IG111
+ 
+G_M000_IG86:                ;; offset=0x0B55
+       cmp      byte  ptr [rax+0x41], 0
+       je       SHORT G_M000_IG87
+       mov      ecx, r12d
+       add      ecx, dword ptr [rax+0x1C]
+       mov      edx, ecx
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r8d, dword ptr [rbp-0xA8]
+       mov      r11, 0x7FF9F14607B0
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Copy(int,int):this
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG87:                ;; offset=0x0B87
+       mov      r8, gword ptr [rbx+0x20]
+       mov      rdx, r8
+       mov      ecx, r13d
+       add      ecx, dword ptr [rax+0x1C]
+       mov      r11d, dword ptr [r8+0x08]
+       cmp      ecx, r11d
+       jae      G_M000_IG126
+       mov      r8, qword ptr [r8+8*rcx+0x10]
+       cmp      r10d, r11d
+       jae      G_M000_IG126
+       mov      r10d, r10d
+       mov      qword ptr [rdx+8*r10+0x10], r8
+       mov      r14, rax
+       jmp      G_M000_IG111
+ 
+G_M000_IG88:                ;; offset=0x0BBF
+       mov      r8d, dword ptr [rax+0x30]
+       mov      dword ptr [rsp+0x20], r8d
+       mov      ecx, r10d
+       sub      ecx, r8d
+       mov      r15d, dword ptr [rax+0x28]
+       sub      r15d, r8d
+       sub      ecx, r15d
+       mov      r9d, ecx
+       mov      ecx, r10d
+       sub      ecx, r8d
+       mov      edx, ecx
+       mov      r8, gword ptr [rbx+0x20]
+       mov      rcx, r8
+       call     [System.Array:Copy(System.Array,int,System.Array,int,int)]
+       mov      r15, bword ptr [rbp-0x140]
+       mov      eax, dword ptr [r15+0x34]
+       mov      dword ptr [rbp-0xCC], eax
+       mov      r10d, dword ptr [r15+0x2C]
+       sub      r10d, eax
+       mov      dword ptr [rbp-0xD0], r10d
+       xor      r9d, r9d
+       test     eax, eax
+       jg       SHORT G_M000_IG90
+ 
+G_M000_IG89:                ;; offset=0x0C16
+       mov      r11d, dword ptr [rbp-0xD0]
+       test     r11d, r11d
+       jle      G_M000_IG93
+       mov      eax, dword ptr [rbp-0xA8]
+       mov      edx, eax
+       sub      edx, r11d
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r8d, r11d
+       mov      r11, 0x7FF9F1460888
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Clear(int,int):this
+       mov      r14, r15
+       jmp      G_M000_IG111
+ 
+G_M000_IG90:                ;; offset=0x0C4D
+       mov      r11d, dword ptr [rbp-0xA8]
+       mov      ecx, r11d
+       sub      ecx, eax
+       mov      dword ptr [rbp-0x134], ecx
+       mov      edx, ecx
+       sub      edx, r10d
+       mov      dword ptr [rbp-0x130], edx
+ 
+G_M000_IG91:                ;; offset=0x0C6A
+       lea      r8d, [rdx+r9]
+       mov      dword ptr [rbp-0xD4], r9d
+       lea      edx, [rcx+r9]
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r11, 0x7FF9F14607B8
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Copy(int,int):this
+       mov      r9d, dword ptr [rbp-0xD4]
+       inc      r9d
+       mov      edx, dword ptr [rbp-0xCC]
+       cmp      r9d, edx
+       mov      ecx, dword ptr [rbp-0x134]
+       jge      G_M000_IG89
+ 
+G_M000_IG92:                ;; offset=0x0CA9
+       mov      edx, dword ptr [rbp-0x130]
+       jmp      SHORT G_M000_IG91
+ 
+G_M000_IG93:                ;; offset=0x0CB1
+       mov      r14, r15
+       jmp      G_M000_IG111
+ 
+G_M000_IG94:                ;; offset=0x0CB9
+       mov      r8, gword ptr [rbx+0x20]
+       mov      rcx, r8
+       lea      r11d, [r10-0x01]
+       mov      r15d, dword ptr [rcx+0x08]
+       cmp      r11d, r15d
+       jae      G_M000_IG126
+       cmp      dword ptr [rcx+8*r11+0x10], 0
+       setne    cl
+       movzx    rcx, cl
+       cmp      dword ptr [rax+0x2C], 2
+       je       SHORT G_M000_IG97
+       test     ecx, ecx
+       je       SHORT G_M000_IG96
+ 
+G_M000_IG95:                ;; offset=0x0CE7
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG96:                ;; offset=0x0CF3
+       mov      rcx, r8
+       mov      rdx, r8
+       lea      r11d, [r10-0x02]
+       cmp      r11d, r15d
+       jae      G_M000_IG126
+       mov      r8d, r11d
+       mov      r8, qword ptr [rdx+8*r8+0x10]
+       lea      edx, [r10-0x03]
+       cmp      edx, r15d
+       jae      G_M000_IG126
+       lea      edx, [r10-0x03]
+       mov      qword ptr [rcx+8*rdx+0x10], r8
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG97:                ;; offset=0x0D30
+       test     ecx, ecx
+       jne      SHORT G_M000_IG98
+       mov      rcx, gword ptr [rbx+0x28]
+       lea      r8d, [rdx-0x02]
+       dec      edx
+       mov      r11, 0x7FF9F14607C8
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Copy(int,int):this
+       mov      edx, dword ptr [rbp-0xA8]
+ 
+G_M000_IG98:                ;; offset=0x0D51
+       mov      rcx, gword ptr [rbx+0x28]
+       dec      edx
+       mov      r11, 0x7FF9F14607C0
+       mov      r8d, 1
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Clear(int,int):this
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG99:                ;; offset=0x0D76
+       cmp      byte  ptr [rax+0x41], 0
+       je       SHORT G_M000_IG100
+       lea      ecx, [rdx-0x01]
+       sub      ecx, dword ptr [rax+0x1C]
+       mov      edx, ecx
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r8d, dword ptr [rbp-0xA8]
+       mov      r11, 0x7FF9F14607D0
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Copy(int,int):this
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG100:                ;; offset=0x0DA8
+       mov      r8, gword ptr [rbx+0x20]
+       mov      rcx, r8
+       mov      rdx, r8
+       lea      r11d, [r10-0x01]
+       sub      r11d, dword ptr [rax+0x1C]
+       mov      r15d, dword ptr [rdx+0x08]
+       cmp      r11d, r15d
+       jae      G_M000_IG126
+       mov      r8d, r11d
+       mov      rdx, qword ptr [rdx+8*r8+0x10]
+       cmp      r10d, r15d
+       jae      G_M000_IG126
+       mov      r8d, r10d
+       mov      qword ptr [rcx+8*r8+0x10], rdx
+       mov      r14, rax
+       jmp      G_M000_IG111
+ 
+G_M000_IG101:                ;; offset=0x0DE8
+       mov      r15d, dword ptr [rax+0x28]
+       cmp      r15d, 2
+       je       G_M000_IG104
+       cmp      dword ptr [rax+0x2C], 2
+       je       SHORT G_M000_IG103
+ 
+G_M000_IG102:                ;; offset=0x0DFC
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG103:                ;; offset=0x0E08
+       mov      rcx, gword ptr [rbx+0x28]
+       dec      edx
+       mov      r8d, dword ptr [rbp-0xA8]
+       mov      r11, 0x7FF9F14607D8
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Copy(int,int):this
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r15d, dword ptr [rbp-0xA8]
+       lea      r8d, [r15-0x01]
+       lea      edx, [r15-0x02]
+       mov      r11, 0x7FF9F14607E0
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Copy(int,int):this
+       mov      rcx, gword ptr [rbx+0x28]
+       lea      r8d, [r15-0x02]
+       mov      edx, r15d
+       mov      r11, 0x7FF9F14607E8
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Copy(int,int):this
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      edx, r15d
+       mov      r11, 0x7FF9F14607F0
+       mov      r8d, 1
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Clear(int,int):this
+       mov      r14, bword ptr [rbp-0x140]
+       jmp      G_M000_IG111
+ 
+G_M000_IG104:                ;; offset=0x0E80
+       mov      r8, gword ptr [rbx+0x20]
+       mov      rdx, r8
+       lea      r11d, [r10-0x01]
+       mov      r15d, dword ptr [rdx+0x08]
+       cmp      r11d, r15d
+       jae      G_M000_IG126
+       mov      ecx, r11d
+       lea      rdx, bword ptr [rdx+8*rcx+0x10]
+       mov      rcx, r8
+       add      r10d, -2
+       cmp      r10d, r15d
+       jae      G_M000_IG126
+       mov      r15d, r10d
+       lea      rcx, bword ptr [rcx+8*r15+0x10]
+       mov      r15, r8
+       mov      r10, qword ptr [r15+8*r10+0x10]
+       mov      r8, qword ptr [r8+8*r11+0x10]
+       mov      qword ptr [rdx], r10
+       mov      qword ptr [rcx], r8
+       mov      r14, rax
+       jmp      G_M000_IG111
+ 
+G_M000_IG105:                ;; offset=0x0ED3
+       xor      r8d, r8d
+       mov      r15d, dword ptr [rax+0x28]
+       test     r15d, r15d
+       jle      SHORT G_M000_IG107
+       mov      rcx, gword ptr [rbx+0x20]
+ 
+G_M000_IG106:                ;; offset=0x0EE3
+       mov      r11, gword ptr [rbx+0x20]
+       mov      rsi, rcx
+       mov      r9d, r10d
+       sub      r9d, r15d
+       add      r9d, r8d
+       mov      r14d, dword ptr [rsi+0x08]
+       cmp      r9d, r14d
+       jae      G_M000_IG126
+       mov      r9, qword ptr [rsi+8*r9+0x10]
+       lea      esi, [r10+r8]
+       cmp      esi, r14d
+       jae      G_M000_IG126
+       mov      r14d, esi
+       mov      qword ptr [r11+8*r14+0x10], r9
+       inc      r8d
+       cmp      r8d, dword ptr [rax+0x28]
+       jl       SHORT G_M000_IG106
+ 
+G_M000_IG107:                ;; offset=0x0F23
+       xor      r15d, r15d
+       cmp      dword ptr [rax+0x2C], 0
+       jg       SHORT G_M000_IG110
+ 
+G_M000_IG108:                ;; offset=0x0F2C
+       mov      r14, rax
+       jmp      SHORT G_M000_IG111
+ 
+G_M000_IG109:                ;; offset=0x0F31
+       mov      rax, r14
+ 
+G_M000_IG110:                ;; offset=0x0F34
+       mov      r8d, edx
+       sub      r8d, dword ptr [rax+0x2C]
+       lea      edx, [r8+r15]
+       mov      esi, dword ptr [rbp-0xA8]
+       lea      r8d, [rsi+r15]
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r11, 0x7FF9F14607F8
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Copy(int,int):this
+       inc      r15d
+       mov      r14, bword ptr [rbp-0x140]
+       cmp      r15d, dword ptr [r14+0x2C]
+       mov      edx, esi
+       jl       SHORT G_M000_IG109
+ 
+G_M000_IG111:                ;; offset=0x0F6C
+       mov      r15d, dword ptr [r14+0x14]
+       mov      r9, gword ptr [rbp-0x158]
+       jmp      G_M000_IG52
+ 
+G_M000_IG112:                ;; offset=0x0F7C
+       mov      r8d, dword ptr [rax+0x1C]
+       mov      rsi, gword ptr [rbp-0x150]
+       cmp      r8d, dword ptr [rsi+0x08]
+       jae      G_M000_IG126
+       mov      r8, gword ptr [rsi+8*r8+0x10]
+       mov      rcx, gword ptr [rbx+0x30]
+       mov      r9d, dword ptr [rbx+0x38]
+       dec      r9d
+       cmp      r9d, dword ptr [rcx+0x08]
+       jae      G_M000_IG126
+       shl      r9, 5
+       mov      dword ptr [rcx+r9+0x1C], r15d
+       mov      dword ptr [rsp+0x20], edx
+       mov      ecx, r10d
+       sub      ecx, dword ptr [r8+0x2C]
+       mov      dword ptr [rsp+0x28], ecx
+       mov      ecx, edx
+       sub      ecx, dword ptr [r8+0x30]
+       mov      dword ptr [rsp+0x30], ecx
+       mov      dword ptr [rsp+0x38], 1
+       mov      r8d, dword ptr [rax+0x1C]
+       mov      rcx, rbx
+       mov      rdx, rdi
+       mov      r9d, r10d
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Enter(Broiler.VM.Ubc.UbcVerifiedProgram,int,int,int,int,int,bool):bool:this]
+       test     eax, eax
+       jne      G_M000_IG11
+ 
+G_M000_IG113:                ;; offset=0x0FF0
+       lea      rdx, [rbp-0xF8]
+       mov      rcx, rbx
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Stop():Broiler.VM.VmExecutionStep:this]
+       cmp      dword ptr [rbx+0x38], 0
+       jle      SHORT G_M000_IG114
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, dword ptr [rbx+0x38]
+       mov      r11, 0x7FF9F1460878
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+ 
+G_M000_IG114:                ;; offset=0x1029
+       mov      rsi, qword ptr [rbp+0x18]
+       vmovdqu  ymm0, ymmword ptr [rbp-0xF8]
+       vmovdqu  ymmword ptr [rsi], ymm0
+ 
+G_M000_IG115:                ;; offset=0x1039
+       jmp      G_M000_IG45
+ 
+G_M000_IG116:                ;; offset=0x103E
+       mov      r8d, dword ptr [rax+0x28]
+       mov      ecx, r8d
+       mov      r15d, dword ptr [rax+0x2C]
+       mov      esi, dword ptr [rbp-0x128]
+       mov      r13d, dword ptr [rbp-0x12C]
+       mov      dword ptr [rsp+0x20], ecx
+       mov      r8d, r10d
+       sub      r8d, ecx
+       mov      edx, r8d
+       mov      rcx, gword ptr [rbx+0x20]
+       mov      r8, rcx
+       mov      r9d, esi
+       call     [System.Array:Copy(System.Array,int,System.Array,int,int)]
+       xor      r12d, r12d
+       test     r15d, r15d
+       jle      SHORT G_M000_IG118
+ 
+G_M000_IG117:                ;; offset=0x107B
+       mov      eax, dword ptr [rbp-0xA8]
+       mov      edx, eax
+       sub      edx, r15d
+       add      edx, r12d
+       lea      r8d, [r12+r13]
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r11, 0x7FF9F1460800
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Copy(int,int):this
+       inc      r12d
+       cmp      r12d, r15d
+       jl       SHORT G_M000_IG117
+ 
+G_M000_IG118:                ;; offset=0x10A6
+       lea      edx, [r15+r13]
+       mov      r12d, dword ptr [rbp-0xA8]
+       mov      r8d, r12d
+       sub      r8d, edx
+       test     r8d, r8d
+       jle      SHORT G_M000_IG120
+ 
+G_M000_IG119:                ;; offset=0x10BC
+       lea      edx, [r15+r13]
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r11, 0x7FF9F1460868
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Clear(int,int):this
+ 
+G_M000_IG120:                ;; offset=0x10D1
+       dec      dword ptr [rbx+0x38]
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       mov      r11, 0x7FF9F1460870
+       mov      edx, 8
+       mov      r8d, 1
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       mov      edx, dword ptr [rbx+0x38]
+       test     edx, edx
+       jne      G_M000_IG03
+ 
+G_M000_IG121:                ;; offset=0x10FF
+       mov      gword ptr [rbp-0x70], rdi
+       mov      r14d, dword ptr [rbp-0x124]
+       mov      dword ptr [rbp-0x60], r14d
+       mov      r12, bword ptr [rbp-0x140]
+       mov      ecx, dword ptr [r12+0x10]
+       mov      dword ptr [rbp-0x5C], ecx
+       mov      dword ptr [rbp-0x50], esi
+       mov      dword ptr [rbp-0x4C], r13d
+       mov      rcx, gword ptr [rbx+0x20]
+       mov      gword ptr [rbp-0x80], rcx
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      gword ptr [rbp-0x78], rcx
+       lea      rcx, [rbp-0x98]
+       call     [Com.Example.Tally.TallyFamily:Completion(byref):Broiler.VM.IVmProfilePayload]
+       xor      rcx, rcx
+       mov      rsi, qword ptr [rbp+0x18]
+       mov      gword ptr [rsi], rcx
+ 
+G_M000_IG122:                ;; offset=0x114A
+       mov      gword ptr [rsi+0x08], rcx
+       lea      rcx, [rsi+0x10]
+       mov      rdx, rax
+       call     CORINFO_HELP_CHECKED_ASSIGN_REF
+       xor      ecx, ecx
+       mov      qword ptr [rsi+0x18], rcx
+       jmp      G_M000_IG45
+ 
+G_M000_IG123:                ;; offset=0x1165
+       mov      ecx, 1
+       call     [Broiler.VM.Ubc.UbcOpcodes:Row(byte):Broiler.VM.Ubc.UbcCommonRow]
+       movzx    r15, byte  ptr [rax+0x11]
+       mov      gword ptr [rbp-0x70], rdi
+       mov      r14d, dword ptr [rbp-0x124]
+       mov      dword ptr [rbp-0x60], r14d
+       mov      r14, bword ptr [rbp-0x140]
+       mov      edx, dword ptr [r14+0x10]
+       mov      dword ptr [rbp-0x5C], edx
+       mov      edi, dword ptr [rbp-0xA4]
+       mov      dword ptr [rbp-0x50], edi
+       mov      edi, dword ptr [rbp-0xA8]
+       mov      dword ptr [rbp-0x4C], edi
+       mov      rdx, qword ptr [r14+0x08]
+       mov      ecx, r15d
+       call     [Broiler.VM.Ubc.UbcOperandShapes:First(byte,ulong):ulong]
+       movzx    rdi, al
+       mov      rdx, qword ptr [r14+0x08]
+       mov      ecx, r15d
+       call     [Broiler.VM.Ubc.UbcOperandShapes:Second(byte,ulong):ulong]
+       movzx    r8, ax
+       mov      edx, edi
+       lea      rcx, [rbp-0x98]
+       call     [Com.Example.Tally.TallyFamily:Fault(byref,byte,ushort):Broiler.VM.IVmProfilePayload]
+       mov      r14, rax
+       cmp      dword ptr [rbx+0x38], 0
+       jle      SHORT G_M000_IG124
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, dword ptr [rbx+0x38]
+       mov      r11, 0x7FF9F1460860
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+ 
+G_M000_IG124:                ;; offset=0x1201
+       xor      rcx, rcx
+       mov      rsi, qword ptr [rbp+0x18]
+       mov      gword ptr [rsi], rcx
+ 
+G_M000_IG125:                ;; offset=0x120A
+       mov      gword ptr [rsi+0x08], rcx
+       lea      rcx, [rsi+0x10]
+       mov      rdx, r14
+       call     CORINFO_HELP_CHECKED_ASSIGN_REF
+       mov      qword ptr [rsi+0x18], 3
+       jmp      G_M000_IG45
+ 
+G_M000_IG126:                ;; offset=0x1227
+       call     CORINFO_HELP_RNGCHKFAIL
+       int3     
+ 
+RWD00  	dd	000007B9h ; case G_M000_IG63
+       	dd	00001108h ; case G_M000_IG123
+       	dd	00000963h ; case G_M000_IG75
+       	dd	00000784h ; case G_M000_IG59
+       	dd	00000754h ; case G_M000_IG55
+       	dd	000006A2h ; case G_M000_IG50
+       	dd	00000FE1h ; case G_M000_IG116
+       	dd	00000F1Fh ; case G_M000_IG112
+       	dd	0000066Dh ; case G_M000_IG47
+       	dd	00000E76h ; case G_M000_IG105
+       	dd	00000E76h ; case G_M000_IG105
+       	dd	00000D8Bh ; case G_M000_IG101
+       	dd	00000D19h ; case G_M000_IG99
+       	dd	00000C5Ch ; case G_M000_IG94
+       	dd	00000B62h ; case G_M000_IG88
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000AF8h ; case G_M000_IG86
+       	dd	00000A63h ; case G_M000_IG82
+       	dd	00000A63h ; case G_M000_IG82
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000341h ; case G_M000_IG17
+       	dd	00000A3Eh ; case G_M000_IG81
+       	dd	00000A3Eh ; case G_M000_IG81
+       	dd	00000A3Eh ; case G_M000_IG81
+       	dd	00000A3Eh ; case G_M000_IG81
+RWD144 	dd	00000973h ; case G_M000_IG76
+       	dd	0000091Dh ; case G_M000_IG72
+       	dd	0000011Fh ; case G_M000_IG09
+       	dd	00000458h ; case G_M000_IG24
+       	dd	0000006Ah ; case G_M000_IG04
+       	dd	00000373h ; case G_M000_IG18
+
+; Total bytes of code 4653
+
+
+; Assembly listing for method Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Start(int,System.ReadOnlySpan`1[byte]):Broiler.VM.VmExecutionStep:this (FullOpts)
+; Emitting BLENDED_CODE for generic X64 + VEX on Windows
+; FullOpts code
+; optimized code
+; rbp based frame
+; partially interruptible
+; No PGO data
+; 0 inlinees with PGO data; 21 single block inlinees; 4 inlinees without PGO data
+
+G_M000_IG01:                ;; offset=0x0000
+       push     rbp
+       push     r15
+       push     r14
+       push     rdi
+       push     rsi
+       push     rbx
+       sub      rsp, 184
+       lea      rbp, [rsp+0xE0]
+       vxorps   xmm4, xmm4, xmm4
+       vmovdqu  ymmword ptr [rbp-0xA0], ymm4
+       vmovdqu  ymmword ptr [rbp-0x80], ymm4
+       vmovdqu  ymmword ptr [rbp-0x60], ymm4
+       vmovdqa  xmmword ptr [rbp-0x40], xmm4
+       xor      eax, eax
+       mov      qword ptr [rbp-0x30], rax
+       mov      r14, rcx
+       mov      rbx, rdx
+       mov      edi, r8d
+       mov      rsi, r9
+ 
+G_M000_IG02:                ;; offset=0x0044
+       mov      rcx, gword ptr [r14+0x10]
+       cmp      dword ptr [rcx], ecx
+       call     [Broiler.VM.Emitter.Bytecode.UbcLoopMeter:Poll():bool:this]
+       test     eax, eax
+       je       G_M000_IG18
+ 
+G_M000_IG03:                ;; offset=0x0058
+       mov      rcx, 0x7FF9F19CCC08
+       call     CORINFO_HELP_NEWSFAST
+       mov      r15, rax
+       mov      rcx, 0x7FF9F19CCDD0
+       xor      edx, edx
+       call     CORINFO_HELP_NEWARR_1_PTR
+       lea      rcx, bword ptr [r15+0x08]
+       mov      rdx, rax
+       call     CORINFO_HELP_ASSIGN_REF
+       lea      rcx, bword ptr [r14+0x28]
+       mov      rdx, r15
+       call     CORINFO_HELP_ASSIGN_REF
+       xor      edx, edx
+       mov      dword ptr [rsp+0x20], edx
+ 
+G_M000_IG04:                ;; offset=0x0099
+       mov      dword ptr [rsp+0x28], edx
+ 
+G_M000_IG05:                ;; offset=0x009D
+       mov      dword ptr [rsp+0x30], edx
+ 
+G_M000_IG06:                ;; offset=0x00A1
+       mov      dword ptr [rsp+0x38], edx
+       mov      rdx, gword ptr [r14+0x08]
+       mov      rdx, gword ptr [rdx+0x08]
+       mov      rcx, r14
+       mov      r8d, edi
+       xor      r9d, r9d
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Enter(Broiler.VM.Ubc.UbcVerifiedProgram,int,int,int,int,int,bool):bool:this]
+       test     eax, eax
+       je       G_M000_IG14
+       lea      rdx, [rbp-0x88]
+       mov      rcx, r14
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Activation():Broiler.VM.Ubc.UbcActivation:this]
+       mov      rcx, gword ptr [r14+0x08]
+       mov      rcx, gword ptr [rcx+0x08]
+       mov      gword ptr [rbp-0x60], rcx
+       mov      dword ptr [rbp-0x50], edi
+       xor      ecx, ecx
+       mov      dword ptr [rbp-0x40], ecx
+ 
+G_M000_IG07:                ;; offset=0x00E8
+       mov      dword ptr [rbp-0x3C], ecx
+       lea      rcx, [rbp-0x88]
+       mov      rdx, rsi
+       call     [Com.Example.Tally.TallyFamily:BindParameters(byref,System.ReadOnlySpan`1[byte]):bool]
+       test     eax, eax
+       je       SHORT G_M000_IG08
+       mov      rcx, r14
+       mov      rdx, rbx
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Run():Broiler.VM.VmExecutionStep:this]
+       jmp      G_M000_IG21
+ 
+G_M000_IG08:                ;; offset=0x0110
+       mov      rcx, gword ptr [r14+0x08]
+       mov      ecx, dword ptr [rcx+0x10]
+       mov      rcx, 0x7FF9F19CB800
+       call     CORINFO_HELP_NEWSFAST
+       mov      r15, rax
+       mov      rax, 0x2DD60800E48
+       mov      rax, gword ptr [rax]
+ 
+G_M000_IG09:                ;; offset=0x0136
+       vmovdqu  xmm0, xmmword ptr [rax+0x08]
+       vmovdqu  xmmword ptr [rbp-0x98], xmm0
+ 
+G_M000_IG10:                ;; offset=0x0143
+       lea      r8, bword ptr [r15+0x20]
+       mov      rdi, r8
+       lea      rsi, bword ptr [rbp-0xA0]
+       movsq    
+       call     CORINFO_HELP_ASSIGN_BYREF
+       movsq    
+       mov      dword ptr [r8], 702
+       mov      dword ptr [r8+0x04], 1
+       mov      dword ptr [r15+0x10], 4
+       mov      word  ptr [r15+0x18], 0
+       xor      ecx, ecx
+       mov      qword ptr [r15+0x08], rcx
+ 
+G_M000_IG11:                ;; offset=0x017E
+       mov      dword ptr [r15+0x14], ecx
+       mov      r8d, dword ptr [r14+0x38]
+       test     r8d, r8d
+       jle      SHORT G_M000_IG12
+       mov      rcx, gword ptr [r14+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       mov      r11, 0x7FF9F1460718
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [r14+0x38], ecx
+ 
+G_M000_IG12:                ;; offset=0x01AB
+       xor      rcx, rcx
+       mov      gword ptr [rbx], rcx
+ 
+G_M000_IG13:                ;; offset=0x01B0
+       mov      gword ptr [rbx+0x08], rcx
+       lea      rcx, [rbx+0x10]
+       mov      rdx, r15
+       call     CORINFO_HELP_CHECKED_ASSIGN_REF
+       mov      qword ptr [rbx+0x18], 3
+       jmp      G_M000_IG21
+ 
+G_M000_IG14:                ;; offset=0x01CD
+       mov      rcx, gword ptr [r14+0x10]
+       mov      esi, 701
+       mov      r8d, 804
+       cmp      byte  ptr [rcx+0x20], 0
+       cmove    esi, r8d
+       mov      r8d, dword ptr [r14+0x38]
+       test     r8d, r8d
+       jle      SHORT G_M000_IG15
+       mov      rcx, gword ptr [rcx+0x08]
+       mov      r11, 0x7FF9F1460710
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      eax, eax
+       mov      dword ptr [r14+0x38], eax
+ 
+G_M000_IG15:                ;; offset=0x0209
+       xor      rax, rax
+       mov      gword ptr [rbx], rax
+ 
+G_M000_IG16:                ;; offset=0x020E
+       mov      gword ptr [rbx+0x08], rax
+ 
+G_M000_IG17:                ;; offset=0x0212
+       mov      gword ptr [rbx+0x10], rax
+       mov      dword ptr [rbx+0x18], 4
+       mov      dword ptr [rbx+0x1C], esi
+       jmp      SHORT G_M000_IG21
+ 
+G_M000_IG18:                ;; offset=0x0222
+       mov      rax, gword ptr [r14+0x10]
+       mov      ecx, 701
+       mov      edx, 804
+       cmp      byte  ptr [rax+0x20], 0
+       cmove    ecx, edx
+       xor      rax, rax
+       mov      gword ptr [rbx], rax
+ 
+G_M000_IG19:                ;; offset=0x023C
+       mov      gword ptr [rbx+0x08], rax
+ 
+G_M000_IG20:                ;; offset=0x0240
+       mov      gword ptr [rbx+0x10], rax
+       mov      dword ptr [rbx+0x18], 4
+       mov      dword ptr [rbx+0x1C], ecx
+ 
+G_M000_IG21:                ;; offset=0x024E
+       mov      rax, rbx
+ 
+G_M000_IG22:                ;; offset=0x0251
+       add      rsp, 184
+       pop      rbx
+       pop      rsi
+       pop      rdi
+       pop      r14
+       pop      r15
+       pop      rbp
+       ret      
+ 
+; Total bytes of code 609
+
+
+; Assembly listing for method Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Resume(Broiler.VM.Emitter.Bytecode.UbcContinuation):Broiler.VM.VmExecutionStep:this (FullOpts)
+; Emitting BLENDED_CODE for generic X64 + VEX on Windows
+; FullOpts code
+; optimized code
+; rsp based frame
+; fully interruptible
+; No PGO data
+; 0 inlinees with PGO data; 43 single block inlinees; 10 inlinees without PGO data
+
+G_M000_IG01:                ;; offset=0x0000
+       push     r15
+       push     r14
+       push     r13
+       push     r12
+       push     rdi
+       push     rsi
+       push     rbp
+       push     rbx
+       sub      rsp, 168
+       xor      eax, eax
+       mov      qword ptr [rsp+0x48], rax
+       vxorps   xmm4, xmm4, xmm4
+       vmovdqu  ymmword ptr [rsp+0x50], ymm4
+       vmovdqu  ymmword ptr [rsp+0x70], ymm4
+       vmovdqa  xmmword ptr [rsp+0x90], xmm4
+       mov      qword ptr [rsp+0xA0], rax
+       mov      rbx, rcx
+       mov      rsi, rdx
+       mov      rdi, r8
+ 
+G_M000_IG02:                ;; offset=0x0044
+       mov      rcx, gword ptr [rbx+0x10]
+       cmp      dword ptr [rcx], ecx
+       call     [Broiler.VM.Emitter.Bytecode.UbcLoopMeter:Poll():bool:this]
+       test     eax, eax
+       je       G_M000_IG25
+ 
+G_M000_IG03:                ;; offset=0x0058
+       mov      rbp, gword ptr [rbx+0x10]
+       movsxd   r8, dword ptr [rdi+0x30]
+       mov      rcx, gword ptr [rbp+0x08]
+       mov      r11, 0x7FF9F14609B0
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:TryCharge(int,ulong):bool:this
+       mov      byte  ptr [rbp+0x20], 0
+       test     eax, eax
+       je       G_M000_IG22
+       mov      ebp, dword ptr [rdi+0x30]
+       mov      dword ptr [rbx+0x38], ebp
+       mov      ecx, 4
+       cmp      ebp, 4
+       cmovl    ebp, ecx
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, ebp
+       shl      r8, 5
+       mov      r11, 0x7FF9F14609A8
+       mov      edx, 2
+       call     [r11]Broiler.VM.IVmMeter:TryCharge(int,ulong):bool:this
+       test     eax, eax
+       je       G_M000_IG18
+       movsxd   rdx, dword ptr [rbx+0x38]
+       mov      rcx, gword ptr [rbx+0x10]
+       cmp      dword ptr [rcx], ecx
+       call     [Broiler.VM.Emitter.Bytecode.UbcLoopMeter:Spend(ulong):bool:this]
+       test     eax, eax
+       je       G_M000_IG18
+       movsxd   rdx, ebp
+       mov      rcx, 0x7FF9F19CC0D0
+       call     CORINFO_HELP_NEWARR_1_VC
+       lea      rcx, bword ptr [rbx+0x30]
+       mov      rdx, rax
+       call     CORINFO_HELP_ASSIGN_REF
+       mov      rcx, gword ptr [rdi+0x10]
+       mov      rdx, gword ptr [rbx+0x30]
+       mov      r8d, dword ptr [rbx+0x38]
+       call     [System.Array:Copy(System.Array,System.Array,int)]
+       mov      rbp, gword ptr [rbx+0x30]
+       mov      rcx, rbp
+       mov      eax, dword ptr [rbx+0x38]
+       dec      eax
+       mov      r14d, dword ptr [rcx+0x08]
+       cmp      eax, r14d
+       jae      G_M000_IG30
+       shl      rax, 5
+       lea      rcx, bword ptr [rcx+rax+0x10]
+       mov      r15, gword ptr [rcx]
+       mov      gword ptr [rsp+0x20], r15
+       mov      r13d, dword ptr [rcx+0x08]
+       mov      r12d, dword ptr [rcx+0x0C]
+       mov      dword ptr [rsp+0x44], r12d
+       mov      eax, dword ptr [rcx+0x10]
+       mov      dword ptr [rsp+0x40], eax
+       mov      edx, dword ptr [rcx+0x14]
+       mov      dword ptr [rsp+0x3C], edx
+       mov      r8, gword ptr [r15+0x30]
+ 
+G_M000_IG04:                ;; offset=0x014D
+       cmp      r13d, dword ptr [r8+0x08]
+       jae      G_M000_IG30
+       mov      ecx, r13d
+       mov      r10, gword ptr [r8+8*rcx+0x10]
+       mov      gword ptr [rsp+0x30], r10
+       mov      rcx, 0x7FF9F19CCC08
+       call     CORINFO_HELP_NEWSFAST
+       mov      gword ptr [rsp+0x28], rax
+       mov      rcx, 0x7FF9F19CCDD0
+       xor      edx, edx
+       call     CORINFO_HELP_NEWARR_1_PTR
+       mov      r8, gword ptr [rsp+0x28]
+       lea      rcx, bword ptr [r8+0x08]
+       mov      rdx, rax
+       call     CORINFO_HELP_ASSIGN_REF
+       lea      rcx, bword ptr [rbx+0x28]
+       mov      rdx, gword ptr [rsp+0x28]
+       call     CORINFO_HELP_ASSIGN_REF
+       xor      edx, edx
+       xor      r8d, r8d
+       mov      ecx, dword ptr [rbx+0x38]
+       xor      eax, eax
+       cmp      eax, ecx
+       jge      SHORT G_M000_IG12
+       align    [0 bytes for IG05]
+ 
+G_M000_IG05:                ;; offset=0x01B6
+       mov      r10, rbp
+       cmp      eax, r14d
+       jae      G_M000_IG30
+       mov      r9, rax
+       shl      r9, 5
+       mov      r10, gword ptr [r10+r9+0x10]
+       mov      r10, gword ptr [r10+0x30]
+       mov      r11, rbp
+       lea      r9, bword ptr [r11+r9+0x10]
+       mov      r11d, dword ptr [r9+0x08]
+       cmp      r11d, dword ptr [r10+0x08]
+       jae      G_M000_IG30
+       mov      r10, gword ptr [r10+8*r11+0x10]
+       mov      r11d, dword ptr [r9+0x10]
+       add      r11d, dword ptr [r10+0x24]
+       mov      r12, gword ptr [r10+0x08]
+       mov      r15d, dword ptr [r12+0x0C]
+       lea      r11d, [r11+r15+0x01]
+       cmp      edx, r11d
+       jl       SHORT G_M000_IG07
+ 
+G_M000_IG06:                ;; offset=0x0208
+       jmp      SHORT G_M000_IG08
+ 
+G_M000_IG07:                ;; offset=0x020A
+       mov      edx, r11d
+ 
+G_M000_IG08:                ;; offset=0x020D
+       mov      r9d, dword ptr [r9+0x14]
+       add      r9d, dword ptr [r10+0x28]
+       mov      r10d, dword ptr [r12+0x10]
+       lea      r10d, [r9+r10+0x01]
+       cmp      r8d, r10d
+       jl       SHORT G_M000_IG10
+ 
+G_M000_IG09:                ;; offset=0x0224
+       jmp      SHORT G_M000_IG11
+ 
+G_M000_IG10:                ;; offset=0x0226
+       mov      r8d, r10d
+ 
+G_M000_IG11:                ;; offset=0x0229
+       inc      eax
+       cmp      eax, ecx
+       jl       SHORT G_M000_IG05
+ 
+G_M000_IG12:                ;; offset=0x022F
+       mov      rcx, rbx
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Grow(int,int):bool:this]
+       test     eax, eax
+       je       G_M000_IG14
+       mov      rcx, gword ptr [rdi+0x18]
+       mov      r8d, dword ptr [rcx+0x08]
+       mov      rdx, gword ptr [rbx+0x20]
+       call     [System.Array:Copy(System.Array,System.Array,int)]
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r8, gword ptr [rdi+0x20]
+       xor      edx, edx
+       call     [Com.Example.Tally.TallyFamily:RestoreValues(Broiler.VM.Ubc.IUbcValuePlane,int,System.Object)]
+       lea      rdx, [rsp+0x48]
+       mov      rcx, rbx
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Activation():Broiler.VM.Ubc.UbcActivation:this]
+       mov      r15, gword ptr [rsp+0x20]
+       mov      gword ptr [rsp+0x70], r15
+       mov      dword ptr [rsp+0x80], r13d
+       mov      rbp, gword ptr [rsp+0x30]
+       mov      rdx, gword ptr [rbp+0x40]
+       mov      r12d, dword ptr [rsp+0x44]
+       cmp      r12d, dword ptr [rdx+0x08]
+       jae      G_M000_IG30
+       mov      ecx, r12d
+       lea      rcx, [rcx+8*rcx]
+       mov      edx, dword ptr [rdx+8*rcx+0x20]
+       mov      dword ptr [rsp+0x84], edx
+       mov      ebp, dword ptr [rsp+0x40]
+       mov      dword ptr [rsp+0x88], ebp
+       mov      ebp, dword ptr [rsp+0x3C]
+       mov      dword ptr [rsp+0x8C], ebp
+       mov      rdx, gword ptr [rdi+0x18]
+       mov      edx, dword ptr [rdx+0x08]
+       mov      dword ptr [rsp+0x90], edx
+       mov      edx, dword ptr [rdi+0x34]
+       mov      dword ptr [rsp+0x94], edx
+       mov      rdx, gword ptr [rdi+0x28]
+       mov      gword ptr [rsp+0x78], rdx
+       lea      rcx, [rsp+0x48]
+       call     [Com.Example.Tally.TallyFamily:OnResume(byref,System.Object)]
+       mov      rcx, gword ptr [rbx+0x30]
+       mov      edx, dword ptr [rbx+0x38]
+       dec      edx
+       cmp      edx, dword ptr [rcx+0x08]
+       jae      G_M000_IG30
+       shl      rdx, 5
+       mov      eax, dword ptr [rdi+0x38]
+       mov      dword ptr [rcx+rdx+0x1C], eax
+ 
+G_M000_IG13:                ;; offset=0x030B
+       mov      rcx, rbx
+       mov      rdx, rsi
+       call     [Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Run():Broiler.VM.VmExecutionStep:this]
+       jmp      G_M000_IG28
+ 
+G_M000_IG14:                ;; offset=0x031C
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      edi, 701
+       mov      r8d, 804
+       cmp      byte  ptr [rcx+0x20], 0
+       cmove    edi, r8d
+       mov      r8d, dword ptr [rbx+0x38]
+       test     r8d, r8d
+       jle      SHORT G_M000_IG15
+       mov      rcx, gword ptr [rcx+0x08]
+       mov      r11, 0x7FF9F14609C0
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+ 
+G_M000_IG15:                ;; offset=0x0357
+       xor      rcx, rcx
+       mov      gword ptr [rsi], rcx
+ 
+G_M000_IG16:                ;; offset=0x035C
+       mov      gword ptr [rsi+0x08], rcx
+ 
+G_M000_IG17:                ;; offset=0x0360
+       mov      gword ptr [rsi+0x10], rcx
+       mov      dword ptr [rsi+0x18], 4
+       mov      dword ptr [rsi+0x1C], edi
+       jmp      G_M000_IG28
+ 
+G_M000_IG18:                ;; offset=0x0373
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      edi, 701
+       mov      r8d, 804
+       cmp      byte  ptr [rcx+0x20], 0
+       cmove    edi, r8d
+       mov      r8d, dword ptr [rbx+0x38]
+       test     r8d, r8d
+       jle      SHORT G_M000_IG19
+       mov      rcx, gword ptr [rcx+0x08]
+       mov      r11, 0x7FF9F14609B8
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      eax, eax
+       mov      dword ptr [rbx+0x38], eax
+ 
+G_M000_IG19:                ;; offset=0x03AE
+       xor      rax, rax
+       mov      gword ptr [rsi], rax
+ 
+G_M000_IG20:                ;; offset=0x03B3
+       mov      gword ptr [rsi+0x08], rax
+ 
+G_M000_IG21:                ;; offset=0x03B7
+       mov      gword ptr [rsi+0x10], rax
+       mov      dword ptr [rsi+0x18], 4
+       mov      dword ptr [rsi+0x1C], edi
+       jmp      SHORT G_M000_IG28
+ 
+G_M000_IG22:                ;; offset=0x03C7
+       mov      rax, gword ptr [rbx+0x10]
+       mov      ecx, 701
+       mov      edx, 804
+       cmp      byte  ptr [rax+0x20], 0
+       cmove    ecx, edx
+       xor      rax, rax
+       mov      gword ptr [rsi], rax
+ 
+G_M000_IG23:                ;; offset=0x03E1
+       mov      gword ptr [rsi+0x08], rax
+ 
+G_M000_IG24:                ;; offset=0x03E5
+       mov      gword ptr [rsi+0x10], rax
+       mov      dword ptr [rsi+0x18], 4
+       mov      dword ptr [rsi+0x1C], ecx
+       jmp      SHORT G_M000_IG28
+ 
+G_M000_IG25:                ;; offset=0x03F5
+       mov      rax, gword ptr [rbx+0x10]
+       mov      ecx, 701
+       mov      edx, 804
+       cmp      byte  ptr [rax+0x20], 0
+       cmove    ecx, edx
+       xor      rax, rax
+       mov      gword ptr [rsi], rax
+ 
+G_M000_IG26:                ;; offset=0x040F
+       mov      gword ptr [rsi+0x08], rax
+ 
+G_M000_IG27:                ;; offset=0x0413
+       mov      gword ptr [rsi+0x10], rax
+       mov      dword ptr [rsi+0x18], 4
+       mov      dword ptr [rsi+0x1C], ecx
+ 
+G_M000_IG28:                ;; offset=0x0421
+       mov      rax, rsi
+ 
+G_M000_IG29:                ;; offset=0x0424
+       add      rsp, 168
+       pop      rbx
+       pop      rbp
+       pop      rsi
+       pop      rdi
+       pop      r12
+       pop      r13
+       pop      r14
+       pop      r15
+       ret      
+ 
+G_M000_IG30:                ;; offset=0x0438
+       call     CORINFO_HELP_RNGCHKFAIL
+       int3     
+ 
+; Total bytes of code 1086
+
+
+; Assembly listing for method Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Unwind(byref,System.Object):int:this (FullOpts)
+; Emitting BLENDED_CODE for generic X64 + VEX on Windows
+; FullOpts code
+; optimized code
+; rsp based frame
+; fully interruptible
+; No PGO data
+; 0 inlinees with PGO data; 27 single block inlinees; 3 inlinees without PGO data
+
+G_M000_IG01:                ;; offset=0x0000
+       push     r15
+       push     r14
+       push     r13
+       push     r12
+       push     rdi
+       push     rsi
+       push     rbp
+       push     rbx
+       sub      rsp, 40
+       mov      bword ptr [rsp+0x78], rdx
+       mov      gword ptr [rsp+0x80], r8
+       mov      rbx, rcx
+ 
+G_M000_IG02:                ;; offset=0x0020
+       jmp      SHORT G_M000_IG07
+       align    [0 bytes for IG03]
+ 
+G_M000_IG03:                ;; offset=0x0022
+       lea      r11d, [rax+0x01]
+       mov      eax, r11d
+       cmp      edx, eax
+       jg       G_M000_IG09
+ 
+G_M000_IG04:                ;; offset=0x0031
+       mov      ecx, dword ptr [rbp+0x14]
+       mov      edx, ecx
+       sub      r8d, ecx
+       test     r8d, r8d
+       jle      SHORT G_M000_IG06
+ 
+G_M000_IG05:                ;; offset=0x003E
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r11, 0x7FF9F1460958
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Clear(int,int):this
+ 
+G_M000_IG06:                ;; offset=0x004F
+       dec      dword ptr [rbx+0x38]
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       mov      r11, 0x7FF9F1460960
+       mov      edx, 8
+       mov      r8d, 1
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+ 
+G_M000_IG07:                ;; offset=0x0072
+       cmp      dword ptr [rbx+0x38], 0
+       jle      G_M000_IG16
+ 
+G_M000_IG08:                ;; offset=0x007C
+       mov      rdx, gword ptr [rbx+0x30]
+       mov      ecx, dword ptr [rbx+0x38]
+       dec      ecx
+       cmp      ecx, dword ptr [rdx+0x08]
+       jae      G_M000_IG19
+       shl      rcx, 5
+       lea      rbp, bword ptr [rdx+rcx+0x10]
+       mov      rdx, gword ptr [rbp]
+       mov      rdx, gword ptr [rdx+0x30]
+       mov      ecx, dword ptr [rbp+0x08]
+       cmp      ecx, dword ptr [rdx+0x08]
+       jae      G_M000_IG19
+       mov      r14, gword ptr [rdx+8*rcx+0x10]
+       mov      r15d, dword ptr [rbp+0x10]
+       add      r15d, dword ptr [r14+0x24]
+       mov      dword ptr [rsp+0x24], r15d
+       mov      r13d, dword ptr [rbp+0x14]
+       add      r13d, dword ptr [r14+0x28]
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rdx, gword ptr [r14+0x48]
+       mov      edx, dword ptr [rdx+0x08]
+       inc      rdx
+       cmp      dword ptr [rcx], ecx
+       call     [Broiler.VM.Emitter.Bytecode.UbcLoopMeter:Spend(ulong):bool:this]
+       test     eax, eax
+       je       G_M000_IG14
+       mov      r12, gword ptr [r14+0x40]
+       mov      ecx, dword ptr [rbp+0x0C]
+       cmp      ecx, dword ptr [r12+0x08]
+       jae      G_M000_IG19
+       lea      rcx, [rcx+8*rcx]
+       lea      rcx, bword ptr [r12+8*rcx+0x10]
+       mov      r8d, r13d
+       add      r8d, dword ptr [rcx+0x24]
+       add      r8d, dword ptr [rcx+0x34]
+       mov      rcx, gword ptr [r14+0x48]
+       mov      edx, dword ptr [rcx+0x08]
+       xor      r11d, r11d
+       xor      eax, eax
+       test     edx, edx
+       jle      G_M000_IG04
+ 
+G_M000_IG09:                ;; offset=0x011D
+       mov      r11d, r11d
+       lea      r11, [r11+2*r11]
+       lea      r11, bword ptr [rcx+8*r11+0x10]
+       mov      r10d, dword ptr [r11]
+       mov      r9d, dword ptr [r11+0x04]
+       mov      r12d, dword ptr [r11+0x08]
+       mov      edi, dword ptr [r11+0x0C]
+       mov      r15d, dword ptr [r11+0x10]
+       movzx    r11, byte  ptr [r11+0x14]
+       mov      dword ptr [rsp+0x20], r11d
+       mov      esi, dword ptr [rbp+0x0C]
+       cmp      esi, r10d
+       jl       G_M000_IG03
+ 
+G_M000_IG10:                ;; offset=0x0152
+       cmp      esi, r9d
+       jge      G_M000_IG03
+ 
+G_M000_IG11:                ;; offset=0x015B
+       add      r15d, r13d
+       sub      r8d, r15d
+       test     r8d, r8d
+       jle      SHORT G_M000_IG12
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      edx, r15d
+       mov      r11, 0x7FF9F1460950
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:Clear(int,int):this
+ 
+G_M000_IG12:                ;; offset=0x017A
+       mov      rdx, gword ptr [rbp]
+       mov      rsi, bword ptr [rsp+0x78]
+       lea      rcx, bword ptr [rsi+0x28]
+       call     CORINFO_HELP_CHECKED_ASSIGN_REF
+       mov      ecx, dword ptr [rbp+0x08]
+       mov      dword ptr [rsi+0x38], ecx
+       mov      rcx, gword ptr [r14+0x40]
+       cmp      r12d, dword ptr [rcx+0x08]
+       jae      G_M000_IG19
+       mov      edx, r12d
+       lea      rdx, [rdx+8*rdx]
+       mov      ecx, dword ptr [rcx+8*rdx+0x20]
+       mov      dword ptr [rsi+0x3C], ecx
+       mov      ecx, dword ptr [rbp+0x10]
+       mov      dword ptr [rsi+0x40], ecx
+       mov      ecx, dword ptr [rbp+0x14]
+       mov      dword ptr [rsi+0x44], ecx
+       add      edi, dword ptr [rsp+0x24]
+       mov      dword ptr [rsi+0x48], edi
+       mov      dword ptr [rsi+0x4C], r15d
+       lea      rcx, bword ptr [rsi+0x30]
+       mov      rdx, gword ptr [rsp+0x80]
+       call     CORINFO_HELP_CHECKED_ASSIGN_REF
+       mov      rcx, rsi
+       mov      edx, dword ptr [rsp+0x20]
+       call     [Com.Example.Tally.TallyFamily:OnLand(byref,byte)]
+       mov      dword ptr [rbp+0x0C], r12d
+       xor      eax, eax
+ 
+G_M000_IG13:                ;; offset=0x01E9
+       add      rsp, 40
+       pop      rbx
+       pop      rbp
+       pop      rsi
+       pop      rdi
+       pop      r12
+       pop      r13
+       pop      r14
+       pop      r15
+       ret      
+ 
+G_M000_IG14:                ;; offset=0x01FA
+       mov      eax, 2
+ 
+G_M000_IG15:                ;; offset=0x01FF
+       add      rsp, 40
+       pop      rbx
+       pop      rbp
+       pop      rsi
+       pop      rdi
+       pop      r12
+       pop      r13
+       pop      r14
+       pop      r15
+       ret      
+ 
+G_M000_IG16:                ;; offset=0x0210
+       mov      rdi, gword ptr [rsp+0x80]
+       xor      ecx, ecx
+       mov      rsi, bword ptr [rsp+0x78]
+       mov      dword ptr [rsi+0x48], ecx
+ 
+G_M000_IG17:                ;; offset=0x0222
+       mov      dword ptr [rsi+0x4C], ecx
+       lea      rcx, bword ptr [rsi+0x30]
+       mov      rdx, rdi
+       call     CORINFO_HELP_CHECKED_ASSIGN_REF
+       mov      eax, 1
+ 
+G_M000_IG18:                ;; offset=0x0236
+       add      rsp, 40
+       pop      rbx
+       pop      rbp
+       pop      rsi
+       pop      rdi
+       pop      r12
+       pop      r13
+       pop      r14
+       pop      r15
+       ret      
+ 
+G_M000_IG19:                ;; offset=0x0247
+       call     CORINFO_HELP_RNGCHKFAIL
+       int3     
+ 
+; Total bytes of code 589
+
+
+; Assembly listing for method Broiler.VM.Emitter.Bytecode.UbcInterpreter`1[Com.Example.Tally.TallyFamily]:Suspend(byref,int):Broiler.VM.VmExecutionStep:this (FullOpts)
+; Emitting BLENDED_CODE for generic X64 + VEX on Windows
+; FullOpts code
+; optimized code
+; rsp based frame
+; partially interruptible
+; No PGO data
+; 0 inlinees with PGO data; 13 single block inlinees; 5 inlinees without PGO data
+
+G_M000_IG01:                ;; offset=0x0000
+       push     r15
+       push     r14
+       push     r13
+       push     r12
+       push     rdi
+       push     rsi
+       push     rbp
+       push     rbx
+       sub      rsp, 72
+       mov      rbx, rcx
+       mov      rsi, rdx
+       mov      rdi, r8
+       mov      ebp, r9d
+ 
+G_M000_IG02:                ;; offset=0x001C
+       mov      r14d, dword ptr [rdi+0x48]
+       mov      r15d, dword ptr [rdi+0x4C]
+       mov      r13, gword ptr [rdi+0x30]
+       test     r13, r13
+       je       G_M000_IG10
+ 
+G_M000_IG03:                ;; offset=0x0031
+       movsxd   r12, r14d
+       lea      r8, [8*r12]
+       movsxd   rax, dword ptr [rbx+0x38]
+       shl      rax, 5
+       add      r8, rax
+       mov      qword ptr [rsp+0x40], r8
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r11, 0x7FF9F1460968
+       call     [r11]Broiler.VM.Ubc.IUbcValuePlane:get_ValueBytes():int:this
+       movsxd   r8, eax
+       movsxd   rcx, r15d
+       imul     r8, rcx
+       add      r8, qword ptr [rsp+0x40]
+       mov      rax, gword ptr [rbx+0x10]
+       mov      gword ptr [rsp+0x20], rax
+       mov      rcx, gword ptr [rax+0x08]
+       mov      r11, 0x7FF9F1460978
+       mov      edx, 2
+       call     [r11]Broiler.VM.IVmMeter:TryCharge(int,ulong):bool:this
+       mov      rdx, gword ptr [rsp+0x20]
+       mov      byte  ptr [rdx+0x20], 0
+       test     eax, eax
+       je       G_M000_IG06
+       mov      rdx, r12
+       mov      rcx, 0x7FF9F16DD6D0
+       call     CORINFO_HELP_NEWARR_1_PTR
+       mov      r12, rax
+       mov      rcx, gword ptr [rbx+0x20]
+       mov      rdx, r12
+       mov      r8d, r14d
+       call     [System.Array:Copy(System.Array,System.Array,int)]
+       mov      r14d, dword ptr [rbx+0x38]
+       movsxd   rdx, r14d
+       mov      rcx, 0x7FF9F19CC0D0
+       call     CORINFO_HELP_NEWARR_1_VC
+       mov      gword ptr [rsp+0x30], rax
+       mov      rcx, gword ptr [rbx+0x30]
+       mov      r8d, r14d
+       mov      rdx, rax
+       call     [System.Array:Copy(System.Array,System.Array,int)]
+       mov      rcx, gword ptr [rbx+0x28]
+       mov      r8d, r15d
+       xor      edx, edx
+       call     [Com.Example.Tally.TallyFamily:CaptureValues(Broiler.VM.Ubc.IUbcValuePlane,int,int):System.Object]
+       mov      r14, rax
+ 
+G_M000_IG04:                ;; offset=0x00FE
+       mov      rcx, 0x7FF9F1A8B0B0
+       call     CORINFO_HELP_NEWSFAST
+       mov      gword ptr [rsp+0x28], rax
+       mov      rdx, gword ptr [rbx+0x08]
+       mov      r8d, dword ptr [rbx+0x38]
+       mov      dword ptr [rsp+0x3C], r8d
+       lea      rcx, bword ptr [rax+0x08]
+       call     CORINFO_HELP_ASSIGN_REF
+       mov      rax, gword ptr [rsp+0x28]
+       lea      rcx, bword ptr [rax+0x10]
+       mov      rdx, gword ptr [rsp+0x30]
+       call     CORINFO_HELP_ASSIGN_REF
+       mov      rax, gword ptr [rsp+0x28]
+       mov      ecx, dword ptr [rsp+0x3C]
+       mov      dword ptr [rax+0x30], ecx
+       lea      rcx, bword ptr [rax+0x18]
+       mov      rdx, r12
+       call     CORINFO_HELP_ASSIGN_REF
+       mov      r12, gword ptr [rsp+0x28]
+       lea      rcx, bword ptr [r12+0x20]
+       mov      rdx, r14
+       call     CORINFO_HELP_ASSIGN_REF
+       mov      dword ptr [r12+0x34], r15d
+       mov      dword ptr [r12+0x38], ebp
+       lea      rcx, bword ptr [r12+0x28]
+       mov      rdx, r13
+       call     CORINFO_HELP_ASSIGN_REF
+       mov      rcx, rdi
+       call     [Com.Example.Tally.TallyFamily:SuspendProjection(byref):Broiler.VM.IVmProfilePayload]
+       mov      rdi, rax
+       mov      r8d, dword ptr [rbx+0x38]
+       test     r8d, r8d
+       jle      SHORT G_M000_IG05
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       mov      r11, 0x7FF9F1460988
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+ 
+G_M000_IG05:                ;; offset=0x01B0
+       xor      rcx, rcx
+       mov      gword ptr [rsi], rcx
+       lea      rcx, [rsi+0x08]
+       mov      rdx, r12
+       call     CORINFO_HELP_CHECKED_ASSIGN_REF
+       lea      rcx, [rsi+0x10]
+       mov      rdx, rdi
+       call     CORINFO_HELP_CHECKED_ASSIGN_REF
+       mov      qword ptr [rsi+0x18], 2
+       jmp      G_M000_IG14
+ 
+G_M000_IG06:                ;; offset=0x01DA
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      edi, 701
+       mov      r8d, 804
+       cmp      byte  ptr [rcx+0x20], 0
+       cmove    edi, r8d
+       mov      r8d, dword ptr [rbx+0x38]
+       test     r8d, r8d
+       jle      SHORT G_M000_IG07
+       mov      rcx, gword ptr [rcx+0x08]
+       mov      r11, 0x7FF9F1460980
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      ecx, ecx
+       mov      dword ptr [rbx+0x38], ecx
+ 
+G_M000_IG07:                ;; offset=0x0215
+       xor      rcx, rcx
+       mov      gword ptr [rsi], rcx
+ 
+G_M000_IG08:                ;; offset=0x021A
+       mov      gword ptr [rsi+0x08], rcx
+ 
+G_M000_IG09:                ;; offset=0x021E
+       mov      gword ptr [rsi+0x10], rcx
+       mov      dword ptr [rsi+0x18], 4
+       mov      dword ptr [rsi+0x1C], edi
+       jmp      SHORT G_M000_IG14
+ 
+G_M000_IG10:                ;; offset=0x022E
+       cmp      dword ptr [rbx+0x38], 0
+       jle      SHORT G_M000_IG11
+       mov      rcx, gword ptr [rbx+0x10]
+       mov      rcx, gword ptr [rcx+0x08]
+       movsxd   r8, dword ptr [rbx+0x38]
+       mov      r11, 0x7FF9F1460970
+       mov      edx, 8
+       call     [r11]Broiler.VM.IVmMeter:ReportReleased(int,ulong):this
+       xor      eax, eax
+       mov      dword ptr [rbx+0x38], eax
+ 
+G_M000_IG11:                ;; offset=0x0257
+       xor      rax, rax
+       mov      gword ptr [rsi], rax
+ 
+G_M000_IG12:                ;; offset=0x025C
+       mov      gword ptr [rsi+0x08], rax
+ 
+G_M000_IG13:                ;; offset=0x0260
+       mov      gword ptr [rsi+0x10], rax
+       mov      rax, 0x1F500000004
+       mov      qword ptr [rsi+0x18], rax
+ 
+G_M000_IG14:                ;; offset=0x0272
+       mov      rax, rsi
+ 
+G_M000_IG15:                ;; offset=0x0275
+       add      rsp, 72
+       pop      rbx
+       pop      rbp
+       pop      rsi
+       pop      rdi
+       pop      r12
+       pop      r13
+       pop      r14
+       pop      r15
+       ret      
+ 
+; Total bytes of code 646
+

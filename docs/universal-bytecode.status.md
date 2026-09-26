@@ -1,6 +1,6 @@
 # The universal bytecode programme — status ledger
 
-**Last updated:** 2026-09-25
+**Last updated:** 2026-09-25 (UBC-0 recorded; UBC-3 and UBC-5 to UBC-10 given the reason they cannot meet their gates; UBC-1 and UBC-2 moved to `In progress` on bundles `ubc-1-001` and `ubc-2-001`)
 
 **Authority:** this file is the authoritative current-evidence ledger for the milestones in
 [the universal bytecode roadmap](universal-bytecode.roadmap.md). The roadmap defines planned work
@@ -12,6 +12,24 @@ nothing and records no state.
 no record it names has been filed, and no bundle under `docs/evidence/ubc-*` exists. That is the whole
 of what this ledger says today, and a reader who finds a later row moved should find a dated line
 beside it saying why.
+
+*(Moved later on 2026-09-25, and the paragraph above is kept as what this file said when it was
+created.)* Milestone UBC-0 now owns records and a retained bundle: [ADR 0013](adr/0013-the-universal-bytecode-extraction-record.md) is filed. It
+**accepts** the universal bytecode and its one loop (candidate A). For the native-form mechanism beside
+it (candidate B) it records that G1 is unsatisfied - one product profile has a native form and the
+other has no emitted code at all - so the gate cannot be invoked for it, in the dated note ADR 0011
+prescribes for that state, which carries no verdict and refuses nothing. That note is why the UBC-5
+row names a holder, and why every row that waits on UBC-5, directly or through UBC-6a and UBC-3, says
+it cannot meet its gate. Only UBC-1, UBC-2 and UBC-4 can. No line of the programme's code exists yet.
+
+*(Moved again later on 2026-09-25, and the paragraph above is kept as what this file said when UBC-0
+was recorded.)* The programme's code now exists: `Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode`, the
+fixture family `Com.Example.Tally` and its composition root, each with the rules, the corpora and the
+records its milestone names. UBC-1 and UBC-2 each hold every clause of their exit gates on a retained
+bundle, and neither is accepted, because review is deferred. UBC-4, the one other milestone that can
+meet its gate, waits on UBC-2 and on the WebAssembly profile owner's decisions UBC-D-2 and UBC-D-3 for
+its clause 7, and has not started. Every milestone after them still cannot meet its gate while ADR
+0013's note on candidate B stands, for the reason the UBC-5 row gives.
 
 ---
 
@@ -44,6 +62,14 @@ here at all.
 | `Blocked` | A named clause cannot be met because of a decision or precondition another party holds; the row names the holder and the unblock condition. |
 | `Accepted` | Every clause of the exit gate is covered by accepted evidence and the owner and reviewer have recorded a decision. Unreachable while `docs/mvp.md` defers review. |
 
+*(Added 2026-09-25, when the first row reached it.)* A milestone whose every clause is met on
+retained evidence, and which is not accepted because [`docs/mvp.md`](mvp.md) defers review, stays
+`In progress` and says both halves in its row. The definition above reads "at least one clause of
+its exit gate is unmet", which such a row does not satisfy, and the core ledger's own definition -
+work has begun "but the objective exit gate has not been accepted" - is the reading this ledger takes
+for it. No fifth state is minted, because a state that meant "met but unaccepted" would read as
+a verdict the owner has not given.
+
 This ledger uses no bracketed mark tokens. It is not one of the review documents the architecture
 rules H1 to H5 govern, and it adopts none of their legends; a reader comparing it with the core ledger
 should read the words in the State column and nothing else.
@@ -54,18 +80,18 @@ should read the words in the State column and nothing else.
 
 | Milestone | Objective, in one line | State | Unmet clauses / holder | Evidence | Last moved |
 |---|---|---|---|---|---|
-| UBC-0 | The extraction record, the records that move, the predeclared parity rules | `Not started` | all | none | 2026-09-25 (row created) |
-| UBC-1 | `Broiler.VM.Ubc`: format, common family, table schema, primitive table, walk, corpus | `Not started` | all | none | 2026-09-25 (row created) |
-| UBC-2 | `Broiler.VM.Emitter.Bytecode` and the fixture family | `Not started` | all | none | 2026-09-25 (row created) |
-| UBC-5 | `Broiler.VM.Ubc.Native`, the `x86` pivot and the execution half | `Not started` | all | none | 2026-09-25 (row created) |
-| UBC-6a | The `x86-64` emitter over the fixture family | `Not started` | all | none | 2026-09-25 (row created) |
-| UBC-3 | The JavaScript family | `Not started` | all; clause 10 is gated on decision UBC-D-1 | none | 2026-09-25 (row created) |
+| UBC-0 | The extraction record, the records that move, the predeclared parity rules | `In progress` | **every clause met on retained evidence; not accepted**, because `docs/mvp.md` defers review (update rule 7). The verdict is an acceptance, of candidate A (the universal bytecode and its one loop); for candidate B (the native-form mechanism) the record carries the unsatisfied-G1 note ADR 0011 prescribes, which carries no verdict, so UBC-0.6's refusal branch is not reached | [bundle ubc-0-001](evidence/ubc-0-001/README.md); [ADR 0013](adr/0013-the-universal-bytecode-extraction-record.md); the three decision rules, first committed as `6486add` before any code of the milestones they judge | 2026-09-25 (records filed, bundle retained) |
+| UBC-1 | `Broiler.VM.Ubc`: format, common family, table schema, primitive table, walk, corpus | `In progress` | **every clause met on retained evidence; not accepted**, because `docs/mvp.md` defers review (update rule 7). The walk's reservations of decoded rows are estimates the bundle names as such, and two adversarial reviews' findings are fixed in the commits it lists | [bundle ubc-1-001](evidence/ubc-1-001/README.md); the corpus `src/tests/corpus/ubc-1/`; the registry `docs/ubc/diagnostics/registry.txt`; the baseline `docs/ubc/api/public-api.txt`; rules U1, U2, U4, U8 and U9 | 2026-09-25 (code landed, bundle retained) |
+| UBC-2 | `Broiler.VM.Emitter.Bytecode` and the fixture family | `In progress` | **every clause met on retained evidence; not accepted**, because `docs/mvp.md` defers review (update rule 7). One RID, `win-x64`, which is not a supported one; E2's differential check itself first has an emitter to run against at UBC-6a, and only its corpus is retained here; the fold check's Native AOT half is asserted, not excluded | [bundle ubc-2-001](evidence/ubc-2-001/README.md); the program and primitive corpora `src/tests/corpus/ubc-2/`; routes MVP-13 and MVP-14; the register row of `docs/compositions.md`; rules A11, A12 and A13 revised | 2026-09-25 (code landed, bundle retained) |
+| UBC-5 | `Broiler.VM.Ubc.Native`, the `x86` pivot and the execution half | `Not started` | all; **it cannot meet clause 1 while ADR 0013's note that G1 is unsatisfied for the native-form mechanism stands**, because clause 1 writes that mechanism's assembly. Holder: the core architecture owner. Unblock condition, in ADR 0011's words: the second product profile - a second product profile's own emitted code over its bytecode, in merged code - or a ruling by that owner that moving one profile's native machinery into an emitter family is not an extraction between profiles | none | 2026-09-25 (reason recorded) |
+| UBC-6a | The `x86-64` emitter over the fixture family | `Not started` | all; it cannot meet its gate while UBC-5 cannot, for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
+| UBC-3 | The JavaScript family | `Not started` | all; clause 10 is gated on decision UBC-D-1; **the whole milestone waits on UBC-6a** (roadmap section 10, "Waits on"), so it cannot meet its gate while UBC-5 cannot, for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
 | UBC-4 | The WebAssembly family | `Not started` | all; clause 7 is gated on decisions UBC-D-2 and UBC-D-3 | none | 2026-09-25 (row created) |
-| UBC-6b | The language families in the `x86-64` form | `Not started` | all | none | 2026-09-25 (row created) |
-| UBC-7 | The `arm64` emitter, emitting-only | `Not started` | all; clause 6 is gated on decision UBC-D-4 | none | 2026-09-25 (row created) |
-| UBC-8 | The polyglot composition | `Not started` | all | none | 2026-09-25 (row created) |
-| UBC-9 | Records, the support table and packability | `Not started` | all; clause 4 is gated on decision UBC-D-5 | none | 2026-09-25 (row created) |
-| UBC-10 | The component split — **optional** | `Not started` | all; the milestone exists only on decision UBC-D-6 | none | 2026-09-25 (row created) |
+| UBC-6b | The language families in the `x86-64` form | `Not started` | all; it waits on UBC-3 and UBC-4, and UBC-3 cannot meet its gate while UBC-5 cannot, for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
+| UBC-7 | The `arm64` emitter, emitting-only | `Not started` | all; clause 6 is gated on decision UBC-D-4; it waits on UBC-6b, and its pivot references `Broiler.VM.Ubc.Native`, so it cannot meet its gate for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
+| UBC-8 | The polyglot composition | `Not started` | all; it waits on UBC-3, which cannot meet its gate for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
+| UBC-9 | Records, the support table and packability | `Not started` | all; clause 4 is gated on decision UBC-D-5, which names `Broiler.VM.Ubc.Native`; the milestone is complete only after UBC-8, which cannot meet its gate for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
+| UBC-10 | The component split — **optional** | `Not started` | all; the milestone exists only on decision UBC-D-6, and it waits on UBC-6b and UBC-7, which cannot meet their gates for the reason UBC-5's row gives | none | 2026-09-25 (reason recorded) |
 
 **The rows are in delivery order, not numeric order**, because the roadmap's section 3 builds the
 emitter machinery over the fixture family before the JavaScript family is cut over, and a reader who

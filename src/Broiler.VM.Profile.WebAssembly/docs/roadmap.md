@@ -233,6 +233,20 @@ core's byte primitives instead of calling the core's `TryReadVarUInt32`.
   its own controls. Fuel figures are not comparable across profiles and are never presented as if
   they were.
 
+**A concept proposing a translator now stands beside this plan** *(added 2026-09-25)*.
+[The universal bytecode concept](../../../docs/universal-bytecode.md), with
+[its programme roadmap](../../../docs/universal-bytecode.roadmap.md), proposes that this profile decode
+and validate a module as it does today and then translate it into a bytecode shared with every
+language profile, that the module become source rather than the artifact the core verifies, and that
+the interpreter's arms become this profile's instruction handlers executed by a shared loop.
+[ADR 0013](../../../docs/adr/0013-the-universal-bytecode-extraction-record.md) admits that bytecode
+through the core's extraction gate, with this profile named as one of its two consumers. **Naming it
+here schedules nothing and amends nothing.** The first non-goal above (no compiler), the third (a
+second execution arm), and section 7's "the artifact is a WebAssembly module, unwrapped" stand exactly
+as written until the programme's milestone UBC-4 takes them, and it is that milestone - not this
+paragraph - that files the corrections this plan's discipline requires for each. Nothing in this
+profile's tree has changed on this paragraph's date, so the corrections file carries no entry for it.
+
 ---
 
 ## 2. Engineering invariants

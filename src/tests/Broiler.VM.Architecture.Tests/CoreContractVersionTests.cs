@@ -220,11 +220,20 @@ public sealed class CoreContractVersionTests
         // rule today, so the class does not need J to keep the suite green; it needs J so that
         // the first record that DOES name one is checked rather than silently skipped, which is
         // the failure mode a character class has.
+        //
+        // U joined it on 2026-09-25 with the universal bytecode's rules, for the same reason and in
+        // a sharper form: ADR 0013 is the record that owns group U and it names U2 and U9, ADR 0001
+        // names U1 and ADR 0003 names U1 to U4, so a record naming "Rule U<n>" is not hypothetical.
+        // None of them writes the capitalised "Rule U<n>" this pattern reads today - they write
+        // "rule U2" or list the identifiers bare - so widening the class keeps the suite green, and
+        // it is what makes the first capitalised citation of an unregistered U rule a failure here.
+        // Groups K, L, M, N, W and X are not in the class; that is a gap this change records rather
+        // than closes, because widening a check over records nobody has re-read is a change of its own.
         var registered = RegisteredRuleIds();
 
         var unregistered = Adrs
             .SelectMany(static adr => Regex
-                .Matches(adr.Text, @"\bRule (?<id>[A-EHJV]\d{1,2}b?)\b")
+                .Matches(adr.Text, @"\bRule (?<id>[A-EHJUV]\d{1,2}b?)\b")
                 .Select(match => (adr.FileName, Id: match.Groups["id"].Value)))
             .Where(named => !registered.Contains(named.Id))
             .Select(named => $"{named.FileName} names unregistered {named.Id}")

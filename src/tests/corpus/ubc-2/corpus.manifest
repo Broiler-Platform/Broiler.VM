@@ -1,0 +1,40 @@
+# the universal bytecode fixture family's retained corpora: programs, the guest program, the primitive inputs
+# program|name|sha256|entry|transcript (lines joined by ' | ')
+# file|name|sha256
+program|sum|a379efb798fa8616acd8fc6d9dca2e04e3fd617469bca40bdcc248bfb4b70ec4|main|completed words=[5] tallies=[]
+program|arithmetic|08c5d693387ca6ed88bd43151a0e888946d1d2775bbd577a0075a10d7bb92643|main|completed words=[40] tallies=[]
+program|divide-by-zero|d4eca79e7f0ea2cdd1e271e9be10a443130de5a26b37bc31ded45a8e7187756b|main|faulted Trap code=1 amount=0
+program|overflow|84f9bcf568543b998a335afd03166c77e9bd0597955205f462d3ee38623a1b1c|main|faulted Trap code=2 amount=0
+program|unreachable|a39eede37efc14bce65698d6bc3341e0ae064c704f49e3c320a0ec99ebcd5b30|main|faulted Unreachable code=0 amount=0
+program|explicit-trap|7b74f395407a9d8bef5862b80989f412a6dbe55e962be79b6142e14c05e483c1|main|faulted Trap code=3 amount=0
+program|catch|5a9212f4b883f3d4aa0d83a02770407c06e1819047b2201f12e9274e74452dc9|main|completed words=[5] tallies=[]
+program|uncaught|d242d8efefdb0e22af569ee18d3b453b57580d2b987af320d6896271cda86301|main|faulted Uncaught code=0 amount=7
+program|throw-across-frames|5a594cdb8e0446fb2a5885efc82abc8317ef3e33bc21bf25d2ac261a2426c4b5|main|completed words=[9] tallies=[]
+program|recursion|97de48b3fc6c4373ed09028d0167dbac28d670c790c81394466aff341f360b31|main|exhausted CallDepth
+program|suspend|80d0688a352c7ddbef23f6d4cf4ee914ad8360e4291153c67a9980e87bf478c4|main|suspended amount=1 | completed words=[121] tallies=[]
+program|suspend-in-callee|fe660fe6387d488a565c18465e44024aabeb0fbeb87bc6ef0092718f9fdab198|main|suspended amount=5 | completed words=[26] tallies=[]
+program|call-request|d72d92f48b037c942ca67d397833c1a4724481156c48931b210a71acb57b37f9|main|completed words=[14] tallies=[]
+program|branch|0dd4e1c333b3998bdff8c83b72fa5fc8bdb4d13e6242d27bfb79468c22284446|main|completed words=[1] tallies=[]
+program|branch-not-taken|efe5421903469f022dd870b84d50b80f30a8c06d10f219b12bdac33f63a8f431|main|completed words=[0] tallies=[]
+program|guest-load|04176531f531970394ec14eb6cf0c86003e2bc915f3dd5288c27e631537bbd4d|main|completed words=[105] tallies=[]
+program|guest-foreign|b6353a1e37da05dc66a321dad97073bd5c8de04c628042e50dee83bf36dddef6|main|faulted Trap code=4 amount=0 load=ProviderProfileMismatch
+program|common-tour|bffa6f09571c1a81b0df6915d5645898fe4b50a36ee7a5d793f06bfc6137f2aa|main|completed words=[84] tallies=[]
+program|value-tour|7748324a729d9de13cb4e0ad227f697ba41a32b881fbcc5a7954266da8d04aa1|main|completed words=[24] tallies=[]
+program|twin-inline|dc55f523be9b0b3c333828bf7b3c741ee0b12ccc8cc1e3257a9696e3b6e420bf|main|completed words=[12] tallies=[]
+program|twin-dynamic|392733082555dc43a4d23ebd20d7737b5a3e13b23a73bbca6652fc426c19fb80|main|completed words=[12] tallies=[]
+program|countdown|b86f63f480dbce5ce71160658867208172752e1b9a180bde468f37f8976921de|main|completed words=[20] tallies=[]
+program|bad-request|11fb47fc5554d67295053f3c69ca18cd68b5eb286b1d7068d471aaad8950fd43|main|ProfileFault ProfileContractViolation
+program|spin|a5b05cabb719db6a7eb2c55914e0ace2d0f1d20ecffb961cd688c3545026f559|main|exhausted Fuel
+program|long-code|9ba89f1657ccb60afcd17deea707a2e3db7dad3a2d227b6b81646920a323a352|main|completed words=[7] tallies=[]
+program|long-entry|9808f048f6df9cd1c8428cb64454969897e84b8f36e4114e601bc3fe18f551ad|eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee|completed words=[7] tallies=[]
+program|resume-long|b3ce067ec4791a204968c414e423fbc950bc1f0baddeea8ff30a13d8982c7044|main|suspended amount=1 | completed words=[1] tallies=[]
+program|load-then-run|8e1ef5d475467ce554389f5464e889446077242542641db3708a96244d792003|main|completed words=[105] tallies=[]
+program|hook-refusal|7e662e7841f2b8a6d4b35f31661a11bbcbba531513fd7c2608524f4d7d26fe13|main|refused InvalidArtifact SemanticValidationFailed 7001
+program|no-such-entry|c8d452f84ee962f941fe301c8dcbecfda79851a9a92aac5ff7e4d602a5cc5165|absent|faulted NoSuchEntry code=0 amount=0
+program|arguments-kept|4fa7b1fc7430f84120246397586f2877b97b1ef03d53acc3f91fcaca8ad61a9c|main|completed words=[11] tallies=[]
+program|nested-regions|e3e67a22060b4b4494181d8158be14b8ac7b9449242b5cf1a76407748312c344|main|completed words=[49] tallies=[]
+program|common-edges|458ac2a8fcce01e5eb106e0debca0819e98eeecce47441def602e2bce64b8d39|main|completed words=[20] tallies=[]
+program|mixed-call|6b8b78ad63b741d47b74c8aeaafb89d280b6104d1274fe8940a73464bc9e17f5|main|completed words=[1012] tallies=[]
+program|wide-frame|f28266b3aa5a1b6437f3a89bb2740fee814c72088d90673d535b7b52006d1f31|main|completed words=[10] tallies=[]
+file|guest-1.bubc|6ae0fddbf8bdbf5b9674e4ca15491515038079c7641bd4e2ceec3e91409b994f
+file|primitives.txt|ffcf286da1cb8a982c7d039f3fe0109e0107a19340da90c3bff22572dd2005fd

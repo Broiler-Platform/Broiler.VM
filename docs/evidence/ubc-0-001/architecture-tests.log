@@ -1,0 +1,23 @@
+$ dotnet test src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo --filter FullyQualifiedName~CoreContractVersionTests --logger "console;verbosity=normal"
+Test run for D:\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 10.0.12)
+[xUnit.net 00:00:00.11]   Discovering: Broiler.VM.Architecture.Tests
+[xUnit.net 00:00:00.15]   Discovered:  Broiler.VM.Architecture.Tests
+[xUnit.net 00:00:00.16]   Starting:    Broiler.VM.Architecture.Tests
+[xUnit.net 00:00:00.43]   Finished:    Broiler.VM.Architecture.Tests
+  Passed Broiler.VM.Architecture.Tests.CoreContractVersionTests.E1_The_Version_Constants_Match_The_Core_Contract_Adr [219 ms]
+  Passed Broiler.VM.Architecture.Tests.CoreContractVersionTests.RuleMessages_For_Group_E_Are_Written_When_Asked_For [< 1 ms]
+  Passed Broiler.VM.Architecture.Tests.CoreContractVersionTests.E2_Every_Adr_Declares_Whether_It_Is_Contract_Bearing [5 ms]
+  Passed Broiler.VM.Architecture.Tests.CoreContractVersionTests.E3_Every_Contract_Bearing_Adr_Declares_The_Current_Version [1 ms]
+  Passed Broiler.VM.Architecture.Tests.CoreContractVersionTests.E4_The_Index_Lists_Every_Adr_And_Every_Named_Rule_Is_Registered [6 ms]
+
+Test Run Successful.
+Total tests: 5
+     Passed: 5
+ Total time: 0,8284 Seconds
+exit 0
+
+$ dotnet test src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --nologo
+Passed!  - Failed:     0, Passed:   268, Skipped:     0, Total:   268, Duration: 14 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+exit 0

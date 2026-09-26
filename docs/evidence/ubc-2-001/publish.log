@@ -1,0 +1,47 @@
+--- TRIMMED: dotnet publish -r win-x64 --self-contained true -p:PublishTrimmed=true ---
+  Determining projects to restore...
+  Restored D:\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj (in 256 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj (in 256 ms).
+  Restored D:\Broiler.VM\src\tests\Com.Example.Ledger\Com.Example.Ledger.csproj (in 256 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Emitter.Bytecode\Broiler.VM.Emitter.Bytecode.csproj (in 256 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 256 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj (in 256 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Ubc.Fixture\Broiler.VM.Composition.Ubc.Fixture.csproj (in 256 ms).
+  Restored D:\Broiler.VM\src\tests\Com.Example.Tally\Com.Example.Tally.csproj (in 256 ms).
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc -> D:\Broiler.VM\src\Broiler.VM.Ubc\bin\Release\net10.0\Broiler.VM.Ubc.dll
+  Com.Example.Ledger -> D:\Broiler.VM\src\tests\Com.Example.Ledger\bin\Release\net10.0\Com.Example.Ledger.dll
+  Com.Example.Tally -> D:\Broiler.VM\src\tests\Com.Example.Tally\bin\Release\net10.0\Com.Example.Tally.dll
+  Broiler.VM.Emitter.Bytecode -> D:\Broiler.VM\src\Broiler.VM.Emitter.Bytecode\bin\Release\net10.0\Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Composition.Ubc.Fixture -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Ubc.Fixture\bin\Release\net10.0\win-x64\Broiler.VM.Composition.Ubc.Fixture.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.Ubc.Fixture -> D:\Broiler.VM\artifacts\publish-ubc-fixture-trimmed\
+
+exit 0
+
+--- NATIVE AOT: dotnet publish src/compositions/Broiler.VM.Composition.Ubc.Fixture -c Release -r win-x64 -p:PublishAot=true -p:IlcUseEnvironmentalTools=true -o artifacts\publish-ubc-fixture-aot ---
+  Determining projects to restore...
+  Restored D:\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj (in 281 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj (in 281 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 281 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj (in 281 ms).
+  Restored D:\Broiler.VM\src\tests\Com.Example.Ledger\Com.Example.Ledger.csproj (in 281 ms).
+  Restored D:\Broiler.VM\src\Broiler.VM.Emitter.Bytecode\Broiler.VM.Emitter.Bytecode.csproj (in 281 ms).
+  Restored D:\Broiler.VM\src\tests\Com.Example.Tally\Com.Example.Tally.csproj (in 281 ms).
+  Restored D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Ubc.Fixture\Broiler.VM.Composition.Ubc.Fixture.csproj (in 281 ms).
+  Broiler.VM.Binary -> D:\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc -> D:\Broiler.VM\src\Broiler.VM.Ubc\bin\Release\net10.0\Broiler.VM.Ubc.dll
+  Com.Example.Ledger -> D:\Broiler.VM\src\tests\Com.Example.Ledger\bin\Release\net10.0\Com.Example.Ledger.dll
+  Com.Example.Tally -> D:\Broiler.VM\src\tests\Com.Example.Tally\bin\Release\net10.0\Com.Example.Tally.dll
+  Broiler.VM.Emitter.Bytecode -> D:\Broiler.VM\src\Broiler.VM.Emitter.Bytecode\bin\Release\net10.0\Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Composition.Ubc.Fixture -> D:\Broiler.VM\src\compositions\Broiler.VM.Composition.Ubc.Fixture\bin\Release\net10.0\win-x64\Broiler.VM.Composition.Ubc.Fixture.dll
+  Generating native code
+  Broiler.VM.Composition.Ubc.Fixture -> D:\Broiler.VM\artifacts\publish-ubc-fixture-aot\
+Der Befehl "vswhere.exe" ist entweder falsch geschrieben oder
+konnte nicht gefunden werden.
+
+exit 0

@@ -88,3 +88,31 @@ layout and the fixed bytes only through unicode escapes: the compiler reads the 
 the names, and the file's text, its comment included, contains neither name, so a clause that chose the
 files to parse by their text would never open it. The test asserts that the text holds neither name
 before it reads the two reports.
+
+**Group U's witnesses are one per clause, and one of them has no comment on purpose.**
+`U2-identifiers-naming-a-language.txt.witness` is in the input format of
+`eng/ubc-vocabulary-scan.py --identifiers` - one identifier per line - and that mode scans every line
+as a name, a line opening with `#` included, so a comment explaining the file would be scanned as an
+identifier and would change what the script reports. The explanation lives here instead: of its five
+names, `WasmModule` and `JsValue` are reported by rule U2 and by the script alike, and `UbcOpcode`,
+`JsonReader` and `UbcInstructionTable` are near misses neither reports. The thirteen `U1-*` project files
+each break one clause of the universal bytecode's project shape, the packability clause in eight ways: the
+element set to true, quoted only in a comment, overridden, held under a condition, present only as item
+metadata, only inside `ProjectExtensions` or only inside a target, and set to true by a target after an
+unconditional false. The item metadata, `ProjectExtensions` and target ones - the places a reader counting
+every element of that name would find a definition the evaluated property does not come from - have `N4-*`
+twins. `U2-a-static-family-table.txt.witness` is four lines in the API describer's format, two of them static family rows that must be reported and two
+of them - an instance property and a static method - that must not.
+`U4-an-appendix-that-disagrees-with-the-table.md.witness` is a copy of the concept's Appendix A with four
+perturbations, one per direction clause (a) decides, and
+`U4-a-second-width-table-with-one-row-perturbed.cs.witness` is the roadmap's perturbed row: a second
+width table for the common family, not compiled by anything, read at a path in a project that
+references the assembly, where every arm is reported, and at the one table's own path, where none is.
+The two `api/U9-*` witnesses are the universal bytecode's baseline with one member removed and one
+member that does not exist added, as W2's are. The three `diagnostics/U8-*` witnesses are one per clause
+of the registry rule, beside group N's registry witnesses: a registry omitting a declared code, whose
+other rows carry a name that is not its number's member and a revision the registry does not have; a
+registry whose rows name a corpus entry the manifest does not have, entries that expect another code
+or another reason, an entry of a sweep, and a defensive row the rule does not admit; and a source,
+read as though it were a file of the assembly, that emits one code with two reasons, the second
+through a forwarding helper of its own so the rule has to read the helper's body to see it.
