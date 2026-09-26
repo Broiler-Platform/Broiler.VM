@@ -65,3 +65,13 @@ after the allocation to a charge before it - and row 9 is **answered rather than
 `LiveBytes` ceiling reached by the store is a refused charge the operation stops at, not a report the
 next charge observes. The guest-observable refusal of route MVP-1, against this profile's own page
 ceiling, is unchanged.
+
+*(Corrected again 2026-09-26, later the same day, and the paragraph above is kept as written.)* It says
+the store "releases what it retained on every path that publishes no instance". The store's retention
+is released through the family on every failure the bytecode emitter answers - a refused charge, a trap
+in a segment or in the start function, an exception - and the core releases a published instance's when
+it is disposed. When a refusal or a cancellation latched during an instantiation the emitter answered as
+complete, the core answers an exhaustion or a cancellation, publishes no instance and releases nothing:
+a defect of the core, not of this family, written out as
+[a task](../../../../docs/tasks/release-dropped-instantiation-retention.md) and recorded in the plan's
+[WAC-43](../roadmap.corrections.md#wac-43).

@@ -44,8 +44,12 @@ source below is the first whose subject is that code)*:
    programme's milestone UBC-4 gave this profile a translator into a bytecode every language profile
    shares and an instruction family for it, and deleted the profile's own descriptor, verifier,
    executor and interpreter once the composition roots translated first. The plan was written for a
-   profile that verified and ran its modules itself, and [WAC-30](#wac-30) to [WAC-41](#wac-41) are
-   the readings that no longer hold. It is the only source in this list that is the tree itself, and
+   profile that verified and ran its modules itself, and [WAC-30](#wac-30) to [WAC-41](#wac-41) and
+   [WAC-43](#wac-43) are the readings that no longer hold *(noted 2026-09-26, later the same day: this
+   read "[WAC-30] to [WAC-41] are the readings that no longer hold". WAC-43 was filed after the check of
+   the programme's bundle `ubc-4-002` found the store's retention still described as the base's;
+   [WAC-42](#wac-42), filed with the others, corrects a header stale since 2026-09-07 and is not one of
+   them)*. It is the only source in this list that is the tree itself, and
    the one a reader of the plan alone would never find, because the plan's own sentences were all
    true of the profile they described.
 
@@ -136,6 +140,7 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 | [WAC-40](#wac-40) | roadmap §3, §17 | The opcode-set half of the core's refusal to share semantics was reached by ADR 0013; no cross-profile value channel exists or is coming | ADR 0013; route MVP-12 |
 | [WAC-41](#wac-41) | roadmap §3, §18, §20 | The translator is an in-process producer, so the byte round trip is a cost this profile pays; the input form is not asked for and no longer refused | route MVP-15; the programme roadmap, UBC-4 |
 | [WAC-42](#wac-42) | roadmap header, its split rules, §5 | The header said no line of this profile was written; it now states only what is not accepted, pinned or retained, and leaves what exists to the ledger | the ledger's section 2, 2026-09-07 |
+| [WAC-43](#wac-43) | roadmap §1, §3, §10, §13; ledger §2 | The store charges retention before it allocates, so a guest never sees a growth the operation then aborts; what it retained is released on every failure the emitter answers, not on every path that publishes no instance | WAD-0001 and WAD-0003, 2026-09-26; the programme's bundle `ubc-4-002` |
 
 ### WAC-01
 
@@ -1192,7 +1197,10 @@ unwinding with a CLR exception is a WA-6 decision with a measurement attached.
 **What replaced it.** The nine rows are answered in
 [WAD-0003](decisions/0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md), in this
 profile's decision series, which states where each stands now that the universal bytecode executes
-this profile's modules: the numeric, reference, rooting and `LiveBytes`-breach rows carry over; the
+this profile's modules: the numeric, reference and rooting rows carry over, and the `LiveBytes`-breach
+row is answered by a retention charged before the allocation *(corrected 2026-09-26, later the same
+day: this read "the numeric, reference, rooting and `LiveBytes`-breach rows carry over", which
+WAD-0003's correction of that date contradicts; see [WAC-43](#wac-43))*; the
 call convention, frames and labels, trap propagation and metering are the universal bytecode's; and
 the vector row is reversed — a word is eight bytes, and a `v128` slot is a question for a universal
 bytecode format version 2. **The entry gate those rows guarded is retired with the interpreter.** The
@@ -1418,6 +1426,52 @@ change without the ledger was changed by milestones, and the plan was not edited
 
 **Authority and date.** [The ledger's section 2](roadmap.status.md#2-current-milestone-status), whose
 rows have recorded milestone-owned code since 2026-09-07, and its headline of that date; 2026-09-26.
+
+### WAC-43
+
+**Where:** roadmap [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses),
+the budget matrix's `LiveBytes` row and the caution paragraph's sentence on the aggregate `LiveBytes`
+case; [section 10](roadmap.md#10-execution-mapping-webassembly-onto-the-core-lifecycle), the stage
+table's `Unwind` row; [section 13](roadmap.md#13-memories-tables-globals-and-the-host-boundary), the
+first property of a memory; [section 1](roadmap.md#1-terminology-and-support-claims), the paragraph
+after the non-goals that lists the entries milestone UBC-4 filed; the
+[ledger](roadmap.status.md)'s WA-5 row and its paragraph on the programme's bundles.
+
+**What the plan said.** The `LiveBytes` row: "Reported on growth, released on instance disposal." The
+caution paragraph: "The same latch makes the aggregate `LiveBytes` case worse rather than better, since
+the guest has already observed a *successful* grow before the operation aborts — which is precisely the
+outcome section 12 forbids." Section 13: "A memory is reported, grown, and released through the meter.
+Allocation on instantiation, growth on `memory.grow`, release on store disposal. A memory that is
+allocated without being reported is a ceiling that does not exist." And section 10's `Unwind` row and
+the ledger's WA-5 row, as [WAC-36](#wac-36) and the programme's milestone left them: retention "is
+released by the family on every path that publishes no instance", and the store "releases what it
+retained on every path that publishes no instance".
+
+**What replaced it.** The family's instance store charges each memory's and each table's `LiveBytes`
+retention **before it allocates**, after the `AllocatedBytes` charge, with a charge that can be refused,
+and each growth's the same way. A refused retention refuses the instantiation or ends the step at the
+growth, so the guest never observes a successful growth the operation then aborts — and it observes no
+refusal either, because a refusal by a core budget is still not guest-observable. What the store
+retained is released through the family on every failure the bytecode emitter answers — a refused
+charge, a trap in a segment or in the start function, an exception — and by the core when a published
+instance is disposed. **It is not released on every path that publishes no instance**: when a refusal
+or a cancellation latched during an instantiation the emitter answered as complete, the core answers an
+exhaustion or a cancellation, publishes no instance and releases nothing. That is a defect of the core,
+not of this profile, written out as
+[a task](../../../docs/tasks/release-dropped-instantiation-retention.md). The paragraphs that list the
+milestone's entries gain this one.
+
+**What it does not change.** The core's contract: the retention report still returns nothing, a refused
+charge still latches, and a refusal by a core budget still has no guest-observable spelling, so
+[section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight)'s amendment row stays
+open and blocking. Route MVP-1's refusal against this profile's own page ceiling, which answers minus
+one before any charge. The amounts: the same bytes are retained for the same memories and tables, and no
+test asserts them, before this entry or after it.
+
+**Authority and date.** [WAD-0001](decisions/0001-the-memory-representation.md)'s addition and
+[WAD-0003](decisions/0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md)'s
+correction of 2026-09-26; the family's store as changed in `5d171ce`; the check of the programme's
+bundle `ubc-4-002`, which found these sentences uncorrected; 2026-09-26.
 
 ---
 

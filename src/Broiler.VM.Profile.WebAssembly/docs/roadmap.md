@@ -288,7 +288,8 @@ corrections file carries each reading it replaced: the compiler non-goal as
 [WAC-31](roadmap.corrections.md#wac-31), and section 7's artifact as
 [WAC-34](roadmap.corrections.md#wac-34), with the milestone's other consequences for this plan in
 [WAC-32](roadmap.corrections.md#wac-32), [WAC-33](roadmap.corrections.md#wac-33) and
-[WAC-35](roadmap.corrections.md#wac-35) to [WAC-41](roadmap.corrections.md#wac-41). The decisions the
+[WAC-35](roadmap.corrections.md#wac-35) to [WAC-41](roadmap.corrections.md#wac-41) and
+[WAC-43](roadmap.corrections.md#wac-43) *(corrected: WAC-43)*. The decisions the
 milestone took for this profile are in [its decision series](decisions/README.md); the programme's own
 state is [its ledger](../../../docs/universal-bytecode.status.md)'s, and this profile's is
 [this profile's ledger](roadmap.status.md)'s.
@@ -456,7 +457,7 @@ not drift:
 | `Fuel` | Charged | Every universal bytecode row dispatched and every frame's declared locals, plus the proportional families of invariant 7; a structural instruction the translator lowers away is dispatched as no row and charges nothing *(corrected: WAC-35)*. |
 | `WallClock` | Charged | Core-metered against the operation; this profile polls often enough for it to bite. |
 | `AllocatedBytes` | Charged | Decode-time buffers; instance allocation; every `memory.grow` and `table.grow`. |
-| `LiveBytes` | Charged | Linear memories and tables are the dominant retained cost of a WebAssembly instance, and a profile that did not report them would let a store grow without any ceiling noticing. Reported on growth, released on instance disposal. |
+| `LiveBytes` | Charged | Linear memories and tables are the dominant retained cost of a WebAssembly instance, and a profile that did not report them would let a store grow without any ceiling noticing. Charged before each allocation and growth, with a charge that can be refused; released through the family when an instantiation fails and by the core when a published instance is disposed *(corrected: WAC-43)*. |
 | `HostCalls` | Charged | Every call into an imported host function. |
 | `CallDepth` | Charged | Every activation frame. [Section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) records that the default is measured, not chosen. |
 | `VerifierWork` | Charged | Required by the catalog. Decode and validation work. |
@@ -488,10 +489,12 @@ core rather than inferred from the contract:** a refused `TryCharge` at any scop
 exhaustion on the meter, and the core then rewrites the completed step as `ResourceExhaustion`
 regardless of what the profile did with the `false` it was handed. So a charge cannot serve as a
 refusable, guest-observable check, and **there is no spelling of a guest-observable `memory.grow`
-refusal on the shipped contract at all** *(corrected: WAC-03)*. The same latch makes the
-aggregate `LiveBytes` case worse rather than better, since the guest has already observed a
-*successful* grow before the operation aborts — which is precisely the outcome
-[section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) forbids. **A memory
+refusal on the shipped contract at all** *(corrected: WAC-03)*. The aggregate `LiveBytes`
+case is no worse than the others, because this profile's store charges retention before it
+allocates: a refused retention ends the operation at the growth, so the guest never observes a
+*successful* grow the operation then aborts — the outcome
+[section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) forbids — though it
+observes no refusal either *(corrected: WAC-43)*. **A memory
 representation has been chosen without it — [WAD-0001](decisions/0001-the-memory-representation.md)
 — and none resolves it: the resolution is an amendment rather than a local workaround**
 *(corrected: WAC-38)*, which is why
@@ -1345,7 +1348,7 @@ WAC-36)*. The mapping:
 | Instantiation | **Links and allocates.** The emitter instantiates through the family: its instance state allocates the memory, the table and the globals, the global initialisers are evaluated, element and data segments are initialised in order, and the start function is run — and, once imports are admitted, they are resolved against the host and the store. Returns `Instantiated`, or `Faulted` carrying a link error or a start-function trap; **a start-function trap publishes no instance**. |
 | Invocation | Calls an exported function on the emitter over the family's handlers. Runs to `Completed` with a typed payload carrying the returned values, or `Faulted` with a typed trap or uncaught exception. |
 | Resume | Not reached at any manifest this roadmap allocates: nothing parks, so there is no suspension to resume, and the continuation type is the emitter's. [Section 14](#14-suspension-threads-and-what-this-profile-does-not-declare) records what that leaves this profile. |
-| Unwind | Terminal, and the emitter's. It **runs no guest code**, and this profile mints no continuation for it to release; a memory's and a table's retention is released by the family on every path that publishes no instance, and by the core when a published instance is disposed. [Section 14](#14-suspension-threads-and-what-this-profile-does-not-declare) records that this is simpler here than it would be for a language with user-visible finalisation, and that the simplicity is a property of the manifest set rather than a permanent one. |
+| Unwind | Terminal, and the emitter's. It **runs no guest code**, and this profile mints no continuation for it to release; a memory's and a table's retention is released through the family on every failure the emitter answers and by the core when a published instance is disposed, and not when the core drops an instantiation the emitter answered as complete *(corrected: WAC-43)*. [Section 14](#14-suspension-threads-and-what-this-profile-does-not-declare) records that this is simpler here than it would be for a language with user-visible finalisation, and that the simplicity is a property of the manifest set rather than a permanent one. |
 | Disposal | Drains an in-flight step before releasing the artifact lease under it. This profile's obligation is that a step is interruptible often enough for the drain to succeed, which is what the cancellation poll bound is for. |
 
 ### The four failure phases, and why they land in three different places
@@ -1573,9 +1576,11 @@ growth, and the support table says so rather than implying a determinism it does
 A linear memory is the largest thing this profile allocates and the main reason `LiveBytes` is
 declared. Four properties are fixed here:
 
-- **A memory is reported, grown, and released through the meter.** Allocation on instantiation,
-  growth on `memory.grow`, release on store disposal. A memory that is allocated without being
-  reported is a ceiling that does not exist.
+- **A memory is charged, grown, and released through the meter.** Allocation on instantiation and
+  growth on `memory.grow`, each charged before it happens with a charge that can be refused; release
+  through the family when an instantiation fails and by the core when a published instance is
+  disposed *(corrected: WAC-43)*. A memory that is allocated without being charged is a ceiling that
+  does not exist.
 - **Bounds checks are not optional and not deferred.** Every access is checked, and the check is
   where the bulk of the interpreter's per-instruction cost will sit.
   [Section 19](roadmap.gates.md#19-measurement-discipline)'s measurement lane exists partly to
