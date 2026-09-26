@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   34
-// Annotated:        34/34
+// Relevant units:   35
+// Annotated:        35/35
 // Exempt:           19
-// Human-reviewed:   0/34
+// Human-reviewed:   0/35
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         19/16
+// Criteria:         20/17
 // Resource impact:  4/10 max
-// Unverified:       34
+// Unverified:       35
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -53,7 +53,10 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// the family lets complete carries a latched refusal of its own. A refusal the family never meets is
 /// the one case left - an aggregate wall clock the meter accrues and latches at a poll that still
 /// answers - and the core drops that state unabandoned with nothing released: a defect of the core,
-/// written out in `docs/tasks/release-dropped-instantiation-retention.md`.
+/// written out in `docs/tasks/release-dropped-instantiation-retention.md`. An exception is not a case
+/// left: an allocation that throws after its charges gives its retention back before the exception
+/// leaves it, and the making gives back everything it retained before any exception leaves
+/// <c>CreateInstance</c>, where the emitter has no state yet to abandon.
 /// </para>
 /// <para>
 /// <b>No value plane.</b> WebAssembly's values are all words, so the family's plane holds nothing and
@@ -646,8 +649,10 @@ internal sealed class WasmNullPlane : IUbcValuePlane
 /// <b>Nothing it retained outlives a refusal it answers.</b> Every path the emitter does not answer as
 /// instantiated releases the memory and the table through the environment's meter, read at the release, within the
 /// instantiation step: at once where the base executor released at once, and through the family's
-/// abandon otherwise. Releasing is idempotent, so the two cannot release twice. A state the emitter
-/// answers as instantiated and the core then drops is not released here; the class remarks say when.
+/// abandon otherwise. Releasing is idempotent, so the two cannot release twice. An exception in the
+/// making releases before it leaves, and an allocation that throws after its charges gives back the
+/// retention it was charged for. A state the emitter answers as instantiated and the core then drops
+/// is not released here; the class remarks say when.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=6E21EB
@@ -699,8 +704,8 @@ internal sealed class WasmInstanceState
     internal bool Exhausted { get; private set; }
 
     /// <summary>Makes an instance's state from its context, as the type's remarks describe.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=CFE4F3
-    // Broiler-Falsified-If: a store is allocated before its charges, a segment is applied past a refused charge or poll, or a minimum above a profile ceiling is allocated
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=013B1D
+    // Broiler-Falsified-If: a store is allocated before its charges, a segment is applied past a refused charge or poll, a minimum above a profile ceiling is allocated, or an exception leaves the making with a byte reported retained
     // Broiler-Human:        PENDING
     internal static WasmInstanceState Create(UbcInstanceContext context)
     {
@@ -710,7 +715,26 @@ internal sealed class WasmInstanceState
         }
 
         var state = new WasmInstanceState(context.Program, definitions, context.Environment, defective: false);
-        var meter = context.Environment.Meter;
+
+        // An exception that leaves here leaves the emitter with no state to abandon, so what the making
+        // retained is given back first.
+        try
+        {
+            return Make(state, definitions, context.Environment.Meter);
+        }
+        catch (System.Exception)
+        {
+            state.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Allocates, initialises and applies the segments of <paramref name="state"/>, as the type's remarks describe.</summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=596338
+    // Broiler-Falsified-If: a store is allocated before its charges, a segment is applied past a refused charge or poll, or a minimum above a profile ceiling is allocated
+    // Broiler-Human:        PENDING
+    private static WasmInstanceState Make(WasmInstanceState state, WasmDefinitions definitions, IVmMeter meter)
+    {
         var pacing = new WasmPacing(meter, WebAssemblyProfile.MaxUnchargedWork);
 
         // The executor charged the instantiation's one fuel unit before it asked for this state, as the
@@ -821,8 +845,8 @@ internal sealed class WasmInstanceState
     /// Its retention is charged before the array exists, so a live-bytes ceiling that refuses it
     /// refuses the instantiation here rather than latching a report the making went on past.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=FD62D2
-    // Broiler-Falsified-If: the array exists before the allocation and retention charges returned true, or a minimum above the page ceiling is allocated
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=6B3988
+    // Broiler-Falsified-If: the array exists before the allocation and retention charges returned true, a minimum above the page ceiling is allocated, or an allocation that throws leaves its retention reported
     // Broiler-Human:        PENDING
     private bool AllocateMemory(IVmMeter meter)
     {
@@ -849,14 +873,27 @@ internal sealed class WasmInstanceState
             return false;
         }
 
-        Memory = new WasmMemoryInstance(WasmMemoryInstance.Allocate(initialBytes), maximum);
+        byte[] bytes;
+
+        try
+        {
+            bytes = WasmMemoryInstance.Allocate(initialBytes);
+        }
+        catch (System.Exception)
+        {
+            // Nothing holds the retention this charge was for, so nothing else would give it back.
+            meter.ReportReleased(VmBudgetDimension.LiveBytes, initialBytes);
+            throw;
+        }
+
+        Memory = new WasmMemoryInstance(bytes, maximum);
         return true;
     }
 
     /// <summary>Allocates the declared table at its minimum, every entry null, or answers false with the refusal recorded.</summary>
     /// <remarks>Its retention is charged before the array exists, as the memory's is.</remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=192D32
-    // Broiler-Falsified-If: the array exists before the allocation and retention charges returned true, or a minimum above the entry ceiling is allocated
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=A2B1CB
+    // Broiler-Falsified-If: the array exists before the allocation and retention charges returned true, a minimum above the entry ceiling is allocated, or an allocation that throws leaves its retention reported
     // Broiler-Human:        PENDING
     private bool AllocateTable(IVmMeter meter)
     {
@@ -882,7 +919,18 @@ internal sealed class WasmInstanceState
             return false;
         }
 
-        var entries = new int[(int)declared.Minimum];
+        int[] entries;
+
+        try
+        {
+            entries = new int[(int)declared.Minimum];
+        }
+        catch (System.Exception)
+        {
+            meter.ReportReleased(VmBudgetDimension.LiveBytes, entryBytes);
+            throw;
+        }
+
         System.Array.Fill(entries, WasmTableInstance.NullFunctionReference);
         Table = new WasmTableInstance(entries);
         return true;

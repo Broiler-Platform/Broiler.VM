@@ -210,8 +210,8 @@ internal sealed class WasmMemoryInstance
     /// count without allocating.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=15D2D3
-    // Broiler-Falsified-If: an array is allocated before the allocation and retention charges return true, a refusal against the profile ceiling reaches the meter or is answered as refused by a budget, or a refused charge is answered as a refusal against the ceiling
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=C5B8BA
+    // Broiler-Falsified-If: an array is allocated before the allocation and retention charges return true, a refusal against the profile ceiling reaches the meter or is answered as refused by a budget, a refused charge is answered as a refusal against the ceiling, or an allocation that throws leaves the added retention reported
     // Broiler-Human:        PENDING
     internal long Grow(uint deltaPages, IVmMeter meter, out bool refusedByBudget)
     {
@@ -249,7 +249,20 @@ internal sealed class WasmMemoryInstance
         // A new pinned array, the contents copied, and the base republished: decision WAD-0001's growth.
         // Every view of the old array is stale from here, which is why nothing holds one across an
         // instruction.
-        var grown = Allocate((ulong)current * PageBytes + addedBytes);
+        byte[] grown;
+
+        try
+        {
+            grown = Allocate((ulong)current * PageBytes + addedBytes);
+        }
+        catch (System.Exception)
+        {
+            // The memory keeps its old array, and its release gives back only that array's length, so
+            // the retention charged for the added pages is given back here.
+            meter.ReportReleased(VmBudgetDimension.LiveBytes, addedBytes);
+            throw;
+        }
+
         System.Array.Copy(bytes, grown, bytes.Length);
         bytes = grown;
 

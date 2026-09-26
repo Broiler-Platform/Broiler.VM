@@ -165,7 +165,9 @@ internal sealed class UbcContinuation : IVmProfileContinuation
 /// only when its unit is flagged as one, and an answer of no kind is a contract violation. An instance
 /// this executor will not answer as instantiated is abandoned through the family before the step
 /// answers, whatever ended it: an admission that was not ready, a start unit that did not complete, or
-/// an exception. One it does answer as instantiated is the core's to publish, and the core drops one
+/// an exception. An exception from the family's <c>CreateInstance</c> itself leaves no state to
+/// abandon, so what the family charged before it threw is the family's to give back before the
+/// exception leaves it. One it does answer as instantiated is the core's to publish, and the core drops one
 /// whose meter latched a refusal or a cancellation during the step without abandoning it: a defect of
 /// the core, written out in `docs/tasks/release-dropped-instantiation-retention.md`.
 /// </para>
