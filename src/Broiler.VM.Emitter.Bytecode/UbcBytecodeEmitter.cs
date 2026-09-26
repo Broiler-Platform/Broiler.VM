@@ -163,8 +163,11 @@ internal sealed class UbcContinuation : IVmProfileContinuation
 /// <b>What a family chooses is checked before it is used.</b> A unit a family names - the unit an entry
 /// point resolved to, an instance's start unit - is entered only when the program has it, an entry
 /// only when its unit is flagged as one, and an answer of no kind is a contract violation. An instance
-/// that will not be published is abandoned through the family before the step answers, whatever ended
-/// it: an admission that was not ready, a start unit that did not complete, or an exception.
+/// this executor will not answer as instantiated is abandoned through the family before the step
+/// answers, whatever ended it: an admission that was not ready, a start unit that did not complete, or
+/// an exception. One it does answer as instantiated is the core's to publish, and the core drops one
+/// whose meter latched a refusal or a cancellation during the step without abandoning it: a defect of
+/// the core, written out in `docs/tasks/release-dropped-instantiation-retention.md`.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=0DCB04
@@ -198,14 +201,15 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
     /// end is answered as the run answered it or, for a suspension, as a contract violation.
     /// </para>
     /// <para>
-    /// Every path on which the state is not published abandons it through the family first, an
+    /// Every path on which this executor does not answer the state as instantiated abandons it through
+    /// the family first, an
     /// exception from any family member included, so what the state retained is released within the
     /// step that retained it. An exception other than a cancellation is answered as a contract
     /// violation; a cancellation is passed on to the core once the state is abandoned.
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=2A89A8
-    // Broiler-Falsified-If: a handle this executor's family did not verify is instantiated, an instance is published whose admission was not ready or whose start unit did not complete, a unit the program does not have is entered, or a state that is not published outlives the step without being abandoned
+    // Broiler-Falsified-If: a handle this executor's family did not verify is instantiated, an instance is published whose admission was not ready or whose start unit did not complete, a unit the program does not have is entered, or a state this executor does not answer as instantiated outlives the step without being abandoned
     // Broiler-Human:        PENDING
     public VmExecutionStep Instantiate(VmVerifiedArtifact artifact, System.Threading.CancellationToken cancellationToken)
     {

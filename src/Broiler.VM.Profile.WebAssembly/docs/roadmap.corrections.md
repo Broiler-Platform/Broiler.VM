@@ -140,7 +140,7 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 | [WAC-40](#wac-40) | roadmap §3, §17 | The opcode-set half of the core's refusal to share semantics was reached by ADR 0013; no cross-profile value channel exists or is coming | ADR 0013; route MVP-12 |
 | [WAC-41](#wac-41) | roadmap §3, §18, §20 | The translator is an in-process producer, so the byte round trip is a cost this profile pays; the input form is not asked for and no longer refused | route MVP-15; the programme roadmap, UBC-4 |
 | [WAC-42](#wac-42) | roadmap header, its split rules, §5 | The header said no line of this profile was written; it now states only what is not accepted, pinned or retained, and leaves what exists to the ledger | the ledger's section 2, 2026-09-07 |
-| [WAC-43](#wac-43) | roadmap §1, §3, §10, §13; ledger §2 | The store charges retention before it allocates, so a guest never sees a growth the operation then aborts; what it retained is released on every failure the emitter answers, not on every path that publishes no instance | WAD-0001 and WAD-0003, 2026-09-26; the programme's bundle `ubc-4-002` |
+| [WAC-43](#wac-43) | roadmap §1, §3, §10, §13; ledger §2 | The store charges retention before it allocates, so a growth whose retention is refused is never observed as a success, and a growth a core budget refuses ends the step; what the store retained is released on every failure the emitter answers, not on every path that publishes no instance | WAD-0001 and WAD-0003, 2026-09-26; the programme's bundle `ubc-4-002` |
 
 ### WAC-01
 
@@ -1445,13 +1445,20 @@ Allocation on instantiation, growth on `memory.grow`, release on store disposal.
 allocated without being reported is a ceiling that does not exist." And section 10's `Unwind` row and
 the ledger's WA-5 row, as [WAC-36](#wac-36) and the programme's milestone left them: retention "is
 released by the family on every path that publishes no instance", and the store "releases what it
-retained on every path that publishes no instance".
+retained on every path that publishes no instance". The ledger's correction of its section 2 route
+paragraph: "The module still never runs the instruction after the growth". And the two lists of the
+milestone's entries, as they stood: section 1's "with the milestone's other consequences for this plan
+in [WAC-32], [WAC-33] and [WAC-35] to [WAC-41]", and the ledger's "The plan's gates are now read
+through roadmap corrections [WAC-30] to [WAC-41], which narrow no clause".
 
 **What replaced it.** The family's instance store charges each memory's and each table's `LiveBytes`
 retention **before it allocates**, after the `AllocatedBytes` charge, with a charge that can be refused,
 and each growth's the same way. A refused retention refuses the instantiation or ends the step at the
-growth, so the guest never observes a successful growth the operation then aborts — and it observes no
-refusal either, because a refusal by a core budget is still not guest-observable. What the store
+growth, so a growth whose retention is refused is never observed as a success — and the guest observes
+no refusal either, because a refusal by a core budget is still not guest-observable. A growth whose
+fuel or allocation charge a core budget refuses ends the step at the growth as well, where the base
+answered minus one and its interpreter ran on until the core rewrote the completed step, so the module
+no longer runs the instruction after it. What the store
 retained is released through the family on every failure the bytecode emitter answers — a refused
 charge, a trap in a segment or in the start function, an exception — and by the core when a published
 instance is disposed. **It is not released on every path that publishes no instance**: when a refusal
@@ -1459,7 +1466,9 @@ or a cancellation latched during an instantiation the emitter answered as comple
 exhaustion or a cancellation, publishes no instance and releases nothing. That is a defect of the core,
 not of this profile, written out as
 [a task](../../../docs/tasks/release-dropped-instantiation-retention.md). The paragraphs that list the
-milestone's entries gain this one.
+milestone's entries gain this one. *(The replacement sentences in the budget row and in section 13 were
+first written, in `8cbbc0c`, as released "through the family when an instantiation fails", and were
+qualified the same day, because the core's drop is a failed instantiation too.)*
 
 **What it does not change.** The core's contract: the retention report still returns nothing, a refused
 charge still latches, and a refusal by a core budget still has no guest-observable spelling, so

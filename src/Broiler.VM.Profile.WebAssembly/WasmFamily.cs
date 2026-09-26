@@ -45,12 +45,15 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// table at their declared minimums, charged and retained; the globals from their initial bits; the
 /// element segments and then the data segments, each atomic and each charged, a segment that does
 /// not fit recording the trap the instantiation faults with. A start function, if the module names
-/// one, is the emitter's to run once the instance is admitted. An instance that is not published
-/// gives back everything it retained, within the step that retained it. That includes an
+/// one, is the emitter's to run once the instance is admitted. An instance the emitter does not
+/// answer as instantiated gives back everything it retained, within the step that retained it. That includes an
 /// instantiation the core would refuse to publish: the core answers a step whose meter latched a
 /// refusal as that refusal and drops its state unabandoned, so every retention here is charged
 /// before its allocation and every refusal the family meets ends the step, and no instantiation
-/// the family lets complete carries a latched refusal of its own.
+/// the family lets complete carries a latched refusal of its own. A refusal the family never meets is
+/// the one case left - an aggregate wall clock the meter accrues and latches at a poll that still
+/// answers - and the core drops that state unabandoned with nothing released: a defect of the core,
+/// written out in `docs/tasks/release-dropped-instantiation-retention.md`.
 /// </para>
 /// <para>
 /// <b>No value plane.</b> WebAssembly's values are all words, so the family's plane holds nothing and
@@ -66,7 +69,7 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=3; Fingerprint=E5586C
-// Broiler-Falsified-If: a handler writes outside its row's effect, a trap is answered with a code of another meaning than the base interpreter's, or an instance that is not published keeps retained bytes
+// Broiler-Falsified-If: a handler writes outside its row's effect, a trap is answered with a code of another meaning than the base interpreter's, or an instance the emitter does not answer as instantiated keeps retained bytes
 // Broiler-Human:        PENDING
 public struct WasmFamily : IUbcFamily
 {
@@ -640,14 +643,15 @@ internal sealed class WasmNullPlane : IUbcValuePlane
 /// one charge above the bound is work the core measures as unpolled.
 /// </para>
 /// <para>
-/// <b>Nothing it retained outlives a refusal.</b> Every path that will not be published releases the
-/// memory and the table through the environment's meter, read at the release, within the
+/// <b>Nothing it retained outlives a refusal it answers.</b> Every path the emitter does not answer as
+/// instantiated releases the memory and the table through the environment's meter, read at the release, within the
 /// instantiation step: at once where the base executor released at once, and through the family's
-/// abandon otherwise. Releasing is idempotent, so the two cannot release twice.
+/// abandon otherwise. Releasing is idempotent, so the two cannot release twice. A state the emitter
+/// answers as instantiated and the core then drops is not released here; the class remarks say when.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=4; Fingerprint=6E21EB
-// Broiler-Falsified-If: an array is allocated before its allocation and retention charges return true, a segment is applied in part, more fuel than the uncharged-work bound is charged between two polls, or a state that is not published keeps a byte reported retained
+// Broiler-Falsified-If: an array is allocated before its allocation and retention charges return true, a segment is applied in part, more fuel than the uncharged-work bound is charged between two polls, or a state the emitter does not answer as instantiated keeps a byte reported retained
 // Broiler-Human:        PENDING
 internal sealed class WasmInstanceState
 {
@@ -763,7 +767,7 @@ internal sealed class WasmInstanceState
 
     /// <summary>Reports every byte the state retained as released, once, through the environment's meter as it is now.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=5D7247
-    // Broiler-Falsified-If: a byte is reported released twice, or one reported retained is never released on a path that is not published
+    // Broiler-Falsified-If: a byte is reported released twice, or one reported retained is never released on a path the emitter does not answer as instantiated
     // Broiler-Human:        PENDING
     internal void Release()
     {

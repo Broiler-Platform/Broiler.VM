@@ -230,8 +230,10 @@ charge latches exhaustion and the core rewrites the completed step" describes th
 bytecode programme's milestone UBC-4 deleted. The family's store charges a growth's allocation and
 its retention before it allocates, so a growth a core budget refuses is never observed as a success:
 the family ends the step at the growth, and the core answers with the exhaustion or cancellation the
-meter latched. The module still never runs the instruction after the growth, the refusal is still
-not guest-observable, and the deviation and its owner are unchanged.)*
+meter latched. The module no longer runs the instruction after the growth, where the base's
+interpreter pushed the minus one of a refused fuel or allocation charge and ran on until the core
+rewrote the completed step *(corrected: WAC-43)*; the refusal is still not guest-observable, and the
+deviation and its owner are unchanged.)*
 
 **The universal bytecode programme's milestone UBC-4 changed what runs a module, and this ledger
 records what it left in the tree** *(added 2026-09-26)*. Observed repository state in section 1's

@@ -451,7 +451,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Emitter.Bytecode.UbcExecutor<TFamily>` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, Spec=ADR-0013, `0DCB04`, PENDING
   - Falsified if: a step is answered with an instance, continuation or payload another executor made, or a guest program's fault is answered as a contract violation
 - `Broiler.VM.Emitter.Bytecode.UbcExecutor.Instantiate(VmVerifiedArtifact, System.Threading.CancellationToken)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, Spec=ADR-0013, `2A89A8`, PENDING
-  - Falsified if: a handle this executor's family did not verify is instantiated, an instance is published whose admission was not ready or whose start unit did not complete, a unit the program does not have is entered, or a state that is not published outlives the step without being abandoned
+  - Falsified if: a handle this executor's family did not verify is instantiated, an instance is published whose admission was not ready or whose start unit did not complete, a unit the program does not have is entered, or a state this executor does not answer as instantiated outlives the step without being abandoned
 - `Broiler.VM.Emitter.Bytecode.UbcExecutor.Invoke(IVmInstanceState, in VmInvocationRequest, System.Threading.CancellationToken)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, Spec=ADR-0013, `274F83`, PENDING
   - Falsified if: an entry point starts a unit the program does not have or one not flagged as an entry, an answer of no kind starts anything, the family resolves before the fuel unit is charged, or another executor's instance is run
 - `Broiler.VM.Emitter.Bytecode.UbcExecutor.Resume(IVmInstanceState, IVmProfileContinuation, System.Threading.CancellationToken)` in `src/Broiler.VM.Emitter.Bytecode/UbcBytecodeEmitter.cs` - Security=High, Spec=none cited, `5992DA`, PENDING
@@ -3373,7 +3373,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.WebAssembly.WasmEntryPoint.TryReadInteger(System.ReadOnlySpan<byte>, out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` - Security=High, Spec=none cited, `247F89`, PENDING
   - Falsified if: a literal with no digits or with a trailing non-digit is accepted
 - `Broiler.VM.Profile.WebAssembly.WasmFamily` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `E5586C`, PENDING
-  - Falsified if: a handler writes outside its row's effect, a trap is answered with a code of another meaning than the base interpreter's, or an instance that is not published keeps retained bytes
+  - Falsified if: a handler writes outside its row's effect, a trap is answered with a code of another meaning than the base interpreter's, or an instance the emitter does not answer as instantiated keeps retained bytes
 - `Broiler.VM.Profile.WebAssembly.WasmFamily.IUbcFamily.Handle(ref UbcActivation, byte, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `2CB32A`, PENDING
   - Falsified if: a row is answered from state it does not own, a trap it raises is answered as another, or a growth a core budget refused lets the guest run on
 - `Broiler.VM.Profile.WebAssembly.WasmFamily.IUbcFamily.CreateInstance(UbcInstanceContext)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=High, Spec=ADR-0013, `D6DB06`, PENDING
@@ -3391,11 +3391,11 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.WebAssembly.WasmFamily.CallIndirect(ref UbcActivation, WasmInstanceState, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `422CCD`, PENDING
   - Falsified if: an index past the table, a null entry or a callee of another type index is requested rather than trapped, or the traps are raised in another order than the base interpreter's
 - `Broiler.VM.Profile.WebAssembly.WasmInstanceState` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `6E21EB`, PENDING
-  - Falsified if: an array is allocated before its allocation and retention charges return true, a segment is applied in part, more fuel than the uncharged-work bound is charged between two polls, or a state that is not published keeps a byte reported retained
+  - Falsified if: an array is allocated before its allocation and retention charges return true, a segment is applied in part, more fuel than the uncharged-work bound is charged between two polls, or a state the emitter does not answer as instantiated keeps a byte reported retained
 - `Broiler.VM.Profile.WebAssembly.WasmInstanceState.Create(UbcInstanceContext)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=ADR-0013, `CFE4F3`, PENDING
   - Falsified if: a store is allocated before its charges, a segment is applied past a refused charge or poll, or a minimum above a profile ceiling is allocated
 - `Broiler.VM.Profile.WebAssembly.WasmInstanceState.Release()` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=High, Spec=none cited, `5D7247`, PENDING
-  - Falsified if: a byte is reported released twice, or one reported retained is never released on a path that is not published
+  - Falsified if: a byte is reported released twice, or one reported retained is never released on a path the emitter does not answer as instantiated
 - `Broiler.VM.Profile.WebAssembly.WasmInstanceState.TryChargePaced(WasmPacing, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=High, Spec=none cited, `6D280A`, PENDING
   - Falsified if: a piece larger than the uncharged-work bound is charged, the pieces add up to anything but the cost, or a refused piece is answered as charged
 - `Broiler.VM.Profile.WebAssembly.WasmInstanceState.AllocateMemory(IVmMeter)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` - Security=Critical, Spec=none cited, `FD62D2`, PENDING

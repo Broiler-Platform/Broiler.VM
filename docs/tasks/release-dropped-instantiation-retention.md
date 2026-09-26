@@ -11,9 +11,11 @@ has what it needs; it moves no ledger row and claims nothing about what any run 
 When a refusal or a cancellation latches on the meter during an instantiation that the executor
 nevertheless answers as complete, the core answers an exhaustion or a cancellation, publishes no
 instance, and drops the executor's state without releasing what the instance level holds of the
-ceiling-class dimensions - `LiveBytes` above all. That consumption is also committed at runtime level,
-so it stays charged until the runtime is disposed, and a later instantiation in the same runtime is
-refused early for room nobody holds.
+ceiling-class dimensions - `LiveBytes` above all. That consumption is also committed at runtime level
+and, for a dimension of aggregate scope under an aggregate budget, at the parent's. It stays charged for
+the runtime's life, and at the parent beyond it, because disposing of a runtime releases nothing to the
+parent; a later instantiation in the same runtime, or in a sibling runtime under the same aggregate
+budget, is refused early for room nobody holds.
 
 ## What is wrong, checkable against the files named
 
@@ -25,7 +27,10 @@ All paths are relative to the repository root.
   the state is dropped, no instance is published, and nothing releases the instance level's
   ceiling-class consumption.
 - `src/Broiler.VM.Runtime/VmMeter.cs` commits every charge at the runtime, instance and invocation
-  levels, so the dropped consumption is also held at runtime level.
+  levels, and charges a dimension of aggregate scope to the parent budget as well, so the dropped
+  consumption is also held at runtime level and at the parent's.
+- `src/Broiler.VM.Runtime/VmAggregateBudget.cs`, `ReleaseRuntime`, only counts a runtime out when it is
+  disposed; it gives none of the runtime's consumption back to the parent.
 - `src/Broiler.VM.Runtime/VmInstanceImplementation.cs`, `ReleaseRetained`, is how a disposed instance
   gives the same consumption back; nothing calls its equivalent on the dropped path.
 - A latch can be set while the step still succeeds: the meter's poll can latch an aggregate

@@ -104,4 +104,9 @@ and not to foreclose [section 17](../roadmap.md)'s boundary, and the record abov
 - **Decision 5's third bullet.** The store that was built charges its `LiveBytes` retention before it
   allocates, with a charge that can be refused, rather than reporting it after the allocation;
   [WAD-0003](0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md)'s correction of this
-  date says what that answers. The release on a failed instantiation is unchanged.
+  date says what that answers. The release on a failed instantiation is unchanged. *(Corrected later
+  the same day, and the sentence before is kept as written: the release is made on every failure the
+  bytecode emitter answers, as the base executor made it on every failure it answered; an
+  instantiation the emitter answered as complete and the core then dropped, because a refusal or a
+  cancellation latched during it, is released by nothing - a defect of the core, recorded in
+  WAD-0003's second correction and the plan's [WAC-43](../roadmap.corrections.md#wac-43).)*

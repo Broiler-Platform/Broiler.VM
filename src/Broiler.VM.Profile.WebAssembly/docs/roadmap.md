@@ -457,7 +457,7 @@ not drift:
 | `Fuel` | Charged | Every universal bytecode row dispatched and every frame's declared locals, plus the proportional families of invariant 7; a structural instruction the translator lowers away is dispatched as no row and charges nothing *(corrected: WAC-35)*. |
 | `WallClock` | Charged | Core-metered against the operation; this profile polls often enough for it to bite. |
 | `AllocatedBytes` | Charged | Decode-time buffers; instance allocation; every `memory.grow` and `table.grow`. |
-| `LiveBytes` | Charged | Linear memories and tables are the dominant retained cost of a WebAssembly instance, and a profile that did not report them would let a store grow without any ceiling noticing. Charged before each allocation and growth, with a charge that can be refused; released through the family when an instantiation fails and by the core when a published instance is disposed *(corrected: WAC-43)*. |
+| `LiveBytes` | Charged | Linear memories and tables are the dominant retained cost of a WebAssembly instance, and a profile that did not report them would let a store grow without any ceiling noticing. Charged before each allocation and growth, with a charge that can be refused; released through the family on every failure the emitter answers and by the core when a published instance is disposed, and not when the core drops an instantiation the emitter answered as complete *(corrected: WAC-43)*. |
 | `HostCalls` | Charged | Every call into an imported host function. |
 | `CallDepth` | Charged | Every activation frame. [Section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) records that the default is measured, not chosen. |
 | `VerifierWork` | Charged | Required by the catalog. Decode and validation work. |
@@ -1578,8 +1578,9 @@ declared. Four properties are fixed here:
 
 - **A memory is charged, grown, and released through the meter.** Allocation on instantiation and
   growth on `memory.grow`, each charged before it happens with a charge that can be refused; release
-  through the family when an instantiation fails and by the core when a published instance is
-  disposed *(corrected: WAC-43)*. A memory that is allocated without being charged is a ceiling that
+  through the family on every failure the emitter answers and by the core when a published instance
+  is disposed, and not when the core drops an instantiation the emitter answered as complete
+  *(corrected: WAC-43)*. A memory that is allocated without being charged is a ceiling that
   does not exist.
 - **Bounds checks are not optional and not deferred.** Every access is checked, and the check is
   where the bulk of the interpreter's per-instruction cost will sit.
