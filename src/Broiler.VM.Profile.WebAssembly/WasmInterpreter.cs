@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   30
-// Annotated:        30/30
+// Relevant units:   31
+// Annotated:        31/31
 // Exempt:           27
-// Human-reviewed:   0/30
+// Human-reviewed:   0/31
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         20/20
+// Criteria:         21/21
 // Resource impact:  9/10 max
-// Unverified:       30
+// Unverified:       31
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -122,7 +122,9 @@ internal sealed class WasmFrame
 /// core measures uncharged work as fuel charged since the last poll and reports a profile fault when
 /// it exceeds the declared bound, so a profile that polled every N instructions and then charged a
 /// proportional cost would breach the bound with one instruction. <see cref="TryReserve"/> is how a
-/// caller that is about to make a large proportional charge buys the headroom for it first.
+/// caller whose proportional charge is made elsewhere - a memory growth charges inside the memory -
+/// buys the headroom for it first. A proportional charge made here, however large, is taken by
+/// <see cref="TryCharge"/> in pieces no larger than the bound.
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=A58F73
 // Broiler-Falsified-If: fuel charged between two polls can exceed the declared uncharged-work bound
@@ -161,8 +163,13 @@ internal sealed class WasmPacing
     internal WasmRunStatus Failure { get; private set; }
 
     /// <summary>Buys polling headroom for a charge of at most <paramref name="worstCase"/>.</summary>
+    /// <remarks>
+    /// The headroom a poll buys is the whole bound and no more, so a worst case larger than the bound
+    /// is a charge this member cannot make room for; <see cref="TryCharge"/> takes one of those in
+    /// pieces.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=624E86
-    // Broiler-Falsified-If: it returns true while the bound could still be crossed by the charge it was asked about
+    // Broiler-Falsified-If: it returns true while the bound could still be crossed by a charge of at most the bound it was asked about
     // Broiler-Human:        PENDING
     internal bool TryReserve(ulong worstCase)
     {
@@ -184,10 +191,40 @@ internal sealed class WasmPacing
     }
 
     /// <summary>Charges fuel, polling first if this charge would cross the bound.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=4DB319
-    // Broiler-Falsified-If: a charge is committed without the poll that its size demanded
+    /// <remarks>
+    /// <b>NO ONE CHARGE IS LARGER THAN THE BOUND.</b> A poll before a charge buys the whole bound and
+    /// no more, so a proportional cost larger than it - a segment applied at instantiation, whose
+    /// size a guest chooses - is committed in pieces no larger than the bound, each after the poll
+    /// its size demands. The pieces sum to the cost, so what is charged does not change; only where
+    /// the polls fall does. A refused piece leaves the pieces before it charged, where one refused
+    /// charge of the whole left nothing charged; either way the operation is refused and the meter
+    /// names why.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=High; Resources=2; Fingerprint=D0585C
+    // Broiler-Falsified-If: a charge is committed without the poll that its size demanded, one charge larger than the bound reaches the meter, or the pieces sum to other than the amount asked for
     // Broiler-Human:        PENDING
     internal bool TryCharge(ulong amount)
+    {
+        var piece = System.Math.Max(bound, 1UL);
+
+        while (amount > piece)
+        {
+            if (!TryChargeWithinBound(piece))
+            {
+                return false;
+            }
+
+            amount -= piece;
+        }
+
+        return TryChargeWithinBound(amount);
+    }
+
+    /// <summary>Charges at most the bound, polling first if it would cross it.</summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=High; Resources=2; Fingerprint=02E589
+    // Broiler-Falsified-If: a charge is committed without the poll that its size demanded, or a refused charge is counted toward the work since the last poll
+    // Broiler-Human:        PENDING
+    private bool TryChargeWithinBound(ulong amount)
     {
         if (!TryReserve(amount))
         {

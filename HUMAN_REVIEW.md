@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5582 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5583 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 230 |
-| Code units | 9901 |
-| Relevant | 5582 |
+| Code units | 9902 |
+| Relevant | 5583 |
 | Exempt | 4319 |
-| Assessed | 5582 of 5582 (100%) |
-| Human reviewed | 0 of 5582 (0%) |
-| Unverified | 5582 |
+| Assessed | 5583 of 5583 (100%) |
+| Human reviewed | 0 of 5583 (0%) |
+| Unverified | 5583 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5582 |
+| HUMAN_PENDING | 5583 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -288,7 +288,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` | 66 | 41 | 25 | 41 | Low | Critical | 26/26 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` | 8 | 8 | 0 | 8 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmFormat.cs` | 24 | 10 | 14 | 10 | Low | High | 2/2 |
-| `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` | 57 | 30 | 27 | 30 | Low | Critical | 20/20 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` | 58 | 31 | 27 | 31 | Low | Critical | 21/21 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmLeb128.cs` | 18 | 12 | 6 | 12 | Low | Critical | 6/6 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` | 15 | 13 | 2 | 13 | Low | Critical | 6/6 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmModule.cs` | 94 | 50 | 44 | 50 | Low | Critical | 7/7 |
@@ -3381,9 +3381,11 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.WebAssembly.WasmPacing` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=none cited, `A58F73`, PENDING
   - Falsified if: fuel charged between two polls can exceed the declared uncharged-work bound
 - `Broiler.VM.Profile.WebAssembly.WasmPacing.TryReserve(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=none cited, `624E86`, PENDING
-  - Falsified if: it returns true while the bound could still be crossed by the charge it was asked about
-- `Broiler.VM.Profile.WebAssembly.WasmPacing.TryCharge(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=none cited, `4DB319`, PENDING
-  - Falsified if: a charge is committed without the poll that its size demanded
+  - Falsified if: it returns true while the bound could still be crossed by a charge of at most the bound it was asked about
+- `Broiler.VM.Profile.WebAssembly.WasmPacing.TryCharge(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=ADR-0007, `D0585C`, PENDING
+  - Falsified if: a charge is committed without the poll that its size demanded, one charge larger than the bound reaches the meter, or the pieces sum to other than the amount asked for
+- `Broiler.VM.Profile.WebAssembly.WasmPacing.TryChargeWithinBound(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=ADR-0007, `02E589`, PENDING
+  - Falsified if: a charge is committed without the poll that its size demanded, or a refused charge is counted toward the work since the last poll
 - `Broiler.VM.Profile.WebAssembly.WasmPacing.Observe(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=High, Spec=none cited, `6ABDC7`, PENDING
   - Falsified if: a charge made elsewhere never reaches this counter
 - `Broiler.VM.Profile.WebAssembly.WasmInterpreter` in `src/Broiler.VM.Profile.WebAssembly/WasmInterpreter.cs` - Security=Critical, Spec=none cited, `03489B`, PENDING
@@ -3622,7 +3624,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an exception escapes this member, or a trap leaves as anything but a typed payload
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Unwind(IVmProfileContinuation, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=High, Spec=none cited, `8FAAB7`, PENDING
   - Falsified if: any guest instruction is dispatched on this path
-- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.InstantiateCore(VmVerifiedArtifact, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=Critical, Spec=none cited, `9A4768`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.InstantiateCore(VmVerifiedArtifact, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=Critical, Spec=none cited, `50E681`, PENDING
   - Falsified if: a store outlives a refused instantiation without being released
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.InvokeCore(IVmInstanceState, in VmInvocationRequest)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyExecutor.cs` - Security=Critical, Spec=none cited, `41C410`, PENDING
   - Falsified if: an entry point resolves to a function whose parameters the arguments do not match
@@ -3892,7 +3894,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5465 of the 5582 assessed units declare
+That is not a figure of speech. 5466 of the 5583 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

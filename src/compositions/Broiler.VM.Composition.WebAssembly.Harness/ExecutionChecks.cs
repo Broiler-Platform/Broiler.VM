@@ -36,6 +36,7 @@ internal static class ExecutionChecks
         checks.AddRange(GlobalsAndStart(runtime));
         checks.AddRange(EntryPointEncoding(runtime));
         checks.AddRange(LongerThanTheUnchargedWorkBound(runtime));
+        checks.AddRange(SegmentsCostingMoreThanTheUnchargedWorkBound(runtime));
 
         var failed = 0;
 
@@ -795,6 +796,156 @@ internal static class ExecutionChecks
         return failed.Count == 0
             ? (name, true, $"constant at offset {at}; {results[^1].Item3}")
             : (name, false, $"{failed[0].Item1[(name.Length + 2)..]}: {failed[0].Item3}");
+    }
+
+    // =============================================================================================
+    // Segments whose instantiation costs more than the uncharged-work bound
+    // =============================================================================================
+
+    /// <summary>
+    /// An element segment and a data segment, each costing more fuel to apply than the descriptor
+    /// admits between two polls, each followed by a start function.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>BOTH WERE REFUSED, AND AS A CANCELLATION NOBODY ASKED FOR.</b> Instantiation charges an
+    /// element segment one unit per entry and one more, and a data segment one per sixty-four bytes
+    /// and one more, and it charged each in one charge: the poll went first, and then the whole cost
+    /// was committed, leaving more than the bound charged since it. The core does not read the
+    /// poll-bound latches at instantiation, so that alone went unnoticed; the next poll the profile
+    /// took itself is what found it, the meter refused the poll, and the refusal left as a
+    /// cancellation.
+    /// </para>
+    /// <para>
+    /// <b>The start function is what makes the breach observable</b>, because its first instruction's
+    /// charge takes that next poll. It also reads what the segment wrote, so it proves the segment was
+    /// applied whole before any guest code ran.
+    /// </para>
+    /// <para>
+    /// <b>The data segment runs under a host that raised the declared-count ceiling.</b> The ceiling
+    /// is spent by every count a module declares, and a segment's byte count is one, so under the
+    /// default no segment's cost can pass the bound: sixty-four bytes a unit, from a ceiling of four
+    /// mebibytes, less whatever else the module counted. A host may raise it to the profile's maximum,
+    /// and a six-mebibyte segment then costs half as much again as the bound.
+    /// </para>
+    /// </remarks>
+    private static List<(string, bool, string)> SegmentsCostingMoreThanTheUnchargedWorkBound(
+        VmRuntime runtime)
+    {
+        const int Entries = 70_000;
+        const int SegmentBytes = 6 * 1024 * 1024;
+
+        var results = new List<(string, bool, string)>();
+
+        var table = new WasmAssembler();
+        table.Table(Entries);
+        var tableNullary = table.Type([], [WasmAssembler.I32]);
+        var tableEffect = table.Type([], []);
+        var entryReached = table.Global(WasmAssembler.I32, mutable: true, Instruction.I32Const(0));
+        var seven = table.Function(tableNullary, [], Instruction.I32Const(7));
+        table.Element(0, Enumerable.Repeat(seven, Entries).ToArray());
+
+        table.Start(table.Function(tableEffect, [], Instruction.Cat(
+            Instruction.I32Const(Entries - 1),
+            Instruction.CallIndirect(tableNullary),
+            Instruction.GlobalSet(entryReached))));
+
+        table.Export("probe", WasmAssembler.ExportFunction, table.Function(
+            table.Type([WasmAssembler.I32], [WasmAssembler.I32]),
+            [],
+            Instruction.Cat(Instruction.LocalGet(0), Instruction.CallIndirect(tableNullary))));
+
+        table.Export("started", WasmAssembler.ExportFunction, table.Function(
+            tableNullary, [], Instruction.GlobalGet(entryReached)));
+
+        Invoke(runtime, table.Build(), "a-70000-entry-element-segment-and-a-start-function", results,
+        [
+            (Entry("started"), Int32(7)),
+            (Entry("probe", I32(0)), Int32(7)),
+            (Entry("probe", I32(Entries - 1)), Int32(7)),
+            (Entry("probe", I32(Entries)), Trap(WasmTrapKind.OutOfBoundsTableAccess)),
+        ]);
+
+        var contents = new byte[SegmentBytes];
+
+        for (var index = 0; index < contents.Length; index++)
+        {
+            contents[index] = (byte)((index * 7) + 3);
+        }
+
+        var memory = new WasmAssembler();
+        memory.Memory(SegmentBytes / 65_536, null);
+        memory.Data(0, contents);
+        var memoryNullary = memory.Type([], [WasmAssembler.I32]);
+        var byteReached = memory.Global(WasmAssembler.I32, mutable: true, Instruction.I32Const(-1));
+
+        memory.Start(memory.Function(memory.Type([], []), [], Instruction.Cat(
+            Instruction.I32Const(SegmentBytes - 1),
+            Instruction.Load(0x2D, 0, 0),
+            Instruction.GlobalSet(byteReached))));
+
+        memory.Export("readbyte", WasmAssembler.ExportFunction, memory.Function(
+            memory.Type([WasmAssembler.I32], [WasmAssembler.I32]),
+            [],
+            Instruction.Cat(Instruction.LocalGet(0), Instruction.Load(0x2D, 0, 0))));
+
+        memory.Export("started", WasmAssembler.ExportFunction, memory.Function(
+            memoryNullary, [], Instruction.GlobalGet(byteReached)));
+
+        const string MemoryLabel = "a-6-mib-data-segment-and-a-start-function";
+        using var raised = RuntimeWithDeclaredCount(4L * SegmentBytes, out var creation);
+
+        if (raised is null)
+        {
+            results.Add(($"{MemoryLabel}: runtime", false, creation));
+            return results;
+        }
+
+        Invoke(raised, memory.Build(), MemoryLabel, results,
+        [
+            (Entry("started"), Int32(contents[SegmentBytes - 1])),
+            (Entry("readbyte", I32(0)), Int32(contents[0])),
+            (Entry("readbyte", I32(SegmentBytes - 1)), Int32(contents[SegmentBytes - 1])),
+        ]);
+
+        return results;
+    }
+
+    /// <summary>
+    /// A runtime like the harness's own, except that it states a declared-count ceiling rather than
+    /// adopting the profile's default.
+    /// </summary>
+    private static VmRuntime? RuntimeWithDeclaredCount(long declaredCount, out string failure)
+    {
+        var catalog = VmCatalog.CreateBuilder().Add(WebAssemblyProfile.Descriptor).Build();
+        var ceilings = System.Collections.Immutable.ImmutableArray.CreateBuilder<VmCeilingSpec>();
+
+        foreach (var dimension in VmBudgetDimensions.All)
+        {
+            ceilings.Add(dimension switch
+            {
+                VmBudgetDimension.LiveRuntimes => VmCeilingSpec.AdoptParentRemaining(dimension),
+                VmBudgetDimension.DeclaredCount => VmCeilingSpec.Value(dimension, (ulong)declaredCount),
+                _ => VmCeilingSpec.AdoptProfileDefault(dimension),
+            });
+        }
+
+        var created = VmRuntime.Create(
+            catalog,
+            new VmRuntimeCreationOptions(
+                aggregateBudget: null,
+                ceilings: ceilings.ToImmutable(),
+                maxSuspendedResidency: TimeSpan.FromMinutes(1),
+                maxLiveSuspendedOperations: 1,
+                guestLoadBounds: VmGuestLoadBoundsSpec.AdoptProfileMaxima,
+                externalSuspension: VmExternalSuspensionMode.Disabled,
+                capabilities: System.Collections.Immutable.ImmutableArray<VmCapabilityRegistration>.Empty));
+
+        failure = created.TryGetRuntime(out var runtime)
+            ? string.Empty
+            : $"runtime creation {created.Outcome}/{created.Reason}";
+
+        return runtime;
     }
 
     private static byte[] Repeat(byte[] unit, int times)

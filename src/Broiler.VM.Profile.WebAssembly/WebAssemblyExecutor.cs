@@ -166,7 +166,7 @@ public sealed class WebAssemblyExecutor : IVmProfileExecutor
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=9A4768
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=50E681
     // Broiler-Falsified-If: a store outlives a refused instantiation without being released
     // Broiler-Human:        PENDING
     private VmExecutionStep InstantiateCore(
@@ -217,8 +217,9 @@ public sealed class WebAssemblyExecutor : IVmProfileExecutor
             var segment = elements[index];
             var offset = (ulong)(uint)Constant(segment.Offset).I32;
 
-            if (!pacing.TryReserve((ulong)segment.EntryCount + 1) ||
-                !pacing.TryCharge((ulong)segment.EntryCount + 1))
+            // A cost the guest sized, and so possibly larger than the bound: the pacing charges it in
+            // pieces, each after the poll it needs, and all of it before one entry is written.
+            if (!pacing.TryCharge((ulong)segment.EntryCount + 1))
             {
                 store!.Release(pacing.Meter);
                 return Refused(pacing.Failure);
@@ -238,8 +239,8 @@ public sealed class WebAssemblyExecutor : IVmProfileExecutor
             var segment = data[index];
             var offset = (ulong)(uint)Constant(segment.Offset).I32;
 
-            if (!pacing.TryReserve(((ulong)segment.ByteCount / 64) + 1) ||
-                !pacing.TryCharge(((ulong)segment.ByteCount / 64) + 1))
+            // Paced as an element segment's cost is, for the same reason.
+            if (!pacing.TryCharge(((ulong)segment.ByteCount / 64) + 1))
             {
                 store!.Release(pacing.Meter);
                 return Refused(pacing.Failure);
