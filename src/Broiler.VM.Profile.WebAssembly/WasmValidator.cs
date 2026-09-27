@@ -166,7 +166,9 @@ internal struct WasmControlFrame
 /// not ceremony: it is what charges the verifier-work allowance for this second walk over the code,
 /// keeps the cancellation poll on its declared cadence, and lets the variable-length immediates be
 /// read by <see cref="WasmLeb128"/> rather than by a second copy of the acceptance rule written for
-/// a span.
+/// a span. The reader polls at the rest of the uncharged-work bound after one read window, as the
+/// decoder's does, and the widest read here is an eight-byte constant, so a read begun just short of
+/// a poll still ends inside the bound.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=Specification; IP=Low; Security=Critical; Resources=8; Fingerprint=566927
@@ -218,6 +220,7 @@ internal ref struct WasmValidator
     // Broiler-Human:        PENDING
     private readonly WasmReadAdapter adapter;
 
+    /// <summary>The poll granularity every body's reader is built with; see the constructor.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A92AB3
     // Broiler-Human:        PENDING
     private readonly ulong pollGranularity;
@@ -323,14 +326,20 @@ internal ref struct WasmValidator
     private int itemOrdinal;
 
     /// <summary>Builds a validator over one decoded module, under the ceilings decoding ran under.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=E88F05
-    // Broiler-Falsified-If: any field is left uninitialised, so a failed validation reads a buffer nothing filled
+    /// <remarks>
+    /// <paramref name="granularity"/> is the uncharged-work bound, and the readers this pass opens are
+    /// not handed it as it is. A reader polls once its unpolled work has reached its granularity, so
+    /// at the whole bound an eight-byte constant begun one unit short of a poll ended seven units past
+    /// the bound; at the rest of the bound after one read window it ends inside it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=3AA443
+    // Broiler-Falsified-If: any field is left uninitialised, so a failed validation reads a buffer nothing filled, or a body's reader is built polling at the whole bound rather than at the rest of it after one read window
     // Broiler-Human:        PENDING
     internal WasmValidator(WasmModule decoded, WasmReadAdapter meter, ulong granularity)
     {
         module = decoded;
         adapter = meter;
-        pollGranularity = granularity;
+        pollGranularity = WasmReadAdapter.ReaderPollGranularity(granularity);
         reader = default;
         refusal = default;
         parameters = default;

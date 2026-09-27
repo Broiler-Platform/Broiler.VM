@@ -70,14 +70,27 @@ namespace Broiler.VM.Profile.WebAssembly;
 public sealed class WebAssemblyVerifier : IVmProfileVerifier
 {
     /// <summary>
-    /// How much work the bounded reader accumulates between polls.
+    /// The uncharged-work bound the decoder and the validator pace their bounded readers against.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// It is the number the descriptor declares as this profile's uncharged-work bound, and it is
-    /// the largest safe value: the meter reports a poll-bound violation on work strictly greater
-    /// than the bound, so polling exactly at it is inside the promise. A granularity of one would
-    /// be far tighter than anything this profile claims and would take the meter's lock and read a
-    /// clock on every byte of every integer.
+    /// not the granularity a reader polls at. A bounded reader charges a read whole and polls after
+    /// it, so a read begun just short of a poll at the whole bound ends past it. Each pass splits the
+    /// bound in two instead - see <see cref="WasmReadAdapter.ReadWindow"/> - charges at most one half
+    /// in one read, and has its reader poll at the other. A granularity of one would be far tighter
+    /// than anything this profile claims and would take the meter's lock and read a clock on every
+    /// byte of every integer.
+    /// </para>
+    /// <para>
+    /// <i>(Corrected 2026-09-27. The summary read "How much work the bounded reader accumulates
+    /// between polls", and this paragraph called the bound "the largest safe value: the meter reports
+    /// a poll-bound violation on work strictly greater than the bound, so polling exactly at it is
+    /// inside the promise". That holds for reads of one unit only: the decoder read a function body
+    /// in one charge, so a body longer than the bound, or one begun short of a poll, did more work
+    /// between two polls than the bound, and a well-formed module was refused as an exhausted
+    /// verifier-work allowance. The superseded reading is quoted rather than deleted.)</i>
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A489E3
     // Broiler-Falsified-If: it exceeds the uncharged-work bound this profile's descriptor declares

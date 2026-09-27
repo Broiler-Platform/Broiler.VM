@@ -35,6 +35,7 @@ internal static class ExecutionChecks
         checks.AddRange(Traps(runtime));
         checks.AddRange(GlobalsAndStart(runtime));
         checks.AddRange(EntryPointEncoding(runtime));
+        checks.AddRange(LongerThanTheUnchargedWorkBound(runtime));
 
         var failed = 0;
 
@@ -572,6 +573,243 @@ internal static class ExecutionChecks
     }
 
     // =============================================================================================
+    // Bodies, segments, sections and names longer than the uncharged-work bound
+    // =============================================================================================
+
+    /// <summary>
+    /// Valid modules, each longer than the descriptor's uncharged-work bound in a different place.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>EVERY MODULE HERE IS VALID, AND EVERY ONE WAS REFUSED UNTIL THE READS WERE PACED.</b> The
+    /// descriptor declares 65,536 units of work between two polls, the decoder charges one unit per
+    /// byte it consumes, and it read a function body, a data segment's contents, a name and a skipped
+    /// custom section in one charge each, polling only once the work since the last poll had reached
+    /// the bound. So a run longer than the bound, or one begun short of a poll and ending past it,
+    /// carried the work between two polls past the bound; the meter latched the breach, the next poll
+    /// failed, and a well-formed module was answered as an exhausted verifier-work allowance. Three
+    /// runs of 40 KiB are here because no single run has to cross the bound for their sum to.
+    /// </para>
+    /// <para>
+    /// <b>The last two are the same defect in an eight-byte read.</b> A fixed-width constant begun one
+    /// unit short of a poll ended seven units past the bound, in the decoder and in the validator
+    /// alike. Each module is padded so that its constant is read exactly there, and each one checks
+    /// that it still is, because a module that drifted off the edge would pass without testing it.
+    /// </para>
+    /// </remarks>
+    private static List<(string, bool, string)> LongerThanTheUnchargedWorkBound(VmRuntime runtime)
+    {
+        const int Run = 100 * 1024;
+        const int Share = 40 * 1024;
+
+        var results = new List<(string, bool, string)>();
+
+        var nops = new WasmAssembler();
+        var nopsNullary = nops.Type([], [WasmAssembler.I32]);
+
+        nops.Export("nops", WasmAssembler.ExportFunction, nops.Function(
+            nopsNullary, [], Instruction.Cat(Repeat([Instruction.Nop], Run), Instruction.I32Const(42))));
+
+        Invoke(runtime, nops.Build(), "a-100-kib-body-of-nops", results,
+        [
+            (Entry("nops"), Int32(42)),
+        ]);
+
+        var pairs = new WasmAssembler();
+        var pairsNullary = pairs.Type([], [WasmAssembler.I32]);
+        var pair = Instruction.Cat(Instruction.I32Const(7), [Instruction.Drop]);
+
+        pairs.Export("pairs", WasmAssembler.ExportFunction, pairs.Function(
+            pairsNullary, [], Instruction.Cat(Repeat(pair, Run / pair.Length), Instruction.I32Const(43))));
+
+        Invoke(runtime, pairs.Build(), "a-100-kib-body-of-constant-and-drop-pairs", results,
+        [
+            (Entry("pairs"), Int32(43)),
+        ]);
+
+        var shares = new WasmAssembler();
+        var sharesNullary = shares.Type([], [WasmAssembler.I32]);
+
+        for (var index = 1; index <= 3; index++)
+        {
+            shares.Export($"share{index}", WasmAssembler.ExportFunction, shares.Function(
+                sharesNullary, [], Instruction.Cat(Repeat([Instruction.Nop], Share), Instruction.I32Const(index))));
+        }
+
+        Invoke(runtime, shares.Build(), "three-40-kib-bodies", results,
+        [
+            (Entry("share1"), Int32(1)),
+            (Entry("share2"), Int32(2)),
+            (Entry("share3"), Int32(3)),
+        ]);
+
+        var contents = new byte[Run];
+
+        for (var index = 0; index < contents.Length; index++)
+        {
+            contents[index] = (byte)((index * 7) + 3);
+        }
+
+        var segment = new WasmAssembler();
+        segment.Memory(2, null);
+        segment.Data(0, contents);
+
+        segment.Export("readbyte", WasmAssembler.ExportFunction, segment.Function(
+            segment.Type([WasmAssembler.I32], [WasmAssembler.I32]),
+            [],
+            Instruction.Cat(Instruction.LocalGet(0), Instruction.Load(0x2D, 0, 0))));
+
+        Invoke(runtime, segment.Build(), "a-100-kib-data-segment", results,
+        [
+            (Entry("readbyte", I32(0)), Int32(contents[0])),
+            (Entry("readbyte", I32(Run - 1)), Int32(contents[Run - 1])),
+        ]);
+
+        var custom = new WasmAssembler();
+        custom.Custom("pacing", new byte[Run]);
+
+        custom.Export("five", WasmAssembler.ExportFunction, custom.Function(
+            custom.Type([], [WasmAssembler.I32]), [], Instruction.I32Const(5)));
+
+        Invoke(runtime, custom.Build(), "a-100-kib-custom-section", results,
+        [
+            (Entry("five"), Int32(5)),
+        ]);
+
+        // Two-byte scalar values over an odd read window, so a piece boundary falls inside one: the
+        // UTF-8 rule has to be applied to the whole name and not to a piece of it.
+        var named = new WasmAssembler();
+        var six = named.Function(named.Type([], [WasmAssembler.I32]), [], Instruction.I32Const(6));
+        named.Export(string.Concat(Enumerable.Repeat("é", Run / 2)), WasmAssembler.ExportFunction, six);
+        named.Export("short", WasmAssembler.ExportFunction, six);
+
+        Invoke(runtime, named.Build(), "a-100-kib-export-name", results,
+        [
+            (Entry("short"), Int32(6)),
+        ]);
+
+        results.Add(AnEightByteConstantOneUnitShortOfAPoll(runtime));
+        results.Add(AnEightByteImmediateOneUnitShortOfAPoll(runtime));
+
+        return results;
+    }
+
+    /// <summary>
+    /// A global's eight-byte initialiser, read by the decoder with the work since its last poll one
+    /// unit short of the bound.
+    /// </summary>
+    /// <remarks>
+    /// The payload bytes are the decoder's work units, and nothing before the immediate is long
+    /// enough to be polled inside under the old cadence, so the immediate's offset is the work the
+    /// decoder had done unpolled when it began reading it. A leading custom section pads it there.
+    /// </remarks>
+    private static (string, bool, string) AnEightByteConstantOneUnitShortOfAPoll(VmRuntime runtime)
+    {
+        const string Name = "an-eight-byte-global-initialiser-read-one-unit-short-of-a-poll";
+        const double Avogadro = 6.02214076e23;
+        var target = (int)WebAssemblyProfile.MaxUnchargedWork - 1;
+        var immediate = BitConverter.GetBytes(BitConverter.DoubleToUInt64Bits(Avogadro));
+
+        byte[] Build(int padding)
+        {
+            var assembler = new WasmAssembler();
+            assembler.Custom("pad", new byte[padding]);
+            var global = assembler.Global(WasmAssembler.F64, mutable: false, Instruction.F64Const(Avogadro));
+
+            assembler.Export("avogadro", WasmAssembler.ExportFunction, assembler.Function(
+                assembler.Type([], [WasmAssembler.F64]), [], Instruction.GlobalGet(global)));
+
+            return assembler.Build();
+        }
+
+        var padding = 0;
+        var module = Build(padding);
+        var at = module.AsSpan().IndexOf(immediate);
+
+        // Growing the payload can lengthen the section's own length field, so the padding is found
+        // by adjusting rather than by one subtraction.
+        for (var attempt = 0; attempt < 3 && at != target; attempt++)
+        {
+            padding += target - at;
+            module = Build(padding);
+            at = module.AsSpan().IndexOf(immediate);
+        }
+
+        return Placed(runtime, Name, module, at, target, "avogadro", Double(Avogadro));
+    }
+
+    /// <summary>
+    /// The same eight-byte read in the validator, which walks a body behind a fresh reader of its own.
+    /// </summary>
+    /// <remarks>
+    /// The validator polls as it opens a body and every thousand and twenty-four instructions after,
+    /// and a branch table is one instruction however many labels it carries, so a table of one-byte
+    /// labels is how the bytes before the constant grow without a poll among them.
+    /// </remarks>
+    private static (string, bool, string) AnEightByteImmediateOneUnitShortOfAPoll(VmRuntime runtime)
+    {
+        const string Name = "an-eight-byte-immediate-validated-one-unit-short-of-a-poll";
+        const double Marker = -1.0 / 3.0;
+        var target = (int)WebAssemblyProfile.MaxUnchargedWork - 1;
+        var immediate = BitConverter.GetBytes(BitConverter.DoubleToUInt64Bits(Marker));
+
+        // Everything before the labels and the constant's opcode after them: a block, a constant, the
+        // branch table's opcode, its three-byte label count and its default label.
+        var labels = target - 10;
+
+        var code = Instruction.Cat(
+            Instruction.Block(Instruction.EmptyBlock),
+            Instruction.I32Const(0),
+            Instruction.BrTable(new uint[labels], 0),
+            Instruction.F64Const(Marker),
+            [Instruction.Drop],
+            Instruction.End(),
+            Instruction.I32Const(9));
+
+        var assembler = new WasmAssembler();
+
+        assembler.Export("table", WasmAssembler.ExportFunction, assembler.Function(
+            assembler.Type([], [WasmAssembler.I32]), [], code));
+
+        return Placed(
+            runtime, Name, assembler.Build(), code.AsSpan().IndexOf(immediate), target, "table", Int32(9));
+    }
+
+    /// <summary>
+    /// Verifies, instantiates and invokes a module whose eight-byte constant must sit at one offset,
+    /// failing the check first if it does not.
+    /// </summary>
+    private static (string, bool, string) Placed(
+        VmRuntime runtime, string name, byte[] module, int at, int target, string export, Expectation expected)
+    {
+        if (at != target)
+        {
+            return (name, false, $"the constant is read at offset {at} and the check needs it at {target}");
+        }
+
+        var results = new List<(string, bool, string)>();
+        Invoke(runtime, module, name, results, [(Entry(export), expected)]);
+
+        var failed = results.Where(result => !result.Item2).ToList();
+
+        return failed.Count == 0
+            ? (name, true, $"constant at offset {at}; {results[^1].Item3}")
+            : (name, false, $"{failed[0].Item1[(name.Length + 2)..]}: {failed[0].Item3}");
+    }
+
+    private static byte[] Repeat(byte[] unit, int times)
+    {
+        var encoded = new byte[unit.Length * times];
+
+        for (var index = 0; index < times; index++)
+        {
+            unit.CopyTo(encoded, index * unit.Length);
+        }
+
+        return encoded;
+    }
+
+    // =============================================================================================
     // The driver every check above shares
     // =============================================================================================
 
@@ -587,12 +825,17 @@ internal static class ExecutionChecks
 
         if (!verified.TryGetArtifact(out var artifact))
         {
+            // An exhaustion carries no diagnostic code and no position; what it carries is the
+            // dimension and the scope that refused, and those are what tell one from another.
             results.Add((
                 $"{label}: verification",
                 false,
-                $"{verified.Outcome}/{verified.Reason}/" +
-                $"{verified.Diagnostics.ProfileDiagnosticCode} at " +
-                $"offset {verified.Diagnostics.SourcePosition.ByteOffset}"));
+                verified.Outcome is VmOutcome.ResourceExhaustion
+                    ? $"{verified.Outcome}/{verified.Reason}/" +
+                      $"{verified.Diagnostics.ExhaustedDimension}/{verified.Diagnostics.ExhaustedScope}"
+                    : $"{verified.Outcome}/{verified.Reason}/" +
+                      $"{verified.Diagnostics.ProfileDiagnosticCode} at " +
+                      $"offset {verified.Diagnostics.SourcePosition.ByteOffset}"));
 
             return;
         }

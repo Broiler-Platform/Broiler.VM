@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
+// Relevant units:   12
+// Annotated:        12/12
 // Exempt:           2
-// Human-reviewed:   0/10
+// Human-reviewed:   0/12
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         6/6
+// Criteria:         8/8
 // Resource impact:  1/10 max
-// Unverified:       10
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -88,6 +88,35 @@ public sealed class WasmReadAdapter : IVmBoundedAllocationMeter
             limits[VmBudgetDimension.SectionCount],
             limits[VmBudgetDimension.DeclaredCount],
             limits[VmBudgetDimension.StructuralDepth]);
+
+    /// <summary>
+    /// The most work one read may charge under the uncharged-work bound <paramref name="bound"/>: half
+    /// the bound and one unit, never more than 65,536. Zero is read as one.
+    /// </summary>
+    /// <remarks>
+    /// <b>THE BOUND IS SPLIT IN TWO AND THE HALVES ARE THIS AND <see cref="ReaderPollGranularity"/>.</b>
+    /// A bounded reader charges a read whole and polls after it, once its unpolled work has reached
+    /// its granularity, so it enters every read with at most that less one unpolled. Handing it the
+    /// bound itself let a read begun one unit short of a poll carry the work between two polls past
+    /// the bound by the read's length less one, and the core latches that as a breach of the
+    /// profile's own promise. Handing it the rest of the bound after one window, and never reading
+    /// more than one window in one charge, ends every read inside the bound.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=High; Resources=0; Fingerprint=DDB92D
+    // Broiler-Falsified-If: the window and the reader's poll granularity sum to more than the bound and one, so the work between two polls can pass the bound
+    // Broiler-Human:        PENDING
+    internal static ulong ReadWindow(ulong bound) =>
+        System.Math.Min((System.Math.Max(bound, 1UL) / 2) + 1, 65_536UL);
+
+    /// <summary>
+    /// The poll granularity a bounded reader is built with under the uncharged-work bound
+    /// <paramref name="bound"/>: the rest of the bound after one read window, and never below one.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=High; Resources=0; Fingerprint=C3E5E8
+    // Broiler-Falsified-If: a reader built with this granularity can begin a read of one window with more than the bound less one window unpolled
+    // Broiler-Human:        PENDING
+    internal static ulong ReaderPollGranularity(ulong bound) =>
+        System.Math.Max(bound, 1UL) - ReadWindow(bound) + 1;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FFFA26

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   39
-// Annotated:        39/39
-// Exempt:           24
-// Human-reviewed:   0/39
+// Relevant units:   41
+// Annotated:        41/41
+// Exempt:           25
+// Human-reviewed:   0/41
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         24/24
+// Criteria:         26/26
 // Resource impact:  8/10 max
-// Unverified:       39
+// Unverified:       41
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -76,9 +76,17 @@ internal struct WasmLocalRun
 /// decoded module to keep a window onto the caller's bytes, so everything retained here is copied
 /// through the bounded allocator into an array this module owns.
 /// </para>
+/// <para>
+/// <b>The work between two polls stays inside the bound.</b> Every byte consumed is charged as
+/// verifier work before it is consumed, and no single read charges more than the read window - half
+/// the uncharged-work bound and one unit - while the bounded reader polls at the other half, so a
+/// read begun just short of a poll still ends inside the bound. A byte run longer than the window, a
+/// function body, a data segment's contents, a name, a skipped custom section or a fixed-width
+/// field alike, is read in pieces no longer than it.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=8; Fingerprint=399155
-// Broiler-Falsified-If: a buffer is sized from a count that has not cleared its ceiling, or a ceiling breach is reported as a malformed artifact
+// Broiler-Falsified-If: a buffer is sized from a count that has not cleared its ceiling, a ceiling breach is reported as a malformed artifact, or one read charges more work than the read window
 // Broiler-Human:        PENDING
 internal ref struct WasmDecoder
 {
@@ -93,6 +101,11 @@ internal ref struct WasmDecoder
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B8F815
     // Broiler-Human:        PENDING
     private readonly VmReadBounds bounds;
+
+    /// <summary>The most work one read charges; see <see cref="WasmReadAdapter.ReadWindow"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4C0F80
+    // Broiler-Human:        PENDING
+    private readonly ulong readWindow;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5677B3
     // Broiler-Human:        PENDING
@@ -174,12 +187,19 @@ internal ref struct WasmDecoder
     /// Builds a decoder over one payload, under ceilings the caller has already materialized.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The bounds arrive as a parameter rather than being read here, because the ordering that
     /// matters - the ceilings are fixed before the first byte is examined - is a property of the
     /// verifier's sequence and is stated there.
+    /// </para>
+    /// <para>
+    /// <paramref name="pollGranularity"/> is the uncharged-work bound, and it is not handed to the
+    /// reader as it is: the reader polls at the rest of the bound after one read window, and every
+    /// read here charges at most one window, so the work charged between two polls never exceeds it.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=7A55F8
-    // Broiler-Falsified-If: any field is left uninitialised so a failed decode hands back an array nothing filled
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=68FDF9
+    // Broiler-Falsified-If: any field is left uninitialised so a failed decode hands back an array nothing filled, or the reader is built polling at the whole bound rather than at the rest of it after one read window
     // Broiler-Human:        PENDING
     internal WasmDecoder(
         System.ReadOnlySpan<byte> payload,
@@ -189,7 +209,9 @@ internal ref struct WasmDecoder
     {
         adapter = meter;
         bounds = readBounds;
-        reader = new VmBoundedReader(payload, in readBounds, meter, pollGranularity);
+        readWindow = WasmReadAdapter.ReadWindow(pollGranularity);
+        reader = new VmBoundedReader(
+            payload, in readBounds, meter, WasmReadAdapter.ReaderPollGranularity(pollGranularity));
         refusal = default;
         sectionOrdinal = -1;
         sectionIdentifier = -1;
@@ -279,14 +301,18 @@ internal ref struct WasmDecoder
     }
 
     /// <summary>Reads the magic and the binary format version.</summary>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=1; Fingerprint=BED23F
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=1; Fingerprint=A74BC2
     // Broiler-Falsified-If: a payload whose first eight bytes are not the magic and version 1 reaches the section loop
     // Broiler-Human:        PENDING
     private bool TryReadPreamble()
     {
-        if (!reader.TryReadBytes(4, out var magic))
+        System.Span<byte> magic = stackalloc byte[4];
+
+        // The only refusal here that carries a position is a truncation, which the paced read makes
+        // before consuming anything, so it is reported at offset zero as it always was.
+        if (!TryReadPaced((ulong)magic.Length, magic))
         {
-            return Stop(FromReader(0));
+            return false;
         }
 
         if (!System.MemoryExtensions.SequenceEqual(magic, WasmFormat.Magic))
@@ -297,9 +323,9 @@ internal ref struct WasmDecoder
         // Four raw little-endian bytes rather than a variable-length integer: the version field is
         // fixed width in this format, and reading it as a varint would accept encodings the format
         // does not have.
-        if (!reader.TryReadUInt32LittleEndian(out var version))
+        if (!TryReadFixedWidth(4, out var version))
         {
-            return Stop(FromReader(reader.Position));
+            return false;
         }
 
         if (version != WasmFormat.BinaryVersion)
@@ -314,7 +340,7 @@ internal ref struct WasmDecoder
     }
 
     /// <summary>Reads one section: its identifier, its length, its framing and its body.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=5D296A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=C16F65
     // Broiler-Falsified-If: the order and duplicate rules are applied after the section body is decoded rather than before
     // Broiler-Human:        PENDING
     private bool TryReadOneSection()
@@ -360,9 +386,11 @@ internal ref struct WasmDecoder
         {
             customSections++;
 
-            if (!reader.TrySkipSectionBody(in frame))
+            // Stepped over in pieces rather than skipped: the reader's skip charges the whole body
+            // in one charge, and a custom section is as long as its producer likes.
+            if (!TryReadPaced(declaredLength, default))
             {
-                return Stop(FromReader(reader.Position));
+                return false;
             }
         }
         else if (!TryDecodeSectionBody(id))
@@ -817,11 +845,13 @@ internal ref struct WasmDecoder
     /// <para>
     /// <b>The instruction bytes are copied and not read.</b> Nothing here looks at an opcode. The
     /// bytes are copied into an array the module owns so that the validator has something immutable
-    /// to walk that is not a window onto the caller's payload.
+    /// to walk that is not a window onto the caller's payload - in pieces no longer than the read
+    /// window, because a body is as long as its producer likes and one charge for the whole of it
+    /// would carry the work between two polls past the uncharged-work bound.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=Critical; Resources=5; Fingerprint=4E1120
-    // Broiler-Falsified-If: a body's byte count is taken from anywhere but its declared size, or the expanded local count is not held to the declared-count ceiling
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=Critical; Resources=5; Fingerprint=58F41D
+    // Broiler-Falsified-If: a body's byte count is taken from anywhere but its declared size, the expanded local count is not held to the declared-count ceiling, or a body's instruction bytes are read in one charge larger than the read window
     // Broiler-Human:        PENDING
     private bool TryDecodeCodeSection()
     {
@@ -872,12 +902,10 @@ internal ref struct WasmDecoder
                     VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact));
             }
 
-            if (!reader.TryReadBytes(codeLength, out var window))
+            if (!TryReadPaced(codeLength, instructions))
             {
-                return Stop(FromReader(reader.Position));
+                return false;
             }
-
-            window.CopyTo(System.MemoryExtensions.AsSpan(instructions));
 
             decoded[index] = new WasmFunctionBody(locals, instructions);
         }
@@ -887,8 +915,8 @@ internal ref struct WasmDecoder
     }
 
     /// <summary>Reads the data segments.</summary>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=3; Fingerprint=077959
-    // Broiler-Falsified-If: a segment encoding form this format version does not define is decoded as though it were the classic form
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=3; Fingerprint=B0C933
+    // Broiler-Falsified-If: a segment encoding form this format version does not define is decoded as though it were the classic form, or a segment's contents are read in one charge larger than the read window
     // Broiler-Human:        PENDING
     private bool TryDecodeDataSection()
     {
@@ -917,17 +945,12 @@ internal ref struct WasmDecoder
 
             if (!TryReadConstantExpression(out var offset) ||
                 !TryReadCount(out var byteCount) ||
-                !TryAllocateValues<byte>(byteCount, out var contents))
+                !TryAllocateValues<byte>(byteCount, out var contents) ||
+                !TryReadPaced(byteCount, contents))
             {
                 return false;
             }
 
-            if (!reader.TryReadBytes(byteCount, out var window))
-            {
-                return Stop(FromReader(reader.Position));
-            }
-
-            window.CopyTo(System.MemoryExtensions.AsSpan(contents));
             decoded[index] = new WasmDataSegment(memoryIndex, offset, contents);
         }
 
@@ -1100,25 +1123,24 @@ internal ref struct WasmDecoder
     }
 
     /// <summary>Reads a name: a byte vector held to this format's own UTF-8 rule.</summary>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=1BD6B8
-    // Broiler-Falsified-If: the platform's UTF-8 decoder is consulted, or the bytes are retained before the rule has admitted them
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=4A96BB
+    // Broiler-Falsified-If: the platform's UTF-8 decoder is consulted, the bytes are retained before the rule has admitted them, or the rule is applied to a piece of the name rather than to the whole of it
     // Broiler-Human:        PENDING
     private bool TryReadName(out byte[] name)
     {
         name = [];
 
         if (!TryReadCount(out var length) ||
-            !TryAllocateValues<byte>(length, out var buffer))
+            !TryAllocateValues<byte>(length, out var buffer) ||
+            !TryReadPaced(length, buffer))
         {
             return false;
         }
 
-        if (!reader.TryReadBytes(length, out var window))
-        {
-            return Stop(FromReader(reader.Position));
-        }
-
-        if (!WasmName.IsWellFormed(window))
+        // THE RULE IS APPLIED TO THE WHOLE NAME, AFTER EVERY PIECE HAS ARRIVED. A piece boundary can
+        // fall inside a multi-byte sequence, so a rule applied piece by piece would refuse a
+        // well-formed name. The buffer is this member's own until the rule admits it.
+        if (!WasmName.IsWellFormed(buffer))
         {
             return Stop(Invalid(
                 VmReason.MalformedEncoding,
@@ -1126,13 +1148,12 @@ internal ref struct WasmDecoder
                 reader.Position - length));
         }
 
-        window.CopyTo(System.MemoryExtensions.AsSpan(buffer));
         name = buffer;
         return true;
     }
 
     /// <summary>Reads a constant expression in the only shape this format version admits.</summary>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=3; Fingerprint=C2310C
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=3; Fingerprint=81543C
     // Broiler-Falsified-If: an expression not closed by the end opcode is accepted, or an instruction outside the constant set is decoded
     // Broiler-Human:        PENDING
     private bool TryReadConstantExpression(out WasmConstantExpression expression)
@@ -1167,18 +1188,18 @@ internal ref struct WasmDecoder
                 break;
 
             case (byte)WasmOpcode.F32Const:
-                if (!reader.TryReadUInt32LittleEndian(out var single))
+                if (!TryReadFixedWidth(4, out var single))
                 {
-                    return Stop(FromReader(reader.Position));
+                    return false;
                 }
 
                 bits = single;
                 break;
 
             case (byte)WasmOpcode.F64Const:
-                if (!reader.TryReadUInt64LittleEndian(out var doublePrecision))
+                if (!TryReadFixedWidth(8, out var doublePrecision))
                 {
-                    return Stop(FromReader(reader.Position));
+                    return false;
                 }
 
                 bits = doublePrecision;
@@ -1289,6 +1310,85 @@ internal ref struct WasmDecoder
         }
 
         return Stop(FromReader(reader.Position));
+    }
+
+    /// <summary>
+    /// Consumes <paramref name="length"/> bytes in pieces no longer than the read window, copying
+    /// them into <paramref name="destination"/> unless it is empty, which steps over them unread.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Each piece is charged before it is consumed and the reader polls between pieces</b>, so a
+    /// run of any length keeps the work between two polls inside the uncharged-work bound. Every
+    /// byte is charged exactly once, as the one read of the whole run charged it, so the verifier
+    /// work a module costs does not change; only where the polls fall does.
+    /// </para>
+    /// <para>
+    /// <b>An empty run and one the payload cannot hold are handed to the reader whole.</b> Neither
+    /// charges a unit of work: the first consumes nothing, and the second is refused before any of it
+    /// is consumed, exactly as one read of the whole length was - so no refusal position moves with
+    /// the window.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=High; Resources=1; Fingerprint=7EF4EB
+    // Broiler-Falsified-If: one piece charges more work than the read window, a run the payload cannot hold consumes bytes before it is refused, or a byte is copied past the destination
+    // Broiler-Human:        PENDING
+    private bool TryReadPaced(ulong length, scoped System.Span<byte> destination)
+    {
+        if (length == 0 || length > reader.Remaining)
+        {
+            return reader.TryReadBytes(length, out _) || Stop(FromReader(reader.Position));
+        }
+
+        var consumed = 0UL;
+
+        while (consumed < length)
+        {
+            var piece = System.Math.Min(readWindow, length - consumed);
+
+            if (!reader.TryReadBytes(piece, out var chunk))
+            {
+                return Stop(FromReader(reader.Position));
+            }
+
+            if (!destination.IsEmpty)
+            {
+                chunk.CopyTo(destination[(int)consumed..]);
+            }
+
+            consumed += piece;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Reads a little-endian fixed-width field - four bytes or eight - paced like any other run.
+    /// </summary>
+    /// <remarks>
+    /// Eight bytes is inside the read window under any bound of fourteen or more, and this profile
+    /// declares 65,536; the field is paced anyway so that no read in this decoder is the exception a
+    /// smaller bound would find.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=96CDD8
+    // Broiler-Falsified-If: the value is assembled other than little-endian, or from bytes the paced read did not consume
+    // Broiler-Human:        PENDING
+    private bool TryReadFixedWidth(int width, out ulong value)
+    {
+        value = 0;
+        System.Span<byte> field = stackalloc byte[sizeof(ulong)];
+
+        if (!TryReadPaced((ulong)width, field[..width]))
+        {
+            return false;
+        }
+
+        for (var index = width - 1; index >= 0; index--)
+        {
+            value = (value << 8) | field[index];
+        }
+
+        return true;
     }
 
     /// <summary>Reads an unsigned 32-bit variable-length integer.</summary>

@@ -36,6 +36,7 @@ internal sealed class WasmAssembler
     private readonly List<byte[]> elements = [];
     private readonly List<byte[]> segments = [];
     private readonly List<byte[]> bodies = [];
+    private readonly List<byte[]> customs = [];
 
     private byte[]? memory;
     private byte[]? table;
@@ -147,10 +148,30 @@ internal sealed class WasmAssembler
     /// <summary>Names the start function.</summary>
     internal void Start(uint functionIndex) => start = functionIndex;
 
+    /// <summary>Adds a custom section, emitted after the preamble and before every other section.</summary>
+    /// <remarks>
+    /// A custom section may stand anywhere in a module, and the front is the one place where what it
+    /// adds to every byte offset after it is the whole of its length.
+    /// </remarks>
+    internal void Custom(string name, byte[] payload)
+    {
+        var utf8 = System.Text.Encoding.UTF8.GetBytes(name);
+        var encoded = new List<byte>();
+        encoded.AddRange(Leb((uint)utf8.Length));
+        encoded.AddRange(utf8);
+        encoded.AddRange(payload);
+        customs.Add([.. encoded]);
+    }
+
     /// <summary>Emits the module.</summary>
     internal byte[] Build()
     {
         var module = new List<byte> { 0x00, 0x61, 0x73, 0x6D, 0x01, 0x00, 0x00, 0x00 };
+
+        foreach (var custom in customs)
+        {
+            module.AddRange(Section(0, custom));
+        }
 
         module.AddRange(Section(1, Vector(types)));
         module.AddRange(Section(3, Vector(functions.Select(Leb).ToList())));
@@ -339,6 +360,7 @@ internal static class Instruction
     internal const byte EmptyBlock = 0x40;
 
     internal const byte Unreachable = 0x00;
+    internal const byte Nop = 0x01;
     internal const byte Return = 0x0F;
     internal const byte Drop = 0x1A;
     internal const byte Select = 0x1B;
