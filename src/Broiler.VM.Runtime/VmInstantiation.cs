@@ -146,8 +146,31 @@ internal static class VmInstantiation
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=4962CD
-    // Broiler-Falsified-If: the scope is entered with no owning operation, or the switch tests no host failure or poll bound
+    /// <summary>Runs the profile's instantiation step and maps what it answered.</summary>
+    /// <remarks>
+    /// <para>
+    /// The mapping follows the one precedence order every stage uses: cancellation, then resource
+    /// exhaustion, then a profile that broke its declared uncharged-work bound, then the step's own
+    /// answer. A breach is found by either of the meter's two readings - a poll that found it and
+    /// latched, or work still unpolled past the bound when the step returned - and is answered as a
+    /// profile fault naming it, whatever the step said. So a profile that answered its refused poll
+    /// as a cancellation is not reported as cancelled, and one that breached and then answered
+    /// <c>Instantiated</c> publishes nothing: its start function is guest code, and an instance
+    /// whose profile did not keep its latency promise is not handed to a caller any more than an
+    /// invocation that did not keep it completes. A continuation such a step parked is unwound, as
+    /// every other refused parking here is.
+    /// </para>
+    /// <para>
+    /// <b>No host failure is checked here, and that is a gap rather than a choice.</b> Invocation
+    /// and resume rank an unconverted host failure between exhaustion and a profile fault, and read
+    /// it from the operation the scope was entered with. Instantiation has no operation of its own,
+    /// so the scope is entered with none, and a capability that fails terminally during
+    /// instantiation has nothing to latch onto: the profile is handed the refusal and whatever it
+    /// answers is the answer.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=E6FCBA
+    // Broiler-Falsified-If: a step whose meter latched a poll-bound breach, or left more work unpolled than the bound, is answered as anything but a profile fault naming the breach when neither cancellation nor exhaustion outranks it, or publishes an instance
     // Broiler-Human:        PENDING
     private static VmInstantiationResult Instantiate(
         VmRuntime runtime,
@@ -227,9 +250,10 @@ internal static class VmInstantiation
         {
             profileState.Scope.Leave();
 
-            // Hygiene. Instantiation never reads the uncharged-work counter, so nothing observable
-            // rests on this - but the meter is finished with, and its fuel belongs at the levels
-            // rather than in a table slot another operation could have used.
+            // As on the invocation and resume paths: what the step spent from a block is committed
+            // before the outcome is mapped. The poll-bound reading below settles for itself as well,
+            // and this settle also hands the fuel back to the levels rather than leaving it in a
+            // table slot another operation could have used.
             meter.SettlePreAdmittedFuel();
         }
 
@@ -247,6 +271,18 @@ internal static class VmInstantiation
                 identified
                     .WithOutcome(VmStage.Instantiation, VmOutcome.ResourceExhaustion, VmMeter.ReasonFor(meter.FailedDimension), VmInitiator.Core)
                     .WithExhaustion(meter.FailedDimension, meter.FailedScope));
+        }
+
+        if (meter.PollBoundExceeded || meter.UnpolledWorkExceedsBound)
+        {
+            if (step.Kind is VmExecutionStepKind.Suspended && step.Continuation is not null)
+            {
+                Abandon(profile, runtime, executor, step.Continuation);
+            }
+
+            return VmInstantiationResult.ProfileFault(
+                VmReason.CancellationPollBoundExceeded, step.Payload,
+                identified.WithOutcome(VmStage.Instantiation, VmOutcome.ProfileFault, VmReason.CancellationPollBoundExceeded, VmInitiator.Guest));
         }
 
         switch (step.Kind)

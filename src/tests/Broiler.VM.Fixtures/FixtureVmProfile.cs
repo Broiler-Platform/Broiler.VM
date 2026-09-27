@@ -84,6 +84,39 @@ public enum FixtureVmProfileVariant
     /// polls: polling more often than declared is what a profile is allowed to do.
     /// </remarks>
     WindowedGuestLoads = 17,
+
+    /// <summary>
+    /// Charges more than its declared bound while instantiating, never polls again, and answers that
+    /// the instance was created.
+    /// </summary>
+    /// <remarks>
+    /// The limiting case of breaking the bound: nothing the profile does afterwards takes a poll, so
+    /// no poll can find the breach and only the core's own reading of the uncharged-work counter at
+    /// the end of the step can.
+    /// </remarks>
+    BreachesBoundDuringInstantiation = 18,
+
+    /// <summary>
+    /// Charges more than its declared bound while instantiating, then polls, and answers the refused
+    /// poll as every executor here answers one: as a cancellation.
+    /// </summary>
+    /// <remarks>
+    /// The case a real engine produces. The poll finds the breach and refuses, and the profile - which
+    /// cannot tell a refused poll's three causes apart - reports the one it guesses. What the caller
+    /// is told has to come from the meter's latch rather than from that guess.
+    /// </remarks>
+    BreachesBoundThenPollsDuringInstantiation = 19,
+
+    /// <summary>
+    /// Declares asynchronous instantiation, charges more than its declared bound while
+    /// instantiating, and then parks.
+    /// </summary>
+    /// <remarks>
+    /// Parking is legal for this variant, so the only thing wrong with the step is the breach. What
+    /// it shows is that the continuation of a step refused for a breach is unwound rather than
+    /// dropped, as every other refused parking at instantiation is.
+    /// </remarks>
+    BreachesBoundThenParksDuringInstantiation = 20,
 }
 
 /// <summary>
@@ -266,6 +299,7 @@ public static class FixtureDescriptorFactory
             : VmGuestLoadDeclaration.NotDeclared;
 
         var asynchronous = variant is FixtureVmProfileVariant.DeclaresAsynchronousInstantiation
+            or FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation
             ? VmDeclaration.Declared
             : VmDeclaration.NotDeclared;
 
@@ -343,6 +377,10 @@ public static class FixtureDescriptorFactory
     {
         FixtureVmProfileVariant.PollBoundBreaker => 32UL,
         FixtureVmProfileVariant.WindowedPolling => FixtureVmExecutor.PollWindow,
+        FixtureVmProfileVariant.BreachesBoundDuringInstantiation or
+            FixtureVmProfileVariant.BreachesBoundThenPollsDuringInstantiation or
+            FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation =>
+            FixtureVmExecutor.InstantiationCharge - 1,
         _ => 1024UL,
     };
 

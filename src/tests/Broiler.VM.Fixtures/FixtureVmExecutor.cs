@@ -28,6 +28,16 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
     /// </remarks>
     public const uint PollWindow = 64;
 
+    /// <summary>
+    /// What the two instantiation-breaching variants charge while instantiating, in one charge after
+    /// no poll.
+    /// </summary>
+    /// <remarks>
+    /// Their declared bound is one unit less, so the charge breaks it by exactly one unit: the
+    /// smallest breach there is, which is the one a check that compared the wrong way would miss.
+    /// </remarks>
+    public const uint InstantiationCharge = 1025;
+
     private readonly IVmExecutionEnvironment environment;
     private readonly FixtureVmProfileVariant variant;
     private readonly uint chargingGranularity;
@@ -89,6 +99,29 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
         if (!artifact.TryGetState(out var state) || state is not FixtureVerifiedState verified)
         {
             return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
+        }
+
+        if (variant is FixtureVmProfileVariant.BreachesBoundDuringInstantiation
+            or FixtureVmProfileVariant.BreachesBoundThenPollsDuringInstantiation
+            or FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation)
+        {
+            var meter = environment.Meter;
+
+            if (!meter.TryCharge(VmBudgetDimension.Fuel, InstantiationCharge))
+            {
+                return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);
+            }
+
+            if (variant is FixtureVmProfileVariant.BreachesBoundThenPollsDuringInstantiation &&
+                !meter.Poll())
+            {
+                return VmExecutionStep.ContractViolation(VmReason.Cancelled);
+            }
+
+            if (variant is FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation)
+            {
+                return VmExecutionStep.Suspended(new FixtureContinuation(0, new long[1], 0), null);
+            }
         }
 
         return VmExecutionStep.Instantiated(new FixtureInstanceState(verified), null);

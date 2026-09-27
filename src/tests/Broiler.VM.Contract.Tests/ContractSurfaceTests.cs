@@ -575,6 +575,96 @@ public sealed class ContractSurfaceTests
         Assert.Equal(VmOutcome.ProfileFault, result.Outcome);
     }
 
+    [Fact]
+    public void A_Profile_That_Exceeds_Its_Poll_Bound_While_Instantiating_Faults_And_Publishes_Nothing()
+    {
+        // The profile never polls after the breach and answers that it created the instance. No
+        // poll found the breach, so only the core reading the uncharged-work counter at the end of
+        // the step can - and an instance whose profile broke its latency promise is not published,
+        // exactly as an invocation that broke it does not complete.
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.BreachesBoundDuringInstantiation));
+
+        using var runtime = FixtureComposition.Runtime(catalog);
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var result = runtime.Instantiate(artifact, CancellationToken.None);
+
+        Assert.Equal(VmOutcome.ProfileFault, result.Outcome);
+        Assert.Equal(VmReason.CancellationPollBoundExceeded, result.Reason);
+        Assert.False(result.TryGetInstance(out _));
+    }
+
+    [Fact]
+    public void A_Poll_Refused_For_A_Breach_While_Instantiating_Is_Reported_As_The_Breach()
+    {
+        // The profile's next poll finds the breach and is refused, and the profile answers the
+        // refusal as a cancellation - the only reading of a refused poll it has. Nothing was
+        // cancelled, and the answer the caller gets is the one the meter latched.
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.BreachesBoundThenPollsDuringInstantiation));
+
+        using var runtime = FixtureComposition.Runtime(catalog);
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var result = runtime.Instantiate(artifact, CancellationToken.None);
+
+        Assert.Equal(VmOutcome.ProfileFault, result.Outcome);
+        Assert.Equal(VmReason.CancellationPollBoundExceeded, result.Reason);
+        Assert.False(result.TryGetInstance(out _));
+    }
+
+    [Fact]
+    public void A_Continuation_Parked_After_A_Breach_While_Instantiating_Is_Unwound()
+    {
+        // Parking is declared, so the breach is the only thing wrong with the step. It is refused
+        // for the breach, nothing is suspended, and the continuation it parked is handed back to the
+        // profile to unwind rather than dropped - as every other refused parking at instantiation is.
+        FixtureVmExecutor? executor = null;
+
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(
+                FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation,
+                environmentObserver: null,
+                executorObserver: created => executor = created));
+
+        using var runtime = FixtureComposition.Runtime(catalog);
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var result = runtime.Instantiate(artifact, CancellationToken.None);
+
+        Assert.Equal(VmOutcome.ProfileFault, result.Outcome);
+        Assert.Equal(VmReason.CancellationPollBoundExceeded, result.Reason);
+        Assert.False(result.TryGetInstance(out _));
+        Assert.False(result.TryGetSuspension(out _));
+        Assert.Equal(1, executor!.UnwoundCount);
+    }
+
+    [Fact]
+    public void A_Refused_Instantiation_For_A_Breach_Leaves_The_Runtime_Usable()
+    {
+        // A broken promise is the profile's fault and this artifact's answer, not a defect in the
+        // core: the runtime is not poisoned, and the next instantiation of a conforming profile in
+        // it succeeds.
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.BreachesBoundDuringInstantiation),
+            SecondFixtureVmProfile.Descriptor);
+
+        using var runtime = FixtureComposition.Runtime(catalog);
+        var breaching = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        Assert.Equal(VmOutcome.ProfileFault, runtime.Instantiate(breaching, CancellationToken.None).Outcome);
+
+        var conforming = FixtureComposition.Verify(
+            runtime,
+            FixtureArtifactWriter.Constant(2),
+            FixtureComposition.Descriptor(SecondFixtureVmProfile.Id, SecondFixtureVmProfile.Manifest));
+
+        using var instance = FixtureComposition.Instantiate(runtime, conforming);
+
+        Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(instance).Outcome);
+    }
+
     private static VmDiagnosticsIdentity DiagnosticsFor(VmProfileId profileId)
     {
         VmDiagnosticsIdentity.TryCreate(profileId, profileId + ".diagnostics", out var identity);
