@@ -62,7 +62,7 @@ negative control as partial evidence, named as such.
 
 ```rule
 evidence class: conformance parity (not a measurement)
-suite: the WebAssembly specification's core test scripts, the 72 files test/core/*.wast of github.com/WebAssembly/spec at commit 977f97014c962f7bd1291fcc6d28b41a924882bf (the commit the tag wg-1.0 names), archived unmodified in this repository with a pin naming that commit and a digest over every file
+suite: the WebAssembly specification's core test scripts, the 73 files test/core/*.wast of github.com/WebAssembly/spec at commit 977f97014c962f7bd1291fcc6d28b41a924882bf (the commit the tag wg-1.0 names), archived unmodified in this repository with a pin naming that commit and a digest over every file
 reader: a script reader in the harness root Broiler.VM.Composition.WebAssembly.Harness, which reads a script's text, encodes each text module to the binary format itself, and drives every command through the core's public verification, instantiation and invocation surface; its own files are identical at the base commit and after except one adapter file holding the catalog and the verification call, which milestone UBC-4 changed from the profile's own descriptor to the translate-first path, and each tree's Program.cs gains the same lines handing the reader its arguments; both versions of the adapter are retained in the bundle
 base commit: a56180b (the retired interpreter, with every change main carries that is not milestone UBC-4's), with the reader applied as a change to the harness root alone; no product file differs from a56180b
 after commit: the first commit on main that carries the reader, named in the bundle
@@ -84,6 +84,12 @@ ratchet: a verdict floor for population A, recording the suite's commit, is set 
 MET if and only if both runs of population A were taken and are not void, every difference in populations A and B is in class (f), (r), (g) or (v) and is named, the negative control was retained failing and then passing, and the ratchet was re-based with the classes named.
 NOT MET otherwise.
 ```
+
+*(Revised 2026-09-28, the day it was written, before the suite was archived, before the reader existed
+and before any command was run. The suite line read "the 72 files test/core/*.wast", and section 7 "there
+are 72 files". The directory holds 73: the count was taken over a listing that also held `README.md` and
+`run.py`, and the two were subtracted as one. The set the line names, every `test/core/*.wast` at the
+commit, is unchanged, and nothing was judged under the superseded count.)*
 
 ## 4. How it is read
 
@@ -140,7 +146,7 @@ NOT MET otherwise.
 
 While the revision was being chosen, the suite's files at the named commit were listed, and their
 command keywords, their trap messages and their module forms were counted by pattern. That is how this
-rule knows there are 72 files, that some modules are given as `module quote` and `module binary`, and
+rule knows there are 73 files, that some modules are given as `module quote` and `module binary`, and
 which trap messages the verdict must map. No command was read by the reader, which does not exist, and
 **no module of the suite has been verified, instantiated or invoked by any build of this profile, at
 any commit.**
