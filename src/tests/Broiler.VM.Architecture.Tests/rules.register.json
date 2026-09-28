@@ -1019,6 +1019,16 @@
       "witness": "witnesses/diagnostics/W3-registry-omits-a-declared-code.txt.witness, witnesses/diagnostics/W3-registry-rows-that-misstate-their-columns.txt.witness, witnesses/diagnostics/W3-a-source-emitting-one-code-with-three-reasons.cs.witness, witnesses/diagnostics/W3-registry-names-a-case-the-corpus-does-not-have.txt.witness, witnesses/diagnostics/W3-a-corpus-manifest-dated-past-the-registry.txt.witness"
     },
     {
+      "id": "W4",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The source of Broiler.VM.Profile.WebAssembly names none of the core bounded reader's canonical variable-length readers - TryReadVarUInt32, TryReadVarUInt64 and TryReadDeclaredCount - and compares a declared count with the effective declared-count ceiling, MaxDeclaredCount, only in the members the rule lists: WasmLeb128.TryReadBoundedCount, the one reader of a count from the payload, which compares and charges it before returning it, and WasmDecoder.TryReadLocals, which compares the total of a body's local runs, each run already read through the first. Every listed member must still hold its comparison. The scan WA-2's exit gate asks for - 'no call to the core's canonical variable-length readers and no second implementation of the count-bound comparison' - because the core's readers refuse the padded encodings this format admits, and declining them moves the declared-count comparison into the profile, where a second copy of it is how two readers come to bound one count differently.",
+      "evidence": "Every source file of Broiler.VM.Profile.WebAssembly, parsed with Roslyn; witnesses/W4-a-profile-source-reading-canonical-integers.cs.witness",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The profile has read its own integers since WA-2, and its sources hold both listed comparisons, so the clean direction finds two real comparisons in the two listed members rather than an empty list agreeing with an empty scan; the test asserts the sources were read, reports a listed member that stops comparing, and fails an empty scan. The witness carries one call to a canonical reader and one unlisted comparison, and the rule reports exactly those two. The behavioural half is the retained corpus's canonical module, whose section length is padded to five bytes: a canonical reader slipped back in refuses it and both sweeps cut from it. STATED LIMITS. The reading is syntax. A comparison is a relational expression one of whose operands names MaxDeclaredCount; a ceiling handed by value to a helper that compares its own parameter - the validator's buffer-growth helper - is not read as one. That every count the profile reads goes through TryReadBoundedCount is not asserted here.",
+      "witness": "witnesses/W4-a-profile-source-reading-canonical-integers.cs.witness"
+    },
+    {
       "id": "X1",
       "owningAdr": "0001",
       "status": "Active",

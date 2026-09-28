@@ -380,10 +380,13 @@ public sealed class RuleRegisterTests
         // the rule's own list of the rows nothing reaches, and to the corpus manifest its revision
         // dates. It is Active from the moment it is minted, because what it is about exists; neither the
         // Vacuous nor the Deferred count moves.
-        Assert.Equal(102, byStatus["Active"]);
+        // WA-2's scan adds W4: the profile names none of the core's canonical variable-length readers,
+        // which refuse the padded encodings the format admits, and compares a declared count with its
+        // ceiling only in the two members the rule lists. Active when minted; no other count moves.
+        Assert.Equal(103, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(104, Loaded.Rules.Count);
+        Assert.Equal(105, Loaded.Rules.Count);
     }
 
     private static Register Load()
