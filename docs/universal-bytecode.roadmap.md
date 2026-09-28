@@ -1058,8 +1058,27 @@ re-base; the parity bundle; the retired interpreter; rules W1, W2 revised; the `
    correction, both watched.
 5. The specification's test suite through the harness gives per assertion the verdict the retained base
    run gives, outside the named class; the ratchet is re-based by hand with the class named.
-6. `memory.grow`'s guest-observable refusal and the `LiveBytes` retention report are unchanged, with
-   the existing tests passing over the new store.
+6. `memory.grow`'s guest-observable refusal is unchanged - a growth past the profile's own page
+   ceiling charges nothing and answers the guest minus one - and the `LiveBytes` amounts are the
+   retired executor's: a page's bytes for each page of a memory's minimum and four bytes for each table
+   entry at instantiation, the pages a growth adds, nothing for a growth either kind of refusal
+   refuses, and all of it given back at disposal. A growth a core budget refuses ends the operation as
+   an exhaustion naming the dimension and the scope that refused, and no guest code runs past it. The
+   harness asserts each amount, and the fuel a refused growth spends, over the new store, with a
+   negative control; its existing memory checks pass over it unchanged.
+   *(Revised 2026-09-28: a gate revision under the ledger's update rule 5, on the WebAssembly profile
+   owner's decision of that date to keep the store's order rather than have it report after the
+   allocation again. This clause read: "6. `memory.grow`'s guest-observable refusal and the `LiveBytes`
+   retention report are unchanged, with the existing tests passing over the new store." The store
+   charges a growth's retention before it allocates, and a growth a core budget refuses ends the
+   operation where the retired executor answered the guest minus one and ran on, so the report could
+   not be unchanged in the old clause's sense and no test asserted what it reported. The revised
+   clause keeps what the old one protected - the refusal the guest observes, and the amounts - and asks
+   for the new order's two consequences by name: nothing retained for a refused growth, and no guest
+   code past a refusal. Existing evidence re-evaluated rather than carried: bundle `ubc-4-002`'s
+   reading of this clause stands for the guest-observable refusal, which the revision keeps, and it
+   asserted no amount, so none is carried from it; the revised clause is judged on bundle
+   `ubc-4-004`.)*
 7. The memory representation decision exists in that profile's series and the store implements it;
    the WA-5 manifest is minted or its absence is recorded (UBC-D-3).
 8. Both WebAssembly roots publish and run under the three modes with closures matching their register
@@ -1073,6 +1092,9 @@ re-base; the parity bundle; the retired interpreter; rules W1, W2 revised; the `
 `docs/evidence/ubc-4-001/`: the decision rule and the base run. `docs/evidence/ubc-4-002/`: the run
 after; the comparison per the rule; the float-comparison check's failing and passing logs; the
 determinism check's log; the corpus re-base log; the publish-and-run logs and closures per mode.
+*(Added 2026-09-28: two bundles were added to these. `docs/evidence/ubc-4-003/` holds clause 3's second
+half for the region rows. `docs/evidence/ubc-4-004/` holds clause 6 on its revised gate: the harness's
+retention checks in the three modes, and the negative controls failing and reverted.)*
 
 ### Does not do
 

@@ -1,0 +1,33 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs b/src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs
+index 5daf29f..1bddd7b 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs
+@@ -238,11 +238,11 @@ internal sealed class WasmMemoryInstance
+         // Proportional rather than flat: the cost of a growth is the cost of zeroing what it added,
+         // and a flat charge would let a guest buy sixty-four mebibytes for the price of one page.
+         // Every refusal from here on latched on the meter.
++        // CONTROL: the retired executor's order - a refused charge answers the guest minus one and
++        // lets it go on, and the retention is reported after the allocation rather than charged.
+         if (!meter.TryCharge(VmBudgetDimension.Fuel, deltaPages) ||
+-            !meter.TryCharge(VmBudgetDimension.AllocatedBytes, addedBytes) ||
+-            !meter.TryCharge(VmBudgetDimension.LiveBytes, addedBytes))
++            !meter.TryCharge(VmBudgetDimension.AllocatedBytes, addedBytes))
+         {
+-            refusedByBudget = true;
+             return GrowthRefused;
+         }
+ 
+@@ -259,12 +259,12 @@ internal sealed class WasmMemoryInstance
+         {
+             // The memory keeps its old array, and its release gives back only that array's length, so
+             // the retention charged for the added pages is given back here.
+-            meter.ReportReleased(VmBudgetDimension.LiveBytes, addedBytes);
+             throw;
+         }
+ 
+         System.Array.Copy(bytes, grown, bytes.Length);
+         bytes = grown;
++        meter.ReportRetained(VmBudgetDimension.LiveBytes, addedBytes);
+ 
+         // The live bytes charged above are retained rather than consumed: they live for as long as the
+         // instance does, which is what makes live bytes a ceiling and allocated bytes an allowance.

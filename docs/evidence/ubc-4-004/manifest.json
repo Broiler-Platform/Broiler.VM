@@ -1,0 +1,44 @@
+{
+  "bundle": "ubc-4-004",
+  "milestone": "UBC-4",
+  "evidence-class": "execution-check-and-publish-and-run",
+  "collected-at": "93c867e16a3b95b06695e749ee4591b60cff53fa",
+  "worktree-clean": true,
+  "hash-method": "sources: git blob id at source-revision; inputs and retained files: sha256 of the LF bytes git stores",
+  "note": "Clause 6 of milestone UBC-4 on its gate as revised on 2026-09-28: the harness's retention checks reading the runtime's LiveBytes account at instantiation, at a growth, at each kind of refused growth and at disposal, and the fuel a refused growth spends, in three publish modes, with two negative controls failing and reverted; the solution's test suites",
+  "source-revision": "93c867e16a3b95b06695e749ee4591b60cff53fa",
+  "sources": {
+    "src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs": "da6d25bea5ee79076de49be75493730628c8bc7c",
+    "src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs": "5daf29fbe9e73b3e4a863cdd8262d6692938974c",
+    "src/Broiler.VM.Runtime/VmInstanceImplementation.cs": "55fac35ed16e5f477de0e8515716414438752be1",
+    "src/Broiler.VM.Runtime/VmMeter.cs": "c5ea60a6d2d9c2031aa916ea842c7ac3611139e9",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ExecutionChecks.cs": "310d150e653e3f6fbd2c60fc1fdb3428162263d3",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Program.cs": "485fcdb1b88e1ef28a7ab1ff8d5948cbeb7e0f41",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/WasmAssembler.cs": "27afabcba175eb7b8cbee5242e89ddad981491c5"
+  },
+  "inputs": {
+    "artifacts/publish-ubc4-004-harness-aot/Broiler.VM.Composition.WebAssembly.Harness": "b058a0c5f1e762286b1602eb748e013905dbfd26febde190afef74613910f16c",
+    "artifacts/publish-ubc4-004-harness-trimmed/Broiler.VM.Abstractions.dll": "54da5226ac6184f3d58ded25bf29b7ec347bc75fab49db82d85b387c514b72e7",
+    "artifacts/publish-ubc4-004-harness-trimmed/Broiler.VM.Binary.dll": "b78211baf71184b8748d8bc910d4dcae7bfb80fede54973cf93ae990b374d8fa",
+    "artifacts/publish-ubc4-004-harness-trimmed/Broiler.VM.Composition.WebAssembly.Harness.dll": "595c5f771647e177a47df28313e16521681d1d195d37f5eca87cb4e8dbce1665",
+    "artifacts/publish-ubc4-004-harness-trimmed/Broiler.VM.Emitter.Bytecode.dll": "40646056dfb3c6e0a13d2849a6dcdd8b0c4e93cce1cf58ffb83d605e73a0ebf9",
+    "artifacts/publish-ubc4-004-harness-trimmed/Broiler.VM.Profile.WebAssembly.dll": "59251a535691a9d2bb101dcd50e34538619965352bef1c7e12b6472d3c9432be",
+    "artifacts/publish-ubc4-004-harness-trimmed/Broiler.VM.Runtime.dll": "7e99630538bf4e2f3775f08492d0f3767ef532ba0addd2809bd5dc7fea9198da",
+    "artifacts/publish-ubc4-004-harness-trimmed/Broiler.VM.Ubc.dll": "4599275d533ec8143e3eb2a0037219c878a0d5a07172f3c00f1fa331280841a2"
+  },
+  "retained": {
+    "README.md": "ae36964b38f8a5d119d32623620da7157419014efbbf0b182f07c1f59ee68db2",
+    "build.log": "2f8d5b0d2e89fab1304a09519ef4fa745788d56b534311fd25add227eb9b0b3d",
+    "collect.py": "a3add25c17881a76bf82791deeafa5384820951b579fecd3ccf6c4a48634cd27",
+    "control-amounts.log": "5f74eb8df14dca1a8a826fecb29a84f5e3b8fd8ef46cc38da071f568d0d12cbd",
+    "control-amounts.patch": "b0796672302c1c23a9f8cfd054e9466ca5ab8238f8f96123afb3c149687c2f0c",
+    "control-retired-order.log": "7d83b2865f8c844346899a9be04b365329fe4bb7a8a9309df2001e57ca2354dd",
+    "control-retired-order.patch": "9f67df47ced79c8fdfb8de4a903e2ea2d7b3a5e0ddc9f91505262d5a0de23abc",
+    "harness-modes.log": "b885115a2764be36c8aa056c3a9af9c48e4d9c368f9ffe7fa510344a88b6eed4",
+    "publish.log": "be0d0bcca2f7453fe90562eff7cd157cf532c279542f2a82aa1d2d0bde1b0369",
+    "run-harness-aot.log": "ebcf16bac8db4708e5c279dbb83ded12b18a17642d707ebbca2e8138228e8a8e",
+    "run-harness-jit.log": "1110e8492d2c942e695775fc23c50f5149b694d2463d7e4b2e105e24bc4103ea",
+    "run-harness-trimmed.log": "ae07a89d56ba4f940a1df03b4375197318c467a29480ff76210a8f7471ab6a88",
+    "tests.log": "0c555a8030c5822cbbf1b1d45f32b9b8a9460868da4d813d047d1e4a515b17de"
+  }
+}

@@ -1,0 +1,23 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs b/src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs
+index da6d25b..2c50b78 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs
+@@ -810,7 +810,7 @@ internal sealed class WasmInstanceState
+ 
+         if (Table is { } table)
+         {
+-            meter.ReportReleased(VmBudgetDimension.LiveBytes, (ulong)table.EntryCount * sizeof(int));
++            meter.ReportReleased(VmBudgetDimension.LiveBytes, (ulong)table.EntryCount * sizeof(long));
+         }
+     }
+ 
+@@ -914,7 +914,8 @@ internal sealed class WasmInstanceState
+             return false;
+         }
+ 
+-        var entryBytes = (ulong)declared.Minimum * sizeof(int);
++        // CONTROL: a table entry retains eight bytes rather than the four the retired executor reported.
++        var entryBytes = (ulong)declared.Minimum * sizeof(long);
+ 
+         if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, entryBytes) ||
+             !meter.TryCharge(VmBudgetDimension.LiveBytes, entryBytes))

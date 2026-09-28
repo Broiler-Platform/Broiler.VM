@@ -1478,7 +1478,12 @@ charge still latches, and a refusal by a core budget still has no guest-observab
 [section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight)'s amendment row stays
 open and blocking. Route MVP-1's refusal against this profile's own page ceiling, which answers minus
 one before any charge. The amounts: the same bytes are retained for the same memories and tables, and no
-test asserts them, before this entry or after it.
+test asserts them, before this entry or after it. *(Added 2026-09-28: the harness's execution checks now
+assert them - at instantiation, at a growth, at each kind of refused growth and at disposal - with the
+fuel a refused growth spends, retained in the programme's bundle `ubc-4-004`, so "no test asserts them
+... after it" no longer holds; it is kept as what this entry said when it was written. The programme's
+UBC-4 clause 6 was revised the same day to ask for those amounts and this entry's order, on this
+profile's owner's decision to keep the order.)*
 
 **Authority and date.** [WAD-0001](decisions/0001-the-memory-representation.md)'s addition and
 [WAD-0003](decisions/0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md)'s
