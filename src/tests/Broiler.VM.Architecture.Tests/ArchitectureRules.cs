@@ -707,24 +707,32 @@ internal static class ArchitectureRules
             : [];
 
     /// <summary>
-    /// N4: no project in the JavaScript profile family declares a PackageId, and every one carries
-    /// the literal element <c>IsPackable false</c>.
+    /// N4: no project in a profile family declares a PackageId, and every one carries the literal
+    /// element <c>IsPackable true</c>, so each packs under its assembly name.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The status ledger's standing claim is that no composition is advertised, none is packable
-    /// and no runtime identifier is claimed. Packaging is JS-10's decision, and until it is taken
-    /// the honest state is that these assemblies ship nowhere. Without this rule the claim decays
-    /// silently: the vendored packaging props default <c>IsPackable</c> to true for any project
-    /// whose name matches none of their test-and-tooling suffixes, which none of these does, so a
-    /// family project that merely forgot the element would pack under its assembly name.
+    /// <b>The profile families are packages since the owner's decision of 2026-09-19</b>, taken for
+    /// the preview feed ahead of the profiles' own packaging milestones. What the rule holds is that
+    /// decision, read off the project files: a family project that lost its element, or set it
+    /// under a condition, would leave the feed without a package nothing else notices, and one that
+    /// declared a <c>PackageId</c> would publish under a name that is not its assembly's.
     /// </para>
     /// <para>
     /// The literal element is asserted rather than the evaluated property, which is rule A5's
     /// discipline applied to a second partition and for the same reason: an evaluated property can
-    /// be true because of an import a reader of the project file cannot see. Unlike A5, the element
-    /// is read as an element and not as text, because a comment quoting it and a later definition
-    /// overriding it both satisfy a text search; <see cref="NotLiterallyUnpackable"/> says how.
+    /// be true because of an import a reader of the project file cannot see - the vendored
+    /// packaging props default it to true for a name matching none of their suffixes, which is an
+    /// import's answer and not the project's. The element is read as an element and not as text,
+    /// because a comment quoting it and a later definition overriding it both satisfy a text search;
+    /// <see cref="NotLiterallyPackable"/> says how, and rule U1 reads it the same way.
+    /// </para>
+    /// <para>
+    /// <i>(Revised 2026-09-28. The rule read "every one carries the literal element <c>IsPackable
+    /// false</c>", holding the ledger's claim that no profile family packs until JS-10 took the
+    /// packaging decision. The owner made the families packable on 2026-09-19, and the test asserting
+    /// the rule was commented out in the same change, so the register listed it Active while nothing
+    /// asserted it. It now asserts the decision that was taken.)</i>
     /// </para>
     /// </remarks>
     internal static IEnumerable<string> N4(ComponentGraph.ProjectFile project)
@@ -739,96 +747,20 @@ internal static class ArchitectureRules
             yield return $"{project.RelativePath} declares PackageId {project.PackageId}";
         }
 
-        foreach (var message in NotLiterallyUnpackable(project, "whether a profile family packs is JS-10's decision"))
+        foreach (var message in NotLiterallyPackable(project, "a profile family packs under its assembly name since the owner's decision of 2026-09-19"))
         {
             yield return message;
         }
     }
 
     /// <summary>
-    /// What stops a project file showing it does not pack: no <c>IsPackable</c> definition at all, one
-    /// that is conditional or whose value is not literally <c>false</c>, or a property group inside a
-    /// target that sets it to anything but <c>false</c>.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// <b>Elements, not text.</b> A search of the file's text for the element is satisfied by a
-    /// comment that quotes it and by a false definition a later one overrides, and in both cases
-    /// the project packs. MSBuild takes the last definition that applies, and a condition - on the
-    /// element, on its group or on an enclosing <c>Choose</c> - depends on properties this reader
-    /// does not evaluate, so the only file that shows the property is off is one in which every
-    /// definition is unconditional and literally false.
-    /// </para>
-    /// <para>
-    /// <b>Only a property group's element is a definition.</b> An element of that name that is not a
-    /// property group's child - item metadata - or that sits inside <c>ProjectExtensions</c>, whose
-    /// content MSBuild does not evaluate, sets no property, so it neither shows the property is off
-    /// nor is reported. A property group inside a <c>Target</c> sets the property only if the target
-    /// runs and only for what runs after it, so a false one there is not the definition either; one
-    /// that sets anything but false is reported, because it can turn the property on for the pack
-    /// that follows it.
-    /// </para>
-    /// <para>
-    /// The property's name is matched without regard to case, as MSBuild matches it. A value set by an
-    /// import - <c>Directory.Build.props</c> or the vendored packaging props - is not seen, because the
-    /// rule reads the project file's own elements, and neither is one a target sets through a task's
-    /// output rather than a property group. Rules N4 and U1 read this; rule A5 still reads the text.
-    /// </para>
-    /// </remarks>
-    internal static IEnumerable<string> NotLiterallyUnpackable(ComponentGraph.ProjectFile project, string decision)
-    {
-        var properties = XDocument.Parse(project.RawText)
-            .Descendants()
-            .Where(static element =>
-                string.Equals(element.Name.LocalName, "IsPackable", StringComparison.OrdinalIgnoreCase) &&
-                element.Parent?.Name.LocalName == "PropertyGroup" &&
-                !element.Ancestors().Any(static ancestor => ancestor.Name.LocalName == "ProjectExtensions"))
-            .ToArray();
-
-        var definitions = properties.Where(static element => !InsideTarget(element)).ToArray();
-
-        if (definitions.Length == 0)
-        {
-            yield return $"{project.RelativePath} does not carry the literal <IsPackable>false</IsPackable>";
-        }
-
-        foreach (var definition in definitions)
-        {
-            var value = definition.Value.Trim();
-
-            if (definition.AncestorsAndSelf().Any(static element =>
-                    element.Attribute("Condition") is not null || element.Name.LocalName == "Choose"))
-            {
-                yield return
-                    $"{project.RelativePath} sets IsPackable under a condition, which this rule cannot " +
-                    "evaluate and so cannot show is off";
-            }
-            else if (!string.Equals(value, "false", StringComparison.Ordinal))
-            {
-                yield return $"{project.RelativePath} sets IsPackable to {value}, and {decision}";
-            }
-        }
-
-        foreach (var scoped in properties.Where(InsideTarget))
-        {
-            var value = scoped.Value.Trim();
-
-            if (!string.Equals(value, "false", StringComparison.Ordinal))
-            {
-                yield return $"{project.RelativePath} sets IsPackable to {value}, and {decision}";
-            }
-        }
-
-        static bool InsideTarget(XElement element) =>
-            element.Ancestors().Any(static ancestor => ancestor.Name.LocalName == "Target");
-    }
-
-    /// <summary>
     /// What stops a project file showing it packs: no <c>IsPackable</c> definition at all, one that is
     /// conditional or whose value is not literally <c>true</c>, or a property group inside a target that
-    /// sets it to anything but <c>true</c>. <see cref="NotLiterallyUnpackable"/> with the value turned
-    /// round, and written beside it rather than as a flag of it, because rule N4 reads that one and a
-    /// flag would let a change to either rule's reading reach the other.
+    /// sets it to anything but <c>true</c>. Rules N4 and U1 read it.
+    /// <i>(Revised 2026-09-28. The summary went on "<c>NotLiterallyUnpackable</c> with the value turned
+    /// round, and written beside it rather than as a flag of it, because rule N4 reads that one". Rule N4
+    /// reads this one since its own revision of that date, and the other reader, which nothing else
+    /// called, was removed.)</i>
     /// </summary>
     /// <remarks>
     /// <para>

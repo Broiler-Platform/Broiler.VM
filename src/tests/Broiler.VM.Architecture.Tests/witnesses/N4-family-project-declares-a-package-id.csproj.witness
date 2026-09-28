@@ -1,10 +1,11 @@
-<!-- Violates N4: a JavaScript-family project declaring a PackageId. Packaging is JS-10's
-     decision and the status ledger's standing claim is that nothing here is packable; a
-     PackageId landing before that decision is the claim decaying silently. -->
+<!-- Violates N4: a profile-family project declaring a PackageId. A family project packs under its
+     assembly name, and a PackageId that is not the assembly's would publish the family under a name
+     nothing else in the component uses. The project is otherwise packable, so the PackageId is the
+     one violation. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
-    <PackageId>Broiler.VM.Profile.JavaScript.Format</PackageId>
-    <IsPackable>false</IsPackable>
+    <PackageId>Broiler.VM.JavaScript.Format</PackageId>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 </Project>

@@ -1,8 +1,9 @@
 # The frozen public surface of the Broiler.VM.Profile.JavaScript family's
-# three assemblies. NONE OF THEM PACKS - rule N4 keeps every one of them
-# unpackable until JS-10 takes the packaging decision - so this file freezes
-# what a composition root in this repository can bind to, not what a consumer
-# outside it can. The packable three are frozen separately in docs/api/.
+# three assemblies. Each packs under its assembly name - rule N4 holds the
+# owner's decision of 2026-09-19 that made the profile families packable - so
+# this file freezes what a consumer of those packages binds to, as well as what
+# a composition root in this repository does. The core's three are frozen
+# separately in docs/api/.
 #
 # GENERATED - regenerate with:
 #   BROILER_API_WRITE=1 dotnet test Broiler.VM.slnx -c Release

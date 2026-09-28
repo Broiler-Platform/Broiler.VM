@@ -1,6 +1,6 @@
 # Broiler.VM roadmap status
 
-**Last updated:** 2026-09-17
+**Last updated:** 2026-09-28 (dated corrections: the packable set, the packages published on 2026-09-23, the graph and the register, rule N4 restored in revised form, and which core bundles the core changes since 2026-09-17 reach; no row moves). Before that: 2026-09-17
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [Broiler.VM roadmap](roadmap.md). The roadmap defines planned work and objective exit gates; this
@@ -65,6 +65,12 @@ the projects that implement core contract version 1 — and the test figures are
 bundle that holds them rather than restated as today's. **A ledger that undercounts its own
 repository is failing in the same way as one that overcounts it**, and no figure above is a new
 measurement: nothing here was timed, and no row moved.)*
+
+*(Noted 2026-09-28, and both paragraphs above are kept as written.)* The paragraph's figures have
+drifted again. The graph holds thirty-one projects and a hundred and thirteen edges, the count ADR
+0001's revision of 2026-09-25 states and rule A15 holds its last budget sentence to. The composition
+register's section 3 lists eleven roots. The fourteen projects that implement core contract version 1
+are still the ones named.
 
 **No milestone is accepted, and none can be until a human reads the work.** VM-0 through VM-6 are
 all unaccepted because no relevant code unit carries a decision on its `// Broiler-Human:` line, so
@@ -177,7 +183,18 @@ and a rule that fails still fails. A row still says what its evidence shows and 
 untruthful support claim is still a stop condition, and it is the one thing an MVP may not buy speed
 with. And no composition is advertised and the packable set is still exactly the three core
 assemblies. And nothing is published: no package, no claimed runtime identifier, no issued support
-table. Update rule 8 already granted the right to build and merge unreviewed work; the MVP
+table. *(Corrected 2026-09-28, and the two sentences above are kept as written.)* Neither holds.
+No composition is advertised or packable. But ten assemblies pack:
+- the three core ones;
+- the five profile-family projects, packable since the owner's decision of 2026-09-19;
+- `Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode`, since decision UBC-D-5 was taken on 2026-09-25.
+
+Eight packages were published to nuget.org on 2026-09-23, by the repository's Publish workflow: the
+core's three and the five profile-family packages, at `0.1.0-preview.4` (built from `aca8cab`) and
+`0.1.0-preview.5` (built from `ebd7079`). `HUMAN_REVIEW.md` was `PENDING` then and is now. No
+runtime identifier is claimed, and the support table carries the same facts in its own dated notes.
+This ledger records the publication and moves no row for it: whether the prohibition is revised, or
+the publication answered, is the owner's decision. Update rule 8 already granted the right to build and merge unreviewed work; the MVP
 programme spends that right and adds nothing to it.
 
 **And the cost, stated rather than implied.** A deferred decision is a decision nobody took, not a
@@ -276,6 +293,35 @@ unchanged - `docs/api/public-api.txt` is byte-identical from `f127d92` to the re
 VM-7-CLI-001's closures contain `Broiler.VM.Runtime`, whose bytes the remedy alters again. This addendum
 re-collects nothing and moves no row.
 
+*Added 2026-09-28: what the core changes since the remedy reach.* The core has changed again since
+`16e3d6d`:
+- `f3e7a73` (2026-09-18) changes `NuGet.config`.
+- `db57c2f` (2026-09-18) adds `VmNativePipeline.cs` and changes `VmRuntime.cs` and
+  `VmProfileContracts.cs`. It adds twelve lines to `docs/api/public-api.txt`: `IVmNativeCompiler` in
+  Abstractions, and `VmRuntime.CompileToMachineCode` and `VmNativeCompilationResult` in Runtime.
+- `b4f9b31` (2026-09-23) changes `Directory.Build.props` and `NuGet.config` for the Publish workflow.
+- `834660d` (2026-09-27) changes `VmBoundedReader.cs`.
+- `f1a2cfc` (2026-09-27), `45778cf` and `a56180b` (both 2026-09-28) change `VmInstantiation.cs`,
+  `VmOperation.cs`, `VmExecutionScope.cs`, `VmInstanceImplementation.cs` and
+  `VmProfileContracts.cs`.
+
+**The same hash comparison, run on this date** between `16e3d6d` and the head against every core
+bundle's `hashes.txt`, finds these first hits:
+- **VM-2-001 to VM-6-001:** `Directory.Build.props` and `NuGet.config`.
+- **VM-4-001, VM-5-001 and VM-6-001:** `VmOperation.cs`.
+- **VM-5-002:** every file it hashes that these commits change. It also has first hits in files
+  outside the core that other programmes changed.
+
+Every other row of theirs that names one of these files was already stale. What that leaves:
+- **VM-6-001's API baseline no longer recertifies unchanged.** `docs/api/public-api.txt` has
+  differed from the baseline that bundle retains since `db57c2f`, and rule M1 holds the file to the
+  tree, not to the bundle.
+- **VM-5-001's recertification trigger** "a change to the metering path, the bounded reader, or the
+  guest-load mediator" is hit again, in its second clause, by `834660d`.
+- **VM-7-CLI-001's closures** contain `Broiler.VM.Runtime`, whose bytes these commits alter again.
+
+This addendum re-collects nothing and moves no row.
+
 ### Where the review stands
 
 No area has been reviewed, so no verdict below is set. **This table is a reader's summary and is
@@ -329,7 +375,9 @@ are worth. A second adversarial pass would be a reasonable thing to fund before 
 
 The review worksheet is a further gap rather than a further reason. `docs/review/vm-0-vm-1.md`
 covers VM-0 and VM-1 and has no item for anything VM-2 added; HUMAN_REVIEW.md records that as
-AT-11.
+AT-11. *(Corrected 2026-09-28: the worksheet was deleted in `ffd9b4e` on 2026-08-28, and the
+generated `HUMAN_REVIEW.md` carries no AT-11. The gap is wider than the sentence says: no worksheet
+exists for any milestone.)*
 
 ### Profiles
 
@@ -355,7 +403,13 @@ file, no profile bundle advances a row above, and no core gate cites a profile r
 rule 6 says so and is not weakened by the placement. **No profile ships**: every profile project
 declares no `PackageId` and carries `IsPackable=false`, the packable set is exactly the three core
 assemblies, and rule N4 asserts both halves, which is what keeps the support table's "the core
-ships no language profile" true while a profile family sits in `src/`.
+ships no language profile" true while a profile family sits in `src/`. *(Corrected 2026-09-28, and
+the sentence is kept as written.)* Profiles ship as packages. Every profile-family project carries
+`IsPackable` true and no `PackageId` since the owner's decision of 2026-09-19. The test asserting N4
+was commented out that day and restored on this date in revised form, so rule N4 now asserts that
+the families pack. Five profile-family packages were published to nuget.org on 2026-09-23. The
+support table's "the core ships no language profile" holds of its section 1 alone, and the table
+says so in a dated note.
 
 The JavaScript profile additionally carries a seeding precondition recorded in its own roadmap: it
 starts from a named snapshot copy of the legacy component taken after that component's in-flight fix
@@ -476,7 +530,9 @@ X1 and K5, each with a witness watched failing — and [the support table](suppo
 native backends and what each has run on. No release capability is claimed. Core contract version 1
 is implemented and runs; it is not accepted, no milestone has a review decision, and no language
 profile ships — the profile project family in `src/` is non-packable, and the packable set is
-exactly the three core assemblies. `linux-x64` and `win-x64` have each published and run, on one
+exactly the three core assemblies. *(Corrected 2026-09-28: every profile family is packable, ten
+assemblies pack, and eight packages were published to nuget.org on 2026-09-23, as section 1's
+dated note says. No composition is advertised.)* `linux-x64` and `win-x64` have each published and run, on one
 machine each, so neither is a claimed RID; the CI lane has since run on the declared matrix and
 collects no bundle, so it moves no claim either. *Corrected 2026-09-01: this sentence said no CI
 lane had ever executed, which ADR 0001's revision of the same date withdraws; it then named three

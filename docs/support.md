@@ -5,6 +5,14 @@
 > and no profile ships in any package listed here. A host that installs these three packages has
 > installed a mechanism and no language.
 
+*(Corrected 2026-09-28, and the paragraph above is kept as written.)* Its first sentence reads as a
+statement about everything this repository packs, and that no longer holds. The three packages of
+section 1 still contain no language profile. But the language profiles have been packable since the
+owner's decision of 2026-09-19. Five profile-family packages were published to nuget.org on
+2026-09-23 beside the core's three, so a host can install a language from this repository's
+packages. Section 1's second note says which packages exist, and none of them is advertised or
+supported by this table.
+
 **Core contract version: 1.** Versioned separately from any profile format, feature manifest,
 package version and persisted-envelope schema version. Its amendment procedure is published in
 [ADR 0003](adr/0003-core-contract-v1-and-amendments.md).
@@ -13,6 +21,12 @@ package version and persisted-envelope schema version. Its amendment procedure i
 `HUMAN_REVIEW.md` is unsigned and `PENDING`. Nothing here is a release, and the binding rule in
 ADR 0001 stands: **no Broiler.VM package is published without a completed review naming the
 reviewed commit.**
+
+*(Noted 2026-09-28.)* Eight Broiler.VM packages were published to nuget.org on 2026-09-23 by the
+repository's Publish workflow: `0.1.0-preview.4`, built from `aca8cab`, and `0.1.0-preview.5`, built
+from `ebd7079`. `HUMAN_REVIEW.md` was `PENDING` then and is now, so no completed review names either
+commit. The rule above is quoted as the record states it. Whether it is revised, or the publication
+answered, is the owner's decision, and this table records the fact rather than taking it.
 
 Roadmap section 16 makes an **untruthful support claim a stop condition**, not a defect to fix
 later. Every row below therefore states what has been *demonstrated on retained evidence*, and
@@ -37,6 +51,25 @@ else would fail its restore outright.
 
 No fourth package exists. ADR 0001's budget section fixes the set at three and requires a dated
 revision of that record before a fourth `PackageId` may appear; rule A6 asserts it.
+
+*(Corrected 2026-09-28, and the paragraph above is kept as written.)* Seven more packages exist, and
+the version column gives the build's default rather than a published version.
+
+- **Packable:** ten assemblies pack under their assembly names.
+  - The three above.
+  - The five profile-family projects: `Broiler.VM.Profile.JavaScript`,
+    `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler`,
+    `Broiler.VM.Profile.WebAssembly` and `Broiler.VM.Profile.MachineCode`. They are packable since
+    the owner's decision of 2026-09-19, and rule N4 holds them to it.
+  - `Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode`, packable since decision UBC-D-5 was taken
+    on 2026-09-25.
+- **Published:** the three above and the five profile-family packages are on nuget.org at
+  `0.1.0-preview.4` and `0.1.0-preview.5`, both published on 2026-09-23. The universal bytecode
+  pair has not been published.
+- **Rule A6 still holds:** only the three above declare a `PackageId`, and the other seven pack under
+  their assembly names without one.
+- **Not supported:** none of the seven is supported by this table, and nothing here makes a claim
+  for one.
 
 ---
 
@@ -219,11 +252,14 @@ transcript or a milestone state collected by a profile is evidence about that pr
 in that profile's own bundles, and does not appear here at any strength. **Sharing a repository is
 not sharing a ledger.** And the claim at the head of this document is unchanged by anything below
 it: **the core ships no language profile**, and no profile ships in any package section 1 lists.
+*(Noted 2026-09-28: both halves hold of section 1's table, and the Packable column below is
+corrected. Every profile family is packable, and its packages have been published; section 1's
+second note lists them.)*
 
 | Input profile | In this repository | Advertised | Packable | Where its state is recorded |
 |---|---|---|---|---|
-| **JavaScript** | **Yes.** A product project family under `src/Broiler.VM.Profile.JavaScript`, composed by demonstration composition roots that [the composition register](compositions.md) lists by name | **No.** The register's advertised set is empty, every root composing this profile is a demonstration, and advertisement is a release decision ADR 0012 owns rather than an edit to a column | **No.** Every project in the family declares no package identity and carries the literal non-packable property the family rule reads out of the project file. The packable set stays exactly the three packages of section 1 | Its own ledger at `src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md`, under its own three-mark legend. **This table does not read it, and a green result there moves no row here** |
-| **WebAssembly** | **Yes** *(corrected 2026-09-07; this cell read "No. Planned, and no code exists" and listed a documentation directory with no project file, no source file, no descriptor, no composition root, no rule-register group, no evidence tree and no entry in either solution — every clause of which was true when written and none of which is true now)*. A product project under `src/Broiler.VM.Profile.WebAssembly` carrying a descriptor, a decoder for the binary format, a validator, a store and an interpreter, composed by two never-advertised composition roots [the composition register](compositions.md) lists by name | **No.** The register's advertised set is empty, both roots composing this profile are demonstrations, and advertisement is a release decision ADR 0012 owns rather than an edit to a column | **No.** The project declares no package identity. The packable set stays exactly the three packages of section 1 | Its own ledger at `src/Broiler.VM.Profile.WebAssembly/docs/roadmap.status.md`, which records which of its milestones own code and states in its own words that **none is accepted, none has a retained bundle, and code that exists and runs is not retained evidence**. **This table does not read that ledger, and a green result there moves no row here** |
+| **JavaScript** | **Yes.** A product project family under `src/Broiler.VM.Profile.JavaScript`, composed by demonstration composition roots that [the composition register](compositions.md) lists by name | **No.** The register's advertised set is empty, every root composing this profile is a demonstration, and advertisement is a release decision ADR 0012 owns rather than an edit to a column | **No.** Every project in the family declares no package identity and carries the literal non-packable property the family rule reads out of the project file. The packable set stays exactly the three packages of section 1. *(Corrected 2026-09-28: **yes**, since the owner's decision of 2026-09-19. Every project in the family carries the literal packable property and no package identity, rule N4 holds both, and the three packages were published to nuget.org on 2026-09-23. They are not advertised, and this table supports none of them.)* | Its own ledger at `src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md`, under its own three-mark legend. **This table does not read it, and a green result there moves no row here** |
+| **WebAssembly** | **Yes** *(corrected 2026-09-07; this cell read "No. Planned, and no code exists" and listed a documentation directory with no project file, no source file, no descriptor, no composition root, no rule-register group, no evidence tree and no entry in either solution — every clause of which was true when written and none of which is true now)*. A product project under `src/Broiler.VM.Profile.WebAssembly` carrying a descriptor, a decoder for the binary format, a validator, a store and an interpreter, composed by two never-advertised composition roots [the composition register](compositions.md) lists by name | **No.** The register's advertised set is empty, both roots composing this profile are demonstrations, and advertisement is a release decision ADR 0012 owns rather than an edit to a column | **No.** The project declares no package identity. The packable set stays exactly the three packages of section 1. *(Corrected 2026-09-28: **yes**, since the owner's decision of 2026-09-19. The project carries the literal packable property and no package identity, rule N4 holds both, and its package was published to nuget.org on 2026-09-23. It is not advertised, and this table supports it in no way.)* | Its own ledger at `src/Broiler.VM.Profile.WebAssembly/docs/roadmap.status.md`, which records which of its milestones own code and states in its own words that **none is accepted, none has a retained bundle, and code that exists and runs is not retained evidence**. **This table does not read that ledger, and a green result there moves no row here** |
 
 **Swept on 2026-09-08 for a claim about the JavaScript profile's conformance run, and there is
 none to correct — which is the rule above working rather than an omission.** On that date the wide
@@ -287,7 +323,8 @@ stands over an empty directory, and it no longer does** — the directory has a 
 changes the In-this-repository column and changes nothing in the three columns beside it. **A profile
 existing is the weakest of the four claims this table makes**, and it is the only one either profile
 has earned: neither is advertised, neither is packable, and what each has demonstrated is its own
-ledger's to say and not this table's.
+ledger's to say and not this table's. *(Corrected 2026-09-28: both are packable and published, as
+the table above now says. Neither is advertised, and that is still the claim that matters here.)*
 
 **No composition composes both, and none is coming from this table.** The product that would need
 both at once is a browser; [the composition register](compositions.md) refuses to carry a row for

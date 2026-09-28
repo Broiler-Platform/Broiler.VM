@@ -408,22 +408,19 @@ public sealed class ProjectFileRuleTests
     }
 
     [Fact]
-    public void N4_No_JavaScript_Profile_Project_Is_Packable()
+    public void N4_Every_Profile_Family_Project_Packs_Under_Its_Assembly_Name()
     {
-        /*Assert.Empty(Sweep(ArchitectureRules.N4));
+        Assert.Empty(Sweep(ArchitectureRules.N4));
 
-        // The rule has real subjects, and since WA-0 they come from two families: the JavaScript
-        // format, profile and lowering, plus the WebAssembly profile, which is one project rather
-        // than three because that family has no format pivot and no lowering. None of the four is
-        // packable. THE RULE ITSELF NEEDED NO EDIT for the second family, because it is written
-        // over the language segment rather than over an assembly name - which is the property this
-        // count is here to keep honest: a literal of three would have gone on passing while saying
-        // nothing about the new family. The composition roots of both families are NOT family
-        // projects and that is deliberate: they are named Broiler.VM.Composition.<Language>.*
-        // rather than Broiler.VM.Profile.<Language>.Composition.*, because the second shape makes
-        // a composition root indistinguishable from a profile assembly to every rule that
-        // identifies one by prefix - A8 fired on it, correctly, when it was tried. A12 and the
-        // composition register hold the roots instead.
+        // The rule has real subjects from three families: the JavaScript format, profile and
+        // lowering, the WebAssembly profile, and the machine-code profile. The rule is written over
+        // the language segment rather than over an assembly name, and this count is what keeps that
+        // honest: a family that arrived without the element would fail the sweep above, and one
+        // whose name the predicate stopped recognising would fail here.
+        //
+        // (Revised 2026-09-28. This test was N4_No_JavaScript_Profile_Project_Is_Packable, asserting
+        // the literal IsPackable false, and its body was commented out on 2026-09-19 when the owner
+        // made the families packable, so nothing asserted the rule the register listed Active.)
         Assert.Equal(
             5,
             ComponentGraph.Projects.Count(project =>
@@ -433,38 +430,51 @@ public sealed class ProjectFileRuleTests
             ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-declares-a-package-id.csproj.witness")),
             message => message.Contains("declares PackageId", StringComparison.Ordinal));
 
+        Assert.Single(
+            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-declares-a-package-id.csproj.witness")));
+
         Assert.Contains(
             ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-omits-ispackable.csproj.witness")),
-            message => message.Contains("IsPackable", StringComparison.Ordinal));*/
+            message => message.Contains("does not carry the literal <IsPackable>true</IsPackable>", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-not-packable.csproj.witness")),
+            message => message.Contains("sets IsPackable to false", StringComparison.Ordinal));
     }
 
     [Fact]
     public void N4_Reads_The_IsPackable_Elements_Rather_Than_The_Text()
     {
         // The rule promises the literal element, and a search of the file's text is satisfied by
-        // the element quoted in a comment and by a false definition a later conditional one
+        // the element quoted in a comment and by a true definition a later conditional one
         // overrides. Each is reported in its own words. Only the witness direction is asserted
         // here, and the sweep over the checkout is left to the test above.
         Assert.Contains(
-            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-packable-behind-a-comment.csproj.witness")),
-            message => message.Contains("does not carry the literal <IsPackable>false</IsPackable>", StringComparison.Ordinal));
+            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-not-packable-behind-a-comment.csproj.witness")),
+            message => message.Contains("does not carry the literal <IsPackable>true</IsPackable>", StringComparison.Ordinal));
 
         Assert.Contains(
-            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-overrides-ispackable.csproj.witness")),
+            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-not-packable-overridden.csproj.witness")),
             message => message.Contains("sets IsPackable under a condition", StringComparison.Ordinal));
+
+        // A target that turns the property off for the pack after it is reported, though the
+        // project's own definition is the rule's.
+        Assert.Contains(
+            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-not-packable-set-by-a-target.csproj.witness")),
+            message => message.Contains("sets IsPackable to false", StringComparison.Ordinal));
 
         // And only a property group's element is a definition: the element inside ProjectExtensions,
         // as item metadata and inside a target each leave the project without one.
         foreach (var witness in new[]
                  {
-                     "N4-family-project-packable-only-in-project-extensions.csproj.witness",
-                     "N4-family-project-packable-only-as-item-metadata.csproj.witness",
-                     "N4-family-project-packable-only-inside-a-target.csproj.witness",
+                     "N4-family-project-not-packable-only-in-project-extensions.csproj.witness",
+                     "N4-family-project-not-packable-only-as-item-metadata.csproj.witness",
+                     "N4-family-project-not-packable-only-inside-a-target.csproj.witness",
                  })
         {
             Assert.Contains(
                 ArchitectureRules.N4(ComponentGraph.Witness(witness)),
-                message => message.Contains("does not carry the literal <IsPackable>false</IsPackable>", StringComparison.Ordinal));
+                message => message.Contains("does not carry the literal <IsPackable>true</IsPackable>", StringComparison.Ordinal));
         }
     }
 

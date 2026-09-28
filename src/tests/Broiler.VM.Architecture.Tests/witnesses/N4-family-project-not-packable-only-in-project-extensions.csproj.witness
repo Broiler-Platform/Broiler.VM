@@ -1,0 +1,13 @@
+<!-- Violates N4: a profile-family project whose only IsPackable true sits inside ProjectExtensions.
+     MSBuild does not evaluate what ProjectExtensions holds, while a reader that counts every
+     element of that name, the property group around it included, finds a definition. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <PropertyGroup>
+      <IsPackable>true</IsPackable>
+    </PropertyGroup>
+  </ProjectExtensions>
+</Project>

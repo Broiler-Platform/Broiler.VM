@@ -43,6 +43,9 @@ internal static class AssuranceSources
     /// partition and not packability: what is covered is what ships as an assembly, and a
     /// component that reviewed only what it packs would leave a composition root's dependencies
     /// unreviewed for as long as they were unpackable.
+    /// <i>(Corrected 2026-09-28. The profile families have been packable since the owner's
+    /// decision of 2026-09-19, and rule N4 now holds them packable. Coverage still follows the
+    /// product/test partition, so nothing about what is covered changes.)</i>
     /// </para>
     /// <para>
     /// The JavaScript profile's own roadmap asks JS-0 to stand up an assurance system of its own.
