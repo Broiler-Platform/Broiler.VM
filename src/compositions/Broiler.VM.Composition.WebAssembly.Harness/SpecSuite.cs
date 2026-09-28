@@ -119,11 +119,26 @@ internal static class SpecSuite
     /// the suite: the reader has to answer each one as declared.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>Half of its commands are declared to fail</b>: a wrong value, a wrong trap message, a global
     /// read, a missing export. A reader whose verdicts passed everything would pass the other half, and
     /// these catch it. Every command kind the suite uses is here at least once, and so is each way a
     /// module can end: instantiated, refused at verification, trapped at instantiation, unlinkable and
     /// excluded. It holds no suite material.
+    /// </para>
+    /// <para>
+    /// <b>Each module assertion is here passing and failing, by what the refusal says.</b> A module
+    /// that is both malformed and invalid - a type index that addresses nothing, then a section
+    /// identifier that names nothing - has to pass as malformed and fail as invalid; a scorer that did
+    /// not tell them apart passes it as both. An invalid module fails as malformed, a malformed one fails
+    /// as invalid, and a feature this profile does not admit fails as either. A malformation inside a
+    /// function body - <c>memory.size</c> with a reserved byte that is not zero - is found by the
+    /// validator and passes as malformed, because the refusal's reason, not the pass, is what says so.
+    /// A module that imports, which verification refuses, fails as unlinkable, and one whose data segment
+    /// does not fit its memory passes.
+    /// <i>(Added 2026-09-28, with the scoring those fixtures pin. The import was declared to pass as
+    /// unlinkable, and the scoring passed it.)</i>
+    /// </para>
     /// </remarks>
     private static bool SelfCheck()
     {
@@ -149,6 +164,13 @@ internal static class SpecSuite
             (assert_malformed (module binary "\00asm" "\02\00\00\00") "unknown binary version")
             (assert_malformed (module quote "(func") "unexpected end")
             (assert_unlinkable (module (import "nowhere" "f" (func))) "unknown import")
+            (assert_unlinkable (module (memory 0) (data (i32.const 0) "a")) "data segment does not fit")
+            (assert_malformed (module binary "\00asm" "\01\00\00\00" "\03\02\01\05" "\0e\00") "malformed section id")
+            (assert_invalid (module binary "\00asm" "\01\00\00\00" "\03\02\01\05" "\0e\00") "unknown type")
+            (assert_malformed (module (func (result i32))) "type mismatch")
+            (assert_invalid (module binary "\00asm" "\02\00\00\00") "unknown binary version")
+            (assert_invalid (module (memory 0) (memory 0)) "multiple memories")
+            (assert_malformed (module binary "\00asm" "\01\00\00\00" "\01\04\01\60\00\00" "\03\02\01\00" "\05\03\01\00\00" "\0a\07\01\05\00\3f\01\1a\0b") "zero byte expected")
             (assert_trap (module (func $start unreachable) (start $start)) "unreachable")
             (module (func (export "one") (result i32) (i32.const 1)))
             (assert_return (invoke "one") (i32.const 1))
@@ -159,8 +181,10 @@ internal static class SpecSuite
         [
             ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Fail, ScriptVerdict.Pass, ScriptVerdict.Fail,
             ScriptVerdict.Pass, ScriptVerdict.Fail, ScriptVerdict.Fail, ScriptVerdict.Fail, ScriptVerdict.Pass,
-            ScriptVerdict.Pass, ScriptVerdict.Fail, ScriptVerdict.Pass, ScriptVerdict.Excluded, ScriptVerdict.Pass,
-            ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Pass,
+            ScriptVerdict.Pass, ScriptVerdict.Fail, ScriptVerdict.Pass, ScriptVerdict.Excluded, ScriptVerdict.Fail,
+            ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Fail, ScriptVerdict.Fail, ScriptVerdict.Fail,
+            ScriptVerdict.Fail, ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Pass,
+            ScriptVerdict.Pass,
         ];
 
         var commands = ScriptRunner.Run("self-check.wast", Encoding.UTF8.GetBytes(Script));
