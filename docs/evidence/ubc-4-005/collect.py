@@ -245,12 +245,14 @@ def main():
         write("reader-check.log", check)
         failures += code != 0
 
+    # The base tree goes before the suites run: rule A14 reads every project file under the checkout, and the
+    # base tree's would be read as this commit's.
+    run(["git", "worktree", "remove", "--force", base])
+
     command = ["dotnet", "test", "Broiler.VM.slnx", "-c", "Release", "--no-build"]
     code, text = run(command)
     write("tests.log", logged(command, code, text))
     failures += code != 0
-
-    run(["git", "worktree", "remove", "--force", base])
     code, status = run(["git", "status", "--porcelain", "--", ".", ":!" + BUNDLE, ":!artifacts"])
     if status.strip():
         print("collect: the tree is not clean after the collection:\n" + status)
