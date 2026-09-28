@@ -1,0 +1,9 @@
+$ git worktree add --detach <scratch>/base f842c2f
+Preparing worktree (detached HEAD f842c2f)
+HEAD is now at f842c2f Merge pull request #105 from Broiler-Platform/claude/dreamy-lovelace-6bb8zv
+# exit 0
+$ git rev-parse HEAD
+f842c2f9cd0e6ae5c753ef8bee4adb6e589ea701
+# exit 0
+$ git status --porcelain
+# exit 0

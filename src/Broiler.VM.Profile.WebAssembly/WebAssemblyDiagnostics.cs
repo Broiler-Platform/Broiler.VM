@@ -150,17 +150,21 @@ public enum WebAssemblyDiagnosticCode
 
     /// <summary>A declared minimum is above the declared maximum beside it.</summary>
     /// <remarks>
-    /// Emitted by nothing since 2026-09-28, when the check moved to the validator as
-    /// <see cref="TableOrMemoryMinimumAboveMaximum"/>: limits whose minimum exceeds their maximum
-    /// decode, and the format's validation refuses them. The number stays taken.
+    /// The decoder has not emitted it since 2026-09-28, when its check on a module moved to the
+    /// validator as <see cref="TableOrMemoryMinimumAboveMaximum"/>: limits whose minimum exceeds their
+    /// maximum decode, and the format's validation refuses them. The family's verifier hook still
+    /// emits it, over the limits a universal bytecode artifact's module definitions carry, which reach
+    /// the hook without passing the validator when an artifact was written some other way than by the
+    /// translator.
     /// </remarks>
     LimitsMinimumAboveMaximum = 2305,
 
     /// <summary>A memory declares more pages than a 32-bit address space holds.</summary>
     /// <remarks>
-    /// Emitted by nothing since 2026-09-28, when the check moved to the validator as
-    /// <see cref="MemoryPagesAboveFormatLimit"/>: a memory type of more pages decodes, and the
-    /// format's validation refuses it. The number stays taken.
+    /// The decoder has not emitted it since 2026-09-28, when its check on a module moved to the
+    /// validator as <see cref="MemoryPagesAboveFormatLimit"/>: a memory type of more pages decodes, and
+    /// the format's validation refuses it. The family's verifier hook still emits it, over a universal
+    /// bytecode artifact's module definitions, as the code above says.
     /// </remarks>
     MemoryPagesAboveFormatMaximum = 2306,
 
