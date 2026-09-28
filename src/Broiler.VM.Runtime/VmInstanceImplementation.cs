@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
-// Exempt:           16
-// Human-reviewed:   0/25
+// Relevant units:   28
+// Annotated:        28/28
+// Exempt:           17
+// Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         7/2
+// Criteria:         11/3
 // Resource impact:  6/10 max
-// Unverified:       25
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -36,7 +36,6 @@ internal sealed class VmInstanceImplementation : VmInstance
     private readonly VmRuntime runtime;
     private readonly VmProfileDescriptor profile;
     private readonly IVmProfileExecutor executor;
-    private readonly IVmInstanceState state;
     private readonly VmBudgetLevel instanceLevel;
     private readonly VmDiagnostics baseline;
     private readonly VmExecutionScope scope;
@@ -45,6 +44,23 @@ internal sealed class VmInstanceImplementation : VmInstance
 
     private VmInstanceState currentState = VmInstanceState.Live;
     private VmOperation? active;
+
+    /// <summary>
+    /// The profile-owned state every step of this instance runs against.
+    /// </summary>
+    /// <remarks>
+    /// Written once more after construction, and only for the pending instance of a parked
+    /// instantiation: that instance is built around the core's placeholder, and the profile hands
+    /// over its real state when a resume completes the instantiation. Everything that reads it
+    /// afterwards is admitted through <c>gate</c>, and the write is made under it.
+    /// </remarks>
+    private IVmInstanceState state;
+
+    /// <summary>
+    /// Whether this is the pending instance of an asynchronous instantiation that has not yet
+    /// completed, and so still holds the placeholder rather than the profile's state.
+    /// </summary>
+    private bool awaitingInstantiatedState;
 
     /// <summary>How many steps are inside the profile right now.</summary>
     /// <remarks>
@@ -114,6 +130,60 @@ internal sealed class VmInstanceImplementation : VmInstance
             {
                 return currentState;
             }
+        }
+    }
+
+    /// <summary>
+    /// Makes this the pending instance of an asynchronous instantiation that is about to park.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// ADR 0004 moves an instance whose instantiation suspends to <c>Suspended</c>, and the parked
+    /// operation becomes this instance's active one. Being active is what lets a cancellation
+    /// requested of the runtime reach it, and what lets this instance's disposal abandon it, as for
+    /// any other parked operation.
+    /// </para>
+    /// <para>
+    /// The instance still holds the placeholder it was built around, and is not handed to anyone
+    /// until a resume completes the instantiation with the profile's own state.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=0; Fingerprint=600FA9
+    // Broiler-Falsified-If: an instance whose instantiation is parked reports anything but Suspended, or a cancellation requested of its runtime does not reach the parked operation
+    // Broiler-Human:        PENDING
+    internal void ParkInstantiation(VmOperation operation)
+    {
+        lock (gate)
+        {
+            active = operation;
+            currentState = VmInstanceState.Suspended;
+            awaitingInstantiatedState = true;
+        }
+    }
+
+    /// <summary>
+    /// Takes the state the profile produced when its parked instantiation completed.
+    /// </summary>
+    /// <remarks>
+    /// Once, and only for the pending instance of an asynchronous instantiation: an instance that
+    /// was published with state of its own is never handed another, since every step already
+    /// taken ran against the state it has.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=High; Resources=0; Fingerprint=626AB2
+    // Broiler-Falsified-If: an instance that was not awaiting its instantiated state has its state replaced, or one is replaced twice
+    // Broiler-Human:        PENDING
+    private bool TryCompleteInstantiation(IVmInstanceState instantiated)
+    {
+        lock (gate)
+        {
+            if (!awaitingInstantiatedState)
+            {
+                return false;
+            }
+
+            state = instantiated;
+            awaitingInstantiatedState = false;
+            return true;
         }
     }
 
@@ -371,7 +441,17 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=51DB74
+    /// <summary>Resumes a parked operation of this instance through the profile.</summary>
+    /// <remarks>
+    /// A resumed instantiation that ends in anything but <c>Normal</c> or another suspension will
+    /// never publish this instance, and nobody else holds it: ADR 0004 takes it to Faulted and then
+    /// Disposed, so it is disposed here - which releases its lease, gives back what its instance
+    /// level retained, and removes it from the runtime. After the step has left, not inside it:
+    /// disposal waits for the steps in flight, and from inside one it would wait out its whole
+    /// drain budget for itself.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=850D0F
+    // Broiler-Falsified-If: a resumed instantiation that completes neither normally nor with a suspension leaves its pending instance undisposed
     // Broiler-Human:        PENDING
     internal VmResumeResult ResumeOperation(VmOperation operation, IVmProfileContinuation continuation)
     {
@@ -390,14 +470,24 @@ internal sealed class VmInstanceImplementation : VmInstance
             stepsInFlight++;
         }
 
+        VmResumeResult result;
+
         try
         {
-            return RunResume(operation, continuation);
+            result = RunResume(operation, continuation);
         }
         finally
         {
             LeaveStep();
         }
+
+        if (operation.Stage is VmStage.Instantiation &&
+            result.Outcome is not (VmOutcome.Normal or VmOutcome.Suspension))
+        {
+            Dispose();
+        }
+
+        return result;
     }
 
     // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=0519BC
@@ -666,7 +756,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0005; IP=Low; Security=Medium; Resources=1; Fingerprint=5DE8C1
+    // Broiler-AI:           Origin=AI; Spec=ADR-0005; IP=Low; Security=Medium; Resources=1; Fingerprint=AEB808
     // Broiler-Human:        PENDING
     private VmResumeResult MapResume(VmOperation operation, VmExecutionStep step)
     {
@@ -718,6 +808,15 @@ internal sealed class VmInstanceImplementation : VmInstance
                         VmRuntime.Invalid(operation.Baseline, VmStage.Resume, parkFailure, VmObjectKind.Operation, VmAttemptedCall.Resume));
                 }
 
+                // ADR 0004: an operation that suspends moves its instance to Suspended, at resume as
+                // at the first park. The instance was left Executing here, so a parked invocation's
+                // next Invoke was refused as re-entrant when nothing was running, and a parked
+                // instantiation's pending instance claimed a step it was not taking.
+                lock (gate)
+                {
+                    currentState = VmInstanceState.Suspended;
+                }
+
                 return VmResumeResult.Suspension(
                     operation.Stage,
                     origin is VmSuspensionOrigin.External ? null : suspension,
@@ -747,14 +846,49 @@ internal sealed class VmInstanceImplementation : VmInstance
                     operation.Stage, VmReason.ProfileContractViolation, null,
                     operation.Baseline.WithOutcome(VmStage.Resume, VmOutcome.ProfileFault, VmReason.ProfileContractViolation, VmInitiator.Guest));
 
-            default:
+            case VmExecutionStepKind.Instantiated when operation.Stage is VmStage.Instantiation && step.State is not null:
+                if (!TryCompleteInstantiation(step.State))
+                {
+                    return CompletedWithoutState(operation);
+                }
+
+                // The parked instantiation completed, and the profile handed over the state its
+                // instance runs against. Only now does an instance exist to publish.
                 return VmResumeResult.Normal(
                     operation.Stage,
-                    operation.Stage is VmStage.Instantiation ? this : null,
+                    this,
                     ValidatePayload(step.Payload),
                     operation.Baseline.WithOutcome(VmStage.Resume, VmOutcome.Normal, VmReason.NormalCompleted, VmInitiator.Caller));
+
+            case VmExecutionStepKind.Completed or VmExecutionStepKind.Instantiated
+                when operation.Stage is not VmStage.Instantiation:
+                return VmResumeResult.Normal(
+                    operation.Stage,
+                    null,
+                    ValidatePayload(step.Payload),
+                    operation.Baseline.WithOutcome(VmStage.Resume, VmOutcome.Normal, VmReason.NormalCompleted, VmInitiator.Caller));
+
+            default:
+                return CompletedWithoutState(operation);
         }
     }
+
+    /// <summary>
+    /// The answer to a resumed instantiation that completed without handing over its state.
+    /// </summary>
+    /// <remarks>
+    /// It was reported <c>Normal</c>, and the pending instance was published still holding the
+    /// core's placeholder, so every later invocation handed the profile a state it never made. A
+    /// step that answers <c>Completed</c>, or <c>Instantiated</c> with no state, has finished
+    /// without producing an instance, and nothing may be published for it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=0; Fingerprint=61EF84
+    // Broiler-Falsified-If: a resumed instantiation is answered Normal without the profile's own instance state
+    // Broiler-Human:        PENDING
+    private static VmResumeResult CompletedWithoutState(VmOperation operation) =>
+        VmResumeResult.ProfileFault(
+            operation.Stage, VmReason.ProfileContractViolation, null,
+            operation.Baseline.WithOutcome(VmStage.Resume, VmOutcome.ProfileFault, VmReason.ProfileContractViolation, VmInitiator.Guest));
 
     /// <summary>
     /// Checks that a payload belongs to the profile that produced the result and lies inside its

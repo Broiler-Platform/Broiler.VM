@@ -187,7 +187,7 @@ internal static class VmInstantiation
     /// given back by the caller, which owns the instance level for exactly that reason.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=C3BD52
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=F2101D
     // Broiler-Falsified-If: a step whose caller cancelled, during which a terminating capability failed, or whose meter latched or left unpolled a poll-bound breach, is answered as anything but that cancellation, that host failure or a profile fault naming the breach where nothing ranked above it applies, or publishes an instance
     // Broiler-Human:        PENDING
     private static VmInstantiationResult Instantiate(
@@ -388,12 +388,14 @@ internal static class VmInstantiation
 
                 // The declared case parks. The instance is NOT published - an instance exists only
                 // when instantiation completes normally - so what the caller receives is the
-                // resumption object and nothing else.
+                // resumption object and nothing else. Both halves of the pairing are made before the
+                // operation parks, so nothing that finds it parked finds it without its instance.
                 var pending = new VmInstanceImplementation(
                     runtime, profile, executor, PlaceholderState.Instance, instanceLevel, identified,
                     profileState.Scope, mediator, lease);
 
                 operation.AttachInstance(pending);
+                pending.ParkInstantiation(operation);
 
                 if (!operation.TryPark(
                         VmSuspensionOrigin.Instantiation, step.Continuation, step.Payload,
@@ -558,12 +560,26 @@ internal static class VmInstantiation
     /// Stands in for instance state while an asynchronous instantiation is still parked.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The instance is not published to the caller until instantiation completes normally, so this
     /// is never handed to anyone: it exists so the parked operation has an instance to be resumed
-    /// against. The profile supplies its real state when it completes.
+    /// against. It is also what the profile's <c>Resume</c> is handed for that instance, and the
+    /// profile has nothing to read in it - its own partial state travels in its continuation.
+    /// </para>
+    /// <para>
+    /// The profile supplies its real state by completing the resumed instantiation with
+    /// <c>Instantiated</c>, and the pending instance takes that state before it is published. A
+    /// resumed instantiation that completes with anything else publishes nothing, and its pending
+    /// instance is disposed.
+    /// </para>
+    /// <para>
+    /// <i>(Corrected 2026-09-28. This read "The profile supplies its real state when it
+    /// completes", and nothing implemented it: a resumed instantiation that completed was published
+    /// still holding this placeholder, and every later invocation handed it to the profile.)</i>
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=5323E5
-    // Broiler-Falsified-If: a placeholder the caller was never given is reachable as an instance disposal will dispose
+    // Broiler-Falsified-If: an instance published to a caller, by instantiation or by a resume that completed one, still holds the placeholder
     // Broiler-Human:        PENDING
     private sealed class PlaceholderState : IVmInstanceState
     {

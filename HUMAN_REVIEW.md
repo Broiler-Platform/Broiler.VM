@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5585 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5588 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 230 |
-| Code units | 9904 |
-| Relevant | 5585 |
-| Exempt | 4319 |
-| Assessed | 5585 of 5585 (100%) |
-| Human reviewed | 0 of 5585 (0%) |
-| Unverified | 5585 |
+| Code units | 9908 |
+| Relevant | 5588 |
+| Exempt | 4320 |
+| Assessed | 5588 of 5588 (100%) |
+| Human reviewed | 0 of 5588 (0%) |
+| Unverified | 5588 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5585 |
+| HUMAN_PENDING | 5588 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4319 |
+| EXEMPT | 4320 |
 
 ## 5. Aliases In The Tree
 
@@ -316,12 +316,12 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Runtime/VmDescriptorValidation.cs` | 10 | 10 | 0 | 10 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmExecutionScope.cs` | 29 | 16 | 13 | 16 | Low | Medium | 2/0 |
 | `src/Broiler.VM.Runtime/VmFuelPreAdmissions.cs` | 13 | 11 | 2 | 11 | Low | Medium | 10/0 |
-| `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` | 41 | 25 | 16 | 25 | Low | High | 7/2 |
+| `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` | 45 | 28 | 17 | 28 | Low | High | 11/3 |
 | `src/Broiler.VM.Runtime/VmInstantiation.cs` | 15 | 9 | 6 | 9 | Low | Medium | 3/0 |
 | `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` | 3 | 3 | 0 | 3 | Low | High | 1/1 |
 | `src/Broiler.VM.Runtime/VmMeter.cs` | 52 | 31 | 21 | 31 | Low | Medium | 20/0 |
 | `src/Broiler.VM.Runtime/VmNativePipeline.cs` | 8 | 3 | 5 | 3 | Low | Low | 0/0 |
-| `src/Broiler.VM.Runtime/VmOperation.cs` | 55 | 26 | 29 | 26 | Low | Medium | 2/0 |
+| `src/Broiler.VM.Runtime/VmOperation.cs` | 55 | 26 | 29 | 26 | Low | Medium | 4/0 |
 | `src/Broiler.VM.Runtime/VmProfileRuntimeState.cs` | 15 | 6 | 9 | 6 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmRuntime.cs` | 62 | 36 | 26 | 36 | Low | High | 13/2 |
 | `src/Broiler.VM.Runtime/VmRuntimeCreationOptions.cs` | 55 | 22 | 33 | 22 | Low | Medium | 0/0 |
@@ -3650,6 +3650,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a payload byte is read on a path that answers UnsupportedProfile, or an exception escapes this method
 - `Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.VerifyCore(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, IVmVerificationContext, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.WebAssembly/WebAssemblyVerifier.cs` - Security=Critical, Spec=none cited, `20FD2C`, PENDING
   - Falsified if: a payload byte is read before the effective ceilings have been projected into the reader's bounds
+- `Broiler.VM.VmInstanceImplementation.TryCompleteInstantiation(IVmInstanceState)` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, Spec=ADR-0009, `626AB2`, PENDING
+  - Falsified if: an instance that was not awaiting its instantiated state has its state replaced, or one is replaced twice
 - `Broiler.VM.VmInstanceImplementation.Dispose(System.TimeSpan)` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, Spec=ADR-0004, `3B4D81`, PENDING
   - Falsified if: disposal returns while stepsInFlight is above zero and still releases the lease
 - `Broiler.VM.VmInstanceImplementation.LeaveStep()` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, Spec=ADR-0004, `E8A45C`, PENDING
@@ -3894,7 +3896,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5468 of the 5585 assessed units declare
+That is not a figure of speech. 5471 of the 5588 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

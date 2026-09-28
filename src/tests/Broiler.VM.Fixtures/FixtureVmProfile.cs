@@ -35,6 +35,13 @@ public enum FixtureVmProfileVariant
     DeclaresNoGuestLoads = 7,
 
     /// <summary>Declares asynchronous instantiation and parks during it.</summary>
+    /// <remarks>
+    /// It parks twice: once while instantiating and once more on the first resume, and the second
+    /// resume completes the instantiation with the instance's state. An instantiation may park any
+    /// number of times, and only the resume that finishes it may publish an instance.
+    /// <i>(Corrected 2026-09-28. The summary above was true of the declaration only: the executor
+    /// never parked for this variant and instantiated it synchronously, and no test used it.)</i>
+    /// </remarks>
     DeclaresAsynchronousInstantiation = 8,
 
     /// <summary>Suspends during instantiation without declaring that it may.</summary>
@@ -141,11 +148,32 @@ public enum FixtureVmProfileVariant
     /// then parks.
     /// </summary>
     /// <remarks>
-    /// With a handler that completes, it is the one variant whose instantiation parks legally, so it
-    /// is what exercises a declared asynchronous instantiation. With a throwing handler, it shows
-    /// that the continuation of a step refused for a host failure is unwound rather than dropped.
+    /// <para>
+    /// With a handler that completes, its instantiation parks legally. The resume charges
+    /// <see cref="FixtureVmExecutor.InstantiationResumeCharge"/> fuel, polls, calls the doubling
+    /// capability again, and completes the instantiation with the instance's state - so a test can
+    /// make the resume fail by exhaustion or by a handler that fails on its second call. With a
+    /// throwing handler, the first step fails, and it shows that the continuation of a step refused
+    /// for a host failure is unwound rather than dropped.
+    /// </para>
+    /// <para>
+    /// It reports <see cref="FixtureVmExecutor.InstantiationRetention"/> bytes retained before it
+    /// parks, so the instance a completed resume publishes holds them, and a pending instance that
+    /// was never published has to give them back.
+    /// </para>
     /// </remarks>
     CallsHostThenParksDuringInstantiation = 22,
+
+    /// <summary>
+    /// Declares asynchronous instantiation, parks during it, and answers the resume as though it
+    /// were an invocation: completed, with no instance state.
+    /// </summary>
+    /// <remarks>
+    /// The one wrong answer a resumed instantiation can give that looks like success. It was
+    /// reported <c>Normal</c>, and the instance it published held the core's placeholder rather than
+    /// any state of the profile's.
+    /// </remarks>
+    CompletesParkedInstantiationWithoutState = 23,
 }
 
 /// <summary>
@@ -330,6 +358,7 @@ public static class FixtureDescriptorFactory
         var asynchronous = variant is FixtureVmProfileVariant.DeclaresAsynchronousInstantiation
             or FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation
             or FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation
+            or FixtureVmProfileVariant.CompletesParkedInstantiationWithoutState
             ? VmDeclaration.Declared
             : VmDeclaration.NotDeclared;
 

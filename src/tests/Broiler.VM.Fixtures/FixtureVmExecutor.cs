@@ -49,6 +49,17 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
     /// </remarks>
     public const ulong InstantiationRetention = 4096;
 
+    /// <summary>
+    /// What <see cref="FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation"/> charges on
+    /// the resume that completes its instantiation, in one charge followed by a poll.
+    /// </summary>
+    /// <remarks>
+    /// Its instantiating step charges no fuel at all, so an instance Fuel ceiling below this lets
+    /// the instantiation park and makes its resume exhaust: the one way to fail a resume by budget
+    /// alone.
+    /// </remarks>
+    public const uint InstantiationResumeCharge = 64;
+
     private readonly IVmExecutionEnvironment environment;
     private readonly FixtureVmProfileVariant variant;
     private readonly uint chargingGranularity;
@@ -112,6 +123,16 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
             return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
         }
 
+        if (variant is FixtureVmProfileVariant.DeclaresAsynchronousInstantiation)
+        {
+            return VmExecutionStep.Suspended(FixtureContinuation.ForInstantiation(verified, parksRemaining: 1), null);
+        }
+
+        if (variant is FixtureVmProfileVariant.CompletesParkedInstantiationWithoutState)
+        {
+            return VmExecutionStep.Suspended(FixtureContinuation.ForInstantiation(verified, parksRemaining: 0), null);
+        }
+
         if (variant is FixtureVmProfileVariant.CallsHostDuringInstantiation
             or FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation)
         {
@@ -125,7 +146,7 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
             _ = environment.Capabilities.Invoke(FixtureHostCapabilities.DoubleBinding, arguments, out _);
 
             return variant is FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation
-                ? VmExecutionStep.Suspended(new FixtureContinuation(0, new long[1], 0), null)
+                ? VmExecutionStep.Suspended(FixtureContinuation.ForInstantiation(verified, parksRemaining: 0), null)
                 : VmExecutionStep.Instantiated(new FixtureInstanceState(verified), null);
         }
 
@@ -181,6 +202,13 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
         IVmProfileContinuation continuation,
         System.Threading.CancellationToken cancellationToken)
     {
+        // A parked instantiation is resumed against the core's placeholder, since no instance state
+        // exists yet. What it needs travels in its own continuation instead.
+        if (continuation is FixtureContinuation { Verified: { } verified } instantiation)
+        {
+            return ResumeInstantiation(verified, instantiation.ParksRemaining);
+        }
+
         if (state is not FixtureInstanceState fixtureState || continuation is not FixtureContinuation parked)
         {
             return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
@@ -191,6 +219,44 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
         return Run(
             fixtureState, parked.InstructionPointer, parked.Stack, parked.StackDepth,
             parked.SinceLastPoll, cancellationToken);
+    }
+
+    /// <summary>Continues an instantiation that parked, and finishes it or parks it again.</summary>
+    private VmExecutionStep ResumeInstantiation(FixtureVerifiedState verified, int parksRemaining)
+    {
+        if (parksRemaining > 0)
+        {
+            return VmExecutionStep.Suspended(FixtureContinuation.ForInstantiation(verified, parksRemaining - 1), null);
+        }
+
+        if (variant is FixtureVmProfileVariant.CompletesParkedInstantiationWithoutState)
+        {
+            return VmExecutionStep.Completed(new FixtureValue(ProfileId, 0));
+        }
+
+        if (variant is FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation)
+        {
+            var meter = environment.Meter;
+
+            if (!meter.TryCharge(VmBudgetDimension.Fuel, InstantiationResumeCharge))
+            {
+                return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);
+            }
+
+            if (!meter.Poll())
+            {
+                return VmExecutionStep.ContractViolation(VmReason.Cancelled);
+            }
+
+            System.Span<long> arguments = stackalloc long[1];
+            arguments[0] = 2;
+
+            // As while instantiating: the answer is not looked at, so a call that fails terminally
+            // is the core's to report.
+            _ = environment.Capabilities.Invoke(FixtureHostCapabilities.DoubleBinding, arguments, out _);
+        }
+
+        return VmExecutionStep.Instantiated(new FixtureInstanceState(verified), null);
     }
 
     /// <inheritdoc/>

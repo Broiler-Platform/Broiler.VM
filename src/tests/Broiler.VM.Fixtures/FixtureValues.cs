@@ -153,6 +153,33 @@ public sealed class FixtureContinuation : IVmProfileContinuation
         SinceLastPoll = sinceLastPoll;
     }
 
+    private FixtureContinuation(FixtureVerifiedState verified, int parksRemaining)
+        : this(0, new long[1], 0)
+    {
+        Verified = verified;
+        ParksRemaining = parksRemaining;
+    }
+
+    /// <summary>
+    /// The continuation of an instantiation that parked, carrying what it needs to finish.
+    /// </summary>
+    /// <remarks>
+    /// A parked instantiation has no instance state to be resumed against - the core hands the
+    /// profile a placeholder - so the verified state it will build the instance from travels here,
+    /// in the profile's own continuation, as a real engine's partial instance would.
+    /// </remarks>
+    internal static FixtureContinuation ForInstantiation(FixtureVerifiedState verified, int parksRemaining) =>
+        new(verified, parksRemaining);
+
+    /// <summary>
+    /// The verified state a parked instantiation builds its instance from, or null for a parked
+    /// invocation.
+    /// </summary>
+    internal FixtureVerifiedState? Verified { get; }
+
+    /// <summary>How many more times a parked instantiation parks before it completes.</summary>
+    internal int ParksRemaining { get; }
+
     internal int InstructionPointer { get; }
 
     internal long[] Stack { get; }
