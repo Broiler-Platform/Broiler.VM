@@ -28,7 +28,13 @@
     "",
     "UBC-1 adds Broiler.VM.Ubc, the universal bytecode ADR 0013 accepted as candidate A, taking the graph from 27 projects and 90 edges to 28 and 93: it references Broiler.VM.Abstractions and Broiler.VM.Binary and nothing else (rule U1), and the behavioural contract suite references it, because the universal bytecode's malformed corpus is replayed there. It adds ZERO packable assemblies: Broiler.VM.Ubc declares IsPackable false and carries no package identity, and whether it becomes a package is UBC-9's question.",
     "",
-    "UBC-2 adds three projects, taking the graph from 28 projects and 93 edges to 31 and 106: Broiler.VM.Emitter.Bytecode, the bytecode emitter, referencing Broiler.VM.Abstractions, Broiler.VM.Binary and Broiler.VM.Ubc; Com.Example.Tally, the universal bytecode's fixture family, an application-local consumer family referencing the same three and nothing else (rule A13 as revised); and Broiler.VM.Composition.Ubc.Fixture, the demonstration root composing the fixture family over the bytecode emitter beside Com.Example.Ledger. It adds ZERO packable assemblies: all three declare IsPackable false and carry no package identity."
+    "UBC-2 adds three projects, taking the graph from 28 projects and 93 edges to 31 and 106: Broiler.VM.Emitter.Bytecode, the bytecode emitter, referencing Broiler.VM.Abstractions, Broiler.VM.Binary and Broiler.VM.Ubc; Com.Example.Tally, the universal bytecode's fixture family, an application-local consumer family referencing the same three and nothing else (rule A13 as revised); and Broiler.VM.Composition.Ubc.Fixture, the demonstration root composing the fixture family over the bytecode emitter beside Com.Example.Ledger. It adds ZERO packable assemblies: all three declare IsPackable false and carry no package identity.",
+    "",
+    "UBC-4 takes decision UBC-D-5 early and makes Broiler.VM.Ubc and Broiler.VM.Emitter.Bytecode packable, and its first change adds no project and no edge. Neither declares a PackageId - each packs under its assembly name, which rule U1 holds for the universal bytecode - so the figure the register counts by package identity does not move. The same change corrects Broiler.VM.Profile.WebAssembly's isPackable, which read false here from commit d16a6aa, when the profile's project file began to declare IsPackable true, until now; the JavaScript profile's three projects and Broiler.VM.Profile.MachineCode, made packable the same way, still read false here, and correcting them belongs with the packaging records of those profiles.",
+    "",
+    "UBC-4's second change adds one edge and no project, taking the graph from 31 projects and 106 edges to 31 and 107: Broiler.VM.Profile.WebAssembly references Broiler.VM.Ubc, to declare the WebAssembly family - its instruction table, its verifier hook, its handlers and its registration - against the universal bytecode (rule W1 as revised). It references no emitter, which rule A11 forbids a profile, so a composition root builds the family's descriptor over the bytecode emitter itself. It adds ZERO packable assemblies. ADR 0001's budget sentence has not been revised for it yet, which rule A15 reports.",
+    "",
+    "UBC-4's third change adds six edges and no project, taking the graph from 31 projects and 107 edges to 31 and 113: Broiler.VM.Composition.WebAssembly.Execution, Broiler.VM.Composition.WebAssembly.Harness and Broiler.VM.Composition.PolyglotCli each reference Broiler.VM.Ubc and Broiler.VM.Emitter.Bytecode, because the core now verifies the WebAssembly translator's universal bytecode artifact and each root builds the WebAssembly family's descriptor over the bytecode emitter itself (rule A12 admits both as siblings at their product paths). It adds ZERO packable assemblies. ADR 0001's budget sentence has not been revised for it yet, which rule A15 reports."
   ],
   "milestone": "JS-1",
   "coreContractVersion": 1,
@@ -114,11 +120,12 @@
       "assemblyName": "Broiler.VM.Profile.WebAssembly",
       "rootNamespace": "Broiler.VM.Profile.WebAssembly",
       "packageId": null,
-      "isPackable": false,
+      "isPackable": true,
       "isTestProject": false,
       "projectReferences": [
         "Broiler.VM.Abstractions",
-        "Broiler.VM.Binary"
+        "Broiler.VM.Binary",
+        "Broiler.VM.Ubc"
       ]
     },
     {
@@ -126,7 +133,7 @@
       "assemblyName": "Broiler.VM.Ubc",
       "rootNamespace": "Broiler.VM.Ubc",
       "packageId": null,
-      "isPackable": false,
+      "isPackable": true,
       "isTestProject": false,
       "projectReferences": [
         "Broiler.VM.Abstractions",
@@ -138,7 +145,7 @@
       "assemblyName": "Broiler.VM.Emitter.Bytecode",
       "rootNamespace": "Broiler.VM.Emitter.Bytecode",
       "packageId": null,
-      "isPackable": false,
+      "isPackable": true,
       "isTestProject": false,
       "projectReferences": [
         "Broiler.VM.Abstractions",
@@ -262,6 +269,8 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
         "Broiler.VM.Runtime",
+        "Broiler.VM.Ubc",
+        "Broiler.VM.Emitter.Bytecode",
         "Broiler.VM.Profile.WebAssembly"
       ]
     },
@@ -276,6 +285,8 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
         "Broiler.VM.Runtime",
+        "Broiler.VM.Ubc",
+        "Broiler.VM.Emitter.Bytecode",
         "Broiler.VM.Profile.WebAssembly"
       ]
     },
@@ -290,6 +301,8 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary",
         "Broiler.VM.Runtime",
+        "Broiler.VM.Ubc",
+        "Broiler.VM.Emitter.Bytecode",
         "Broiler.VM.Profile.JavaScript",
         "Broiler.VM.Profile.JavaScript.Compiler",
         "Broiler.VM.Profile.WebAssembly"

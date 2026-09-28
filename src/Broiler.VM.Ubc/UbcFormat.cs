@@ -31,8 +31,11 @@ namespace Broiler.VM.Ubc;
 /// </para>
 /// <para>
 /// <b>The format version is the universal bytecode's own</b>, distinct from every family table
-/// version, every emitter version and the core contract version. It moves only when the container,
-/// the common family, the slot types, the operand shapes or the table schema change.
+/// version, every emitter version and the core contract version. It moves only when what a byte of an
+/// artifact can say changes: the container, the common family, the slot types or the operand shapes.
+/// A change to the family table schema or to the primitive table that no byte of an artifact shows -
+/// a new effect form, a trap an entry raises - moves the universal bytecode contract version,
+/// <see cref="UbcContract.Version"/>, and leaves this one where it is.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=0; Fingerprint=B7B3FA
@@ -122,17 +125,23 @@ public static class UbcFormat
 /// <remarks>
 /// A family registration and an emitter each state the version they were built against, and
 /// <see cref="UbcDescriptors"/> refuses to build a descriptor for one that differs from this
-/// assembly's. The version is minted by a dated record in the core's ADR set (the programme's route
-/// UBC-R9, at milestone UBC-9); until then it is 1 and nothing outside this repository depends on it.
+/// assembly's. It covers the family table schema, the primitive table and this assembly's public
+/// surface. Version 2, at milestone UBC-4, adds the signature effect form, gives the trapping
+/// truncations two distinct traps, adds the family members that resolve an entry, admit an
+/// instance and name its start unit, and gives an emitter's form the two version integers a family
+/// registration carries. The version is minted by a dated record in the core's ADR set
+/// (the programme's route UBC-R9, at milestone UBC-9); until that record exists its number is this
+/// assembly's alone, and what holds a family or an emitter to it is the comparison the descriptor
+/// factory makes.
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=0; Fingerprint=9349A5
 // Broiler-Human:        PENDING
 public static class UbcContract
 {
     /// <summary>The universal bytecode contract version this assembly implements.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A5EC68
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4172D3
     // Broiler-Human:        PENDING
-    public const int Version = 1;
+    public const int Version = 2;
 }
 
 /// <summary>The kinds of section a container may carry, in the order they must appear.</summary>

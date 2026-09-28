@@ -3,43 +3,55 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           3
-// Human-reviewed:   0/13
+// Relevant units:   14
+// Annotated:        14/14
+// Exempt:           4
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         4/4
-// Resource impact:  3/10 max
-// Unverified:       13
+// Criteria:         6/6
+// Resource impact:  2/10 max
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 using Broiler.VM;
+using Broiler.VM.Ubc;
 using System.Collections.Immutable;
 
 namespace Broiler.VM.Profile.WebAssembly;
 
 /// <summary>
-/// The Broiler.VM WebAssembly language profile, exposed the way the contract requires: one static
-/// accessor on the profile's own type, naming its own descriptor.
+/// The Broiler.VM WebAssembly language profile: its identity, the universal bytecode family it
+/// declares, and the projections of its payloads.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>This build verifies and runs.</b> The descriptor below is a complete and valid entry in a
-/// catalog; the verifier it names decodes a WebAssembly binary module and then validates it; and the
-/// executor it names allocates a store, evaluates the module's global initialisers, applies its
-/// element and data segments, runs its start function if it declares one, and interprets an exported
-/// function. What it runs is the four numeric types, locals, globals, one linear memory with its
-/// loads, stores, size and growth, structured control flow with all four branch forms, direct calls
-/// and indirect calls through one table.
+/// <b>This build translates, and the universal bytecode verifies and runs what it translated.</b> The
+/// profile builds no descriptor of its own: it declares its family - <see cref="Registration"/> and
+/// <see cref="Declaration"/> - and a composition root builds the descriptor from them over the
+/// bytecode emitter it composes. <see cref="WasmTranslator"/> decodes a WebAssembly binary module with
+/// this profile's own decoder, validates it, and lowers it into a universal bytecode artifact; the core
+/// verifies the artifact through the family's hook, and the emitter instantiates it - allocating the
+/// store, evaluating the module's global initialisers, applying its element and data segments and
+/// running its start function if it declares one - and runs an exported function over the family's
+/// handlers, <see cref="WasmFamily"/>. What it runs is the four numeric types, locals, globals, one
+/// linear memory with its loads, stores, size and growth, structured control flow with all four branch
+/// forms, direct calls and indirect calls through one table.
+/// </para>
+/// <para>
+/// <b>Until milestone UBC-4 the profile carried a descriptor of its own</b>, whose verifier took a
+/// bare WebAssembly module as the whole payload and whose executor ran it on an interpreter in this
+/// assembly. UBC-4 retired that path - the descriptor, its verifier, its executor, the interpreter and
+/// its value slot - once the composition roots translated first; the family's declaration keeps every
+/// row the descriptor carried but its revision.
 /// </para>
 /// <para>
 /// <b>WHAT IT DOES NOT DO IS RESTRICT THAT SURFACE PER FEATURE MANIFEST, AND THAT GAP IS STATED
 /// RATHER THAN LEFT TO BE FOUND.</b> The roadmap's section 6 defines
 /// <c>broiler.webassembly.slice</c> as one type, one function, one export, integer arithmetic, local
 /// access and structured control flow - no memory, no table, no global and no float. This build's
-/// decoder, validator and interpreter admit more than that under the same manifest identity, so a
+/// decoder, validator and translator admit more than that under the same manifest identity, so a
 /// module that declares the slice manifest and uses a float is accepted here and section 6 says it
 /// should be refused at validation. The manifest identity is allocated; the surface behind it is
 /// wider than its definition; and closing that is owned by the milestone that mints the second
@@ -73,7 +85,7 @@ public static class WebAssemblyProfile
     // Broiler-Human:        PENDING
     public static VmProfileId Id { get; } = VmProfileId.Parse("broiler.webassembly");
 
-    /// <summary>The one feature manifest this descriptor accepts, and which nothing implements.</summary>
+    /// <summary>The one feature manifest the family's table is keyed on, and which nothing implements.</summary>
     /// <remarks>
     /// A manifest identity is allocated by being named and is earned by a retained run scoring it.
     /// This one is allocated here and earned nowhere: an artifact naming it can be verified, and
@@ -100,61 +112,115 @@ public static class WebAssemblyProfile
     public const int EntryPointFaultKindId = 2003;
 
     /// <summary>
-    /// How much fuel and verifier work may be charged between two polls, which the descriptor
-    /// declares and both the decoder and the interpreter pace themselves against.
+    /// How much fuel and verifier work may be charged between two polls, which the family's
+    /// declaration carries and the decoder, the validator, the translator and the family's
+    /// instantiation pace themselves against.
     /// </summary>
     /// <remarks>
-    /// It is the number the descriptor's uncharged-work row carries, named once so that a reader
-    /// cannot find the interpreter pacing itself against a different one. Exceeding it is a profile
-    /// fault and never a resource exhaustion, which is why the pacing polls before the charge that
-    /// would cross it rather than after a fixed instruction count.
+    /// It is the number the declaration's uncharged-work row carries, named once so that a reader
+    /// cannot find one of them pacing itself against a different one. Exceeding it is a profile fault
+    /// and never a resource exhaustion, which is why the pacing polls before the charge that would
+    /// cross it rather than after a fixed count.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D58353
-    // Broiler-Falsified-If: the descriptor's uncharged-work row and this constant disagree
+    // Broiler-Falsified-If: the declaration's uncharged-work row and this constant disagree
     // Broiler-Human:        PENDING
     public const uint MaxUnchargedWork = 65_536;
 
-    /// <summary>This profile's descriptor: the one static accessor the contract asks for.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FBD334
-    // Broiler-Human:        PENDING
-    public static VmProfileDescriptor Descriptor { get; } = Build();
-
     /// <summary>
-    /// Builds the descriptor in one full-arity construction.
+    /// The WebAssembly family's registration: its identity, its one instruction table under
+    /// <see cref="SliceManifest"/>, its verifier hook, and the universal bytecode contract version it
+    /// was written for and compiled against.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>Format version 1 means a bare WebAssembly binary module as the entire payload</b> - no
-    /// Broiler magic, no framing, no envelope and no re-encoding - because the artifact descriptor
-    /// already carries the profile identity, the format version, the feature manifest, the
-    /// requested limits and the caller's identity beside the bytes. It says nothing about which
-    /// specification version the module targets: the binary format's own version field has been 1
-    /// across every published revision, and the language surface travels in the feature manifest.
+    /// <b>It is what a composition root builds the profile's descriptor from</b>, with
+    /// <see cref="Declaration"/> and the forms the root composes, through
+    /// <c>UbcDescriptors.Build</c>: this profile references no emitter, so it cannot build that
+    /// descriptor itself. The descriptor verifies universal bytecode an artifact names this profile
+    /// in, and runs it over the family's handlers, <see cref="WasmFamily"/>.
+    /// </para>
+    /// <para>
+    /// <b>It is the profile's only descriptor source since milestone UBC-4</b>, which retired the
+    /// descriptor the profile built itself over bare modules once the roots translated first.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=9322B9
+    // Broiler-Falsified-If: the registration carries a table of another identity or manifest, or a contract version other than the one the family was written for
+    // Broiler-Human:        PENDING
+    public static UbcFamilyRegistration<WasmFamily> Registration { get; } =
+        new(WasmFamilyTable.Identity, [WasmFamilyTable.Table], new WasmFamilyVerifier(), authoredUbcContractVersion: 2);
+
+    /// <summary>
+    /// The descriptor rows the WebAssembly family declares itself - rows 1 to 3 and 8 to 30 - which a
+    /// composition root hands <c>UbcDescriptors.Build</c> with <see cref="Registration"/>.
+    /// </summary>
+    /// <remarks>
+    /// Every row is the one the profile's bare-module descriptor carried until milestone UBC-4 retired
+    /// it, but the revision, which is 2: the descriptor built from these rows is a revision of the
+    /// profile's descriptor whose format, manifests, verifier and executor are the universal bytecode's
+    /// rather than the bare module's. Rows 4 to 7 are not here, because they are the universal
+    /// bytecode's.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=B55BAA
+    // Broiler-Falsified-If: a row here differs from the same row of the retired bare-module descriptor, other than the revision
+    // Broiler-Human:        PENDING
+    public static UbcFamilyDeclaration Declaration { get; } = Declare();
+
+    /// <summary>
+    /// Evaluates one numeric row with this profile's own arms - the reference handler - over
+    /// <paramref name="a"/>, the deeper operand, and <paramref name="b"/>, the top one, which a
+    /// one-operand row does not read.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Answers true with the result's bits, a thirty-two-bit result's in the low half; or true with
+    /// the trap the arm raised in <paramref name="trap"/> and zero bits. <paramref name="trap"/> is zero,
+    /// which names no trap, when none was raised. Answers false when the arms have no answer for the
+    /// row, and for a byte that is not a numeric row of the family's table.
+    /// </para>
+    /// <para>
+    /// <b>It is the door the universal bytecode's obligation E2 reads the profile through.</b> The arms
+    /// are the retired bare-module interpreter's own, including the routing defect that gives the twelve
+    /// float comparisons, 0x5B to 0x66, no answer; they canonicalise no NaN, so a comparison with the
+    /// primitive table under the family's NaN flag must read a NaN answer as a NaN.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=1; Fingerprint=B05DAD
+    // Broiler-Human:        PENDING
+    public static bool TryEvaluateReference(byte opcode, ulong a, ulong b, out ulong bits, out WasmTrapKind trap) =>
+        WasmReferenceNumerics.TryEvaluate(opcode, a, b, out bits, out trap);
+
+    /// <summary>
+    /// The family's declaration: the descriptor's own rows, in one full-arity construction, at
+    /// descriptor revision 2.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The rows are the ones the profile's bare-module descriptor carried at revision 1, spelled here
+    /// rather than read off it so that the declaration stood when that descriptor was retired at
+    /// milestone UBC-4; every row but the revision agrees with it.
     /// </para>
     /// <para>
     /// <b>What this build declares it does not do, it really does not do.</b> No host capability is
     /// imported, because nothing here calls one and the decoder refuses a module that declares an
     /// import. No guest-initiated load is declared, because WebAssembly has no dynamic-load
     /// instruction. Asynchronous instantiation and external suspension are both undeclared, because
-    /// at every allocated manifest execution runs to completion or to a trap and there is no
-    /// instruction of this format that parks a frame.
+    /// at every allocated manifest execution runs to completion or to a trap and no row of the family's
+    /// table parks a frame.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=FDF7A7
-    // Broiler-Falsified-If: a row here states a capability, a guest load, a manifest or a format version this assembly does not implement without the surrounding text saying so
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=1B63C5
+    // Broiler-Falsified-If: a row here states a capability, a guest load, a manifest or a limit this assembly does not implement without the surrounding text saying so
     // Broiler-Human:        PENDING
-    private static VmProfileDescriptor Build()
+    private static UbcFamilyDeclaration Declare()
     {
         VmDiagnosticsIdentity.TryCreate(Id, "broiler.webassembly.diagnostics", out var diagnostics);
 
-        return new VmProfileDescriptor(
+        return new UbcFamilyDeclaration(
             profileId: Id,
             displayName: "Broiler WebAssembly",
-            descriptorRevision: 1,
-            supportedFormatVersions: new VmFormatVersionRange(1, 1),
-            acceptedFeatureManifests: ImmutableArray.Create(SliceManifest),
-            verifier: new WebAssemblyVerifier(Id, SliceManifest),
-            executorFactory: static environment => new WebAssemblyExecutor(Id, environment),
+            descriptorRevision: 2,
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
             artifactLifetimeKind: VmArtifactLifetimeKind.Managed,
             supportsConcurrentVerification: true,
@@ -285,7 +351,7 @@ public static class WebAssemblyProfile
     /// profile accepts and reaches no profile composed beside it. It is not a statement of what
     /// this profile uses - the defaults are that - but of the most it would tolerate a host
     /// granting. The call-depth row is a placeholder rather than a measurement, and it must stay
-    /// one until an interpreter exists whose native frame cost can be measured per claimed
+    /// one until a form runs this family whose native frame cost can be measured per claimed
     /// architecture.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=162AEB
@@ -327,24 +393,29 @@ public static class WebAssemblyProfile
     /// times as a high-water mark with a release on the way out, by the reader for section nesting
     /// and by the validator for control nesting; verifier work, charged per byte consumed; allocated
     /// bytes, because every array a verified module keeps is reserved against the meter before it
-    /// exists; and declared count, which this profile charges itself at one site.
+    /// exists; and declared count, which this profile charges itself at one site. Since milestone UBC-4
+    /// those charges of the decoder and the validator reach the translator's own meter, and the core's
+    /// meter is charged in the same six dimensions by its verification of the translated artifact - the
+    /// universal bytecode's reader and walk, and this family's hook over the module definitions.
     /// </para>
     /// <para>
-    /// <b>The four that execution adds.</b> Fuel is charged once per instruction dispatched, plus a
+    /// <b>The four that execution adds.</b> Fuel is charged once per row an emitter executes, plus a
     /// proportional charge for the two operations whose size a guest chooses - growing a memory, and
     /// initialising a segment at instantiation. Call depth is charged once per activation and
     /// released on return, and because frames are heap-allocated it is the only thing bounding
-    /// recursion at all. Live bytes are reported retained for every byte a memory or a table holds
-    /// and reported released when the store is dropped, because those are the dominant retained cost
-    /// and a store that reported nothing would grow with no ceiling noticing.
+    /// recursion at all. Live bytes are charged retained for every byte a memory or a table holds,
+    /// before the array exists, and reported released when the store is dropped, because those are the
+    /// dominant retained cost and a store that retained nothing would grow with no ceiling noticing.
     /// </para>
     /// <para>
     /// <b>Wall clock is charged in a sense worth spelling out, because this profile makes no
     /// wall-clock charge.</b> The core accrues it inside the poll rather than on a charge, so a
-    /// profile that polls is a profile whose wall-clock ceiling bites - and this one polls, at the
-    /// declared uncharged-work bound, in the decoder, in the validator and in the interpreter.
-    /// Declaring the row inapplicable would say a wall-clock ceiling cannot stop an interpreter that
-    /// has been running for an hour, which is false.
+    /// profile that polls is a profile whose wall-clock ceiling bites - and this family polls, at the
+    /// declared uncharged-work bound, through the universal bytecode: in the core's walk over the
+    /// translated artifact, in an emitter's loop and in the family's instantiation. (The decoder and the
+    /// validator poll the translator's own meter, which accrues no wall clock.) Declaring the row
+    /// inapplicable would say a wall-clock ceiling cannot stop a guest that has been running for an
+    /// hour, which is false.
     /// </para>
     /// <para>
     /// <b>Five rows read inapplicable, and each is a fact rather than a placeholder.</b> Host calls

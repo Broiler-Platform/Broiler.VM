@@ -30,8 +30,8 @@ internal enum UbcCorpusHookMode
 /// The test-only family the universal bytecode's malformed corpus is written against. Nothing of it
 /// executes at UBC-1: its handler struct answers <see cref="NotSupportedException"/>, and its executor
 /// factory is a stub. What it contributes is data - two tables, a region vocabulary, a trap
-/// vocabulary - and a hook, which between them reach every operand shape, both effect forms, all three
-/// target forms and every instruction kind.
+/// vocabulary - and a hook, which between them reach every operand shape, all three effect forms, all
+/// three target forms and every instruction kind.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -40,10 +40,16 @@ internal enum UbcCorpusHookMode
 /// because <see cref="UbcDescriptors.Build"/> requires the declaration's profile to be the family.
 /// </para>
 /// <para>
-/// <b>Two tables.</b> The base manifest selects table version 1; the wide manifest selects table
-/// version 2, which is the base table plus one row. So a Families row can name the right family with
-/// the wrong version, or the right version under the wrong manifest, and a row of one table can be
-/// used under the other.
+/// <b>Two tables.</b> The base manifest selects table version 2; the wide manifest selects table
+/// version 3, which is the base table plus two rows - one that exists only there, and a call row of the
+/// signature effect form. So a Families row can name the right family with the wrong version, or the
+/// right version under the wrong manifest, and a row of one table can be used under the other.
+/// </para>
+/// <para>
+/// <b>Why the versions are not 1 and 2.</b> They were until universal bytecode contract version 2, which
+/// gave a truncation's out-of-range trap a code of its own: the truncation row maps it, so the base
+/// table's rows changed and its version moved, and the wide table - the base table and more - moved
+/// with it and gained the signature row.
 /// </para>
 /// <para>
 /// <b>Not registered.</b> The roadmap says no descriptor is registered in any catalog at UBC-1, and
@@ -58,9 +64,9 @@ internal static class UbcCorpusFamily
 
     internal const string WideManifestText = "com.example.ubccorpus.wide";
 
-    internal const uint BaseTableVersion = 1;
+    internal const uint BaseTableVersion = 2;
 
-    internal const uint WideTableVersion = 2;
+    internal const uint WideTableVersion = 3;
 
     /// <summary>The bound the family declares on work between two polls, and the walk's granularity.</summary>
     internal const uint MaxUnchargedWork = 256;
@@ -112,7 +118,7 @@ internal static class UbcCorpusFamily
         internal const byte MemorySize = 0x07;   // none      [] -> [i32]                       region primitive
         internal const byte F64Add = 0x08;       // none      [f64 f64] -> [f64]                primitive
         internal const byte KeepI64 = 0x09;      // none      [i64] -> [i64]                    primitive word.keep
-        internal const byte Trunc = 0x0A;        // none      [f64] -> [i32]                    primitive, traps
+        internal const byte Trunc = 0x0A;        // none      [f64] -> [i32]                    primitive, two traps
         internal const byte IfTrue = 0x10;       // u32       [v] -> [], taken []               branch, own pushes
         internal const byte Iterate = 0x11;      // u32       [v] -> [v], taken []              branch, distinct taken pushes
         internal const byte CallValue = 0x12;    // u8        [v, v x n] -> [v]                 call, counted x1
@@ -129,6 +135,7 @@ internal static class UbcCorpusFamily
         internal const byte ToI32 = 0x1D;        // none      [v] -> [i32]                      dynamic
         internal const byte FromI32 = 0x1E;      // none      [i32] -> [v]                      dynamic
         internal const byte WideOnly = 0x20;     // none      [] -> []                          dynamic, wide table only
+        internal const byte CallSignature = 0x21; // u32      [params(t) i32] -> [results(t)]   call, signature form, wide table only
     }
 
     private static readonly ImmutableArray<UbcSlotType> None = ImmutableArray<UbcSlotType>.Empty;
@@ -170,7 +177,7 @@ internal static class UbcCorpusFamily
                 primitive: UbcPrimitive.WordKeep),
             new(Op.Trunc, "corpus.trunc", UbcOperandShape.None, Listed(F64, I32), UbcTarget.None, UbcInstructionKind.Primitive,
                 primitive: UbcPrimitive.I32TruncF64S,
-                traps: [new(UbcTrapCode.InvalidConversion, TrapInvalidConversion)]),
+                traps: [new(UbcTrapCode.InvalidConversion, TrapInvalidConversion), new(UbcTrapCode.IntegerOverflow, TrapIntegerOverflow)]),
             new(Op.IfTrue, "corpus.if_true", UbcOperandShape.U32, Listed(V, None), UbcTarget.Code(), UbcInstructionKind.Branch),
             new(Op.Iterate, "corpus.iterate", UbcOperandShape.U32, Listed(V, V), UbcTarget.Code(None), UbcInstructionKind.Branch),
             new(Op.CallValue, "corpus.call_value", UbcOperandShape.U8, UbcEffect.Counted(V, UbcSlotType.V, 1, V), UbcTarget.None,
@@ -191,10 +198,16 @@ internal static class UbcCorpusFamily
         ];
     }
 
-    /// <summary>The rows of table version 2: the base rows and one more.</summary>
+    /// <summary>
+    /// The rows of table version 3: the base rows, one row the base table lacks, and a call whose callee
+    /// is the operand's Types row with an i32 above its parameters.
+    /// </summary>
     internal static ImmutableArray<UbcInstructionRow> WideRows() =>
-        BaseRows().Add(new UbcInstructionRow(
-            Op.WideOnly, "corpus.wide_only", UbcOperandShape.None, UbcEffect.Listed(None, None), UbcTarget.None, UbcInstructionKind.Dynamic));
+        BaseRows().AddRange(
+            new UbcInstructionRow(
+                Op.WideOnly, "corpus.wide_only", UbcOperandShape.None, UbcEffect.Listed(None, None), UbcTarget.None, UbcInstructionKind.Dynamic),
+            new UbcInstructionRow(
+                Op.CallSignature, "corpus.call_signature", UbcOperandShape.U32, UbcEffect.Signature(I32), UbcTarget.None, UbcInstructionKind.Call));
 
     /// <summary>The region kinds: a catch landing pushes the exception, a finally landing the exception and a word.</summary>
     internal static ImmutableArray<UbcRegionKindRow> RegionKinds() =>
@@ -330,7 +343,7 @@ internal static class UbcCorpusFamily
 
     /// <summary>The emitter set: the bytecode form, whose executor factory is a stub.</summary>
     internal static UbcEmitterSet Forms(UbcCorpusExecutorFactory? factory = null) =>
-        UbcEmitterSet.Create(new UbcForm(UbcFormat.BytecodeForm, 1, factory ?? new UbcCorpusExecutorFactory()));
+        UbcEmitterSet.Create(new UbcForm(UbcFormat.BytecodeForm, 1, factory ?? new UbcCorpusExecutorFactory(), UbcContract.Version));
 
     /// <summary>The descriptor the corpus is verified by, built and never registered.</summary>
     internal static VmProfileDescriptor Descriptor(

@@ -23,10 +23,13 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <remarks>
 /// <para>
 /// WA-0 stood up the boundary, the identity and the assurance floor and landed no product code;
-/// four milestones since have landed code into this assembly. What it holds beside this type is
-/// an identity, a descriptor, a decoder, a validator, a verifier, a value model, a store, an
-/// interpreter and an executor, and nothing in this component may be described as validated,
-/// accepted, supported or published.
+/// four milestones since have landed code into this assembly, and the universal bytecode
+/// programme's milestone UBC-4 has replaced its execution path. What it holds beside this type is
+/// an identity, a decoder, a validator, a translator of a module into universal bytecode, and the
+/// universal bytecode family the translation runs under - its declaration and registration, its
+/// instruction table, its verifier hook, its handlers with the store an instance runs against, and
+/// the numeric arms the family's reference handler answers with - and nothing in this component may
+/// be described as validated, accepted, supported or published.
 /// <i>(Corrected 2026-09-08. This paragraph read "What this assembly holds beside this type is an
 /// identity, a descriptor, a verifier that refuses every artifact and an executor that refuses
 /// every step. There is no decoder, no validator, no value model, no store and no interpreter."
@@ -34,11 +37,17 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// executor refuses nothing on that ground; understating the assembly that decodes, validates and
 /// runs a guest payload is the same defect as overstating it, which is why the superseded reading
 /// is quoted here rather than removed.)</i>
+/// <i>(Corrected 2026-09-25. The corrected paragraph read "What it holds beside this type is an
+/// identity, a descriptor, a decoder, a validator, a verifier, a value model, a store, an
+/// interpreter and an executor". Milestone UBC-4 retired the descriptor, the verifier, the value
+/// model, the interpreter and the executor once the composition roots translated first, and the
+/// store became the family's instance state.)</i>
 /// </para>
 /// <para>
-/// The nine-row value and frame decision, the store reading, the entry-point encoding and the
-/// refusable-retention amendment are all open, and each is recorded in the roadmap under docs/
-/// rather than here.
+/// The nine-row value and frame decision is recorded under docs/decisions/, where decision
+/// WAD-0003 says where each row stands now that the value model it was written in is retired. The
+/// store reading, the entry-point encoding and the refusable-retention amendment are open, and each
+/// is recorded in the roadmap under docs/ rather than here.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=None; Resources=0; Fingerprint=E1BC8B

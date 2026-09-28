@@ -1,0 +1,77 @@
+<!-- SPDX-FileCopyrightText: 2026 Broiler Platform contributors -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# WAD-0003 - The nine value, store and frame routes under the universal bytecode
+
+**Status:** Taken, 2026-09-25, by the WebAssembly profile owner, in the same act as the programme's
+milestone UBC-4 retires `WasmInterpreter` and `WasmValue`. Nobody has signed the record, so it claims no
+approval. Approvals are deferred under the MVP terms.
+
+**Owner:** the WebAssembly profile owner. **Co-signer:** the core architecture owner, because four of the
+rows are now answered by the core's shared assembly rather than by this profile. **Both roles are held by
+one person**, and this record does not claim the co-signature is independent.
+
+**Milestone:** none in the `WA-` series; the programme's milestone UBC-4. It moves no row of
+[this profile's ledger](../roadmap.status.md).
+
+## What was open
+
+This profile's [section 9](../roadmap.md) asks for a nine-row value, store and frame decision before any
+interpreter source is written. The rows were answered as routes and written down in the remarks of
+`WasmValue`, which said of them that none was a review decision and each might be reversed. The
+programme's milestone UBC-4 deletes `WasmValue` and `WasmInterpreter`: this profile's modules are
+translated to the universal bytecode and executed by the bytecode emitter. The routes need a home that
+does not disappear with the file, and each needs a statement of where it now stands.
+
+## Decision
+
+Each row, as `WasmValue`'s remarks stated it, and where it stands:
+
+| Row | The route as it was | Where it stands under the universal bytecode |
+|---|---|---|
+| 1, numeric representation | A single untyped 64-bit payload in a sixteen-byte slot; validation proved every type, so the slot carries no tag | **Carries over, narrowed**: a value is an untyped 64-bit word of the universal bytecode's word plane; the walk proves every slot's type, so no word carries a tag |
+| 2, vector representation | A sixteen-byte slot reserving the vector width (route MVP-2) | **Reversed**: the word is eight bytes and no slot reserves a vector's width. A `v128` slot is a question for a universal bytecode format version 2, and route MVP-2's reservation is annotated as such in `docs/mvp.md` rather than answered |
+| 3, reference representation | None, because no reference type is admitted; a table holds function indices as integers | **Carries over**: the family declares no value plane, and a table's entries are unit indices held in the store |
+| 4, rooting and lifetime | Nothing needs rooting; the store's arrays are reachable from the instance and no host holds a view | **Carries over, with [WAD-0001](0001-the-memory-representation.md)**: the memory is a pinned array reachable from the instance, and a growth invalidates every view |
+| 5, call convention | Arguments popped into the callee's own locals array; results pushed back | **Now the universal bytecode's**: a call copies its parameters into the callee's first locals, as Appendix A's `call` row says, and results replace the arguments |
+| 6, frames and labels | Heap frames and per-frame label arrays; guest depth never grows the CLR stack | **Now the universal bytecode's**: heap frames owned by the operation, one CLR frame whatever the guest's depth; labels are lowered away by the translator, which leaves only jumps, jump tables and `squash` |
+| 7, trap propagation | A return code through the dispatch loop, never a CLR exception | **Now the universal bytecode's**: a trap is a status answered by a primitive or a handler and turned into the family's payload at the loop's boundary |
+| 8, metering | A fuel unit per instruction, proportional charges beside it, CallDepth per activation, allocation and retention for the store, a poll at the declared bound | **Now the universal bytecode's, with this profile's store charges kept**: fuel per row and per frame's declared locals, charged before effects, polls at the declared bound; the store's charges and retention reports are this family's, unchanged. Structural instructions are no longer charged, because the translator emits no row for them |
+| 9, what a `LiveBytes` breach does | Nothing this profile decides; observed at the next charge or poll | **Carries over, unchanged**: retention is still reported and the report still returns nothing |
+
+## What it rejects, and why
+
+**Keeping the sixteen-byte slot** (row 2) as a word-plane convention of this family alone. It is rejected
+because the word plane is the universal bytecode's, shared by every family, and a width one family
+reserves would be a width every family pays for; the question belongs to the format's next version.
+
+## What would settle it differently
+
+A universal bytecode format version 2 that admits a `v128` slot type reopens row 2; the admission of a
+reference type into this profile's manifest reopens rows 3 and 4. Either is taken in a later record of
+this series.
+
+## Corrected 2026-09-26: rows 8 and 9, the store's retention
+
+When this record was taken the family's store was not yet written, and rows 8 and 9 were stated as
+carried over unchanged. Row 8 read "the store's charges and retention reports are this family's,
+unchanged", and row 9 read "**Carries over, unchanged**: retention is still reported and the report still
+returns nothing". Neither holds of the store that was built. The family's instance store charges each
+memory's and each table's allocation **and its `LiveBytes` retention** before it allocates, with a charge
+that can be refused, and each growth's the same way; a refused retention refuses the instantiation or
+ends the step at the growth, and the store releases what it retained on every path that publishes no
+instance. So row 8's store charges are this family's but not unchanged - retention moved from a report
+after the allocation to a charge before it - and row 9 is **answered rather than carried over**: a
+`LiveBytes` ceiling reached by the store is a refused charge the operation stops at, not a report the
+next charge observes. The guest-observable refusal of route MVP-1, against this profile's own page
+ceiling, is unchanged.
+
+*(Corrected again 2026-09-26, later the same day, and the paragraph above is kept as written.)* It says
+the store "releases what it retained on every path that publishes no instance". The store's retention
+is released through the family on every failure the bytecode emitter answers - a refused charge, a trap
+in a segment or in the start function, an exception - and the core releases a published instance's when
+it is disposed. When a refusal or a cancellation latched during an instantiation the emitter answered as
+complete, the core answers an exhaustion or a cancellation, publishes no instance and releases nothing:
+a defect of the core, not of this family, written out as
+[a task](../../../../docs/tasks/release-dropped-instantiation-retention.md) and recorded in the plan's
+[WAC-43](../roadmap.corrections.md#wac-43).

@@ -1,24 +1,37 @@
 using Broiler.VM;
+using Broiler.VM.Emitter.Bytecode;
 using Broiler.VM.Profile.WebAssembly;
+using Broiler.VM.Ubc;
 using System.Collections.Immutable;
+using System.Globalization;
 
 namespace Broiler.VM.Composition.WebAssembly.Execution;
 
 /// <summary>
-/// The execution-only composition for the WebAssembly profile: a descriptor, a decoder, and no
-/// compiler anywhere in the image.
+/// The WebAssembly profile's execution composition: the family's descriptor over the bytecode
+/// emitter, and the translator that turns a module into what the core verifies.
 /// </summary>
 /// <remarks>
 /// <para>
 /// <b>What this root demonstrates is the whole loop.</b> The profile it composes reads a
-/// WebAssembly binary module, decodes it, validates it, instantiates it and runs an exported
-/// function. The checks below assert that much and no more: that the descriptor is admitted by a
-/// catalog, that a valid module verifies, that a malformed one is refused with a stable triple, that
-/// an invalid one is refused with a triple of its own from the other phase, that a module which
-/// verifies instantiates and returns the value its body computes, and that an artifact naming an
-/// unaccepted feature manifest is refused by the core before this profile is asked anything. The
-/// wider surface - every trap, the memory, the tables, the branches - is exercised in the harness
-/// root beside this one, because that is where an encoder can live.
+/// WebAssembly binary module, decodes it, validates it and translates it into universal bytecode;
+/// the core verifies that artifact under the family's descriptor, which this root builds over the
+/// bytecode emitter, and the emitter instantiates it and runs an exported function. The checks below
+/// assert that much and no more: that the descriptor is admitted by a catalog, that a valid module
+/// translates and its program verifies, that a malformed one is refused with a stable triple, that an
+/// invalid one is refused with a triple of its own from the other phase, that a module which verifies
+/// instantiates and returns the value its body computes, and that an artifact naming an unaccepted
+/// feature manifest is refused by the core before the family is asked anything. The wider surface -
+/// every trap, the memory, the tables, the branches - is exercised in the harness root beside this
+/// one, because that is where an encoder can live.
+/// </para>
+/// <para>
+/// <b>It is no longer an execution-only image, and its catalog says so.</b> Until the universal
+/// bytecode programme's milestone UBC-4 the profile carried no lowering at all, so this image could
+/// not turn anything into an artifact and ran the module it was handed as the artifact. It now
+/// carries the translator, which lowers a module into a universal bytecode artifact at run time, and
+/// the core never sees a module: the catalog prints <c>label none</c> and <c>carries-lowering yes</c>
+/// and names the translator and the form.
 /// </para>
 /// <para>
 /// The checks live in a composition root rather than in a test project because rule A11 forbids a
@@ -95,7 +108,7 @@ internal static class Program
                 AMalformedModuleIsRefusedWithItsOwnTriple(),
                 AnInvalidModuleIsRefusedByTheOtherPhase(),
                 AVerifiedModuleInstantiatesAndRuns(),
-                AnUnacceptedManifestIsRefusedBeforeTheProfileIsAsked(),
+                AnUnacceptedManifestIsRefusedBeforeTheFamilyIsAsked(),
             };
 
             var failed = 0;
@@ -137,10 +150,13 @@ internal static class Program
         return runtime is null
             ? ("catalog-admits-the-descriptor", false, failure)
             : ("catalog-admits-the-descriptor", true,
-                $"{WebAssemblyProfile.Id} revision {WebAssemblyProfile.Descriptor.DescriptorRevision}");
+                $"{WebAssemblyProfile.Id} revision {Descriptor.DescriptorRevision}");
     }
 
-    /// <summary>Verification decodes a module with no sections and answers normally.</summary>
+    /// <summary>
+    /// A module with no sections translates, and the core verifies its artifact and holds the
+    /// universal bytecode program it read.
+    /// </summary>
     private static (string, bool, string) AWellFormedModuleVerifies()
     {
         using var runtime = Runtime(out var failure);
@@ -150,27 +166,27 @@ internal static class Program
             return ("a-well-formed-module-verifies", false, failure);
         }
 
-        var descriptor = Descriptor(WebAssemblyProfile.SliceManifest);
-        var verified = runtime.Verify(in descriptor, EmptyModule, CancellationToken.None);
+        var verified = Verify(runtime, EmptyModule, ArtifactDescriptor(WebAssemblyProfile.SliceManifest));
 
         if (!verified.TryGetArtifact(out var artifact))
         {
             return ("a-well-formed-module-verifies", false,
-                $"{verified.Outcome}/{verified.Reason}/{verified.Diagnostics.ProfileDiagnosticCode}");
+                $"{verified.Outcome}/{verified.Reason}/{verified.Code}");
         }
 
         using (artifact)
         {
-            var carries = artifact.TryGetState(out var state) && state is WasmModule;
+            var carries = artifact.TryGetState(out var state) && state is UbcVerifiedProgram;
 
             return ("a-well-formed-module-verifies", carries,
-                $"{verified.Outcome}/{verified.Reason}, decoded module carried: {carries}");
+                $"{verified.Outcome}/{verified.Reason}, universal bytecode program carried: {carries}");
         }
     }
 
     /// <summary>
     /// A payload whose magic is wrong is refused as a malformed encoding, with this profile's own
-    /// code and a byte position.
+    /// code and a byte position. The translator refuses it, in the fields the core refused it in
+    /// before the universal bytecode, and the core is never asked.
     /// </summary>
     private static (string, bool, string) AMalformedModuleIsRefusedWithItsOwnTriple()
     {
@@ -181,22 +197,22 @@ internal static class Program
             return ("a-malformed-module-is-refused", false, failure);
         }
 
-        var descriptor = Descriptor(WebAssemblyProfile.SliceManifest);
-        var verified = runtime.Verify(in descriptor, NotAModule, CancellationToken.None);
+        var verified = Verify(runtime, NotAModule, ArtifactDescriptor(WebAssemblyProfile.SliceManifest));
 
         var expected =
             verified.Outcome is VmOutcome.InvalidArtifact &&
             verified.Reason is VmReason.MalformedEncoding &&
-            verified.Diagnostics.ProfileDiagnosticCode == (int)WebAssemblyDiagnosticCode.WrongMagic;
+            verified.Code == (int)WebAssemblyDiagnosticCode.WrongMagic;
 
         return ("a-malformed-module-is-refused", expected,
-            $"{verified.Outcome}/{verified.Reason}/{verified.Diagnostics.ProfileDiagnosticCode} " +
-            $"at offset {verified.Diagnostics.SourcePosition.ByteOffset}");
+            $"{verified.Outcome}/{verified.Reason}/{verified.Code} " +
+            $"at offset {verified.Position.ByteOffset}");
     }
 
     /// <summary>
     /// A module whose sections are all well formed and whose one function body cannot be typed is
-    /// refused by the validator, with a code from the validation band and not the decoding one.
+    /// refused by the validator, with a code from the validation band and not the decoding one. The
+    /// validator runs inside the translator, which answers the refusal as the core answered it.
     /// </summary>
     private static (string, bool, string) AnInvalidModuleIsRefusedByTheOtherPhase()
     {
@@ -207,18 +223,16 @@ internal static class Program
             return ("an-invalid-module-is-refused-by-validation", false, failure);
         }
 
-        var descriptor = Descriptor(WebAssemblyProfile.SliceManifest);
-        var verified = runtime.Verify(in descriptor, InvalidModule, CancellationToken.None);
+        var verified = Verify(runtime, InvalidModule, ArtifactDescriptor(WebAssemblyProfile.SliceManifest));
 
         var expected =
             verified.Outcome is VmOutcome.InvalidArtifact &&
             verified.Reason is VmReason.SemanticValidationFailed &&
-            verified.Diagnostics.ProfileDiagnosticCode ==
-                (int)WebAssemblyDiagnosticCode.OperandStackUnderflow;
+            verified.Code == (int)WebAssemblyDiagnosticCode.OperandStackUnderflow;
 
         return ("an-invalid-module-is-refused-by-validation", expected,
-            $"{verified.Outcome}/{verified.Reason}/{verified.Diagnostics.ProfileDiagnosticCode} " +
-            $"at body offset {verified.Diagnostics.SourcePosition.ByteOffset}");
+            $"{verified.Outcome}/{verified.Reason}/{verified.Code} " +
+            $"at body offset {verified.Position.ByteOffset}");
     }
 
     /// <summary>
@@ -239,8 +253,7 @@ internal static class Program
             return ("a-verified-module-instantiates-and-runs", false, failure);
         }
 
-        var descriptor = Descriptor(WebAssemblyProfile.SliceManifest);
-        var verified = runtime.Verify(in descriptor, AnsweringModule, CancellationToken.None);
+        var verified = Verify(runtime, AnsweringModule, ArtifactDescriptor(WebAssemblyProfile.SliceManifest));
 
         if (!verified.TryGetArtifact(out var artifact))
         {
@@ -277,9 +290,15 @@ internal static class Program
 
     /// <summary>
     /// A manifest inside this profile's namespace that the descriptor does not accept is refused by
-    /// the core, and the profile is never asked.
+    /// the core, and the family is never asked.
     /// </summary>
-    private static (string, bool, string) AnUnacceptedManifestIsRefusedBeforeTheProfileIsAsked()
+    /// <remarks>
+    /// <b>What happens first is now the translation.</b> A module is translated before anything is
+    /// verified, and the translator reads no manifest - so the empty module translates, and the core
+    /// then refuses the artifact descriptor naming <c>broiler.webassembly.core1</c> before the family's
+    /// verifier hook sees a byte of the artifact. The line this check prints says both.
+    /// </remarks>
+    private static (string, bool, string) AnUnacceptedManifestIsRefusedBeforeTheFamilyIsAsked()
     {
         using var runtime = Runtime(out var failure);
 
@@ -288,14 +307,18 @@ internal static class Program
             return ("unaccepted-manifest-is-refused", false, failure);
         }
 
-        var descriptor = Descriptor(VmFeatureManifestId.Parse("broiler.webassembly.core1"));
-        var verified = runtime.Verify(in descriptor, EmptyModule, CancellationToken.None);
+        var verified = Verify(
+            runtime, EmptyModule, ArtifactDescriptor(VmFeatureManifestId.Parse("broiler.webassembly.core1")));
 
         var expected =
+            verified.Stage is Stage.Core &&
             verified.Outcome is VmOutcome.InvalidArtifact &&
             verified.Reason is VmReason.UnsupportedFeatureManifest;
 
-        return ("unaccepted-manifest-is-refused", expected, $"{verified.Outcome}/{verified.Reason}");
+        return ("unaccepted-manifest-is-refused", expected,
+            verified.Stage is Stage.Core
+                ? $"translated, then {verified.Outcome}/{verified.Reason}"
+                : $"not translated: {verified.Outcome}/{verified.Reason}/{verified.Code}");
     }
 
     /// <summary>
@@ -303,26 +326,45 @@ internal static class Program
     /// </summary>
     private static int ReportClosure()
     {
-        Console.WriteLine($"# broiler-vm-composition core-contract-version={VmCoreContract.Version}");
+        Console.WriteLine(
+            $"# broiler-vm-composition core-contract-version={VmCoreContract.Version} " +
+            $"ubc-contract-version={UbcContract.Version}");
         Console.WriteLine("composition Broiler.VM.Composition.WebAssembly.Execution");
-        Console.WriteLine("label execution-only");
-        Console.WriteLine("carries-lowering no");
+
+        // THE LABEL THIS IMAGE CARRIED UNTIL THE TRANSLATOR ARRIVED IS NOT PRINTED. It was
+        // `execution-only`, and what it meant here was that the profile carried no lowering at all, so
+        // nothing in the image could turn anything into an artifact. The translator is a lowering from
+        // a module into universal bytecode, it runs in this image, and so the image claims no label.
+        Console.WriteLine("label none");
+        Console.WriteLine("carries-lowering yes");
         Console.WriteLine("profiles 1");
         Console.WriteLine(
             string.Join(
                 ' ',
                 "profile",
                 WebAssemblyProfile.Id,
-                WebAssemblyProfile.Descriptor.PackageIdentity.PackageId,
-                WebAssemblyProfile.Descriptor.DescriptorRevision,
-                WebAssemblyProfile.Descriptor.HostCapabilityDescriptors.Length));
+                Descriptor.PackageIdentity.PackageId,
+                Descriptor.DescriptorRevision,
+                Descriptor.HostCapabilityDescriptors.Length));
         Console.WriteLine(string.Join(' ', "manifest", WebAssemblyProfile.SliceManifest));
         Console.WriteLine(
             string.Join(
                 ' ',
                 "format-versions",
-                WebAssemblyProfile.Descriptor.SupportedFormatVersions.Min,
-                WebAssemblyProfile.Descriptor.SupportedFormatVersions.Max));
+                Descriptor.SupportedFormatVersions.Min,
+                Descriptor.SupportedFormatVersions.Max));
+
+        // The lowering, named from what the image holds: the translator's identity and version, and the
+        // one form that runs what it writes.
+        Console.WriteLine(
+            string.Join(
+                ' ',
+                "translator",
+                WasmTranslator.TranslatorIdentity,
+                WasmTranslator.TranslatorVersion.ToString(CultureInfo.InvariantCulture)));
+        Console.WriteLine(
+            $"form {UbcBytecodeEmitter.Form.Identity} " +
+            UbcBytecodeEmitter.Form.SemanticVersion.ToString(CultureInfo.InvariantCulture));
         Console.WriteLine("decoder yes");
         Console.WriteLine("validator yes");
         Console.WriteLine("interpreter yes");
@@ -331,14 +373,25 @@ internal static class Program
         return 0;
     }
 
+    /// <summary>The family's descriptor over the bytecode emitter: the one profile row this root composes.</summary>
+    /// <remarks>
+    /// A family names no emitter, so the root that composes it builds its descriptor over the form it
+    /// chose. This one composes the bytecode emitter and nothing else.
+    /// </remarks>
+    private static VmProfileDescriptor Descriptor { get; } = UbcDescriptors.Build(
+        WebAssemblyProfile.Registration,
+        WebAssemblyProfile.Declaration,
+        UbcEmitterSet.Create(UbcBytecodeEmitter.Form));
+
     private static VmRuntime? Runtime(out string failure)
     {
         var catalog = VmCatalog.CreateBuilder()
 
-            // The whole of the composition: one profile, named by its own static accessor. There is
-            // no aggregate profile type to name instead, by design - one would reference every
-            // profile assembly and this closure would stop being a single-profile closure.
-            .Add(WebAssemblyProfile.Descriptor)
+            // The whole of the composition: one profile, named by its own static accessors and built
+            // here over the one form. There is no aggregate profile type to name instead, by design -
+            // one would reference every profile assembly and this closure would stop being a
+            // single-profile closure.
+            .Add(Descriptor)
             .Build();
 
         var created = VmRuntime.Create(catalog, Options());
@@ -353,9 +406,88 @@ internal static class Program
         return null;
     }
 
-    private static VmArtifactDescriptor Descriptor(VmFeatureManifestId manifest) =>
-        new(WebAssemblyProfile.Id, 1, manifest, default,
+    /// <summary>The artifact descriptor a translation's artifact is verified under.</summary>
+    private static VmArtifactDescriptor ArtifactDescriptor(VmFeatureManifestId manifest) =>
+        new(WebAssemblyProfile.Id, UbcFormat.FormatVersion, manifest, default,
             VmCallerIdentity.FromCanonicalIdentity("composition-wasm-execution://artifact"));
+
+    /// <summary>Which stage answered a module.</summary>
+    private enum Stage
+    {
+        /// <summary>The translator refused it, and the core was never asked.</summary>
+        Translation,
+
+        /// <summary>It translated, and the core answered over its artifact.</summary>
+        Core,
+    }
+
+    /// <summary>
+    /// What verifying one module answered, in the fields the core's refusal of a bare module was
+    /// reported in: a translation's refusal where the translator refused it, the core's answer over
+    /// the artifact where it translated.
+    /// </summary>
+    private sealed record Verified(
+        Stage Stage,
+        VmOutcome Outcome,
+        VmReason Reason,
+        int Code,
+        VmSourcePosition Position,
+        VmVerifiedArtifact? Artifact)
+    {
+        internal bool TryGetArtifact(out VmVerifiedArtifact artifact)
+        {
+            artifact = Artifact!;
+            return Artifact is not null;
+        }
+    }
+
+    /// <summary>
+    /// Translates <paramref name="module"/> under the ceilings the core would verify it under in
+    /// <paramref name="runtime"/>, and verifies the artifact under <paramref name="descriptor"/>.
+    /// </summary>
+    /// <remarks>
+    /// The ceilings are the runtime's, read off its budget snapshot, intersected with the profile's
+    /// hard maxima and with the request, as the core intersects them for the verification of the
+    /// artifact - so the two run under one set.
+    /// </remarks>
+    private static Verified Verify(VmRuntime runtime, byte[] module, VmArtifactDescriptor descriptor)
+    {
+        var snapshot = runtime.GetBudgetSnapshot();
+        var values = new ulong[VmBudgetDimensions.Count];
+
+        foreach (var dimension in VmBudgetDimensions.All)
+        {
+            values[(int)dimension] = snapshot.EffectiveCeiling(dimension);
+        }
+
+        if (!VmLimitVector.TryCreate(values, out var host))
+        {
+            throw new InvalidOperationException("the runtime's ceilings do not form a limit vector");
+        }
+
+        var ceilings = VmLimitVector.Intersect(
+            VmLimitVector.Intersect(host, Descriptor.ProfileHardMaxima),
+            descriptor.RequestedLimits.IsEmpty ? VmLimitVector.Unconstrained : descriptor.RequestedLimits);
+
+        var translation = WasmTranslator.Translate(module, ceilings, CancellationToken.None);
+
+        if (!translation.Succeeded)
+        {
+            return new Verified(
+                Stage.Translation, translation.Outcome, translation.Reason, (int)translation.Code,
+                translation.Position, null);
+        }
+
+        var verified = runtime.Verify(in descriptor, translation.Artifact.AsSpan(), CancellationToken.None);
+
+        return new Verified(
+            Stage.Core,
+            verified.Outcome,
+            verified.Reason,
+            verified.Diagnostics.ProfileDiagnosticCode,
+            verified.Diagnostics.SourcePosition,
+            verified.TryGetArtifact(out var artifact) ? artifact : null);
+    }
 
     private static VmRuntimeCreationOptions Options()
     {

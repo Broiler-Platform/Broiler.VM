@@ -16,7 +16,7 @@ namespace Broiler.VM.Architecture.Tests;
 /// and they cover this family the day its projects exist, with no code change. The rest of group N
 /// is hard-coded to the JavaScript assembly names, deliberately, because a rule about a family is a
 /// rule about that family's own shape. This family's shape is not the JavaScript family's: it has
-/// one project rather than three, no format pivot and no lowering, so the reference-set claim it
+/// one project rather than three and no format pivot of its own, so the reference-set claim it
 /// needs is a different sentence and gets a different row.
 /// </para>
 /// </remarks>
@@ -27,17 +27,21 @@ internal static class WebAssemblyFamilyRules
 
     /// <summary>The exact Broiler.VM-owned reference set this profile assembly may have.</summary>
     /// <remarks>
-    /// ADR 0011's obligation P1, with nothing added to it. The JavaScript profile's set carries a
+    /// ADR 0011's obligation P1, and the universal bytecode. The JavaScript profile's set carries a
     /// third name because that family has a format sibling to hold a lowering and an executor apart;
-    /// this family has neither, so the set is the two core assemblies and the rule says so.
+    /// this family has no sibling of its own, and its third name is <c>Broiler.VM.Ubc</c>, the
+    /// universal bytecode's format, family-table schema and verifier, which milestone UBC-4 has the
+    /// profile reference to declare its family against. It references no emitter - rule A11 forbids a
+    /// profile one - so the set is the two core assemblies and the universal bytecode, and the rule
+    /// says so.
     /// </remarks>
     internal static readonly string[] ProfileCoreReferences =
-        ["Broiler.VM.Abstractions", "Broiler.VM.Binary"];
+        ["Broiler.VM.Abstractions", "Broiler.VM.Binary", "Broiler.VM.Ubc"];
 
     /// <summary>
-    /// W1: the WebAssembly profile assembly references exactly Abstractions and Binary; it never
-    /// references the runtime and never grows a family sibling; it declares no PackageReference and
-    /// opens its internals to nobody.
+    /// W1: the WebAssembly profile assembly references exactly Abstractions, Binary and the universal
+    /// bytecode; it never references the runtime and never grows a family sibling; it declares no
+    /// PackageReference and opens its internals to nobody.
     /// </summary>
     /// <remarks>
     /// <para>

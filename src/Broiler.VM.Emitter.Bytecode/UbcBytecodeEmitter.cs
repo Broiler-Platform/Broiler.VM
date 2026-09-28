@@ -39,14 +39,23 @@ namespace Broiler.VM.Emitter.Bytecode;
 public static class UbcBytecodeEmitter
 {
     /// <summary>The emitter's semantic version: it moves when the interpreter executes any row differently.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4AD700
+    /// <remarks>
+    /// Version 2 executes call rows of the signature effect form, traps an out-of-range truncation as an
+    /// integer overflow rather than an invalid conversion, charges one fuel unit before it resolves an
+    /// invocation's entry point, and runs a family's admission and start unit in the instantiation step.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B84AAF
     // Broiler-Human:        PENDING
-    public const int SemanticVersion = 1;
+    public const int SemanticVersion = 2;
 
-    /// <summary>The bytecode form: the identity <see cref="UbcFormat.BytecodeForm"/> and the interpreter as its executor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=2B5582
+    /// <summary>
+    /// The bytecode form: the identity <see cref="UbcFormat.BytecodeForm"/> and the interpreter as its
+    /// executor, written for universal bytecode contract version 2 and carrying the version this
+    /// assembly was compiled against, which the descriptor factory compares with its own.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=798ACE
     // Broiler-Human:        PENDING
-    public static UbcForm Form { get; } = new(UbcFormat.BytecodeForm, SemanticVersion, new UbcBytecodeExecutorFactory());
+    public static UbcForm Form { get; } = new(UbcFormat.BytecodeForm, SemanticVersion, new UbcBytecodeExecutorFactory(), authoredUbcContractVersion: 2);
 }
 
 /// <summary>Makes the interpreter's executor for one family.</summary>
@@ -145,9 +154,23 @@ internal sealed class UbcContinuation : IVmProfileContinuation
 /// each answered as a core step and never as a core outcome.
 /// </summary>
 /// <remarks>
+/// <para>
 /// A meter refusal is answered as a contract violation naming the allowance, and a false poll as one
 /// naming cancellation; the core rewrites both from its own latches into the exhaustion or the
 /// cancellation that actually happened, which is the only way a profile can name a dimension.
+/// </para>
+/// <para>
+/// <b>What a family chooses is checked before it is used.</b> A unit a family names - the unit an entry
+/// point resolved to, an instance's start unit - is entered only when the program has it, an entry
+/// only when its unit is flagged as one, and an answer of no kind is a contract violation. An instance
+/// this executor will not answer as instantiated is abandoned through the family before the step
+/// answers, whatever ended it: an admission that was not ready, a start unit that did not complete, or
+/// an exception. An exception from the family's <c>CreateInstance</c> itself leaves no state to
+/// abandon, so what the family charged before it threw is the family's to give back before the
+/// exception leaves it. One it does answer as instantiated is the core's to publish, and the core drops one
+/// whose meter latched a refusal or a cancellation during the step without abandoning it: a defect of
+/// the core, written out in `docs/tasks/release-dropped-instantiation-retention.md`.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=0DCB04
 // Broiler-Falsified-If: a step is answered with an instance, continuation or payload another executor made, or a guest program's fault is answered as a contract violation
@@ -172,8 +195,23 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
     public VmProfileId ProfileId => environment.ProfileId;
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=B958BC
-    // Broiler-Falsified-If: a handle this executor's family did not verify is instantiated
+    /// <remarks>
+    /// <para>
+    /// The family makes the instance state, then says whether it may be published. A ready instance
+    /// with a start unit runs that unit here, in this step and under its meter, and is published only
+    /// when the unit completes: a fault of the start unit is the instantiation's fault, and every other
+    /// end is answered as the run answered it or, for a suspension, as a contract violation.
+    /// </para>
+    /// <para>
+    /// Every path on which this executor does not answer the state as instantiated abandons it through
+    /// the family first, an
+    /// exception from any family member included, so what the state retained is released within the
+    /// step that retained it. An exception other than a cancellation is answered as a contract
+    /// violation; a cancellation is passed on to the core once the state is abandoned.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=2A89A8
+    // Broiler-Falsified-If: a handle this executor's family did not verify is instantiated, an instance is published whose admission was not ready or whose start unit did not complete, a unit the program does not have is entered, or a state this executor does not answer as instantiated outlives the step without being abandoned
     // Broiler-Human:        PENDING
     public VmExecutionStep Instantiate(VmVerifiedArtifact artifact, System.Threading.CancellationToken cancellationToken)
     {
@@ -188,13 +226,103 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
             return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);
         }
 
-        var familyState = TFamily.CreateInstance(new UbcInstanceContext(program, environment));
-        return VmExecutionStep.Instantiated(new UbcInstance(program, familyState, this), null);
+        object? familyState = null;
+        UbcInterpreter<TFamily>? interpreter = null;
+        var abandoned = false;
+
+        try
+        {
+            familyState = TFamily.CreateInstance(new UbcInstanceContext(program, environment));
+            var admission = TFamily.AdmitInstance(familyState);
+
+            switch (admission.Kind)
+            {
+                case UbcInstanceAnswerKind.Ready:
+                    break;
+
+                case UbcInstanceAnswerKind.Faulted:
+                    Abandon();
+                    return VmExecutionStep.Faulted(admission.Fault);
+
+                case UbcInstanceAnswerKind.Exhausted:
+                    Abandon();
+                    return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);
+
+                default:
+                    Abandon();
+                    return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
+            }
+
+            var instance = new UbcInstance(program, familyState, this);
+            var start = TFamily.StartUnit(familyState);
+
+            if (start == -1)
+            {
+                return VmExecutionStep.Instantiated(instance, null);
+            }
+
+            if ((uint)start >= (uint)program.Units.Length)
+            {
+                Abandon();
+                return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
+            }
+
+            interpreter = new UbcInterpreter<TFamily>(instance, environment.Meter, environment.Capabilities, declaration.MaxUnchargedWork);
+            var ran = interpreter.RunStart(start);
+
+            switch (ran.Kind)
+            {
+                case VmExecutionStepKind.Completed:
+                    return VmExecutionStep.Instantiated(instance, null);
+
+                case VmExecutionStepKind.Faulted:
+                case VmExecutionStepKind.ContractViolation:
+                    Abandon();
+                    return ran;
+
+                default:
+                    Abandon();
+                    return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
+            }
+        }
+        catch (System.Exception failure)
+        {
+            // A handler that threw left the start run's frames standing; their depth is given back
+            // here, in the step that charged it, as an ending the run answered would have given it.
+            interpreter?.ReleaseDepth();
+
+            if (familyState is not null)
+            {
+                Abandon();
+            }
+
+            if (failure is System.OperationCanceledException)
+            {
+                throw;
+            }
+
+            return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
+        }
+
+        // At most once per state, even when abandoning it is what threw.
+        void Abandon()
+        {
+            if (!abandoned)
+            {
+                abandoned = true;
+                TFamily.AbandonInstance(familyState!);
+            }
+        }
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D7B803
-    // Broiler-Falsified-If: an entry name no entry carries starts a unit, or another executor's instance is run
+    /// <remarks>
+    /// One fuel unit is charged before the family resolves the entry point: resolving it is work the
+    /// invocation asks for before any frame stands to pay for it. A unit the family names is entered
+    /// only when the program has it and it is flagged as an entry.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=274F83
+    // Broiler-Falsified-If: an entry point starts a unit the program does not have or one not flagged as an entry, an answer of no kind starts anything, the family resolves before the fuel unit is charged, or another executor's instance is run
     // Broiler-Human:        PENDING
     public VmExecutionStep Invoke(IVmInstanceState state, in VmInvocationRequest request, System.Threading.CancellationToken cancellationToken)
     {
@@ -203,15 +331,38 @@ internal sealed class UbcExecutor<TFamily> : IVmProfileExecutor
             return VmExecutionStep.ContractViolation(VmReason.ForeignPayload);
         }
 
-        var name = request.EntryPoint.Utf8;
-
-        if (!instance.Program.TryGetEntry(name, out var unit))
+        if (!environment.Meter.TryCharge(VmBudgetDimension.Fuel, 1))
         {
-            return VmExecutionStep.Faulted(TFamily.EntryRefused(instance.FamilyState, name));
+            return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);
         }
 
-        var interpreter = new UbcInterpreter<TFamily>(instance, environment.Meter, environment.Capabilities, declaration.MaxUnchargedWork);
-        return interpreter.Start(unit, name);
+        var name = request.EntryPoint.Utf8;
+        var answer = TFamily.ResolveEntry(instance.FamilyState, instance.Program, name);
+
+        switch (answer.Kind)
+        {
+            case UbcEntryAnswerKind.Found:
+            {
+                var units = instance.Program.Units;
+
+                if ((uint)answer.Unit >= (uint)units.Length || (units[answer.Unit].Unit.Flags & UbcUnitFlags.Entry) == 0)
+                {
+                    return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
+                }
+
+                var interpreter = new UbcInterpreter<TFamily>(instance, environment.Meter, environment.Capabilities, declaration.MaxUnchargedWork);
+                return interpreter.Start(answer.Unit, name);
+            }
+
+            case UbcEntryAnswerKind.Missing:
+                return VmExecutionStep.Faulted(TFamily.EntryRefused(instance.FamilyState, name));
+
+            case UbcEntryAnswerKind.Refused:
+                return VmExecutionStep.Faulted(answer.Fault);
+
+            default:
+                return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
+        }
     }
 
     /// <inheritdoc/>

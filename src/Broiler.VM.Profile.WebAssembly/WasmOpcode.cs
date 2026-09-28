@@ -32,14 +32,17 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <para>
 /// <b>Naming an opcode here is not admitting it.</b> The decoder retains a function body as bytes
 /// rather than reading it instruction by instruction; <see cref="WasmValidator"/> is the pass that
-/// walks a body and <see cref="WasmInterpreter"/> the one that executes it. What this enum fixes is
-/// the byte-to-name mapping both use, so that the mapping is reviewed once rather than inline in
-/// each of the two places that needs it.
+/// walks a body and <see cref="WasmLowering"/> the one that lowers it into universal bytecode. What
+/// this enum fixes is the byte-to-name mapping both use, so that the mapping is reviewed once rather
+/// than inline in each of the two places that needs it.
 /// <i>(Corrected 2026-09-08. This paragraph read "Nothing in this build executes an instruction,
 /// and ... validation is the next part of this work rather than a part of it. What this enum fixes
 /// now is the byte-to-name mapping that pass will use". Both clauses were true when written and
 /// went stale when the validator and then the interpreter landed beside this enum; the superseded
 /// reading is quoted rather than deleted so the chain stays readable.)</i>
+/// <i>(Corrected 2026-09-25. The corrected paragraph named the interpreter as the pass that executes
+/// a body. Milestone UBC-4 retired it; the translator's lowering is the second pass that reads the
+/// mapping, and the universal bytecode executes what it writes.)</i>
 /// </para>
 /// <para>
 /// <b>What is deliberately absent.</b> Every instruction behind the <c>0xFC</c> prefix (bulk memory

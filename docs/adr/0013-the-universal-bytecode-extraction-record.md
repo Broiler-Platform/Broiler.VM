@@ -427,3 +427,21 @@ This record defines no exclusion identifier.
   UBC-10 the unsatisfied G1 of candidate B as the reason they cannot meet their gates, with its holder.
 - **Nothing is reviewed, accepted, advertised, packed or published by this record**, under
   [`docs/mvp.md`](../mvp.md).
+
+## Decision UBC-D-5, taken early for two assemblies (added 2026-09-25, at milestone UBC-4)
+
+The programme roadmap places decision UBC-D-5 - the packability of `Broiler.VM.Ubc` and
+`Broiler.VM.Ubc.Native` - with the release owner and the architecture owner, due before UBC-9. On
+2026-09-25, before milestone UBC-4 made the WebAssembly profile reference `Broiler.VM.Ubc`, the owner took
+it early for the two assemblies that exist: **`Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode` are
+packable.** The reason is the profile's own packaging: the language profiles had been made packable for
+the preview feed, and a packable profile referencing an assembly that is never packed would publish a
+package whose dependency does not exist. The alternatives weighed were to stop packing the WebAssembly
+profile until UBC-9, which would withdraw a published preview, and to record the broken dependency and
+change nothing, which would publish it knowingly. Both were refused.
+
+What it changes: rule U1 requires `IsPackable` true on `Broiler.VM.Ubc` and keeps every other clause;
+ADR 0001 carries the dated revision of the packable set; `Broiler.VM.Ubc.Native` does not exist, and
+the decision stays open for it. The release owner and the architecture owner are the same person as
+every other holder, recorded as EX-30, and this section does not claim their agreement is independent.
+Nothing is published by this section.

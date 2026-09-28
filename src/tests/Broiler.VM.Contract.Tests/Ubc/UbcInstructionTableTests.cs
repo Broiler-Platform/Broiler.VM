@@ -45,6 +45,11 @@ public sealed class UbcInstructionTableTests
         { "a-kind-outside-the-closed-set", "closed set" },
         { "a-cost-of-zero", "fuel unit" },
         { "a-counted-effect-on-a-u32-operand", "U8 or U16" },
+        { "a-signature-effect-on-a-dynamic-row", "only on a call row" },
+        { "a-signature-effect-on-a-primitive-row", "only on a call row" },
+        { "a-signature-effect-on-a-branch-row", "only on a call row" },
+        { "a-signature-effect-on-a-u8-operand", "U16 or U32" },
+        { "a-signature-effect-on-a-two-field-operand", "U16 or U32" },
         { "a-code-target-on-a-u16-operand", "U32 operand" },
         { "a-branch-with-no-code-target", "branch row names a code target" },
         { "a-code-target-on-a-dynamic-row", "only a branch row" },
@@ -114,6 +119,21 @@ public sealed class UbcInstructionTableTests
                 break;
             case "a-counted-effect-on-a-u32-operand":
                 rows.Add(new(0x40, "test.x", UbcOperandShape.U32, UbcEffect.Counted(None, UbcSlotType.V, 1, None), UbcTarget.None, UbcInstructionKind.Dynamic));
+                break;
+            case "a-signature-effect-on-a-dynamic-row":
+                rows.Add(new(0x40, "test.x", UbcOperandShape.U32, UbcEffect.Signature(I32), UbcTarget.None, UbcInstructionKind.Dynamic));
+                break;
+            case "a-signature-effect-on-a-primitive-row":
+                rows.Add(Primitive(UbcPrimitive.I32Add, UbcEffect.Signature(I32), UbcOperandShape.U32));
+                break;
+            case "a-signature-effect-on-a-branch-row":
+                rows.Add(new(0x40, "test.x", UbcOperandShape.U32, UbcEffect.Signature(I32), UbcTarget.Code(), UbcInstructionKind.Branch));
+                break;
+            case "a-signature-effect-on-a-u8-operand":
+                rows.Add(new(0x40, "test.x", UbcOperandShape.U8, UbcEffect.Signature(I32), UbcTarget.None, UbcInstructionKind.Call));
+                break;
+            case "a-signature-effect-on-a-two-field-operand":
+                rows.Add(new(0x40, "test.x", UbcOperandShape.U16U16, UbcEffect.Signature(I32), UbcTarget.None, UbcInstructionKind.Call));
                 break;
             case "a-code-target-on-a-u16-operand":
                 rows.Add(new(0x40, "test.x", UbcOperandShape.U16, UbcEffect.Listed(None, None), UbcTarget.Code(), UbcInstructionKind.Branch));
@@ -193,6 +213,40 @@ public sealed class UbcInstructionTableTests
         Assert.Contains(defectMentions, defect, StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData(UbcOperandShape.U16)]
+    [InlineData(UbcOperandShape.U32)]
+    public void A_Signature_Effect_Is_Admitted_On_A_Call_Row_Whose_Operand_Is_One_Wide_Field(UbcOperandShape shape)
+    {
+        var row = new UbcInstructionRow(0x40, "test.call_signature", shape, UbcEffect.Signature(I32), UbcTarget.None, UbcInstructionKind.Call);
+
+        var created = UbcInstructionTable.TryCreate(
+            UbcCorpusFamily.Identity, 1, UbcCorpusFamily.BaseManifest, [row], [], [], [], canonicaliseNaN: false, out var table, out var defect);
+
+        Assert.True(created, defect);
+        Assert.True(table!.TryGetRow(0x40, out var admitted));
+        Assert.Equal(UbcEffectForm.Signature, admitted.Effect.Form);
+    }
+
+    [Fact]
+    public void A_Signature_Effect_Carries_Only_Its_Trailing_Pops_And_Cannot_Count_Them_Alone()
+    {
+        var effect = UbcEffect.Signature([UbcSlotType.V, UbcSlotType.I32]);
+
+        Assert.Equal(UbcEffectForm.Signature, effect.Form);
+        Assert.Equal(new[] { UbcSlotType.V, UbcSlotType.I32 }, effect.Pops);
+        Assert.Empty(effect.Pushes);
+        Assert.Equal(0, effect.Multiplier);
+
+        // How many slots it pops is the Types row's, which the effect does not hold: the count is
+        // refused rather than answered as the trailing pops alone.
+        Assert.False(effect.TryGetPopCount(0, out _));
+        Assert.False(effect.TryGetPopCount(7, out _));
+
+        Assert.Throws<ArgumentException>(() => UbcEffect.Signature(default));
+        Assert.Throws<ArgumentOutOfRangeException>(() => UbcEffect.Signature([(UbcSlotType)9]));
+    }
+
     [Fact]
     public void A_Missing_List_Is_Refused_With_A_Defect_Rather_Than_Thrown()
     {
@@ -225,11 +279,14 @@ public sealed class UbcInstructionTableTests
         Assert.Equal(UbcCorpusFamily.WideManifest, wide.Manifest);
         Assert.True(baseTable.CanonicaliseNaN);
         Assert.False(wide.CanonicaliseNaN);
-        Assert.Equal(baseTable.Rows.Length + 1, wide.Rows.Length);
+        Assert.Equal(baseTable.Rows.Length + 2, wide.Rows.Length);
         Assert.Equal(baseTable.Rows.Select(static row => row.Opcode).Order(), baseTable.Rows.Select(static row => row.Opcode));
 
         Assert.True(wide.TryGetRow(UbcCorpusFamily.Op.WideOnly, out _));
         Assert.False(baseTable.TryGetRow(UbcCorpusFamily.Op.WideOnly, out _));
+        Assert.True(wide.TryGetRow(UbcCorpusFamily.Op.CallSignature, out var signatureRow));
+        Assert.Equal(UbcEffectForm.Signature, signatureRow.Effect.Form);
+        Assert.False(baseTable.TryGetRow(UbcCorpusFamily.Op.CallSignature, out _));
         Assert.False(baseTable.TryGetRow(0xFF, out _));
         Assert.True(baseTable.TryGetRegionKind(UbcCorpusFamily.FinallyKind, out var finallyKind));
         Assert.Equal(new[] { UbcSlotType.V, UbcSlotType.I32 }, finallyKind.LandingPushes);

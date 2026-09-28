@@ -69,45 +69,59 @@ public sealed class UbcRuleTests
             message => message.Contains("opens internals to", StringComparison.Ordinal));
 
         Assert.Contains(
-            UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable.csproj.witness")),
-            message => message.Contains("sets IsPackable to true", StringComparison.Ordinal));
+            UbcRules.U1(ComponentGraph.Witness("U1-ubc-not-packable.csproj.witness")),
+            message => message.Contains("sets IsPackable to false", StringComparison.Ordinal));
 
         // The packability clause reads elements, not text, so each way a search of the text is
-        // satisfied while the project packs is reported: the element quoted in a comment and
-        // nowhere else, a false definition a later one overrides, and a false definition that
+        // satisfied while the project does not pack is reported: the element quoted in a comment
+        // and nowhere else, a true definition a later one overrides, and a true definition that
         // holds only under a condition the rule does not evaluate.
         Assert.Contains(
-            UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable-behind-a-comment.csproj.witness")),
-            message => message.Contains("does not carry the literal <IsPackable>false</IsPackable>", StringComparison.Ordinal));
+            UbcRules.U1(ComponentGraph.Witness("U1-ubc-not-packable-behind-a-comment.csproj.witness")),
+            message => message.Contains("does not carry the literal <IsPackable>true</IsPackable>", StringComparison.Ordinal));
 
         Assert.Contains(
-            UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable-overridden.csproj.witness")),
-            message => message.Contains("sets IsPackable to true", StringComparison.Ordinal));
+            UbcRules.U1(ComponentGraph.Witness("U1-ubc-not-packable-overridden.csproj.witness")),
+            message => message.Contains("sets IsPackable to false", StringComparison.Ordinal));
 
         Assert.Contains(
-            UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable-under-a-condition.csproj.witness")),
+            UbcRules.U1(ComponentGraph.Witness("U1-ubc-not-packable-under-a-condition.csproj.witness")),
             message => message.Contains("sets IsPackable under a condition", StringComparison.Ordinal));
 
         // And only a property group's element is a definition, so an element of that name that is
         // no property - inside ProjectExtensions, which MSBuild does not evaluate, or item metadata -
-        // and a false one a target sets, which holds only once the target has run, each leave the
-        // project without one; while a target that sets anything but false is reported, because it
-        // can turn the property on for the pack that runs after it.
+        // and a true one a target sets, which holds only once the target has run, each leave the
+        // project without one; while a target that sets anything but true is reported, because it
+        // can turn the property off for the pack that runs after it.
         foreach (var witness in new[]
                  {
-                     "U1-ubc-packable-only-in-project-extensions.csproj.witness",
-                     "U1-ubc-packable-only-as-item-metadata.csproj.witness",
-                     "U1-ubc-packable-only-inside-a-target.csproj.witness",
+                     "U1-ubc-not-packable-only-in-project-extensions.csproj.witness",
+                     "U1-ubc-not-packable-only-as-item-metadata.csproj.witness",
+                     "U1-ubc-not-packable-only-inside-a-target.csproj.witness",
                  })
         {
             Assert.Contains(
                 UbcRules.U1(ComponentGraph.Witness(witness)),
-                message => message.Contains("does not carry the literal <IsPackable>false</IsPackable>", StringComparison.Ordinal));
+                message => message.Contains("does not carry the literal <IsPackable>true</IsPackable>", StringComparison.Ordinal));
         }
 
         Assert.Contains(
-            UbcRules.U1(ComponentGraph.Witness("U1-ubc-packable-set-by-a-target.csproj.witness")),
-            message => message.Contains("sets IsPackable to true", StringComparison.Ordinal));
+            UbcRules.U1(ComponentGraph.Witness("U1-ubc-not-packable-set-by-a-target.csproj.witness")),
+            message => message.Contains("sets IsPackable to false", StringComparison.Ordinal));
+
+        // Each witness of another clause declares the assembly packable, so the one message it draws
+        // is its own clause's, and a witness of one clause cannot stand in for another's.
+        foreach (var witness in new[]
+                 {
+                     "U1-ubc-references-a-third-project.csproj.witness",
+                     "U1-ubc-package-reference.csproj.witness",
+                     "U1-ubc-internals-visible-to.csproj.witness",
+                     "U1-ubc-package-id.csproj.witness",
+                     "U1-ubc-allows-unsafe-blocks.csproj.witness",
+                 })
+        {
+            Assert.Single(UbcRules.U1(ComponentGraph.Witness(witness)));
+        }
 
         Assert.Contains(
             UbcRules.U1(ComponentGraph.Witness("U1-ubc-package-id.csproj.witness")),
@@ -618,15 +632,17 @@ public sealed class UbcRuleTests
     {
         Assert.Empty(UbcRules.U8Vocabulary(Registry, Vocabulary));
 
-        // Non-vacuous: both sides were read whole. Fifty-six members from the 3000 range to the 3900
-        // one, and a row for each, at the registry's first revision - so a clean result is a comparison
-        // of two real sets rather than of an empty one with another.
+        // Non-vacuous: both sides were read whole. Fifty-seven members from the 3000 range to the 3900
+        // one, and a row for each, at the registry's second revision - so a clean result is a comparison
+        // of two real sets rather than of an empty one with another. The one row of the second
+        // revision is the walk's refusal of a signature row naming no Types row, and it says so.
         Assert.Empty(Registry.Problems);
-        Assert.Equal(56, Vocabulary.Count);
+        Assert.Equal(57, Vocabulary.Count);
         Assert.Equal(Vocabulary.Count, Registry.Rows.Count);
-        Assert.Equal(1, Registry.Revision);
+        Assert.Equal(2, Registry.Revision);
         Assert.Contains(Vocabulary, static member => member is ("WrongMagic", 3001));
         Assert.Contains(Vocabulary, static member => member is ("VerifierDefect", 3904));
+        Assert.Equal([3418], Registry.Rows.Where(static row => row.Since == 2).Select(static row => row.Code));
 
         var witness = Witness("U8-registry-omits-a-declared-code.txt.witness", "diagnostics");
         var reported = UbcRules.U8Vocabulary(UbcRules.ReadRegistry(File.ReadAllText(witness), witness), Vocabulary).ToArray();
@@ -782,7 +798,7 @@ public sealed class UbcRuleTests
         // Non-vacuous, and the figures that matter: every row but one names an Exact entry of the
         // corpus, and the one is the row the rule lists - which is the count the rule fixes rather than
         // the registry.
-        Assert.Equal(55, Registry.Rows.Count(static row => row.Reachability == "corpus"));
+        Assert.Equal(56, Registry.Rows.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
             [3903],
             Registry.Rows.Where(static row => row.Reachability == "defensive").Select(static row => row.Code));
@@ -971,7 +987,7 @@ public sealed class UbcRuleTests
         Assert.Contains(BaselineName, row.Evidence, StringComparison.Ordinal);
 
         // The row must state the limit rather than claim a package surface: this baseline is over a
-        // build output, and the assembly does not pack.
+        // build output, and no rule reads the assembly a produced package carries.
         Assert.Contains("build output", row.NonVacuousWhen, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -1074,12 +1090,12 @@ public sealed class UbcRuleTests
 
         text.Append("# The frozen public surface of Broiler.VM.Ubc, the universal bytecode: its\n");
         text.Append("# container, the common family, the family table schema, the primitive table,\n");
-        text.Append("# the contracts a family implements and the verifier walk. IT DOES NOT PACK -\n");
-        text.Append("# rule U1 holds IsPackable false and no PackageId, and whether it becomes a\n");
-        text.Append("# package is milestone UBC-9's decision - so this file freezes what a family,\n");
-        text.Append("# an emitter or a composition root in this repository can bind to, not what a\n");
-        text.Append("# consumer outside it can. The packable three are frozen in docs/api/ and each\n");
-        text.Append("# profile family in its own docs/api/.\n");
+        text.Append("# the contracts a family implements and the verifier walk. IT PACKS - decision\n");
+        text.Append("# UBC-D-5 was taken at milestone UBC-4 and rule U1 holds IsPackable true and no\n");
+        text.Append("# PackageId - so this file freezes what a family, an emitter or a composition\n");
+        text.Append("# root can bind to, in this repository and in a consumer of the package. The\n");
+        text.Append("# core's three are frozen in docs/api/ and each profile family in its own\n");
+        text.Append("# docs/api/.\n");
         text.Append("#\n");
         text.Append("# GENERATED - regenerate with:\n");
         text.Append("#   BROILER_API_WRITE=1 dotnet test Broiler.VM.slnx -c Release\n");

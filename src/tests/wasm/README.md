@@ -39,13 +39,15 @@ write: `accepts`, `refuses-decoding`, `refuses-validation`, `exhausts`, `refuses
 `sound-either-way`. The decode-and-validate split is checkable from outside because this profile
 numbered it — diagnostic codes below 2700 are the decoder's and 2700 and above are the validator's
 — so "this module was refused before validation began" is a claim a caller can check rather than a
-claim about the profile's internal call order.
+claim about the profile's internal call order. The family hook's codes and the translation's own
+limit codes, numbered in the upper half of the 2800s since the universal bytecode programme's
+milestone UBC-4, fall on the validator's side of that line, and no retained row records one.
 
 `sound-either-way` is the inversion sweep's, and it is the strongest invariant that is **true** of
 it: an inverted byte inside a custom section's payload or inside a data segment's contents produces
 a different module and not an invalid one, so "refuses" would be false. What is true of all
 ninety-nine is that the answer is sound — an acceptance, or a refusal carrying a code the published
-enumeration holds, and never the verifier reporting its own defect.
+enumeration holds, and never the translator or the verifier reporting a defect of its own.
 
 ## Running it
 
@@ -66,7 +68,12 @@ enumeration holds, and never the verifier reporting its own defect.
 There is no entry produced by a fuzzer and none minimised from a counterexample: every module was
 written by hand by the same person who wrote its expected answer, so **this corpus cannot find a
 refusal nobody thought of**. There is no reader for the specification's text format, so none of the
-published conformance assertions is run. No row is replayed under a second publish mode, because
-the harness root publishes one. And no row records an execution answer — every entry stops at
-verification, and the interpreter is scored by the harness's differential lane instead, where the
-expected values come from a second implementation rather than from the interpreter.
+published conformance assertions is run. The manifest records one answer per row and no publish
+mode: a replay under the harness root's trimmed or Native AOT publish is retained, where it is
+retained at all, in the evidence bundle that ran it, and never here. And no row records an execution
+answer. Since the universal bytecode programme's milestone UBC-4 a module is source: every entry
+stops at the profile's translator, which refuses it in the fields the core's verification answers,
+or at the core's verification of the universal bytecode artifact the translator wrote. What runs a
+module — the bytecode emitter executing that artifact over the profile's family — is scored by the
+harness's differential lane instead, where the expected values come from a second implementation
+rather than from what runs the module.

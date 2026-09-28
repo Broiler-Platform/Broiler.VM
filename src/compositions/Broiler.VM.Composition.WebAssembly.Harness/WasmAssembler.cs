@@ -383,6 +383,10 @@ internal static class Instruction
     internal const byte I64Mul = 0x7E;
     internal const byte I64ShrU = 0x88;
 
+    // The twelve float comparisons, in the W3C order: eq, ne, lt, gt, le, ge for f32 and then f64.
+    internal const byte F32Eq = 0x5B;
+    internal const byte F64Eq = 0x61;
+
     internal const byte F32Add = 0x92;
     internal const byte F32Div = 0x95;
     internal const byte F32Min = 0x96;

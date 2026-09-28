@@ -1,0 +1,17 @@
+<!-- Violates U1: the universal bytecode whose only IsPackable true is metadata of an item. Item
+     metadata is not a property, so whether the project packs is whatever an import says, while a
+     reader that counts every element of that name finds a definition. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md">
+      <IsPackable>true</IsPackable>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+</Project>

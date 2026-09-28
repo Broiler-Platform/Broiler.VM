@@ -58,7 +58,7 @@ internal sealed class FixtureProbe : IUbcExecutorFactory
     internal VmProfileDescriptor Descriptor() => UbcDescriptors.Build(
         TallyProfile.Registration,
         TallyProfile.Declaration,
-        UbcEmitterSet.Create(new UbcForm(UbcFormat.BytecodeForm, UbcBytecodeEmitter.SemanticVersion, this)));
+        UbcEmitterSet.Create(new UbcForm(UbcFormat.BytecodeForm, UbcBytecodeEmitter.SemanticVersion, this, UbcBytecodeEmitter.Form.AuthoredUbcContractVersion)));
 
     /// <inheritdoc/>
     public IVmProfileExecutor Create<TFamily>(

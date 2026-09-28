@@ -68,16 +68,20 @@ internal static class FixtureChecks
             : ("descriptor-rows", false, "rows differ: " + string.Join(", ", differing));
     }
 
-    /// <summary>A family compiled against another universal bytecode contract version is refused while the catalog is built.</summary>
+    /// <summary>
+    /// A family compiled against another universal bytecode contract version is refused while the
+    /// catalog is built: here version 1, the one before this build's 2, with the version it was written
+    /// for this build's own, so that only the compilation differs.
+    /// </summary>
     internal static (string, bool, string) ContractVersionRefused()
     {
         var elsewhere = new UbcFamilyRegistration<TallyFamily>(
-            TallyTable.Identity, [TallyTable.Table], new TallyVerifier(), authoredUbcContractVersion: 1, builtAgainstUbcContractVersion: 2);
+            TallyTable.Identity, [TallyTable.Table], new TallyVerifier(), authoredUbcContractVersion: 2, builtAgainstUbcContractVersion: 1);
 
         try
         {
             _ = FixtureHost.Catalog(UbcDescriptors.Build(elsewhere, TallyProfile.Declaration, UbcEmitterSet.Create(UbcBytecodeEmitter.Form)));
-            return ("contract-version-refused", false, "a family built against version 2 was composed");
+            return ("contract-version-refused", false, "a family built against version 1 was composed");
         }
         catch (UbcCompositionException refusal) when (refusal.Fault == UbcCompositionFault.ContractVersionMismatch)
         {

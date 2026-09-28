@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           2
-// Human-reviewed:   0/13
+// Relevant units:   11
+// Annotated:        11/11
+// Exempt:           3
+// Human-reviewed:   0/11
 // IP risk:          Low
 // Security risk:    Critical
 // Criteria:         6/6
 // Resource impact:  4/10 max
-// Unverified:       13
+// Unverified:       11
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -25,11 +25,13 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>THE REPRESENTATION IS A MANAGED ARRAY, AND THE BOUNDS CHECK IS NOT OPTIONAL AND NOT
-/// DEFERRED.</b> Every load and store goes through <see cref="TryLoad"/> or <see cref="TryStore"/>,
-/// each of which computes the effective address in 64-bit arithmetic - so a 32-bit address plus a
-/// 32-bit static offset cannot wrap - and compares the whole accessed range against the memory's
-/// current size before touching a byte. <i>The alternative not taken</i> is a reserved virtual
+/// <b>THE REPRESENTATION IS A PINNED MANAGED ARRAY, AND THE BOUNDS CHECK IS NOT OPTIONAL AND NOT
+/// DEFERRED.</b> Decision WAD-0001 pins the array (<see cref="Allocate"/>) so its base is stable
+/// between growths. Every load and store goes through the universal bytecode's region primitive over
+/// <see cref="Bytes"/>, which computes the effective address in 64-bit arithmetic - so a 32-bit
+/// address plus a 32-bit static offset cannot wrap - and compares the whole accessed range against
+/// the memory's current size before touching a byte; a data segment goes through
+/// <see cref="TryInitialise"/>, which checks its whole range the same way. <i>The alternative not taken</i> is a reserved virtual
 /// range with guard pages, which moves the check into the memory management unit and makes every
 /// claimed runtime identifier a separate piece of evidence; it is the representation this profile
 /// will have to cost when there is a measurement to cost it against, and it is not this one.
@@ -37,24 +39,24 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <para>
 /// <b>THE PUBLISHED DEVIATION, AND THE REASON IT EXISTS.</b> The specification says a refused
 /// <c>memory.grow</c> answers minus one: the operation completes normally and the module decides
-/// what to do. The core's metering surface cannot spell that. A retention report returns nothing,
-/// so a ceiling refusal cannot be handed back at the point of retention; and a refused
-/// <c>TryCharge</c> at any scope latches exhaustion on the meter, after which the core rewrites the
-/// completed step as a resource exhaustion whatever this profile did with the <see langword="false"/>
-/// it was handed. <b>So growth is gated first on this profile's OWN declared page maximum</b> - see
+/// what to do. The core's metering surface cannot spell that for a core budget: a refused
+/// <c>TryCharge</c> at any scope - the allocation's, or the retention's, which a growth charges before
+/// it allocates - latches exhaustion on the meter, after which the core rewrites the step as a resource
+/// exhaustion whatever this profile did with the <see langword="false"/> it was handed. <b>So growth is
+/// gated first on this profile's OWN declared page maximum</b> - see
 /// <see cref="ProfileMaximumPages"/> - which is not a core budget and refuses nothing on the meter.
 /// That gate is where the specification's minus-one comes from: the guest observes it, the
 /// operation continues, and no allowance was spent because none was asked for.
 /// </para>
 /// <para>
 /// <b>A refusal caused by a CORE budget stays non-guest-observable, and that is the deviation this
-/// component's support surface publishes.</b> If the allocation charge below is refused, this
-/// method still answers minus one, and the answer does not reach the guest: the meter latched, and
-/// the core reports the operation as a resource exhaustion naming the dimension and the scope. The
-/// module never runs the instruction after the growth. That is a deviation from what the
-/// specification says <c>memory.grow</c> answers, it is taken deliberately rather than discovered,
-/// and closing it needs a refusable retention member on the core's metering surface that nobody has
-/// minted.
+/// component's support surface publishes.</b> If a charge of <see cref="Grow"/> is refused, it still
+/// answers minus one and says a budget refused it, and the answer does not reach the guest: the
+/// family's handler ends the step there, the meter latched, and the core reports the operation as a
+/// resource exhaustion naming the dimension and the scope. The module never runs the instruction after
+/// the growth. That is a deviation from what the specification says <c>memory.grow</c> answers, it is
+/// taken deliberately rather than discovered, and closing it needs a way for a core budget to refuse a
+/// charge without latching that nobody has minted.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=985077
@@ -111,15 +113,37 @@ internal sealed class WasmMemoryInstance
         declaredMaximumPages = maximumPages;
     }
 
+    /// <summary>
+    /// Allocates the pinned, zeroed array a memory of <paramref name="byteCount"/> bytes is held in,
+    /// which the caller has already charged.
+    /// </summary>
+    /// <remarks>
+    /// <b>DECISION WAD-0001: A LINEAR MEMORY IS A PINNED MANAGED ARRAY.</b> It is allocated on the
+    /// pinned object heap, so the collector never moves it while it lives and its base is stable
+    /// between growths; a growth allocates a new one and republishes the base. The profile's own page
+    /// ceiling keeps the count far below what one array can hold.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=35BEEF
+    // Broiler-Falsified-If: a memory's array is allocated anywhere but the pinned object heap, or allocated before its charge
+    // Broiler-Human:        PENDING
+    internal static byte[] Allocate(ulong byteCount) => System.GC.AllocateArray<byte>((int)byteCount, pinned: true);
+
+    /// <summary>
+    /// The memory's current bytes, for a region access that reads the base at the access.
+    /// </summary>
+    /// <remarks>
+    /// The span is a view, and a successful growth invalidates it: a caller takes it for
+    /// one access and never holds it across an instruction that can grow the memory.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=0; Fingerprint=CB7CA1
+    // Broiler-Falsified-If: a span taken here is held across a growth, or covers bytes outside the current array
+    // Broiler-Human:        PENDING
+    internal System.Span<byte> Bytes => bytes;
+
     /// <summary>How many pages the memory currently holds.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F46F93
     // Broiler-Human:        PENDING
     internal uint PageCount => (uint)(bytes.Length / PageBytes);
-
-    /// <summary>How many bytes the memory currently holds.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=5B4E82
-    // Broiler-Human:        PENDING
-    internal int ByteCount => bytes.Length;
 
     /// <summary>
     /// The effective page ceiling: the tighter of what the module declared and what this profile
@@ -129,60 +153,6 @@ internal sealed class WasmMemoryInstance
     // Broiler-Human:        PENDING
     internal uint EffectiveMaximumPages =>
         declaredMaximumPages < ProfileMaximumPages ? declaredMaximumPages : ProfileMaximumPages;
-
-    /// <summary>
-    /// Reads <paramref name="width"/> bytes little-endian at an address, or refuses.
-    /// </summary>
-    /// <remarks>
-    /// The address arrives already summed in 64 bits from a 32-bit dynamic address and a 32-bit
-    /// static offset, so the sum cannot have wrapped before it got here; the comparison below is
-    /// therefore the only thing standing between a guest and the rest of the heap.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=8389FD
-    // Broiler-Falsified-If: it reads a byte at or past the current size, or the range check is performed in 32-bit arithmetic
-    // Broiler-Human:        PENDING
-    internal bool TryLoad(ulong address, int width, out ulong bits)
-    {
-        bits = 0;
-
-        if (address + (ulong)width > (ulong)bytes.Length)
-        {
-            return false;
-        }
-
-        var at = (int)address;
-
-        for (var index = 0; index < width; index++)
-        {
-            bits |= (ulong)bytes[at + index] << (index * 8);
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Writes the low <paramref name="width"/> bytes of a value little-endian at an address, or
-    /// refuses.
-    /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=2; Fingerprint=A3FB78
-    // Broiler-Falsified-If: it writes a byte at or past the current size, or the range check is performed in 32-bit arithmetic
-    // Broiler-Human:        PENDING
-    internal bool TryStore(ulong address, int width, ulong bits)
-    {
-        if (address + (ulong)width > (ulong)bytes.Length)
-        {
-            return false;
-        }
-
-        var at = (int)address;
-
-        for (var index = 0; index < width; index++)
-        {
-            bytes[at + index] = (byte)(bits >> (index * 8));
-        }
-
-        return true;
-    }
 
     /// <summary>
     /// Copies a data segment's bytes in, after checking the whole segment fits.
@@ -209,15 +179,30 @@ internal sealed class WasmMemoryInstance
     }
 
     /// <summary>
-    /// Grows the memory by whole pages, answering the old page count or minus one.
+    /// Grows the memory by whole pages, answering the old page count or minus one, and says whether a
+    /// core budget refused the growth.
     /// </summary>
     /// <remarks>
     /// <para>
     /// The order is load-bearing and is the order of the two refusals this profile distinguishes.
     /// First the profile's own page ceiling, which spends nothing and hands the guest a minus one it
-    /// can act on. Then the core's allocation charge, which if refused latches exhaustion and makes
-    /// the minus one unreachable by the guest - the deviation this type's remarks publish. Then, and
-    /// only then, the allocation.
+    /// can act on. Then the core's charges - the growth's fuel, its allocation and its retention - any
+    /// of which if refused latches exhaustion and makes the minus one unreachable by the guest, the
+    /// deviation this type's remarks publish. Then, and only then, the allocation.
+    /// </para>
+    /// <para>
+    /// <b>The retention is charged before the allocation, not reported after it.</b> A report returns
+    /// nothing, so a growth that reported its retention after allocating would go on past a refusal
+    /// nobody heard; charged first - the meter's own statement of how a caller that must observe a
+    /// ceiling refusal does it - a refused retention allocates nothing, holds nothing unreported, and is
+    /// answered as the core-budget refusal it is. The bare-module executor this profile carried until
+    /// milestone UBC-4 reported it after the allocation; the bytes and the dimension retained are the
+    /// same.
+    /// </para>
+    /// <para>
+    /// <paramref name="refusedByBudget"/> is true exactly when a charge or a retention the meter refused
+    /// is why the answer is minus one, and false for a refusal against the page ceiling, which charged
+    /// nothing. A caller that must not run the guest past a latched refusal reads it.
     /// </para>
     /// <para>
     /// A growth of zero pages is not a no-op the caller may skip: the specification defines it as the
@@ -225,11 +210,12 @@ internal sealed class WasmMemoryInstance
     /// count without allocating.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=859A66
-    // Broiler-Falsified-If: an array is allocated before the allocation charge returns true, or a refusal against the profile ceiling reaches the meter
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=C5B8BA
+    // Broiler-Falsified-If: an array is allocated before the allocation and retention charges return true, a refusal against the profile ceiling reaches the meter or is answered as refused by a budget, a refused charge is answered as a refusal against the ceiling, or an allocation that throws leaves the added retention reported
     // Broiler-Human:        PENDING
-    internal long Grow(uint deltaPages, IVmMeter meter)
+    internal long Grow(uint deltaPages, IVmMeter meter, out bool refusedByBudget)
     {
+        refusedByBudget = false;
         var current = PageCount;
 
         if (deltaPages == 0)
@@ -251,23 +237,37 @@ internal sealed class WasmMemoryInstance
 
         // Proportional rather than flat: the cost of a growth is the cost of zeroing what it added,
         // and a flat charge would let a guest buy sixty-four mebibytes for the price of one page.
-        if (!meter.TryCharge(VmBudgetDimension.Fuel, deltaPages))
+        // Every refusal from here on latched on the meter.
+        if (!meter.TryCharge(VmBudgetDimension.Fuel, deltaPages) ||
+            !meter.TryCharge(VmBudgetDimension.AllocatedBytes, addedBytes) ||
+            !meter.TryCharge(VmBudgetDimension.LiveBytes, addedBytes))
         {
+            refusedByBudget = true;
             return GrowthRefused;
         }
 
-        if (!meter.TryCharge(VmBudgetDimension.AllocatedBytes, addedBytes))
+        // A new pinned array, the contents copied, and the base republished: decision WAD-0001's growth.
+        // Every view of the old array is stale from here, which is why nothing holds one across an
+        // instruction.
+        byte[] grown;
+
+        try
         {
-            return GrowthRefused;
+            grown = Allocate((ulong)current * PageBytes + addedBytes);
+        }
+        catch (System.Exception)
+        {
+            // The memory keeps its old array, and its release gives back only that array's length, so
+            // the retention charged for the added pages is given back here.
+            meter.ReportReleased(VmBudgetDimension.LiveBytes, addedBytes);
+            throw;
         }
 
-        var grown = new byte[(int)((ulong)current * PageBytes + addedBytes)];
         System.Array.Copy(bytes, grown, bytes.Length);
         bytes = grown;
 
-        // Retained rather than consumed: the bytes live for as long as the store does, which is what
-        // makes live bytes a ceiling and allocated bytes an allowance.
-        meter.ReportRetained(VmBudgetDimension.LiveBytes, addedBytes);
+        // The live bytes charged above are retained rather than consumed: they live for as long as the
+        // instance does, which is what makes live bytes a ceiling and allocated bytes an allowance.
         return current;
     }
 

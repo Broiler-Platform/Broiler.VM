@@ -19,7 +19,12 @@ internal sealed record ManifestRow(
     string Provenance,
     string Invariant);
 
-/// <summary>What one replayed entry actually did.</summary>
+/// <summary>What one replayed entry actually did, and which stage answered it.</summary>
+/// <remarks>
+/// The stage is <c>translation</c> where the translator refused the module and the core was never
+/// asked, <c>core</c> where the module translated and the core answered over its artifact, and
+/// <c>-</c> where there was no module to hand either.
+/// </remarks>
 internal sealed record ReplayObservation(
     string Name,
     string Outcome,
@@ -27,7 +32,8 @@ internal sealed record ReplayObservation(
     int DiagnosticCode,
     string Dimension,
     string Scope,
-    string HashStatus);
+    string HashStatus,
+    string Stage);
 
 /// <summary>
 /// The retained-corpus writer and the replay that holds it: read the bytes, re-hash them, verify
@@ -52,6 +58,16 @@ internal sealed record ReplayObservation(
 /// <c>ResourceExhaustion/CeilingReached/0</c> is the same answer for a declared-count ceiling and a
 /// structural-depth one, and a corpus that recorded the category alone could not tell a verifier
 /// that refuses the right module for the wrong reason from one that does not.
+/// </para>
+/// <para>
+/// <b>Every answer is the translator's or the core's over the translator's artifact, and the replay
+/// records which.</b> The translator decodes and validates a module with the profile's own decoder
+/// and validator before it lowers anything, so every check that refused a module before the
+/// universal bytecode still refuses it there, in the same fields; no check moved into the universal
+/// bytecode's walk, and the class of rows the predeclared parity rule admits for one that did -
+/// class (r) - is empty by construction. A module the translator admitted and the core then refused
+/// is therefore a defect of the translator or of the family's verifier hook, and it fails every
+/// invariant rather than being recorded as an answer.
 /// </para>
 /// <para>
 /// <b>What is NOT compared.</b> The source position is not: a row that pinned four byte offsets
@@ -106,6 +122,9 @@ internal static class CorpusReplay
 
             if (derived)
             {
+                // A declaration names an answer and not the stage that gives it, so the stage the
+                // observation recorded is carried over; the invariant above has already refused the
+                // one stage that may not answer a refusal.
                 var declared = new ReplayObservation(
                     entry.Name,
                     entry.Outcome!.Value.ToString(),
@@ -113,7 +132,8 @@ internal static class CorpusReplay
                     (int)entry.Code,
                     entry.Dimension?.ToString() ?? "-",
                     entry.Scope?.ToString() ?? "-",
-                    "match");
+                    "match",
+                    observed.Stage);
 
                 if (declared != observed)
                 {
@@ -247,7 +267,7 @@ internal static class CorpusReplay
             if (!File.Exists(path))
             {
                 observations[index] = new ReplayObservation(
-                    row.Name, "Missing", "NoSuchFile", 0, "-", "-", "MISSING");
+                    row.Name, "Missing", "NoSuchFile", 0, "-", "-", "MISSING", "-");
 
                 continue;
             }
@@ -268,16 +288,14 @@ internal static class CorpusReplay
     private static ReplayObservation Observe(
         VmRuntime runtime, byte[] bytes, string name, string hashStatus)
     {
-        var descriptor = Descriptor();
-        var verified = runtime.Verify(in descriptor, bytes, CancellationToken.None);
+        var verified = ModuleVerification.Verify(
+            runtime, bytes, "composition-wasm-harness://corpus", "corpus " + name);
 
         // A DIAGNOSTIC CODE IS READ ONLY WHERE THE OUTCOME CARRIES ONE. An exhaustion and a normal
         // completion both leave the field at whatever the diagnostics record defaults to, and
         // formatting it unconditionally would put a number beside two hundred rows that answered
         // with none - a value that looks like an observation and is not one.
-        var code = verified.Outcome is VmOutcome.InvalidArtifact
-            ? verified.Diagnostics.ProfileDiagnosticCode
-            : 0;
+        var code = verified.Outcome is VmOutcome.InvalidArtifact ? verified.Code : 0;
 
         var exhausted = verified.Outcome is VmOutcome.ResourceExhaustion;
 
@@ -286,10 +304,17 @@ internal static class CorpusReplay
             verified.Outcome.ToString(),
             verified.Reason.ToString(),
             code,
-            exhausted ? verified.Diagnostics.ExhaustedDimension.ToString() : "-",
-            exhausted ? verified.Diagnostics.ExhaustedScope.ToString() : "-",
-            hashStatus);
+            exhausted ? verified.Dimension.ToString() : "-",
+            exhausted ? verified.Scope.ToString() : "-",
+            hashStatus,
+            verified.Stage is ModuleStage.Core ? CoreStage : TranslationStage);
     }
+
+    /// <summary>The stage a module the translator refused was answered at.</summary>
+    internal const string TranslationStage = "translation";
+
+    /// <summary>The stage a translated module was answered at: the core, over its artifact.</summary>
+    internal const string CoreStage = "core";
 
     /// <summary>Whether an observation is the ANSWER its manifest row recorded.</summary>
     /// <remarks>
@@ -299,6 +324,11 @@ internal static class CorpusReplay
     /// the integrity script could no longer tell which half of the replay had noticed. That
     /// distinction is the strongest argument for recording a digest at all, and a report that hid it
     /// would be arguing against its own column.
+    /// <para>
+    /// The stage is not one of the comparisons either. A manifest row records the answer a module
+    /// gets, which did not change when the translator started giving it; which stage answered is held
+    /// by the invariant, where a refusal the core gave a translated module fails whatever the row says.
+    /// </para>
     /// </remarks>
     internal static bool Agrees(ManifestRow expected, ReplayObservation observed) =>
         string.Equals(expected.Outcome, observed.Outcome, StringComparison.Ordinal) &&
@@ -321,6 +351,14 @@ internal static class CorpusReplay
     /// moment it is attempted.
     /// </para>
     /// <para>
+    /// <b>A refusal the core gave a translated module fails every invariant, before any other clause is
+    /// read.</b> The translator refuses everything the profile's decoder and validator refuse, so the
+    /// core's walk and the family's hook have nothing left to refuse in a module that translated: class
+    /// (r) is empty by construction, and a universal code - 3001 to 3009 among them, which are also
+    /// this profile's trap codes, and every one of them in the validation band by number - must never
+    /// satisfy a band or an enumeration clause below by coincidence.
+    /// </para>
+    /// <para>
     /// <b>The decode-and-validate split is observable because this profile numbered it.</b>
     /// Diagnostic codes below 2700 are the decoder's and codes from 2700 up are the validator's, so
     /// "this module was refused before validation began" is a claim an outside caller can check
@@ -333,6 +371,13 @@ internal static class CorpusReplay
         var accepted = string.Equals(observed.Outcome, "Normal", StringComparison.Ordinal);
         var exhausted = string.Equals(
             observed.Outcome, "ResourceExhaustion", StringComparison.Ordinal);
+
+        if (string.Equals(observed.Stage, CoreStage, StringComparison.Ordinal) && !accepted)
+        {
+            return $"the core answered {Format(observed)} for a module the translator admitted; " +
+                "class (r) is empty by construction, so this is a defect of the translator or of " +
+                "the family's verifier hook and not an answer";
+        }
 
         switch (invariant)
         {
@@ -514,10 +559,22 @@ internal static class CorpusReplay
                 ? "replayed twice with no residue"
                 : $"replayed twice and {moved} entries answered differently on the second pass"));
 
+        // WHICH STAGE ANSWERED, COUNTED FROM THE FIRST PASS, and what that makes of class (r). The
+        // count is derived rather than asserted, like the residue clause above: a core refusal of a
+        // translated module has already failed its row, and this line says how many there were.
+        var translated = first.Count(o => string.Equals(o.Stage, CoreStage, StringComparison.Ordinal));
+        var refusedAtTranslation = first.Count(o => string.Equals(o.Stage, TranslationStage, StringComparison.Ordinal));
+        var refusedByCore = first.Count(o =>
+            string.Equals(o.Stage, CoreStage, StringComparison.Ordinal) &&
+            !string.Equals(o.Outcome, "Normal", StringComparison.Ordinal));
+
+        Console.WriteLine(
+            $"# retained corpus: {refusedAtTranslation} entries answered by the translator, " +
+            $"{translated} translated and answered by the core, {refusedByCore} of them refused - " +
+            (refusedByCore == 0
+                ? "class (r) is empty"
+                : "class (r) must be empty, and each is a FAIL above"));
+
         return failed;
     }
-
-    private static VmArtifactDescriptor Descriptor() =>
-        new(WebAssemblyProfile.Id, 1, WebAssemblyProfile.SliceManifest, default,
-            VmCallerIdentity.FromCanonicalIdentity("composition-wasm-harness://corpus"));
 }

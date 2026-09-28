@@ -10,9 +10,9 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// <remarks>
 /// <para>
 /// <b>EVERY MODULE HERE IS ASSEMBLED FROM BYTES BY THE ENCODER BESIDE THIS FILE AND GOES THROUGH THE
-/// CORE.</b> Nothing calls the interpreter directly, nothing reaches inside the profile, and no
-/// check asserts on a type the profile does not publish. What a check reads is what an embedder
-/// would read: an outcome, a reason, and a typed payload.
+/// TRANSLATOR AND THE CORE.</b> Nothing calls an interpreter directly, nothing reaches inside the
+/// profile, and no check asserts on a type the profile does not publish. What a check reads is what
+/// an embedder would read: an outcome, a reason, and a typed payload.
 /// </para>
 /// <para>
 /// <b>What this is not.</b> It is not the specification's conformance suite, it is not scored per
@@ -29,6 +29,7 @@ internal static class ExecutionChecks
         var checks = new List<(string Name, bool Passed, string Detail)>();
 
         checks.AddRange(Numeric(runtime));
+        checks.AddRange(FloatComparisons(runtime));
         checks.AddRange(Control(runtime));
         checks.AddRange(Memory(runtime));
         checks.AddRange(Calls(runtime));
@@ -128,6 +129,78 @@ internal static class ExecutionChecks
             (Entry("conv", I32(-5)), Double(-5.0)),
         ]);
 
+        return results;
+    }
+
+    // =============================================================================================
+    // The twelve float comparisons
+    // =============================================================================================
+
+    /// <summary>
+    /// Every float comparison over ordered, equal, unordered and signed-zero operands, each answered
+    /// with the specification's value.
+    /// </summary>
+    /// <remarks>
+    /// Added before the universal bytecode programme's base run of milestone UBC-4, so that the class
+    /// its predeclared rule names - a float comparison whose base answer is the interpreter's defect
+    /// and whose answer after is the specification's value - has members in the harness's own checks
+    /// and not only in the primitive corpus. At the base these checks FAILED, because the profile's
+    /// own interpreter routed the comparison bytes to its integer arm, which has no case for them.
+    /// Through the translator each comparison is a primitive row the bytecode emitter executes from
+    /// the primitive table, and every one of them answers the specification's value.
+    /// </remarks>
+    private static List<(string, bool, string)> FloatComparisons(VmRuntime runtime)
+    {
+        var assembler = new WasmAssembler();
+        var single = assembler.Type([WasmAssembler.F32, WasmAssembler.F32], [WasmAssembler.I32]);
+        var twin = assembler.Type([WasmAssembler.F64, WasmAssembler.F64], [WasmAssembler.I32]);
+        string[] names = ["eq", "ne", "lt", "gt", "le", "ge"];
+
+        for (var index = 0; index < names.Length; index++)
+        {
+            var f32 = assembler.Function(single, [], Binary((byte)(Instruction.F32Eq + index)));
+            var f64 = assembler.Function(twin, [], Binary((byte)(Instruction.F64Eq + index)));
+            assembler.Export("f32" + names[index], WasmAssembler.ExportFunction, f32);
+            assembler.Export("f64" + names[index], WasmAssembler.ExportFunction, f64);
+        }
+
+        // eq ne lt gt le ge, over (1, 2), (2, 2), (NaN, 1) and (-0, +0).
+        (float A, float B, int[] Answers)[] singles =
+        [
+            (1.0f, 2.0f, [0, 1, 1, 0, 1, 0]),
+            (2.0f, 2.0f, [1, 0, 0, 0, 1, 1]),
+            (float.NaN, 1.0f, [0, 1, 0, 0, 0, 0]),
+            (-0.0f, 0.0f, [1, 0, 0, 0, 1, 1]),
+        ];
+
+        (double A, double B, int[] Answers)[] doubles =
+        [
+            (1.0, 2.0, [0, 1, 1, 0, 1, 0]),
+            (2.0, 2.0, [1, 0, 0, 0, 1, 1]),
+            (1.0, double.NaN, [0, 1, 0, 0, 0, 0]),
+            (-0.0, 0.0, [1, 0, 0, 0, 1, 1]),
+        ];
+
+        var calls = new List<(string, Expectation)>();
+
+        foreach (var (a, b, answers) in singles)
+        {
+            for (var index = 0; index < names.Length; index++)
+            {
+                calls.Add((Entry("f32" + names[index], F32(a), F32(b)), Int32(answers[index])));
+            }
+        }
+
+        foreach (var (a, b, answers) in doubles)
+        {
+            for (var index = 0; index < names.Length; index++)
+            {
+                calls.Add((Entry("f64" + names[index], F64(a), F64(b)), Int32(answers[index])));
+            }
+        }
+
+        var results = new List<(string, bool, string)>();
+        Invoke(runtime, assembler.Build(), "float-comparison", results, [.. calls]);
         return results;
     }
 
@@ -447,8 +520,7 @@ internal static class ExecutionChecks
         VmRuntime runtime, byte[] module)
     {
         const string Name = "a-trapping-start-function-publishes-no-instance";
-        var descriptor = Descriptor();
-        var verified = runtime.Verify(in descriptor, module, CancellationToken.None);
+        var verified = ModuleVerification.Verify(runtime, module, Caller, Name);
 
         if (!verified.TryGetArtifact(out var artifact))
         {
@@ -473,8 +545,7 @@ internal static class ExecutionChecks
         VmRuntime runtime, byte[] module)
     {
         const string Name = "an-overrunning-data-segment-publishes-no-instance";
-        var descriptor = Descriptor();
-        var verified = runtime.Verify(in descriptor, module, CancellationToken.None);
+        var verified = ModuleVerification.Verify(runtime, module, Caller, Name);
 
         if (!verified.TryGetArtifact(out var artifact))
         {
@@ -539,8 +610,7 @@ internal static class ExecutionChecks
         VmRuntime runtime, byte[] module)
     {
         const string Name = "an-unknown-entry-point-is-a-typed-fault-and-not-a-trap";
-        var descriptor = Descriptor();
-        var verified = runtime.Verify(in descriptor, module, CancellationToken.None);
+        var verified = ModuleVerification.Verify(runtime, module, Caller, Name);
 
         if (!verified.TryGetArtifact(out var artifact))
         {
@@ -917,7 +987,7 @@ internal static class ExecutionChecks
     /// </summary>
     private static VmRuntime? RuntimeWithDeclaredCount(long declaredCount, out string failure)
     {
-        var catalog = VmCatalog.CreateBuilder().Add(WebAssemblyProfile.Descriptor).Build();
+        var catalog = VmCatalog.CreateBuilder().Add(ModuleVerification.Descriptor).Build();
         var ceilings = System.Collections.Immutable.ImmutableArray.CreateBuilder<VmCeilingSpec>();
 
         foreach (var dimension in VmBudgetDimensions.All)
@@ -971,8 +1041,7 @@ internal static class ExecutionChecks
         List<(string, bool, string)> results,
         (string Entry, Expectation Expected)[] calls)
     {
-        var descriptor = Descriptor();
-        var verified = runtime.Verify(in descriptor, module, CancellationToken.None);
+        var verified = ModuleVerification.Verify(runtime, module, Caller, label);
 
         if (!verified.TryGetArtifact(out var artifact))
         {
@@ -982,15 +1051,16 @@ internal static class ExecutionChecks
                 $"{label}: verification",
                 false,
                 verified.Outcome is VmOutcome.ResourceExhaustion
-                    ? $"{verified.Outcome}/{verified.Reason}/" +
-                      $"{verified.Diagnostics.ExhaustedDimension}/{verified.Diagnostics.ExhaustedScope}"
+                    ? $"{verified.Outcome}/{verified.Reason}/{verified.Dimension}/{verified.Scope}"
                     : $"{verified.Outcome}/{verified.Reason}/" +
-                      $"{verified.Diagnostics.ProfileDiagnosticCode} at " +
-                      $"offset {verified.Diagnostics.SourcePosition.ByteOffset}"));
+                      $"{verified.Code} at " +
+                      $"offset {verified.Position.ByteOffset}"));
 
             return;
         }
 
+        // THE BYTE COUNT IS THE MODULE'S, and not the artifact's the core verified: it is what this
+        // check built and handed over, and what it printed before the translator existed.
         results.Add((
             $"{label}: verification",
             true,
@@ -1071,9 +1141,8 @@ internal static class ExecutionChecks
     private static byte[] Binary(byte opcode) => Instruction.Cat(
         Instruction.LocalGet(0), Instruction.LocalGet(1), [opcode]);
 
-    private static VmArtifactDescriptor Descriptor() =>
-        new(WebAssemblyProfile.Id, 1, WebAssemblyProfile.SliceManifest, default,
-            VmCallerIdentity.FromCanonicalIdentity("composition-wasm-harness://execution"));
+    /// <summary>The identity every module of this lane is verified under.</summary>
+    private const string Caller = "composition-wasm-harness://execution";
 
     // =============================================================================================
     // The entry-point encoding, written once so no check spells a byte count by hand

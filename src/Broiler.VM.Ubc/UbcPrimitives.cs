@@ -276,21 +276,21 @@ public enum UbcPrimitive : ushort
     /// <summary>The bits of an i64 as a binary64.</summary>
     F64ReinterpretI64,
 
-    /// <summary>Binary32 to signed i32 toward zero; traps on NaN and out of range.</summary>
+    /// <summary>Binary32 to signed i32 toward zero; traps as an invalid conversion on NaN and as an integer overflow out of range.</summary>
     I32TruncF32S,
-    /// <summary>Binary32 to unsigned i32 toward zero; traps on NaN and out of range.</summary>
+    /// <summary>Binary32 to unsigned i32 toward zero; traps as an invalid conversion on NaN and as an integer overflow out of range.</summary>
     I32TruncF32U,
-    /// <summary>Binary64 to signed i32 toward zero; traps on NaN and out of range.</summary>
+    /// <summary>Binary64 to signed i32 toward zero; traps as an invalid conversion on NaN and as an integer overflow out of range.</summary>
     I32TruncF64S,
-    /// <summary>Binary64 to unsigned i32 toward zero; traps on NaN and out of range.</summary>
+    /// <summary>Binary64 to unsigned i32 toward zero; traps as an invalid conversion on NaN and as an integer overflow out of range.</summary>
     I32TruncF64U,
-    /// <summary>Binary32 to signed i64 toward zero; traps on NaN and out of range.</summary>
+    /// <summary>Binary32 to signed i64 toward zero; traps as an invalid conversion on NaN and as an integer overflow out of range.</summary>
     I64TruncF32S,
-    /// <summary>Binary32 to unsigned i64 toward zero; traps on NaN and out of range.</summary>
+    /// <summary>Binary32 to unsigned i64 toward zero; traps as an invalid conversion on NaN and as an integer overflow out of range.</summary>
     I64TruncF32U,
-    /// <summary>Binary64 to signed i64 toward zero; traps on NaN and out of range.</summary>
+    /// <summary>Binary64 to signed i64 toward zero; traps as an invalid conversion on NaN and as an integer overflow out of range.</summary>
     I64TruncF64S,
-    /// <summary>Binary64 to unsigned i64 toward zero; traps on NaN and out of range.</summary>
+    /// <summary>Binary64 to unsigned i64 toward zero; traps as an invalid conversion on NaN and as an integer overflow out of range.</summary>
     I64TruncF64U,
 
     /// <summary>A little-endian i32 loaded from a region.</summary>
@@ -362,10 +362,10 @@ public enum UbcTrapCode : byte
     /// <summary>An integer division or remainder by zero.</summary>
     DivideByZero = 1,
 
-    /// <summary>The one signed division whose quotient does not fit.</summary>
+    /// <summary>The one signed division whose quotient does not fit, or a truncation of a number outside the target's range.</summary>
     IntegerOverflow = 2,
 
-    /// <summary>A truncation of NaN, or of a value outside the target's range.</summary>
+    /// <summary>A truncation of NaN.</summary>
     InvalidConversion = 4,
 
     /// <summary>A region access whose effective address and width leave the region.</summary>
@@ -459,7 +459,7 @@ public static class UbcPrimitives
     };
 
     /// <summary>The universal traps <paramref name="primitive"/> can raise.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9CB1EF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=00EC9F
     // Broiler-Falsified-If: an entry whose evaluation can trap answers a set that omits that trap
     // Broiler-Human:        PENDING
     public static UbcTrapCode TrapsOf(UbcPrimitive primitive) => primitive switch
@@ -467,7 +467,7 @@ public static class UbcPrimitives
         UbcPrimitive.I32DivS or UbcPrimitive.I64DivS => UbcTrapCode.DivideByZero | UbcTrapCode.IntegerOverflow,
         UbcPrimitive.I32DivU or UbcPrimitive.I32RemS or UbcPrimitive.I32RemU
             or UbcPrimitive.I64DivU or UbcPrimitive.I64RemS or UbcPrimitive.I64RemU => UbcTrapCode.DivideByZero,
-        >= UbcPrimitive.I32TruncF32S and <= UbcPrimitive.I64TruncF64U => UbcTrapCode.InvalidConversion,
+        >= UbcPrimitive.I32TruncF32S and <= UbcPrimitive.I64TruncF64U => UbcTrapCode.InvalidConversion | UbcTrapCode.IntegerOverflow,
         >= UbcPrimitive.RegionLoadI32 and <= UbcPrimitive.RegionStoreI64To32 => UbcTrapCode.OutOfBounds,
         _ => UbcTrapCode.None,
     };
@@ -969,8 +969,8 @@ public static class UbcPrimitives
         return a > b ? a : b;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=64E30C
-    // Broiler-Falsified-If: a value whose truncation lies outside the target range converts instead of trapping, or NaN converts
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=499157
+    // Broiler-Falsified-If: a value whose truncation lies outside the target range converts or traps as anything but an integer overflow, or NaN converts or traps as anything but an invalid conversion
     // Broiler-Human:        PENDING
     private static UbcPrimitiveResult TruncToI32(double value, bool signed)
     {
@@ -985,7 +985,7 @@ public static class UbcPrimitives
         {
             if (truncated < -2147483648.0 || truncated > 2147483647.0)
             {
-                return UbcPrimitiveResult.Trapped(UbcTrapCode.InvalidConversion);
+                return UbcPrimitiveResult.Trapped(UbcTrapCode.IntegerOverflow);
             }
 
             return I32((uint)(int)truncated);
@@ -993,14 +993,14 @@ public static class UbcPrimitives
 
         if (truncated < 0.0 || truncated > 4294967295.0)
         {
-            return UbcPrimitiveResult.Trapped(UbcTrapCode.InvalidConversion);
+            return UbcPrimitiveResult.Trapped(UbcTrapCode.IntegerOverflow);
         }
 
         return I32((uint)truncated);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=66725E
-    // Broiler-Falsified-If: a value whose truncation lies outside the sixty-four-bit range converts instead of trapping, the bound itself included
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=4073DD
+    // Broiler-Falsified-If: a value whose truncation lies outside the sixty-four-bit range, the bound itself included, converts or traps as anything but an integer overflow, or NaN traps as anything but an invalid conversion
     // Broiler-Human:        PENDING
     private static UbcPrimitiveResult TruncToI64(double value, bool signed)
     {
@@ -1016,7 +1016,7 @@ public static class UbcPrimitives
             // -2^63 is exactly representable and in range; +2^63 is exactly representable and is not.
             if (truncated < -9223372036854775808.0 || truncated >= 9223372036854775808.0)
             {
-                return UbcPrimitiveResult.Trapped(UbcTrapCode.InvalidConversion);
+                return UbcPrimitiveResult.Trapped(UbcTrapCode.IntegerOverflow);
             }
 
             return UbcPrimitiveResult.Value((ulong)(long)truncated);
@@ -1024,7 +1024,7 @@ public static class UbcPrimitives
 
         if (truncated < 0.0 || truncated >= 18446744073709551616.0)
         {
-            return UbcPrimitiveResult.Trapped(UbcTrapCode.InvalidConversion);
+            return UbcPrimitiveResult.Trapped(UbcTrapCode.IntegerOverflow);
         }
 
         return UbcPrimitiveResult.Value((ulong)truncated);

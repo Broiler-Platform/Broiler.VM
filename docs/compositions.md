@@ -38,6 +38,11 @@ decisions:
   lists none.
 - The packable set stays exactly the three product packages:
   `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, `Broiler.VM.Runtime`.
+  *(Corrected 2026-09-25, and the bullet above is kept as it was written.)* It does not: the
+  language profiles have been packable since the owner made them so for the preview feed, and the
+  universal bytecode programme took its packability decision UBC-D-5 early at milestone UBC-4, so
+  `Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode` are packable too. What stays true is this
+  section's subject: no composition root is packable, because none is advertised.
 - No RID in section 4 is a supported RID. It is a record of what was published
   and run, on one machine, once. Claiming a RID is a release act and this
   document performs none.
@@ -158,12 +163,25 @@ the exact closure this register exists to describe.
 | `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` | none |
 | `Broiler.VM.Composition.JavaScript.Conformance` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler`, `Broiler.VM.Profile.MachineCode` | `broiler.javascript.write` (optional import of `broiler.javascript`) | `broiler.javascript.write` | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3a-004` | `x86-64` |
 | `Broiler.VM.Composition.JavaScript.Cli` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler`, `Broiler.VM.Profile.MachineCode` | `broiler.javascript.write`, `broiler.javascript.source-provider`, `broiler.javascript.host-surface` (all optional imports of `broiler.javascript`; the third is registered only by the `--host-surface` lane, and is a permission this root never invokes) | `broiler.javascript.source-provider`, answered by this root's own compiler | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3b-001` | `x86-64` |
-| `Broiler.VM.Composition.WebAssembly.Execution` | demonstration | `broiler.webassembly` | `Broiler.VM.Profile.WebAssembly` | none | none registered | none registered | `src/Broiler.VM.Profile.WebAssembly/docs/evidence/wa-0-001` | none |
-| `Broiler.VM.Composition.WebAssembly.Harness` | demonstration | `broiler.webassembly` | `Broiler.VM.Profile.WebAssembly` | none | none registered | none registered | `src/Broiler.VM.Profile.WebAssembly/docs/evidence/wa-0-001` | none |
-| `Broiler.VM.Composition.PolyglotCli` | demonstration | `broiler.javascript`, `broiler.webassembly` | `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.WebAssembly` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write`, `broiler.javascript.resolve`, `broiler.javascript.source-provider` (all optional imports of `broiler.javascript`; the WebAssembly profile imports nothing, and the three are registered only for a JavaScript run) | `broiler.javascript.source-provider`, answered by this root's own compiler | `docs/evidence/vm-7-cli-001` | none |
-| `Broiler.VM.Composition.Ubc.Fixture` | demonstration | `com.example.tally`, `com.example.ledger` | `Com.Example.Tally`, `Com.Example.Ledger` | `Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode` | `com.example.tally.program-provider` (optional import of `com.example.tally`; the ledger imports it not), registered by the fixture checks and not by the hostile-neighbour check | `com.example.tally.program-provider`, answered by this root with the fixture family's guest program and, for the breach check, the ledger's artifact | `docs/evidence/ubc-2-001` | none |
+| `Broiler.VM.Composition.WebAssembly.Execution` | demonstration | `broiler.webassembly` | `Broiler.VM.Profile.WebAssembly` | `Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode` | none registered | none registered | `docs/evidence/ubc-4-002` | none |
+| `Broiler.VM.Composition.WebAssembly.Harness` | demonstration | `broiler.webassembly` | `Broiler.VM.Profile.WebAssembly` | `Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode` | none registered | none registered | `docs/evidence/ubc-4-002` | none |
+| `Broiler.VM.Composition.PolyglotCli` | demonstration | `broiler.javascript`, `broiler.webassembly` | `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.WebAssembly` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler`, `Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode` | `broiler.javascript.write`, `broiler.javascript.resolve`, `broiler.javascript.source-provider` (all optional imports of `broiler.javascript`; the WebAssembly profile imports nothing, and the three are registered only for a JavaScript run) | `broiler.javascript.source-provider`, answered by this root's own compiler | `docs/evidence/ubc-4-002` | none |
+| `Broiler.VM.Composition.Ubc.Fixture` | demonstration | `com.example.tally`, `com.example.ledger` | `Com.Example.Tally`, `Com.Example.Ledger` | `Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode` | `com.example.tally.program-provider` (optional import of `com.example.tally`; the ledger imports it not), registered by the fixture checks and not by the hostile-neighbour check | `com.example.tally.program-provider`, answered by this root with the fixture family's guest program and, for the breach check, the ledger's artifact | `docs/evidence/ubc-4-002` | none |
 
 **The universal bytecode's fixture root is the first row whose image links an emitter rather than a profile's own executor** *(added 2026-09-25, by the programme's milestone UBC-2)*. `Broiler.VM.Composition.Ubc.Fixture` composes the fixture family `com.example.tally`, whose descriptor it builds itself through `UbcDescriptors.Build` over the one form it composes - the bytecode emitter - because a family names no emitter and the form is the root's choice. `Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode` are therefore its sibling assemblies, and its native-execution cell is `none` because neither can map memory executable. The ledger is composed beside it for the two-profile hostile-neighbour check the roadmap's section 14 has asked for since VM-3, and its artifact is also what the root's provider answers a guest load with when it checks that a provider may not answer one profile with another's.
+
+**The WebAssembly rows link the universal bytecode too** *(added 2026-09-25, by the programme's milestone
+UBC-4)*. The WebAssembly profile no longer executes a module itself: a root translates the module into a
+universal bytecode artifact with the profile's translator, and the core verifies that artifact under the
+WebAssembly family's descriptor, which the root builds through `UbcDescriptors.Build` over the bytecode
+emitter, and executes it through that emitter. So `Broiler.VM.Composition.WebAssembly.Execution`,
+`Broiler.VM.Composition.WebAssembly.Harness` and `Broiler.VM.Composition.PolyglotCli` each carry
+`Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode` as sibling assemblies, and their native-execution
+cells stay `none` for the reason the fixture row's does. Their evidence cells, and the fixture root's -
+whose catalog moved when the universal bytecode's contract version moved to 2 - name bundle `ubc-4-002`,
+which retains the four roots' catalog tables and closures from all three publish modes; the bundles the
+cells named before (`wa-0-001`, `vm-7-cli-001`, `ubc-2-001`) are unchanged and remain the record of what
+those images were when they were collected.
 
 **Three rows declare `x86-64` and the rest read `none`** *(corrected 2026-09-23,
 and the sentence this replaces is quoted below because it is the finding)*.
@@ -362,7 +380,11 @@ ledger is the authority for both. And the `execution-only` label on the first of
 them is narrower than it is for a compiling profile for the reason it always was:
 that image cannot turn source into an artifact because no image of that profile
 can - there is no lowering in the component at all - and not because this root
-declined to link a compiler.
+declined to link a compiler. *(Corrected 2026-09-25, by the universal bytecode
+programme's milestone UBC-4, and the sentence above is kept as it was written.)* There
+is a lowering now: the profile translates a module into universal bytecode, and every
+root that runs a module carries that translator. The execution root's catalog prints
+`carries-lowering yes` and no `execution-only` label.
 
 **The harness row is the placement decision, and now the code that needed it.** A
 binary corpus encoder writes the bytes a verifier is then asked to refuse, so it
@@ -899,6 +921,23 @@ either.
 Its transcripts, catalog table and closure report are in
 `docs/evidence/ubc-2-001/`. The same limit applies to it: one RID, one machine,
 one lane.
+
+*(Added later on 2026-09-25.)* The programme's milestone UBC-4 published and ran
+four roots when bundle `ubc-4-002` was collected: the fixture root again, because
+its catalog moved with the universal bytecode's contract version, and the three
+roots that compose the WebAssembly profile, which now translate every module into
+universal bytecode. None is a supported RID.
+
+| Composition | RID | JIT | Trimmed, self-contained | Native AOT |
+|---|---|---|---|---|
+| `Broiler.VM.Composition.Ubc.Fixture` | `win-x64` | published and run | published and run | published and run |
+| `Broiler.VM.Composition.WebAssembly.Execution` | `win-x64` | published and run | published and run | published and run |
+| `Broiler.VM.Composition.WebAssembly.Harness` | `win-x64` | published and run | published and run | published and run |
+| `Broiler.VM.Composition.PolyglotCli` | `win-x64` | published and run | published and run | published and run |
+
+Their transcripts, catalog tables and closure reports are in
+`docs/evidence/ubc-4-002/`. The same limit applies: one RID, one machine, one
+lane.
 
 ---
 

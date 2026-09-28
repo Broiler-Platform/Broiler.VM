@@ -1,0 +1,10 @@
+$ dotnet src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0\Broiler.VM.Composition.WebAssembly.Harness.dll --write-corpus <scratch>
+broiler-wasm-harness: wrote 290 entries to C:\Users\proof\AppData\Local\Temp\ubc-4-002-corpus-dq1v3794 (96 derived, 194 recorded)
+
+exit 0
+
+# 291 files compared with src/tests/wasm/corpus, 0 differ
+
+# retained corpus: 290 entries under src/tests/wasm/corpus
+# retained corpus: 290 of 290 entries reproduced, 290 hashes re-computed and matched, 29 entries verify, replayed twice with no residue
+# retained corpus: 261 entries answered by the translator, 29 translated and answered by the core, 0 of them refused - class (r) is empty

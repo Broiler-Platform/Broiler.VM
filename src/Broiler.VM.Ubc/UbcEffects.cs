@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
-// Exempt:           12
-// Human-reviewed:   0/10
+// Relevant units:   11
+// Annotated:        11/11
+// Exempt:           13
+// Human-reviewed:   0/11
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         4/2
+// Criteria:         5/3
 // Resource impact:  0/10 max
-// Unverified:       10
+// Unverified:       11
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -19,8 +19,8 @@ using System.Collections.Immutable;
 
 namespace Broiler.VM.Ubc;
 
-/// <summary>The two forms of the closed language a family row states its stack effect in.</summary>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=677E54
+/// <summary>The three forms of the closed language a family row states its stack effect in.</summary>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=FCB7D2
 // Broiler-Human:        PENDING
 public enum UbcEffectForm : byte
 {
@@ -29,6 +29,12 @@ public enum UbcEffectForm : byte
 
     /// <summary>Fixed typed pops beneath a run of one type whose length the operand gives, then fixed pushes.</summary>
     Counted = 1,
+
+    /// <summary>
+    /// The parameters of the signature the operand names in the artifact's Types section beneath fixed
+    /// typed pops, then that signature's results. Admitted only on a call row.
+    /// </summary>
+    Signature = 2,
 }
 
 /// <summary>
@@ -45,9 +51,19 @@ public enum UbcEffectForm : byte
 /// operand is the count.
 /// </para>
 /// <para>
-/// A row whose effect is not expressible in these two forms is not admitted, which is deliberate: the
+/// A <see cref="UbcEffectForm.Signature"/> effect is the shape of a call whose callee is chosen at run
+/// time: its operand names a row of the artifact's Types section, and the row pops that signature's
+/// parameters followed by <see cref="Pops"/> - the trailing slots, which are the top of the stack - and
+/// pushes that signature's results. Its own <see cref="Pushes"/> are empty, because the pushes are the
+/// artifact's and not the table's. It is admitted only on a call row whose operand is a <c>U16</c> or a
+/// <c>U32</c>, and the walk refuses an operand that names no row of the Types section.
+/// </para>
+/// <para>
+/// A row whose effect is not expressible in these three forms is not admitted, which is deliberate: the
 /// walk, the interpreter and every encoder read one description, and a family that needs another form
-/// asks for a universal bytecode format version rather than a callback.
+/// asks for a new universal bytecode contract version rather than a callback. No byte of an artifact
+/// names an effect form, so the container format does not change when a form is added: the contract
+/// version moves, and the format version does not.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=5F03D0
@@ -72,16 +88,19 @@ public sealed class UbcEffect
     /// <summary>The form of this effect.</summary>
     public UbcEffectForm Form { get; }
 
-    /// <summary>The fixed pops, bottom to top. For a counted effect, the slots beneath the counted run.</summary>
+    /// <summary>
+    /// The fixed pops, bottom to top. For a counted effect, the slots beneath the counted run; for a
+    /// signature effect, the trailing slots above the named signature's parameters.
+    /// </summary>
     public ImmutableArray<UbcSlotType> Pops { get; }
 
-    /// <summary>The type of the counted run. Meaningless for a listed effect.</summary>
+    /// <summary>The type of the counted run. Meaningless for a listed or a signature effect.</summary>
     public UbcSlotType Repeated { get; }
 
-    /// <summary>How many slots of the run each unit of the operand counts. Zero for a listed effect.</summary>
+    /// <summary>How many slots of the run each unit of the operand counts. Zero for a listed or a signature effect.</summary>
     public byte Multiplier { get; }
 
-    /// <summary>The pushes, bottom to top.</summary>
+    /// <summary>The pushes, bottom to top. Empty for a signature effect, whose pushes are the named signature's results.</summary>
     public ImmutableArray<UbcSlotType> Pushes { get; }
 
     /// <summary>A listed effect: <paramref name="pops"/> then <paramref name="pushes"/>, every slot typed.</summary>
@@ -122,36 +141,61 @@ public sealed class UbcEffect
     }
 
     /// <summary>
+    /// A signature effect: the parameters of the Types row the operand names, then
+    /// <paramref name="trailingPops"/> above them, the last the top; the pushes are that row's results.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=D74D19
+    // Broiler-Falsified-If: a trailing list naming an undefined slot type is accepted, or the effect built here carries pushes of its own
+    // Broiler-Human:        PENDING
+    public static UbcEffect Signature(ImmutableArray<UbcSlotType> trailingPops)
+    {
+        Check(trailingPops, nameof(trailingPops));
+        return new UbcEffect(UbcEffectForm.Signature, trailingPops, UbcSlotType.V, 0, ImmutableArray<UbcSlotType>.Empty);
+    }
+
+    /// <summary>
     /// The number of slots this effect pops for <paramref name="operand"/>, or false when that number
     /// exceeds the highest height any plane may hold, so no stack could supply it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=63713B
-    // Broiler-Falsified-If: an operand large enough to overflow the product yields a small count instead of false
+    /// <remarks>
+    /// A signature effect answers false: how many slots it pops depends on the Types row its operand
+    /// names, which is the artifact's and not the effect's, so only a reader holding the artifact - the
+    /// walk - can count them. A caller that reaches this member with one has missed a form.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=2982F8
+    // Broiler-Falsified-If: an operand large enough to overflow the product yields a small count instead of false, or a signature effect answers a count
     // Broiler-Human:        PENDING
     public bool TryGetPopCount(ulong operand, out int count)
     {
         count = Pops.Length;
 
-        if (Form == UbcEffectForm.Listed)
+        switch (Form)
         {
-            return true;
+            case UbcEffectForm.Listed:
+                return true;
+
+            case UbcEffectForm.Counted:
+            {
+                if (operand > UbcFormat.MaxHeight)
+                {
+                    return false;
+                }
+
+                var run = operand * Multiplier;
+                var total = run + (ulong)Pops.Length;
+
+                if (total > UbcFormat.MaxHeight)
+                {
+                    return false;
+                }
+
+                count = (int)total;
+                return true;
+            }
+
+            default:
+                return false;
         }
-
-        if (operand > UbcFormat.MaxHeight)
-        {
-            return false;
-        }
-
-        var run = operand * Multiplier;
-        var total = run + (ulong)Pops.Length;
-
-        if (total > UbcFormat.MaxHeight)
-        {
-            return false;
-        }
-
-        count = (int)total;
-        return true;
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4F5986

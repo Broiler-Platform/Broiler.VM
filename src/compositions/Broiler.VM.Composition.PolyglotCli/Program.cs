@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using Broiler.VM;
+using Broiler.VM.Emitter.Bytecode;
 using Broiler.VM.Profile.JavaScript;
 using Broiler.VM.Profile.JavaScript.Compiler;
 using Broiler.VM.Profile.WebAssembly;
+using Broiler.VM.Ubc;
 
 namespace Broiler.VM.Composition.PolyglotCli;
 
@@ -398,11 +400,18 @@ internal static class Program
     /// </summary>
     /// <remarks>
     /// <b>THIS SUBCOMMAND EXISTS FOR ONE PROFILE AND REFUSES FOR THE OTHER, and the refusal is the
-    /// honest answer rather than a gap.</b> The WebAssembly profile has no lowering anywhere in
-    /// this repository: a <c>.wasm</c> file already IS the artifact, produced by a toolchain that
-    /// is not here. So <c>broiler compile app.wasm -o app.bvm</c> is refused by name, because the
-    /// only thing this host could do is copy the file, and a copy presented as a compilation would
-    /// be a claim about a lowering nothing in this image has.
+    /// honest answer rather than a gap.</b> Since the universal bytecode programme's milestone UBC-4
+    /// the WebAssembly profile does carry a lowering - its translator turns a module into universal
+    /// bytecode on every run - but what it writes is an intermediate this host verifies and runs in
+    /// the same process and never publishes: the artifact a person hands this host for WebAssembly
+    /// is the module, and the translation is repeated from it on every run. So
+    /// <c>broiler compile app.wasm -o app.bvm</c> is still refused by name, and the refusal says
+    /// why: no host in this repository reads a translated WebAssembly artifact from a file - this one
+    /// routes <c>.js</c>, <c>.mjs</c> and <c>.wasm</c> and nothing else - so writing one out would
+    /// produce a file nothing here runs.
+    /// <i>(Corrected at milestone UBC-4. This read "The WebAssembly profile has no lowering anywhere
+    /// in this repository", and the refusal said the profile "carries no lowering in this image";
+    /// both stopped being true when the translator arrived.)</i>
     /// </remarks>
     private static int Compile(string[] args)
     {
@@ -451,9 +460,10 @@ internal static class Program
             if (file.Lane != Lane.JavaScript)
             {
                 Console.Error.WriteLine(
-                    $"broiler: {file.Path}: the broiler.webassembly profile carries no lowering in " +
-                    "this image, so a `.wasm` file is already an artifact and there is nothing " +
-                    "here to compile it from");
+                    $"broiler: {file.Path}: a `.wasm` file is what this host runs for " +
+                    "broiler.webassembly - it is translated into universal bytecode again on every " +
+                    "run, and no host here reads a translation from a file - so there is nothing " +
+                    "to compile it to");
 
                 return ExitCodes.Usage;
             }
@@ -542,15 +552,19 @@ internal static class Program
     /// </remarks>
     private static int Closure()
     {
-        Console.WriteLine($"# broiler-vm-composition core-contract-version={VmCoreContract.Version}");
+        Console.WriteLine(
+            $"# broiler-vm-composition core-contract-version={VmCoreContract.Version} " +
+            $"ubc-contract-version={UbcContract.Version}");
         Console.WriteLine("composition Broiler.VM.Composition.PolyglotCli");
 
         // THE LABEL IS `narrow-runtime-compiler` FOR THE JAVASCRIPT HALF AND NOTHING FOR THE
         // OTHER, so this root prints the label it is entitled to and no more. It carries the
         // tokenizer, the static semantics and the lowering for a named restricted source surface,
         // and it is handed source from outside the image by a person naming a file - which is what
-        // the label means. The WebAssembly half carries no lowering at all, so no label of that
-        // family exists for it to claim.
+        // the label means. The WebAssembly half carries a lowering too - the translator, from a
+        // binary module into universal bytecode, printed below - but a binary module is not a source
+        // surface, so it claims no label of that family. (Until milestone UBC-4 this said the
+        // WebAssembly half carried no lowering at all.)
         Console.WriteLine("label narrow-runtime-compiler");
         Console.WriteLine("carries-lowering yes");
         Console.WriteLine("profiles 2");
@@ -569,9 +583,9 @@ internal static class Program
                 ' ',
                 "profile",
                 WebAssemblyProfile.Id,
-                WebAssemblyProfile.Descriptor.PackageIdentity.PackageId,
-                WebAssemblyProfile.Descriptor.DescriptorRevision,
-                WebAssemblyProfile.Descriptor.HostCapabilityDescriptors.Length));
+                Composition.WebAssembly.PackageIdentity.PackageId,
+                Composition.WebAssembly.DescriptorRevision,
+                Composition.WebAssembly.HostCapabilityDescriptors.Length));
 
         // EVERY MANIFEST EACH DESCRIPTOR ACCEPTS, not the one this root happens to prefer. A
         // closure claim naming one while the image admits three would be read as the image
@@ -591,12 +605,24 @@ internal static class Program
                 "format-versions",
                 JavaScriptProfile.Descriptor.SupportedFormatVersions.Min,
                 JavaScriptProfile.Descriptor.SupportedFormatVersions.Max,
-                WebAssemblyProfile.Descriptor.SupportedFormatVersions.Min,
-                WebAssemblyProfile.Descriptor.SupportedFormatVersions.Max));
+                Composition.WebAssembly.SupportedFormatVersions.Min,
+                Composition.WebAssembly.SupportedFormatVersions.Max));
 
         // The lowering, named from the assembly that actually carries it rather than declared.
         Console.WriteLine(
             string.Join(' ', "lowering", typeof(SliceSourceCompiler).Assembly.GetName().Name));
+
+        // The WebAssembly half's translator and the one form that runs what it writes, named from
+        // what the image holds.
+        Console.WriteLine(
+            string.Join(
+                ' ',
+                "translator",
+                WasmTranslator.TranslatorIdentity,
+                WasmTranslator.TranslatorVersion.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+        Console.WriteLine(
+            $"form {UbcBytecodeEmitter.Form.Identity} " +
+            UbcBytecodeEmitter.Form.SemanticVersion.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
         // THE BACKEND ROSTER, WITH THE HALF THAT RUNS SEPARATED FROM THE HALF THAT DOES NOT. A
         // closure claim listing three backend names would read as three forms this image can run,
@@ -657,7 +683,10 @@ internal static class Program
         Console.WriteLine("  --arg <type>:<literal>");
         Console.WriteLine("              one argument to that export; i32, i64, f32 or f64. Repeatable.");
         Console.WriteLine("  --fuel <n>  the instruction allowance per run");
-        Console.WriteLine("  --wall <ms> the wall-clock allowance per run");
+        Console.WriteLine("  --wall <ms> the wall-clock allowance per run, spent by the core verifying,");
+        Console.WriteLine("              instantiating and invoking. Compiling a script and translating a");
+        Console.WriteLine("              WebAssembly module happen before the core sees the result, and");
+        Console.WriteLine("              are not timed.");
         Console.WriteLine("  --call-depth <n>  the call-depth allowance per run, in frames");
         Console.WriteLine("  --live-bytes <n>  the live-memory allowance per run");
         Console.WriteLine("  --max-depth <n>");
@@ -813,10 +842,12 @@ internal static class Program
         Console.WriteLine("and a `using` declaration are refused as syntax errors. BigInt is the absence");
         Console.WriteLine("this paragraph spells out, not the only one the manifest has.)");
         Console.WriteLine();
-        Console.WriteLine($"The WebAssembly surface is {WebAssemblyProfile.SliceManifest}: it decodes,");
-        Console.WriteLine("validates, instantiates and executes a module - integer and floating-point");
-        Console.WriteLine("arithmetic, locals, globals, linear memory, structured control flow, direct and");
-        Console.WriteLine("indirect calls, start functions, element and data segments, and traps. It has");
+        Console.WriteLine($"The WebAssembly surface is {WebAssemblyProfile.SliceManifest}: it decodes and");
+        Console.WriteLine("validates a module, translates it into universal bytecode, and instantiates and");
+        Console.WriteLine("executes that - integer and floating-point arithmetic, locals, globals, linear");
+        Console.WriteLine("memory, structured control flow, direct and indirect calls, start functions,");
+        Console.WriteLine("element and data segments, and traps. The translation is made on every run and");
+        Console.WriteLine("never written out, which is why `compile` refuses a `.wasm` file. It has");
         Console.WriteLine("NO imports and no linking, no text format, no vector instructions, no garbage");
         Console.WriteLine("collection, no exception handling, no threads and no memory64. A module that");
         Console.WriteLine("declares an import is refused rather than linked.");

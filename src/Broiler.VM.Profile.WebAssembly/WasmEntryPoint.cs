@@ -81,19 +81,22 @@ internal static class WasmEntryPoint
     internal const int MaximumArguments = 64;
 
     /// <summary>
-    /// Parses one entry-point text into a name window and a typed argument vector.
+    /// Parses one entry-point text into a name window and a typed argument vector: each argument's
+    /// type in <paramref name="argumentTypes"/> and its bits in <paramref name="arguments"/>, a
+    /// thirty-two-bit argument's in the low half with the high half zero.
     /// </summary>
     /// <remarks>
     /// It reads bytes and answers; it allocates nothing and it throws on nothing. The name is
     /// reported as an offset and a length into the caller's own span rather than copied, because the
-    /// caller compares it against export names it already holds.
+    /// caller compares it against export names it already holds. The arguments are bits, which the
+    /// family writes into the entry frame's word locals.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=B56F30
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=E6C5D8
     // Broiler-Falsified-If: a byte count is trusted past the end of the text, or a malformed literal is read as a value
     // Broiler-Human:        PENDING
     internal static bool TryParse(
         System.ReadOnlySpan<byte> text,
-        System.Span<WasmValue> arguments,
+        System.Span<ulong> arguments,
         System.Span<WasmValueType> argumentTypes,
         out int nameOffset,
         out int nameLength,
@@ -244,13 +247,13 @@ internal static class WasmEntryPoint
     }
 
     /// <summary>Reads one literal in the spelling its type fixes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=DEABD5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=A1B9E7
     // Broiler-Falsified-If: a float literal of the wrong digit count is accepted, or an integer literal is accepted with a trailing byte
     // Broiler-Human:        PENDING
     private static bool TryReadLiteral(
-        WasmValueType type, System.ReadOnlySpan<byte> literal, out WasmValue value)
+        WasmValueType type, System.ReadOnlySpan<byte> literal, out ulong value)
     {
-        value = WasmValue.Zero;
+        value = 0;
 
         switch (type)
         {
@@ -260,7 +263,7 @@ internal static class WasmEntryPoint
                     return false;
                 }
 
-                value = WasmValue.FromBits(single);
+                value = single;
                 return true;
 
             case WasmValueType.F64:
@@ -269,7 +272,7 @@ internal static class WasmEntryPoint
                     return false;
                 }
 
-                value = WasmValue.FromBits(doublePrecision);
+                value = doublePrecision;
                 return true;
 
             default:
@@ -278,8 +281,7 @@ internal static class WasmEntryPoint
                     return false;
                 }
 
-                value = WasmValue.FromBits(
-                    type is WasmValueType.I32 ? (uint)bits : bits);
+                value = type is WasmValueType.I32 ? (uint)bits : bits;
 
                 return true;
         }

@@ -3,14 +3,16 @@
   <PropertyGroup>
     <RootNamespace>Broiler.VM.Profile.WebAssembly</RootNamespace>
     <AssemblyName>Broiler.VM.Profile.WebAssembly</AssemblyName>
-    <Description>The Broiler.VM WebAssembly language profile. It carries an identity, a descriptor, a decoder for the binary format, a validator, and an interpreter over the four numeric types, locals, globals, one linear memory, structured control flow, direct and indirect calls. It has no linker and admits no import, no manifest has been scored against the specification's own conformance suite, and the status ledger under docs/ is the authority for what exists.</Description>
+    <Description>The Broiler.VM WebAssembly language profile. It carries an identity, a decoder for the binary format, a validator, a translator of a validated module into universal bytecode, and the universal bytecode family that runs it over the four numeric types, locals, globals, one linear memory, structured control flow, direct and indirect calls. It has no linker and admits no import, no manifest has been scored against the specification's own conformance suite, and the status ledger under docs/ is the authority for what exists.</Description>
 
-    <!-- WA-0 declares no package. Packaging is WA-10's decision and rule N4 holds the claim. -->
+    <!-- Packable since commit d16a6aa, with no PackageId, so it packs under its assembly name. WA-0
+         declared no package and the packaging decision is still WA-10's; rule N4, which asks every
+         profile project for the literal element false, reports this one. -->
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <!--
-    THE REFERENCE SET IS EXACTLY TWO, AND THERE IS NO FORMAT SIBLING.
+    THE REFERENCE SET IS EXACTLY THREE, AND THERE IS NO FORMAT SIBLING.
 
     ADR 0011 obligation P1 fixes a profile's Broiler.VM-owned reference set at Abstractions and
     Binary, and its 2026-08-31 revision admits a profile component's own siblings beside them. The
@@ -19,13 +21,25 @@
     apart.
 
     This profile has no pivot to hold apart. Its roadmap section 5 rejects a format assembly by
-    name: there is no compiler here, the payload is a bare WebAssembly module produced by an
-    external toolchain, and a third project would be a boundary with nothing on either side of it.
-    So the set is the two core assemblies and nothing else, and rule W1 asserts it.
+    name, and the universal bytecode programme's milestone UBC-4 gives it the pivot that already
+    exists instead: Broiler.VM.Ubc, the format, family-table schema and verifier every family is
+    written against. The profile references it to declare its family - the table, the verifier hook,
+    the handlers and the registration a composition root builds a descriptor from - and it never
+    references an emitter, which rule A11 forbids a profile. So the set is the two core assemblies
+    and the universal bytecode, and rule W1 asserts it.
+
+    The family is the profile's one execution path. A composition root hands a module produced by an
+    external toolchain to the profile's translator, which decodes and validates it with the
+    profile's own decoder and validator and lowers it into universal bytecode; the root builds the
+    family's descriptor over the bytecode emitter it composes, and the core verifies and runs the
+    translation's artifact under it. The profile builds no descriptor of its own: milestone UBC-4
+    retired the one it built over bare modules, with its verifier, its executor and its
+    interpreter, once the roots translated first.
   -->
   <ItemGroup>
     <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
     <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,13 +1,16 @@
 using Broiler.VM;
+using Broiler.VM.Emitter.Bytecode;
 using Broiler.VM.Profile.WebAssembly;
+using Broiler.VM.Ubc;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Text;
 
 namespace Broiler.VM.Composition.WebAssembly.Harness;
 
 /// <summary>
 /// The harness root: where this profile's corpus encoder, its retained corpus, the replay that
-/// holds it and the differential lane that scores the interpreter live, and where they must live.
+/// holds it and the differential lane that scores the execution live, and where they must live.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -29,6 +32,25 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// row claims and what a recorded one does not. The EXECUTION CHECKS drive real modules through the
 /// whole core lifecycle. The DIFFERENTIAL LANE scores the interpreter against answers derived
 /// somewhere other than the interpreter, which is the only kind of answer worth comparing against.
+/// </para>
+/// <para>
+/// <b>Every module goes through the translator first.</b> Since the universal bytecode programme's
+/// milestone UBC-4 the core verifies universal bytecode and never a bare module: every lane hands a
+/// module to <see cref="WasmTranslator"/> through <see cref="ModuleVerification"/>, and the core
+/// verifies the artifact the translation answers under the family's descriptor, which this root
+/// builds over the bytecode emitter. A module the translator refuses is reported in the fields the
+/// core reported it in, so every lane prints what it printed before the translator existed wherever
+/// the answer did not change.
+/// </para>
+/// <para>
+/// <b>Two lanes run only when asked for, and neither is part of the corpus replay, the execution
+/// checks or the differential lane.</b> <c>--determinism</c> translates every corpus module, and
+/// every module the execution and differential lanes built, twice and compares the artifacts byte for
+/// byte. <c>--primitives &lt;file&gt;</c> is obligation E2 of the universal bytecode: every numeric
+/// primitive row of the family's table, the profile's reference arms against the primitive table
+/// over the retained primitive input corpus, with the twelve float comparisons reported apart as the
+/// negative control. Neither lane's header opens with a name the headers of those three lanes open
+/// with, and a run without the flags prints neither lane.
 /// </para>
 /// <para>
 /// <b>What is still NOT here.</b> There is no reader for the specification's text format and so no
@@ -82,6 +104,8 @@ internal static class Program
             }
 
             var corpus = Argument(args, "--corpus");
+            var primitives = Argument(args, "--primitives");
+            var determinism = args.Contains("--determinism", StringComparer.Ordinal);
             var failed = ReportTheDecodedModule(runtime);
 
             if (corpus is not null)
@@ -97,8 +121,30 @@ internal static class Program
                 Console.WriteLine();
             }
 
+            // THE LANES THAT RE-READ WHAT THE OTHERS BUILT ARE ASKED FOR, never run by default. The
+            // modules the execution and differential lanes build are written down only when the
+            // determinism lane will translate them again.
+            ModuleVerification.Recorded = determinism ? [] : null;
+
             failed += ExecutionChecks.Report(runtime, verbose);
             failed += DifferentialChecks.Report(runtime, verbose);
+
+            var built = ModuleVerification.Recorded;
+            ModuleVerification.Recorded = null;
+
+            if (built is not null)
+            {
+                Console.WriteLine();
+                failed += Determinism.Report(runtime, built, verbose);
+            }
+
+            // A --primitives WITH NO FILE AFTER IT STILL RUNS THE LANE, which then fails: asking for
+            // a lane and getting a passing run that never printed it would read as the lane passing.
+            if (primitives is not null || args.Contains("--primitives", StringComparer.Ordinal))
+            {
+                Console.WriteLine();
+                failed += PrimitiveDifferential.Report(primitives, verbose);
+            }
 
             Console.WriteLine(
                 failed == 0
@@ -142,8 +188,8 @@ internal static class Program
     private static int ReportTheDecodedModule(VmRuntime runtime)
     {
         var bytes = CorpusStore.CanonicalModule();
-        var descriptor = Descriptor();
-        var verified = runtime.Verify(in descriptor, bytes, CancellationToken.None);
+        var verified = ModuleVerification.Verify(
+            runtime, bytes, "composition-wasm-harness://artifact", "canonical module");
 
         Console.WriteLine($"# module: {bytes.Length} bytes, hand-encoded in this root");
         Console.WriteLine($"verification {verified.Outcome}/{verified.Reason}");
@@ -152,18 +198,24 @@ internal static class Program
         {
             Console.WriteLine(
                 $"FAIL the canonical module did not verify: " +
-                $"code {verified.Diagnostics.ProfileDiagnosticCode} at " +
-                $"section {verified.Diagnostics.SourcePosition.SectionIndex} " +
-                $"offset {verified.Diagnostics.SourcePosition.ByteOffset}");
+                $"code {verified.Code} at " +
+                $"section {verified.Position.SectionIndex} " +
+                $"offset {verified.Position.ByteOffset}");
 
             return 1;
         }
 
         using (artifact)
         {
-            if (!artifact.TryGetState(out var state) || state is not WasmModule module)
+            // WHAT THE CORE HOLDS IS THE TRANSLATION'S PROGRAM, and what this lane describes is the
+            // module the translation decoded and validated on the way to it.
+            if (!artifact.TryGetState(out var state) || state is not UbcVerifiedProgram ||
+                verified.Module is not { } module)
             {
-                Console.WriteLine("FAIL the verified artifact does not carry a decoded module");
+                Console.WriteLine(
+                    "FAIL the verified artifact does not carry a universal bytecode program " +
+                    "translated from a decoded module");
+
                 return 1;
             }
 
@@ -211,7 +263,8 @@ internal static class Program
 
             // THE MODULE IS RUN, NOT JUST DESCRIBED. Instantiating it allocates its memory and
             // table, evaluates its global initialiser and applies its element and data segments;
-            // invoking its export runs the interpreter over the body printed above.
+            // invoking its export runs the bytecode emitter over the translation of the body
+            // printed above.
             var instantiated = runtime.Instantiate(artifact, CancellationToken.None);
 
             Console.WriteLine(
@@ -249,7 +302,11 @@ internal static class Program
 
     private static int ReportClosure()
     {
-        Console.WriteLine($"# broiler-vm-composition core-contract-version={VmCoreContract.Version}");
+        var descriptor = ModuleVerification.Descriptor;
+
+        Console.WriteLine(
+            $"# broiler-vm-composition core-contract-version={VmCoreContract.Version} " +
+            $"ubc-contract-version={UbcContract.Version}");
         Console.WriteLine("composition Broiler.VM.Composition.WebAssembly.Harness");
         Console.WriteLine("label none");
         Console.WriteLine("advertised no");
@@ -259,10 +316,21 @@ internal static class Program
                 ' ',
                 "profile",
                 WebAssemblyProfile.Id,
-                WebAssemblyProfile.Descriptor.PackageIdentity.PackageId,
-                WebAssemblyProfile.Descriptor.DescriptorRevision,
-                WebAssemblyProfile.Descriptor.HostCapabilityDescriptors.Length));
+                descriptor.PackageIdentity.PackageId,
+                descriptor.DescriptorRevision,
+                descriptor.HostCapabilityDescriptors.Length));
         Console.WriteLine(string.Join(' ', "manifest", WebAssemblyProfile.SliceManifest));
+
+        // What turns a module into what the core verifies, and the one form that runs it.
+        Console.WriteLine(
+            string.Join(
+                ' ',
+                "translator",
+                WasmTranslator.TranslatorIdentity,
+                WasmTranslator.TranslatorVersion.ToString(CultureInfo.InvariantCulture)));
+        Console.WriteLine(
+            $"form {UbcBytecodeEmitter.Form.Identity} " +
+            UbcBytecodeEmitter.Form.SemanticVersion.ToString(CultureInfo.InvariantCulture));
         Console.WriteLine($"corpus-entries {CorpusStore.Entries().Count}");
         Console.WriteLine($"corpus-retained yes {RetainedCorpusPath}");
         Console.WriteLine("interpreter yes");
@@ -271,14 +339,10 @@ internal static class Program
         return 0;
     }
 
-    private static VmArtifactDescriptor Descriptor() =>
-        new(WebAssemblyProfile.Id, 1, WebAssemblyProfile.SliceManifest, default,
-            VmCallerIdentity.FromCanonicalIdentity("composition-wasm-harness://artifact"));
-
     private static VmRuntime? Runtime(out string failure)
     {
         var catalog = VmCatalog.CreateBuilder()
-            .Add(WebAssemblyProfile.Descriptor)
+            .Add(ModuleVerification.Descriptor)
             .Build();
 
         var created = VmRuntime.Create(catalog, Options());

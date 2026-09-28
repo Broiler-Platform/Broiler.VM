@@ -49,7 +49,7 @@ public static class TallyProfile
 
     /// <summary>The family's registration: its table, its hook, and its contract integers.</summary>
     public static UbcFamilyRegistration<TallyFamily> Registration { get; } =
-        new(TallyTable.Identity, [TallyTable.Table], new TallyVerifier(), authoredUbcContractVersion: 1);
+        new(TallyTable.Identity, [TallyTable.Table], new TallyVerifier(), authoredUbcContractVersion: 2);
 
     /// <summary>The family's descriptor rows.</summary>
     public static UbcFamilyDeclaration Declaration { get; } = Declare(Defaults(), Maxima());

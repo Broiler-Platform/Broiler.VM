@@ -190,7 +190,7 @@ internal ref struct WasmDecoder
     /// <para>
     /// The bounds arrive as a parameter rather than being read here, because the ordering that
     /// matters - the ceilings are fixed before the first byte is examined - is a property of the
-    /// verifier's sequence and is stated there.
+    /// translator's sequence and is stated there.
     /// </para>
     /// <para>
     /// <paramref name="pollGranularity"/> is the uncharged-work bound, and it is not handed to the

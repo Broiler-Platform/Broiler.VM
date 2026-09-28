@@ -370,6 +370,9 @@ public sealed class RuleRegisterTests
         // source carries, and against the corpus entry that reaches each row. All five are Active from the
         // moment they are minted, because what they are about exists; neither the Vacuous nor the
         // Deferred count moves.
+        // UBC-4 takes decision UBC-D-5 early and turns U1's packability clause round: the project must
+        // now carry the literal IsPackable true, still with no PackageId, and its witnesses are renamed
+        // from packable to not-packable. No row is added or removed, and no count moves.
         Assert.Equal(101, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);

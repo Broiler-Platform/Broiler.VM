@@ -1,7 +1,7 @@
 # The universal bytecode's diagnostic-code registry
 #
-# registry-revision: 1
-# published-at-milestone: UBC-1 (revision 1)
+# registry-revision: 2
+# published-at-milestone: UBC-1 (revision 1), UBC-4 (revision 2)
 # owning-decision: ADR 0013
 # vocabulary: UbcDiagnosticCode, in src/Broiler.VM.Ubc/UbcDiagnostics.cs
 # corpus: src/tests/corpus/ubc-1/manifest.json
@@ -89,6 +89,7 @@
 3415|SuspendOutsideSuspendableUnit|InconsistentStructure|corpus|a-suspension-in-a-unit-not-flagged-suspendable|1
 3416|TrapUndefined|InconsistentStructure|corpus|a-trap-of-the-common-slot-with-a-code|1
 3417|CountedOperandTooLarge|InconsistentStructure|corpus|a-counted-operand-no-stack-could-supply|1
+3418|SignatureTypeOutOfRange|InconsistentStructure|corpus|a-signature-call-naming-a-type-the-artifact-does-not-have|2
 3501|RegionRangeInvalid|InconsistentStructure|corpus|a-region-of-a-unit-that-does-not-exist|1
 3502|RegionNesting|InconsistentStructure|corpus|regions-that-overlap-without-nesting|1
 3503|RegionEntryInconsistent|InconsistentStructure|corpus|a-region-entry-height-above-the-format|1

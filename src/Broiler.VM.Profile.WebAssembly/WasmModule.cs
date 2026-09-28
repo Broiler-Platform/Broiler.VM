@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   50
-// Annotated:        50/50
+// Relevant units:   49
+// Annotated:        49/49
 // Exempt:           44
-// Human-reviewed:   0/50
+// Human-reviewed:   0/49
 // IP risk:          Low
 // Security risk:    Critical
 // Criteria:         7/7
 // Resource impact:  3/10 max
-// Unverified:       50
+// Unverified:       49
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -198,11 +198,6 @@ internal sealed class WasmDataSegment
     // Broiler-Human:        PENDING
     internal WasmConstantExpression Offset { get; }
 
-    /// <summary>How many bytes the segment writes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=327536
-    // Broiler-Human:        PENDING
-    internal int ByteCount => contents.Length;
-
     /// <summary>The bytes, as a read-only window over the array this segment keeps.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F8499F
     // Broiler-Human:        PENDING
@@ -215,20 +210,24 @@ internal sealed class WasmDataSegment
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>IT EXISTS SO THAT NOTHING SCANS FOR A MATCHING <c>end</c> AT RUN TIME.</b> The bytes of a
-/// function body carry no back pointer: a <c>block</c> says where it starts and nothing says where
-/// it stops, so an interpreter that did not have this table would walk forward over the body's
-/// remaining bytes - skipping immediates correctly, which means decoding them - every time a branch
-/// was taken. That turns a loop with a conditional exit into a quadratic walk over the body and
-/// hands a guest a cost it chooses. Validation already walks every instruction once and already
-/// knows, at each <c>end</c>, which opening instruction it closes, so the pairing is recorded there
-/// and read here.
+/// <b>IT EXISTS SO THAT NOTHING SCANS FOR A MATCHING <c>end</c>.</b> The bytes of a function body
+/// carry no back pointer: a <c>block</c> says where it starts and nothing says where it stops, so a
+/// pass that did not have this table would walk forward over the body's remaining bytes - skipping
+/// immediates correctly, which means decoding them - to find where each structured instruction's
+/// <c>else</c> arm and <c>end</c> are. Done once per structured instruction, that is a quadratic
+/// walk over a deeply nested body and hands a guest a cost it chooses. Validation already walks
+/// every instruction once and already knows, at each <c>end</c>, which opening instruction it
+/// closes, so the pairing is recorded there, and the translator's lowering reads each structured
+/// instruction's <see cref="ElseOffset"/> and <see cref="EndOffset"/> here.
 /// </para>
 /// <para>
-/// <b>The two arities are recorded for the same reason as the two offsets.</b> A branch truncates
-/// the operand stack to the label's height and carries the label's values across, so an interpreter
-/// needs to know how many values that is - and the only other way to learn it is to re-read the
-/// block type immediate the validator already read.
+/// <b>Nothing outside validation reads <see cref="LabelOffset"/>, <see cref="LabelArity"/> or
+/// <see cref="EndArity"/>.</b> The bare-module interpreter read <see cref="LabelArity"/> here, to
+/// carry a branch's values across without re-reading the block type immediate, until milestone
+/// UBC-4 retired it; the lowering re-reads the immediate and keeps each frame's arity on a frame of
+/// its own, and the other two had no reader outside validation before that. The three fields stay
+/// because validation charges the table at this type's size, so removing them would move the
+/// allocated-bytes charge at which a module is refused.
 /// </para>
 /// <para>
 /// Every offset is relative to the start of the body's own instruction bytes, and every one of them
@@ -290,10 +289,20 @@ internal struct WasmJumpTarget
 /// payload choose how much memory a host commits, and the format does not even offer it here.
 /// </para>
 /// <para>
-/// <b>The three computed fields are assigned exactly once, by validation, before verification
-/// returns.</b> <see cref="TrySeal"/> refuses a second call, so a body cannot be resealed and the
-/// immutability a shareable verified handle depends on is a property of this type rather than a
-/// convention its callers keep. There is deliberately no setter and no other way in.
+/// <b>Since milestone UBC-4 nothing sizes anything from either bound.</b> Their one consumer, the
+/// bare-module interpreter, sized its stacks from them and was retired: what runs a module now is
+/// the artifact the translator lowers it into, whose unit heights the lowering counts as it emits
+/// and the core's walk checks against the universal bytecode's own ceiling. The bounds are still
+/// computed, because they are high-water marks over a walk validation makes and charges anyway, and
+/// the one thing that reads them is <see cref="WasmModule.ExecutionBoundsComputed"/>, which
+/// answers whether validation reached every body.
+/// </para>
+/// <para>
+/// <b>The three computed fields are assigned exactly once, by validation, before the translation
+/// that decoded the body returns.</b> <see cref="TrySeal"/> refuses a second call, so a body cannot
+/// be resealed and the immutability a module read from two threads at once depends on is a
+/// property of this type rather than a convention its callers keep. There is deliberately no setter
+/// and no other way in.
 /// </para>
 /// <para>
 /// The local types are expanded: the format encodes them as runs of a count and a type, and the
@@ -347,8 +356,8 @@ internal sealed class WasmFunctionBody
     /// <remarks>
     /// A second call answers <see langword="false"/> and changes nothing, which is the whole reason
     /// this is a method rather than three setters: the window in which this state may move is the
-    /// dynamic extent of one verification, and a type that cannot say no would leave that window
-    /// open for the life of a shared handle.
+    /// dynamic extent of one validation, and a type that cannot say no would leave that window open
+    /// for the life of the module a translation hands back.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=1; Fingerprint=0C343E
     // Broiler-Falsified-If: a second call changes any field, or a caller reaches these fields by any other route
@@ -367,7 +376,8 @@ internal sealed class WasmFunctionBody
     }
 
     /// <summary>
-    /// The deepest the operand stack goes in this body, computed at validation and stored here.
+    /// The deepest the operand stack goes in this body, computed at validation and stored here;
+    /// nothing sizes anything from it since milestone UBC-4.
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6AF324
     // Broiler-Human:        PENDING
@@ -375,7 +385,7 @@ internal sealed class WasmFunctionBody
 
     /// <summary>
     /// The deepest the control-frame stack goes in this body, computed at validation and stored
-    /// here.
+    /// here; nothing sizes anything from it since milestone UBC-4.
     /// </summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=32822B
     // Broiler-Human:        PENDING
@@ -455,8 +465,8 @@ internal sealed class WasmFunctionBody
 }
 
 /// <summary>
-/// The decoded and validated module verification produces, and the state a verified artifact
-/// carries.
+/// The decoded and validated module a translation produces, and the summary a translation that
+/// succeeded hands back beside its artifact.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -475,29 +485,35 @@ internal sealed class WasmFunctionBody
 /// </para>
 /// <para>
 /// <b>What neither pass asserts is anything about the guest's behaviour</b> - only that the body is
-/// walkable and its bounds are computed. Running it is the executor's job, and the executor beside
-/// this class runs it: it allocates a store, evaluates the start function if the module declares
-/// one, and answers a completed step carrying results on invocation.
+/// walkable and its bounds are computed. Running it is the universal bytecode's job: the translator
+/// lowers a module both passes admitted into an artifact, the core verifies the artifact, and an
+/// emitter runs it over the family's handlers - allocating a store, running the start function if
+/// the module declares one, and answering a completed step carrying results on invocation. The
+/// module itself is never handed to the core; it is the translation's summary.
 /// <i>(Corrected 2026-09-08. This paragraph read "<b>What it still does not assert is that the
 /// module can be run</b>, because running it needs an interpreter and there is none in this
 /// assembly. The executor beside this class refuses every step and says so in its own words." Both
-/// halves were true when written and stopped being true when <see cref="WasmInterpreter"/> landed
-/// in this assembly and <see cref="WebAssemblyExecutor"/> began running it. The superseded reading
+/// halves were true when written and stopped being true when <c>WasmInterpreter</c> landed
+/// in this assembly and <c>WebAssemblyExecutor</c> began running it. The superseded reading
 /// is quoted rather than deleted, because a record that revises itself silently is a record a
 /// reader cannot audit.)</i>
+/// <i>(Corrected 2026-09-25. The corrected paragraph then read "Running it is the executor's job,
+/// and the executor beside this class runs it", and this class was the state a verified artifact
+/// carried. Milestone UBC-4 retired that executor, its interpreter and the verifier that handed this
+/// class to the core, and the module stopped being a verified artifact's state.)</i>
 /// </para>
 /// <para>
-/// <b>Everything reachable from it is immutable once verification returns.</b> That is what makes a
-/// shareable handle safe for two runtimes reading it at once with no synchronisation between them.
+/// <b>Everything reachable from it is immutable once validation returns.</b> That is what makes a
+/// module safe for two threads reading it at once with no synchronisation between them.
 /// No array is handed out: the arrays are private, the internal accessors return read-only windows,
 /// and the public surface is counts and copies. There is no cache slot, no interned identity and no
 /// process-local object anywhere behind it.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=25C6A2
-// Broiler-Falsified-If: anything reachable from this state can be mutated after verification returns, or a caller reads one of these fields as though a validation pass had run
+// Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=4DF8A9
+// Broiler-Falsified-If: anything reachable from this module can be mutated after validation returns, or a caller reads one of these fields as though a validation pass had run
 // Broiler-Human:        PENDING
-public sealed class WasmModule : IVmVerifiedState
+public sealed class WasmModule
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E975C8
     // Broiler-Human:        PENDING
@@ -649,13 +665,13 @@ public sealed class WasmModule : IVmVerifiedState
 
     /// <summary>
     /// Whether the per-body execution bounds have been computed, which they have on every module
-    /// verification hands back.
+    /// a translation hands back.
     /// </summary>
     /// <remarks>
     /// A caller reads this rather than inferring it from a count, because a zero bound would be
     /// indistinguishable from a function that happens to need no stack. It is false only on a module
     /// that decoding produced and validation has not yet sealed, which is a state that exists inside
-    /// one verification and never outside it.
+    /// one translation and never outside it.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A79497
     // Broiler-Falsified-If: it reports true while any body still carries the not-computed sentinel
@@ -700,7 +716,7 @@ public sealed class WasmModule : IVmVerifiedState
     /// <summary>Copies one export's name bytes into a caller-supplied buffer.</summary>
     /// <remarks>
     /// A copy rather than a window, because a window into a private array is a handle onto state a
-    /// shared verified module owns and this member is on the public surface.
+    /// module read from two threads at once owns, and this member is on the public surface.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=82B42B
     // Broiler-Falsified-If: it writes past the destination, or hands back a view onto the array the module keeps

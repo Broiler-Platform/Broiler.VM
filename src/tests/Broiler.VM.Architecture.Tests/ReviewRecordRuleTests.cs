@@ -1154,7 +1154,33 @@ public sealed class ReviewRecordRuleTests
         // AND THE TWO OF MILESTONE UBC-2, the whole of Broiler.VM.Emitter.Bytecode: the form and the
         // executor with its instance and continuation, and the dispatch loop with its frame and its
         // meter. Nothing in them has been read by a human.
-        Assert.Equal(230, AssuranceSources.Files.Count);
+        //
+        // AND THE FIVE OF MILESTONE UBC-4's WEBASSEMBLY FAMILY, in the WebAssembly profile: the
+        // family's instruction table, WasmFamilyTable.cs; the codec of its module definitions with the
+        // position index and the meter adapter the hook reads them through, WasmFamilyData.cs; the
+        // verifier hook, WasmFamilyVerifier.cs, which every artifact naming the profile reaches and
+        // which is therefore a parser over untrusted bytes; the handlers, the null value plane and the
+        // instance store, WasmFamily.cs; and the numeric arms moved out of the interpreter,
+        // WasmReferenceNumerics.cs. They are covered on the same terms as every other product file,
+        // and nothing in them has been read by a human.
+        //
+        // AND THE TWO OF MILESTONE UBC-4's TRANSLATOR, in the WebAssembly profile: the public front of
+        // the translation with its answer and the meter the decoder and the validator charge under it,
+        // WasmTranslator.cs, which reads an untrusted module and is therefore a parser over untrusted
+        // bytes; and the lowering of a validated module into universal bytecode, WasmLowering.cs. They
+        // are covered on the same terms as every other product file, and nothing in them has been read
+        // by a human.
+        //
+        // AND MILESTONE UBC-4's RETIREMENT OF THE BARE-MODULE PATH TOOK FOUR AWAY AND ADDED ONE, in the
+        // WebAssembly profile. The profile's own verifier, WebAssemblyVerifier.cs, its executor,
+        // WebAssemblyExecutor.cs, the interpreter that executor ran, WasmInterpreter.cs, and the value
+        // slot the interpreter ran over, WasmValue.cs, are deleted with the descriptor that named them,
+        // because the composition roots translate first and the core verifies universal bytecode. The
+        // store, WasmStore.cs, is WasmTable.cs now, because the table is all of it the family's instance
+        // state kept. And the charge-and-poll pacing the family's instantiation charges its segments
+        // through moved out of the deleted interpreter into a file of its own, WasmPacing.cs, which is
+        // covered on the same terms as every other product file; nothing in it has been read by a human.
+        Assert.Equal(234, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

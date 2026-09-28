@@ -45,23 +45,31 @@
     profile turns the argument into one with two real parties and "does not make either pass
     earlier", which is exactly this root's position.
 
-    WHAT THE REFERENCE SET IS, AND WHY IT IS SIX. Three core projects, the JavaScript profile and
-    its lowering, and the WebAssembly profile. The JavaScript format assembly arrives transitively
-    through the profile and is in the image without being named here, which is what the register's
-    sibling column exists to record. The WebAssembly profile has no format sibling and no lowering
-    at all, because its payload is a bare module produced by an external toolchain.
+    WHAT THE REFERENCE SET IS, AND WHY IT IS EIGHT. Three core projects, the JavaScript profile and
+    its lowering, the WebAssembly profile, and the universal bytecode with its bytecode emitter. The
+    JavaScript format assembly arrives transitively through the profile and is in the image without
+    being named here, which is what the register's sibling column exists to record. The WebAssembly
+    profile carries its own lowering - the translator, which turns a module produced by an external
+    toolchain into universal bytecode - and declares the WebAssembly family; the core verifies the
+    translation's artifact, and the family executes through the one form this root composes. A
+    family names no emitter, so this root builds the family's descriptor over the bytecode emitter
+    itself, and that is why it names both. (Until the universal bytecode programme's milestone
+    UBC-4 this paragraph said the reference set was six and that the WebAssembly profile had no
+    lowering at all, because its payload was the bare module.)
 
     RULE N2 FORBIDS A CROSS-FAMILY EDGE AND EXCEPTS EXACTLY THIS. No project in one
     `Broiler.VM.Profile.<Language>` family may reference a project in another, and no project
     outside every family may reference into one - "except a composition root, which A12 bounds
-    instead". A12's bound is three core projects plus one or more profile assemblies, and this
-    root has that and nothing else. So the two families still cannot see each other; a composition
-    can see both.
+    instead". A12's bound is three core projects, one or more profile assemblies and the universal
+    bytecode's siblings at their product paths, and this root has that and nothing else. So the two
+    families still cannot see each other; a composition can see both.
   -->
   <ItemGroup>
     <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Emitter.Bytecode\Broiler.VM.Emitter.Bytecode.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" />
     <ProjectReference Include="..\..\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj" />
