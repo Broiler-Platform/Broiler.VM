@@ -53,7 +53,11 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// the family lets complete carries a latched refusal of its own. A refusal the family never meets is
 /// the one case left - an aggregate wall clock the meter accrues and latches at a poll that still
 /// answers - and the core drops that state unabandoned with nothing released: a defect of the core,
-/// written out in `docs/tasks/release-dropped-instantiation-retention.md`. An exception is not a case
+/// written out in `docs/tasks/release-dropped-instantiation-retention.md`. <i>(Corrected 2026-09-28: the
+/// core now releases what the instance level holds on every instantiation path that publishes nothing,
+/// in `45778cf`, so nothing retained here stays counted on that path. It still does not tell the family
+/// the state was dropped, which costs this family nothing further: its store is managed memory.)</i>
+/// An exception is not a case
 /// left: an allocation that throws after its charges gives its retention back before the exception
 /// leaves it, and the making gives back everything it retained before any exception leaves
 /// <c>CreateInstance</c>, where the emitter has no state yet to abandon.

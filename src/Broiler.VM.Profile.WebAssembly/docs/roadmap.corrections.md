@@ -1465,7 +1465,10 @@ instance is disposed. **It is not released on every path that publishes no insta
 or a cancellation latched during an instantiation the emitter answered as complete, the core answers an
 exhaustion or a cancellation, publishes no instance and releases nothing. That is a defect of the core,
 not of this profile, written out as
-[a task](../../../docs/tasks/release-dropped-instantiation-retention.md). The paragraphs that list the
+[a task](../../../docs/tasks/release-dropped-instantiation-retention.md). *(Added 2026-09-28: the core
+now releases it - what the instance level holds is released on every instantiation path that publishes
+no instance, in `45778cf` - so the sentence in bold above no longer holds; it is kept as what this entry
+said when it was written.)* The paragraphs that list the
 milestone's entries gain this one. *(The replacement sentences in the budget row and in section 13 were
 first written, in `8cbbc0c`, as released "through the family when an instantiation fails", and were
 qualified the same day, because the core's drop is a failed instantiation too.)*

@@ -1,0 +1,25 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs b/src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs
+index 7a91527..2516df1 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs
+@@ -147,7 +147,7 @@ internal static class WasmReferenceMemory
+         bits = opcode switch
+         {
+             0x2C => FromI32((sbyte)raw),
+-            0x2D => FromI32((byte)raw),
++            0x2D => FromI32((sbyte)raw),
+             0x2E => FromI32((short)raw),
+             0x2F => FromI32((ushort)raw),
+             0x30 => FromI64((sbyte)raw),
+@@ -211,6 +211,11 @@ internal static class WasmReferenceMemory
+             bytes[at + index] = (byte)(bits >> (index * 8));
+         }
+ 
++        if (at + width < bytes.Length)
++        {
++            bytes[at + width] ^= 0xFF;
++        }
++
+         return true;
+     }
+ 

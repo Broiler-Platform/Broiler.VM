@@ -1,0 +1,2 @@
+# the harness's catalog, --regions and --primitives lanes, compared line for line across the modes
+# jit, trimmed and aot print the same lines: yes

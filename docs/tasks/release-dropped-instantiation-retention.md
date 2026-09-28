@@ -1,6 +1,14 @@
 # Suggested task — Release the retention of an instantiation the core drops
 
-**Status:** suggested, not scheduled, no owner. Found 2026-09-25 while building the WebAssembly family
+**Status:** done 2026-09-28, in `45778cf` on the branch of PR #102, which merged milestone UBC-4 in
+beside it: every instantiation path that publishes no instance now releases the instance level's
+ceiling-class consumption from the runtime and parent levels through the helper instance disposal
+uses, and contract tests watched failing before the change show `LiveBytes` back at baseline at the
+runtime and at an aggregate parent. What stays true is that the core drops the state without
+abandoning it through the executor. *(The status read "suggested, not scheduled, no owner." until
+then, and the rest of this document is kept as it was written.)*
+
+**Status as written:** suggested, not scheduled, no owner. Found 2026-09-25 while building the WebAssembly family
 of [the universal bytecode programme](../universal-bytecode.roadmap.md)'s milestone UBC-4, and named in
 that milestone's bundle [`ubc-4-002`](../evidence/ubc-4-002/README.md) as a defect of the core that the
 milestone does not fix. This document is the task written out so that a session starting from it alone

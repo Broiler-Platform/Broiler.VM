@@ -169,7 +169,10 @@ internal sealed class UbcContinuation : IVmProfileContinuation
 /// abandon, so what the family charged before it threw is the family's to give back before the
 /// exception leaves it. One it does answer as instantiated is the core's to publish, and the core drops one
 /// whose meter latched a refusal or a cancellation during the step without abandoning it: a defect of
-/// the core, written out in `docs/tasks/release-dropped-instantiation-retention.md`.
+/// the core, written out in `docs/tasks/release-dropped-instantiation-retention.md`. <i>(Corrected
+/// 2026-09-28: the core now releases what the instance level holds on every instantiation path that
+/// publishes nothing, in `45778cf`, so what the family retained is no longer left counted; it still
+/// drops the state without abandoning it through this executor.)</i>
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=2; Fingerprint=0DCB04

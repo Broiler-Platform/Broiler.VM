@@ -74,4 +74,7 @@ it is disposed. When a refusal or a cancellation latched during an instantiation
 complete, the core answers an exhaustion or a cancellation, publishes no instance and releases nothing:
 a defect of the core, not of this family, written out as
 [a task](../../../../docs/tasks/release-dropped-instantiation-retention.md) and recorded in the plan's
-[WAC-43](../roadmap.corrections.md#wac-43).
+[WAC-43](../roadmap.corrections.md#wac-43). *(Added 2026-09-28: the core now releases what the
+instance level holds on every instantiation path that publishes no instance, in `45778cf`, so that
+defect is closed; the core still drops the state without abandoning it through the emitter, which
+costs this family nothing further.)*

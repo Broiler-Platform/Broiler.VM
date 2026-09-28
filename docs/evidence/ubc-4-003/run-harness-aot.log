@@ -1,0 +1,394 @@
+$ <root>/artifacts/publish-ubc4-003-harness-aot/Broiler.VM.Composition.WebAssembly.Harness --closure
+# broiler-vm-composition core-contract-version=1 ubc-contract-version=2
+composition Broiler.VM.Composition.WebAssembly.Harness
+label none
+advertised no
+profiles 1
+profile broiler.webassembly Broiler.VM.Profile.WebAssembly 2 0
+manifest broiler.webassembly.slice
+translator broiler.webassembly.translator 1
+form bytecode 2
+corpus-entries 290
+corpus-retained yes src/tests/wasm/corpus
+interpreter yes
+linker no
+# exit 0
+$ <root>/artifacts/publish-ubc4-003-harness-aot/Broiler.VM.Composition.WebAssembly.Harness --regions src/tests/corpus/ubc-2/regions.txt --primitives src/tests/corpus/ubc-2/primitives.txt --verbose
+# module: 99 bytes, hand-encoded in this root
+verification Normal/NormalCompleted
+types                  1
+functions              1
+tables                 1
+memories               1
+globals                1
+exports                2
+element segments       1
+data segments          1
+custom sections        1 (skipped)
+start function         -1
+declares data count    False
+total code bytes       6
+execution bounds       computed by validation
+  export[0]          "add" Function #0
+  export[1]          "mem" Memory #0
+  body[0]            0 locals, 6 code bytes
+instantiation          Normal/NormalCompleted
+invocation             Normal/NormalCompleted, add(2, 3) = 5
+
+# retained corpus: not replayed - no --corpus <directory> was given, and the retained one is at src/tests/wasm/corpus
+
+# execution: 151 checks
+ok   numeric: verification: Normal/NormalCompleted, 273 bytes
+ok   numeric: instantiation: Normal/NormalCompleted
+ok   numeric: 3:addi32:1:7i32:2:35: Normal/NormalCompleted i32 42
+ok   numeric: 4:divsi32:2:-7i32:1:2: Normal/NormalCompleted i32 -3
+ok   numeric: 4:remsi32:2:-7i32:1:2: Normal/NormalCompleted i32 -1
+ok   numeric: 3:shli32:1:1i32:1:4: Normal/NormalCompleted i32 16
+ok   numeric: 4:rotli32:11:-2147483647i32:1:1: Normal/NormalCompleted i32 3
+ok   numeric: 6:i64muli64:2:11i64:1:3: Normal/NormalCompleted i64 33
+ok   numeric: 6:i64shri64:2:-1i64:2:60: Normal/NormalCompleted i64 15
+ok   numeric: 6:f32divf32:8:3F800000f32:8:40800000: Normal/NormalCompleted f32 0.25 (0x3E800000)
+ok   numeric: 6:f32minf32:8:80000000f32:8:00000000: Normal/NormalCompleted f32 -0 (0x80000000)
+ok   numeric: 6:f64addf64:16:3FF8000000000000f64:16:4002000000000000: Normal/NormalCompleted f64 3.75 (0x400E000000000000)
+ok   numeric: 7:f64sqrtf64:16:4000000000000000: Normal/NormalCompleted f64 1.4142135623730951 (0x3FF6A09E667F3BCD)
+ok   numeric: 5:truncf64:16:C00F333333333333: Normal/NormalCompleted i32 -3
+ok   numeric: 4:convi32:2:-5: Normal/NormalCompleted f64 -5 (0xC014000000000000)
+ok   float-comparison: verification: Normal/NormalCompleted, 236 bytes
+ok   float-comparison: instantiation: Normal/NormalCompleted
+ok   float-comparison: 5:f32eqf32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32nef32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32ltf32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32gtf32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32lef32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32gef32:8:3F800000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32eqf32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32nef32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32ltf32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32gtf32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32lef32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32gef32:8:40000000f32:8:40000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32eqf32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32nef32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32ltf32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32gtf32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32lef32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32gef32:8:FFC00000f32:8:3F800000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32eqf32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32nef32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32ltf32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32gtf32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f32lef32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f32gef32:8:80000000f32:8:00000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64eqf64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64nef64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64ltf64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64gtf64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64lef64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64gef64:16:3FF0000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64eqf64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64nef64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64ltf64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64gtf64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64lef64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64gef64:16:4000000000000000f64:16:4000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64eqf64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64nef64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64ltf64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64gtf64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64lef64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64gef64:16:3FF0000000000000f64:16:FFF8000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64eqf64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64nef64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64ltf64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64gtf64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 0
+ok   float-comparison: 5:f64lef64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 1
+ok   float-comparison: 5:f64gef64:16:8000000000000000f64:16:0000000000000000: Normal/NormalCompleted i32 1
+ok   control: verification: Normal/NormalCompleted, 174 bytes
+ok   control: instantiation: Normal/NormalCompleted
+ok   control: 3:sumi32:1:5: Normal/NormalCompleted i32 15
+ok   control: 3:sumi32:1:0: Normal/NormalCompleted i32 0
+ok   control: 8:classifyi32:1:0: Normal/NormalCompleted i32 10
+ok   control: 8:classifyi32:1:1: Normal/NormalCompleted i32 20
+ok   control: 8:classifyi32:1:2: Normal/NormalCompleted i32 30
+ok   control: 8:classifyi32:1:7: Normal/NormalCompleted i32 99
+ok   control: 3:iffi32:1:1: Normal/NormalCompleted i32 111
+ok   control: 3:iffi32:1:0: Normal/NormalCompleted i32 222
+ok   control: 3:seli32:1:1: Normal/NormalCompleted i32 5
+ok   control: 3:seli32:1:0: Normal/NormalCompleted i32 6
+ok   control: 3:teei32:1:4: Normal/NormalCompleted i32 24
+ok   memory: verification: Normal/NormalCompleted, 142 bytes
+ok   memory: instantiation: Normal/NormalCompleted
+ok   memory: 9:roundtrip: Normal/NormalCompleted i32 123456
+ok   memory: 8:readbytei32:1:0: Normal/NormalCompleted i32 65
+ok   memory: 8:readbytei32:1:2: Normal/NormalCompleted i32 67
+ok   memory: 4:size: Normal/NormalCompleted i32 1
+ok   memory: 4:growi32:1:1: Normal/NormalCompleted i32 1
+ok   memory: 4:size: Normal/NormalCompleted i32 2
+ok   memory: 4:growi32:4:2000: Normal/NormalCompleted i32 -1
+ok   memory: 4:size: Normal/NormalCompleted i32 2
+ok   memory: 3:oob: ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess/3005 expected trap=OutOfBoundsMemoryAccess
+ok   calls: verification: Normal/NormalCompleted, 138 bytes
+ok   calls: instantiation: Normal/NormalCompleted
+ok   calls: 6:direct: Normal/NormalCompleted i32 8
+ok   calls: 8:indirecti32:2:21i32:1:0: Normal/NormalCompleted i32 42
+ok   calls: 8:indirecti32:2:21i32:1:1: ProfileFault/ProfileFaultUnspecified trap=IndirectCallTypeMismatch/3008 expected trap=IndirectCallTypeMismatch
+ok   calls: 8:indirecti32:2:21i32:1:2: ProfileFault/ProfileFaultUnspecified trap=UninitializedElement/3009 expected trap=UninitializedElement
+ok   calls: 8:indirecti32:2:21i32:1:9: ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsTableAccess/3006 expected trap=OutOfBoundsTableAccess
+ok   calls: 4:deepi32:3:100: Normal/NormalCompleted i32 5050
+ok   traps: verification: Normal/NormalCompleted, 83 bytes
+ok   traps: instantiation: Normal/NormalCompleted
+ok   traps: 7:unreach: ProfileFault/ProfileFaultUnspecified trap=Unreachable/3001 expected trap=Unreachable
+ok   traps: 4:divsi32:1:1i32:1:0: ProfileFault/ProfileFaultUnspecified trap=IntegerDivideByZero/3002 expected trap=IntegerDivideByZero
+ok   traps: 4:divsi32:11:-2147483648i32:2:-1: ProfileFault/ProfileFaultUnspecified trap=IntegerOverflow/3003 expected trap=IntegerOverflow
+ok   traps: 4:divsi32:11:-2147483648i32:1:1: Normal/NormalCompleted i32 -2147483648
+ok   traps: 7:badconvf64:16:FFF8000000000000: ProfileFault/ProfileFaultUnspecified trap=InvalidConversionToInteger/3004 expected trap=InvalidConversionToInteger
+ok   traps: 7:badconvf64:16:7E37E43C8800759C: ProfileFault/ProfileFaultUnspecified trap=IntegerOverflow/3003 expected trap=IntegerOverflow
+ok   globals-and-start: verification: Normal/NormalCompleted, 87 bytes
+ok   globals-and-start: instantiation: Normal/NormalCompleted
+ok   globals-and-start: 10:readglobal: Normal/NormalCompleted i32 777
+ok   globals-and-start: 4:bump: Normal/NormalCompleted i32 778
+ok   globals-and-start: 4:bump: Normal/NormalCompleted i32 779
+ok   a-trapping-start-function-publishes-no-instance: ProfileFault/ProfileFaultUnspecified trap=Unreachable instance-published=False
+ok   an-overrunning-data-segment-publishes-no-instance: ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess instance-published=False
+ok   entry-point-encoding: verification: Normal/NormalCompleted, 63 bytes
+ok   entry-point-encoding: instantiation: Normal/NormalCompleted
+ok   entry-point-encoding: 6:f(i32)i32:2:41: Normal/NormalCompleted i32 42
+ok   entry-point-encoding: 7:a:3:i32: Normal/NormalCompleted i32 5
+ok   an-unknown-entry-point-is-a-typed-fault-and-not-a-trap: ProfileFault/ProfileFaultUnspecified problem=UnknownExport
+ok   a-100-kib-body-of-nops: verification: Normal/NormalCompleted, 102441 bytes
+ok   a-100-kib-body-of-nops: instantiation: Normal/NormalCompleted
+ok   a-100-kib-body-of-nops: 4:nops: Normal/NormalCompleted i32 42
+ok   a-100-kib-body-of-constant-and-drop-pairs: verification: Normal/NormalCompleted, 102441 bytes
+ok   a-100-kib-body-of-constant-and-drop-pairs: instantiation: Normal/NormalCompleted
+ok   a-100-kib-body-of-constant-and-drop-pairs: 5:pairs: Normal/NormalCompleted i32 43
+ok   three-40-kib-bodies: verification: Normal/NormalCompleted, 122957 bytes
+ok   three-40-kib-bodies: instantiation: Normal/NormalCompleted
+ok   three-40-kib-bodies: 6:share1: Normal/NormalCompleted i32 1
+ok   three-40-kib-bodies: 6:share2: Normal/NormalCompleted i32 2
+ok   three-40-kib-bodies: 6:share3: Normal/NormalCompleted i32 3
+ok   a-100-kib-data-segment: verification: Normal/NormalCompleted, 102462 bytes
+ok   a-100-kib-data-segment: instantiation: Normal/NormalCompleted
+ok   a-100-kib-data-segment: 8:readbytei32:1:0: Normal/NormalCompleted i32 3
+ok   a-100-kib-data-segment: 8:readbytei32:6:102399: Normal/NormalCompleted i32 252
+ok   a-100-kib-custom-section: verification: Normal/NormalCompleted, 102448 bytes
+ok   a-100-kib-custom-section: instantiation: Normal/NormalCompleted
+ok   a-100-kib-custom-section: 4:five: Normal/NormalCompleted i32 5
+ok   a-100-kib-export-name: verification: Normal/NormalCompleted, 102445 bytes
+ok   a-100-kib-export-name: instantiation: Normal/NormalCompleted
+ok   a-100-kib-export-name: 5:short: Normal/NormalCompleted i32 6
+ok   an-eight-byte-global-initialiser-read-one-unit-short-of-a-poll: constant at offset 65535; Normal/NormalCompleted f64 6.02214076E+23 (0x44DFE185CA57C517)
+ok   an-eight-byte-immediate-validated-one-unit-short-of-a-poll: constant at offset 65535; Normal/NormalCompleted i32 9
+ok   a-70000-entry-element-segment-and-a-start-function: verification: Normal/NormalCompleted, 70115 bytes
+ok   a-70000-entry-element-segment-and-a-start-function: instantiation: Normal/NormalCompleted
+ok   a-70000-entry-element-segment-and-a-start-function: 7:started: Normal/NormalCompleted i32 7
+ok   a-70000-entry-element-segment-and-a-start-function: 5:probei32:1:0: Normal/NormalCompleted i32 7
+ok   a-70000-entry-element-segment-and-a-start-function: 5:probei32:5:69999: Normal/NormalCompleted i32 7
+ok   a-70000-entry-element-segment-and-a-start-function: 5:probei32:5:70000: ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsTableAccess/3006 expected trap=OutOfBoundsTableAccess
+ok   a-6-mib-data-segment-and-a-start-function: verification: Normal/NormalCompleted, 6291568 bytes
+ok   a-6-mib-data-segment-and-a-start-function: instantiation: Normal/NormalCompleted
+ok   a-6-mib-data-segment-and-a-start-function: 7:started: Normal/NormalCompleted i32 252
+ok   a-6-mib-data-segment-and-a-start-function: 8:readbytei32:1:0: Normal/NormalCompleted i32 3
+ok   a-6-mib-data-segment-and-a-start-function: 8:readbytei32:7:6291455: Normal/NormalCompleted i32 252
+# execution: 151 of 151 checks passed
+# differential: 43 checks
+ok   integer: the module verifies and instantiates: 600 bytes
+ok   i32.add: 361 cases agreed with the oracle
+ok   i32.sub: 361 cases agreed with the oracle
+ok   i32.mul: 361 cases agreed with the oracle
+ok   i32.div_s: 361 cases agreed with the oracle
+ok   i32.div_u: 361 cases agreed with the oracle
+ok   i32.rem_s: 361 cases agreed with the oracle
+ok   i32.rem_u: 361 cases agreed with the oracle
+ok   i32.and: 361 cases agreed with the oracle
+ok   i32.or: 361 cases agreed with the oracle
+ok   i32.xor: 361 cases agreed with the oracle
+ok   i32.shl: 361 cases agreed with the oracle
+ok   i32.shr_s: 361 cases agreed with the oracle
+ok   i32.shr_u: 361 cases agreed with the oracle
+ok   i32.rotl: 361 cases agreed with the oracle
+ok   i32.rotr: 361 cases agreed with the oracle
+ok   i32.clz: 19 cases agreed with the oracle
+ok   i32.ctz: 19 cases agreed with the oracle
+ok   i32.popcnt: 19 cases agreed with the oracle
+ok   i32.eqz: 19 cases agreed with the oracle
+ok   i64.i64add: 256 cases agreed with the oracle
+ok   i64.i64mul: 256 cases agreed with the oracle
+ok   i64.i64div_s: 256 cases agreed with the oracle
+ok   i64.i64div_u: 256 cases agreed with the oracle
+ok   i64.i64rem_s: 256 cases agreed with the oracle
+ok   i64.i64rem_u: 256 cases agreed with the oracle
+ok   i64.i64shl: 256 cases agreed with the oracle
+ok   i64.i64shr_s: 256 cases agreed with the oracle
+ok   i64.i64shr_u: 256 cases agreed with the oracle
+ok   i64.i64rotl: 256 cases agreed with the oracle
+ok   i64.i64rotr: 256 cases agreed with the oracle
+ok   i64.i64clz: 16 cases agreed with the oracle
+ok   i64.i64ctz: 16 cases agreed with the oracle
+ok   i64.i64popcnt: 16 cases agreed with the oracle
+ok   floating-point: the module verifies and instantiates: 268 bytes
+ok   f64 binary operations against hand-derived bit patterns: 27 cases agreed with the oracle
+ok   f64 unary operations against hand-derived bit patterns: 21 cases agreed with the oracle
+ok   f64 operations that must produce a NaN: 8 cases agreed with the oracle
+ok   algorithm: the module verifies and instantiates: 300 bytes
+ok   an iterative Fibonacci against the same loop in C#: 41 cases agreed with the oracle
+ok   Euclid's algorithm against the same loop in C#: 189 cases agreed with the oracle
+ok   a memory write-then-read scan against the same sum in C#: 65 cases agreed with the oracle
+ok   an indirect dispatch against the three functions written in C#: 20 cases agreed with the oracle
+# differential: 43 of 43 checks passed
+
+# primitive-differential: 123 numeric primitive rows of broiler.webassembly.slice table version 1, NaN canonicalised yes, inputs from src/tests/corpus/ubc-2/primitives.txt
+ok   wasm.i32.eqz (0x45, I32Eqz): 14 inputs agreed, 0 disagreed
+ok   wasm.i32.eq (0x46, I32Eq): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.ne (0x47, I32Ne): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.lt_s (0x48, I32LtS): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.lt_u (0x49, I32LtU): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.gt_s (0x4A, I32GtS): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.gt_u (0x4B, I32GtU): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.le_s (0x4C, I32LeS): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.le_u (0x4D, I32LeU): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.ge_s (0x4E, I32GeS): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.ge_u (0x4F, I32GeU): 196 inputs agreed, 0 disagreed
+ok   wasm.i64.eqz (0x50, I64Eqz): 18 inputs agreed, 0 disagreed
+ok   wasm.i64.eq (0x51, I64Eq): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.ne (0x52, I64Ne): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.lt_s (0x53, I64LtS): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.lt_u (0x54, I64LtU): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.gt_s (0x55, I64GtS): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.gt_u (0x56, I64GtU): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.le_s (0x57, I64LeS): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.le_u (0x58, I64LeU): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.ge_s (0x59, I64GeS): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.ge_u (0x5A, I64GeU): 225 inputs agreed, 0 disagreed
+ok   wasm.i32.clz (0x67, I32Clz): 14 inputs agreed, 0 disagreed
+ok   wasm.i32.ctz (0x68, I32Ctz): 14 inputs agreed, 0 disagreed
+ok   wasm.i32.popcnt (0x69, I32Popcnt): 14 inputs agreed, 0 disagreed
+ok   wasm.i32.add (0x6A, I32Add): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.sub (0x6B, I32Sub): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.mul (0x6C, I32Mul): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.div_s (0x6D, I32DivS): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.div_u (0x6E, I32DivU): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.rem_s (0x6F, I32RemS): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.rem_u (0x70, I32RemU): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.and (0x71, I32And): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.or (0x72, I32Or): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.xor (0x73, I32Xor): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.shl (0x74, I32Shl): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.shr_s (0x75, I32ShrS): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.shr_u (0x76, I32ShrU): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.rotl (0x77, I32Rotl): 196 inputs agreed, 0 disagreed
+ok   wasm.i32.rotr (0x78, I32Rotr): 196 inputs agreed, 0 disagreed
+ok   wasm.i64.clz (0x79, I64Clz): 18 inputs agreed, 0 disagreed
+ok   wasm.i64.ctz (0x7A, I64Ctz): 18 inputs agreed, 0 disagreed
+ok   wasm.i64.popcnt (0x7B, I64Popcnt): 18 inputs agreed, 0 disagreed
+ok   wasm.i64.add (0x7C, I64Add): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.sub (0x7D, I64Sub): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.mul (0x7E, I64Mul): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.div_s (0x7F, I64DivS): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.div_u (0x80, I64DivU): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.rem_s (0x81, I64RemS): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.rem_u (0x82, I64RemU): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.and (0x83, I64And): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.or (0x84, I64Or): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.xor (0x85, I64Xor): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.shl (0x86, I64Shl): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.shr_s (0x87, I64ShrS): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.shr_u (0x88, I64ShrU): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.rotl (0x89, I64Rotl): 225 inputs agreed, 0 disagreed
+ok   wasm.i64.rotr (0x8A, I64Rotr): 225 inputs agreed, 0 disagreed
+ok   wasm.f32.abs (0x8B, F32Abs): 33 inputs agreed, 0 disagreed
+ok   wasm.f32.neg (0x8C, F32Neg): 33 inputs agreed, 0 disagreed
+ok   wasm.f32.ceil (0x8D, F32Ceil): 33 inputs agreed, 0 disagreed
+ok   wasm.f32.floor (0x8E, F32Floor): 33 inputs agreed, 0 disagreed
+ok   wasm.f32.trunc (0x8F, F32Trunc): 33 inputs agreed, 0 disagreed
+ok   wasm.f32.nearest (0x90, F32Nearest): 33 inputs agreed, 0 disagreed
+ok   wasm.f32.sqrt (0x91, F32Sqrt): 33 inputs agreed, 0 disagreed
+ok   wasm.f32.add (0x92, F32Add): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.sub (0x93, F32Sub): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.mul (0x94, F32Mul): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.div (0x95, F32Div): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.min (0x96, F32Min): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.max (0x97, F32Max): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.copysign (0x98, F32Copysign): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.abs (0x99, F64Abs): 41 inputs agreed, 0 disagreed
+ok   wasm.f64.neg (0x9A, F64Neg): 41 inputs agreed, 0 disagreed
+ok   wasm.f64.ceil (0x9B, F64Ceil): 41 inputs agreed, 0 disagreed
+ok   wasm.f64.floor (0x9C, F64Floor): 41 inputs agreed, 0 disagreed
+ok   wasm.f64.trunc (0x9D, F64Trunc): 41 inputs agreed, 0 disagreed
+ok   wasm.f64.nearest (0x9E, F64Nearest): 41 inputs agreed, 0 disagreed
+ok   wasm.f64.sqrt (0x9F, F64Sqrt): 41 inputs agreed, 0 disagreed
+ok   wasm.f64.add (0xA0, F64Add): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.sub (0xA1, F64Sub): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.mul (0xA2, F64Mul): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.div (0xA3, F64Div): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.min (0xA4, F64Min): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.max (0xA5, F64Max): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.copysign (0xA6, F64Copysign): 625 inputs agreed, 0 disagreed
+ok   wasm.i32.wrap_i64 (0xA7, I32WrapI64): 18 inputs agreed, 0 disagreed
+ok   wasm.i32.trunc_f32_s (0xA8, I32TruncF32S): 33 inputs agreed, 0 disagreed
+ok   wasm.i32.trunc_f32_u (0xA9, I32TruncF32U): 33 inputs agreed, 0 disagreed
+ok   wasm.i32.trunc_f64_s (0xAA, I32TruncF64S): 41 inputs agreed, 0 disagreed
+ok   wasm.i32.trunc_f64_u (0xAB, I32TruncF64U): 41 inputs agreed, 0 disagreed
+ok   wasm.i64.extend_i32_s (0xAC, I64ExtendI32S): 14 inputs agreed, 0 disagreed
+ok   wasm.i64.extend_i32_u (0xAD, I64ExtendI32U): 14 inputs agreed, 0 disagreed
+ok   wasm.i64.trunc_f32_s (0xAE, I64TruncF32S): 33 inputs agreed, 0 disagreed
+ok   wasm.i64.trunc_f32_u (0xAF, I64TruncF32U): 33 inputs agreed, 0 disagreed
+ok   wasm.i64.trunc_f64_s (0xB0, I64TruncF64S): 41 inputs agreed, 0 disagreed
+ok   wasm.i64.trunc_f64_u (0xB1, I64TruncF64U): 41 inputs agreed, 0 disagreed
+ok   wasm.f32.convert_i32_s (0xB2, F32ConvertI32S): 14 inputs agreed, 0 disagreed
+ok   wasm.f32.convert_i32_u (0xB3, F32ConvertI32U): 14 inputs agreed, 0 disagreed
+ok   wasm.f32.convert_i64_s (0xB4, F32ConvertI64S): 18 inputs agreed, 0 disagreed
+ok   wasm.f32.convert_i64_u (0xB5, F32ConvertI64U): 18 inputs agreed, 0 disagreed
+ok   wasm.f32.demote_f64 (0xB6, F32DemoteF64): 41 inputs agreed, 0 disagreed
+ok   wasm.f64.convert_i32_s (0xB7, F64ConvertI32S): 14 inputs agreed, 0 disagreed
+ok   wasm.f64.convert_i32_u (0xB8, F64ConvertI32U): 14 inputs agreed, 0 disagreed
+ok   wasm.f64.convert_i64_s (0xB9, F64ConvertI64S): 18 inputs agreed, 0 disagreed
+ok   wasm.f64.convert_i64_u (0xBA, F64ConvertI64U): 18 inputs agreed, 0 disagreed
+ok   wasm.f64.promote_f32 (0xBB, F64PromoteF32): 33 inputs agreed, 0 disagreed
+ok   wasm.i32.reinterpret_f32 (0xBC, I32ReinterpretF32): 33 inputs agreed, 0 disagreed
+ok   wasm.i64.reinterpret_f64 (0xBD, I64ReinterpretF64): 41 inputs agreed, 0 disagreed
+ok   wasm.f32.reinterpret_i32 (0xBE, F32ReinterpretI32): 14 inputs agreed, 0 disagreed
+ok   wasm.f64.reinterpret_i64 (0xBF, F64ReinterpretI64): 18 inputs agreed, 0 disagreed
+# primitive-differential: 111 of 111 rows outside the control agreed
+# primitive-differential control: 12 rows, the float comparisons 0x5B-0x66, against the profile's reference arms
+ok   wasm.f32.eq (0x5B, F32Eq): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.ne (0x5C, F32Ne): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.lt (0x5D, F32Lt): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.gt (0x5E, F32Gt): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.le (0x5F, F32Le): 625 inputs agreed, 0 disagreed
+ok   wasm.f32.ge (0x60, F32Ge): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.eq (0x61, F64Eq): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.ne (0x62, F64Ne): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.lt (0x63, F64Lt): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.gt (0x64, F64Gt): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.le (0x65, F64Le): 625 inputs agreed, 0 disagreed
+ok   wasm.f64.ge (0x66, F64Ge): 625 inputs agreed, 0 disagreed
+# primitive-differential control: 12 of 12 rows agreed
+
+# region-differential: 24 region primitive rows of broiler.webassembly.slice table version 1, inputs from src/tests/corpus/ubc-2/regions.txt
+ok   wasm.i32.load (0x28, RegionLoadI32): 150 inputs agreed, 133 of them traps, 0 disagreed
+ok   wasm.i64.load (0x29, RegionLoadI64): 150 inputs agreed, 140 of them traps, 0 disagreed
+ok   wasm.f32.load (0x2A, RegionLoadF32): 150 inputs agreed, 133 of them traps, 0 disagreed
+ok   wasm.f64.load (0x2B, RegionLoadF64): 150 inputs agreed, 140 of them traps, 0 disagreed
+ok   wasm.i32.load8_s (0x2C, RegionLoadI32From8S): 150 inputs agreed, 125 of them traps, 0 disagreed
+ok   wasm.i32.load8_u (0x2D, RegionLoadI32From8U): 150 inputs agreed, 125 of them traps, 0 disagreed
+ok   wasm.i32.load16_s (0x2E, RegionLoadI32From16S): 150 inputs agreed, 128 of them traps, 0 disagreed
+ok   wasm.i32.load16_u (0x2F, RegionLoadI32From16U): 150 inputs agreed, 128 of them traps, 0 disagreed
+ok   wasm.i64.load8_s (0x30, RegionLoadI64From8S): 150 inputs agreed, 125 of them traps, 0 disagreed
+ok   wasm.i64.load8_u (0x31, RegionLoadI64From8U): 150 inputs agreed, 125 of them traps, 0 disagreed
+ok   wasm.i64.load16_s (0x32, RegionLoadI64From16S): 150 inputs agreed, 128 of them traps, 0 disagreed
+ok   wasm.i64.load16_u (0x33, RegionLoadI64From16U): 150 inputs agreed, 128 of them traps, 0 disagreed
+ok   wasm.i64.load32_s (0x34, RegionLoadI64From32S): 150 inputs agreed, 133 of them traps, 0 disagreed
+ok   wasm.i64.load32_u (0x35, RegionLoadI64From32U): 150 inputs agreed, 133 of them traps, 0 disagreed
+ok   wasm.i32.store (0x36, RegionStoreI32): 900 inputs agreed, 798 of them traps, 0 disagreed
+ok   wasm.i64.store (0x37, RegionStoreI64): 900 inputs agreed, 840 of them traps, 0 disagreed
+ok   wasm.f32.store (0x38, RegionStoreF32): 900 inputs agreed, 798 of them traps, 0 disagreed
+ok   wasm.f64.store (0x39, RegionStoreF64): 900 inputs agreed, 840 of them traps, 0 disagreed
+ok   wasm.i32.store8 (0x3A, RegionStoreI32To8): 900 inputs agreed, 750 of them traps, 0 disagreed
+ok   wasm.i32.store16 (0x3B, RegionStoreI32To16): 900 inputs agreed, 768 of them traps, 0 disagreed
+ok   wasm.i64.store8 (0x3C, RegionStoreI64To8): 900 inputs agreed, 750 of them traps, 0 disagreed
+ok   wasm.i64.store16 (0x3D, RegionStoreI64To16): 900 inputs agreed, 768 of them traps, 0 disagreed
+ok   wasm.i64.store32 (0x3E, RegionStoreI64To32): 900 inputs agreed, 798 of them traps, 0 disagreed
+ok   wasm.memory.size (0x3F, RegionSize): 3 inputs agreed, 0 of them traps, 0 disagreed
+# region-differential: 24 of 24 rows agreed
+broiler-wasm-harness: every check passed, core contract version 1
+# exit 0
