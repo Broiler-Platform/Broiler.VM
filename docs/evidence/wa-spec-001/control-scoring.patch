@@ -1,0 +1,20 @@
+diff --git a/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs b/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs
+index be1a1cc..b546cb0 100644
+--- a/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs
++++ b/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs
+@@ -582,12 +582,9 @@ internal sealed class ScriptRunner : IDisposable
+         var module = Define(subject);
+         Discard(module);
+ 
+-        var pass = head switch
+-        {
+-            "assert_unlinkable" => module.Instance is null && module.Answer.StartsWith("instantiation ", StringComparison.Ordinal),
+-            "assert_malformed" => module.Judgement is ScriptJudgement.Malformed,
+-            _ => module.Judgement is ScriptJudgement.Invalid,
+-        };
++        var pass = head is "assert_unlinkable"
++            ? module.Instance is null
++            : module.Answer.StartsWith("refused ", StringComparison.Ordinal);
+ 
+         return new ScriptCommand(file, ordinal, command.Line, head, module.Answer, pass ? ScriptVerdict.Pass : ScriptVerdict.Fail);
+     }

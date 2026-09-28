@@ -1,0 +1,14 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs b/src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs
+index 70c7cbc..2cee39a 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs
+@@ -409,8 +409,7 @@ internal ref struct WasmValidator
+             return false;
+         }
+ 
+-        if (!TryValidateTypes() ||
+-            !TryValidateFunctionTypes() ||
++        if (!TryValidateFunctionTypes() ||
+             !TryValidateStartFunction() ||
+             !TryValidateExports() ||
+             !TryValidateGlobals() ||
