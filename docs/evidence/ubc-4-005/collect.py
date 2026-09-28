@@ -82,7 +82,8 @@ def logged(command, code, text):
 
 
 def spec(image, suite, extra=()):
-    return image + ["--spec", suite, "--expect", PIN] + list(extra)
+    # The pin by its absolute path: the base run's working directory is the base tree, which has no pin.
+    return image + ["--spec", suite, "--expect", os.path.join(ROOT, PIN)] + list(extra)
 
 
 def main():
