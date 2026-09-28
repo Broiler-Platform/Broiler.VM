@@ -1,0 +1,5 @@
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --expect <root>/src/tests/wasm/spec/wasm-spec.pin --encode-to <scratch>/encoded
+# spec: 1820 text modules encoded, 0 refused by the reader, nothing run
+# exit 0
+1820 modules
+# 1820 modules: 1820 byte-identical, 0 differ, 0 refused by wabt
