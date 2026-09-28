@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   45
-// Annotated:        45/45
+// Relevant units:   48
+// Annotated:        48/48
 // Exempt:           27
-// Human-reviewed:   0/45
+// Human-reviewed:   0/48
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         28/28
+// Criteria:         29/28
 // Resource impact:  8/10 max
-// Unverified:       45
+// Unverified:       48
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -800,9 +800,13 @@ internal ref struct WasmDecoder
         return true;
     }
 
-    /// <summary>Reads a memory type: limits no larger than a 32-bit address space holds.</summary>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=1; Fingerprint=3B0387
-    // Broiler-Falsified-If: a memory type declaring more pages than a 32-bit address space holds is read
+    /// <summary>Reads a memory type: its limits.</summary>
+    /// <remarks>
+    /// A memory type of more pages than a 32-bit address space holds is well formed, and the
+    /// validator refuses it. <i>(Corrected 2026-09-28. This member refused it here as
+    /// <c>MemoryPagesAboveFormatMaximum</c>, answering an invalid module as a malformed one.)</i>
+    /// </remarks>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=Medium; Resources=1; Fingerprint=F5B7C2
     // Broiler-Human:        PENDING
     private bool TryReadMemoryType(out WasmMemoryType memory)
     {
@@ -811,15 +815,6 @@ internal ref struct WasmDecoder
         if (!TryReadLimits(out var limits))
         {
             return false;
-        }
-
-        if (limits.Minimum > WasmTypeGrammar.MaximumMemoryPages ||
-            (limits.HasMaximum && limits.Maximum > WasmTypeGrammar.MaximumMemoryPages))
-        {
-            return Stop(Invalid(
-                VmReason.InconsistentStructure,
-                WebAssemblyDiagnosticCode.MemoryPagesAboveFormatMaximum,
-                reader.Position));
         }
 
         memory = new WasmMemoryType(limits);
@@ -1239,8 +1234,13 @@ internal ref struct WasmDecoder
     }
 
     /// <summary>Reads a resizable limit.</summary>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=ADE89C
-    // Broiler-Falsified-If: a limit whose minimum is above its maximum is accepted
+    /// <remarks>
+    /// A minimum above its maximum is well formed, and the validator refuses it. <i>(Corrected
+    /// 2026-09-28. This member refused it here as <c>LimitsMinimumAboveMaximum</c>, answering an
+    /// invalid module as a malformed one.)</i>
+    /// </remarks>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=7D2A96
+    // Broiler-Falsified-If: a limits flag other than the two the format defines is accepted, or a limit is refused for the relation between its minimum and maximum
     // Broiler-Human:        PENDING
     private bool TryReadLimits(out WasmLimits limits)
     {
@@ -1273,14 +1273,6 @@ internal ref struct WasmDecoder
         if (!TryReadVarU32(out var maximum))
         {
             return false;
-        }
-
-        if (minimum > maximum)
-        {
-            return Stop(Invalid(
-                VmReason.InconsistentStructure,
-                WebAssemblyDiagnosticCode.LimitsMinimumAboveMaximum,
-                reader.Position));
         }
 
         limits = new WasmLimits(minimum, maximum, true);
@@ -1317,90 +1309,227 @@ internal ref struct WasmDecoder
         return true;
     }
 
-    /// <summary>Reads a constant expression in the only shape this format version admits.</summary>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=3; Fingerprint=81543C
-    // Broiler-Falsified-If: an expression not closed by the end opcode is accepted, or an instruction outside the constant set is decoded
+    /// <summary>Reads a constant expression: an instruction sequence closed by the end opcode.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The format's grammar is an instruction sequence, and this reads one; the validator decides
+    /// whether it is constant.</b> Every instruction this format version defines is read with its
+    /// immediates, and a block, loop or conditional opens a level whose own <c>end</c> closes it, so
+    /// the expression ends at the <c>end</c> that closes no level. The five constant instructions -
+    /// the four <c>const</c> instructions and <c>global.get</c> - are the only ones whose immediate is
+    /// kept. What is kept is the first instruction, the number of instructions, and whether any was
+    /// not constant, which is all the validator needs to refuse a sequence as not constant or as
+    /// leaving other than one value.
+    /// </para>
+    /// <para>
+    /// A byte that names an instruction a later version defines is refused here as an unadmitted
+    /// feature, and one that names nothing as malformed, as the validator refuses them in a function
+    /// body. An <c>else</c> that closes no conditional is read as an instruction that is not constant,
+    /// because the decoder does not match structure; the validator refuses the expression either way.
+    /// </para>
+    /// <para>
+    /// <i>(Corrected 2026-09-28. The summary read "Reads a constant expression in the only shape this
+    /// format version admits", and the member read exactly one constant instruction and its closing
+    /// byte, refusing anything else as unadmitted or unterminated. A sequence of two instructions, or
+    /// one instruction that is not constant, is well formed and invalid, and the specification's
+    /// scripts expect it refused at validation.)</i>
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=3; Fingerprint=A6F684
+    // Broiler-Falsified-If: an expression is ended at an end that closes a nested level, an instruction's immediate is read with the wrong width so the next byte is taken for an instruction, or a byte naming no instruction of this format version is read as one
     // Broiler-Human:        PENDING
     private bool TryReadConstantExpression(out WasmConstantExpression expression)
     {
         expression = default;
 
-        if (!TryReadByte(out var opcode))
+        var count = 0;
+        var depth = 0;
+        var constant = true;
+        byte first = 0;
+        ulong firstBits = 0;
+
+        while (true)
         {
-            return false;
+            if (!TryReadByte(out var opcode))
+            {
+                return false;
+            }
+
+            if (opcode == WasmFormat.EndOpcode)
+            {
+                if (depth == 0)
+                {
+                    break;
+                }
+
+                depth--;
+                continue;
+            }
+
+            count++;
+            ulong bits = 0;
+
+            switch ((WasmOpcode)opcode)
+            {
+                case WasmOpcode.I32Const:
+                    if (!TryReadVarS32(out var narrow))
+                    {
+                        return false;
+                    }
+
+                    bits = (ulong)(long)narrow;
+                    break;
+
+                case WasmOpcode.I64Const:
+                    if (!TryReadVarS64(out var wide))
+                    {
+                        return false;
+                    }
+
+                    bits = (ulong)wide;
+                    break;
+
+                case WasmOpcode.F32Const:
+                    if (!TryReadFixedWidth(4, out bits))
+                    {
+                        return false;
+                    }
+
+                    break;
+
+                case WasmOpcode.F64Const:
+                    if (!TryReadFixedWidth(8, out bits))
+                    {
+                        return false;
+                    }
+
+                    break;
+
+                case WasmOpcode.GlobalGet:
+                    if (!TryReadVarU32(out var globalIndex))
+                    {
+                        return false;
+                    }
+
+                    bits = globalIndex;
+                    break;
+
+                default:
+                    if (!IsCoreOpcode(opcode))
+                    {
+                        return Stop(IsLaterOpcode(opcode)
+                            ? Invalid(
+                                VmReason.UnknownFeature,
+                                WebAssemblyDiagnosticCode.ConstantExpressionOpcodeNotAdmitted,
+                                reader.Position - 1)
+                            : Invalid(
+                                VmReason.MalformedEncoding,
+                                WebAssemblyDiagnosticCode.ConstantExpressionUnknownOpcode,
+                                reader.Position - 1));
+                    }
+
+                    constant = false;
+
+                    if (opcode is (byte)WasmOpcode.Block or (byte)WasmOpcode.Loop or (byte)WasmOpcode.If)
+                    {
+                        depth++;
+                    }
+
+                    if (!TrySkipImmediates(opcode))
+                    {
+                        return false;
+                    }
+
+                    break;
+            }
+
+            if (count == 1)
+            {
+                first = opcode;
+                firstBits = bits;
+            }
         }
 
-        ulong bits;
+        expression = new WasmConstantExpression(first, firstBits, count, constant);
+        return true;
+    }
 
-        switch (opcode)
+    /// <summary>Whether a byte names an instruction of this format version.</summary>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=Medium; Resources=0; Fingerprint=65EB29
+    // Broiler-Falsified-If: a byte this format version defines as an instruction is answered as none, or one it does not define is answered as one
+    // Broiler-Human:        PENDING
+    private static bool IsCoreOpcode(byte opcode) =>
+        opcode <= (byte)WasmOpcode.Else ||
+        opcode is >= (byte)WasmOpcode.End and <= (byte)WasmOpcode.CallIndirect ||
+        opcode is (byte)WasmOpcode.Drop or (byte)WasmOpcode.Select ||
+        opcode is >= (byte)WasmOpcode.LocalGet and <= (byte)WasmOpcode.GlobalSet ||
+        opcode is >= (byte)WasmOpcode.I32Load and <= 0xBF;
+
+    /// <summary>
+    /// Whether a byte names an instruction a later version defines, as the validator divides them.
+    /// </summary>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=Low; Resources=0; Fingerprint=B6E342
+    // Broiler-Human:        PENDING
+    private static bool IsLaterOpcode(byte opcode) =>
+        opcode is (>= 0xC0 and <= 0xC4) or (>= 0xD0 and <= 0xD2) or 0xFC or 0xFD or 0xFE;
+
+    /// <summary>Reads past an instruction's immediates, for an instruction of this format version.</summary>
+    /// <remarks>
+    /// Only the widths are read, because nothing here is kept: a block type as the signed 33-bit
+    /// integer its form is, an index or a count as an unsigned integer, a branch table's labels, a
+    /// memory argument's alignment and offset, and the reserved byte of <c>call_indirect</c>,
+    /// <c>memory.size</c> and <c>memory.grow</c>. Every other instruction of the version has none.
+    /// </remarks>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=1; Fingerprint=B0B414
+    // Broiler-Falsified-If: an instruction's immediates are read with a width other than the format's, or a branch table's label count is not held to the declared-count ceiling
+    // Broiler-Human:        PENDING
+    private bool TrySkipImmediates(byte opcode)
+    {
+        switch ((WasmOpcode)opcode)
         {
-            case (byte)WasmOpcode.I32Const:
-                if (!TryReadVarS32(out var narrow))
+            case WasmOpcode.Block:
+            case WasmOpcode.Loop:
+            case WasmOpcode.If:
+                var at = reader.Position;
+                return WasmLeb128.TryReadVarS33(ref reader, out _, out var status) ||
+                    Stop(FromVarInt(status, at));
+
+            case WasmOpcode.Br:
+            case WasmOpcode.BrIf:
+            case WasmOpcode.Call:
+            case WasmOpcode.LocalGet:
+            case WasmOpcode.LocalSet:
+            case WasmOpcode.LocalTee:
+            case WasmOpcode.GlobalSet:
+                return TryReadVarU32(out _);
+
+            case WasmOpcode.BrTable:
+                if (!TryReadCount(out var labels))
                 {
                     return false;
                 }
 
-                bits = (ulong)(long)narrow;
-                break;
-
-            case (byte)WasmOpcode.I64Const:
-                if (!TryReadVarS64(out var wide))
+                for (var label = 0u; label <= labels; label++)
                 {
-                    return false;
+                    if (!TryReadVarU32(out _))
+                    {
+                        return false;
+                    }
                 }
 
-                bits = (ulong)wide;
-                break;
+                return true;
 
-            case (byte)WasmOpcode.F32Const:
-                if (!TryReadFixedWidth(4, out var single))
-                {
-                    return false;
-                }
+            case WasmOpcode.CallIndirect:
+                return TryReadVarU32(out _) && TryReadByte(out _);
 
-                bits = single;
-                break;
-
-            case (byte)WasmOpcode.F64Const:
-                if (!TryReadFixedWidth(8, out var doublePrecision))
-                {
-                    return false;
-                }
-
-                bits = doublePrecision;
-                break;
-
-            case (byte)WasmOpcode.GlobalGet:
-                if (!TryReadVarU32(out var globalIndex))
-                {
-                    return false;
-                }
-
-                bits = globalIndex;
-                break;
+            case WasmOpcode.MemorySize:
+            case WasmOpcode.MemoryGrow:
+                return TryReadByte(out _);
 
             default:
-                return Stop(Invalid(
-                    VmReason.UnknownFeature,
-                    WebAssemblyDiagnosticCode.UnsupportedConstantExpressionOpcode,
-                    reader.Position - 1));
+                return opcode is < (byte)WasmOpcode.I32Load or > (byte)WasmOpcode.I64Store32 ||
+                    TryReadVarU32(out _) && TryReadVarU32(out _);
         }
-
-        if (!TryReadByte(out var terminator))
-        {
-            return false;
-        }
-
-        if (terminator != WasmFormat.EndOpcode)
-        {
-            return Stop(Invalid(
-                VmReason.InconsistentStructure,
-                WebAssemblyDiagnosticCode.ConstantExpressionNotTerminated,
-                reader.Position - 1));
-        }
-
-        expression = new WasmConstantExpression(opcode, bits);
-        return true;
     }
 
     /// <summary>Reads a body's local declarations and expands them.</summary>

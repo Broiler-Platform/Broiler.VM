@@ -1,7 +1,7 @@
 # The WebAssembly profile's retained corpus
 
-**This directory holds bytes and one text file, and nothing that runs.** `corpus/` is two hundred
-and ninety-eight WebAssembly modules, each one pinned by SHA-256 in `corpus/corpus.manifest` beside the
+**This directory holds bytes and one text file, and nothing that runs.** `corpus/` is three hundred
+and seven WebAssembly modules, each one pinned by SHA-256 in `corpus/corpus.manifest` beside the
 answer it must produce. The encoder that wrote them and the replay that reads them both live in
 `src/compositions/Broiler.VM.Composition.WebAssembly.Harness/` — rule A11 forbids a project outside
 `src/compositions/` to reference a profile assembly, so an encoder that produces the bytes a
@@ -24,9 +24,11 @@ the right module for the wrong reason from one that does not.
 **`derived`** — a person wrote the answer down from the format before the profile was asked. The
 writer refuses to emit a manifest at all when the profile contradicts one: the declaration wins and
 the run stops, so a regeneration cannot quietly record the profile's answer over the person's. Of
-the two hundred and ninety-eight rows, a hundred and four are derived. *(Corrected 2026-09-28: the
+the three hundred and seven rows, a hundred and thirteen are derived. *(Corrected 2026-09-28: the
 corpus had two hundred and ninety rows, ninety-six derived, until eight derived rows were added for
-custom-section names, import entries and a function type with two results.)*
+custom-section names, import entries and a function type with two results. Nine more were added the
+same day, when limits and constant expressions moved to validation: two for limits and seven for
+constant expressions.)*
 
 **`recorded`** — the answer came from the profile at the moment the corpus was written. It detects
 a change between one regeneration and the next and it **proves no correctness**. Nobody hand-derives

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   5
 // Annotated:        5/5
-// Exempt:           91
+// Exempt:           96
 // Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    High
@@ -65,7 +65,7 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// be several dozen separately assessed fixed values saying the same thing worse.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=2C6DFE
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=63F8D2
 // Broiler-Human:        PENDING
 public enum WebAssemblyDiagnosticCode
 {
@@ -149,9 +149,19 @@ public enum WebAssemblyDiagnosticCode
     MalformedLimitsFlag = 2304,
 
     /// <summary>A declared minimum is above the declared maximum beside it.</summary>
+    /// <remarks>
+    /// Emitted by nothing since 2026-09-28, when the check moved to the validator as
+    /// <see cref="TableOrMemoryMinimumAboveMaximum"/>: limits whose minimum exceeds their maximum
+    /// decode, and the format's validation refuses them. The number stays taken.
+    /// </remarks>
     LimitsMinimumAboveMaximum = 2305,
 
     /// <summary>A memory declares more pages than a 32-bit address space holds.</summary>
+    /// <remarks>
+    /// Emitted by nothing since 2026-09-28, when the check moved to the validator as
+    /// <see cref="MemoryPagesAboveFormatLimit"/>: a memory type of more pages decodes, and the
+    /// format's validation refuses it. The number stays taken.
+    /// </remarks>
     MemoryPagesAboveFormatMaximum = 2306,
 
     /// <summary>A table's element type is not one this format version admits.</summary>
@@ -191,13 +201,45 @@ public enum WebAssemblyDiagnosticCode
     // ---- 2600: constant expressions and segments --------------------------------------------
 
     /// <summary>An instruction appears in a constant expression that may not hold one.</summary>
+    /// <remarks>
+    /// Emitted by nothing since 2026-09-28. The decoder read a constant expression as exactly one
+    /// constant instruction and refused any other with this code, as an unadmitted feature. It now
+    /// reads the instruction sequence the format defines. An instruction this format version defines
+    /// that is not constant is refused by the validator as
+    /// <see cref="ConstantExpressionNotConstant"/>. A byte a later version defines is refused as
+    /// <see cref="ConstantExpressionOpcodeNotAdmitted"/>, and one no version defines as
+    /// <see cref="ConstantExpressionUnknownOpcode"/>. The number stays taken.
+    /// </remarks>
     UnsupportedConstantExpressionOpcode = 2601,
 
     /// <summary>A constant expression does not end where the format says it must.</summary>
+    /// <remarks>
+    /// Emitted by nothing since 2026-09-28. The decoder refused a constant expression whose single
+    /// instruction was not followed by the closing byte. It now reads the whole sequence, and a
+    /// sequence of more than one instruction is refused by the validator as a type mismatch or as
+    /// not constant. The number stays taken.
+    /// </remarks>
     ConstantExpressionNotTerminated = 2602,
 
     /// <summary>A segment uses an encoding form this format version does not define.</summary>
     UnsupportedSegmentKind = 2603,
+
+    /// <summary>
+    /// A byte in a constant expression names an instruction a later specification defines and no
+    /// manifest here admits.
+    /// </summary>
+    /// <remarks>
+    /// The constant expression's counterpart of <see cref="OpcodeNotAdmitted"/>, in the decoding band
+    /// because the decoder reads constant expressions and the validator reads function bodies.
+    /// </remarks>
+    ConstantExpressionOpcodeNotAdmitted = 2604,
+
+    /// <summary>A byte in a constant expression names no instruction.</summary>
+    /// <remarks>
+    /// The constant expression's counterpart of <see cref="UnknownOpcode"/>, in the decoding band for
+    /// the same reason as the code above.
+    /// </remarks>
+    ConstantExpressionUnknownOpcode = 2605,
 
     // ---- 2700: validation of the module's own index spaces ----------------------------------
 
@@ -246,6 +288,30 @@ public enum WebAssemblyDiagnosticCode
     /// multiple results, and no feature manifest here admits that group.
     /// </remarks>
     FunctionTypeResultArityAboveOne = 2711,
+
+    /// <summary>A table's or a memory's declared minimum is above its declared maximum.</summary>
+    /// <remarks>
+    /// Limits whose minimum exceeds their maximum are well formed, and validation refuses them.
+    /// Until 2026-09-28 the decoder refused them as <see cref="LimitsMinimumAboveMaximum"/>, which
+    /// answered an invalid module as a malformed one.
+    /// </remarks>
+    TableOrMemoryMinimumAboveMaximum = 2712,
+
+    /// <summary>A memory's minimum or maximum is above the 65,536 pages a 32-bit address space holds.</summary>
+    /// <remarks>
+    /// A memory type of more pages is well formed, and validation refuses it. Until 2026-09-28 the
+    /// decoder refused it as <see cref="MemoryPagesAboveFormatMaximum"/>.
+    /// </remarks>
+    MemoryPagesAboveFormatLimit = 2713,
+
+    /// <summary>A constant expression holds an instruction that is not constant.</summary>
+    /// <remarks>
+    /// This format version's constant instructions are the four <c>const</c> instructions and
+    /// <c>global.get</c>. Any other instruction the version defines decodes in a constant expression,
+    /// and validation refuses it here. A sequence of constant instructions that leaves other than one
+    /// value is refused as <see cref="ConstantExpressionTypeMismatch"/>.
+    /// </remarks>
+    ConstantExpressionNotConstant = 2714,
 
     // ---- 2800: validation of one function body ----------------------------------------------
 

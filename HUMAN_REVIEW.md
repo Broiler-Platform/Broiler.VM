@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5761 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5765 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 235 |
-| Code units | 10204 |
-| Relevant | 5761 |
-| Exempt | 4443 |
-| Assessed | 5761 of 5761 (100%) |
-| Human reviewed | 0 of 5761 (0%) |
-| Unverified | 5761 |
+| Code units | 10215 |
+| Relevant | 5765 |
+| Exempt | 4450 |
+| Assessed | 5765 of 5765 (100%) |
+| Human reviewed | 0 of 5765 (0%) |
+| Unverified | 5765 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5761 |
+| HUMAN_PENDING | 5765 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4443 |
+| EXEMPT | 4450 |
 
 ## 5. Aliases In The Tree
 
@@ -285,7 +285,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.MachineCode/VmNativePage.Windows.cs` | 13 | 13 | 0 | 13 | Low | Critical | 13/13 |
 | `src/Broiler.VM.Profile.MachineCode/VmNativePage.cs` | 22 | 12 | 10 | 12 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.WebAssembly/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
-| `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` | 72 | 45 | 27 | 45 | Low | Critical | 28/28 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` | 75 | 48 | 27 | 48 | Low | Critical | 29/28 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmEntryPoint.cs` | 8 | 8 | 0 | 8 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs` | 55 | 36 | 19 | 36 | Low | Critical | 21/18 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` | 84 | 47 | 37 | 47 | Low | Critical | 20/17 |
@@ -295,7 +295,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.WebAssembly/WasmLeb128.cs` | 18 | 12 | 6 | 12 | Low | Critical | 6/6 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmLowering.cs` | 116 | 61 | 55 | 61 | Low | Critical | 32/30 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmMemory.cs` | 14 | 11 | 3 | 11 | Low | Critical | 6/6 |
-| `src/Broiler.VM.Profile.WebAssembly/WasmModule.cs` | 93 | 49 | 44 | 49 | Low | Critical | 7/7 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmModule.cs` | 95 | 49 | 46 | 49 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmName.cs` | 3 | 3 | 0 | 3 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmOpcode.cs` | 173 | 1 | 172 | 1 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmPacing.cs` | 7 | 4 | 3 | 4 | Low | High | 3/3 |
@@ -306,8 +306,8 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.WebAssembly/WasmTranslator.cs` | 41 | 24 | 17 | 24 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmTrapKind.cs` | 10 | 1 | 9 | 1 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmTypes.cs` | 45 | 20 | 25 | 20 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` | 114 | 76 | 38 | 76 | Low | Critical | 53/52 |
-| `src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs` | 96 | 5 | 91 | 5 | Low | High | 3/3 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` | 115 | 77 | 38 | 77 | Low | Critical | 54/53 |
+| `src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs` | 101 | 5 | 96 | 5 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyPayloads.cs` | 42 | 15 | 27 | 15 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` | 19 | 15 | 4 | 15 | Low | High | 7/6 |
 | `src/Broiler.VM.Runtime/VmAggregateBudget.cs` | 42 | 23 | 19 | 23 | Low | Medium | 0/0 |
@@ -3337,8 +3337,6 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a second table is accepted at a format version that defines only one
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeMemorySection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `032266`, PENDING
   - Falsified if: a memory declaring more pages than a 32-bit address space holds is accepted
-- `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadMemoryType(out WasmMemoryType)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `3B0387`, PENDING
-  - Falsified if: a memory type declaring more pages than a 32-bit address space holds is read
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeExportSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `54567B`, PENDING
   - Falsified if: a name that is not well formed under this format's own UTF-8 rule is accepted
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeElementSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `07BA66`, PENDING
@@ -3353,12 +3351,14 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the vector is sized before its count has cleared the declared-count ceiling
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadValueType(out WasmValueType)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `6D564B`, PENDING
   - Falsified if: an unadmitted value type and an undefined byte produce the same diagnostic code
-- `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadLimits(out WasmLimits)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `ADE89C`, PENDING
-  - Falsified if: a limit whose minimum is above its maximum is accepted
+- `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadLimits(out WasmLimits)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `7D2A96`, PENDING
+  - Falsified if: a limits flag other than the two the format defines is accepted, or a limit is refused for the relation between its minimum and maximum
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadName(out byte[])` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `4A96BB`, PENDING
   - Falsified if: the platform's UTF-8 decoder is consulted, the bytes are retained before the rule has admitted them, or the rule is applied to a piece of the name rather than to the whole of it
-- `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadConstantExpression(out WasmConstantExpression)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `81543C`, PENDING
-  - Falsified if: an expression not closed by the end opcode is accepted, or an instruction outside the constant set is decoded
+- `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadConstantExpression(out WasmConstantExpression)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `A6F684`, PENDING
+  - Falsified if: an expression is ended at an end that closes a nested level, an instruction's immediate is read with the wrong width so the next byte is taken for an instruction, or a byte naming no instruction of this format version is read as one
+- `Broiler.VM.Profile.WebAssembly.WasmDecoder.TrySkipImmediates(byte)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `B0B414`, PENDING
+  - Falsified if: an instruction's immediates are read with a width other than the format's, or a branch table's label count is not held to the declared-count ceiling
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadLocals(out WasmValueType[])` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=Critical, Spec=none cited, `A839E9`, PENDING
   - Falsified if: the expanded array is sized before the accumulated total has cleared the declared-count ceiling
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadPaced(ulong, scoped System.Span<byte>)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=ADR-0007, `7EF4EB`, PENDING
@@ -3673,8 +3673,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: any field is left uninitialised, so a failed validation reads a buffer nothing filled, or a body's reader is built polling at the whole bound rather than at the rest of it after one read window
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidate(out VmVerifierOutcome)` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=Critical, Spec=none cited, `E081FE`, PENDING
   - Falsified if: a scratch reservation or a charged level of nesting survives this call on any path
-- `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateModule()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=Critical, Spec=none cited, `43DA7E`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateModule()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=Critical, Spec=none cited, `383331`, PENDING
   - Falsified if: a function body is walked before the type indices it reads have been held to the type space
+- `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateLimits()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, Spec=none cited, `C54BC4`, PENDING
+  - Falsified if: a table or memory whose minimum is above its maximum, or a memory whose minimum or maximum is above 65,536 pages, reaches the body walk
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateFunctionTypes()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, Spec=none cited, `52A978`, PENDING
   - Falsified if: a function whose type index addresses no type reaches the body walk
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateStartFunction()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, Spec=none cited, `3E5D87`, PENDING
@@ -3687,8 +3689,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a segment writing a function index that addresses no function is accepted
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateDataSegments()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, Spec=none cited, `55202D`, PENDING
   - Falsified if: a segment naming a memory the module does not declare is accepted
-- `Broiler.VM.Profile.WebAssembly.WasmValidator.TryConstantExpressionType(WasmConstantExpression, out WasmValueType)` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, Spec=none cited, `C58248`, PENDING
-  - Falsified if: a constant expression reading a module's own global is admitted
+- `Broiler.VM.Profile.WebAssembly.WasmValidator.TryConstantExpressionType(WasmConstantExpression, out WasmValueType)` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, Spec=none cited, `1B6978`, PENDING
+  - Falsified if: a constant expression reading a module's own global, holding an instruction that is not constant, or holding other than one instruction is admitted
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateBody(int)` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=Critical, Spec=none cited, `074C19`, PENDING
   - Falsified if: a body is sealed while the control stack is not empty, or bytes past the closing end are accepted
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.OpenReaderOver(System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, Spec=none cited, `0947DE`, PENDING
@@ -4043,7 +4045,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5632 of the 5761 assessed units declare
+That is not a figure of speech. 5632 of the 5765 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

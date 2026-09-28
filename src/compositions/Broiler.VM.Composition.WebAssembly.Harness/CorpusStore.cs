@@ -487,17 +487,33 @@ internal static class CorpusStore
             VmOutcome.InvalidArtifact, VmReason.MalformedEncoding,
             WebAssemblyDiagnosticCode.MalformedLimitsFlag),
 
+        // CORRECTED 2026-09-28. This entry and the next were refuses-decoding, with codes 2305 and
+        // 2306. Limits whose minimum exceeds their maximum, and a memory of more pages than the format
+        // allows, are well formed; the format's validation refuses them, and the specification's
+        // scripts assert them invalid. Both moved to the validator with new codes.
         new("limits-minimum-above-maximum", "limits",
-            [.. Preamble, .. Section(5, [0x01, 0x01, 0x05, 0x02])], RefusesDecoding,
-            VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
-            WebAssemblyDiagnosticCode.LimitsMinimumAboveMaximum),
+            [.. Preamble, .. Section(5, [0x01, 0x01, 0x05, 0x02])], RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.TableOrMemoryMinimumAboveMaximum),
 
         // 65,537 pages: one past the 65,536 the format itself caps a memory at, which is a
-        // different fact from a host ceiling and gets a decode code rather than an exhaustion.
+        // different fact from a host ceiling and gets a validation code rather than an exhaustion.
         new("limits-memory-minimum-above-the-formats-own-maximum", "limits",
-            [.. Preamble, .. Section(5, [0x01, 0x00, 0x81, 0x80, 0x04])], RefusesDecoding,
-            VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
-            WebAssemblyDiagnosticCode.MemoryPagesAboveFormatMaximum),
+            [.. Preamble, .. Section(5, [0x01, 0x00, 0x81, 0x80, 0x04])], RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.MemoryPagesAboveFormatLimit),
+
+        // The same rule over the maximum, whose minimum is in range.
+        new("limits-memory-maximum-above-the-formats-own-maximum", "limits",
+            [.. Preamble, .. Section(5, [0x01, 0x01, 0x00, 0x81, 0x80, 0x04])], RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.MemoryPagesAboveFormatLimit),
+
+        // A table's limits are held to the same order as a memory's, and to no page maximum.
+        new("limits-table-minimum-above-maximum", "limits",
+            [.. Preamble, .. Section(4, [0x01, 0x70, 0x01, 0x05, 0x02])], RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.TableOrMemoryMinimumAboveMaximum),
 
         new("type-table-element-type-is-not-funcref", "type",
             [.. Preamble, .. Section(4, [0x01, 0x6F, 0x00, 0x01])], RefusesDecoding,
@@ -570,15 +586,74 @@ internal static class CorpusStore
 
     private static IEnumerable<CorpusEntry> ConstantExpressions() =>
     [
+        // CORRECTED 2026-09-28. This entry was refuses-decoding, answered UnknownFeature with code
+        // 2601: the decoder read exactly one constant instruction. An instruction the format defines
+        // decodes in a constant expression, and validation refuses it as not constant.
         new("constant-expression-is-not-a-constant-instruction", "constant-expression",
-            [.. Preamble, .. Section(6, [0x01, 0x7F, 0x00, 0x6A, 0x0B])], RefusesDecoding,
-            VmOutcome.InvalidArtifact, VmReason.UnknownFeature,
-            WebAssemblyDiagnosticCode.UnsupportedConstantExpressionOpcode),
+            [.. Preamble, .. Section(6, [0x01, 0x7F, 0x00, 0x6A, 0x0B])], RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.ConstantExpressionNotConstant),
 
+        // CORRECTED 2026-09-28. This entry answered InconsistentStructure with code 2602, the
+        // decoder's refusal of anything but the closing byte after the one instruction. The decoder
+        // reads the sequence now: `i32.const 0` and `nop` are both instructions, and the artifact
+        // ends before the byte that would close them, so the expression is truncated.
         new("constant-expression-is-not-terminated", "constant-expression",
             [.. Preamble, .. Section(6, [0x01, 0x7F, 0x00, 0x41, 0x00, 0x01])], RefusesDecoding,
-            VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
-            WebAssemblyDiagnosticCode.ConstantExpressionNotTerminated),
+            VmOutcome.InvalidArtifact, VmReason.Truncated,
+            WebAssemblyDiagnosticCode.Truncated),
+
+        // Two constant instructions leave two values where the global takes one.
+        new("constant-expression-of-two-constant-instructions", "constant-expression",
+            FunctionModule([], [], [], globalSection: [0x01, 0x7F, 0x00, 0x41, 0x00, 0x41, 0x00, 0x0B]),
+            RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.ConstantExpressionTypeMismatch),
+
+        // No instruction leaves no value where the global takes one.
+        new("constant-expression-of-no-instruction", "constant-expression",
+            FunctionModule([], [], [], globalSection: [0x01, 0x7F, 0x00, 0x0B]),
+            RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.ConstantExpressionTypeMismatch),
+
+        // `block (result i32) i32.const 0 end end`: the first end closes the block and the second the
+        // expression. A reader that ended the expression at the first would read the second as the
+        // next thing in the section and answer the section's length.
+        new("constant-expression-holding-a-block", "constant-expression",
+            FunctionModule([], [], [], globalSection: [0x01, 0x7F, 0x00, 0x02, 0x7F, 0x41, 0x00, 0x0B, 0x0B]),
+            RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.ConstantExpressionNotConstant),
+
+        // `i32.const 0 i32.load align=2 offset=39 end`: the load's two immediates are read as two
+        // integers. The offset's byte, 0x27, names no instruction, so a reader that read one integer
+        // would take it for an instruction and answer a malformation.
+        new("constant-expression-holding-a-load", "constant-expression",
+            FunctionModule([], [], [], globalSection: [0x01, 0x7F, 0x00, 0x41, 0x00, 0x28, 0x02, 0x27, 0x0B]),
+            RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.ConstantExpressionNotConstant),
+
+        // `i32.const 0 br_table 0 0 end`: a branch table's label count, its label and its default.
+        new("constant-expression-holding-a-branch-table", "constant-expression",
+            FunctionModule([], [], [], globalSection: [0x01, 0x7F, 0x00, 0x41, 0x00, 0x0E, 0x01, 0x00, 0x00, 0x0B]),
+            RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.ConstantExpressionNotConstant),
+
+        // 0xC0 is i32.extend8_s, a sign-extension instruction a later version defines: an unadmitted
+        // feature, as it is in a function body.
+        new("constant-expression-holding-an-instruction-a-later-version-defines", "constant-expression",
+            [.. Preamble, .. Section(6, [0x01, 0x7F, 0x00, 0x41, 0x00, 0xC0, 0x0B])], RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.UnknownFeature,
+            WebAssemblyDiagnosticCode.ConstantExpressionOpcodeNotAdmitted),
+
+        // 0x27 names no instruction in any version.
+        new("constant-expression-holding-a-byte-that-names-no-instruction", "constant-expression",
+            [.. Preamble, .. Section(6, [0x01, 0x7F, 0x00, 0x27, 0x0B])], RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.MalformedEncoding,
+            WebAssemblyDiagnosticCode.ConstantExpressionUnknownOpcode),
 
         new("constant-expression-of-another-type-than-the-global", "constant-expression",
             FunctionModule([], [], [], globalSection: [0x01, 0x7E, 0x00, 0x41, 0x01, 0x0B]),
