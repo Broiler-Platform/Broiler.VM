@@ -31,6 +31,8 @@ section-duplicated-with-another-section-between|f80539a41cd1ac7b2f872f8c7cbcc5d2
 section-body-shorter-than-its-declared-length|681b237afcc02117b1b637d3f7960f7edebedaa6dd99acb7c21deea43c8119bf|section|InvalidArtifact|InconsistentStructure|2104|-|-|derived|refuses-decoding
 section-body-longer-than-its-declared-length|9da3b8cb6cc3da1cdde098d2e5f00c8b879e863f1c5ee25b5224ad1887466005|section|InvalidArtifact|InconsistentStructure|2104|-|-|derived|refuses-decoding
 section-declares-a-length-past-the-end-of-the-artifact|6068d2001cae5b4f7320ff5d63de88b7c77f7b4958ecca182ecd8256ba8a9d4e|section|InvalidArtifact|Truncated|2106|-|-|derived|refuses-decoding
+section-a-custom-sections-name-runs-past-the-section|a28bf6266fa2b1476831dcfc092133b064b39a55644d53bfe8af1bd3cab925e0|section|InvalidArtifact|InconsistentStructure|2104|-|-|derived|refuses-decoding
+section-a-custom-section-of-no-bytes-has-no-name|e5ddb81afd7ff27f33aeed47770268010a37ad8626d9529e4ced1f200b0abbe9|section|InvalidArtifact|Truncated|2106|-|-|derived|refuses-decoding
 name-overlong-two-byte-form|5858b21b765e89c7b93066ae7585d0263f69480b97e03a61835aad141bd56e36|name|InvalidArtifact|MalformedEncoding|2401|-|-|derived|refuses-decoding
 name-encodes-a-surrogate|dea5c02a3b181cd4d737a9f3d777d290ae5942f4ceb0b1e9a74b6b3e2c35e3c0|name|InvalidArtifact|MalformedEncoding|2401|-|-|derived|refuses-decoding
 name-encodes-a-value-above-the-last-code-point|1ce7a7aaa66e6692c3d6a05ae0789aef9ff58cbceb538b3a5594529a25fc1e9a|name|InvalidArtifact|MalformedEncoding|2401|-|-|derived|refuses-decoding
@@ -40,6 +42,10 @@ name-a-five-byte-lead-byte|b8a7f9be2460709b41a063dcee745c3e30ce77ca34dfc962839d6
 name-a-four-byte-scalar-value-is-accepted|427ec3f213ec84dbae6fd43a437171e08b107c2db7abf59d15d44b6b53012744|name|Normal|NormalCompleted|0|-|-|derived|accepts
 name-of-no-bytes-is-accepted|a5dd098b2bc5766ce268c59cabb866e5301322e82d59f94a065d92fb61c2d26a|name|Normal|NormalCompleted|0|-|-|derived|accepts
 name-export-kind-byte-names-nothing|a073b94ce39f5b306bf9f5bd1a6fd265fd466ccefcabce4155b583eaebda8595|name|InvalidArtifact|MalformedEncoding|2402|-|-|derived|refuses-decoding
+name-a-custom-sections-name-in-an-overlong-form|d29f50423c8ea3f12063b8f9b048aefc2e12710a03fd323cf88885bee6a72750|name|InvalidArtifact|MalformedEncoding|2401|-|-|derived|refuses-decoding
+name-an-imports-field-name-encodes-a-surrogate|78f939ff6a3740fb667bbbff44a9f33ed8d804d435df9a014c6eaf6d834ad78f|name|InvalidArtifact|MalformedEncoding|2401|-|-|derived|refuses-decoding
+name-an-imports-module-name-is-a-lone-continuation-byte|65d6388c6970088b5a28d633e42d467bf1f291a2e96559a921bc39e6ab76ea3f|name|InvalidArtifact|MalformedEncoding|2401|-|-|derived|refuses-decoding
+name-import-kind-byte-names-nothing|ed02aa06431a68389e2b1637661bb65c286c3adea9fa3c5dbb2140e5fb1a92e9|name|InvalidArtifact|MalformedEncoding|2402|-|-|derived|refuses-decoding
 type-function-tag-is-not-0x60|3a711b7b85f33a704b378e98cb428a088a5070f7d9fe7a26388c5eba91edaee0|type|InvalidArtifact|MalformedEncoding|2301|-|-|derived|refuses-decoding
 type-value-type-byte-names-nothing|1eb41f2853977a77b877e85e53bad402976fde1fb7768584d6a2aa1da83630d8|type|InvalidArtifact|MalformedEncoding|2302|-|-|derived|refuses-decoding
 limits-flag-is-neither-form|bf38d27bc85561df5752c13869909ffedc09d638c0ddddfa21fde991fd167220|limits|InvalidArtifact|MalformedEncoding|2304|-|-|derived|refuses-decoding
@@ -49,6 +55,7 @@ type-table-element-type-is-not-funcref|687c0cb01909398750a0cc0d08d56b6ad899b227b
 type-global-mutability-flag-is-neither-form|14daac5cb5f98387aa80d5f7faf7d5296c25580641f7b94e736465433a200397|type|InvalidArtifact|MalformedEncoding|2308|-|-|derived|refuses-decoding
 feature-a-vector-value-type|9ff8fc2d357cea6495fd6782f407a2bed0822cfd50b739ca619355630075a53f|feature|InvalidArtifact|UnknownFeature|2303|-|-|derived|refuses-decoding
 feature-an-import|46de6d1d76501e89786e9449dae0ecabcc3556ecb3a6d9776924e0969d2b27b4|feature|InvalidArtifact|UnknownFeature|2403|-|-|derived|refuses-decoding
+feature-an-import-in-a-module-malformed-after-it|4327c3dfcbdc7c5b2a17f6f8d667663c3d40870ef9fb07bf76558df74472da1b|feature|InvalidArtifact|InconsistentStructure|2101|-|-|derived|refuses-decoding
 feature-two-memories|a51ea11ea8803e51de8595f544f187db47f1ec64b957dc160bfb64ecfd3e3fdf|feature|InvalidArtifact|UnknownFeature|2504|-|-|derived|refuses-decoding
 feature-two-tables|8c1dd92342556ad3913a92223c3674cf271d8e5512d76ca94ef8d2f4841ce962|feature|InvalidArtifact|UnknownFeature|2505|-|-|derived|refuses-decoding
 feature-a-bulk-memory-prefixed-instruction|9e7d196b583b9c03bccf7cc63e2cc9ed7aaab6f7d75a2fbb79c8621c344a7aa2|feature|InvalidArtifact|UnknownFeature|2822|-|-|derived|refuses-validation
@@ -87,6 +94,7 @@ validation-a-call-whose-index-addresses-no-function|2552c384b63f131924ca31eb9bff
 validation-a-memory-instruction-with-no-memory-declared|c16f4ef11620413b8f5079177c0e11794be3f9b9ffe3cad437809519aa67a9bb|validation-index|InvalidArtifact|SemanticValidationFailed|2817|-|-|derived|refuses-validation
 validation-an-indirect-call-with-no-table-declared|cd31beaa7d9fef9c1c88643bec12e79d7dccd9218854968fe8c2ae5c76902994|validation-index|InvalidArtifact|SemanticValidationFailed|2818|-|-|derived|refuses-validation
 validation-an-indirect-call-naming-no-declared-type|ba5ba4f96d4d6b30f579535e49d562bb96d53099c62b6835362fec03a28a708d|validation-index|InvalidArtifact|SemanticValidationFailed|2816|-|-|derived|refuses-validation
+module-a-function-type-with-two-results|e073348866b8b00447b31217245790b19af9622ce8d7ff0e4202f366f729a9e5|validation-module|InvalidArtifact|SemanticValidationFailed|2711|-|-|derived|refuses-validation
 module-a-function-section-without-a-code-section|d34554201294a6135024ed24267c1128119ae0b6217d2b034af6f4b80d623820|validation-module|InvalidArtifact|InconsistentStructure|2501|-|-|derived|refuses-decoding
 module-a-function-whose-type-index-addresses-no-type|7af02a117d5758694573f20fdd5fd1ed3615b9bab0ff2da6e3e65aadf3fc274d|validation-module|InvalidArtifact|SemanticValidationFailed|2701|-|-|derived|refuses-validation
 module-a-start-section-naming-a-function-that-does-not-exist|5239795798d928f3b12b5ac4ab80a76842be152d5912008418df5127a0b75edc|validation-module|InvalidArtifact|SemanticValidationFailed|2702|-|-|derived|refuses-validation
@@ -287,10 +295,10 @@ inversion-0088|e86343fea051400159d0925ccf877e055c1cce7a800b72fa89ae455c0ff269f2|
 inversion-0089|c20d9e2c9f66949fc5c4b2b7db2bd64aaf01195cbd5487a9fc1954f07d4905cb|inversion-sweep|Normal|NormalCompleted|0|-|-|recorded|sound-either-way
 inversion-0090|7d3414b8429e4ea5c30fd4f8805d98474229c11318cab520ad9cbdc49a8b58eb|inversion-sweep|InvalidArtifact|InconsistentStructure|2101|-|-|recorded|sound-either-way
 inversion-0091|956c67ad0a76e16dc1df07d344dcfce771f88e2cb53f85496e9bdec12623a833|inversion-sweep|InvalidArtifact|Truncated|2106|-|-|recorded|sound-either-way
-inversion-0092|cc98f2870974e4213ad830a444693b9137f17978685ee7c2ac9cbac0d8caaabe|inversion-sweep|Normal|NormalCompleted|0|-|-|recorded|sound-either-way
-inversion-0093|dca6727e386f18a0547b486b40f3b42569ce99200f44630fb74b9d3c01c6315c|inversion-sweep|Normal|NormalCompleted|0|-|-|recorded|sound-either-way
-inversion-0094|ef442ad92a43a48952ed9eebc61f2ee494afede67e8d7d1b02bdb8423a6538c8|inversion-sweep|Normal|NormalCompleted|0|-|-|recorded|sound-either-way
-inversion-0095|b38c84494db9ca8d16d221c54a9a7c232e3b096b9dc9a5b6e0fbec22142e1966|inversion-sweep|Normal|NormalCompleted|0|-|-|recorded|sound-either-way
-inversion-0096|f07329ec4455aaf3bcdddb282416c395ad5c0404db93e4a8860d338ee27c0736|inversion-sweep|Normal|NormalCompleted|0|-|-|recorded|sound-either-way
+inversion-0092|cc98f2870974e4213ad830a444693b9137f17978685ee7c2ac9cbac0d8caaabe|inversion-sweep|InvalidArtifact|Truncated|2106|-|-|recorded|sound-either-way
+inversion-0093|dca6727e386f18a0547b486b40f3b42569ce99200f44630fb74b9d3c01c6315c|inversion-sweep|InvalidArtifact|MalformedEncoding|2401|-|-|recorded|sound-either-way
+inversion-0094|ef442ad92a43a48952ed9eebc61f2ee494afede67e8d7d1b02bdb8423a6538c8|inversion-sweep|InvalidArtifact|MalformedEncoding|2401|-|-|recorded|sound-either-way
+inversion-0095|b38c84494db9ca8d16d221c54a9a7c232e3b096b9dc9a5b6e0fbec22142e1966|inversion-sweep|InvalidArtifact|MalformedEncoding|2401|-|-|recorded|sound-either-way
+inversion-0096|f07329ec4455aaf3bcdddb282416c395ad5c0404db93e4a8860d338ee27c0736|inversion-sweep|InvalidArtifact|MalformedEncoding|2401|-|-|recorded|sound-either-way
 inversion-0097|e45db858a0eb8b9bbe90d12de6706fb4c37fb1ec748285a3f478578a74c2a445|inversion-sweep|Normal|NormalCompleted|0|-|-|recorded|sound-either-way
 inversion-0098|a7199eee9ace48fd7b7633f85ba2759728c1a733e951ca65106d9195607bb540|inversion-sweep|Normal|NormalCompleted|0|-|-|recorded|sound-either-way

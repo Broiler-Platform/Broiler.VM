@@ -146,8 +146,8 @@ internal static class CorpusStore
         new("control-canonical-module-with-a-padded-section-length", "control",
             CanonicalModule(), Accepts, VmOutcome.Normal, VmReason.NormalCompleted),
 
-        // Two custom sections and nothing else: unordered, repeatable, and read past without a byte
-        // of either body being looked at.
+        // Two custom sections and nothing else: unordered and repeatable, each name read and each
+        // section's content after it read past unexamined.
         new("control-two-custom-sections", "control",
             [.. Preamble, .. Section(0, [0x01, 0x61, 0xFF]), .. Section(0, [0x01, 0x62, 0xFF])],
             Accepts, VmOutcome.Normal, VmReason.NormalCompleted),
@@ -339,6 +339,21 @@ internal static class CorpusStore
             [.. Preamble, 0x01, 0x7F, 0x01, 0x60, 0x00, 0x00], RefusesDecoding,
             VmOutcome.InvalidArtifact, VmReason.Truncated,
             WebAssemblyDiagnosticCode.Truncated),
+
+        // A custom section's name declares four bytes in a section of two, so the name reads the
+        // type section after it as its own. The bytes it reads are well formed, so it is the lengths
+        // that disagree, and the section's length is what the answer names.
+        new("section-a-custom-sections-name-runs-past-the-section", "section",
+            [.. Preamble, .. Section(0, [0x04, 0x61]), .. Section(1, [0x00])], RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
+            WebAssemblyDiagnosticCode.SectionLengthMismatch),
+
+        // A custom section of no bytes has no name, and a name is the one thing the format says it
+        // has: the name's length is read past the end of the artifact.
+        new("section-a-custom-section-of-no-bytes-has-no-name", "section",
+            [.. Preamble, 0x00, 0x00], RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.Truncated,
+            WebAssemblyDiagnosticCode.Truncated),
     ];
 
     // =============================================================================================
@@ -421,6 +436,34 @@ internal static class CorpusStore
             [.. Preamble, .. Section(7, [0x01, 0x01, 0x61, 0x09, 0x00])], RefusesDecoding,
             VmOutcome.InvalidArtifact, VmReason.MalformedEncoding,
             WebAssemblyDiagnosticCode.UnknownExternalKind),
+
+        // A custom section's name is a name. C0 AF is the overlong form of '/', as above, and the byte
+        // after it is the section's own content, which nothing reads.
+        new("name-a-custom-sections-name-in-an-overlong-form", "name",
+            [.. Preamble, .. Section(0, [0x02, 0xC0, 0xAF, 0xFF])], RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.MalformedEncoding,
+            WebAssemblyDiagnosticCode.MalformedNameEncoding),
+
+        // An import's names are names too, and a malformed one is malformed before it is an import
+        // this profile does not admit: the field name encodes a surrogate.
+        new("name-an-imports-field-name-encodes-a-surrogate", "name",
+            [.. Preamble, .. Section(2, [0x01, 0x01, 0x6D, 0x03, 0xED, 0xA0, 0x80, 0x00, 0x00])],
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.MalformedEncoding,
+            WebAssemblyDiagnosticCode.MalformedNameEncoding),
+
+        // The module name, the first of the two: a continuation byte with no lead byte.
+        new("name-an-imports-module-name-is-a-lone-continuation-byte", "name",
+            [.. Preamble, .. Section(2, [0x01, 0x01, 0x80, 0x01, 0x66, 0x00, 0x00])],
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.MalformedEncoding,
+            WebAssemblyDiagnosticCode.MalformedNameEncoding),
+
+        new("name-import-kind-byte-names-nothing", "name",
+            [.. Preamble, .. Section(2, [0x01, 0x01, 0x6D, 0x01, 0x66, 0x04, 0x00])],
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.MalformedEncoding,
+            WebAssemblyDiagnosticCode.UnknownExternalKind),
     ];
 
     // =============================================================================================
@@ -486,6 +529,15 @@ internal static class CorpusStore
             RefusesDecoding,
             VmOutcome.InvalidArtifact, VmReason.UnknownFeature,
             WebAssemblyDiagnosticCode.ImportNotAdmitted),
+
+        // The same import, and after it a section identifier that names nothing. The module is
+        // malformed whatever this profile admits, and the refusal of the import waits until decoding
+        // completes, so the malformation is the answer.
+        new("feature-an-import-in-a-module-malformed-after-it", "feature",
+            [.. Preamble, .. Section(2, [0x01, 0x01, 0x6D, 0x01, 0x66, 0x00, 0x00]), 0x0E, 0x00],
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
+            WebAssemblyDiagnosticCode.UnknownSectionId),
 
         new("feature-two-memories", "feature",
             [.. Preamble, .. Section(5, [0x02, 0x00, 0x01, 0x00, 0x01])], RefusesDecoding,
@@ -797,6 +849,14 @@ internal static class CorpusStore
 
     private static IEnumerable<CorpusEntry> ValidationModule() =>
     [
+        // Two results decode - the grammar reads a result vector of any length - and validation
+        // holds a function type to one. The type is used by nothing, and it is invalid all the same.
+        new("module-a-function-type-with-two-results", "validation-module",
+            [.. Preamble, .. Section(1, [0x01, 0x60, 0x00, 0x02, 0x7F, 0x7F])],
+            RefusesValidation,
+            VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
+            WebAssemblyDiagnosticCode.FunctionTypeResultArityAboveOne),
+
         new("module-a-function-section-without-a-code-section", "validation-module",
             [.. Preamble, .. Section(1, [0x01, 0x60, 0x00, 0x00]), .. Section(3, [0x01, 0x00])],
             RefusesDecoding,
@@ -941,10 +1001,14 @@ internal static class CorpusStore
     /// </summary>
     /// <remarks>
     /// <b>Some of these are ACCEPTED and that is correct.</b> An inversion inside the custom
-    /// section's payload, or inside the data segment's contents, produces a different module and not
-    /// an invalid one - so the family's invariant cannot be "refuses" without being false. What is
-    /// true of every one of them is that the answer is sound: an acceptance or a refusal carrying a
-    /// published code, and never the verifier reporting its own defect.
+    /// section's contents after its name, or inside the data segment's contents, produces a different
+    /// module and not an invalid one - so the family's invariant cannot be "refuses" without being
+    /// false. What is true of every one of them is that the answer is sound: an acceptance or a refusal
+    /// carrying a published code, and never the verifier reporting its own defect.
+    /// <i>(Corrected 2026-09-28. The first sentence read "An inversion inside the custom section's
+    /// payload", when the decoder read no byte of it. It now reads the section's name, so the five
+    /// inversions that land in the name's length and its four bytes are refused, and their recorded
+    /// rows moved from an acceptance to a refusal.)</i>
     /// </remarks>
     private static IEnumerable<CorpusEntry> InversionSweep()
     {
@@ -1018,7 +1082,8 @@ internal static class CorpusStore
         // One active data segment writing "ABC" at memory offset 0.
         module.AddRange(Section(11, [0x01, 0x00, 0x41, 0x00, 0x0B, 0x03, 0x41, 0x42, 0x43]));
 
-        // A custom section, which takes no position in the order and is read past unexamined.
+        // A custom section, which takes no position in the order: its name "demo" is read, and the two
+        // bytes after it are read past unexamined.
         module.AddRange(Section(0, [0x04, 0x64, 0x65, 0x6D, 0x6F, 0xAA, 0xBB]));
 
         return [.. module];

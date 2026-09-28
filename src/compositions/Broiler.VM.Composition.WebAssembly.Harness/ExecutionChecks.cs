@@ -623,6 +623,11 @@ internal static class ExecutionChecks
         var unary = assembler.Type([WasmAssembler.I32], [WasmAssembler.I32]);
         var binary = assembler.Type([WasmAssembler.I32, WasmAssembler.I32], [WasmAssembler.I32]);
 
+        // The same function type as `unary`, declared again under an index of its own. The format's
+        // indirect-call check is structural, so a call naming this index reaches a callee declared
+        // under the other. A nominal check traps it.
+        var unaryAgain = assembler.Type([WasmAssembler.I32], [WasmAssembler.I32]);
+
         var seven = assembler.Function(nullary, [], Instruction.I32Const(7));
 
         var twice = assembler.Function(unary, [], Instruction.Cat(
@@ -651,10 +656,16 @@ internal static class ExecutionChecks
             [Instruction.I32Add],
             Instruction.End()));
 
+        var twin = assembler.Function(binary, [], Instruction.Cat(
+            Instruction.LocalGet(0),
+            Instruction.LocalGet(1),
+            Instruction.CallIndirect(unaryAgain)));
+
         assembler.Element(0, twice, seven);
         assembler.Export("direct", WasmAssembler.ExportFunction, direct);
         assembler.Export("indirect", WasmAssembler.ExportFunction, indirect);
         assembler.Export("deep", WasmAssembler.ExportFunction, deep);
+        assembler.Export("twin", WasmAssembler.ExportFunction, twin);
 
         var results = new List<(string, bool, string)>();
 
@@ -665,6 +676,11 @@ internal static class ExecutionChecks
             (Entry("indirect", I32(21), I32(1)), Trap(WasmTrapKind.IndirectCallTypeMismatch)),
             (Entry("indirect", I32(21), I32(2)), Trap(WasmTrapKind.UninitializedElement)),
             (Entry("indirect", I32(21), I32(9)), Trap(WasmTrapKind.OutOfBoundsTableAccess)),
+
+            // A callee declared under another index of the same function type is called, and one of
+            // another function type still traps.
+            (Entry("twin", I32(21), I32(0)), Int32(42)),
+            (Entry("twin", I32(21), I32(1)), Trap(WasmTrapKind.IndirectCallTypeMismatch)),
 
             // Recursion, which on a heap frame stack costs call depth and never the CLR stack.
             (Entry("deep", I32(100)), Int32(5050)),
