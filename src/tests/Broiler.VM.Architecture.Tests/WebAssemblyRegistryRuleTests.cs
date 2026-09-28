@@ -28,6 +28,8 @@ public sealed class WebAssemblyRegistryRuleTests
     private static readonly IReadOnlySet<string> CheckedKinds = WebAssemblyRegistryRules.NamedTrapKinds(
         WebAssemblyRegistryRules.Parse(WebAssemblyRegistryRules.ExecutionChecksFile));
 
+    private static readonly IReadOnlyList<WebAssemblyRegistryRules.PayloadArm> CheckedCodes = ReadCheckedCodes();
+
     private static readonly IReadOnlyDictionary<string, int> CoreReasons = WebAssemblyRegistryRules.CoreReasons();
 
     [Fact]
@@ -246,7 +248,7 @@ public sealed class WebAssemblyRegistryRuleTests
     public void W3_Every_Row_Is_Reachable_From_A_Named_Case_Or_Listed_As_Unreached()
     {
         Assert.Empty(WebAssemblyRegistryRules.W3Reachability(
-            Registry, Corpus, CheckedKinds, Emissions.Payload, WebAssemblyRegistryRules.Unreached));
+            Registry, Corpus, CheckedKinds, Emissions.Payload, CheckedCodes, WebAssemblyRegistryRules.Unreached));
 
         // Non-vacuous, and the figures that matter: sixty-four rows name a derived corpus entry, eight
         // name a trap kind the execution checks expect, four are retired, and twenty are the rows the
@@ -264,7 +266,7 @@ public sealed class WebAssemblyRegistryRuleTests
 
         var reported = WebAssemblyRegistryRules.W3Reachability(
                 Read("W3-registry-names-a-case-the-corpus-does-not-have.txt.witness"),
-                Corpus, CheckedKinds, Emissions.Payload, WebAssemblyRegistryRules.Unreached)
+                Corpus, CheckedKinds, Emissions.Payload, CheckedCodes, WebAssemblyRegistryRules.Unreached)
             .ToArray();
 
         foreach (var expected in new[]
@@ -290,7 +292,7 @@ public sealed class WebAssemblyRegistryRuleTests
             .ToArray();
 
         Assert.Contains(
-            WebAssemblyRegistryRules.W3Reachability(Registry, drifted, CheckedKinds, Emissions.Payload, WebAssemblyRegistryRules.Unreached),
+            WebAssemblyRegistryRules.W3Reachability(Registry, drifted, CheckedKinds, Emissions.Payload, CheckedCodes, WebAssemblyRegistryRules.Unreached),
             static message => message.Contains(
                 "the corpus entry preamble-wrong-magic records 2001 WrongMagic as InvalidArtifact with Truncated, and the registry says InvalidArtifact with MalformedEncoding",
                 StringComparison.Ordinal));
@@ -298,9 +300,30 @@ public sealed class WebAssemblyRegistryRuleTests
         Assert.Contains(
             WebAssemblyRegistryRules.W3Reachability(
                 Registry, Corpus, CheckedKinds.Where(static kind => kind != "Unreachable").ToHashSet(StringComparer.Ordinal),
-                Emissions.Payload, WebAssemblyRegistryRules.Unreached),
+                Emissions.Payload, CheckedCodes, WebAssemblyRegistryRules.Unreached),
             static message => message.Contains(
                 "the row for 3001 TrapUnreachable names WasmTrapKind.Unreachable, and no execution check expects a trap of that kind",
+                StringComparison.Ordinal));
+
+        // The execution checks read a trap's code against a table of their own: one arm per execution
+        // row, and a discard arm naming no row's code. A table that forgot a kind, or mapped it onto
+        // another code, is a check that would pass a payload carrying the wrong code.
+        Assert.Equal(8, CheckedCodes.Count(static arm => arm.Kind is not null));
+
+        var forgetful = CheckedCodes.Where(static arm => arm.Kind != "Unreachable").ToArray();
+        var crossed = CheckedCodes
+            .Select(static arm => arm.Kind == "IntegerOverflow" ? arm with { Code = "TrapIntegerDivideByZero" } : arm)
+            .ToArray();
+
+        Assert.Contains(
+            WebAssemblyRegistryRules.W3Reachability(Registry, Corpus, CheckedKinds, Emissions.Payload, forgetful, WebAssemblyRegistryRules.Unreached),
+            static message => message.Contains(
+                "the row for 3001 TrapUnreachable names WasmTrapKind.Unreachable, and the execution checks' table of codes has no arm for it",
+                StringComparison.Ordinal));
+        Assert.Contains(
+            WebAssemblyRegistryRules.W3Reachability(Registry, Corpus, CheckedKinds, Emissions.Payload, crossed, WebAssemblyRegistryRules.Unreached),
+            static message => message.Contains(
+                "the row for 3003 TrapIntegerOverflow names WasmTrapKind.IntegerOverflow, which the execution checks' table of codes maps onto TrapIntegerDivideByZero",
                 StringComparison.Ordinal));
     }
 
@@ -371,6 +394,15 @@ public sealed class WebAssemblyRegistryRuleTests
 
         Assert.Empty(problems);
         return corpus;
+    }
+
+    private static IReadOnlyList<WebAssemblyRegistryRules.PayloadArm> ReadCheckedCodes()
+    {
+        var problems = new List<string>();
+        var arms = WebAssemblyRegistryRules.CheckedCodes(WebAssemblyRegistryRules.ExecutionChecksFile, problems);
+
+        Assert.Empty(problems);
+        return arms;
     }
 
     private static WebAssemblyRegistryRules.Registry Read(string witness) =>

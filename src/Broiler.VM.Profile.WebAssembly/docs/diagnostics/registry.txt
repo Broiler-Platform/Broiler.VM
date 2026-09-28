@@ -49,10 +49,16 @@
 #                           artifact with exactly this code and this reason. Every entry recording
 #                           the code records the same reason.
 #                execution  the case column names a trap kind a named check of the harness root's
-#                           execution lane expects. The check reads the trap's kind, and the code
-#                           travels beside it, mapped from the kind by one switch in WasmFamily; no
-#                           check reads the code off the payload. That is weaker than `corpus`, and
-#                           it is why this is its own word.
+#                           execution lane expects. The check reads the trap's kind and its code off
+#                           the payload, and holds the code to the execution checks' own table of
+#                           this registry's codes, which rule W3 holds to these rows. It is weaker
+#                           than `corpus` in one way, which is why it is its own word: the module is
+#                           assembled by the harness at every run, and no bytes or answer are
+#                           retained and pinned. *(Corrected 2026-09-28, the day revision 1 was
+#                           written: this read "The check reads the trap's kind, and the code travels
+#                           beside it, mapped from the kind by one switch in WasmFamily; no check reads
+#                           the code off the payload." The checks read the code since. No row and no
+#                           code's meaning changed, so the revision did not move.)*
 #                unreached  no named case reaches the code, and the case column says why, in the
 #                           words rule W3 lists. WHICH ROWS MAY SAY THIS IS FIXED BY THE RULE, not
 #                           by this file. These rows are the part of WA-3's gate clause "every code
@@ -103,7 +109,8 @@
 # reason and is in one of the row's passes, and each of the row's passes has a site; the carrier is
 # the one its passes use; a corpus row's entry exists, is derived and records exactly this code and
 # reason, and no entry records a code with another reason; an execution row's trap kind is mapped to
-# this code and is named by the execution checks; the unreached rows are the ones the rule lists;
+# this code by the profile and by the execution checks' table, and a check expects it; the unreached
+# rows are the ones the rule lists;
 # and a retired row's code is named nowhere in the assembly's source.
 2001|WrongMagic|decode|translation|MalformedEncoding|corpus|preamble-wrong-magic|1
 2002|UnsupportedBinaryVersion|decode|translation|UnknownFormatVersion|corpus|preamble-wrong-binary-version|1

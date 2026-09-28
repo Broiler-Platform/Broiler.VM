@@ -341,6 +341,21 @@ internal static class WebAssemblyRegistryRules
         .Select(static access => access.Name.Identifier.ValueText)
         .ToHashSet(StringComparer.Ordinal);
 
+    /// <summary>
+    /// The arms of every switch from a trap kind to a code in a file that is not a source of the
+    /// profile assembly - the execution checks' own table of the registry's codes - and every arm
+    /// the rule could not read.
+    /// </summary>
+    internal static IReadOnlyList<PayloadArm> CheckedCodes(string relative, List<string> problems)
+    {
+        var text = File.ReadAllText(UbcRules.RootPath(relative));
+        var tree = CSharpSyntaxTree.ParseText(text, path: relative);
+        var file = new AssuranceSourceFile(UbcRules.RootPath(relative), relative, "harness", text, "\n", tree);
+        var arms = new List<PayloadArm>();
+        ReadPayloadMappings(file, tree.GetRoot(), arms, [], [], problems);
+        return arms;
+    }
+
     /// <summary>The literal value of the writer's revision constant, or -1 when there is none the rule can read.</summary>
     internal static int WriterRevision(SyntaxTree tree) => tree.GetRoot()
         .DescendantNodes()
@@ -1142,6 +1157,7 @@ internal static class WebAssemblyRegistryRules
         IReadOnlyList<CorpusEntry> corpus,
         IReadOnlySet<string> checkedKinds,
         IReadOnlyList<PayloadArm> payload,
+        IReadOnlyList<PayloadArm> checkedCodes,
         IReadOnlyList<UnreachedCode> admitted)
     {
         var entries = corpus
@@ -1219,6 +1235,18 @@ internal static class WebAssemblyRegistryRules
                     if (!string.Equals(mapped, row.Name, StringComparison.Ordinal))
                     {
                         yield return $"{name} names {row.Case}, which the payload mapping maps onto {mapped ?? "nothing"}";
+                    }
+
+                    // The check reads the code as well as the kind, against its own table of the
+                    // registry's codes; a kind that table does not name, or names onto another code,
+                    // is a check that would pass a payload carrying the wrong code.
+                    var expected = checkedCodes.FirstOrDefault(arm => string.Equals(arm.Kind, kind, StringComparison.Ordinal))?.Code;
+
+                    if (!string.Equals(expected, row.Name, StringComparison.Ordinal))
+                    {
+                        yield return expected is null
+                            ? $"{name} names {row.Case}, and the execution checks' table of codes has no arm for it"
+                            : $"{name} names {row.Case}, which the execution checks' table of codes maps onto {expected}";
                     }
 
                     break;
@@ -1307,6 +1335,7 @@ internal static class WebAssemblyRegistryRules
         var manifest = File.ReadAllText(UbcRules.RootPath(CorpusManifestFile));
         var corpus = ReadCorpus(manifest, problems);
         var checkedKinds = NamedTrapKinds(Parse(ExecutionChecksFile));
+        var checkedCodes = CheckedCodes(ExecutionChecksFile, problems);
         var writer = WriterRevision(Parse(CorpusWriterFile));
 
         return
@@ -1315,7 +1344,7 @@ internal static class WebAssemblyRegistryRules
             .. W3Vocabulary(registry, vocabulary),
             .. W3Columns(registry, CoreReasons()),
             .. W3Reasons(registry, vocabulary, emissions),
-            .. W3Reachability(registry, corpus, checkedKinds, emissions.Payload, Unreached),
+            .. W3Reachability(registry, corpus, checkedKinds, emissions.Payload, checkedCodes, Unreached),
             .. W3Revision(registry.Revision, ManifestRevision(manifest), writer),
         ];
     }
