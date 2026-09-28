@@ -174,11 +174,11 @@ internal readonly struct WasmGlobalType
 /// One function type: a vector of parameter types and a vector of result types.
 /// </summary>
 /// <remarks>
-/// The arrays are held rather than handed out, because everything reachable from the verified state
-/// has to be immutable once verification returns and an array a caller holds is not.
+/// The arrays are held rather than handed out, because everything reachable from a module has to be
+/// immutable once validation returns and an array a caller holds is not.
 /// </remarks>
 // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=1; Fingerprint=33E22E
-// Broiler-Falsified-If: either array reaches a caller, so a state two runtimes share can be mutated through it
+// Broiler-Falsified-If: either array reaches a caller, so a module two threads read can be mutated through it
 // Broiler-Human:        PENDING
 internal sealed class WasmFuncType
 {

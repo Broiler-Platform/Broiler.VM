@@ -823,6 +823,79 @@ internal static class ArchitectureRules
             element.Ancestors().Any(static ancestor => ancestor.Name.LocalName == "Target");
     }
 
+    /// <summary>
+    /// What stops a project file showing it packs: no <c>IsPackable</c> definition at all, one that is
+    /// conditional or whose value is not literally <c>true</c>, or a property group inside a target that
+    /// sets it to anything but <c>true</c>. <see cref="NotLiterallyUnpackable"/> with the value turned
+    /// round, and written beside it rather than as a flag of it, because rule N4 reads that one and a
+    /// flag would let a change to either rule's reading reach the other.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Elements, not text, for the same reasons.</b> A search of the file's text is satisfied by a
+    /// comment that quotes the element and by a true definition a later false one overrides, and in
+    /// both cases the project does not pack. MSBuild takes the last definition that applies, and a
+    /// condition depends on properties this reader does not evaluate, so the only file that shows the
+    /// property is on is one in which every definition is unconditional and literally true.
+    /// </para>
+    /// <para>
+    /// <b>The default is not enough.</b> The vendored packaging props default the property to true for
+    /// a project whose name matches none of their suffixes, so a project with no definition packs
+    /// today; but that is an import's answer, which a reader of the project file cannot see and a
+    /// change to the props can turn, so the rule asks for the literal element. Item metadata and what
+    /// <c>ProjectExtensions</c> holds are no definition; a property group inside a target is not the
+    /// definition either, and one that sets anything but true is reported, because it can turn the
+    /// property off for the pack that follows it.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> NotLiterallyPackable(ComponentGraph.ProjectFile project, string decision)
+    {
+        var properties = XDocument.Parse(project.RawText)
+            .Descendants()
+            .Where(static element =>
+                string.Equals(element.Name.LocalName, "IsPackable", StringComparison.OrdinalIgnoreCase) &&
+                element.Parent?.Name.LocalName == "PropertyGroup" &&
+                !element.Ancestors().Any(static ancestor => ancestor.Name.LocalName == "ProjectExtensions"))
+            .ToArray();
+
+        var definitions = properties.Where(static element => !InsideTarget(element)).ToArray();
+
+        if (definitions.Length == 0)
+        {
+            yield return $"{project.RelativePath} does not carry the literal <IsPackable>true</IsPackable>";
+        }
+
+        foreach (var definition in definitions)
+        {
+            var value = definition.Value.Trim();
+
+            if (definition.AncestorsAndSelf().Any(static element =>
+                    element.Attribute("Condition") is not null || element.Name.LocalName == "Choose"))
+            {
+                yield return
+                    $"{project.RelativePath} sets IsPackable under a condition, which this rule cannot " +
+                    "evaluate and so cannot show is on";
+            }
+            else if (!string.Equals(value, "true", StringComparison.Ordinal))
+            {
+                yield return $"{project.RelativePath} sets IsPackable to {value}, and {decision}";
+            }
+        }
+
+        foreach (var scoped in properties.Where(InsideTarget))
+        {
+            var value = scoped.Value.Trim();
+
+            if (!string.Equals(value, "true", StringComparison.Ordinal))
+            {
+                yield return $"{project.RelativePath} sets IsPackable to {value}, and {decision}";
+            }
+        }
+
+        static bool InsideTarget(XElement element) =>
+            element.Ancestors().Any(static ancestor => ancestor.Name.LocalName == "Target");
+    }
+
     // ---- Group N, second half: the published diagnostic registry ------------------------------
     //
     // JS-3a publishes the diagnostic-code registry and the position encoding, and the four rules

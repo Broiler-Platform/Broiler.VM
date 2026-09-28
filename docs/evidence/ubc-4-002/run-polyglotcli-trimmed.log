@@ -1,0 +1,39 @@
+$ D:\wt\ubc-4\artifacts\publish-ubc4-polyglotcli-trimmed\Broiler.VM.Composition.PolyglotCli.exe version
+broiler broiler.javascript manifest broiler.javascript.wide format 2
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+broiler broiler.webassembly manifest broiler.webassembly.slice format 1
+core-contract-version 1
+
+exit 0
+
+$ D:\wt\ubc-4\artifacts\publish-ubc4-polyglotcli-trimmed\Broiler.VM.Composition.PolyglotCli.exe run docs/evidence/vm-7-cli-001/inputs/adder.wasm
+42
+
+exit 0
+
+$ D:\wt\ubc-4\artifacts\publish-ubc4-polyglotcli-trimmed\Broiler.VM.Composition.PolyglotCli.exe run docs/evidence/vm-7-cli-001/inputs/adder.wasm --invoke add --arg i32:7 --arg i32:35
+42
+
+exit 0
+
+$ D:\wt\ubc-4\artifacts\publish-ubc4-polyglotcli-trimmed\Broiler.VM.Composition.PolyglotCli.exe run docs/evidence/vm-7-cli-001/inputs/hello.js docs/evidence/vm-7-cli-001/inputs/adder.wasm
+ok       docs/evidence/vm-7-cli-001/inputs/adder.wasm  42
+hello from broiler.javascript
+fib(20) = 6765
+ok       docs/evidence/vm-7-cli-001/inputs/hello.js  2,4,6
+# 2 files
+# Completed: 2
+
+exit 0
+
+$ D:\wt\ubc-4\artifacts\publish-ubc4-polyglotcli-trimmed\Broiler.VM.Composition.PolyglotCli.exe run docs/evidence/vm-7-cli-001/inputs/nottext.wasm
+broiler: docs/evidence/vm-7-cli-001/inputs/nottext.wasm: is named `.wasm` and does not open with the WebAssembly preamble 00 61 73 6D, so this host declines to hand it to a decoder that would report a byte-zero failure instead of a mislabelled file
+
+exit 2
+
+$ D:\wt\ubc-4\artifacts\publish-ubc4-polyglotcli-trimmed\Broiler.VM.Composition.PolyglotCli.exe run docs/evidence/vm-7-cli-001/inputs/hello.js
+hello from broiler.javascript
+fib(20) = 6765
+2,4,6
+
+exit 0

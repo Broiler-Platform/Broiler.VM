@@ -73,6 +73,34 @@ public sealed class ReviewRegressionTests
         Assert.Equal(VmInstanceState.Suspended, instance.State);
     }
 
+    [Fact]
+    public void An_Invocation_That_Parks_Again_When_Resumed_Leaves_Its_Instance_Suspended()
+    {
+        // ADR 0004 moves an instance to Suspended whenever its operation suspends. The first park
+        // did, and a resume that parked again left the instance Executing - so a second invocation
+        // was refused as re-entrant into a running step when nothing was running.
+        using var runtime = FixtureComposition.Runtime(FixtureComposition.AlphaCatalog());
+
+        var artifact = FixtureComposition.Verify(
+            runtime,
+            FixtureArtifactWriter.Write(
+                [5], [FixtureFormat.OpYield, FixtureFormat.OpYield, FixtureFormat.OpPushConst, 0, FixtureFormat.OpReturn]));
+
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+        Assert.True(FixtureComposition.Invoke(instance).TryGetSuspension(out var first));
+
+        var again = runtime.Resume(first);
+
+        Assert.Equal(VmOutcome.Suspension, again.Outcome);
+        Assert.Equal(VmInstanceState.Suspended, instance.State);
+        Assert.Equal(VmReason.WrongState, FixtureComposition.Invoke(instance).Reason);
+
+        Assert.True(again.TryGetSuspension(out var second));
+        Assert.Equal(VmOutcome.Normal, runtime.Resume(second).Outcome);
+        Assert.Equal(VmInstanceState.Live, instance.State);
+    }
+
     // ---- the frozen precedence order ------------------------------------------------------
 
     [Fact]

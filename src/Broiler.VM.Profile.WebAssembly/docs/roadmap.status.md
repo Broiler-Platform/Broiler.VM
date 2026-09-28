@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.WebAssembly roadmap status
 
-**Last updated:** 2026-09-07
+**Last updated:** 2026-09-26
 
 **This file is part of the [WebAssembly profile roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split).
@@ -13,9 +13,15 @@ carries the new reading and [the corrections and rejections](roadmap.corrections
 replaced — **that file records no status and advances nothing here**.
 
 **At this snapshot, five milestones own code and none is accepted** *(updated 2026-09-07)*.
-The component has a source tree, projects in the solution, a descriptor, a decoder, a validator, a
-store and an interpreter, two never-advertised composition roots, its own group in the component's
-rule register, and an assurance record. It has no pinned specification revision, no pinned suite
+The component has a source tree, projects in the solution, a decoder, a validator, a translator into
+the universal bytecode, and the instruction family that bytecode's emitter runs — its table, its
+verifier hook, its handlers and its instance store — two never-advertised composition roots, its own
+group in the component's rule register, and an assurance record *(corrected 2026-09-26: this sentence
+read "a descriptor, a decoder, a validator, a store and an interpreter". The universal bytecode
+programme's milestone UBC-4 deleted the profile's descriptor, its interpreter and the store types the
+interpreter used, on 2026-09-25, and what took their place is recorded under
+[What now exists](#what-now-exists-and-what-each-part-of-it-is-not). Nothing else in this paragraph
+moved, and no row below moved with it)*. It has no pinned specification revision, no pinned suite
 revision, no evidence bundle, and no human review of anything. WA-0, WA-1, WA-3 and WA-5 move to
 `In progress` on the strength of milestone-owned code that exists and runs; WA-2 owns code too and
 stays `Blocked`, because its blocker binds acceptance and publication rather than authorship.
@@ -133,11 +139,11 @@ like — publishing all three is what lets the other two be read when a row firs
 | Verdict | Milestone | State | Current evidence | Immediate evidence-producing action |
 |---|---|---|---|---|
 | [NONE] | **WA-0 — boundary, identity, assurance floor** | **In progress** | Milestone-owned work exists and no gate has been accepted. The profile project, the two never-advertised composition roots, the entry in the frozen project graph, this profile's own group in the component's rule register with a witness and a negative control for each rule, the family public-API baseline, the assurance annotations on every relevant unit, and the fifteen hard maxima and fifteen defaults with the three guest-load defaults written as large finite numbers all exist in the checkout. **No evidence bundle is retained and no gate clause is demonstrated**: nothing has been published or run on any runtime identifier, under trimming or under Native AOT, and the exit gate asks for exactly that. | Publish and run the two composition roots on a claimed runtime identifier under JIT, trimmed self-contained and Native AOT with trim and AOT warnings treated as errors, read the closure off the published output rather than asserting it, and retain the three tables as a bundle. Until that exists this row cannot move past `In progress`, and the licence obligation still has no owner and no co-signer recorded. |
-| [NONE] | **WA-1 — the whole contract loop on a slice module** | **In progress** | Milestone-owned work exists and no gate has been accepted. The full-arity descriptor, the seven core-facing types, the slice manifest identity, format version 1 as a bare module, this profile's own variable-length integer layer, the binary corpus encoder in a harness root and the execution-only composition root all exist; **the contract loop closes end to end** — a module is cataloged, verified, instantiated and invoked, and the harness root prints what each step answered. The entry-point encoding decision is taken and written down beside the code that implements it: length-prefixed, so an export name carrying the encoding's own separators resolves, with float literals as hexadecimal bit patterns so they round-trip exactly. | Retain the run as a bundle rather than as a console transcript, then produce each of the five verifier outcomes and each of the five execution-step kinds from a named case in that bundle, on every claimed runtime identifier under all three publish modes. The operand-stack bound is computed at validation and stored on the verified state, which is one gate clause held; the rest are not. |
+| [NONE] | **WA-1 — the whole contract loop on a slice module** | **In progress** | Milestone-owned work exists and no gate has been accepted. The slice manifest identity, the family's declaration carrying every row of the full-arity descriptor a root builds from it, the payloads and the allocation-meter adapter, this profile's own variable-length integer layer, the binary corpus encoder in a harness root and the execution composition root all exist; **the contract loop closes end to end** — a module is translated, and its artifact cataloged, verified, instantiated and invoked, and the harness root prints what each step answered. The entry-point encoding decision is taken and written down beside the code that implements it: length-prefixed, so an export name carrying the encoding's own separators resolves, with float literals as hexadecimal bit patterns so they round-trip exactly. *(Corrected 2026-09-26: this cell read "The full-arity descriptor, the seven core-facing types, the slice manifest identity, format version 1 as a bare module, ... and the execution-only composition root all exist", and its action cell read "The operand-stack bound is computed at validation and stored on the verified state, which is one gate clause held; the rest are not". The universal bytecode programme's milestone UBC-4 deleted the profile's descriptor, verifier, executor, verified-state marker and continuation, made the module the translator's input rather than the artifact, and left the execution root claiming no label. The validator still computes the operand-stack bound and nothing sizes anything from it: a universal bytecode unit declares its own operand height, which the translator writes and the core's walk checks. So the clause the action cell called held is held by nothing in this profile. The row's state and its mark are unchanged, because the programme moves no row of this ledger.)* | Retain the run as a bundle rather than as a console transcript, then produce each of the five verifier outcomes and each of the five execution-step kinds from a named case in that bundle, on every claimed runtime identifier under all three publish modes. |
 | [NONE] | **WA-2 — the decoder, the integer decision, the malformed corpus** | **Blocked** (the blocker binds acceptance and publication; milestone-owned work has begun and is recorded here) | Milestone-owned work exists and no gate has been accepted. The decoder covers the whole binary grammar this format version admits, with the section-order table written as a table rather than as an identifier comparison, its own signed and unsigned variable-length readers, the bound-before-use ordering re-derived, strict UTF-8 name validation, and custom sections read past. A malformed and invalid corpus lives in the harness root and every entry reproduces its recorded triple when that root is run. **What the exit gate asks for and does not have**: the corpus is not retained with a hash per entry, it is not replayed under three publish modes, the three tables are not compared, the specification revision is not pinned, and the correction this milestone owes the core's metering-split record has not been filed. | Pin the specification revision or record a named exclusion; retain the corpus with its hashes; replay it under JIT, trimmed and Native AOT; and file or confirm the metering-split correction with the core's architecture owner. **Under the MVP programme the named dependency blocks this row's acceptance and this component's publication, and does not block writing the code** ([WAC-29](roadmap.corrections.md#wac-29)); the code is written and the row stays where it is. |
 | [NONE] | **WA-3 — validation and the diagnostic registry** | **In progress** | Milestone-owned work exists and no gate has been accepted. Validation is the specification's single-pass algorithm over a value stack and a control stack with polymorphic unreachable code; decoding completes before validation begins at module granularity; implementation-limit refusals answer as resource exhaustion naming a dimension and a scope rather than as an invalid artifact; and every rejection carries a stable code and a byte position. **The registry is not published**: the codes exist in the source as a closed enumeration and there is no versioned registry document bound in both directions, so the gate clause asking for one is unmet. The nesting corpus at and beyond the structural-depth ceiling is not written, and no case yet fails when the two phases are fused. | Publish the versioned diagnostic-code registry and bind it in both directions; write the malformed-and-invalid case that fails when the phases are fused at module granularity; write the nesting corpus at and one level beyond the ceiling and run it under Native AOT on every claimed runtime identifier. |
 | [NONE] | **WA-4 — the oracle** | **Not started** | None. No suite pin, no script reader, no harness, no self-check fixture. | After WA-3, and in parallel with WA-5. This is the milestone whose value is lost by serialising it: the malformed and invalid families can be scored before any interpreter exists, and that is the main structural advantage this profile has. |
-| [NONE] | **WA-5 — value model, store, interpreter** | **In progress** | Milestone-owned work exists and no gate has been accepted. **The nine-row value, store and frame decision is taken and written down before the interpreter's first line**, each row with the alternative not taken: an untyped operand stack because validation already proved the types, a sixteen-byte slot reserving the vector width now, heap-allocated frames because a frame model on the CLR stack cannot later be moved to the heap without rewriting the interpreter, arguments popped from the caller's stack into the callee's locals, traps as a return code threaded through the dispatch loop rather than as a CLR exception, and one poll per the declared uncharged-work bound placed before the charge that would cross it rather than after a fixed instruction count. The interpreter runs the numeric surface for all four types, locals, globals, one linear memory with its loads, stores, size and growth, structured control flow with all four branch forms, direct calls and indirect calls; the store, its memories and its tables are allocated, charged and reported retained; instantiation evaluates global initialisers, applies element and data segments in order with each segment bounds-checked whole before any of it is written, and runs the start function. **What the exit gate asks for and does not have**: no evidence bundle, no call-depth default derived from a retained per-runtime-identifier frame-cost measurement, no memory-growth proportionality fixture with a flat-charge negative control, no structural scan proving that no mutable state is reachable from a handle, and one member of the closed trap list is declared and unreachable — the earlier specification revision's name for an out-of-bounds indirect call, which this build reports under the current revision's name. | Measure the native cost of one interpreter frame per claimed runtime identifier and derive the call-depth default from it; write the proportionality fixture and its unsimplified control; write the handle-immutability scan; and retain a bundle. The guest-observable growth refusal exists and is exercised, against **this profile's own** page ceiling — which is the route recorded as taken without a decision, and not a gate clause held. |
+| [NONE] | **WA-5 — value model, store, interpreter** | **In progress** | Milestone-owned work exists and no gate has been accepted. **The nine value, store and frame routes are recorded in this profile's decision series** as [WAD-0003](decisions/0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md), which states where each stands now that the universal bytecode executes this profile's modules — the numeric, reference and rooting rows carried over, the `LiveBytes`-breach row answered by a retention charged before the allocation, the call convention, frames, trap propagation and metering the universal bytecode's, and the sixteen-byte slot reversed — and the memory representation is [WAD-0001](decisions/0001-the-memory-representation.md)'s pinned array, reallocated on a successful growth. What executes a module is this profile's family under the universal bytecode's bytecode emitter: the numeric surface for all four types, locals, globals, one linear memory with its loads, stores, size and growth, structured control flow with all four branch forms, direct calls and indirect calls. The family's instance store charges each memory's and each table's allocation and retention, and each growth's, before it allocates, and releases what it retained on every failure the emitter answers, though not when the core drops an instantiation the emitter answered as complete *(corrected: WAC-43)*; instantiation evaluates global initialisers, applies element and data segments in order with each segment bounds-checked whole before any of it is written, and runs the start function. **What the exit gate asks for and does not have**: no evidence bundle, no fixtures or Native AOT representation probes beside WAD-0003's rows, no call-depth default derived from a retained per-runtime-identifier frame-cost measurement, no memory-growth proportionality fixture with a flat-charge negative control, no structural scan proving that no mutable state is reachable from a handle, and one member of the closed trap list is declared and unreachable — the earlier specification revision's name for an out-of-bounds indirect call, which this build reports under the current revision's name. *(Corrected 2026-09-26: this cell read "**The nine-row value, store and frame decision is taken and written down before the interpreter's first line**, each row with the alternative not taken: an untyped operand stack ..., a sixteen-byte slot reserving the vector width now, heap-allocated frames ...", and "The interpreter runs the numeric surface ...; the store, its memories and its tables are allocated, charged and reported retained". The universal bytecode programme's milestone UBC-4 deleted the interpreter and its value slot on 2026-09-25, moved the nine routes from the slot's source remarks into WAD-0003, and replaced the store's report after allocation with a charge before it. The row's state and its mark are unchanged, because the programme moves no row of this ledger.)* | Measure the native cost of one frame of the bytecode emitter per claimed runtime identifier and derive the call-depth default from it; write the proportionality fixture and its unsimplified control; write the handle-immutability scan; and retain a bundle. The guest-observable growth refusal exists and is exercised, against **this profile's own** page ceiling — which is the route recorded as taken without a decision, and not a gate clause held. |
 | [NONE] | **WA-6 — linking, host imports, the store decision** | **Not started** | None. The store reading of roadmap [section 11](roadmap.md#11-the-store-instances-and-linking) is **open**, with three candidates and one already rejected. | Open the store decision now — it needs no code either — and cost the naming channel for the runtime-scoped reading, because that is the part with no contract member behind it. |
 | [NONE] | **WA-7 — `core1` complete and the embedding seam** | **Not started** | None. No manifest is minted, no seam exists. | After WA-6. |
 | [NONE] | **WA-8 — the second standardised group and the vector family** | **Not started** | None. No manifest is minted, and roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s allocation table is the authority for which milestone mints which *(corrected 2026-09-07: this cell read "No manifest beyond the slice is planned to exist before this point", which already contradicted that table's own earliest-milestone column — `broiler.webassembly.core1` opens at WA-6 — and contradicts it further now that `broiler.webassembly.numeric1` is allocated to WA-5. It is recorded as a correction rather than silently rewritten, because a cell that disagrees with the table it summarises is exactly the failure this ledger exists to prevent, and **a reader who skips the table quotes the cell**)*. | After WA-7. This is the first point at which a second validator exists to compare, so this milestone supplies **this profile's half** of the extraction-gate comparison of roadmap [section 25](roadmap.gates.md#25-risks-and-stop-conditions) — file paths, source revision, correspondence table — and records that it supplied it, or records that the first condition is unsatisfied. **It records no verdict**: that is the core architecture owner's and can only be filed in the core's own set. |
@@ -160,17 +166,27 @@ numeric types and their conversions, locals and globals, one linear memory with 
 size and growth, `block`, `loop`, `if`/`else`, `br`, `br_if` and `br_table`, direct calls, recursion,
 indirect calls through a table filled by an element segment, a start function, and the trap list.
 Its output is a console transcript and **not** a retained bundle, and this ledger states no figure
-from it.
+from it. *(Corrected 2026-09-26: two phrases of this paragraph are false since the universal bytecode
+programme's milestone UBC-4 — "whose Broiler-owned reference set is the two core assemblies and
+nothing else", which now also holds `Broiler.VM.Ubc`, and "a value slot, a store with memories,
+tables and globals, an interpreter", whose types were deleted. The paragraph added below on the same
+date says what took their place, and the lifecycle the harness root demonstrates now begins with a
+translation.)*
 
-**Three things about that surface are worth stating in the direction that costs.** The interpreter's
-frames are heap-allocated, so guest call depth never grows the CLR stack and the only thing bounding
-recursion is the call-depth charge — which means an exhausted call depth is a resource exhaustion
-naming a dimension, and a process that stopped would be a defect rather than a limit. `Resume`
-answers the named invalid-state refusal because nothing here parks, and `Unwind` releases a store
-and runs no guest code — but no path in this build mints a continuation, so that release arm is
-written and unreached. And one member of the closed trap list, the earlier specification revision's
-name for an out-of-bounds indirect call, is declared and never raised, because this build reports
-that case under the current revision's name.
+**Three things about that surface are worth stating in the direction that costs.** The frames a
+module runs in are the universal bytecode's, heap-allocated and owned by the operation, so guest call
+depth never grows the CLR stack and the only thing bounding recursion is the call-depth charge —
+which means an exhausted call depth is a resource exhaustion naming a dimension, and a process that
+stopped would be a defect rather than a limit. Nothing here parks, so no step produces a suspension
+for a resume to take, and the continuation, resume and unwind are the bytecode emitter's; this
+profile implements none of them. And one member of the closed trap list, the earlier specification
+revision's name for an out-of-bounds indirect call, is declared and never raised, because this build
+reports that case under the current revision's name. *(Corrected 2026-09-26: the first two sentences
+read "The interpreter's frames are heap-allocated, so guest call depth never grows the CLR stack ..."
+and "`Resume` answers the named invalid-state refusal because nothing here parks, and `Unwind`
+releases a store and runs no guest code — but no path in this build mints a continuation, so that
+release arm is written and unreached". The interpreter, the executor and the continuation they
+describe were deleted at the universal bytecode programme's milestone UBC-4.)*
 
 **One directory in this component is named like a bundle and is not one, and a reader meets it before
 they meet this sentence otherwise** *(added 2026-09-07)*.
@@ -192,6 +208,13 @@ reference set is the two core assemblies and nothing else, and neither those two
 own sources name any of the platform's reserve, protect or map entry points. **`none` there is a claim
 of incapability and not of restraint**, which is what that column requires, and it is worth stating in
 this ledger because the sibling profile's five rows changed to an architecture on the same day.
+*(Corrected 2026-09-26: "This profile's Broiler-owned reference set is the two core assemblies and
+nothing else" stopped being true at the universal bytecode programme's milestone UBC-4, when the set
+gained `Broiler.VM.Ubc` and the roots gained it and `Broiler.VM.Emitter.Bytecode` as siblings. The
+claim of incapability still holds, now over the set as it is: neither universal bytecode assembly,
+and no source of this profile's, names any of those entry points, and the memory representation
+[WAD-0001](decisions/0001-the-memory-representation.md) chose is a pinned managed array rather than a
+reserved range.)*
 
 **The memory-growth route recorded above as taken without a decision is now code.** Growth is gated
 first on this profile's own declared page ceiling, which is not a core budget and refuses nothing on
@@ -202,25 +225,74 @@ exhaustion and the core rewrites the completed step, so the module never runs th
 the growth. That remains a deviation from what the specification says the growth instruction
 answers, it is written into the code that implements it, and **publishing it in a support table is
 WA-10's release decision and not WA-5's** ([WAC-16](roadmap.corrections.md#wac-16),
-[WAC-28](roadmap.corrections.md#wac-28)). Nothing here publishes it.
+[WAC-28](roadmap.corrections.md#wac-28)). Nothing here publishes it. *(Corrected 2026-09-26: "the
+charge latches exhaustion and the core rewrites the completed step" describes the store the universal
+bytecode programme's milestone UBC-4 deleted. The family's store charges a growth's allocation and
+its retention before it allocates, so a growth a core budget refuses is never observed as a success:
+the family ends the step at the growth, and the core answers with the exhaustion or cancellation the
+meter latched. The module no longer runs the instruction after the growth, where the base's
+interpreter pushed the minus one of a refused fuel or allocation charge and ran on until the core
+rewrote the completed step *(corrected: WAC-43)*; the refusal is still not guest-observable, and the
+deviation and its owner are unchanged.)*
+
+**The universal bytecode programme's milestone UBC-4 changed what runs a module, and this ledger
+records what it left in the tree** *(added 2026-09-26)*. Observed repository state in section 1's
+sense, like the paragraphs above. The profile now holds a **translator**, `WasmTranslator` and its
+lowering, which decodes and validates a module with this profile's own decoder and validator and
+lowers it into a universal bytecode artifact; and an **instruction family** for that bytecode,
+`WasmFamily`, with its table `WasmFamilyTable` selected by `broiler.webassembly.slice`, the codec of
+the module definitions it writes into the artifact's family data, the verifier hook
+`WasmFamilyVerifier` the core calls inside its own verification, the instance store holding a memory,
+a table and globals as [WAD-0001](decisions/0001-the-memory-representation.md) decides, and the
+reference arms the programme's differential check compares the universal bytecode's primitive table
+against. Its Broiler-owned reference set is the two core assemblies and `Broiler.VM.Ubc`, which rule
+W1 asserts. **The profile's own descriptor, verifier, executor, interpreter and value slot are
+deleted, with the store, instance and continuation types they used**: the WebAssembly execution and
+harness roots and the polyglot command-line root each translate a module and hand the core the
+artifact, under a descriptor each builds with `UbcDescriptors.Build` from the family's registration
+and declaration over the bytecode emitter, `Broiler.VM.Emitter.Bytecode`, which executes it. The
+decision series exists at [`decisions/`](decisions/README.md), holding the memory representation
+(WAD-0001), the recorded absence of a second manifest (WAD-0002) and the nine value, store and frame
+routes (WAD-0003). The diagnostic registry gained the family hook's codes 2851 to 2860 and the
+translation's limit codes 2871 to 2874 — 2875 was minted and withdrawn before release, and its number
+is unused — and codes 2003 and 2004 are now emitted by nothing. The float comparisons the harness's
+execution lane failed on now answer the specification's values, because the universal bytecode
+executes them from its primitive table, and the reference arms that routed them to the integer arm
+are corrected. And route MVP-15 — the module as source — is recorded in
+[the MVP programme record](../../../docs/mvp.md) as taken without a decision, beside the three
+routes section 2 names below.
+
+**None of it moves a row here, and none of it is this profile's evidence.** The programme's own rule
+is that no other ledger's row moves because of it, and update rule 6 keeps its bundles — `ubc-4-001`
+and `ubc-4-002`, under the component's `docs/evidence/` and judged under the component's legend —
+out of this ledger's evidence column, so every row above keeps its state and its `[NONE]`. The
+programme's state is [its own ledger](../../../docs/universal-bytecode.status.md)'s. The plan's gates
+are now read through roadmap corrections [WAC-30](roadmap.corrections.md#wac-30) to
+[WAC-41](roadmap.corrections.md#wac-41) and [WAC-43](roadmap.corrections.md#wac-43) *(corrected: WAC-43)*, which narrow no clause, and no row here held evidence for
+update rule 5 to re-evaluate.
 
 ### What this component is not claiming
 
 Stated positively, because a table of empty rows invites a reader to fill them in:
 
-- **No WebAssembly is supported.** One feature manifest identity is allocated in the descriptor
-  and nothing has scored it: the specification's own conformance suite is not pinned, no harness
-  reads it, and a run against modules this component wrote is not a conformance result. A
-  specification version name would not be a conformance claim either.
+- **No WebAssembly is supported.** One feature manifest identity is allocated in the family's table
+  and declaration, and nothing has scored it: the specification's own conformance suite is not
+  pinned, no harness reads it, and a run against modules this component wrote is not a conformance
+  result. A specification version name would not be a conformance claim either. *(Corrected
+  2026-09-26: the first sentence read "allocated in the descriptor", which the universal bytecode
+  programme's milestone UBC-4 deleted.)*
 - **The admitted surface is wider than the manifest that names it, and that is a defect this ledger
   records rather than a scope note.** Roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)
   defines `broiler.webassembly.slice` as one type, one function, one export, integer arithmetic,
   local access and structured control flow — no memory, no table, no global and no float. The
-  decoder, the validator and the interpreter admit more than that under the same manifest identity,
-  so a module declaring the slice manifest and using a float is accepted here where section 6 says
-  it must be refused at validation. **A manifest is refused and not degraded**, and per-manifest
-  surface restriction is not implemented; the milestone that mints a second manifest owns closing
-  it.
+  decoder, the validator, the translator and the family's table admit more than that under the same
+  manifest identity, so a module declaring the slice manifest and using a float is accepted here
+  where section 6 says it must be refused at validation. **A manifest is refused and not degraded**,
+  and per-manifest surface restriction is not implemented; the milestone that mints a second manifest
+  owns closing it, and [WAD-0002](decisions/0002-the-family-table-stays-under-the-slice-identity.md)
+  records that milestone UBC-4 kept the one table under the slice identity rather than minting that
+  manifest. *(Corrected 2026-09-26: the fourth sentence read "The decoder, the validator and the
+  interpreter admit more than that", and the interpreter it named was deleted at that milestone.)*
 - **No composition is advertised**, none is packable, and no runtime identifier is claimed.
 - **No conformance result exists.** Neither the specification nor the suite is pinned, and the
   harness is not built. No family total exists, and no aggregate percentage will ever be published
@@ -251,7 +323,11 @@ loads and stores, structured control flow, `call`, `call_indirect`, and the clos
 is the delivery order's own and the MVP reorders nothing: WA-0 lands no product code, WA-1 closes
 the contract loop on the slice manifest, WA-2 completes the decoder, WA-3 completes validation and
 publishes the diagnostic registry, and WA-5 takes the value and frame decision before its first
-interpreter line and then writes the interpreter.
+interpreter line and then writes the interpreter. *(Corrected 2026-09-26: the path's last step no
+longer describes the tree. The interpreter was written under routes, and the universal bytecode
+programme's milestone UBC-4 deleted it; the routes are recorded in WAD-0003, and what executes a
+module is this profile's family under the universal bytecode's bytecode emitter. The path's order and
+its end are unchanged.)*
 
 **WA-4 is not on the path, and it is not deferred either — it is unschedulable.** Its first input
 is a conformance suite revision nobody has retrieved, which section 3 records as an unopened
@@ -293,7 +369,13 @@ MVP however long the MVP runs:**
   [section 14](roadmap.md#14-suspension-threads-and-what-this-profile-does-not-declare) gives,
   which is not scope.
 - **No second execution arm, no IL emission, no code generator, and no tiering.** The MVP has one
-  interpreter and no promotion path, and there is no tier for a promotion to reach.
+  interpreter and no promotion path, and there is no tier for a promotion to reach. *(Corrected
+  2026-09-26: "The MVP has one interpreter" is false since the universal bytecode programme's
+  milestone UBC-4. This profile has no interpreter of its own; its modules run on the universal
+  bytecode's bytecode emitter, a loop every family shares, and the profile's translator lowers a
+  module into that bytecode rather than into code. Nothing emits IL, no native form runs a module of
+  this profile's — that is the programme's milestone UBC-6b — and there is still no tier for a
+  promotion to reach.)*
 - **No persistence and no code cache.** Roadmap
   [section 18](roadmap.md#18-persistence-and-the-code-cache) names the key and delivers nothing,
   and the MVP delivers nothing of it either.
@@ -369,7 +451,14 @@ be reversed without a correction entry, which is the cost rather than the conven
 built on one is work that may have to be unbuilt. They are recorded because a route nobody wrote
 down is an invisible branch, and an invisible branch in a component nobody has reviewed is one
 nobody would ever find. **Two of the three are now code** — the memory-growth route and the
-entry-point encoding — and being code makes neither of them a decision.
+entry-point encoding — and being code makes neither of them a decision. *(Corrected 2026-09-26: the
+sixteen-byte slot of MVP-2 was code too, and is not now. The universal bytecode programme's milestone
+UBC-4 deleted it with the interpreter; a value is an eight-byte word of the universal bytecode's word
+plane, and [WAD-0003](decisions/0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md)
+records the slot's row as reversed rather than settled, the vector width being a question for that
+bytecode's next format version. The same milestone took a fourth route, MVP-15 — the module as
+source, which the paragraph under What now exists names — and it is code as well, and no more a
+decision than the others.)*
 
 ---
 

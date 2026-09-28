@@ -5,8 +5,10 @@
     <AssemblyName>Broiler.VM.Emitter.Bytecode</AssemblyName>
     <Description>The universal bytecode's bytecode emitter: an emitting half that emits nothing, and an executing half that interprets verified universal bytecode in one dispatch loop generic over the family. It names no family and no language; a family's handlers reach it through the contracts of Broiler.VM.Ubc.</Description>
 
-    <!-- The programme's milestone UBC-2: not packable during the MVP, like Broiler.VM.Ubc. -->
-    <IsPackable>false</IsPackable>
+    <!-- A package since milestone UBC-4, with Broiler.VM.Ubc: decision UBC-D-5, taken early, makes
+         both packable, because a composition that runs a packaged family names this emitter. It
+         packs under its assembly name and declares no PackageId. -->
+    <IsPackable>true</IsPackable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>

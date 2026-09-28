@@ -148,11 +148,14 @@ internal struct WasmControlFrame
 /// <para>
 /// <b>Two bounds are computed here because they cannot honestly be read anywhere else.</b> The
 /// deepest the operand stack goes and the deepest the control stack goes are high-water marks over
-/// a walk that has to happen anyway, and they are stored on the function body so that an
-/// interpreter sizes its stacks from a number this pass computed rather than from a number the
-/// payload chose. The jump targets are the same argument: this pass already knows, at every
-/// <c>end</c>, which opening instruction it closes, so the pairing is recorded and no interpreter
-/// ever scans forward for a matching <c>end</c>.
+/// a walk that has to happen anyway, and they are stored on the function body. The bare-module
+/// interpreter sized its stacks from them rather than from a number the payload chose; since
+/// milestone UBC-4 retired it nothing sizes anything from them, and they are still computed because
+/// computing them costs this walk nothing it does not already charge, and
+/// <see cref="WasmModule.ExecutionBoundsComputed"/> reads them as the proof that validation reached
+/// every body. The jump targets are the same argument: this pass already knows, at every
+/// <c>end</c>, which opening instruction it closes, so the pairing is recorded and the translator's
+/// lowering never scans forward for a matching <c>end</c>.
 /// </para>
 /// <para>
 /// <b>Nesting is charged as a high-water mark and released, and the loop is iterative.</b> A level
@@ -166,11 +169,13 @@ internal struct WasmControlFrame
 /// not ceremony: it is what charges the verifier-work allowance for this second walk over the code,
 /// keeps the cancellation poll on its declared cadence, and lets the variable-length immediates be
 /// read by <see cref="WasmLeb128"/> rather than by a second copy of the acceptance rule written for
-/// a span.
+/// a span. The reader polls at the rest of the uncharged-work bound after one read window, as the
+/// decoder's does, and the widest read here is an eight-byte constant, so a read begun just short of
+/// a poll still ends inside the bound.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=Specification; IP=Low; Security=Critical; Resources=8; Fingerprint=566927
-// Broiler-Falsified-If: a pop at a frame's own height answers the bottom type while the frame is not unreachable, or a module reaches an interpreter with an index, an opcode, a block or an operand stack this pass did not check
+// Broiler-Falsified-If: a pop at a frame's own height answers the bottom type while the frame is not unreachable, or a module reaches the translator with an index, an opcode, a block or an operand stack this pass did not check
 // Broiler-Human:        PENDING
 internal ref struct WasmValidator
 {
@@ -218,6 +223,7 @@ internal ref struct WasmValidator
     // Broiler-Human:        PENDING
     private readonly WasmReadAdapter adapter;
 
+    /// <summary>The poll granularity every body's reader is built with; see the constructor.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A92AB3
     // Broiler-Human:        PENDING
     private readonly ulong pollGranularity;
@@ -323,14 +329,20 @@ internal ref struct WasmValidator
     private int itemOrdinal;
 
     /// <summary>Builds a validator over one decoded module, under the ceilings decoding ran under.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=E88F05
-    // Broiler-Falsified-If: any field is left uninitialised, so a failed validation reads a buffer nothing filled
+    /// <remarks>
+    /// <paramref name="granularity"/> is the uncharged-work bound, and the readers this pass opens are
+    /// not handed it as it is. A reader polls once its unpolled work has reached its granularity, so
+    /// at the whole bound an eight-byte constant begun one unit short of a poll ended seven units past
+    /// the bound; at the rest of the bound after one read window it ends inside it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=3AA443
+    // Broiler-Falsified-If: any field is left uninitialised, so a failed validation reads a buffer nothing filled, or a body's reader is built polling at the whole bound rather than at the rest of it after one read window
     // Broiler-Human:        PENDING
     internal WasmValidator(WasmModule decoded, WasmReadAdapter meter, ulong granularity)
     {
         module = decoded;
         adapter = meter;
-        pollGranularity = granularity;
+        pollGranularity = WasmReadAdapter.ReaderPollGranularity(granularity);
         reader = default;
         refusal = default;
         parameters = default;
@@ -761,7 +773,7 @@ internal ref struct WasmValidator
     // =============================================================================================
 
     /// <summary>
-    /// Walks one function body once, type-checking it and computing what an interpreter will need.
+    /// Walks one function body once, type-checking it and computing its bounds and its jump targets.
     /// </summary>
     /// <remarks>
     /// The outermost control frame is the function itself: a block whose label types are the
@@ -1380,7 +1392,7 @@ internal ref struct WasmValidator
     /// a question with no answer.
     /// </remarks>
     // Broiler-AI:           Origin=Specification; IP=Low; Security=Critical; Resources=3; Fingerprint=3B8775
-    // Broiler-Falsified-If: an alignment above the natural alignment of the access reaches an interpreter, or a store pops its address before its value
+    // Broiler-Falsified-If: an alignment above the natural alignment of the access reaches the translator, or a store pops its address before its value
     // Broiler-Human:        PENDING
     private bool? TryMemoryAccess(byte opcode)
     {

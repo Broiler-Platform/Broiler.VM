@@ -1,0 +1,2 @@
+# the harness's catalog and a whole run, compared line for line across the modes
+# jit, trimmed and aot print the same lines: yes

@@ -1,0 +1,47 @@
+{
+  "bundle": "ubc-4-003",
+  "milestone": "UBC-4",
+  "evidence-class": "differential-check-and-publish-and-run",
+  "collected-at": "83593baa713adacd74066c277e81d747b35f0d16",
+  "worktree-clean": true,
+  "hash-method": "sources: git blob id at source-revision; inputs and retained files: sha256 of the LF bytes git stores",
+  "note": "Clause 3's second half for the region rows of milestone UBC-4: the harness's --regions lane holding the profile's own memory arms to the table's region primitive over the retained region input corpus, in three publish modes, with a negative control failing and reverted; the fixture corpus replayed; the architecture suite",
+  "source-revision": "83593baa713adacd74066c277e81d747b35f0d16",
+  "sources": {
+    "src/Broiler.VM.Profile.WebAssembly/WasmFamilyTable.cs": "96f2db96a9bdb926cca8287861e9f3399a55ebcd",
+    "src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs": "7a91527b0978828406dd498200c04ecf8c43c906",
+    "src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs": "3de19b1e9e4f80fa3aa1006b32a5a3ba54128447",
+    "src/Broiler.VM.Ubc/UbcPrimitives.cs": "4b110379f23f070e08b721600af4a0bce7fc5942",
+    "src/compositions/Broiler.VM.Composition.Ubc.Fixture/FixtureCorpus.cs": "4eb553328ff27954daab8a2ce9ace705e1a8b3a0",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/PrimitiveDifferential.cs": "b5c6149411a77aff7dfb1693b97d4ac17128f442",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Program.cs": "485fcdb1b88e1ef28a7ab1ff8d5948cbeb7e0f41",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/RegionDifferential.cs": "feaff3df011bf86e86e2f4406f261a933dce8998"
+  },
+  "inputs": {
+    "artifacts/publish-ubc4-003-harness-aot/Broiler.VM.Composition.WebAssembly.Harness": "9a94a30d97256f8a34c4f82927dcee07b664434fa066b21099960c87b7355cfd",
+    "artifacts/publish-ubc4-003-harness-trimmed/Broiler.VM.Abstractions.dll": "d406b1d55bdf1db47e3204cb7684c80b450472aff5af4a0fcbd48bc0c921bd74",
+    "artifacts/publish-ubc4-003-harness-trimmed/Broiler.VM.Binary.dll": "b7011f931515f78e0f5da2038c31f92f633e4792af1ad5e57233f62e9c8727df",
+    "artifacts/publish-ubc4-003-harness-trimmed/Broiler.VM.Composition.WebAssembly.Harness.dll": "8097ef81761d0668a23c3e5b2390621698cc9a37a7a2ef55fdcf608d9e75b60a",
+    "artifacts/publish-ubc4-003-harness-trimmed/Broiler.VM.Emitter.Bytecode.dll": "a3569be3e6f5bb677f5f054eb3d2a391618a6ab21a301af4dfd900f9384ddb94",
+    "artifacts/publish-ubc4-003-harness-trimmed/Broiler.VM.Profile.WebAssembly.dll": "c81adf2f516c512709699ce82c98e14f3abeed725227381f88c1526cd2d1a421",
+    "artifacts/publish-ubc4-003-harness-trimmed/Broiler.VM.Runtime.dll": "4020de22f32669f5a03a61dbbb9e3710d507e75464845f1daa7e50fc0d30f4dc",
+    "artifacts/publish-ubc4-003-harness-trimmed/Broiler.VM.Ubc.dll": "76eccb03d5869c4bb6a76166815c2660c77806ce0bad8c16e39b4639dcc3ca37",
+    "src/tests/corpus/ubc-2/corpus.manifest": "ea91d2d6f2cf35785bb04dfc9ae197ebb46290afdca3b5ca848b74195632d85e",
+    "src/tests/corpus/ubc-2/primitives.txt": "6cb0e4c319f4c3b7c56f586c67da37a85ff4ffdbf5d98b56f77df0a613583985",
+    "src/tests/corpus/ubc-2/regions.txt": "476aae0861255f68536252f0757f36a45c1067492e04e90bd6b127a0524a154f"
+  },
+  "retained": {
+    "README.md": "9ef57082e8f60a26cca3056ea936215c91c2b877f68bba5346f8a2c2eed93d41",
+    "architecture-tests.log": "ab913fdabdb2813c0bade2250d788e64d2a8beaf29c032e7e91d1a6dd2433bb8",
+    "build.log": "02b6129fb42608b1ee0227a0c2098dadd6abd9d34f36c166feb2a76c0e4663a0",
+    "collect.py": "2d30b936a7dc51de1406178f65940a732e02a0301fdd07b80a00eaa9ebdd4c44",
+    "control-failing.log": "30ec367b037ce0643c6bc8d863ff40be4da4e17d9da16110559a85ecb2644b7a",
+    "control.patch": "9097847e9ff76e48a711272a343cbf5cf499e6b1caef12c432ab503819acedd6",
+    "fixture-corpus.log": "20ee1148c319b8025c432af53d450d0b63743ef8ac65248bb4b781668e5daf8f",
+    "harness-modes.log": "a45cb15397f3e86d7bdb7786b338135912032428dea191e73faabe4075579d6b",
+    "publish.log": "aa88aa0f0a1abd1e33c96b68e6722cf5d8f442667edf7d7bdcfa9dbf625a632e",
+    "run-harness-aot.log": "1cc47938ba015cd5c5601205e314a66e074afc5ccec0d950af4c55f75c69159a",
+    "run-harness-jit.log": "efbbf9cc3646bff082558efcf62591fe50605505e8f8d6db4ecd3fe19cb57cbf",
+    "run-harness-trimmed.log": "32fa0f36156094786c88d05bb03d5c828a8896d49c9bd0b61093c83ef1b20e69"
+  }
+}

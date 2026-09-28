@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   2
-// Annotated:        2/2
-// Exempt:           14
-// Human-reviewed:   0/2
+// Relevant units:   1
+// Annotated:        1/1
+// Exempt:           9
+// Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  1/10 max
-// Unverified:       2
+// Unverified:       1
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -22,11 +22,11 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>A TRAP IS A VALUE AND NEVER AN EXCEPTION.</b> Every member here leaves the interpreter as a
-/// return code threaded through the dispatch loop, is carried out of the executor inside
-/// <see cref="WebAssemblyTrap"/>, and reaches the caller behind the core's profile-fault outcome.
-/// Nothing derived from a CLR exception type crosses the boundary, and no member of this list is
-/// raised by throwing.
+/// <b>A TRAP IS A VALUE AND NEVER AN EXCEPTION.</b> Every member here is the family trap code of the
+/// same value: a primitive or the family's handler answers it as a status through the universal
+/// bytecode's dispatch loop, the family turns it into <see cref="WebAssemblyTrap"/> at the loop's
+/// boundary, and it reaches the caller behind the core's profile-fault outcome. Nothing derived from
+/// a CLR exception type crosses the boundary, and no member of this list is raised by throwing.
 /// </para>
 /// <para>
 /// <b>The list is the specification's and not this build's, so it carries a member this build does
@@ -84,40 +84,4 @@ public enum WasmTrapKind
 
     /// <summary>An indirect call reached a table entry holding a null reference.</summary>
     UninitializedElement = 9,
-}
-
-/// <summary>
-/// What one run of the interpreter ended as, kept apart from the trap kind so that the trap list
-/// stays exactly the specification's.
-/// </summary>
-/// <remarks>
-/// The list has no member for a successful trap, because a trap is not a status: a run that trapped
-/// answers <see cref="Trapped"/> and the trap kind travels beside it. Adding a <c>None</c> member to
-/// <see cref="WasmTrapKind"/> to carry that would have widened a closed specification list with an
-/// implementation's bookkeeping.
-/// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5F82C8
-// Broiler-Human:        PENDING
-internal enum WasmRunStatus
-{
-    /// <summary>The entry function returned, and its results are on the operand stack.</summary>
-    Completed = 0,
-
-    /// <summary>A trap was raised, and the interpreter carries which one and where.</summary>
-    Trapped = 1,
-
-    /// <summary>
-    /// A charge was refused. The meter has latched the refusal, so the core rewrites the step
-    /// whatever this executor answers with.
-    /// </summary>
-    Exhausted = 2,
-
-    /// <summary>A poll observed cancellation.</summary>
-    Cancelled = 3,
-
-    /// <summary>
-    /// The interpreter disagreed with what validation proved. This is a defect in this assembly and
-    /// is reported as one rather than as anything an artifact did.
-    /// </summary>
-    Defect = 4,
 }

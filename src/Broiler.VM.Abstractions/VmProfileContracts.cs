@@ -505,6 +505,20 @@ public interface IVmProfileExecutor
         System.Threading.CancellationToken cancellationToken);
 
     /// <summary>Resumes a parked step from its continuation.</summary>
+    /// <remarks>
+    /// <para>
+    /// For a parked invocation, <paramref name="state"/> is the instance's own state and a step
+    /// that finishes answers <see cref="VmExecutionStep.Completed"/>.
+    /// </para>
+    /// <para>
+    /// For an asynchronous instantiation that parked, no instance state exists yet:
+    /// <paramref name="state"/> is a core placeholder with nothing in it, and the profile's partial
+    /// state is whatever its continuation carries. A step that finishes the instantiation answers
+    /// <see cref="VmExecutionStep.Instantiated"/> with the instance's state, which the instance
+    /// runs against from then on. <c>Completed</c> is a contract violation there: it finishes the
+    /// instantiation without an instance, so nothing is published.
+    /// </para>
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F0E5BB
     // Broiler-Human:        PENDING
     VmExecutionStep Resume(

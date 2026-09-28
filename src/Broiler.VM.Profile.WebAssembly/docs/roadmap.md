@@ -4,10 +4,10 @@
 
 **[The evidence ledger](roadmap.status.md) is the authority for what has been accepted, and this
 document transcribes none of it.** What this plan states about the present is only what no
-milestone can change without changing the ledger in the same breath — **no line of this profile has
-been written**: no source tree, no descriptor, no decoder, no pinned specification revision, no
-pinned suite revision, and no evidence bundle. No milestone is complete because its design appears
-here.
+milestone can change without changing the ledger in the same breath — **no milestone of this profile
+is accepted, no specification or suite revision is pinned, and no evidence bundle of this profile's
+own is retained** *(corrected: WAC-42)*. What exists in the tree, the ledger records. No milestone
+is complete because its design appears here.
 
 **Where it lives.** This profile is a family of product projects **inside the `Broiler.VM`
 component**, at `src/Broiler.VM.Profile.WebAssembly/`, and not a component with its own repository:
@@ -15,16 +15,33 @@ the core's topology record rules that a language profile is a set of product pro
 component rather than a component of its own, and names this path. Three mechanisms are therefore
 the host component's, adopted rather than duplicated — the assurance system, the architecture rule
 register, and the licence and notice files. What this profile stands up inside them is a rule group
-of its own, which WA-0 writes and which no register holds today. **What is not shared is
+of its own, which WA-0 writes, and whether the register holds it is the ledger's to say
+*(corrected: WAC-42)*. **What is not shared is
 evidence**: every gate here is closed by this profile's own bundles, no result from another
 component is cited, and the ledgers stay apart. Where the text below says "this
 component", read "this profile" *(corrected: WAC-08)*.
 
-`Broiler.VM.Profile.WebAssembly` is a **language profile**: one artifact format, one decoder, one
-validator, one store and instance model, one interpreter, one linker, one set of host imports, and
-one conformance harness, compiled into a product by a composition root that names its descriptor
-directly. It is not an execution core and owns none of the mechanism the core owns. It references
-exactly two core assemblies and nothing else Broiler-owned, and no core milestone waits for it.
+`Broiler.VM.Profile.WebAssembly` is a **language profile**: one source format, one decoder, one
+validator, one translator into the universal bytecode, one instruction family for that bytecode with
+its store and instance model, one linker, one set of host imports, and one conformance harness,
+compiled into a product by a composition root that builds the profile's descriptor from the family's
+registration and declaration. It is not an execution core and owns none of the mechanism the core
+owns, and **it has no interpreter of its own**: the universal bytecode's bytecode emitter executes its
+family *(corrected: WAC-31, WAC-36)*. It references the two core assemblies and the universal
+bytecode's `Broiler.VM.Ubc`, and nothing else Broiler-owned *(corrected: WAC-33)*, and no core
+milestone waits for it.
+
+**Since the universal bytecode programme's milestone UBC-4, five terms in the chapters below name
+different things, and every chapter is read with them.** Where the plan says *the verifier* or
+*verification* of a module, read the translator's decoding and validation, which a composition root
+runs, followed by the core's verification of the universal bytecode artifact with this profile's
+family hook. Where it says *the executor* or *the interpreter*, read this profile's family — its
+instruction table, handlers and store — executed by the universal bytecode's bytecode emitter. *The
+descriptor* is the descriptor a root builds from the family's registration and declaration. *The
+verified state* or *the verified module* is the universal bytecode's verified program, and the decoded
+module is the translator's intermediate. And *format version 1 as a bare module* is the universal
+bytecode's format version, with the module as the translator's input
+*(corrected: WAC-31, WAC-32, WAC-34, WAC-36)*.
 
 This component differs from the other intended first profile in the one way that matters most to a
 plan: **it has no seed.** There is no existing Broiler WebAssembly engine to snapshot, no fork to
@@ -57,6 +74,7 @@ time rather than start to finish.
 | [`roadmap.gates.md`](roadmap.gates.md) | 19, 23–26 | The measurement rules, the test and evidence matrix, the release gates, the stop conditions, and the references. |
 | [`roadmap.status.md`](roadmap.status.md) | — | The evidence ledger. It, and not any file above, is the authority for what has been accepted. |
 | [`roadmap.corrections.md`](roadmap.corrections.md) | — | The corrections and rejections, `WAC-nn`. What an earlier reading of this plan said, what replaced it, when, and on whose authority — and every option this programme refuses. |
+| [`decisions/`](decisions/README.md) | — | This profile's own dated decisions, `WAD-nnnn`: a series beside the plan and not part of it, numbered apart from the core's records. Where the plan says a decision is taken, a record there is what taking it produced. |
 
 Four rules keep the split cheap and are not negotiable.
 
@@ -68,8 +86,8 @@ ledger, and they stay bare. **No count, inventory, or status the ledger already 
 transcribed into any of the three plan files** — the ledger's own update rule 10, applied to the
 documents a reader opens first. Two things are not transcription: a structural fact the plan itself
 fixes, such as how many dimensions the core's budget vocabulary has; and this file's opening
-statement that nothing has been built, which no milestone can change without changing the ledger in
-the same breath. And **a correction is never written inline**: where
+statement of what is not accepted, not pinned and not retained, which no milestone can change without
+changing the ledger in the same breath *(corrected: WAC-42)*. And **a correction is never written inline**: where
 the core changed, a sibling's dated finding settled something, or this document replaced its own
 earlier reading, the plan states the new reading in its own voice and
 [`roadmap.corrections.md`](roadmap.corrections.md) holds what it replaced. A section carries a bare
@@ -114,21 +132,21 @@ terms this component adds or narrows; where a term is the core's, that is said.
 
 | Term | Meaning in this roadmap |
 |---|---|
-| **This profile** | `Broiler.VM.Profile.WebAssembly`. One profile ID, one descriptor, one verifier, one executor factory, one payload-kind range. |
+| **This profile** | `Broiler.VM.Profile.WebAssembly`. One profile ID, one universal bytecode family — its registration and declaration, from which a composition root builds the descriptor — one translator, one payload-kind range *(corrected: WAC-36)*. |
 | **The core** | The Broiler.VM execution core: its three packable assemblies and the numbered core contract version they carry. Core-owned terms — verified artifact, verified handle, guest-initiated load, artifact-provider capability, external suspension, deployment composition, feature manifest, core contract version, operation-result envelope — keep their core meanings. |
 | **The specification** | The W3C WebAssembly core specification at one pinned, dated revision, together with its binary format, validation rules, execution semantics, and the appendices this profile implements against. A specification version name is never a conformance claim. |
 | **Feature manifest** | The core's term, with this profile's content: the exact WebAssembly surface accepted by one version of this profile, minted as a `VmFeatureManifestId` under this profile's own ID. **A specification version alone is never a conformance claim**, and neither is a manifest name; a manifest claims only what its own retained oracle run shows. |
 | **Manifest increment** | One further feature-manifest identity with a reviewed scope, its own corpus extension, and its own oracle run. An increment is not a milestone and closes none. This profile expects more increments than milestones, because the specification's own feature set is how its surface grows. |
-| **The format version** | This profile's own integer, in the core's sense: the shape of the payload the descriptor admits. **It does not track the specification version.** The binary format's own version field has been `1` across every published specification version, so a format version derived from it would never move; the language surface is carried by the feature manifest, which is its correct home. [Section 7](#7-the-artifact-the-decoder-and-one-disagreement-with-the-core) states what the format version does mean. |
-| **Decoding** | Turning payload bytes into a structural module. The specification's first phase. In this component it is the first half of one verification, never a separate public step. |
-| **Validation** | Type-checking a decoded module, including the single-pass algorithm over structured control flow. The specification's second phase. In this component it is the second half of the same verification. |
+| **The format version** | The core's integer for the shape of the payload a descriptor admits. **For this profile it is the universal bytecode's**, shared by every family and owned by none, because the payload the core verifies is the translator's artifact and the module is source *(corrected: WAC-34)*. **It does not track the specification version.** The binary format's own version field has been `1` across every published specification version, and this profile's decoder checks it; the language surface is carried by the feature manifest, which is its correct home. [Section 7](#7-the-artifact-the-decoder-and-one-disagreement-with-the-core) states what follows. |
+| **Decoding** | Turning a module's bytes into a structural module. The specification's first phase. In this component it is the first phase of one translation, which a composition root runs before the core verifies anything, and never a separate public step *(corrected: WAC-32)*. |
+| **Validation** | Type-checking a decoded module, including the single-pass algorithm over structured control flow. The specification's second phase. In this component it is the second phase of the same translation. |
 | **Linking** | Resolving a module's imports against a store and a host, and allocating its instance. The specification's third phase. In this component it happens at instantiation, and it is the one specification phase that is *not* verification. |
 | **The store** | The specification's term for the mutable state holding every allocated instance, memory, table, global, and tag. **Where the store lives relative to a core instance state is the single most consequential open question in this document**, because the core offers exactly one instantiation shape and WebAssembly linking needs several instances to share one store. [Section 11](#11-the-store-instances-and-linking) enumerates the three possible answers, rejects one, and names the milestone that chooses between the other two. |
 | **A trap** | The specification's term for a runtime abort. In this component a trap is a typed profile payload behind a profile fault. It is never a process failure, never a CLR exception crossing the core boundary, and never a core outcome category. |
 | **DET / FUL** | The specification's *own* profiles: `DET` is its deterministic profile, `FUL` its full one. **This is a word collision with the core's "profile" and it is not resolvable by renaming either.** Wherever this document says *profile* unqualified it means the core's sense; the specification's sense is always written `DET` or `FUL`, or spelled out as "the specification's deterministic profile". [Section 6](#6-feature-manifests-how-the-language-surface-is-admitted) records that this component implements `DET`, and why that is a refinement rather than a subset. |
 | **The oracle** | The specification's own conformance test suite, pinned at an immutable revision, run by this component's own harness, whose self-check proves that a failing test comes back as a failure before any shard is scored. |
 | **The ratchet** | The first per-assertion-family totals **admitted** for a manifest by the milestone that scores it. No later run of that manifest may regress against them. *Admitted* is deliberately not the ledger's `Accepted` *(corrected: WAC-19)*. |
-| **Deployment composition** | The core's term. [Section 16](#16-deployment-compositions-native-aot-and-the-browser-embedding) records that this profile mints exactly one label, and why another profile's three do not transfer to it. |
+| **Deployment composition** | The core's term. [Section 16](#16-deployment-compositions-native-aot-and-the-browser-embedding) records that this profile claims no label, because every image that runs a module carries its translator, and why another profile's three do not transfer to it *(corrected: WAC-39)*. |
 
 A release of this profile claims this profile: its accepted feature-manifest set, its accepted
 format-version range, the core contract version it is built against, the specification revision it
@@ -141,11 +159,14 @@ load failure, never a best-effort partial execution.
 
 This profile owns:
 
-- its artifact shape and format-version range, and its feature manifests;
+- its source format and its feature manifests *(corrected: WAC-34)*;
 - decoding, structural validation, type and stack validation over structured control flow, and
-  every profile-specific resource check, all of it inside the one verification entry point the
-  core provides;
-- its value, store, instance, frame, label, call, and trap model;
+  every profile-specific resource check, all of it inside the translator a composition root runs
+  before the core's one verification entry point *(corrected: WAC-32)*;
+- its translator into the universal bytecode, and its instruction family for that bytecode: the
+  table, the verifier hook the core calls inside its verification, the handlers, and the store;
+- its value, store and instance model, and the trap kinds its family maps — the frame, label, call
+  and trap-propagation model being the universal bytecode's *(corrected: WAC-35)*;
 - import resolution and export projection: the explicit linker, its failure taxonomy, and the
   aliasing and lifetime rules for memories, tables, globals, and tags shared across instances;
 - its typed normal-result and fault payloads and the projection accessors that expose them
@@ -165,7 +186,9 @@ algorithm across host ceilings, profile maxima, and artifact requests; the fifte
 dimensions and their metering; the lifecycle state machine, thread affinity, reentrancy,
 cancellation, and idempotent disposal; guest-initiated-load mediation and its bounds; external
 suspension; the profile-neutral operation-result envelopes; and the composition, trimming, and
-Native AOT gates for the core boundary.
+Native AOT gates for the core boundary. Beside the core, and not this profile's either, stand the
+universal bytecode's format, walk and dispatch loop, which this profile's family is written against
+*(corrected: WAC-31)*.
 
 **One core primitive is in scope only in part, and that is a finding rather than a preference.**
 The core's variable-length integer readers accept canonical encodings only; the specification
@@ -175,12 +198,16 @@ core's byte primitives instead of calling the core's `TryReadVarUInt32`.
 
 ### Non-goals
 
-- **A compiler.** This profile consumes artifacts that external toolchains already produce. There
-  is no Broiler WebAssembly compiler, no lowering assembly, and no compiler sibling — the core's
-  own roadmap says so — and [section 5](#5-package-boundaries-and-the-dependency-graph) records
-  what follows for the assembly graph. The format package that exists to keep a compiler and an
-  executor from depending on each other has nothing to separate here, and creating one anyway
-  would be an assembly created to shorten a file.
+- **A compiler.** This profile consumes modules that external toolchains already produce, and it
+  produces none. What it carries is a **translator**: inside the profile assembly, it lowers a
+  validated module into the universal bytecode, which is a lowering from one bytecode into another
+  and not a compiler of any source language or a compiler to native code — a native form for this
+  profile is the universal bytecode programme's milestone UBC-6b, not this plan's *(corrected:
+  WAC-30)*. There is no Broiler compiler to WebAssembly, no lowering assembly, and no compiler
+  sibling, and [section 5](#5-package-boundaries-and-the-dependency-graph) records what follows for
+  the assembly graph: the format a translator and an executor agree on is the universal bytecode's,
+  which is shared, so a format package of this profile's own would have nothing to separate, and
+  creating one anyway would be an assembly created to shorten a file.
 - **The text format, in any advertised composition.** The specification's text format exists in
   this component only as an ingestion path for the conformance corpus, which is distributed as
   scripts written in it. A scan asserts it appears in no package and in **no advertised
@@ -188,14 +215,19 @@ core's byte primitives instead of calling the core's `TryReadVarUInt32`.
   [section 5](#5-package-boundaries-and-the-dependency-graph) puts the harness in a root that
   publishes one of its own *(corrected: WAC-22)*. Its absence from the shipped image is the point;
   its presence in the harness is unavoidable.
-- **A second execution arm.** This profile has one interpreter. It emits no IL, builds no
-  expression tree, compiles no delegate, and contains no tiering path into dynamic code. There is
-  no bytecode-to-IL promotion, no deoptimization, and no on-stack replacement, because there is no
+- **A second execution arm.** This profile has **no interpreter of its own**: its modules run on the
+  universal bytecode's bytecode emitter, one dispatch loop shared with every family a composition
+  composes, over this profile's family *(corrected: WAC-31)*. Nothing in this profile emits IL,
+  builds an expression tree, compiles a delegate, or contains a tiering path into dynamic code, and
+  no native form executes its modules — that is the programme's milestone UBC-6b. There is no
+  bytecode-to-IL promotion, no deoptimization, and no on-stack replacement, because there is no
   second tier for any of them to reach. A product closure containing an IL emitter is a release
   blocker, not a configuration.
 - **A second validator.** Whatever validates a module is this profile's validator, reached through
-  the core's one verification entry point. A build-time reimplementation that is merely supposed
-  to agree with it is a security defect with a schedule attached.
+  this profile's translator. What the core's walk and this profile's family hook check is the
+  universal bytecode artifact, a different input, and where the hook repeats a check the validator
+  makes it answers with the validator's code *(corrected: WAC-32)*. A build-time reimplementation
+  that is merely supposed to agree with the validator is a security defect with a schedule attached.
 - **Lazy validation.** The specification explicitly permits deferring a function body's validation
   until first invocation, with an invalid body then trapping. This profile declines that
   permission, because invariant 3 forbids a structural check migrating into execution and the
@@ -247,6 +279,21 @@ as written until the programme's milestone UBC-4 takes them, and it is that mile
 paragraph - that files the corrections this plan's discipline requires for each. Nothing in this
 profile's tree has changed on this paragraph's date, so the corrections file carries no entry for it.
 
+**UBC-4 has now taken all three** *(added 2026-09-26)*. The programme's milestone UBC-4 gave this
+profile its translator and its instruction family, made the module source rather than the artifact,
+and deleted the profile's own descriptor, verifier, executor and interpreter once the composition
+roots translated first. The non-goals above and section 7 now state what is true after it, and the
+corrections file carries each reading it replaced: the compiler non-goal as
+[WAC-30](roadmap.corrections.md#wac-30), the second-execution-arm non-goal as
+[WAC-31](roadmap.corrections.md#wac-31), and section 7's artifact as
+[WAC-34](roadmap.corrections.md#wac-34), with the milestone's other consequences for this plan in
+[WAC-32](roadmap.corrections.md#wac-32), [WAC-33](roadmap.corrections.md#wac-33) and
+[WAC-35](roadmap.corrections.md#wac-35) to [WAC-41](roadmap.corrections.md#wac-41) and
+[WAC-43](roadmap.corrections.md#wac-43) *(corrected: WAC-43)*. The decisions the
+milestone took for this profile are in [its decision series](decisions/README.md); the programme's own
+state is [its ledger](../../../docs/universal-bytecode.status.md)'s, and this profile's is
+[this profile's ledger](roadmap.status.md)'s.
+
 ---
 
 ## 2. Engineering invariants
@@ -263,8 +310,8 @@ profile's tree has changed on this paragraph's date, so the corrections file car
    specification's own permission to validate lazily is declined rather than exercised. A late
    check reported as a trap makes a malformed module indistinguishable from a program that
    trapped, and hollows out the corpus that is supposed to prove the boundary.
-4. **Decoding and validation are two phases inside one verification, and their order is
-   observable.** The specification requires decoding to complete before validation begins, so a
+4. **Decoding and validation are two phases inside one translation, and their order is
+   observable** *(corrected: WAC-32)*. The specification requires decoding to complete before validation begins, so a
    module that is both malformed and invalid is reported malformed. The conformance suite tests
    exactly that distinction, which makes phase order a correctness property here and not an
    implementation detail.
@@ -333,6 +380,13 @@ than assuming it away.
 | `IVmProfilePayload` | Every value crossing back to the caller: returned values, traps, uncaught exceptions, link errors. Carries a `VmPayloadIdentity` whose kind IDs must lie inside the descriptor's declared range. |
 | `IVmBoundedAllocationMeter` | The adapter that lets the core's bounded allocator charge this profile's allocations, because the core's own meter type is not public. Writing it is this profile's work, not the core's. |
 
+**This profile implements two of the seven: the payloads and the allocation-meter adapter** *(corrected:
+WAC-36)*. The other five — the verifier, the executor, the verified state, the instance state and the
+continuation — are implemented by the universal bytecode's assemblies, for every family they execute;
+what this profile implements in their place is that bytecode's family contract,
+`IUbcFamily` and `IUbcFamilyVerifier`. The table states what a profile owes the core, and it is still
+what the core is owed for this profile's modules.
+
 The five verifier outcomes are `Verified`, `InvalidArtifact`, `ResourceExhaustion`, `Cancellation`,
 and `UnsupportedProfile`. The five execution-step kinds are `Completed`, `Instantiated`,
 `Suspended`, `Faulted`, and `ContractViolation`. There are no others, and this profile's whole
@@ -349,7 +403,9 @@ capability imports, the guest-load declaration, the asynchronous-instantiation d
 external-suspension declaration, the payload kind-ID range, the authored and built-against core
 contract versions, the conformance manifest identity and version, the diagnostics identity, the
 package identity, the fault-recovery mode, the maximum uncharged work, the charging granularity,
-and the artifact sharing mode.
+and the artifact sharing mode. This profile supplies the rows and not the construction: its family's
+declaration carries them, and a composition root builds the descriptor with the universal bytecode's
+`UbcDescriptors.Build` over the emitter it composes *(corrected: WAC-36)*.
 
 The catalog validates it and refuses with a named reason from a closed set — among them
 `ProfileIdReservedNamespace`, `FeatureManifestIdOutOfNamespace`,
@@ -377,11 +433,12 @@ manifest ID, the requested limits, and the caller's own identity; the payload sp
 Nothing in the contract requires the payload to restate any of it.
 
 The consequence shapes [section 7](#7-the-artifact-the-decoder-and-one-disagreement-with-the-core)
-and is worth stating plainly: **a bare `.wasm` file produced by any external toolchain can be the
-payload verbatim, with no Broiler wrapper, no re-encoding, and no envelope.** The module's own
+and is worth stating plainly: **a bare `.wasm` file produced by any external toolchain is this
+profile's source verbatim, with no Broiler wrapper, no re-encoding, and no envelope**, and what the
+core verifies is the artifact the translator writes from it *(corrected: WAC-34)*. The module's own
 magic and version are checked by this profile's decoder as the specification requires, and the
-core's identity requirements are satisfied entirely by the descriptor the caller already had to
-construct. A browser that fetched a module hands those exact bytes to verification.
+core's identity requirements are satisfied entirely by the descriptor the caller constructs beside
+the artifact. A browser that fetched a module hands those exact bytes to the translator.
 
 ### The fifteen budget dimensions, and what this profile intends to declare
 
@@ -397,10 +454,10 @@ not drift:
 
 | Dimension | Intended | What charges it |
 |---|---|---|
-| `Fuel` | Charged | Every instruction dispatched, plus the proportional families of invariant 7. |
+| `Fuel` | Charged | Every universal bytecode row dispatched and every frame's declared locals, plus the proportional families of invariant 7; a structural instruction the translator lowers away is dispatched as no row and charges nothing *(corrected: WAC-35)*. |
 | `WallClock` | Charged | Core-metered against the operation; this profile polls often enough for it to bite. |
 | `AllocatedBytes` | Charged | Decode-time buffers; instance allocation; every `memory.grow` and `table.grow`. |
-| `LiveBytes` | Charged | Linear memories and tables are the dominant retained cost of a WebAssembly instance, and a profile that did not report them would let a store grow without any ceiling noticing. Reported on growth, released on instance disposal. |
+| `LiveBytes` | Charged | Linear memories and tables are the dominant retained cost of a WebAssembly instance, and a profile that did not report them would let a store grow without any ceiling noticing. Charged before each allocation and growth, with a charge that can be refused; released through the family on every failure the emitter answers and by the core when a published instance is disposed, and not when the core drops an instantiation the emitter answered as complete *(corrected: WAC-43)*. |
 | `HostCalls` | Charged | Every call into an imported host function. |
 | `CallDepth` | Charged | Every activation frame. [Section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) records that the default is measured, not chosen. |
 | `VerifierWork` | Charged | Required by the catalog. Decode and validation work. |
@@ -413,6 +470,14 @@ not drift:
 | `NestedLoadBytes` | NotApplicable, **default a large finite value** | As above. |
 | `LiveRuntimes` | Charged | Core-metered; this profile adds nothing. |
 
+**Decoding and validation are charged outside the core, and that is a published cost rather than a
+free one** *(corrected: WAC-34)*. The translator runs in a composition root before the core verifies
+anything, under the effective ceilings the root reads and against a meter that follows the core's
+rules for each dimension. Its work therefore reaches no runtime-level account, no verification wall
+clock and no one-verification slot, and an artifact larger than the module it came from can exceed an
+`ArtifactBytes` ceiling the module is within. The `VerifierWork` the core charges is its own walk's and
+the family hook's, over the artifact.
+
 **One caution the metering surface carries, and it lands on this profile harder than on any
 other.** The retention report returns nothing, so a refusal on a ceiling-class dimension cannot be
 handed back at the point of retention: it is latched, and the operation observes it at its next
@@ -424,12 +489,15 @@ core rather than inferred from the contract:** a refused `TryCharge` at any scop
 exhaustion on the meter, and the core then rewrites the completed step as `ResourceExhaustion`
 regardless of what the profile did with the `false` it was handed. So a charge cannot serve as a
 refusable, guest-observable check, and **there is no spelling of a guest-observable `memory.grow`
-refusal on the shipped contract at all** *(corrected: WAC-03)*. The same latch makes the
-aggregate `LiveBytes` case worse rather than better, since the guest has already observed a
-*successful* grow before the operation aborts — which is precisely the outcome
-[section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) forbids. **WA-5 cannot
-choose a memory representation until this is resolved, and the resolution is an amendment rather
-than a local workaround**, which is why
+refusal on the shipped contract at all** *(corrected: WAC-03)*. The aggregate `LiveBytes`
+case is no worse than the others, because this profile's store charges retention before it
+allocates: a refused retention ends the operation at the growth, so the guest never observes a
+*successful* grow the operation then aborts — the outcome
+[section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) forbids — though it
+observes no refusal either *(corrected: WAC-43)*. **A memory
+representation has been chosen without it — [WAD-0001](decisions/0001-the-memory-representation.md)
+— and none resolves it: the resolution is an amendment rather than a local workaround**
+*(corrected: WAC-38)*, which is why
 [section 20](#20-amendments-and-this-profiles-duty-as-the-counterweight) carries it as a blocking
 ask rather than a filed one: a refusable retention member would be general to any profile with
 host-visible retained state, which is the counterweight test this profile applies to everyone
@@ -475,8 +543,11 @@ removed. Naming the residue is the point; a default that looked free would hide 
 
 ### What the core refuses to do for this profile
 
-- It stores no values, inspects no frames, and knows no opcode. There is no shared value ABI to
-  reach for and none is coming.
+- It stores no values, inspects no frames, and knows no opcode. The universal bytecode does — an
+  opcode set, a word plane and a frame model shared by every family, which the core's extraction
+  gate admitted beside it — and this profile's family executes on it; but no language value crosses
+  from one profile to another through it, and no channel that would carry one is coming
+  *(corrected: WAC-40)*.
 - It discovers nothing. No assembly load, no type lookup by name, no scan, no activator, no
   module-initializer ordering. A composition root names this profile's descriptor directly or the
   profile is not in the image.
@@ -501,12 +572,12 @@ removed. Naming the residue is the point; a default that looked free would hide 
   code cache that does not exist yet and gates it accordingly.
 - **It admits exactly one verification input form, and that is settled rather than open.** The
   byte round trip is mandatory and verification is whole-artifact and eager, so a handle means the
-  whole module was decoded and validated. Each is reopened only by a numbered amendment. For this
-  profile the round trip costs nothing — the bytes came from outside anyway — and the eager
-  reading is the one invariant 3 already required.
+  whole artifact was verified. Each is reopened only by a numbered amendment. For this profile the
+  round trip is paid once per translation, because the translator writes in-process what the core
+  reads back *(corrected: WAC-41)*, and the eager reading is the one invariant 3 already required.
   [Section 20](#20-amendments-and-this-profiles-duty-as-the-counterweight) records that this
-  profile is therefore the counterweight that would *decline* both amendments rather than fund
-  them.
+  profile asks for neither amendment: it declines the second, and on present evidence does not need
+  the first.
 - **Its variable-length integer readers accept canonical encodings only.** The core's own package
   description says "canonical-only LEB128", and the reader's source says over-long encodings are
   rejected "rather than accepted and truncated". The specification says the opposite.
@@ -588,12 +659,12 @@ commit.
 
 | Material | Disposition |
 |---|---|
-| The core's three packable assemblies | **Referenced**, exactly two of them by the profile — the abstractions and the binary primitives — and by project reference, because this profile is a set of product projects in the same repository as the core and a package boundary between the two would put a version in the way for no boundary in return. Never vendored and never copied. |
+| The core's three packable assemblies | **Referenced**, exactly two of them by the profile — the abstractions and the binary primitives — beside the universal bytecode's `Broiler.VM.Ubc` *(corrected: WAC-33)*, and by project reference, because this profile is a set of product projects in the same repository as the core and a package boundary between the two would put a version in the way for no boundary in return. Never vendored and never copied. |
 | The specification document | **Pinned by dated revision, retrieved, hashed, and archived.** Retrieving and archiving a third-party document is a *human* action; until someone performs it, the pin is provisional and carries a named exclusion in the ledger. WA-0 records the intended revision; WA-2 records the one actually taken. |
 | The conformance test suite | **Pinned by immutable commit** and read at run time from a directory rather than compiled into anything. It is Apache-2.0 licensed material entering this repository, so [section 4.4](#44-licence-attribution-and-one-notice-that-must-change) applies to it. No file of it is an item of any project, and a scan asserts none appears in any published closure. |
 | A text-format reader for the suite's scripts | **Written here, and never in an advertised composition.** The suite is distributed as scripts in the specification's text format, so something must read them. It is this component's code, it is subject to the same absent-from-the-advertised-closure rule as the corpus it reads, and [section 5](#5-package-boundaries-and-the-dependency-graph) fixes which project it may live in — which is **not** a test project *(corrected: WAC-22)*. It is not a WebAssembly text-format implementation and does not claim to be one: it reads what the suite actually contains. |
-| A binary encoder | **Written here, and never in an advertised composition.** The malformed corpus is generated, and generating a malformed module means being able to emit a well-formed one first. It exists to produce corpus entries and nothing else, and a scan asserts it is in no advertised closure. Its absence from the product is what keeps "no compiler" true. |
-| Everything else | **Written here.** Decoder, validator, store, linker, interpreter, payloads, descriptor, host adapter, harness, corpus, fuzz targets, measurement lane. |
+| A binary encoder | **Written here, and never in an advertised composition.** The malformed corpus is generated, and generating a malformed module means being able to emit a well-formed one first. It exists to produce corpus entries and nothing else, and a scan asserts it is in no advertised closure. Its absence from the product is what keeps the product from producing WebAssembly *(corrected: WAC-30)*. |
+| Everything else | **Written here.** Decoder, validator, translator, the family's table, verifier hook, handlers and store, linker, payloads, host adapter, harness, corpus, fuzz targets, measurement lane *(corrected: WAC-31, WAC-36)*. |
 
 ### 4.4 Licence, attribution, and one notice that must change
 
@@ -637,27 +708,35 @@ These names follow the pattern the core fixes for a profile and are hypotheses u
 the graph with project shells and an explicit assembly budget. No assembly is created to shorten a
 file; each must enforce a dependency, AOT, deployment, ownership, test, or package boundary.
 
-**The pivot argument does not transfer, and this is the section where that shows.** The core's
-placement rule for a profile puts the format in its own assembly because a compiler and an
-executor must agree on the bytecode and neither may depend on the other. This profile has no
-compiler. Its format is the W3C binary format, its only encoder lives in a harness root, and its
-only decoder is inside the verifier. There is therefore nothing for a format assembly to hold
-apart, and creating one would be creating an assembly to shorten a file. **The default here is one product
-assembly**, and a split needs a justification that names the boundary it enforces.
+**The pivot argument transfers, and an assembly this profile does not own answers it — this is the
+section where that shows** *(corrected: WAC-33)*. The core's placement rule for a profile puts the
+format in its own assembly because a lowering and an executor must agree on the bytecode and neither
+may depend on the other. This profile has both halves: its translator writes universal bytecode, and
+the universal bytecode's emitter executes it. The format they agree on is `Broiler.VM.Ubc`, which
+every family is written against and which the core's extraction gate admitted beside the core; its
+source format is the W3C binary format, whose only encoder lives in a harness root and whose only
+decoder is inside the translator. There is therefore nothing for a format assembly of this profile's
+own to hold apart, and creating one would be creating an assembly to shorten a file. **The default
+here is one product assembly**, and a split needs a justification that names the boundary it
+enforces.
 
 | Logical boundary | Candidate assembly | Responsibility and dependency rule |
 |---|---|---|
-| Profile | `Broiler.VM.Profile.WebAssembly` | Descriptor, decoder, validator, verified module, store and instance model, linker, interpreter, host imports, payload projections. References exactly the two core assemblies and nothing else Broiler-owned. |
-| Composition root | `Broiler.VM.Composition.WebAssembly.Execution` | The one named deployment composition, under `src/compositions/`. The only project that knows which profiles and capabilities an image contains. **Not under the `Broiler.VM.Profile.` prefix**: the rule forbidding a profile project from referencing the runtime identifies a profile assembly by that prefix, so a composition root named under it would be a profile assembly to that rule — and referencing the runtime is exactly what a composition root must do. The rule bounding where a profile assembly may be referenced *from* is keyed on the path `src/compositions/` rather than on the name, so it is satisfied by where this root sits whatever it is called, and it is the runtime rule and not that one that the name would break *(corrected: WAC-09)*. Non-packable unless the composition register advertises it. |
+| Profile | `Broiler.VM.Profile.WebAssembly` | Decoder, validator, translator into the universal bytecode, the family — its instruction table, its verifier hook, its handlers, and its store and instance model — linker, host imports, payload projections. It builds no descriptor: a composition root builds one from the family's registration and declaration. References the two core assemblies and `Broiler.VM.Ubc`, and nothing else Broiler-owned — never an emitter *(corrected: WAC-33)*. |
+| Composition root | `Broiler.VM.Composition.WebAssembly.Execution` | The one named deployment composition, under `src/compositions/`. The only project that knows which profiles and capabilities an image contains, and the one that composes a form: it references `Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode` as sibling assemblies and builds the family's descriptor over the bytecode emitter *(corrected: WAC-33)*. **Not under the `Broiler.VM.Profile.` prefix**: the rule forbidding a profile project from referencing the runtime identifies a profile assembly by that prefix, so a composition root named under it would be a profile assembly to that rule — and referencing the runtime is exactly what a composition root must do. The rule bounding where a profile assembly may be referenced *from* is keyed on the path `src/compositions/` rather than on the name, so it is satisfied by where this root sits whatever it is called, and it is the runtime rule and not that one that the name would break *(corrected: WAC-09)*. Non-packable unless the composition register advertises it. |
 | Harness roots | `Broiler.VM.Composition.WebAssembly.Harness*` | The conformance host, the script reader, the corpus store and encoder, the fuzz host, the soak host and the bench host. **These are composition roots and not test projects, and that is forced rather than chosen** — see below. Never advertised, never packable, and never cited as evidence for the execution composition's closure. |
 | Test-only | whatever judges a harness root's output rather than producing it | Never referenced by a product project and never present in a published closure. The corpus manifest's reader, the merge, and the audit command are this row; the code that drives the profile is the row above. |
 
 ```text
 Broiler.VM.Abstractions               ──→ (nothing)
 Broiler.VM.Binary                     ──→ (nothing)
-…Profile.WebAssembly                  ──→ Abstractions + Binary
-…Composition.WebAssembly.Execution    ──→ Broiler.VM.Runtime + the profile  (advertised)
-…Composition.WebAssembly.Harness*     ──→ Broiler.VM.Runtime + the profile  (never advertised)
+Broiler.VM.Ubc                        ──→ Abstractions + Binary
+Broiler.VM.Emitter.Bytecode           ──→ Abstractions + Binary + Broiler.VM.Ubc
+…Profile.WebAssembly                  ──→ Abstractions + Binary + Broiler.VM.Ubc
+…Composition.WebAssembly.Execution    ──→ Broiler.VM.Runtime + the profile
+                                          + Broiler.VM.Ubc + Broiler.VM.Emitter.Bytecode  (advertised)
+…Composition.WebAssembly.Harness*     ──→ Broiler.VM.Runtime + the profile
+                                          + Broiler.VM.Ubc + Broiler.VM.Emitter.Bytecode  (never advertised)
 ```
 
 ### The harness cannot be a test project, and the rule that says so is active today
@@ -696,9 +775,10 @@ Three consequences, and each is a WA-0 gate clause rather than a note:
 
 The rules the verified graph must retain, whatever the names become:
 
-- the profile's Broiler.VM reference set is **exactly** the two core assemblies — no reference to
-  the core runtime, no package reference to a third core package, no `InternalsVisibleTo` in
-  either direction. **A profile family's own siblings sit outside that set**: it is a set of
+- the profile's Broiler.VM reference set is **exactly** the two core assemblies and the universal
+  bytecode's `Broiler.VM.Ubc` *(corrected: WAC-33)* — no reference to the core runtime, none to an
+  emitter, no package reference to a third core package, no `InternalsVisibleTo` in either
+  direction. **A profile family's own siblings sit outside that set**: it is a set of
   *Broiler.VM-owned* assemblies, and the rule that otherwise forbids referencing a
   `Broiler.VM.Profile.*` assembly from outside a composition root exempts a sibling **in the same
   family**, keyed on the language segment. This profile has one product assembly and needs no
@@ -721,22 +801,24 @@ The rules the verified graph must retain, whatever the names become:
   and defeat the exact-closure reports the composition depends on; and
 - **a second product assembly is a dated decision, not a convenience.** If the vector instruction
   family or the garbage-collected type surface turns out to justify its own assembly on trimming
-  grounds — an execution-only image that carries no vector interpreter is a real product — that is
+  grounds — an image that carries no vector handlers is a real product — that is
   a decision with a measured closure difference attached, taken at the milestone that mints the
   manifest and not before.
 
 **The MVP creates exactly three projects, and stating the count is what makes a fourth visible**
 *(amended 2026-09-07)*. Under [the MVP programme](../../../docs/mvp.md) the set is:
-`Broiler.VM.Profile.WebAssembly`, whose Broiler.VM reference set is exactly the two core assemblies;
-`Broiler.VM.Composition.WebAssembly.Execution` under `src/compositions/`, referencing the three core
-projects and that one profile, which is the shape the composition rule admits and the only shape it
-admits; and one harness root under `src/compositions/` carrying the binary corpus encoder and the
-corpus store, never advertised and never packable. **No format sibling is created**, and the reason
-is this section's own rather than the MVP's: there is no compiler here, so there is nothing for a
-pivot to hold apart, and a format assembly would be an assembly created to shorten a file. The
-second product assembly the previous bullet keeps available is not taken either, because both of its
-named candidates are surfaces the MVP does not mint. **None of the three exists today**; the
-[ledger](roadmap.status.md) is the authority for that, and a project set named in a plan is a plan.
+`Broiler.VM.Profile.WebAssembly`, whose Broiler.VM reference set is the two core assemblies and
+`Broiler.VM.Ubc`; `Broiler.VM.Composition.WebAssembly.Execution` under `src/compositions/`,
+referencing the three core projects, that one profile, and the universal bytecode's two assemblies as
+its siblings; and one harness root under `src/compositions/` carrying the binary corpus encoder and
+the corpus store, never advertised and never packable, with the same siblings *(corrected: WAC-33)*.
+**No format sibling is created**, and the reason is this section's own rather than the MVP's: the
+pivot a translator and an emitter agree on is `Broiler.VM.Ubc`, which exists and is shared, so a
+format assembly of this profile's own would be an assembly created to shorten a file. The second
+product assembly the previous bullet keeps available is not taken either, because both of its named
+candidates are surfaces the MVP does not mint. **Which of the three exists is the
+[ledger](roadmap.status.md)'s to record** *(corrected: WAC-42)*, and a project set named in a plan is a
+plan.
 
 ---
 
@@ -800,7 +882,7 @@ WA-0 fixes this table; later milestones may extend it but may not silently widen
 | `broiler.webassembly.numeric1` *(allocated 2026-09-07)* | The MVP's surface, which is `…core1` minus everything that needs a second module or an initialiser: the full numeric instruction set for `i32`, `i64`, `f32` and `f64` including every comparison, conversion and reinterpretation; `drop` and `select`; `local.get`, `local.set`, `local.tee`, `global.get` and `global.set`; structured control flow with `block`, `loop`, `if`/`else`, `br`, `br_if`, `br_table`, `return`, `unreachable` and `nop`, **at the empty block type and the single-value block type only**; one linear memory with its loads and stores, `memory.size` and `memory.grow`; one table, reached by `call_indirect` and by nothing else; `call`; exports; and custom sections ignored correctly. **No import, no start function, no element or data segment, no multi-value block type, no sign-extension operator, no saturating conversion, no bulk memory or table instruction, no reference instruction, no vector and no atomic.** | WA-5 |
 | `broiler.webassembly.core1` | The original standardised surface: the full numeric instruction set including floats, structured control flow, `call` and `call_indirect`, one linear memory with its loads and stores and `memory.grow`, one table, globals, imports and exports of all four kinds, the start function, element and data segments, and custom sections ignored correctly. | WA-6 opens it; WA-7 completes it with imports |
 | `broiler.webassembly.core2` | The second standardised group **minus vectors**: sign-extension operators, non-trapping float-to-integer conversion, multi-value blocks and results, reference types with `funcref` and `externref`, bulk memory and table instructions, and the data count section. | WA-8 |
-| `broiler.webassembly.vector` | The 128-bit vector instruction family. Its own manifest because it is, by instruction count, comparable to everything above it combined, and because an execution-only image that never needs it should be able to decline it truthfully. | WA-8, or excluded with a published failure |
+| `broiler.webassembly.vector` | The 128-bit vector instruction family. Its own manifest because it is, by instruction count, comparable to everything above it combined, and because an image that never needs it should be able to decline it truthfully. | WA-8, or excluded with a published failure |
 | `broiler.webassembly.relaxed` | The relaxed vector instructions, under `DET` and only under `DET`. | After `…vector`; excluded by name until it has a run |
 | `broiler.webassembly.tailcall` | `return_call` and `return_call_indirect`, and the frame-reuse obligation that makes them meaningful rather than merely accepted. | Increment |
 | `broiler.webassembly.exceptions` | Tags, `throw`, the try/catch forms, and `exnref`, together with the unwinding interaction with host frames that [section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) fixes. | Increment |
@@ -838,29 +920,34 @@ which a reader is most likely to collapse it.
 
 ## 7. The artifact, the decoder, and one disagreement with the core
 
-### The artifact is a WebAssembly module, unwrapped
+### The module is source, unwrapped, and the artifact is its translation
 
-Format version 1 admits **a bare WebAssembly binary module as the entire payload**. No Broiler
-magic, no Broiler framing, no outer envelope, no re-encoding. The identity the core needs travels
-in the artifact descriptor beside the bytes, which
+**A bare WebAssembly binary module is this profile's source, and the universal bytecode artifact the
+translator writes from it is what the core verifies** *(corrected: WAC-34)*. The module reaches the
+translator with no Broiler magic, no Broiler framing, no outer envelope and no re-encoding; the
+translator decodes and validates it as the specification requires and lowers it; and the identity the
+core needs travels in the artifact descriptor beside the artifact's bytes, which
 [section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses) records as a property
 of the shipped contract rather than a hope.
 
-This is worth defending, because the alternative is tempting and wrong. A Broiler wrapper would
-make the corpus easier to version and would let the format version carry the manifest. It would
-also mean that no artifact any external toolchain produces could be verified without a
-transformation step, that a browser would re-encode every module it fetched on its critical path,
-and that this component's malformed corpus would be testing a Broiler framing layer rather than
-the specification's own binary format. The suite's malformed cases are cases about *this* format;
-wrapping it would put a layer between the corpus and the thing the corpus is about.
+This is worth defending, because the alternative is tempting and wrong. A Broiler wrapper around the
+module would make the corpus easier to version and would let a format version carry the manifest. It
+would also mean that no module any external toolchain produces could be read without a
+transformation step before the translator, that a browser would re-encode every module it fetched on
+its critical path, and that this component's malformed corpus would be testing a Broiler framing
+layer rather than the specification's own binary format. The suite's malformed cases are cases about
+*this* format; wrapping it would put a layer between the corpus and the thing the corpus is about.
+**The corpus is still about that format**: a module the decoder or the validator refuses is refused by
+the translator, before the core is asked, and answered in the fields the core's verification answers —
+outcome, reason, diagnostic code, dimension, scope and position.
 
-**What the format version means, then, is the shape of the payload and nothing else.** It is
-version 1 for a bare module. It moves if the specification's own binary version field ever moves,
-or if a later format version admits a different payload shape —
-[section 11](#11-the-store-instances-and-linking) names one candidate. It does **not** move when
-the language surface grows, because the feature manifest carries that, and a format version that
-tracked specification versions would be a second, redundant, and inevitably disagreeing version
-axis.
+**What the format version means, then, is the universal bytecode's payload shape, and it is not this
+profile's to move.** Every family shares it. The module's own binary version field is checked by this
+profile's decoder, and a different source shape — [section 11](#11-the-store-instances-and-linking)
+names one candidate — is a second shape the translator reads, not a second format version. The
+format version does **not** move when the language surface grows, because the feature manifest
+carries that, and a format version that tracked specification versions would be a second, redundant,
+and inevitably disagreeing version axis.
 
 ### The disagreement: canonical against padded variable-length integers
 
@@ -1033,15 +1120,16 @@ the category per bullet.
 
 ## 8. Validation
 
-### One verification, two phases, and the order is observable
+### One translation, two phases, and the order is observable
 
 The specification is a three-phase language — decode, validate, instantiate — and this component
-maps the first two onto the core's single verification and the third onto instantiation. The
-mapping is not a convenience: it is what the core's contract requires, because a verified handle
-means the artifact is admitted and the stage matrix makes `InvalidArtifact` illegal at every later
-stage.
+maps the first two onto one translation, which a composition root runs before the core's single
+verification of the artifact it writes, and the third onto instantiation *(corrected: WAC-32)*. The
+mapping is not a convenience: a module the translator refuses never reaches the core, a verified
+handle means the artifact is admitted, and the stage matrix makes `InvalidArtifact` illegal at every
+later stage.
 
-Within that one verification, **decoding completes before validation begins**, and the ordering is
+Within that one translation, **decoding completes before validation begins**, and the ordering is
 observable rather than internal. A module that is both malformed and invalid must be reported
 malformed; the suite asserts it; and an implementation that fused the phases to save a pass would
 report the wrong one. This is stated as invariant 4 because it is the kind of property that a
@@ -1130,9 +1218,11 @@ directions: every code the profile can emit appears in the registry, and every c
 is reachable from a named case. Each code maps onto exactly one core reason. Positions are byte
 offsets into the payload, with a documented encoding, and they are stable across a rebuild.
 
-**The registry has two carriers and the sentence above spans both, which is worth saying because the
-core's do not.** A verification rejection travels as the core's own pair — this profile's stable
-32-bit diagnostic code plus an opaque position record — on the verifier outcome. A trap, an uncaught
+**The registry has three carriers and the sentence above spans all of them, which is worth saying
+because the core's do not** *(corrected: WAC-32)*. A decoding, validation or translation refusal
+travels on the translation's answer, in the fields the core's verifier outcome has — this profile's
+stable 32-bit diagnostic code plus a position record — and never reaches the core. A refusal by this
+profile's family hook travels as the core's own pair on the verifier outcome. A trap, an uncaught
 exception, or a link error is a `ProfileFault`, and the core's only channel for its detail is the
 typed payload: the diagnostics record has nowhere to put it and the position field is populated on
 the verification path alone. So a trap's position and code travel **in the payload**, not in the
@@ -1157,8 +1247,15 @@ WA-3 states which field this profile uses for it or names it as an amendment can
 
 ## 9. The value, store, and frame model
 
-**This decision is taken before the interpreter is written, and it is a gate on entry to WA-5
-rather than that milestone's first task.**
+**The rows are answered in this profile's decision series, and the entry gate they guarded is retired
+with the interpreter** *(corrected: WAC-35)*.
+[WAD-0003](decisions/0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md) states
+where each of the nine stands now that the universal bytecode executes this profile's modules — which
+carry over, which the universal bytecode answers, and which is reversed — and
+[WAD-0001](decisions/0001-the-memory-representation.md) is the memory representation the ninth row
+cannot be separated from *(corrected: WAC-38)*. There is no interpreter source of this profile's for
+the decision to precede, and the questions below are what those records answer and what WA-5's exit
+gate still asks each answer to carry.
 
 Unlike a language whose library is already typed against an existing value base type, this
 profile's value set is closed, small, and fully specified, which makes the decision tractable — but
@@ -1239,17 +1336,19 @@ interpreter cannot execute *(corrected: WAC-21)*.
 
 ## 10. Execution: mapping WebAssembly onto the core lifecycle
 
-The core's lifecycle is fixed and this profile refines observable behaviour inside it. The mapping:
+The core's lifecycle is fixed and this profile refines observable behaviour inside it. **Every stage is
+answered by the universal bytecode with this profile's family inside it** *(corrected: WAC-32,
+WAC-36)*. The mapping:
 
 | Core stage | What this profile does |
 |---|---|
-| Catalog build | Supplies one descriptor through one static accessor. No aggregate listing type exists anywhere in the graph. |
-| Runtime creation | The composition supplies ceilings, capabilities, and the external-suspension mode. The executor factory creates one executor per runtime from the execution environment. |
-| Verification | Decodes and validates into an immutable `IVmVerifiedState` — the module, its types, its function bodies, its segments, and the ceilings computed for it. Owns or fully decodes its input: later mutation, disposal, or concurrent overwrite of the caller's buffer changes nothing. |
-| Instantiation | **Links and allocates.** Resolves imports against the host and the store, allocates memories, tables, globals, and tags, initialises element and data segments, and runs the start function. Returns `Instantiated`, or `Faulted` carrying a link error or a start-function trap. |
-| Invocation | Calls an exported function. Runs to `Completed` with a typed payload carrying the returned values, or `Faulted` with a typed trap or uncaught exception. |
-| Resume | Not reached at any manifest this roadmap allocates. Implemented as the named invalid-state refusal, and [section 14](#14-suspension-threads-and-what-this-profile-does-not-declare) records why the type is implemented anyway. |
-| Unwind | Terminal. Releases memories, tables, and host references under the tighter of the abandon budget and the unwind budget, and **runs no guest code**. [Section 14](#14-suspension-threads-and-what-this-profile-does-not-declare) records that this is simpler here than it would be for a language with user-visible finalisation, and that the simplicity is a property of the manifest set rather than a permanent one. |
+| Catalog build | Supplies its family's registration and declaration through static accessors, and each composition root builds the descriptor from them over the emitter it composes. No aggregate listing type exists anywhere in the graph. |
+| Runtime creation | The composition supplies ceilings, capabilities, and the external-suspension mode. The bytecode emitter's executor factory, which the root's descriptor names, creates one executor per runtime from the execution environment. |
+| Verification | **In the root, first:** the translator decodes and validates the module and lowers it into a universal bytecode artifact, refusing what it refuses in the fields the core's verification answers. **Then in the core:** the universal bytecode's walk and this profile's family hook verify the artifact into the universal bytecode's immutable verified program — its units, its tables, the module definitions the hook reads, and the ceilings computed for it. Each owns or fully reads its input: later mutation, disposal, or concurrent overwrite of the caller's buffer changes nothing. |
+| Instantiation | **Links and allocates.** The emitter instantiates through the family: its instance state allocates the memory, the table and the globals, the global initialisers are evaluated, element and data segments are initialised in order, and the start function is run — and, once imports are admitted, they are resolved against the host and the store. Returns `Instantiated`, or `Faulted` carrying a link error or a start-function trap; **a start-function trap publishes no instance**. |
+| Invocation | Calls an exported function on the emitter over the family's handlers. Runs to `Completed` with a typed payload carrying the returned values, or `Faulted` with a typed trap or uncaught exception. |
+| Resume | Not reached at any manifest this roadmap allocates: nothing parks, so there is no suspension to resume, and the continuation type is the emitter's. [Section 14](#14-suspension-threads-and-what-this-profile-does-not-declare) records what that leaves this profile. |
+| Unwind | Terminal, and the emitter's. It **runs no guest code**, and this profile mints no continuation for it to release; a memory's and a table's retention is released through the family on every failure the emitter answers and by the core when a published instance is disposed, and not when the core drops an instantiation the emitter answered as complete *(corrected: WAC-43)*. [Section 14](#14-suspension-threads-and-what-this-profile-does-not-declare) records that this is simpler here than it would be for a language with user-visible finalisation, and that the simplicity is a property of the manifest set rather than a permanent one. |
 | Disposal | Drains an in-flight step before releasing the artifact lease under it. This profile's obligation is that a step is interruptible often enough for the drain to succeed, which is what the cancellation poll bound is for. |
 
 ### The four failure phases, and why they land in three different places
@@ -1260,8 +1359,8 @@ passes functionally and fails conformance:
 
 | Specification failure | Suite assertion | Where this profile answers | Core outcome |
 |---|---|---|---|
-| Malformed — the bytes do not decode | `assert_malformed` | Verification, decode phase | `InvalidArtifact`, with a decode reason and a byte position |
-| Invalid — it decodes but does not type-check | `assert_invalid` | Verification, validation phase | `InvalidArtifact`, with a validation reason |
+| Malformed — the bytes do not decode | `assert_malformed` | Translation, decode phase, in the root before the core is asked *(corrected: WAC-34)* | `InvalidArtifact`, with a decode reason and a byte position, in the translation's answer |
+| Invalid — it decodes but does not type-check | `assert_invalid` | Translation, validation phase | `InvalidArtifact`, with a validation reason, in the translation's answer |
 | Unlinkable — imports cannot be satisfied | `assert_unlinkable` | **Instantiation** | `ProfileFault` carrying a typed link error. It cannot be `InvalidArtifact`: the stage matrix forbids that outcome at instantiation, and it would be wrong anyway — the module is valid, the *environment* did not supply what it needs |
 | Uninstantiable — linking succeeded, the start function trapped | `assert_trap` on an instantiation | Instantiation | `ProfileFault` carrying a typed trap. **No instance is published**, and a test asserts it |
 | Trap during a call | `assert_trap` on an action | Invocation | `ProfileFault` carrying a typed trap |
@@ -1361,8 +1460,8 @@ So a design must say where the store lives, and **there are exactly three places
 | Reading | The store is | What an artifact is | Cost |
 |---|---|---|---|
 | **A — one instance, one store** | Whatever one `IVmInstanceState` holds | One module, bare | Simplest and wrong for anything real. Two modules can never link, the suite's linking files cannot run at all, and the profile could never host a toolchain that emits more than one module. It is recorded here only to be rejected explicitly, because it is what an implementer arrives at by default. |
-| **B — one artifact, one link set** | Whatever one `IVmInstanceState` holds, but an artifact carries several modules | A container: N modules plus a link plan | Entirely within contract, verified as one unit, and deterministic — the handle means *this whole set links*. But it needs a second format version and a Broiler-invented container, which is the thing [section 7](#7-the-artifact-the-decoder-and-one-disagreement-with-the-core) argued against; and a browser that instantiates modules as it fetches them cannot use it. |
-| **C — one runtime, one store** | Executor-scoped: the executor is created once per runtime and holds the store; each `IVmInstanceState` is one module instance's handle into it | One module, bare | Semantically the specification's own shape, keeps bare payloads, and supports incremental instantiation. But the store now outlives every individual instance, disposal order becomes a real design problem, and **there is no contract channel that names an instance for a later module to import from.** |
+| **B — one artifact, one link set** | Whatever one `IVmInstanceState` holds, but an artifact carries several modules | A container: N modules plus a link plan | Entirely within contract, verified as one unit, and deterministic — the handle means *this whole set links*. But it needs a second source shape the translator reads — a Broiler-invented container — which is the thing [section 7](#7-the-artifact-the-decoder-and-one-disagreement-with-the-core) argued against *(corrected: WAC-34)*; and a browser that instantiates modules as it fetches them cannot use it. |
+| **C — one runtime, one store** | Runtime-scoped: held once per runtime; each `IVmInstanceState` is one module instance's handle into it. **This profile has no executor to hold it**: the executor is the universal bytecode's emitter, and the family contract gives a family per-instance state and nothing scoped to a runtime *(corrected: WAC-37)* | One module, bare | Semantically the specification's own shape, keeps bare modules, and supports incremental instantiation. But the store now outlives every individual instance, disposal order becomes a real design problem, **there is no contract channel that names an instance for a later module to import from**, and the store needs a runtime-scoped member of the universal bytecode's family contract, which is not this profile's to add. |
 
 ### What this roadmap fixes now, and what WA-6 decides
 
@@ -1386,10 +1485,10 @@ recorded now so the decision is not taken on taste:
   registration command, which folds this problem into the one WA-1 is already solving. **The third
   is the least bad and is the one WA-5 should cost first**, precisely because it reuses a channel
   this profile must build anyway.
-- **B's container is not as offensive as it first looks.** Format version 1 stays a bare module,
-  format version 2 adds the container, and the two coexist under one descriptor's version range.
-  A browser uses version 1 and reading C's incremental path; a toolchain shipping a linked set of
-  modules uses version 2. **The readings are not exclusive**, and the honest possibility that WA-5
+- **B's container is not as offensive as it first looks.** The bare module stays one source shape,
+  the container is a second, and the translator reads both into artifacts of the one universal
+  bytecode format *(corrected: WAC-34)*. A browser uses the bare module and reading C's incremental
+  path; a toolchain shipping a linked set of modules uses the container. **The readings are not exclusive**, and the honest possibility that WA-5
   should evaluate is that this profile wants both: C for the store's shape, B for the case where a
   set really is one deployable unit.
 - **The suite forces the issue and dates it.** WA-4 stands the harness up and WA-6 is the first
@@ -1441,11 +1540,12 @@ open, a null reference dereference, an out-of-bounds array access, and a failed 
 
 Three properties are gates rather than notes:
 
-**A trap is a value, not an exception.** It leaves the interpreter as a typed payload behind
-`ProfileFault`, carrying its kind and the position that produced it. Whether the interpreter
-*implements* unwinding with a CLR exception is a WA-6 decision with a measurement attached — it is
-the single most common place an interpreter pays for a rarely-taken path — but the answer is
-invisible at the boundary, and a scan asserts nothing derived from a CLR exception type crosses it.
+**A trap is a value, not an exception.** It leaves execution as a typed payload behind
+`ProfileFault`, carrying its kind and the position that produced it. It is not implemented with a
+CLR exception either: a trap is a status the universal bytecode's loop turns into this profile's
+payload at its boundary, as [WAD-0003](decisions/0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md)'s
+trap row records *(corrected: WAC-35)* — and a scan asserts nothing derived from a CLR exception type
+crosses the boundary.
 
 **Exhaustion is not a trap, and conflating them fails conformance.** The suite has separate
 assertion families, and a call-stack overflow is exhaustion. It maps onto `ResourceExhaustion`
@@ -1476,17 +1576,23 @@ growth, and the support table says so rather than implying a determinism it does
 A linear memory is the largest thing this profile allocates and the main reason `LiveBytes` is
 declared. Four properties are fixed here:
 
-- **A memory is reported, grown, and released through the meter.** Allocation on instantiation,
-  growth on `memory.grow`, release on store disposal. A memory that is allocated without being
-  reported is a ceiling that does not exist.
+- **A memory is charged, grown, and released through the meter.** Allocation on instantiation and
+  growth on `memory.grow`, each charged before it happens with a charge that can be refused; release
+  through the family on every failure the emitter answers and by the core when a published instance
+  is disposed, and not when the core drops an instantiation the emitter answered as complete
+  *(corrected: WAC-43)*. A memory that is allocated without being charged is a ceiling that
+  does not exist.
 - **Bounds checks are not optional and not deferred.** Every access is checked, and the check is
   where the bulk of the interpreter's per-instruction cost will sit.
   [Section 19](roadmap.gates.md#19-measurement-discipline)'s measurement lane exists partly to
   publish that cost honestly rather than to hide it.
 - **The representation decision names its own limits.** Whether a memory is a managed array, a
-  pinned buffer, or a reserved virtual range with guard pages is a WA-5 decision with Native AOT
-  and per-RID consequences, and a virtual-reservation strategy that works on one platform and not
-  another is a claim about RIDs, not about the profile.
+  pinned buffer, or a reserved virtual range with guard pages is decided by
+  [WAD-0001](decisions/0001-the-memory-representation.md), at the universal bytecode programme's
+  milestone UBC-4 rather than at WA-5: a pinned managed byte array, reallocated on a successful growth
+  with its base republished *(corrected: WAC-38)*. Its Native AOT and per-RID consequences are what
+  WA-5's exit gate still asks it to name, and a virtual-reservation strategy that works on one
+  platform and not another would be a claim about RIDs, not about the profile.
 - **A successful growth invalidates every view a host holds over that memory.** Growth may
   reallocate, so any span, pointer, or buffer the embedder was handed before it is stale
   afterwards, and the rule is that it is *invalid* rather than merely stale — the embedder
@@ -1610,22 +1716,26 @@ types, and diagnostics carry identity and position without carrying host state.
 ### It declares no suspension, and that is a statement about the manifests
 
 At every manifest this roadmap allocates, WebAssembly execution runs to completion or to a trap.
-There is no `yield`, no `await`, and no instruction that parks a frame. So the descriptor declares
-`NotDeclared` for asynchronous instantiation and for external suspension, `Resume` answers the
-named invalid-state reason, and `Unwind` releases store resources and runs no guest code.
+There is no `yield`, no `await`, and no instruction that parks a frame. So the family's declaration
+declares `NotDeclared` for asynchronous instantiation and for external suspension, no suspension is
+ever produced for a resume to take, and unwinding runs no guest code *(corrected: WAC-36)*.
 
 Three things follow that are worth stating so nobody has to rediscover them:
 
-- **`IVmProfileContinuation` is still implemented.** The core requires the type and the executor
-  must answer `Resume` correctly, so the refusals are code and are tested. A profile that declares
-  nothing still has to refuse correctly.
-- **The frame model is designed to be capturable anyway.** This costs nothing today and is the one
-  thing that cannot be retrofitted: a frame model that lives on the CLR stack cannot later be
-  moved to the heap without rewriting the interpreter.
-  [Section 9](#9-the-value-store-and-frame-model)'s frame row says so, and WA-5's exit gate asks
-  for the design rather than the implementation.
+- **No continuation is this profile's to implement** *(corrected: WAC-36)*. The core requires the
+  type, and the universal bytecode's emitter owns it; since nothing here parks, no step of this
+  profile's produces a suspension, so there is nothing for a resume to be handed. What stays this
+  profile's is its declaration, which declares nothing, and a profile that declares nothing still
+  has to be refused correctly wherever a caller tries.
+- **The frame model is capturable.** It is the universal bytecode's — heap frames owned by the
+  operation, which a suspension can capture and a resume can restore — as
+  [WAD-0003](decisions/0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md)'s frame
+  row records *(corrected: WAC-35)*. That was the one thing that could not be retrofitted, and it is
+  now a property of the loop rather than of a design this profile has to keep.
 - **`Unwind` is simple here, and its simplicity is temporary.** WebAssembly has no user-visible
-  finalisation, so terminal unwinding releases memories, tables, and host references and stops. The
+  finalisation, so terminal unwinding runs nothing of the guest's and stops, and what the store
+  retained is released where [section 10](#10-execution-mapping-webassembly-onto-the-core-lifecycle)
+  says. The
   exceptions manifest does not change that — an unwind still runs no guest handler. A future
   stack-switching surface would.
 
@@ -1762,13 +1872,17 @@ an attribution but never accept one.
 
 ## 16. Deployment compositions, Native AOT, and the browser embedding
 
-**This profile mints exactly one composition label, and the reason is structural rather than
-modest.** A composition label describes *when source is compiled*. This profile compiles nothing,
-so there is only one answer:
+**This profile claims no composition label, and the reason is structural rather than modest**
+*(corrected: WAC-39)*. A composition label describes *when source is compiled*, and the one this plan
+intended, `execution-only`, names an image that carries no lowering. Every image that runs a module
+carries one — the translator, which lowers the module into universal bytecode at run time — so the
+execution root's catalog prints no label and says that it carries a lowering. Whether a translating
+image claims a label, and which, is [the composition register](../../../docs/compositions.md)'s to
+decide rather than this plan's. What the image holds, and what its gate proves, does not wait on that:
 
-| Label | Contains at run time | What its Native AOT gate proves |
+| Root | Contains at run time | What its Native AOT gate proves |
 |---|---|---|
-| `execution-only` | Decoder, validator, store, linker, interpreter, host adapter | That the accepted manifest set verifies and executes under Native AOT on every claimed RID |
+| The execution root | Decoder, validator, translator, the family's table, verifier hook, handlers and store, the universal bytecode and its bytecode emitter, linker, host adapter | That the accepted manifest set translates, verifies and executes under Native AOT on every claimed RID |
 
 **One label is not one root.** [Section 5](#5-package-boundaries-and-the-dependency-graph) puts the
 harness in composition roots of its own, because the rules forbid a test project to reference a
@@ -1777,8 +1891,9 @@ source is compiled, and it is made by the composition register naming a root as 
 that is never advertised makes none, publishes for its own evidence, and is cited as evidence for
 nothing else *(corrected: WAC-22)*.
 
-The three-label pattern a language with a compiler needs does not transfer, and inventing a second
-label here would be inventing a distinction this component cannot demonstrate. If a future
+The three-label pattern a language with a compiler needs does not transfer — the translator is not
+a compiler of a source language, and no image of this profile runs without it — and inventing a
+distinction between labels here would be inventing one this component cannot demonstrate. If a future
 decision splits the product into more than one assembly —
 [section 5](#5-package-boundaries-and-the-dependency-graph) names the vector family and the
 garbage-collected surface as the only plausible candidates — that produces further *closures*, not
@@ -1792,18 +1907,19 @@ insufficient**, and no publish is evidence for another RID.
 ### The browser is the smallest closure here, not the largest
 
 For a language whose source arrives as text, a browser composition must link a tokenizer and a
-lowering, and its Native AOT gate proves the *larger* closure. For this profile the inverse holds,
+compiler, and its Native AOT gate proves the *larger* closure. For this profile the inverse holds,
 and it is the clearest practical benefit of consuming a format rather than a language:
 
-**A browser fetches WebAssembly bytes and hands them to verification.** There is nothing to compile,
-no text format on the path, no lowering in the image. The browser composition is the
-`execution-only` composition, unmodified. The closure a page exercises is the closure a
-precompiled-artifact host exercises, so there is one thing to evidence rather than two, and the
-evidence transfers between the two consumers because it is the same image.
+**A browser fetches WebAssembly bytes and hands them to the translator.** There is no text format on
+the path and no compiler of any source language; the one lowering in the image is the translator,
+and it runs on the bytes the browser fetched *(corrected: WAC-34, WAC-39)*. The browser composition
+is the execution root's composition, unmodified. The closure a page exercises is the closure any
+module-running host exercises, so there is one thing to evidence rather than two, and the evidence
+transfers between the two consumers because it is the same image.
 
 **The host keeps its own seam.** An embedder already talks to WebAssembly through its own interface
 in terms of bytes, an import object, and an instance. That interface does not change: an adapter
-behind it verifies, instantiates, and invokes. The embedder never handles this profile's internal
+behind it translates, verifies, instantiates, and invokes. The embedder never handles this profile's internal
 types, and swapping the engine behind the seam stays a bounded change.
 
 **The division of labour is strict.** The host owns fetch, identity, content policy, integrity
@@ -1830,9 +1946,15 @@ them means two core runtimes, carrying two profiles, exchanging values.
 
 The core's rule for this is explicit and it is a refusal: **share mechanism, never share
 semantics.** A shared value representation, frame layout, or opcode set is named in the core's own
-table as something it exists not to own. So there is no cross-profile value channel and none is
-coming, and a component that wanted one would be asking the core to grow the
-lowest-common-denominator model its invariants exist to prevent.
+table as something it exists not to own — and the opcode-set half of that row has been reached by an
+extraction verdict: [ADR 0013](../../../docs/adr/0013-the-universal-bytecode-extraction-record.md)
+admits the universal bytecode, which this profile executes on, as an encoding whose language
+instructions keep the meanings their profiles give them *(corrected: WAC-40)*. **The half this
+section is about stands.** A universal bytecode word carries no language meaning, a family's own
+values stay on its own plane, and the value-representation and frame-layout halves of the refusal
+stand. So there is no cross-profile value channel and none is coming, and a component that wanted
+one would be asking the core to grow the lowest-common-denominator model its invariants exist to
+prevent.
 
 **Two frozen facts settle the route, and neither is obvious from the core's non-goal alone.** The
 non-goal excludes "an implied invocation bridge between two profiles", which reads to anyone who
@@ -1880,8 +2002,9 @@ follow, and each is a thing a browser team will meet:
    *is* this component's and [section 13](#13-memories-tables-globals-and-the-host-boundary) now
    carries it: **a successful `memory.grow` invalidates any view a host holds over that memory**,
    which the JavaScript API models as detaching the buffer. It is stated here because a memory
-   representation chosen without it is a representation that cannot express it, and WA-5 takes
-   that decision.
+   representation chosen without it is a representation that cannot express it, and
+   [WAD-0001](decisions/0001-the-memory-representation.md) took that decision with the rule adopted
+   *(corrected: WAC-38)*.
 3. **Two profiles in one catalog reach each other through their defaults.** A maximum binds only
    the profile an artifact names, so this profile's maxima constrain a JavaScript profile beside it
    not at all. But a host that adopts profile defaults rather than stating ceilings gets the tightest
@@ -1905,8 +2028,9 @@ follow, and each is a thing a browser team will meet:
 - **It commits to not foreclosing it.** Where a design choice inside this profile would make the
   boundary harder — a memory representation that cannot be handed out as a contiguous region, an
   export projection that cannot enumerate, an opaque reference model with no stable identity — the
-  choice is recorded with that consequence noted at the milestone that takes it. WA-5's memory
-  representation row and WA-6's export projection each carry that clause.
+  choice is recorded with that consequence noted at the milestone that takes it. The memory
+  representation, WAD-0001, carries that clause through WA-5's exit gate, which still asks the
+  record to state it *(corrected: WAC-38)*, and WA-6's export projection carries it too.
 - **It commits to naming the owner.** A browser integration is a consumer of two profile families
   and belongs to whichever component composes them. This roadmap's obligation is to make the price
   visible before that component exists, not to pay it.
@@ -1923,8 +2047,9 @@ serialization path with nothing to hold it to the first.
 What this roadmap does instead is fix the design so it stays reachable, at no cost today:
 
 - **The cache key is named now, and it is the handle's identity minus the terms that cannot
-  survive a process.** Module bytes identity — the artifact content hash, which is the core's own
-  key field — the format version, the feature manifest identity and version, **the descriptor
+  survive a process.** Module bytes identity and the translator's identity and version — the core's
+  own key field, the artifact content hash, now identifies the translation, which is deterministic in
+  those two *(corrected: WAC-34)* — the format version, the feature manifest identity and version, **the descriptor
   revision**, the verifier semantic version, the core contract version, **this profile's declared
   hard-maximum vector**, and **the per-import capability tuple for every import the artifact
   binds**. That last term is not optional: [section 11](#11-the-store-instances-and-linking)
@@ -1961,10 +2086,11 @@ What this roadmap does instead is fix the design so it stays reachable, at no co
   the core, as a joint gate.
 
 **One neighbouring question is already answered and this profile plans against the answer.** At
-core contract version 1 the byte round trip is mandatory. For this profile that costs nothing: the
-bytes always came from outside, so there is no in-process producer to bypass serialization for.
-This component therefore has no reason to want that amendment, which
-[section 20](#20-amendments-and-this-profiles-duty-as-the-counterweight) records — because a
+core contract version 1 the byte round trip is mandatory. For this profile it is paid once per
+translation: the modules still come from outside, but the translator is an in-process producer, and
+what it writes the core reads back *(corrected: WAC-41)*. This component does not ask for that
+amendment on present evidence — no measurement shows the round trip on a critical path — which
+[section 20](#20-amendments-and-this-profiles-duty-as-the-counterweight) records, because a
 counterweight that stays silent when it agrees is only half a counterweight.
 
 ---
@@ -1993,7 +2119,7 @@ table below records what this profile **needs**, and the section after it record
 | **A wider value slot on the capability channel** | `v128` does not fit in a 64-bit slot. Splitting works and needs a published encoding; a wider slot would not. | **Weak.** This is one type in one instruction family. Recorded so it is not mistaken for the previous row. |
 | **A charging hook for work done inside a host capability** | Wall clock covers a slow capability; it does not cover one that allocates on this profile's behalf. | **Strong: general**, and this profile reaches it by the same route any other would. |
 | **A persisted envelope** | [Section 18](#18-persistence-and-the-code-cache). | **Strong: general**, and already admitted by contract. It needs a gate rather than an amendment. |
-| **A refusable retention member on the metering surface** | [Section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses): the retention report returns nothing, so a ceiling-class dimension cannot carry a guest-observable refusal, while [section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) requires a refused `memory.grow` to be exactly that. **No local resolution exists.** Admitting or refusing growth on a charge, with retention reported for accounting only, does not work against the shipped core: a refused `TryCharge` latches exhaustion and the core rewrites the completed step as `ResourceExhaustion`, so no spelling of a guest-observable refusal exists on the current contract *(corrected: WAC-03)*. | **Strong, and blocking.** Any profile with host-visible retained state that the language can ask to grow meets it, which is the counterweight test passing — and unlike every other row in this table there is no local workaround to fall back on. **WA-5 cannot choose a memory representation until this is filed and answered**, so this is the one row this profile opens rather than holds. **The other intended profile's position is recorded, dated, and it is *unaffected*** *(corrected: WAC-26)*: it has no construct that needs a guest-observable budget refusal and treats that as a property to preserve, so it neither files this row nor obstructs it — the second of the three answers the core's procedure admits, and the one that lets this row be filed by this profile alone with its counterweight field complete. |
+| **A refusable retention member on the metering surface** | [Section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses): the retention report returns nothing, so a ceiling-class dimension cannot carry a guest-observable refusal, while [section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) requires a refused `memory.grow` to be exactly that. **No local resolution exists.** Admitting or refusing growth on a charge, with retention reported for accounting only, does not work against the shipped core: a refused `TryCharge` latches exhaustion and the core rewrites the completed step as `ResourceExhaustion`, so no spelling of a guest-observable refusal exists on the current contract *(corrected: WAC-03)*. | **Strong, and blocking.** Any profile with host-visible retained state that the language can ask to grow meets it, which is the counterweight test passing — and unlike every other row in this table there is no local workaround to fall back on. **A memory representation has been chosen without it, and none answers it** — [WAD-0001](decisions/0001-the-memory-representation.md) keeps the route and the deviation *(corrected: WAC-38)* — so this is the one row this profile opens rather than holds. **The other intended profile's position is recorded, dated, and it is *unaffected*** *(corrected: WAC-26)*: it has no construct that needs a guest-observable budget refusal and treats that as a property to preserve, so it neither files this row nor obstructs it — the second of the three answers the core's procedure admits, and the one that lets this row be filed by this profile alone with its counterweight field complete. |
 
 ### What this profile does **not** need, and says so
 
@@ -2002,7 +2128,7 @@ one language's shape:
 
 | Candidate a language profile might raise | This profile's answer |
 |---|---|
-| **An in-process producer input form — compiling straight to a verified handle, skipping the byte round trip** | **Not needed, and this profile would not co-sign it.** There is no in-process producer. Every byte arrives from outside the trust boundary, so serialization is not a critical-path cost here — it is the input. A profile that meets this wall meets it because it compiles its own source in-process, which is a property of that profile and not of the contract. |
+| **An in-process producer input form — compiling straight to a verified handle, skipping the byte round trip** | **Not asked for, and no longer refused** *(corrected: WAC-41)*. The translator is an in-process producer: every module still arrives from outside the trust boundary, but what the core verifies is written in-process and read back, so the round trip is paid once per translation. No measurement shows that cost on a critical path, so this profile does not ask for the form; WA-10's cold-start measurement, which now includes translation, is what would reopen it. |
 | **Lazy per-section or per-function verification** | **Not needed, and actively declined.** The specification *offers* this profile the permission and [section 8](#8-validation) refuses it, because a deferred check is a check reported as a trap. If a latency measurement ever justified reopening it, this profile would still want the whole-module answer for the malformed and invalid families, so the amendment would have to preserve exactly what invariant 3 asks for. Recorded as a refusal rather than a silence. |
 | **Streaming or incremental verification** | **Wanted eventually, needed by nobody yet.** A browser does stream WebAssembly bytes and would like to validate as they arrive, so this profile is not indifferent — but it has no measurement, and the core already carries a registered amendment shape. Reopened against WA-10's throughput figures, not against the observation that browsers stream. |
 | **Nested instantiation through the mediator** | **Not needed.** The language has no dynamic module-loading instruction. [Section 11](#11-the-store-instances-and-linking)'s problem is about *linking*, which happens at instantiation, and none of its three readings requires the core to instantiate anything nested. A profile that needs nested instantiation needs it because its language can ask for code while running, which is the exact property this profile does not have. |
@@ -2017,7 +2143,8 @@ at any time.
 **Two procedural facts, so the counterweight duty is discharged without overreaching it.** A
 refusal in the table above is **recorded, not blocking**. The core's procedure asks whether the
 other intended profile could use a capability, is unaffected, or refuses it, and this profile's
-answers are the third kind — but a profile with a veto over a core amendment would be a
+answers are the third kind, the in-process producer's row excepted *(corrected: WAC-41)* — but a
+profile with a veto over a core amendment would be a
 profile-to-profile dependency established by governance rather than by reference, which is exactly
 what the extraction gate's fourth condition exists to prevent. Saying "this profile would not
 co-sign it" is a counterweight answer for the record and not a decision. And the procedure is

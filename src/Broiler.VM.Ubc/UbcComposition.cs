@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   16
 // Annotated:        16/16
-// Exempt:           46
+// Exempt:           48
 // Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    High
@@ -304,24 +304,48 @@ public interface IUbcExecutorFactory
         where TFamily : struct, IUbcFamily;
 }
 
-/// <summary>One form an image composes: its identity, its semantic version and its executor factory.</summary>
+/// <summary>
+/// One form an image composes: its identity, its semantic version, its executor factory, and the two
+/// universal bytecode contract versions its emitter carries.
+/// </summary>
 /// <remarks>
+/// <para>
 /// At this contract version the only form an image can compose is <see cref="UbcFormat.BytecodeForm"/>.
 /// A native form carries an Emission section, and admitting one needs a form verifier over emitted bytes
 /// and the emitting half of a native emitter - the mechanism the extraction record, ADR 0013, did not
 /// admit - so <see cref="UbcEmitterSet.Create"/> refuses any other identity, and the walk refuses an
 /// artifact naming one as a form the image does not compose.
+/// </para>
+/// <para>
+/// <b>The two integers.</b> An emitter is a separate package from this assembly, and a package
+/// reference resolves to this version or a later one, so an emitter compiled against an earlier
+/// contract could otherwise be composed with a family of a later one and run it without the members
+/// that version added. The form therefore carries the two integers a family registration carries:
+/// <see cref="AuthoredUbcContractVersion"/>, which the emitter's author wrote for, and
+/// <see cref="BuiltAgainstUbcContractVersion"/>, whose parameter defaults to
+/// <see cref="UbcContract.Version"/>, a constant fixed into the emitter's assembly at the emitter's
+/// compilation. <see cref="UbcDescriptors.Build"/> compares both with this assembly's.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=0; Fingerprint=478E3B
 // Broiler-Human:        PENDING
 public sealed class UbcForm
 {
-    /// <summary>A form.</summary>
-    public UbcForm(string identity, int semanticVersion, IUbcExecutorFactory executorFactory)
+    /// <summary>A form, its emitter written for <paramref name="authoredUbcContractVersion"/>.</summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=0; Fingerprint=835A89
+    // Broiler-Human:        PENDING
+    public UbcForm(
+        string identity,
+        int semanticVersion,
+        IUbcExecutorFactory executorFactory,
+        int authoredUbcContractVersion,
+        int builtAgainstUbcContractVersion = UbcContract.Version)
     {
         Identity = identity;
         SemanticVersion = semanticVersion;
         ExecutorFactory = executorFactory;
+        AuthoredUbcContractVersion = authoredUbcContractVersion;
+        BuiltAgainstUbcContractVersion = builtAgainstUbcContractVersion;
     }
 
     /// <summary>The form identity an artifact's header names.</summary>
@@ -332,6 +356,12 @@ public sealed class UbcForm
 
     /// <summary>The factory of the form's executor.</summary>
     public IUbcExecutorFactory ExecutorFactory { get; }
+
+    /// <summary>The universal bytecode contract version the emitter's author wrote for.</summary>
+    public int AuthoredUbcContractVersion { get; }
+
+    /// <summary>The universal bytecode contract version the emitter was compiled against.</summary>
+    public int BuiltAgainstUbcContractVersion { get; }
 }
 
 /// <summary>The forms one image composes for one family: at least one, each identity once.</summary>
@@ -411,7 +441,7 @@ public sealed class UbcEmitterSet
 // Broiler-Human:        PENDING
 public enum UbcCompositionFault
 {
-    /// <summary>The family was compiled against, or written for, another universal bytecode contract version.</summary>
+    /// <summary>The family, or the emitter of a form, was compiled against, or written for, another universal bytecode contract version.</summary>
     ContractVersionMismatch = 1,
 
     /// <summary>The declaration's profile identity is not the family's identity.</summary>
@@ -471,12 +501,13 @@ public sealed class UbcCompositionException : System.Exception
 public static class UbcDescriptors
 {
     /// <summary>
-    /// Builds the descriptor. Throws <see cref="UbcCompositionException"/> when the family was compiled
-    /// against or written for another universal bytecode contract version, when the declaration's
-    /// identity is not the family's, or when the family registers more tables than a descriptor accepts.
+    /// Builds the descriptor. Throws <see cref="UbcCompositionException"/> when the family, or the
+    /// emitter of any form in <paramref name="forms"/>, was compiled against or written for another
+    /// universal bytecode contract version, when the declaration's identity is not the family's, or
+    /// when the family registers more tables than a descriptor accepts.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=058D0F
-    // Broiler-Falsified-If: a mismatched contract version or identity yields a descriptor rather than an exception
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=1; Fingerprint=1395B9
+    // Broiler-Falsified-If: a family or an emitter of a mismatched contract version, or a mismatched identity, yields a descriptor rather than an exception
     // Broiler-Human:        PENDING
     public static VmProfileDescriptor Build<TFamily>(
         UbcFamilyRegistration<TFamily> family,
@@ -494,6 +525,18 @@ public static class UbcDescriptors
                 UbcCompositionFault.ContractVersionMismatch,
                 $"the family '{family.Identity}' was written for universal bytecode contract version {family.AuthoredUbcContractVersion} " +
                 $"and compiled against {family.BuiltAgainstUbcContractVersion}; this assembly is version {UbcContract.Version}");
+        }
+
+        foreach (var composed in forms.Forms)
+        {
+            if (composed.BuiltAgainstUbcContractVersion != UbcContract.Version || composed.AuthoredUbcContractVersion != UbcContract.Version)
+            {
+                throw new UbcCompositionException(
+                    UbcCompositionFault.ContractVersionMismatch,
+                    $"the emitter of the form '{composed.Identity}' was written for universal bytecode contract version " +
+                    $"{composed.AuthoredUbcContractVersion} and compiled against {composed.BuiltAgainstUbcContractVersion}; " +
+                    $"this assembly is version {UbcContract.Version}");
+            }
         }
 
         if (!string.Equals(declaration.ProfileId.ToString(), family.Identity, System.StringComparison.Ordinal))

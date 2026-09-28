@@ -22,6 +22,11 @@ namespace Broiler.VM.Composition.Ubc.Fixture;
 /// fuel charged with it, and a parked operation holding no call depth.
 /// </para>
 /// <para>
+/// Four more, from universal bytecode contract version 2, run the paths the fixture family's defaults
+/// never take over a probe family compiled into this root: a call row of the signature effect form, a
+/// family's entry resolution, its admission of an instance, and an instance's start unit.
+/// </para>
+/// <para>
 /// <c>--closure</c> prints what the composition declares; <c>--transcripts</c> prints every program's
 /// transcript; <c>--write-corpus DIR</c> retains the program corpus and the primitive input corpus;
 /// <c>--corpus DIR</c> replays a retained corpus against its hashes and its recorded answers.
@@ -78,6 +83,10 @@ internal static class Program
                 FixtureChecks.HostileNeighbour(),
                 FixtureChecks.FrameFuelCharged(),
                 FixtureChecks.ParkedOperationHoldsNoDepth(),
+                ProbeChecks.SignatureCall(),
+                ProbeChecks.EntryResolution(),
+                ProbeChecks.InstanceAdmission(),
+                ProbeChecks.StartUnit(),
             };
 
             var failed = 0;

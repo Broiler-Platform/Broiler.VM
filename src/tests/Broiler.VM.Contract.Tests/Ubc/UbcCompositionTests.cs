@@ -15,14 +15,14 @@ public sealed class UbcCompositionTests
     public void The_Emitter_Set_Refuses_A_Native_Form()
     {
         var exception = Assert.Throws<UbcCompositionException>(() =>
-            UbcEmitterSet.Create(new UbcForm("x86-64", 1, new UbcCorpusExecutorFactory())));
+            UbcEmitterSet.Create(new UbcForm("x86-64", 1, new UbcCorpusExecutorFactory(), UbcContract.Version)));
 
         Assert.Equal(UbcCompositionFault.FormNotAdmitted, exception.Fault);
 
         // Alongside the bytecode form too: one native form refuses the set.
         exception = Assert.Throws<UbcCompositionException>(() => UbcEmitterSet.Create(
-            new UbcForm(UbcFormat.BytecodeForm, 1, new UbcCorpusExecutorFactory()),
-            new UbcForm("arm64", 1, new UbcCorpusExecutorFactory())));
+            new UbcForm(UbcFormat.BytecodeForm, 1, new UbcCorpusExecutorFactory(), UbcContract.Version),
+            new UbcForm("arm64", 1, new UbcCorpusExecutorFactory(), UbcContract.Version)));
 
         Assert.Equal(UbcCompositionFault.FormNotAdmitted, exception.Fault);
     }
@@ -35,15 +35,15 @@ public sealed class UbcCompositionTests
         Assert.Equal(UbcCompositionFault.NoForm, Assert.Throws<UbcCompositionException>(() => UbcEmitterSet.Create([null!])).Fault);
         Assert.Equal(
             UbcCompositionFault.NoForm,
-            Assert.Throws<UbcCompositionException>(() => UbcEmitterSet.Create(new UbcForm(UbcFormat.BytecodeForm, 1, null!))).Fault);
+            Assert.Throws<UbcCompositionException>(() => UbcEmitterSet.Create(new UbcForm(UbcFormat.BytecodeForm, 1, null!, UbcContract.Version))).Fault);
     }
 
     [Fact]
     public void The_Emitter_Set_Refuses_A_Form_Composed_Twice()
     {
         var exception = Assert.Throws<UbcCompositionException>(() => UbcEmitterSet.Create(
-            new UbcForm(UbcFormat.BytecodeForm, 1, new UbcCorpusExecutorFactory()),
-            new UbcForm(UbcFormat.BytecodeForm, 2, new UbcCorpusExecutorFactory())));
+            new UbcForm(UbcFormat.BytecodeForm, 1, new UbcCorpusExecutorFactory(), UbcContract.Version),
+            new UbcForm(UbcFormat.BytecodeForm, 2, new UbcCorpusExecutorFactory(), UbcContract.Version)));
 
         Assert.Equal(UbcCompositionFault.DuplicateForm, exception.Fault);
     }
@@ -71,6 +71,35 @@ public sealed class UbcCompositionTests
             UbcDescriptors.Build(registration, UbcCorpusFamily.Declaration(), UbcCorpusFamily.Forms()));
 
         Assert.Equal(UbcCompositionFault.ContractVersionMismatch, exception.Fault);
+    }
+
+    [Theory]
+    [InlineData(UbcContract.Version - 1, UbcContract.Version)]
+    [InlineData(UbcContract.Version, UbcContract.Version - 1)]
+    [InlineData(UbcContract.Version + 1, UbcContract.Version)]
+    [InlineData(UbcContract.Version, UbcContract.Version + 1)]
+    public void An_Emitter_Of_Another_Universal_Bytecode_Contract_Version_Is_Refused(int authored, int builtAgainst)
+    {
+        // The emitter is a package of its own, and a package reference resolves to a later version of
+        // this assembly: an emitter compiled against an earlier contract must not compose a family of
+        // this one, whose members it would never call.
+        var forms = UbcEmitterSet.Create(new UbcForm(UbcFormat.BytecodeForm, 1, new UbcCorpusExecutorFactory(), authored, builtAgainst));
+
+        var exception = Assert.Throws<UbcCompositionException>(() =>
+            UbcDescriptors.Build(UbcCorpusFamily.Registration(), UbcCorpusFamily.Declaration(), forms));
+
+        Assert.Equal(UbcCompositionFault.ContractVersionMismatch, exception.Fault);
+        Assert.Contains("the emitter of the form 'bytecode'", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void A_Form_Carries_The_Version_Its_Emitter_Was_Compiled_Against_And_Composes_At_This_One()
+    {
+        var form = new UbcForm(UbcFormat.BytecodeForm, 1, new UbcCorpusExecutorFactory(), UbcContract.Version);
+
+        Assert.Equal(UbcContract.Version, form.AuthoredUbcContractVersion);
+        Assert.Equal(UbcContract.Version, form.BuiltAgainstUbcContractVersion);
+        Assert.NotNull(UbcDescriptors.Build(UbcCorpusFamily.Registration(), UbcCorpusFamily.Declaration(), UbcEmitterSet.Create(form)));
     }
 
     [Fact]

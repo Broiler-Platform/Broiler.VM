@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   5
 // Annotated:        5/5
-// Exempt:           76
+// Exempt:           90
 // Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    High
@@ -26,11 +26,16 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <para>
 /// <b>The registry is bound in both directions or it is not a registry.</b> Every code this
 /// assembly can emit is a member below, and every member below is reachable from a decode path in
-/// <see cref="WasmDecoder"/>, a validation path in <see cref="WasmValidator"/>, or the reserved
-/// path in <see cref="WebAssemblyVerifier"/>. The numbers are grouped by the pass that emits them
-/// so that a reader can tell from a code alone which pass refused an artifact, and a code is never
-/// reused for a different meaning: a rejection whose meaning changes takes a new number and the old
-/// one is retired, because a corpus entry that recorded a code has dated it.
+/// <see cref="WasmDecoder"/>, a validation path in <see cref="WasmValidator"/>, the family hook
+/// <see cref="WasmFamilyVerifier"/> over a universal bytecode artifact, the lowering of a validated
+/// module into one by <see cref="WasmTranslator"/>, or the reserved path in the hook and in the
+/// translator - one member of the translation band excepted, which guards operand fields no module
+/// the validator admits today can overflow and says so, and the two header members the retired
+/// bare-module verifier emitted, which stay numbered and are emitted by nothing. The numbers are
+/// grouped by the pass that emits them so that a reader can
+/// tell from a code alone which pass refused an artifact, and a code is never reused for a different
+/// meaning: a rejection whose meaning changes takes a new number and the old one is retired, because
+/// a corpus entry that recorded a code has dated it.
 /// </para>
 /// <para>
 /// <b>The two thousand and the twenty-one hundred through twenty-six hundred bands are decoding;
@@ -50,9 +55,9 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// <para>
 /// <b>The 2900 band is reserved and is not a decode diagnostic.</b> It is the answer a defect in
 /// this assembly produces, and reaching it is a bug to be fixed rather than a rejection route: the
-/// core deliberately does not catch a verifier's exception, so an escape would surface as a crash
-/// in the caller rather than as an answer, and converting one into a refusal is the only way this
-/// verifier can be total.
+/// core deliberately does not catch a verifier's exception, so an escape from the family's hook
+/// would surface as a crash in the caller rather than as an answer, and converting one into a
+/// refusal is the only way the hook and the translator can be total.
 /// </para>
 /// <para>
 /// <b>It is an enum rather than a class of constants</b>, for the reason the JavaScript profile's
@@ -60,7 +65,7 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// be several dozen separately assessed fixed values saying the same thing worse.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=11871F
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D805C6
 // Broiler-Human:        PENDING
 public enum WebAssemblyDiagnosticCode
 {
@@ -72,10 +77,20 @@ public enum WebAssemblyDiagnosticCode
     /// <summary>The four bytes after the magic are not a binary format version this build reads.</summary>
     UnsupportedBinaryVersion = 2002,
 
-    /// <summary>The artifact descriptor names a format version outside this profile's range.</summary>
+    /// <summary>The artifact descriptor named a format version outside the retired bare-module verifier's range.</summary>
+    /// <remarks>
+    /// Emitted by nothing since milestone UBC-4 retired the bare-module verifier that checked it. The
+    /// core refuses an artifact's format version against the descriptor a root builds from the
+    /// family before the family's hook is reached, and the number stays taken.
+    /// </remarks>
     UnsupportedArtifactFormatVersion = 2003,
 
-    /// <summary>The artifact descriptor names a feature manifest this verifier does not accept.</summary>
+    /// <summary>The artifact descriptor named a feature manifest the retired bare-module verifier did not accept.</summary>
+    /// <remarks>
+    /// Emitted by nothing since milestone UBC-4 retired the bare-module verifier that checked it. The
+    /// core refuses an artifact's manifest against the descriptor a root builds from the family before
+    /// the family's hook is reached, and the number stays taken.
+    /// </remarks>
     UnacceptedFeatureManifest = 2004,
 
     // ---- 2100: section framing ------------------------------------------------------------
@@ -308,16 +323,96 @@ public enum WebAssemblyDiagnosticCode
     /// </remarks>
     OpcodeNotAdmitted = 2822,
 
+    // ---- 2850: the family hook, over a universal bytecode artifact's module definitions -----
+    //
+    // The universal bytecode walk verifies what every family shares; the family's hook then checks
+    // what only this profile knows, over the artifact's FamilyData section and at every family
+    // instruction. A hook refusal that means exactly what a decoder or validator code above already
+    // means carries that code: a limits minimum above its maximum is 2305 whichever pass finds it.
+    // The members below are the checks nothing above states, because they are about the universal
+    // bytecode container a translation writes rather than about a WebAssembly module's bytes. They
+    // sit in the upper half of the body-validation hundred, the one hundred with room, because every
+    // hundred from 2000 to 2900 is taken and 3000 to 3999 is the universal bytecode's own range,
+    // which the walk answers as a defect of the hook when a hook names it.
+
+    /// <summary>The artifact carries no module definitions: no FamilyData section of family slot one.</summary>
+    ModuleDefinitionsMissing = 2851,
+
+    /// <summary>The module definitions ended where their layout says more bytes follow.</summary>
+    ModuleDefinitionsTruncated = 2852,
+
+    /// <summary>The module definitions carry bytes after the start field that ends them.</summary>
+    ModuleDefinitionsTrailingBytes = 2853,
+
+    /// <summary>The module definitions name a layout version this build does not read.</summary>
+    ModuleDefinitionsVersionUnsupported = 2854,
+
+    /// <summary>A byte saying whether a memory or a table is declared is neither zero nor one.</summary>
+    ModuleDefinitionsMalformedPresence = 2855,
+
+    /// <summary>A thirty-two-bit global's initial bits set a bit above its width.</summary>
+    GlobalInitialValueOutOfRange = 2856,
+
+    /// <summary>A Types row or a unit's locals name a language-value slot, and this family has no value plane.</summary>
+    ValueSlotNotAdmitted = 2857,
+
+    /// <summary>An exported function's unit is not flagged as an entry, so no invocation could start it.</summary>
+    ExportedFunctionNotAnEntry = 2858,
+
+    /// <summary>The Positions rows are not in ascending order of unit and offset, or one position is stated twice.</summary>
+    PositionsNotOrdered = 2859,
+
+    /// <summary>A global row's type is not the type of the global its operand names.</summary>
+    GlobalRowTypeMismatch = 2860,
+
+    // ---- 2870: the translation, what a valid module says that universal bytecode cannot hold ---
+    //
+    // A module the decoder and the validator admitted is lowered into a universal bytecode artifact,
+    // and the container's format bounds what one unit and one artifact hold. A module past one of
+    // those bounds is refused at translation with one of the members below, each naming its bound,
+    // with the reason this profile gives a well-formed module it does not admit and the position the
+    // validator gives a body's refusals. They share the upper half of the body-validation hundred with
+    // the hook's band above, for the reason that band gives.
+
+    /// <summary>A function declares more locals, its parameters included, than one universal bytecode unit holds.</summary>
+    /// <remarks>
+    /// A value a branch carries to a block crosses the branch in a scratch local the translation
+    /// declares after the function's own, one per carried position and word type the function needs,
+    /// and a branch that drops further than one squash names its target in one more; so a function
+    /// within five locals of the bound is refused here, at the branch, when it needs one more than the
+    /// unit can declare.
+    /// </remarks>
+    TranslationLocalsAboveMaximum = 2871,
+
+    /// <summary>A function's operand stack rises above the height one universal bytecode unit may declare.</summary>
+    /// <remarks>
+    /// A call to a function whose type has more results than the height reaches it with one
+    /// instruction, whatever the size of the body.
+    /// </remarks>
+    TranslationOperandHeightAboveMaximum = 2872,
+
+    /// <summary>The module holds more branch tables than one universal bytecode artifact can name.</summary>
+    TranslationJumpTablesAboveMaximum = 2873,
+
+    /// <summary>An immediate does not fit the operand field of the universal bytecode row it lowers to.</summary>
+    /// <remarks>
+    /// No module the validator admits reaches it today: a local index is bounded by the locals a unit
+    /// holds, and an alignment by the access width. It is checked so that a lowering never writes an
+    /// operand its field cannot hold, whatever the validator comes to admit.
+    /// </remarks>
+    TranslationOperandOutOfRange = 2874,
+
     // ---- 2900: reserved for a defect in this assembly ---------------------------------------
 
     /// <summary>
     /// Something in this assembly threw. It says nothing about the artifact.
     /// </summary>
     /// <remarks>
-    /// It is emitted by the one catch that makes this verifier total, and it exists so that a
-    /// defect here becomes a deterministic refusal instead of an exception escaping into a caller
-    /// that has no way to tell it from a malicious module. A retained corpus entry recording this
-    /// code is a bug report, never an expected answer.
+    /// It is emitted by the catches that make the family's hook and the translator total, and by the
+    /// validator where it disagrees with itself, and it exists so that a defect here becomes a
+    /// deterministic refusal instead of an exception escaping into a caller that has no way to tell it
+    /// from a malicious module. A retained corpus entry recording this code is a bug report, never an
+    /// expected answer.
     /// </remarks>
     VerifierDefect = 2901,
 
@@ -367,7 +462,7 @@ public enum WebAssemblyDiagnosticCode
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>IT IS ONE MAPPING BECAUSE TWO WOULD DISAGREE.</b> Both passes of this verifier read bytes
+/// <b>IT IS ONE MAPPING BECAUSE TWO WOULD DISAGREE.</b> Both passes, decoding and validation, read bytes
 /// through the core's bounded reader and both read this profile's own variable-length integers, so
 /// both have to decide, for every way those can stop, whether the answer is an invalid artifact
 /// carrying a diagnostic code or a resource exhaustion naming a dimension and a scope. That split

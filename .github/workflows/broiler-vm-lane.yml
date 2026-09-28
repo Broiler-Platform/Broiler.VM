@@ -182,8 +182,12 @@ jobs:
           # Eight since d16a6aa (2026-09-19) made the three JavaScript profile projects,
           # Profile.MachineCode and Profile.WebAssembly packable; it was three before that
           # and this number was not moved with them, so every push has failed here since.
-          test "$nupkg" -eq 8
-          test "$snupkg" -eq 8
+          # Ten since 1b55423 (2026-09-25), where decision UBC-D-5 was taken early and made
+          # Broiler.VM.Ubc and Broiler.VM.Emitter.Bytecode packable, because the packable
+          # WebAssembly profile now references the first. This number was not moved with them
+          # either, and every push of that milestone's branch failed here until it was.
+          test "$nupkg" -eq 10
+          test "$snupkg" -eq 10
 
       # The one check that cannot be done from inside the solution: a consumer with no project
       # reference, restoring from a feed whose only source is the packages just built.

@@ -99,4 +99,148 @@ public sealed class ReclamationTests
 
         Assert.Equal(spent, runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.Fuel));
     }
+
+    [Theory]
+    [InlineData(FixtureVmProfileVariant.BreachesBoundDuringInstantiation)]
+    [InlineData(FixtureVmProfileVariant.BreachesBoundThenPollsDuringInstantiation)]
+    [InlineData(FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation)]
+    public void A_Refused_Instantiation_Gives_Back_The_Live_Bytes_It_Retained(FixtureVmProfileVariant variant)
+    {
+        // The profile reported bytes retained and was then refused for breaking its poll bound. No
+        // instance was built around the instance level those bytes were committed through, so no
+        // disposal will ever release them: the core has to, at the runtime and at the aggregate.
+        using var parent = Parent();
+        var catalog = FixtureComposition.Catalog(FixtureVmProfile.DescriptorFor(variant));
+        var runtime = FixtureComposition.Runtime(catalog, FixtureComposition.Options(parent: parent));
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var before = runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes);
+        var parentBefore = parent.GetSnapshot().Consumed(VmBudgetDimension.LiveBytes);
+
+        // Three times, so a leak would show as a climb and not only as an offset.
+        for (var attempt = 0; attempt < 3; attempt++)
+        {
+            var result = runtime.Instantiate(artifact, CancellationToken.None);
+
+            Assert.Equal(VmOutcome.ProfileFault, result.Outcome);
+            Assert.Equal(VmReason.CancellationPollBoundExceeded, result.Reason);
+            Assert.Equal(before, runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes));
+        }
+
+        // The aggregate is where a leak would outlive the runtime: disposing a runtime gives back
+        // what its instances held, and there were none.
+        runtime.Dispose();
+
+        Assert.Equal(parentBefore, parent.GetSnapshot().Consumed(VmBudgetDimension.LiveBytes));
+    }
+
+    [Fact]
+    public void An_Instantiation_Refused_For_Exhaustion_Gives_Back_The_Live_Bytes_It_Retained()
+    {
+        // The exhaustion path had the same gap as the poll-bound one: the retention before the
+        // refused charge was committed and never released. The instance's Fuel ceiling is stated
+        // below what the profile charges while instantiating, so the charge is refused.
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.BreachesBoundDuringInstantiation));
+
+        using var runtime = FixtureComposition.Runtime(catalog);
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var before = runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes);
+
+        var result = runtime.Instantiate(
+            artifact,
+            VmLimitOverrides.Of(VmBudgetDimension.Fuel, FixtureVmExecutor.InstantiationCharge / 2),
+            CancellationToken.None);
+
+        Assert.Equal(VmOutcome.ResourceExhaustion, result.Outcome);
+        Assert.Equal(VmBudgetDimension.Fuel, result.Diagnostics.ExhaustedDimension);
+        Assert.Equal(before, runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes));
+    }
+
+    [Fact]
+    public void An_Instantiation_Refused_For_A_Host_Failure_Gives_Back_The_Live_Bytes_It_Retained()
+    {
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.CallsHostDuringInstantiation));
+
+        // First the same profile with a handler that completes, so the retention is shown to be
+        // real: the instance holds it until it is disposed.
+        using (var runtime = FixtureComposition.Runtime(catalog))
+        {
+            var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+            var before = runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes);
+
+            var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+            Assert.Equal(
+                before + FixtureVmExecutor.InstantiationRetention,
+                runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes));
+
+            instance.Dispose();
+        }
+
+        // Then with a handler that fails terminally: refused, and nothing left counted.
+        using (var runtime = FixtureComposition.Runtime(
+                   catalog,
+                   FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(ThrowingHostCall))))
+        {
+            var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+            var before = runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes);
+
+            var result = runtime.Instantiate(artifact, CancellationToken.None);
+
+            Assert.Equal(VmOutcome.HostFailure, result.Outcome);
+            Assert.Equal(before, runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes));
+        }
+    }
+
+    [Fact]
+    public void A_Cancelled_Instantiation_Gives_Back_The_Live_Bytes_It_Retained()
+    {
+        // The profile retains, makes a call that completes, and answers that it created the
+        // instance, under a token its caller had already cancelled. The answer is a cancellation,
+        // so nothing holds the retention and nothing may stay counted for it.
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.CallsHostDuringInstantiation));
+
+        using var runtime = FixtureComposition.Runtime(catalog);
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var before = runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes);
+
+        var result = runtime.Instantiate(artifact, new CancellationToken(canceled: true));
+
+        Assert.Equal(VmOutcome.Cancellation, result.Outcome);
+        Assert.Equal(before, runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes));
+    }
+
+    private static VmHostCallOutcome ThrowingHostCall(ReadOnlySpan<long> arguments, out long result)
+    {
+        result = 0;
+        throw new InvalidOperationException("host defect");
+    }
+
+    private static VmAggregateBudget Parent()
+    {
+        var builder = System.Collections.Immutable.ImmutableArray.CreateBuilder<VmCeilingSpec>();
+
+        foreach (var dimension in VmBudgetDimensions.All)
+        {
+            if (!VmBudgetDimensions.CarriesAggregateScope(dimension))
+            {
+                continue;
+            }
+
+            builder.Add(dimension switch
+            {
+                VmBudgetDimension.LiveRuntimes => VmCeilingSpec.Value(dimension, 8),
+                VmBudgetDimension.Fuel => VmCeilingSpec.Value(dimension, 10_000_000),
+                VmBudgetDimension.HostCalls => VmCeilingSpec.Value(dimension, 1_000_000),
+                _ => VmCeilingSpec.Value(dimension, 1_000_000_000),
+            });
+        }
+
+        return VmAggregateBudget.Create(builder.ToImmutable());
+    }
 }

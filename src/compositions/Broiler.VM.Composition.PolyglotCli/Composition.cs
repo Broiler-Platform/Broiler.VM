@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using Broiler.VM;
+using Broiler.VM.Emitter.Bytecode;
 using Broiler.VM.Profile.JavaScript;
 using Broiler.VM.Profile.WebAssembly;
+using Broiler.VM.Ubc;
 using System.Collections.Immutable;
 
 namespace Broiler.VM.Composition.PolyglotCli;
@@ -71,8 +73,56 @@ internal static class Composition
             .Add(emitter is null
                 ? JavaScriptProfile.Descriptor
                 : JavaScriptProfile.DescriptorReEmittingWith(emitter, JavaScriptProfile.NativeManifest))
-            .Add(WebAssemblyProfile.Descriptor)
+            .Add(WebAssembly)
             .Build();
+
+    /// <summary>
+    /// The WebAssembly family's descriptor over the bytecode emitter, built here because a family
+    /// names no emitter and the form is the composition's choice.
+    /// </summary>
+    /// <remarks>
+    /// <b>What the core verifies for this profile is universal bytecode, and never a module.</b> The
+    /// WebAssembly lane hands a module to the profile's translator first and the core the artifact the
+    /// translation answers; the descriptor is the family's, built from its registration and its
+    /// declaration over the one form this image composes.
+    /// </remarks>
+    internal static VmProfileDescriptor WebAssembly { get; } = UbcDescriptors.Build(
+        WebAssemblyProfile.Registration,
+        WebAssemblyProfile.Declaration,
+        UbcEmitterSet.Create(UbcBytecodeEmitter.Form));
+
+    /// <summary>
+    /// The ceilings the core verifies an artifact named by <paramref name="descriptor"/> under in
+    /// <paramref name="runtime"/>: the runtime's own, intersected with the WebAssembly profile's hard
+    /// maxima and with what the descriptor requests.
+    /// </summary>
+    /// <remarks>
+    /// <b>The translator is handed these and not a default.</b> The translation decodes and validates
+    /// the module under a meter of its own, and the ceilings it enforces must be the ones the core
+    /// would have verified the module under - the ones this host states or adopts, and a caller's
+    /// allowances, intersected as the core intersects them - or a module the host admits could be
+    /// refused at translation, and one it refuses translated. They are read off the runtime's budget
+    /// snapshot, so the two can never drift apart.
+    /// </remarks>
+    internal static VmLimitVector WebAssemblyCeilings(VmRuntime runtime, in VmArtifactDescriptor descriptor)
+    {
+        var snapshot = runtime.GetBudgetSnapshot();
+        var values = new ulong[VmBudgetDimensions.Count];
+
+        foreach (var dimension in VmBudgetDimensions.All)
+        {
+            values[(int)dimension] = snapshot.EffectiveCeiling(dimension);
+        }
+
+        if (!VmLimitVector.TryCreate(values, out var host))
+        {
+            throw new InvalidOperationException("the runtime's ceilings do not form a limit vector");
+        }
+
+        return VmLimitVector.Intersect(
+            VmLimitVector.Intersect(host, WebAssembly.ProfileHardMaxima),
+            descriptor.RequestedLimits.IsEmpty ? VmLimitVector.Unconstrained : descriptor.RequestedLimits);
+    }
 
     /// <summary>The ceilings a caller may move, with null meaning "this host does not state it".</summary>
     /// <param name="Fuel">The instruction allowance per run.</param>
@@ -177,7 +227,7 @@ internal static class Composition
             }
 
             if (!TryDefault(JavaScriptProfile.Descriptor, dimension, out var script) ||
-                !TryDefault(WebAssemblyProfile.Descriptor, dimension, out var module))
+                !TryDefault(WebAssembly, dimension, out var module))
             {
                 continue;
             }

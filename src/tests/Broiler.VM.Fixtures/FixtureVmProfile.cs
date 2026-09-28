@@ -35,6 +35,13 @@ public enum FixtureVmProfileVariant
     DeclaresNoGuestLoads = 7,
 
     /// <summary>Declares asynchronous instantiation and parks during it.</summary>
+    /// <remarks>
+    /// It parks twice: once while instantiating and once more on the first resume, and the second
+    /// resume completes the instantiation with the instance's state. An instantiation may park any
+    /// number of times, and only the resume that finishes it may publish an instance.
+    /// <i>(Corrected 2026-09-28. The summary above was true of the declaration only: the executor
+    /// never parked for this variant and instantiated it synchronously, and no test used it.)</i>
+    /// </remarks>
     DeclaresAsynchronousInstantiation = 8,
 
     /// <summary>Suspends during instantiation without declaring that it may.</summary>
@@ -84,6 +91,89 @@ public enum FixtureVmProfileVariant
     /// polls: polling more often than declared is what a profile is allowed to do.
     /// </remarks>
     WindowedGuestLoads = 17,
+
+    /// <summary>
+    /// Charges more than its declared bound while instantiating, never polls again, and answers that
+    /// the instance was created.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The limiting case of breaking the bound: nothing the profile does afterwards takes a poll, so
+    /// no poll can find the breach and only the core's own reading of the uncharged-work counter at
+    /// the end of the step can.
+    /// </para>
+    /// <para>
+    /// Like every variant that misbehaves while instantiating, it first reports
+    /// <see cref="FixtureVmExecutor.InstantiationRetention"/> bytes retained and never gives them
+    /// back itself, so what a refused instantiation leaves counted is visible to a test.
+    /// </para>
+    /// </remarks>
+    BreachesBoundDuringInstantiation = 18,
+
+    /// <summary>
+    /// Charges more than its declared bound while instantiating, then polls, and answers the refused
+    /// poll as every executor here answers one: as a cancellation.
+    /// </summary>
+    /// <remarks>
+    /// The case a real engine produces. The poll finds the breach and refuses, and the profile - which
+    /// cannot tell a refused poll's three causes apart - reports the one it guesses. What the caller
+    /// is told has to come from the meter's latch rather than from that guess.
+    /// </remarks>
+    BreachesBoundThenPollsDuringInstantiation = 19,
+
+    /// <summary>
+    /// Declares asynchronous instantiation, charges more than its declared bound while
+    /// instantiating, and then parks.
+    /// </summary>
+    /// <remarks>
+    /// Parking is legal for this variant, so the only thing wrong with the step is the breach. What
+    /// it shows is that the continuation of a step refused for a breach is unwound rather than
+    /// dropped, as every other refused parking at instantiation is.
+    /// </remarks>
+    BreachesBoundThenParksDuringInstantiation = 20,
+
+    /// <summary>
+    /// Calls the doubling capability while instantiating, ignores what the call answered, and
+    /// answers that the instance was created.
+    /// </summary>
+    /// <remarks>
+    /// The doubling capability declares that a fault terminates the operation. A test that registers
+    /// a throwing handler for it therefore makes a host failure the right answer, and a profile that
+    /// carries on regardless is the case where its own answer has to be discarded.
+    /// </remarks>
+    CallsHostDuringInstantiation = 21,
+
+    /// <summary>
+    /// Declares asynchronous instantiation, calls the doubling capability while instantiating, and
+    /// then parks.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// With a handler that completes, its instantiation parks legally. The resume charges
+    /// <see cref="FixtureVmExecutor.InstantiationResumeCharge"/> fuel, polls, calls the doubling
+    /// capability again, and completes the instantiation with the instance's state - so a test can
+    /// make the resume fail by exhaustion or by a handler that fails on its second call. With a
+    /// throwing handler, the first step fails, and it shows that the continuation of a step refused
+    /// for a host failure is unwound rather than dropped.
+    /// </para>
+    /// <para>
+    /// It reports <see cref="FixtureVmExecutor.InstantiationRetention"/> bytes retained before it
+    /// parks, so the instance a completed resume publishes holds them, and a pending instance that
+    /// was never published has to give them back.
+    /// </para>
+    /// </remarks>
+    CallsHostThenParksDuringInstantiation = 22,
+
+    /// <summary>
+    /// Declares asynchronous instantiation, parks during it, and answers the resume as though it
+    /// were an invocation: completed, with no instance state.
+    /// </summary>
+    /// <remarks>
+    /// The one wrong answer a resumed instantiation can give that looks like success. It was
+    /// reported <c>Normal</c>, and the instance it published held the core's placeholder rather than
+    /// any state of the profile's.
+    /// </remarks>
+    CompletesParkedInstantiationWithoutState = 23,
 }
 
 /// <summary>
@@ -266,6 +356,9 @@ public static class FixtureDescriptorFactory
             : VmGuestLoadDeclaration.NotDeclared;
 
         var asynchronous = variant is FixtureVmProfileVariant.DeclaresAsynchronousInstantiation
+            or FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation
+            or FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation
+            or FixtureVmProfileVariant.CompletesParkedInstantiationWithoutState
             ? VmDeclaration.Declared
             : VmDeclaration.NotDeclared;
 
@@ -343,6 +436,10 @@ public static class FixtureDescriptorFactory
     {
         FixtureVmProfileVariant.PollBoundBreaker => 32UL,
         FixtureVmProfileVariant.WindowedPolling => FixtureVmExecutor.PollWindow,
+        FixtureVmProfileVariant.BreachesBoundDuringInstantiation or
+            FixtureVmProfileVariant.BreachesBoundThenPollsDuringInstantiation or
+            FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation =>
+            FixtureVmExecutor.InstantiationCharge - 1,
         _ => 1024UL,
     };
 

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   26
+// Annotated:        26/26
 // Exempt:           29
-// Human-reviewed:   0/25
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         1/0
+// Criteria:         4/0
 // Resource impact:  5/10 max
-// Unverified:       25
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -39,12 +39,12 @@ internal sealed class VmOperation
 {
     private readonly object gate = new();
     private readonly VmRuntime runtime;
-    private readonly VmInstanceImplementation? instance;
     private readonly VmProfileDescriptor profile;
     private readonly VmMeter meter;
     private readonly System.Threading.CancellationTokenSource cancellation;
     private readonly System.Diagnostics.Stopwatch parkedFor = new();
 
+    private VmInstanceImplementation? instance;
     private IVmProfileContinuation? continuation;
     private VmSuspension? pending;
     private VmOperationState state = VmOperationState.Running;
@@ -157,6 +157,27 @@ internal sealed class VmOperation
             HostFailure = reason;
             HostFailureCapability = capability;
             HostFailureCapabilityVersion = version;
+        }
+    }
+
+    /// <summary>
+    /// Names the instance a parked instantiation is resumed against, once.
+    /// </summary>
+    /// <remarks>
+    /// An instantiation is an operation before it has an instance. It is created before the
+    /// profile's step so that a host failure the step produces has something to latch onto, and
+    /// only a step that parks gives it the placeholder instance a resume runs against. The first
+    /// instance named stays: an operation resumed against one instance and unwound through another
+    /// would be two operations wearing one identity.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=0; Fingerprint=62ABA6
+    // Broiler-Falsified-If: an operation that already has an instance is moved to another
+    // Broiler-Human:        PENDING
+    internal void AttachInstance(VmInstanceImplementation parked)
+    {
+        lock (gate)
+        {
+            instance ??= parked;
         }
     }
 
@@ -359,11 +380,19 @@ internal sealed class VmOperation
     }
 
     /// <summary>Resumes the parked operation through the profile's own continuation.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=E19972
+    /// <remarks>
+    /// An instantiation cancelled while it was parked is abandoned when that cancellation is
+    /// reported: nobody holds its pending instance or ever will, so answering cancelled and leaving
+    /// it parked would keep its continuation, its instance, its lease and its retained bytes until
+    /// the residency bound or the runtime's disposal came for them.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=AFB39E
+    // Broiler-Falsified-If: an instantiation cancelled while parked is answered cancelled and left unabandoned
     // Broiler-Human:        PENDING
     internal VmResumeResult Resume(VmDiagnostics baseline)
     {
         IVmProfileContinuation? resumed;
+        var cancelledWhileParked = false;
 
         lock (gate)
         {
@@ -382,16 +411,31 @@ internal sealed class VmOperation
             // cancelled. Resuming it would re-enter profile state that has already been abandoned.
             if (cancellationRequested)
             {
-                return VmResumeResult.Cancellation(
-                    Stage,
-                    VmReason.Cancelled,
-                    baseline.WithOutcome(VmStage.Resume, VmOutcome.Cancellation, VmReason.Cancelled, VmInitiator.Host));
+                cancelledWhileParked = true;
+                resumed = null;
+            }
+            else
+            {
+                resumed = continuation;
+                continuation = null;
+                pending = null;
+                state = VmOperationState.Running;
+            }
+        }
+
+        if (cancelledWhileParked)
+        {
+            // Outside the lock: abandoning unwinds through the profile and disposes an instance,
+            // and neither is work to do while holding this operation's gate.
+            if (Kind is VmOperationKind.Instantiate)
+            {
+                Abandon(VmReason.Cancelled);
             }
 
-            resumed = continuation;
-            continuation = null;
-            pending = null;
-            state = VmOperationState.Running;
+            return VmResumeResult.Cancellation(
+                Stage,
+                VmReason.Cancelled,
+                baseline.WithOutcome(VmStage.Resume, VmOutcome.Cancellation, VmReason.Cancelled, VmInitiator.Host));
         }
 
         parkedFor.Stop();
@@ -427,7 +471,16 @@ internal sealed class VmOperation
     // Broiler-Human:        PENDING
     internal void Abandon() => Abandon(VmReason.ExternalSuspensionAbandoned);
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=4; Fingerprint=DC2471
+    /// <summary>Latches the operation abandoned for <paramref name="reason"/> and unwinds the profile.</summary>
+    /// <remarks>
+    /// An abandoned instantiation will never complete, so its pending instance - which nobody was
+    /// handed - is disposed as well: ADR 0004 takes an instantiation abandoned while suspended to
+    /// Faulted and then Disposed. Left registered, it held its lease and its instance level's
+    /// retained bytes until the runtime itself was disposed. A disposal that is itself the cause of
+    /// the abandonment finds that instance already disposing, and this does nothing more.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=4; Fingerprint=B68344
+    // Broiler-Falsified-If: an abandoned instantiation leaves its pending instance registered, or an abandoned invocation disposes its instance
     // Broiler-Human:        PENDING
     internal void Abandon(VmReason reason)
     {
@@ -459,6 +512,11 @@ internal sealed class VmOperation
         if (dropped is not null)
         {
             instance?.Unwind(dropped);
+        }
+
+        if (Kind is VmOperationKind.Instantiate)
+        {
+            instance?.Dispose();
         }
     }
 

@@ -16,10 +16,9 @@ namespace Broiler.VM.Architecture.Tests;
 /// </para>
 /// <para>
 /// <b>One assembly, because this family has one.</b> The WebAssembly profile has no format sibling
-/// and no lowering - its payload is a bare WebAssembly module produced by an external toolchain, so
-/// there is no bytecode two projects have to agree on without depending on each other. The list is
-/// therefore short, and its being short is a fact about the family rather than about how much of it
-/// has been written.
+/// of its own: the bytecode it is translated into is the universal bytecode, whose assembly the
+/// profile references and which is frozen by its own baseline. The list is therefore short, and its
+/// being short is a fact about the family rather than about how much of it has been written.
 /// </para>
 /// <para>
 /// The describer and the loader are the ones <see cref="ProfileApiSurface"/> uses and for the same
@@ -35,6 +34,15 @@ internal static class WebAssemblyApiSurface
     internal static readonly string[] FamilyAssemblies =
     [
         "Broiler.VM.Profile.WebAssembly",
+    ];
+
+    /// <summary>
+    /// The assemblies the family references that this test project does not, resolved from the
+    /// profile's own build output: only the universal bytecode.
+    /// </summary>
+    internal static readonly string[] ProfileOnlyReferences =
+    [
+        "Broiler.VM.Ubc",
     ];
 
     /// <summary>Describes the public surface of the family's assemblies, sorted.</summary>
@@ -54,6 +62,23 @@ internal static class WebAssemblyApiSurface
         resolverPaths.AddRange(Directory.EnumerateFiles(
             Path.GetDirectoryName(typeof(object).Assembly.Location)!, "*.dll"));
         resolverPaths.AddRange(Directory.EnumerateFiles(AppContext.BaseDirectory, "*.dll"));
+
+        // The profile's own build output holds the assemblies it references that this test does not:
+        // Broiler.VM.Ubc, which its family's public types derive from and implement, and which the
+        // describer reads through their base types and interfaces. Named one by one rather than the
+        // whole directory, so a copy of an assembly this test already resolves is not offered twice.
+        foreach (var file in files)
+        {
+            foreach (var reference in ProfileOnlyReferences)
+            {
+                var path = Path.Combine(Path.GetDirectoryName(file)!, reference + ".dll");
+
+                if (File.Exists(path))
+                {
+                    resolverPaths.Add(path);
+                }
+            }
+        }
 
         using var context = new MetadataLoadContext(
             new PathAssemblyResolver(resolverPaths.Distinct(StringComparer.OrdinalIgnoreCase)));

@@ -139,9 +139,16 @@ internal sealed class VmExecutionScope
     // Broiler-Human:        PENDING
     internal VmOperation? CurrentOperation => operation.Value;
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=F0C37E
+    /// <summary>Opens the scope for one step of <paramref name="owner"/>, charged to <paramref name="meter"/>.</summary>
+    /// <remarks>
+    /// The owner is required, and there is deliberately no overload that omits it. There was a
+    /// default, and instantiation used it: its steps ran with no operation in scope, so a capability
+    /// that failed terminally during instantiation had nothing to latch onto and the profile's own
+    /// answer was reported instead of the host failure.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=4413E3
     // Broiler-Human:        PENDING
-    internal void Enter(VmMeter meter, VmOperation? owner = null)
+    internal void Enter(VmMeter meter, VmOperation owner)
     {
         current.Value = meter;
         operation.Value = owner;

@@ -94,15 +94,39 @@ public ref struct VmBoundedReader
     /// Polling once per byte is therefore far tighter than the contract asks for, and it is not
     /// free: a poll takes the meter's lock and reads a clock, so a verifier that reads a
     /// variable-length integer one byte at a time pays that on every byte of every integer. A
-    /// profile passes its own declared bound here and gets the latency it promised rather than a
-    /// stricter one it never claimed.
+    /// profile passes a granularity derived from its own declared bound, by the rule below, and
+    /// gets the latency it promised rather than a stricter one it never claimed.
     /// </para>
     /// <para>
-    /// Pass the value the profile declares as its uncharged-work bound. A granularity larger than
-    /// that bound is a profile defect the meter detects on its own: accumulated work strictly
-    /// greater than the bound is reported as a poll-bound violation, so a granularity equal to the
-    /// bound is the largest safe value. A granularity of zero or one polls on every charge, which
-    /// is the behaviour of the constructor above.
+    /// <b>The granularity and the largest single read must fit inside the bound together.</b> A
+    /// read is charged whole and the poll comes after it, once the unpolled work has reached the
+    /// granularity, so this reader enters every read with up to the granularity less one unpolled
+    /// and leaves a read of <c>L</c> units with up to the granularity less one, plus <c>L</c>. The
+    /// meter reports accumulated work strictly greater than the profile's declared uncharged-work
+    /// bound as a poll-bound violation. So the rule is: the granularity plus the largest single
+    /// read must not exceed the bound plus one. A reader whose every read is one unit may poll at
+    /// the bound itself; one that reads a byte run of any length may not.
+    /// </para>
+    /// <para>
+    /// The universal bytecode reader and the WebAssembly profile both split the bound in two: no
+    /// read charges more than half the bound and one unit, a longer run is read in pieces no
+    /// longer than that, and the reader polls at the rest of the bound
+    /// (<c>UbcArtifactReader.ReadWindow</c>, and <c>WasmReadAdapter.ReadWindow</c> with
+    /// <c>WasmReadAdapter.ReaderPollGranularity</c>). The rule counts only work charged through
+    /// this reader: work charged to the same meter by any other route between two polls leaves
+    /// that much less room. A granularity of zero or one polls on every charge, which is the
+    /// behaviour of the constructor above.
+    /// </para>
+    /// <para>
+    /// <i>(Corrected 2026-09-27. The second paragraph of these remarks read "A profile passes its
+    /// own declared bound here", and the two after it stood as one that read "Pass the value the
+    /// profile declares as its uncharged-work bound. A granularity larger than that bound is a
+    /// profile defect the meter detects on its own: accumulated work strictly greater than the
+    /// bound is reported as a poll-bound violation, so a granularity equal to the bound is the
+    /// largest safe value." That holds for reads of one unit only. The universal bytecode reader and the WebAssembly decoder both followed it and
+    /// read byte runs in one charge, so a run begun just short of a poll carried the work between
+    /// two polls past the bound, and both had to be fixed. The superseded reading is quoted rather
+    /// than deleted.)</i>
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=High; Resources=1; Fingerprint=83214B

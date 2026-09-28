@@ -11,6 +11,18 @@ The [evidence ledger](roadmap.status.md) is the authority for what has been acce
 milestone below said before the core, a sibling's finding, or this plan's own redrafting replaced
 it.
 
+**Every milestone below is read with the five terms [the roadmap's opening](roadmap.md) redefines
+since the universal bytecode programme's milestone UBC-4** *(corrected: WAC-31, WAC-32, WAC-34,
+WAC-36)*. *The verifier* and *verification* of a module are the translator's decoding and
+validation, which a composition root runs, followed by the core's verification of the universal
+bytecode artifact with this profile's family hook; *the executor* and *the interpreter* are this profile's family — its instruction table,
+handlers and store — executed by the universal bytecode's bytecode emitter; *the descriptor* is the one
+a root builds from the family's registration and declaration; *the verified state* is the universal
+bytecode's verified program; and *format version 1 as a bare module* is the universal bytecode's
+format version, with the module as the translator's input. **The reading narrows no clause and
+removes none**: a gate clause is met when what the reading names does what the clause asks, and a
+clause whose subject no longer exists in this profile stays open, and the ledger says which.
+
 ---
 
 ## 21. Milestones
@@ -315,10 +327,12 @@ scope control a copied codebase gets for free from the shape of what it copied.
 - **Ledger:** WA-5's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
   its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
-- **Next action:** Take the [section 9](roadmap.md#9-the-value-store-and-frame-model) decision as
-  a numbered decision stating its consequence in both directions, **before any interpreter source
-  is written**, with all nine rows including the vector-width row that only matters later and
-  the `LiveBytes`-breach row the amendment below decides the shape of.
+- **Next action:** The [section 9](roadmap.md#9-the-value-store-and-frame-model) decision is
+  [WAD-0003](decisions/0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md), with
+  all nine rows including the vector-width row that only matters later and the `LiveBytes`-breach
+  row the amendment below decides the shape of, and the memory representation is
+  [WAD-0001](decisions/0001-the-memory-representation.md); what remains of this action is the
+  fixtures and Native AOT representation probes each row still owes *(corrected: WAC-35, WAC-38)*.
   Implement the store for a single module: memories, tables, globals, and their metering.
   Implement the interpreter over the numeric and control surface, memory loads and stores,
   `memory.grow`, and `call` and `call_indirect` within one module. Implement traps as typed
@@ -326,7 +340,8 @@ scope control a copied codebase gets for free from the shape of what it copied.
   each claimed RID and derive the `CallDepth` default from it. Choose the uncharged-work bound,
   the charging granularity, and the cancellation poll bound from measurement. Catch every internal
   exception at this profile's own adapter.
-- **Dependencies:** WA-3. The ABI decision is a **gate on entry**, not this milestone's first task.
+- **Dependencies:** WA-3. The ABI decision is WAD-0003, and it gates nothing on entry: there is no
+  interpreter source of this profile's for it to precede *(corrected: WAC-35)*.
   And **the refusable retention member of
   [section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight)**, which is
   the one amendment this profile opens rather than files: no local resolution exists, and no
@@ -373,8 +388,8 @@ scope control a copied codebase gets for free from the shape of what it copied.
   non-charging variant is detected and reported as a contract violation; two runtimes read one
   shareable handle concurrently with no synchronisation and a **structural scan** asserts no
   memory, table, global, or mutable cache is reachable from a handle, with the scan's mechanism
-  and its residual stated; the memory representation decision names its own per-RID limits and
-  does not foreclose section 17's boundary; **the ABI decision's `LiveBytes`-breach row is answered
+  and its residual stated; the memory representation decision, WAD-0001
+  *(corrected: WAC-38)*, names its own per-RID limits and does not foreclose section 17's boundary; **the ABI decision's `LiveBytes`-breach row is answered
   in both directions and its answer is exercised** — whether an aggregate breach may terminate an
   operation at all, and what a guest observes when it does, by a named case per arm of whatever the
   row decides *(corrected: WAC-23)*; and the `assert_return`, `assert_trap`, and
@@ -676,7 +691,8 @@ What this ordering does and does not imply:
   whose vector half is by instruction count comparable to everything before it.
 - **Two decisions need no code and may be opened early**, against WA-1 rather than waiting on the
   acceptance gate: the value and frame ABI of
-  [section 9](roadmap.md#9-the-value-store-and-frame-model), and the store reading of
+  [section 9](roadmap.md#9-the-value-store-and-frame-model), now answered as WAD-0003
+  *(corrected: WAC-35)*, and the store reading of
   [section 11](roadmap.md#11-the-store-instances-and-linking). A team that reaches the acceptance
   gate after WA-1 should have prepared work rather than a hard stop.
 - **Manifest increments are not milestones.** Each mints one identity with a reviewed scope,
@@ -708,16 +724,16 @@ milestones means the piece is landed twice at two scopes rather than that its ow
 |---|---|
 | The three projects of [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph) and their solution entries | WA-0 draws the shell graph and the rule group; **WA-1 stands the first roots**, because the composition rule admits no root that composes nothing |
 | The profile identity, the manifest allocation, the fifteen hard maxima and the fifteen defaults | WA-0 decides and records all four |
-| The full-arity descriptor, with the rows [section 9](roadmap.md#9-the-value-store-and-frame-model) owns marked provisional | WA-1 |
+| The family's declaration, which carries every row of the full-arity descriptor a root builds from it, with the rows [section 9](roadmap.md#9-the-value-store-and-frame-model) owns marked provisional *(corrected: WAC-36)* | WA-1 |
 | The variable-length integer layer and its bounded count reader, over the core's byte primitives | WA-1 at slice scope; **WA-2 completes it** and runs the scan that proves no call to the core's canonical readers survives |
 | The format vocabulary — magic, version field, section identifiers, value types, limits — and the section-order table | WA-1 for the slice's subset; **WA-2 for the order table**, which is derived from the pinned revision and not from the identifiers |
 | The decoder | WA-1 at slice scope; WA-2 over the whole grammar |
 | The verified module, and every bound the interpreter will size itself from | WA-1, which is where a case first proves the operand-stack bound is computed at validation and stored on the verified state; extended at WA-2, WA-3 and WA-5 |
 | The validator — the value, control and initialization stacks, and polymorphic unreachable code | WA-1 at slice scope; **WA-3 for the specification's algorithm** and the diagnostic registry |
 | The instruction set the MVP admits | WA-2 and WA-3 decode and validate it; **WA-5 executes it**, and WA-5 is where `broiler.webassembly.numeric1` is minted |
-| The nine-row value, store and frame decision | **WA-5, on entry**, before the interpreter's first line — [section 9](roadmap.md#9-the-value-store-and-frame-model) makes it a gate on entry rather than a first task, and the MVP does not move it |
-| The interpreter, the store, and the executor's four members including the two refusals | WA-5 |
-| The allocation-meter adapter, the bounds projection, and the payload projections | WA-1, with the other five core-facing types |
+| The nine-row value, store and frame decision | **WA-5**, whose gate asks for its fixtures and probes; the rows themselves are answered in WAD-0003, and there is no interpreter source of this profile's for them to precede *(corrected: WAC-35)* |
+| The family's handlers and store, executed by the bytecode emitter, whose four executor members — the two refusals among them — are the universal bytecode's *(corrected: WAC-31, WAC-36)* | WA-5 |
+| The allocation-meter adapter, the bounds projection, and the payload projections | WA-1; the other five core-facing types are the universal bytecode's *(corrected: WAC-36)* |
 | The verifier, total from its first line | WA-1; WA-2 and WA-3 widen what it answers and never widen how it answers |
 | The entry-point encoding, including an export name carrying the encoding's own separator | **WA-1** — [section 10](roadmap.md#10-execution-mapping-webassembly-onto-the-core-lifecycle) fixes that it is decided there or decided by accident later, and the MVP's route through it is row MVP-6 of [the MVP programme record](../../../docs/mvp.md) rather than a decision this milestone takes |
 | The malformed corpus, its hashes, its expected triples, and its replay across three publish modes | WA-1 at slice scope; WA-2 at grammar scope; **WA-3 for the entries whose recorded triple is an exhaustion** rather than an invalid artifact |

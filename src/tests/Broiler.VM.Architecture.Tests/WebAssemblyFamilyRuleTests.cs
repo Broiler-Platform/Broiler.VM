@@ -20,7 +20,7 @@ public sealed class WebAssemblyFamilyRuleTests
         string.Equals(Environment.GetEnvironmentVariable(WriteSwitch), "1", StringComparison.Ordinal);
 
     [Fact]
-    public void W1_The_WebAssembly_Profile_References_Exactly_Abstractions_And_Binary()
+    public void W1_The_WebAssembly_Profile_References_Exactly_Abstractions_Binary_And_Ubc()
     {
         // Non-vacuous in both directions: the real project exists and has the set, and the rule
         // rejects each of the four ways it could stop having it. Without the first clause this

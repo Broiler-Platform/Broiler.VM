@@ -1,6 +1,15 @@
 # Suggested task — Fix WebAssembly float comparisons never executing
 
-**Status:** suggested, not scheduled, no owner. Found 2026-09-25 while surveying the tree for
+**Status:** suggested, not scheduled, no owner. *(Done 2026-09-25, and the status and the task below
+are kept as written. The universal bytecode programme's milestone UBC-4 retired the interpreter this
+task names in `e7efbc0`. The fixture of item 2 is the harness's float comparisons, added in `72e7491`:
+they fail in bundle `ubc-4-001`'s base run and pass in bundle
+[`ubc-4-002`](../evidence/ubc-4-002/README.md)'s run after, where the bytecode emitter executes each
+comparison from the primitive table. The routing item 1 names was corrected in `4931f3e`, in
+`WasmReferenceNumerics`, the family's reference arms moved out of the interpreter, and item 3's
+failing-then-passing watch of that correction is the E2 check's negative control, retained in
+`ubc-4-002`. Item 4 was met by the WebAssembly ledger's dated paragraph on the milestone rather than by a
+`WAC-nn` entry. Several paths below name files that no longer exist.)* Found 2026-09-25 while surveying the tree for
 [the universal bytecode concept](../universal-bytecode.md) (its section 2.2 names it). This document
 is the task written out so that a session starting from it alone has what it needs; it moves no
 ledger row and claims nothing about what any run has shown.

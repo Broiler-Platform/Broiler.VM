@@ -1,0 +1,15 @@
+# closure Broiler.VM.Composition.PolyglotCli rid=win-x64
+
+[trimmed] 10 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.PolyglotCli
+Broiler.VM.Emitter.Bytecode
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Compiler
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Profile.WebAssembly
+Broiler.VM.Runtime
+Broiler.VM.Ubc
+
+[aot] 0 non-framework assemblies

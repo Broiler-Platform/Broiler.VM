@@ -20,9 +20,10 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// identically in two programs written in two languages to escape.
 /// </para>
 /// <para>
-/// <b>The second implementation is deliberately a different shape.</b> The profile's interpreter is
-/// a dispatch loop over decoded bodies with an operand stack; the oracle below is a static method
-/// per operation with no stack and no dispatch. Two implementations that shared a structure would
+/// <b>The second implementation is deliberately a different shape.</b> What runs a module - since
+/// the universal bytecode programme's milestone UBC-4, the bytecode emitter's interpreter over the
+/// translator's artifact, with the primitive table's arithmetic - is a dispatch loop with an operand
+/// stack; the oracle below is a static method per operation with no stack and no dispatch. Two implementations that shared a structure would
 /// share the mistakes that structure invites, which is the failure mode a differential check exists
 /// to avoid rather than to reproduce.
 /// </para>
@@ -1050,11 +1051,8 @@ internal static class DifferentialChecks
             string label,
             List<(string, bool, string)> results)
         {
-            var descriptor = new VmArtifactDescriptor(
-                WebAssemblyProfile.Id, 1, WebAssemblyProfile.SliceManifest, default,
-                VmCallerIdentity.FromCanonicalIdentity("composition-wasm-harness://differential"));
-
-            var verified = runtime.Verify(in descriptor, module, CancellationToken.None);
+            var verified = ModuleVerification.Verify(
+                runtime, module, "composition-wasm-harness://differential", label);
 
             if (!verified.TryGetArtifact(out var artifact))
             {
@@ -1062,8 +1060,8 @@ internal static class DifferentialChecks
                     $"{label}: verification",
                     false,
                     $"{verified.Outcome}/{verified.Reason}/" +
-                    $"{verified.Diagnostics.ProfileDiagnosticCode} at offset " +
-                    verified.Diagnostics.SourcePosition.ByteOffset));
+                    $"{verified.Code} at offset " +
+                    verified.Position.ByteOffset));
 
                 return null;
             }
@@ -1081,6 +1079,7 @@ internal static class DifferentialChecks
                 return null;
             }
 
+            // The WebAssembly module's length, which is what this lane built and always printed.
             results.Add((
                 $"{label}: the module verifies and instantiates",
                 true,

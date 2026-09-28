@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
     <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Ubc\Broiler.VM.Ubc.csproj" />
     <ProjectReference Include="..\Broiler.VM.Profile.WebAssembly.Format\Broiler.VM.Profile.WebAssembly.Format.csproj" />
   </ItemGroup>
 </Project>

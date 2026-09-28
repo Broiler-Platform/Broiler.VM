@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           56
+// Exempt:           57
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    High
@@ -41,7 +41,7 @@ namespace Broiler.VM.Ubc;
 /// thing.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=4503D5
+// Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=6E0ADC
 // Broiler-Falsified-If: a member is emitted with two different core reasons, or a refusal of the walk carries no member of this vocabulary
 // Broiler-Human:        PENDING
 public enum UbcDiagnosticCode
@@ -184,6 +184,9 @@ public enum UbcDiagnosticCode
 
     /// <summary>A counted operand larger than any stack could supply.</summary>
     CountedOperandTooLarge = 3417,
+
+    /// <summary>A family row of the signature effect form names a row the Types section does not have.</summary>
+    SignatureTypeOutOfRange = 3418,
 
     // ---- 3500: regions ---------------------------------------------------------------------
 

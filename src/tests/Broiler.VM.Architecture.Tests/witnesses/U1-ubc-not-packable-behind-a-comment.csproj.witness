@@ -1,0 +1,13 @@
+<!-- Violates U1: the universal bytecode whose only mention of IsPackable true is inside a comment. A
+     comment is not a definition, so whether the project packs is whatever an import says, while a
+     search of the file's text finds the words. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+    <!-- Since UBC-4 this reads <IsPackable>true</IsPackable>. -->
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+</Project>

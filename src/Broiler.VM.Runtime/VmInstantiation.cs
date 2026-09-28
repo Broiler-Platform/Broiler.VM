@@ -9,7 +9,7 @@
 // Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         2/0
+// Criteria:         3/0
 // Resource impact:  5/10 max
 // Unverified:       9
 //
@@ -60,7 +60,8 @@ internal sealed class VmExecutionEnvironment : IVmExecutionEnvironment
 // Broiler-Human:        PENDING
 internal static class VmInstantiation
 {
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=3E6067
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=EA76BF
+    // Broiler-Falsified-If: an instantiation that publishes and parks nothing leaves its lease held, or what its instance level retained still counted at the runtime or aggregate level
     // Broiler-Human:        PENDING
     internal static VmInstantiationResult Run(
         VmRuntime runtime,
@@ -130,38 +131,76 @@ internal static class VmInstantiation
                 VmRuntime.Invalid(identified, VmStage.Instantiation, VmReason.HandleDraining, VmObjectKind.VerifiedArtifact, VmAttemptedCall.Instantiate));
         }
 
+        var instanceLevel = new VmBudgetLevel(VmBudgetScope.Instance, instanceCeilings);
         var succeeded = false;
 
         try
         {
             return Instantiate(
-                runtime, artifact, lease, profile, instanceCeilings, cancellationToken, identified, ref succeeded);
+                runtime, artifact, lease, profile, instanceLevel, cancellationToken, identified, ref succeeded);
         }
         finally
         {
             if (!succeeded)
             {
+                // Nothing was published and nothing parked, so no instance will ever be disposed
+                // around this level. What the step reported retained was committed at the runtime
+                // and aggregate levels too, and left there it would stay counted for bytes nobody
+                // holds: at the runtime until it is disposed, and at the aggregate for good, since
+                // a disposing runtime gives back only what its instances held. Released first and
+                // the lease last, the order an instance's own disposal uses.
+                VmInstanceImplementation.ReleaseRetained(runtime, instanceLevel);
                 lease.Release();
             }
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=4962CD
-    // Broiler-Falsified-If: the scope is entered with no owning operation, or the switch tests no host failure or poll bound
+    /// <summary>Runs the profile's instantiation step and maps what it answered.</summary>
+    /// <remarks>
+    /// <para>
+    /// The mapping follows the one precedence order every stage uses: cancellation, then resource
+    /// exhaustion, then a host failure the profile did not convert, then a profile that broke its
+    /// declared uncharged-work bound, then the step's own answer. Cancellation is read from the
+    /// token as well as from the meter, as invocation and resume read it: a profile that never
+    /// polled did not observe it, and the caller that cancelled is still not handed an instance.
+    /// </para>
+    /// <para>
+    /// Instantiation is an operation like any other, and the step runs with it in scope, so a
+    /// capability that fails terminally while the profile instantiates is latched onto it as it
+    /// would be during an invocation. The profile's own answer is then discarded, whatever it was:
+    /// a host defect is not billed to the guest because it happened before the guest had an
+    /// instance. It is the same operation a declared asynchronous instantiation parks, so a resumed
+    /// instantiation keeps its identity and its nested-load counters, as a resumed invocation does.
+    /// </para>
+    /// <para>
+    /// A breach of the bound is found by either of the meter's two readings - a poll that found it
+    /// and latched, or work still unpolled past the bound when the step returned - and is answered
+    /// as a profile fault naming it, whatever the step said. So a profile that answered its refused
+    /// poll as a cancellation is not reported as cancelled, and one that breached and then answered
+    /// <c>Instantiated</c> publishes nothing: its start function is guest code, and an instance
+    /// whose profile did not keep its latency promise is not handed to a caller any more than an
+    /// invocation that did not keep it completes.
+    /// </para>
+    /// <para>
+    /// A continuation parked by a step refused for cancellation, a host failure or a breach is
+    /// unwound, as every other refused parking here is. What a refused step reported retained is
+    /// given back by the caller, which owns the instance level for exactly that reason.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=F2101D
+    // Broiler-Falsified-If: a step whose caller cancelled, during which a terminating capability failed, or whose meter latched or left unpolled a poll-bound breach, is answered as anything but that cancellation, that host failure or a profile fault naming the breach where nothing ranked above it applies, or publishes an instance
     // Broiler-Human:        PENDING
     private static VmInstantiationResult Instantiate(
         VmRuntime runtime,
         VmVerifiedArtifact artifact,
         VmArtifactLease lease,
         VmProfileDescriptor profile,
-        ulong[] instanceCeilings,
+        VmBudgetLevel instanceLevel,
         System.Threading.CancellationToken cancellationToken,
         VmDiagnostics identified,
         ref bool succeeded)
     {
         var profileState = runtime.GetProfileState(profile);
-
-        var instanceLevel = new VmBudgetLevel(VmBudgetScope.Instance, instanceCeilings);
 
         var invocationLevel = new VmBudgetLevel(
             VmBudgetScope.Invocation, instanceLevel.CeilingsCopy());
@@ -197,15 +236,22 @@ internal static class VmInstantiation
 
         VmExecutionStep step;
 
+        // Created before the step rather than only when it parks: a host failure latches onto the
+        // operation in scope, and a step run with none in scope had its host failures dropped.
+        var operation = new VmOperation(
+            runtime, null, profile, VmOperationKind.Instantiate, meter, linked,
+            VmStage.Instantiation, identified);
+
         // The scope is what the executor's meter, capability table and mediator resolve through,
         // and it answers only inside the dynamic extent of this step.
-        profileState.Scope.Enter(meter);
+        profileState.Scope.Enter(meter, operation);
 
-        // Instantiation has no VmOperation of its own, so it mints the identity the mediator keys
-        // its per-operation counters on. A fresh one each time is the honest answer: two
+        // Keyed on the operation's own identity, which is fresh for every instantiation - two
         // instantiations are two operations, and they no more share a fan-out allowance than two
-        // invocations do.
-        mediator?.EnterScope(identified, VmObjectId.Mint());
+        // invocations do - and which a resume of a parked instantiation enters with again. A
+        // separately minted key reset the counters at that first resume, handing a profile that
+        // parks between loads a second allowance.
+        mediator?.EnterScope(identified, operation.ObjectId);
 
         try
         {
@@ -227,14 +273,23 @@ internal static class VmInstantiation
         {
             profileState.Scope.Leave();
 
-            // Hygiene. Instantiation never reads the uncharged-work counter, so nothing observable
-            // rests on this - but the meter is finished with, and its fuel belongs at the levels
-            // rather than in a table slot another operation could have used.
+            // As on the invocation and resume paths: what the step spent from a block is committed
+            // before the outcome is mapped. The poll-bound reading below settles for itself as well,
+            // and this settle also hands the fuel back to the levels rather than leaving it in a
+            // table slot another operation could have used.
             meter.SettlePreAdmittedFuel();
         }
 
-        if (meter.CancellationObserved)
+        // The token as well as the meter, as on the invocation and resume paths: a profile that
+        // never polled did not observe the cancellation, but the caller cancelled all the same and
+        // is owed that answer rather than an instance it no longer asked for.
+        if (meter.CancellationObserved || linked.Token.IsCancellationRequested)
         {
+            if (step.Kind is VmExecutionStepKind.Suspended && step.Continuation is not null)
+            {
+                Abandon(profile, runtime, executor, step.Continuation);
+            }
+
             return VmInstantiationResult.Cancellation(
                 VmReason.Cancelled,
                 identified.WithOutcome(VmStage.Instantiation, VmOutcome.Cancellation, VmReason.Cancelled, VmInitiator.Host));
@@ -247,6 +302,32 @@ internal static class VmInstantiation
                 identified
                     .WithOutcome(VmStage.Instantiation, VmOutcome.ResourceExhaustion, VmMeter.ReasonFor(meter.FailedDimension), VmInitiator.Core)
                     .WithExhaustion(meter.FailedDimension, meter.FailedScope));
+        }
+
+        if (operation.HostFailure is not VmReason.None)
+        {
+            if (step.Kind is VmExecutionStepKind.Suspended && step.Continuation is not null)
+            {
+                Abandon(profile, runtime, executor, step.Continuation);
+            }
+
+            return VmInstantiationResult.HostFailure(
+                operation.HostFailure,
+                identified
+                    .WithOutcome(VmStage.Instantiation, VmOutcome.HostFailure, operation.HostFailure, VmInitiator.Host)
+                    .WithCapability(operation.HostFailureCapability, operation.HostFailureCapabilityVersion, default));
+        }
+
+        if (meter.PollBoundExceeded || meter.UnpolledWorkExceedsBound)
+        {
+            if (step.Kind is VmExecutionStepKind.Suspended && step.Continuation is not null)
+            {
+                Abandon(profile, runtime, executor, step.Continuation);
+            }
+
+            return VmInstantiationResult.ProfileFault(
+                VmReason.CancellationPollBoundExceeded, step.Payload,
+                identified.WithOutcome(VmStage.Instantiation, VmOutcome.ProfileFault, VmReason.CancellationPollBoundExceeded, VmInitiator.Guest));
         }
 
         switch (step.Kind)
@@ -307,14 +388,14 @@ internal static class VmInstantiation
 
                 // The declared case parks. The instance is NOT published - an instance exists only
                 // when instantiation completes normally - so what the caller receives is the
-                // resumption object and nothing else.
+                // resumption object and nothing else. Both halves of the pairing are made before the
+                // operation parks, so nothing that finds it parked finds it without its instance.
                 var pending = new VmInstanceImplementation(
                     runtime, profile, executor, PlaceholderState.Instance, instanceLevel, identified,
                     profileState.Scope, mediator, lease);
 
-                var operation = new VmOperation(
-                    runtime, pending, profile, VmOperationKind.Instantiate, meter, linked,
-                    VmStage.Instantiation, identified);
+                operation.AttachInstance(pending);
+                pending.ParkInstantiation(operation);
 
                 if (!operation.TryPark(
                         VmSuspensionOrigin.Instantiation, step.Continuation, step.Payload,
@@ -479,12 +560,26 @@ internal static class VmInstantiation
     /// Stands in for instance state while an asynchronous instantiation is still parked.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The instance is not published to the caller until instantiation completes normally, so this
     /// is never handed to anyone: it exists so the parked operation has an instance to be resumed
-    /// against. The profile supplies its real state when it completes.
+    /// against. It is also what the profile's <c>Resume</c> is handed for that instance, and the
+    /// profile has nothing to read in it - its own partial state travels in its continuation.
+    /// </para>
+    /// <para>
+    /// The profile supplies its real state by completing the resumed instantiation with
+    /// <c>Instantiated</c>, and the pending instance takes that state before it is published. A
+    /// resumed instantiation that completes with anything else publishes nothing, and its pending
+    /// instance is disposed.
+    /// </para>
+    /// <para>
+    /// <i>(Corrected 2026-09-28. This read "The profile supplies its real state when it
+    /// completes", and nothing implemented it: a resumed instantiation that completed was published
+    /// still holding this placeholder, and every later invocation handed it to the profile.)</i>
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=5323E5
-    // Broiler-Falsified-If: a placeholder the caller was never given is reachable as an instance disposal will dispose
+    // Broiler-Falsified-If: an instance published to a caller, by instantiation or by a resume that completed one, still holds the placeholder
     // Broiler-Human:        PENDING
     private sealed class PlaceholderState : IVmInstanceState
     {

@@ -378,6 +378,8 @@ public sealed class UbcMalformedCorpusTests
         Assert.Contains((UbcEffectForm.Listed, false), effects);
         Assert.Contains((UbcEffectForm.Counted, false), effects);
         Assert.Contains((UbcEffectForm.Counted, true), effects);
+        Assert.Contains((UbcEffectForm.Signature, false), effects);
+        Assert.Equal(Enum.GetValues<UbcEffectForm>().ToHashSet(), effects.Select(static effect => effect.Form).ToHashSet());
         Assert.Equal(new HashSet<string> { "none", "code-own", "code-distinct-taken" }, targets);
         Assert.Equal(Enum.GetValues<UbcInstructionKind>().ToHashSet(), kinds);
         Assert.True(regionPrimitive, "no verifying entry uses a region primitive");

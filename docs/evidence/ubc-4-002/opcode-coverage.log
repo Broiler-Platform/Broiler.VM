@@ -1,0 +1,188 @@
+$ python docs/evidence/ubc-4-002/opcode-coverage.py
+# WasmOpcode members against WasmLowering.Step and WasmFamilyTable, read from the source
+
+0x00 Unreachable              lowered by name to common rows
+0x01 Nop                      lowered by name to common rows
+0x02 Block                    lowered by name to common rows
+0x03 Loop                     lowered by name to common rows
+0x04 If                       lowered by name to common rows
+0x05 Else                     lowered by name to common rows
+0x0B End                      lowered by name to common rows
+0x0C Br                       lowered by name to common rows
+0x0D BrIf                     lowered by name to common rows
+0x0E BrTable                  lowered by name to common rows
+0x0F Return                   lowered by name to common rows
+0x10 Call                     lowered by name to common rows
+0x11 CallIndirect             family row, lowered by name
+0x1A Drop                     lowered by name to common rows
+0x1B Select                   lowered by name to common rows
+0x20 LocalGet                 lowered by name to common rows
+0x21 LocalSet                 lowered by name to common rows
+0x22 LocalTee                 lowered by name to common rows
+0x23 GlobalGet                family global rows 0xE0-0xE7, lowered by name
+0x24 GlobalSet                family global rows 0xE0-0xE7, lowered by name
+0x28 I32Load                  family access row
+0x29 I64Load                  family access row
+0x2A F32Load                  family access row
+0x2B F64Load                  family access row
+0x2C I32Load8S                family access row
+0x2D I32Load8U                family access row
+0x2E I32Load16S               family access row
+0x2F I32Load16U               family access row
+0x30 I64Load8S                family access row
+0x31 I64Load8U                family access row
+0x32 I64Load16S               family access row
+0x33 I64Load16U               family access row
+0x34 I64Load32S               family access row
+0x35 I64Load32U               family access row
+0x36 I32Store                 family access row
+0x37 I64Store                 family access row
+0x38 F32Store                 family access row
+0x39 F64Store                 family access row
+0x3A I32Store8                family access row
+0x3B I32Store16               family access row
+0x3C I64Store8                family access row
+0x3D I64Store16               family access row
+0x3E I64Store32               family access row
+0x3F MemorySize               family row, lowered by name
+0x40 MemoryGrow               family row, lowered by name
+0x41 I32Const                 lowered by name to common rows
+0x42 I64Const                 lowered by name to common rows
+0x43 F32Const                 lowered by name to common rows
+0x44 F64Const                 lowered by name to common rows
+0x45 I32Eqz                   family numeric row
+0x46 I32Eq                    family numeric row
+0x47 I32Ne                    family numeric row
+0x48 I32LtS                   family numeric row
+0x49 I32LtU                   family numeric row
+0x4A I32GtS                   family numeric row
+0x4B I32GtU                   family numeric row
+0x4C I32LeS                   family numeric row
+0x4D I32LeU                   family numeric row
+0x4E I32GeS                   family numeric row
+0x4F I32GeU                   family numeric row
+0x50 I64Eqz                   family numeric row
+0x51 I64Eq                    family numeric row
+0x52 I64Ne                    family numeric row
+0x53 I64LtS                   family numeric row
+0x54 I64LtU                   family numeric row
+0x55 I64GtS                   family numeric row
+0x56 I64GtU                   family numeric row
+0x57 I64LeS                   family numeric row
+0x58 I64LeU                   family numeric row
+0x59 I64GeS                   family numeric row
+0x5A I64GeU                   family numeric row
+0x5B F32Eq                    family numeric row
+0x5C F32Ne                    family numeric row
+0x5D F32Lt                    family numeric row
+0x5E F32Gt                    family numeric row
+0x5F F32Le                    family numeric row
+0x60 F32Ge                    family numeric row
+0x61 F64Eq                    family numeric row
+0x62 F64Ne                    family numeric row
+0x63 F64Lt                    family numeric row
+0x64 F64Gt                    family numeric row
+0x65 F64Le                    family numeric row
+0x66 F64Ge                    family numeric row
+0x67 I32Clz                   family numeric row
+0x68 I32Ctz                   family numeric row
+0x69 I32Popcnt                family numeric row
+0x6A I32Add                   family numeric row
+0x6B I32Sub                   family numeric row
+0x6C I32Mul                   family numeric row
+0x6D I32DivS                  family numeric row
+0x6E I32DivU                  family numeric row
+0x6F I32RemS                  family numeric row
+0x70 I32RemU                  family numeric row
+0x71 I32And                   family numeric row
+0x72 I32Or                    family numeric row
+0x73 I32Xor                   family numeric row
+0x74 I32Shl                   family numeric row
+0x75 I32ShrS                  family numeric row
+0x76 I32ShrU                  family numeric row
+0x77 I32Rotl                  family numeric row
+0x78 I32Rotr                  family numeric row
+0x79 I64Clz                   family numeric row
+0x7A I64Ctz                   family numeric row
+0x7B I64Popcnt                family numeric row
+0x7C I64Add                   family numeric row
+0x7D I64Sub                   family numeric row
+0x7E I64Mul                   family numeric row
+0x7F I64DivS                  family numeric row
+0x80 I64DivU                  family numeric row
+0x81 I64RemS                  family numeric row
+0x82 I64RemU                  family numeric row
+0x83 I64And                   family numeric row
+0x84 I64Or                    family numeric row
+0x85 I64Xor                   family numeric row
+0x86 I64Shl                   family numeric row
+0x87 I64ShrS                  family numeric row
+0x88 I64ShrU                  family numeric row
+0x89 I64Rotl                  family numeric row
+0x8A I64Rotr                  family numeric row
+0x8B F32Abs                   family numeric row
+0x8C F32Neg                   family numeric row
+0x8D F32Ceil                  family numeric row
+0x8E F32Floor                 family numeric row
+0x8F F32Trunc                 family numeric row
+0x90 F32Nearest               family numeric row
+0x91 F32Sqrt                  family numeric row
+0x92 F32Add                   family numeric row
+0x93 F32Sub                   family numeric row
+0x94 F32Mul                   family numeric row
+0x95 F32Div                   family numeric row
+0x96 F32Min                   family numeric row
+0x97 F32Max                   family numeric row
+0x98 F32Copysign              family numeric row
+0x99 F64Abs                   family numeric row
+0x9A F64Neg                   family numeric row
+0x9B F64Ceil                  family numeric row
+0x9C F64Floor                 family numeric row
+0x9D F64Trunc                 family numeric row
+0x9E F64Nearest               family numeric row
+0x9F F64Sqrt                  family numeric row
+0xA0 F64Add                   family numeric row
+0xA1 F64Sub                   family numeric row
+0xA2 F64Mul                   family numeric row
+0xA3 F64Div                   family numeric row
+0xA4 F64Min                   family numeric row
+0xA5 F64Max                   family numeric row
+0xA6 F64Copysign              family numeric row
+0xA7 I32WrapI64               family numeric row
+0xA8 I32TruncF32S             family numeric row
+0xA9 I32TruncF32U             family numeric row
+0xAA I32TruncF64S             family numeric row
+0xAB I32TruncF64U             family numeric row
+0xAC I64ExtendI32S            family numeric row
+0xAD I64ExtendI32U            family numeric row
+0xAE I64TruncF32S             family numeric row
+0xAF I64TruncF32U             family numeric row
+0xB0 I64TruncF64S             family numeric row
+0xB1 I64TruncF64U             family numeric row
+0xB2 F32ConvertI32S           family numeric row
+0xB3 F32ConvertI32U           family numeric row
+0xB4 F32ConvertI64S           family numeric row
+0xB5 F32ConvertI64U           family numeric row
+0xB6 F32DemoteF64             family numeric row
+0xB7 F64ConvertI32S           family numeric row
+0xB8 F64ConvertI32U           family numeric row
+0xB9 F64ConvertI64S           family numeric row
+0xBA F64ConvertI64U           family numeric row
+0xBB F64PromoteF32            family numeric row
+0xBC I32ReinterpretF32        family numeric row
+0xBD I64ReinterpretF64        family numeric row
+0xBE F32ReinterpretI32        family numeric row
+0xBF F64ReinterpretI64        family numeric row
+
+# 172 members
+#    23 family access row
+#     2 family global rows 0xE0-0xE7, lowered by name
+#   123 family numeric row
+#     3 family row, lowered by name
+#    21 lowered by name to common rows
+# members with no row and no common mapping: 0
+# family rows in the ranges naming no member, or named rows at another byte: 0
+# case labels in Step naming no member: 0
+# every member is answered, and every byte of the access and numeric ranges names a member
+
+exit 0

@@ -32,11 +32,23 @@ namespace Broiler.VM.Composition.Ubc.Fixture;
 /// both settings of the NaN flag. <c>word.keep</c>, which keeps a word of any type, takes every type's
 /// edges. It is shared by every later emitter's differential check.
 /// </para>
+/// <para>
+/// <b>The region input corpus.</b> For every region access of the primitive table, the inputs a
+/// family's reference handler for a region row is compared over: an empty region and one of sixteen
+/// bytes, filled by a stated rule; dynamic addresses and static offsets on both sides of every width's
+/// last fitting byte, and at the top of the address space, where the effective address must be summed
+/// without wrapping; and, for a store, values whose bytes differ, with high bits set and NaN payloads.
+/// <see cref="UbcPrimitive.RegionSize"/> takes a size and no access. The answer is the table's region
+/// primitive over that region, with a store's written bytes read back. The fixture family declares no
+/// region, so these are inputs for a language family's lane, retained here beside the primitive
+/// inputs because they are the table's and no family's.
+/// </para>
 /// </remarks>
 internal static class FixtureCorpus
 {
     private const string Manifest = "corpus.manifest";
     private const string Primitives = "primitives.txt";
+    private const string Regions = "regions.txt";
     private static readonly string Guest = TallyPrograms.GuestName(1) + ".bubc";
 
     /// <summary>Retains the corpora in <paramref name="directory"/>.</summary>
@@ -44,7 +56,7 @@ internal static class FixtureCorpus
     {
         Directory.CreateDirectory(directory);
         var manifest = new StringBuilder();
-        manifest.Append("# the universal bytecode fixture family's retained corpora: programs, the guest program, the primitive inputs\n");
+        manifest.Append("# the universal bytecode fixture family's retained corpora: programs, the guest program, the primitive inputs, the region inputs\n");
         manifest.Append("# program|name|sha256|entry|transcript (lines joined by ' | ')\n");
         manifest.Append("# file|name|sha256\n");
 
@@ -71,8 +83,12 @@ internal static class FixtureCorpus
         File.WriteAllBytes(Path.Combine(directory, Primitives), primitives);
         manifest.Append(CultureInfo.InvariantCulture, $"file|{Primitives}|{Hash(primitives)}\n");
 
+        var regions = Encoding.UTF8.GetBytes(RegionCorpus());
+        File.WriteAllBytes(Path.Combine(directory, Regions), regions);
+        manifest.Append(CultureInfo.InvariantCulture, $"file|{Regions}|{Hash(regions)}\n");
+
         File.WriteAllText(Path.Combine(directory, Manifest), manifest.ToString(), new UTF8Encoding(false));
-        Console.WriteLine($"written: {TallyPrograms.All.Length.ToString(CultureInfo.InvariantCulture)} programs, the guest program and the primitive input corpus");
+        Console.WriteLine($"written: {TallyPrograms.All.Length.ToString(CultureInfo.InvariantCulture)} programs, the guest program, the primitive input corpus and the region input corpus");
         return 0;
     }
 
@@ -164,6 +180,16 @@ internal static class FixtureCorpus
                         ? "MOVED: the primitive table no longer yields the retained inputs"
                         : $"{checkedCount.ToString(CultureInfo.InvariantCulture)} inputs, 0 answers differ";
             }
+            else if (file == Regions)
+            {
+                var text = Encoding.UTF8.GetString(content);
+                var (checkedCount, wrong) = CheckRegions(text);
+                verdict = wrong != 0
+                    ? $"{checkedCount.ToString(CultureInfo.InvariantCulture)} inputs, {wrong.ToString(CultureInfo.InvariantCulture)} answers differ"
+                    : !string.Equals(text, RegionCorpus(), StringComparison.Ordinal)
+                        ? "MOVED: the primitive table no longer yields the retained region inputs"
+                        : $"{checkedCount.ToString(CultureInfo.InvariantCulture)} inputs, 0 answers differ";
+            }
             else
             {
                 verdict = "UNKNOWN: the corpus retains no file of this name";
@@ -181,7 +207,7 @@ internal static class FixtureCorpus
             Console.WriteLine($"FAIL {program.Name} MISSING: the fixed list has a program the corpus does not retain");
         }
 
-        foreach (var file in new[] { Guest, Primitives }.Where(f => !files.Contains(f)))
+        foreach (var file in new[] { Guest, Primitives, Regions }.Where(f => !files.Contains(f)))
         {
             failures++;
             Console.WriteLine($"FAIL {file} MISSING: the corpus does not retain it");
@@ -360,6 +386,168 @@ internal static class FixtureCorpus
 
             if (!string.Equals(Answer(primitive, a, b, false), fields[3], StringComparison.Ordinal) ||
                 !string.Equals(Answer(primitive, a, b, true), fields[4], StringComparison.Ordinal))
+            {
+                wrong++;
+            }
+        }
+
+        return (count, wrong);
+    }
+
+    /// <summary>The region lengths every access is tried over: empty, and sixteen bytes.</summary>
+    private static readonly int[] RegionLengths = [0, 16];
+
+    /// <summary>
+    /// Dynamic addresses: the start, both sides of every width's last fitting byte in sixteen bytes, the
+    /// end and one past it, and the top of the address space.
+    /// </summary>
+    private static readonly uint[] RegionAddresses =
+    [
+        0, 1, 7, 8, 9, 12, 13, 14, 15, 16, 17, 0x7FFF_FFFF, 0x8000_0000, 0xFFFF_FFF8, 0xFFFF_FFFF,
+    ];
+
+    /// <summary>Static offsets, the largest of which overflows thirty-two bits with any address above zero.</summary>
+    private static readonly uint[] RegionOffsets = [0, 1, 4, 8, 0xFFFF_FFFF];
+
+    /// <summary>A store's values: bytes that all differ from the fill, high bits set, and a NaN payload of each width.</summary>
+    private static readonly ulong[] RegionValues =
+    [
+        0x0000_0000_0000_0000, 0xFFFF_FFFF_FFFF_FFFF, 0x0123_4567_89AB_CDEF,
+        0x8000_0000_0000_0080, 0x7FF0_0000_0000_0001, 0x0000_0000_7FA0_0001,
+    ];
+
+    /// <summary>The sizes <see cref="UbcPrimitive.RegionSize"/> is asked to answer.</summary>
+    private static readonly uint[] RegionSizes = [0, 1, 2];
+
+    /// <summary>
+    /// The region every input is evaluated over: byte <c>i</c> of <paramref name="length"/> is
+    /// <c>0xA5</c> exclusive-or <c>0x3B * i</c>, modulo 256, so neighbouring bytes differ and half have
+    /// the sign bit set.
+    /// </summary>
+    internal static byte[] RegionFill(int length)
+    {
+        var region = new byte[length];
+
+        for (var index = 0; index < length; index++)
+        {
+            region[index] = (byte)(0xA5 ^ (0x3B * index));
+        }
+
+        return region;
+    }
+
+    private static string RegionCorpus()
+    {
+        var text = new StringBuilder();
+        text.Append("# primitive|length|size|address|offset|value|answer|written - the region is 'length' bytes, byte i\n");
+        text.Append("# being 0xA5 xor 0x3B*i mod 256; address and offset as hexadecimal 32-bit words, value and answer\n");
+        text.Append("# as hexadecimal word bits, an answer as 'trap:<universal code>' where the access traps; 'written' is\n");
+        text.Append("# a store's bytes read back at the effective address, little-endian, and '-' for anything else\n");
+
+        foreach (var primitive in Enum.GetValues<UbcPrimitive>().Where(static p => UbcPrimitives.IsRegionAccess(p)))
+        {
+            if (primitive == UbcPrimitive.RegionSize)
+            {
+                foreach (var size in RegionSizes)
+                {
+                    text.Append(RegionLine(primitive, 0, size, 0, 0, 0));
+                }
+
+                continue;
+            }
+
+            var store = UbcPrimitives.TryGetSignature(primitive, out var operands, out _) && operands.Length == 2;
+            ulong[] values = store ? RegionValues : [0UL];
+
+            foreach (var length in RegionLengths)
+            {
+                foreach (var address in RegionAddresses)
+                {
+                    foreach (var offset in RegionOffsets)
+                    {
+                        foreach (var value in values)
+                        {
+                            text.Append(RegionLine(primitive, length, 0, address, offset, value));
+                        }
+                    }
+                }
+            }
+        }
+
+        return text.ToString();
+    }
+
+    private static string RegionLine(UbcPrimitive primitive, int length, uint size, uint address, uint offset, ulong value)
+    {
+        var (answer, written) = RegionAnswer(primitive, length, size, address, offset, value);
+        return string.Create(
+            CultureInfo.InvariantCulture,
+            $"{primitive}|{length}|{size}|{address:X8}|{offset:X8}|{value:X16}|{answer}|{written}\n");
+    }
+
+    private static (string Answer, string Written) RegionAnswer(
+        UbcPrimitive primitive, int length, uint size, uint address, uint offset, ulong value)
+    {
+        var region = RegionFill(length);
+        var result = UbcPrimitives.EvaluateRegion(primitive, region, address, offset, value, size);
+
+        if (result.Trap != UbcTrapCode.None)
+        {
+            return ("trap:" + result.Trap.ToString(), "-");
+        }
+
+        var answer = result.Bits.ToString("X16", CultureInfo.InvariantCulture);
+        var width = UbcPrimitives.AccessWidth(primitive);
+        var isStore = UbcPrimitives.TryGetSignature(primitive, out var operands, out _) && operands.Length == 2;
+
+        if (!isStore || width == 0)
+        {
+            return (answer, "-");
+        }
+
+        var readBack = 0UL;
+        var at = (int)((ulong)address + offset);
+
+        for (var index = 0; index < width; index++)
+        {
+            readBack |= (ulong)region[at + index] << (index * 8);
+        }
+
+        return (answer, readBack.ToString("X16", CultureInfo.InvariantCulture));
+    }
+
+    private static (int Checked, int Wrong) CheckRegions(string text)
+    {
+        var count = 0;
+        var wrong = 0;
+
+        foreach (var line in text.Split('\n'))
+        {
+            if (line.Length == 0 || line[0] == '#')
+            {
+                continue;
+            }
+
+            var fields = line.Split('|');
+            count++;
+
+            if (fields.Length != 8 ||
+                !Enum.TryParse<UbcPrimitive>(fields[0], out var primitive) ||
+                !UbcPrimitives.IsRegionAccess(primitive) ||
+                !int.TryParse(fields[1], NumberStyles.None, CultureInfo.InvariantCulture, out var length) ||
+                !uint.TryParse(fields[2], NumberStyles.None, CultureInfo.InvariantCulture, out var size) ||
+                !uint.TryParse(fields[3], NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var address) ||
+                !uint.TryParse(fields[4], NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var offset) ||
+                !ulong.TryParse(fields[5], NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var value))
+            {
+                wrong++;
+                continue;
+            }
+
+            var (answer, written) = RegionAnswer(primitive, length, size, address, offset, value);
+
+            if (!string.Equals(answer, fields[6], StringComparison.Ordinal) ||
+                !string.Equals(written, fields[7], StringComparison.Ordinal))
             {
                 wrong++;
             }

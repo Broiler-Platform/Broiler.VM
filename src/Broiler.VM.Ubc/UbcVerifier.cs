@@ -44,9 +44,13 @@ namespace Broiler.VM.Ubc;
 public sealed class UbcVerifier : IVmProfileVerifier
 {
     /// <summary>The walk's version: it moves when the walk admits or refuses anything it did not before.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=83433C
+    /// <remarks>
+    /// Version 2 admits the signature effect form and refuses a signature row whose operand names no
+    /// row of the Types section, with <see cref="UbcDiagnosticCode.SignatureTypeOutOfRange"/>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1B21F2
     // Broiler-Human:        PENDING
-    public const int WalkVersion = 1;
+    public const int WalkVersion = 2;
 
     private readonly UbcFamilyDeclaration declaration;
     private readonly UbcFamilyRegistration family;
@@ -1671,8 +1675,8 @@ internal sealed class UbcWalk
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=F6611C
-    // Broiler-Falsified-If: a family row is applied with other pops than its effect names for its operand, a suspending row passes outside a suspendable unit, or a branch's taken edge carries the fall-through's pushes when the row names its own
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=C2A025
+    // Broiler-Falsified-If: a family row is applied with other pops than its effect names for its operand, a signature row with other pops or pushes than the Types row its operand names, a suspending row passes outside a suspendable unit, or a branch's taken edge carries the fall-through's pushes when the row names its own
     // Broiler-Human:        PENDING
     private bool StepFamily(
         WalkState state,
@@ -1694,42 +1698,78 @@ internal sealed class UbcWalk
             return Invalid(UbcDiagnosticCode.SuspendOutsideSuspendableUnit, VmReason.InconsistentStructure, at);
         }
 
-        if (!effect.TryGetPopCount(raw.Operand, out var popCount))
-        {
-            return Invalid(UbcDiagnosticCode.CountedOperandTooLarge, VmReason.InconsistentStructure, at);
-        }
-
         UbcStackNode? rest;
+        ImmutableArray<UbcSlotType> pushes;
 
-        if (effect.Form == UbcEffectForm.Listed)
+        // One arm per form of the closed effect language, and no arm that stands for another: a form
+        // this walk does not know is its own defect, never read as the nearest form it does know.
+        switch (effect.Form)
         {
-            if (!Pop(before, effect.Pops, at, out rest))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            var run = popCount - effect.Pops.Length;
+            case UbcEffectForm.Listed:
+                if (!Pop(before, effect.Pops, at, out rest))
+                {
+                    return false;
+                }
 
-            if (!Repeat(before, effect.Repeated, run, at, out var beneath) || !Pop(beneath, effect.Pops, at, out rest))
+                pushes = effect.Pushes;
+                break;
+
+            case UbcEffectForm.Counted:
             {
-                return false;
+                if (!effect.TryGetPopCount(raw.Operand, out var popCount))
+                {
+                    return Invalid(UbcDiagnosticCode.CountedOperandTooLarge, VmReason.InconsistentStructure, at);
+                }
+
+                var run = popCount - effect.Pops.Length;
+
+                if (!Repeat(before, effect.Repeated, run, at, out var beneath) || !Pop(beneath, effect.Pops, at, out rest))
+                {
+                    return false;
+                }
+
+                pushes = effect.Pushes;
+                break;
             }
+
+            case UbcEffectForm.Signature:
+            {
+                // The operand names a Types row, compared whole as the sixty-four bits it was read
+                // as, so no operand is narrowed into range before it is checked.
+                if (raw.Operand >= (ulong)artifact.Types.Length)
+                {
+                    return Invalid(UbcDiagnosticCode.SignatureTypeOutOfRange, VmReason.InconsistentStructure, at);
+                }
+
+                var signature = artifact.Types[(int)raw.Operand];
+
+                // The trailing slots are the top of the stack and the signature's parameters lie
+                // beneath them: two pops, each charged per slot, and no list made of the two.
+                if (!Pop(before, effect.Pops, at, out var beneath) || !Pop(beneath, signature.Parameters, at, out rest))
+                {
+                    return false;
+                }
+
+                pushes = signature.Results;
+                break;
+            }
+
+            default:
+                return Invalid(UbcDiagnosticCode.VerifierDefect, VmReason.InconsistentStructure, at);
         }
 
         var wordPops = (before?.Words ?? 0) - (rest?.Words ?? 0);
         var valuePops = (before?.Values ?? 0) - (rest?.Values ?? 0);
 
         // The pass that counts the row's pushes, paid for before it runs.
-        if (!Work((ulong)effect.Pushes.Length))
+        if (!Work((ulong)pushes.Length))
         {
             return false;
         }
 
-        Count(effect.Pushes, out var wordPushes, out var valuePushes);
+        Count(pushes, out var wordPushes, out var valuePushes);
 
-        if (!Push(rest, effect.Pushes, unit, at, out var after))
+        if (!Push(rest, pushes, unit, at, out var after))
         {
             return false;
         }
@@ -1744,7 +1784,7 @@ internal sealed class UbcWalk
                 return false;
             }
 
-            var taken = row.Target.HasDistinctTakenEdge ? row.Target.TakenPushes : effect.Pushes;
+            var taken = row.Target.HasDistinctTakenEdge ? row.Target.TakenPushes : pushes;
 
             // And the one that counts the taken edge's pushes.
             if (!Work((ulong)taken.Length))

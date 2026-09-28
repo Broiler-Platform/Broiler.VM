@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   45
-// Annotated:        45/45
-// Exempt:           58
-// Human-reviewed:   0/45
+// Relevant units:   58
+// Annotated:        58/58
+// Exempt:           74
+// Human-reviewed:   0/58
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         6/5
+// Criteria:         10/9
 // Resource impact:  0/10 max
-// Unverified:       45
+// Unverified:       58
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -35,6 +35,13 @@ namespace Broiler.VM.Ubc;
 /// <para>
 /// A family's code never pushes a frame, never reads the call depth, never searches a region and never
 /// holds a return address. It answers a <see cref="UbcStatus"/>, and the emitter does the rest.
+/// </para>
+/// <para>
+/// <b>Four members have defaults.</b> <see cref="ResolveEntry"/>, <see cref="AdmitInstance"/>,
+/// <see cref="StartUnit"/> and <see cref="AbandonInstance"/> are static virtual, and their defaults are
+/// what every family did before universal bytecode contract version 2: entry points from the artifact's
+/// Entries section, every instance ready, no start unit, and nothing to release. A family overrides
+/// only the ones its language needs.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=CA8AC4
@@ -75,10 +82,83 @@ public interface IUbcFamily
     static abstract object CreateInstance(UbcInstanceContext context);
 
     /// <summary>
+    /// Whether the instance state <see cref="CreateInstance"/> made may be published: ready, a fault of
+    /// the guest's that the instantiation answers, or an allowance that making it exhausted.
+    /// </summary>
+    /// <remarks>
+    /// Asked once, in the instantiation step, right after <see cref="CreateInstance"/>. Any answer but
+    /// ready abandons the state through <see cref="AbandonInstance"/> before the step answers, and an
+    /// answer of no kind - a default <see cref="UbcInstanceAnswer"/> - is a contract violation. A family
+    /// answers exhausted only after a charge the meter refused, so the core names the dimension from its
+    /// own latch. The default answers ready: a family whose instance cannot fail to be made has nothing
+    /// to say here.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=B96FB4
+    // Broiler-Falsified-If: the default answers anything but ready, so a family that declares no admission has its instances refused
+    // Broiler-Human:        PENDING
+    static virtual UbcInstanceAnswer AdmitInstance(object instanceState) => UbcInstanceAnswer.Ready;
+
+    /// <summary>
+    /// The unit an admitted instance runs before it is published, or minus one for none, which is the
+    /// default.
+    /// </summary>
+    /// <remarks>
+    /// The executor runs the unit in the instantiation step, under that step's meter, with no parameter
+    /// bound and no completion payload made. It must be a unit the program has, and its signature must
+    /// take and give nothing; any other unit is a contract violation. A fault there faults the
+    /// instantiation with the family's payload, and any end but completion abandons the state.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=0; Fingerprint=5C7C72
+    // Broiler-Human:        PENDING
+    static virtual int StartUnit(object instanceState) => -1;
+
+    /// <summary>
+    /// Releases what an instance state holds when it will never be published: after an admission that
+    /// was not ready, a start unit that did not complete, or an exception from any family member in the
+    /// instantiation step. Called at most once per state, in the step that made it. The default does
+    /// nothing.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=0; Fingerprint=0E3E76
+    // Broiler-Human:        PENDING
+    static virtual void AbandonInstance(object instanceState)
+    {
+    }
+
+    /// <summary>
+    /// Resolves the entry point an invocation names to the unit it starts, before any frame stands.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The executor charges one fuel unit before it asks, and it checks what a found answer names: a
+    /// unit the program has, flagged <see cref="UbcUnitFlags.Entry"/>, or the step ends as a contract
+    /// violation, as it does for an answer of no kind. A missing answer is faulted with
+    /// <see cref="EntryRefused"/>'s payload, and a refused one with the family's own.
+    /// </para>
+    /// <para>
+    /// The default answers from the artifact's Entries section: the unit the entry of exactly that name
+    /// starts, or missing. A family whose entry points are named elsewhere - in its FamilyData, with
+    /// arguments written in the name - overrides it. An answer carries a unit and not what the family
+    /// parsed, so <see cref="BindParameters"/> reads the entry point again: the two readings must agree,
+    /// and an entry point this member found and that one refuses is answered with
+    /// <see cref="EntryRefused"/>'s payload.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=803D49
+    // Broiler-Falsified-If: the default answers a unit for a name no entry of the artifact carries, or no unit for a name one carries
+    // Broiler-Human:        PENDING
+    static virtual UbcEntryAnswer ResolveEntry(object instanceState, UbcVerifiedProgram program, System.ReadOnlySpan<byte> entryPoint) =>
+        program.TryGetEntry(entryPoint, out var unit) ? UbcEntryAnswer.Found(unit) : UbcEntryAnswer.Missing;
+
+    /// <summary>
     /// Writes the parameters of the entry unit <paramref name="entryName"/> names into its locals, the
     /// first locals of the new frame, before its first instruction. Answers false when the family can
     /// supply none, which the executor answers with <see cref="EntryRefused"/>.
     /// </summary>
+    /// <remarks>
+    /// It is handed the entry point <see cref="ResolveEntry"/> resolved, and reads it again: a family
+    /// that parses arguments out of the entry point parses them twice, once to choose the unit and once
+    /// to bind them.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=2BCECF
     // Broiler-Human:        PENDING
     static abstract bool BindParameters(ref UbcActivation activation, System.ReadOnlySpan<byte> entryName);
@@ -172,6 +252,130 @@ public sealed class UbcInstanceContext
 
     /// <summary>The execution environment: the meter, the capabilities, the load mediator.</summary>
     public IVmExecutionEnvironment Environment { get; }
+}
+
+/// <summary>What <see cref="IUbcFamily.ResolveEntry"/> answered.</summary>
+/// <remarks>
+/// Zero is no answer, so that a default <see cref="UbcEntryAnswer"/> - a family that returned without
+/// deciding - is refused rather than read as a unit.
+/// </remarks>
+// Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=0; Fingerprint=5A0E38
+// Broiler-Human:        PENDING
+public enum UbcEntryAnswerKind : byte
+{
+    /// <summary>No answer: the kind of a default value, which the executor answers as a contract violation.</summary>
+    Unanswered = 0,
+
+    /// <summary>The entry point starts <see cref="UbcEntryAnswer.Unit"/>.</summary>
+    Found = 1,
+
+    /// <summary>The family knows no entry of that name; the executor faults with <see cref="IUbcFamily.EntryRefused"/>'s payload.</summary>
+    Missing = 2,
+
+    /// <summary>The family refuses the entry point with a fault of its own, <see cref="UbcEntryAnswer.Fault"/>.</summary>
+    Refused = 3,
+}
+
+/// <summary>A family's answer to an entry point: the unit it starts, no such entry, or a fault of the family's.</summary>
+// Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=22A419
+// Broiler-Falsified-If: a default value answers found, or a refusal is built without the fault it carries
+// Broiler-Human:        PENDING
+public readonly struct UbcEntryAnswer
+{
+    private UbcEntryAnswer(UbcEntryAnswerKind kind, int unit, IVmProfilePayload? fault)
+    {
+        Kind = kind;
+        Unit = unit;
+        Fault = fault;
+    }
+
+    /// <summary>What the family answered.</summary>
+    public UbcEntryAnswerKind Kind { get; }
+
+    /// <summary>For <see cref="UbcEntryAnswerKind.Found"/>, the unit the entry point starts.</summary>
+    public int Unit { get; }
+
+    /// <summary>For <see cref="UbcEntryAnswerKind.Refused"/>, the fault the invocation ends in.</summary>
+    public IVmProfilePayload? Fault { get; }
+
+    /// <summary>No entry of that name.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DAA8B6
+    // Broiler-Human:        PENDING
+    public static UbcEntryAnswer Missing => new(UbcEntryAnswerKind.Missing, -1, null);
+
+    /// <summary>The entry point starts <paramref name="unit"/>, which the executor checks before it enters it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=715232
+    // Broiler-Human:        PENDING
+    public static UbcEntryAnswer Found(int unit) => new(UbcEntryAnswerKind.Found, unit, null);
+
+    /// <summary>The family refuses the entry point, and the invocation faults with <paramref name="fault"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B864DB
+    // Broiler-Human:        PENDING
+    public static UbcEntryAnswer Refused(IVmProfilePayload fault)
+    {
+        System.ArgumentNullException.ThrowIfNull(fault);
+        return new UbcEntryAnswer(UbcEntryAnswerKind.Refused, -1, fault);
+    }
+}
+
+/// <summary>What <see cref="IUbcFamily.AdmitInstance"/> answered.</summary>
+/// <remarks>
+/// Zero is no answer, so that a default <see cref="UbcInstanceAnswer"/> is refused rather than read as
+/// ready, and an instance whose making failed is never published by a family that forgot to say so.
+/// </remarks>
+// Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=0; Fingerprint=CBF8AC
+// Broiler-Human:        PENDING
+public enum UbcInstanceAnswerKind : byte
+{
+    /// <summary>No answer: the kind of a default value, which the executor answers as a contract violation.</summary>
+    Unanswered = 0,
+
+    /// <summary>The instance may be published.</summary>
+    Ready = 1,
+
+    /// <summary>Making the instance faulted the guest; the instantiation faults with <see cref="UbcInstanceAnswer.Fault"/>.</summary>
+    Faulted = 2,
+
+    /// <summary>Making the instance was refused a charge; the core names the dimension from its latch.</summary>
+    Exhausted = 3,
+}
+
+/// <summary>A family's answer on an instance it made: ready, faulted with a payload, or exhausted.</summary>
+// Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=High; Resources=0; Fingerprint=AF0376
+// Broiler-Falsified-If: a default value answers ready, or a fault is built without the payload it carries
+// Broiler-Human:        PENDING
+public readonly struct UbcInstanceAnswer
+{
+    private UbcInstanceAnswer(UbcInstanceAnswerKind kind, IVmProfilePayload? fault)
+    {
+        Kind = kind;
+        Fault = fault;
+    }
+
+    /// <summary>What the family answered.</summary>
+    public UbcInstanceAnswerKind Kind { get; }
+
+    /// <summary>For <see cref="UbcInstanceAnswerKind.Faulted"/>, the fault the instantiation ends in.</summary>
+    public IVmProfilePayload? Fault { get; }
+
+    /// <summary>The instance may be published.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4D2138
+    // Broiler-Human:        PENDING
+    public static UbcInstanceAnswer Ready => new(UbcInstanceAnswerKind.Ready, null);
+
+    /// <summary>A charge made while the instance was made was refused.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B93757
+    // Broiler-Human:        PENDING
+    public static UbcInstanceAnswer Exhausted => new(UbcInstanceAnswerKind.Exhausted, null);
+
+    /// <summary>Making the instance faulted, and the instantiation faults with <paramref name="fault"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=290FA8
+    // Broiler-Human:        PENDING
+    public static UbcInstanceAnswer Faulted(IVmProfilePayload fault)
+    {
+        System.ArgumentNullException.ThrowIfNull(fault);
+        return new UbcInstanceAnswer(UbcInstanceAnswerKind.Faulted, fault);
+    }
 }
 
 /// <summary>What a handler answers.</summary>
@@ -285,11 +489,15 @@ public readonly struct UbcStatus : System.IEquatable<UbcStatus>
 /// </summary>
 /// <remarks>
 /// <para>
-/// The callee's parameters are the top slots of the row's input region, in the callee's signature's
-/// order, per plane: the handler may rearrange the region before it answers, and the emitter moves the
-/// parameters into the callee's locals. When the callee returns, the row's inputs are discarded and the
-/// callee's results are placed at the row's argument bases; they must be exactly the row's pushes, and
-/// anything else is a defect.
+/// The callee's parameters are slots of the row's input region, in the callee's signature's order, per
+/// plane. For a row whose effect is listed or counted they are the region's top slots, and the callee's
+/// signature must match the row's typed pops there and give exactly the row's pushes. For a row whose
+/// effect is the signature form they are the region's bottom slots, beneath the row's trailing pops,
+/// where the walk typed the named signature's parameters, and the callee's signature must equal that
+/// named signature type for type. The handler may rearrange the region before it answers, and the
+/// emitter copies the parameters into the callee's locals. When the callee returns, the row's inputs
+/// are discarded and the callee's results are placed at the row's argument bases. A callee that does
+/// not fit is a defect.
 /// </para>
 /// <para>
 /// A program of another family is a defect of the handler that names it: the family boundary is not

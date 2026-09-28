@@ -1818,3 +1818,39 @@ projects is packable or carries a package identity, and section 1 of the
 composition register still advertises nothing.
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-09-25 - the WebAssembly family and the packable universal bytecode, UBC-4
+
+**What changes.** No project is added. `Broiler.VM.Profile.WebAssembly` gains a
+reference to `Broiler.VM.Ubc`, because it now declares a universal bytecode family
+and carries the translator that lowers a module into universal bytecode; rule W1's
+list becomes Abstractions, Binary and `Broiler.VM.Ubc`, and the profile still
+references no emitter (rule A11). The three roots that compose the profile -
+`Broiler.VM.Composition.WebAssembly.Execution`,
+`Broiler.VM.Composition.WebAssembly.Harness` and
+`Broiler.VM.Composition.PolyglotCli` - each gain references to `Broiler.VM.Ubc` and
+`Broiler.VM.Emitter.Bytecode`, because each builds the family's descriptor over the
+bytecode emitter and verifies the translator's artifact under it.
+
+**The packable set changes, and this is the dated revision section 1 asks for.**
+The universal bytecode programme's decision UBC-D-5 is taken early for two of its
+assemblies: `Broiler.VM.Ubc` and `Broiler.VM.Emitter.Bytecode` are packable, so
+that the WebAssembly profile's package, which references `Broiler.VM.Ubc`, resolves,
+and so that a consumer can compose it over the bytecode emitter. Rule U1 is revised
+to require `IsPackable` true on `Broiler.VM.Ubc`. The boundaries they enforce are
+the dependency and package boundaries of section 5: `Broiler.VM.Ubc` is what every
+family and every emitter share and may reference nothing but the two core sinks, so
+it cannot live inside a profile or the runtime; and the emitter is what a family
+must never reference (rule A11), so it cannot live inside `Broiler.VM.Ubc` or a
+profile. This revision also records what
+section 1's sentence has not said since the owner made the language profiles
+packable for the preview feed: packable package identities are no longer exactly
+three, and the budget sentence of section 1 stands as written, as every earlier
+revision does. `Broiler.VM.Ubc.Native` does not exist, and UBC-D-5 stays open for
+it.
+
+**What is now true.** The graph goes from 31 projects and 106 edges to 31 and 113.
+No composition root is packable, and section 1 of the composition register still
+advertises nothing.
+
+**What is not edited.** Every revision above stands as written.

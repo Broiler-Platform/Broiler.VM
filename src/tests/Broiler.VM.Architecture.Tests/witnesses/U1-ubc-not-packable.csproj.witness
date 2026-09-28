@@ -1,0 +1,13 @@
+<!-- Violates U1: the universal bytecode declaring IsPackable false. Decision UBC-D-5, taken at
+     milestone UBC-4, made the assembly a package, because a packable profile references it and a
+     package whose dependency is no package cannot be restored. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Ubc</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+</Project>
