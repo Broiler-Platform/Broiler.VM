@@ -124,6 +124,7 @@ internal static class CorpusStore
         entries.AddRange(Preambles());
         entries.AddRange(Varints());
         entries.AddRange(SectionFraming());
+        entries.AddRange(SectionOrderPairs());
         entries.AddRange(Names());
         entries.AddRange(TypesAndLimits());
         entries.AddRange(FeatureRefusals());
@@ -368,6 +369,61 @@ internal static class CorpusStore
             VmOutcome.InvalidArtifact, VmReason.Truncated,
             WebAssemblyDiagnosticCode.Truncated),
     ];
+
+    // =============================================================================================
+    // The section-order table's adjacent pairs, each in the order it forbids. WA-2's gate asks for a
+    // corpus entry for every one, "including the tag and data-count pairs whose identifiers and order
+    // disagree". Each module is two empty sections, the later-ranked first, so the second is refused
+    // at the order check before a byte of it is framed. The canonical order is
+    //   type, import, function, table, memory, tag, global, export, start, element, data count, code,
+    //   data
+    // and the one pair this list omits, memory before table, is section-out-of-order-by-one-identifier
+    // above.
+    //
+    // TWO OF THE PAIRS ARE THE REASON THE ORDER IS A TABLE. The global section (6) before the tag
+    // section (13), and the code section (10) before the data count section (12), are each in
+    // ascending identifier order, so a decoder comparing identifiers would admit both. And one pair
+    // cannot reach the order check under this build: the tag section before the memory section is
+    // refused at the tag section itself, as a section no manifest here admits, before the memory
+    // section is read. Its entry records that answer, and says so.
+    // =============================================================================================
+
+    private static IEnumerable<CorpusEntry> SectionOrderPairs()
+    {
+        (string Name, byte First, byte Second)[] pairs =
+        [
+            ("section-order-import-before-type", 2, 1),
+            ("section-order-function-before-import", 3, 2),
+            ("section-order-table-before-function", 4, 3),
+            ("section-order-global-before-tag", 6, 13),
+            ("section-order-export-before-global", 7, 6),
+            ("section-order-start-before-export", 8, 7),
+            ("section-order-element-before-start", 9, 8),
+            ("section-order-data-count-before-element", 12, 9),
+            ("section-order-code-before-data-count", 10, 12),
+            ("section-order-data-before-code", 11, 10),
+        ];
+
+        foreach (var (name, first, second) in pairs)
+        {
+            yield return new(name, "section",
+                [.. Preamble, .. Section(first, [0x00]), .. Section(second, [0x00])], RefusesDecoding,
+                VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
+                WebAssemblyDiagnosticCode.SectionOutOfOrder);
+        }
+
+        // The tag section is refused as unadmitted before the memory section after it is read.
+        yield return new("section-order-tag-before-memory", "section",
+            [.. Preamble, .. Section(13, [0x00]), .. Section(5, [0x00])], RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.UnknownFeature,
+            WebAssemblyDiagnosticCode.TagSectionNotAdmitted);
+
+        // And the order the format requires where the identifiers descend: the data count section
+        // before the code section. A decoder comparing identifiers would refuse it.
+        yield return new("section-order-data-count-before-code-is-accepted", "section",
+            [.. Preamble, .. Section(12, [0x00]), .. Section(10, [0x00])], Accepts,
+            VmOutcome.Normal, VmReason.NormalCompleted);
+    }
 
     // =============================================================================================
     // Names. THE PLATFORM'S OWN DECODER WOULD HAVE ACCEPTED THE FIRST FIVE OF THESE.
