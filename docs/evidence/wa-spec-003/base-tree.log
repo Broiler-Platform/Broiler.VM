@@ -1,0 +1,9 @@
+$ git worktree add --detach <scratch>/base 7c2b45b
+Preparing worktree (detached HEAD 7c2b45b)
+HEAD is now at 7c2b45b WebAssembly: retain record wa-spec-002, and correct two registry notes
+# exit 0
+$ git rev-parse HEAD
+7c2b45b9b5297c05b6cb902fea04c834825f4744
+# exit 0
+$ git status --porcelain
+# exit 0

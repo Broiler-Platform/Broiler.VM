@@ -1,0 +1,17 @@
+# per command family: pass / fail / excluded, before -> after
+# all                            18484 /  348 / 430 -> 18484 /  348 / 430
+# assert_exhaustion                  4 /   11 /   0 ->     4 /   11 /   0
+# assert_invalid                   979 /   10 /   0 ->   979 /   10 /   0
+# assert_malformed                 658 /    3 / 430 ->   658 /    3 / 430
+# assert_return                  13757 /  137 /   0 -> 13757 /  137 /   0
+# assert_return_arithmetic_nan     961 /    0 /   0 ->   961 /    0 /   0
+# assert_return_canonical_nan      933 /    0 /   0 ->   933 /    0 /   0
+# assert_trap                      438 /   22 /   0 ->   438 /   22 /   0
+# assert_unlinkable                 18 /   77 /   0 ->    18 /   77 /   0
+# func                               0 /    2 /   0 ->     0 /    2 /   0
+# invoke                            41 /    1 /   0 ->    41 /    1 /   0
+# memory                             0 /    1 /   0 ->     0 /    1 /   0
+# module                           695 /   84 /   0 ->   695 /   84 /   0
+# commands whose answer or verdict moved: 0
+# (t): 0
+# NONE: 0
