@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   76
-// Annotated:        76/76
+// Relevant units:   77
+// Annotated:        77/77
 // Exempt:           38
-// Human-reviewed:   0/76
+// Human-reviewed:   0/77
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         53/52
+// Criteria:         54/53
 // Resource impact:  8/10 max
-// Unverified:       76
+// Unverified:       77
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -399,7 +399,7 @@ internal ref struct WasmValidator
     /// function's declared type and a type index that addresses nothing would otherwise have to be
     /// discovered twice.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=43DA7E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=383331
     // Broiler-Falsified-If: a function body is walked before the type indices it reads have been held to the type space
     // Broiler-Human:        PENDING
     private bool TryValidateModule()
@@ -410,6 +410,7 @@ internal ref struct WasmValidator
         }
 
         if (!TryValidateTypes() ||
+            !TryValidateLimits() ||
             !TryValidateFunctionTypes() ||
             !TryValidateStartFunction() ||
             !TryValidateExports() ||
@@ -454,6 +455,54 @@ internal ref struct WasmValidator
             if (module.Types[index].ResultCount > 1)
             {
                 return Fail(WebAssemblyDiagnosticCode.FunctionTypeResultArityAboveOne, 0);
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Holds every table's and every memory's limits to a minimum no greater than the maximum, and
+    /// every memory's to the pages a 32-bit address space holds.
+    /// </summary>
+    /// <remarks>
+    /// Both rules are validation rules in the format: limits that break them decode. <i>(Added
+    /// 2026-09-28, when the decoder stopped refusing them as malformed.)</i>
+    /// </remarks>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=1; Fingerprint=C54BC4
+    // Broiler-Falsified-If: a table or memory whose minimum is above its maximum, or a memory whose minimum or maximum is above 65,536 pages, reaches the body walk
+    // Broiler-Human:        PENDING
+    private bool TryValidateLimits()
+    {
+        sectionIdentifier = (int)WasmSectionId.Table;
+
+        for (var index = 0; index < module.TableCount; index++)
+        {
+            itemOrdinal = index;
+            var limits = module.Tables[index].Limits;
+
+            if (limits.HasMaximum && limits.Minimum > limits.Maximum)
+            {
+                return Fail(WebAssemblyDiagnosticCode.TableOrMemoryMinimumAboveMaximum, 0);
+            }
+        }
+
+        sectionIdentifier = (int)WasmSectionId.Memory;
+
+        for (var index = 0; index < module.MemoryCount; index++)
+        {
+            itemOrdinal = index;
+            var limits = module.Memories[index].Limits;
+
+            if (limits.HasMaximum && limits.Minimum > limits.Maximum)
+            {
+                return Fail(WebAssemblyDiagnosticCode.TableOrMemoryMinimumAboveMaximum, 0);
+            }
+
+            if (limits.Minimum > WasmTypeGrammar.MaximumMemoryPages ||
+                (limits.HasMaximum && limits.Maximum > WasmTypeGrammar.MaximumMemoryPages))
+            {
+                return Fail(WebAssemblyDiagnosticCode.MemoryPagesAboveFormatLimit, 0);
             }
         }
 
@@ -749,19 +798,38 @@ internal ref struct WasmValidator
     /// The type one constant expression produces.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// An expression holding an instruction that is not constant is refused first, and one of
+    /// constant instructions that leaves other than one value - none, or two - is refused as a type
+    /// mismatch, because the value it leaves is not the one type its position asks for.
+    /// <i>(Added 2026-09-28, when the decoder began reading the format's instruction sequence rather
+    /// than exactly one constant instruction.)</i>
+    /// </para>
+    /// <para>
     /// A constant expression may read an IMPORTED global and no other, because a module's own
     /// globals are themselves initialised by constant expressions and one reading another would be
     /// reading a value that does not exist yet. No manifest here admits an import, so every
     /// <c>global.get</c> arriving here names a global that cannot be read, and the answer says that
     /// rather than blaming the type.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=C58248
-    // Broiler-Falsified-If: a constant expression reading a module's own global is admitted
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=1B6978
+    // Broiler-Falsified-If: a constant expression reading a module's own global, holding an instruction that is not constant, or holding other than one instruction is admitted
     // Broiler-Human:        PENDING
     private bool TryConstantExpressionType(
         WasmConstantExpression expression, out WasmValueType produced)
     {
         produced = WasmValueType.I32;
+
+        if (!expression.IsConstant)
+        {
+            return Fail(WebAssemblyDiagnosticCode.ConstantExpressionNotConstant, 0);
+        }
+
+        if (expression.InstructionCount != 1)
+        {
+            return Fail(WebAssemblyDiagnosticCode.ConstantExpressionTypeMismatch, 0);
+        }
 
         switch ((WasmOpcode)expression.Opcode)
         {
@@ -785,11 +853,13 @@ internal ref struct WasmValidator
                 return Fail(WebAssemblyDiagnosticCode.ConstantExpressionGlobalUnavailable, 0);
 
             default:
-                // The decoder admits five opcodes here and no other, so this arm is reachable only
-                // through a defect in that decoder rather than through any artifact.
+                // An expression of one constant instruction holds one of the five opcodes above, so
+                // this arm is reachable only through a defect in the decoder rather than through any
+                // artifact, and it carries the code that says so. (Corrected 2026-09-28: it carried
+                // UnsupportedConstantExpressionOpcode with MalformedEncoding, a code now retired.)
                 return Fail(
-                    VmReason.MalformedEncoding,
-                    WebAssemblyDiagnosticCode.UnsupportedConstantExpressionOpcode,
+                    VmReason.InconsistentStructure,
+                    WebAssemblyDiagnosticCode.VerifierDefect,
                     0);
         }
     }

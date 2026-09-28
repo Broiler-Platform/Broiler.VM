@@ -1,0 +1,20 @@
+# A WebAssembly registry whose rows claim reachability the corpus and the execution checks do not give them.
+#
+# One defect per row: an entry the manifest does not have; an entry that records another code; an
+# entry of the inversion sweep, whose answer was recorded from the profile rather than written down
+# before it was asked; a row claiming no named case reaches it when a derived entry does, and the
+# rule does not list it; a row the rule lists as unreached, in other words than the rule's; a row
+# the rule lists as unreached claiming a corpus entry; a trap kind the payload mapping maps onto
+# another code; and a trap kind no execution check expects.
+#
+# registry-revision: 1
+#
+# code|name|pass|carrier|reason|reachability|case|since
+2001|WrongMagic|decode|translation|MalformedEncoding|corpus|a-corpus-entry-nobody-wrote|1
+2002|UnsupportedBinaryVersion|decode|translation|UnknownFormatVersion|corpus|preamble-wrong-magic|1
+2106|Truncated|decode+validate|translation|Truncated|corpus|inversion-0071|1
+2105|TagSectionNotAdmitted|decode|translation|UnknownFeature|unreached|No module carries one.|1
+2901|VerifierDefect|validate+hook+translate|translation+outcome|InconsistentStructure|unreached|The validator cannot fail.|1
+2107|ReaderMalformedEncoding|decode+validate|translation|MalformedEncoding|corpus|preamble-truncated|1
+3001|TrapUnreachable|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.IntegerOverflow|1
+3002|TrapIntegerDivideByZero|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.UndefinedElement|1

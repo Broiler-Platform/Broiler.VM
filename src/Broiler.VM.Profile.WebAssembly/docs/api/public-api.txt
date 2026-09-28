@@ -74,8 +74,11 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.BranchDepthOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2810
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.BranchTableArityMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2811
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ConstantExpressionGlobalUnavailable : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2710
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ConstantExpressionNotConstant : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2714
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ConstantExpressionNotTerminated : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2602
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ConstantExpressionOpcodeNotAdmitted : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2604
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ConstantExpressionTypeMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2709
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ConstantExpressionUnknownOpcode : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2605
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.DataCountMismatch : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2502
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.DataSegmentMemoryIndexOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2708
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.DuplicateExportName : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2705
@@ -107,6 +110,7 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.MalformedMutabilityFlag : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2308
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.MalformedNameEncoding : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2401
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.MemoryNotDeclared : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2817
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.MemoryPagesAboveFormatLimit : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2713
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.MemoryPagesAboveFormatMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2306
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ModuleDefinitionsMalformedPresence : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2855
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.ModuleDefinitionsMissing : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2851
@@ -127,6 +131,7 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.StartFunctionIndexOutOfRange : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2702
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.StartFunctionSignatureInvalid : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2703
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TableNotDeclared : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2818
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TableOrMemoryMinimumAboveMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2712
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TagSectionNotAdmitted : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2105
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationJumpTablesAboveMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2873
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode.TranslationLocalsAboveMaximum : const Broiler.VM.Profile.WebAssembly.WebAssemblyDiagnosticCode = 2871

@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 235 |
 | Files carrying an annotation | 235 |
-| Code units | 10204 |
-| Relevant | 5761 |
-| Exempt by predicate | 4443 |
-| Annotated | 5761 of 5761 (100%) |
-| Human reviewed | 0 of 5761 (0%) |
-| Unverified | 5761 |
+| Code units | 10215 |
+| Relevant | 5765 |
+| Exempt by predicate | 4450 |
+| Annotated | 5765 of 5765 (100%) |
+| Human reviewed | 0 of 5765 (0%) |
+| Unverified | 5765 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5761 |
+| HUMAN_PENDING | 5765 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4443 |
+| EXEMPT | 4450 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1539 |
-| Low | 5356 |
+| Low | 5362 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 952 |
-| Medium | 4187 |
-| High | 1575 |
+| Low | 953 |
+| Medium | 4191 |
+| High | 1576 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 5761 |
+| Units scored | 5765 |
 
 ## High-security review areas
 
@@ -1552,7 +1552,6 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeImportSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeTableSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeMemorySection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadMemoryType(out WasmMemoryType)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeExportSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeElementSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeCodeSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=Critical, human line PENDING
@@ -1563,6 +1562,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadLimits(out WasmLimits)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadName(out byte[])` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadConstantExpression(out WasmConstantExpression)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmDecoder.TrySkipImmediates(byte)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadLocals(out WasmValueType[])` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadPaced(ulong, scoped System.Span<byte>)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryReadFixedWidth(int, out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, human line PENDING
@@ -1721,6 +1721,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.WasmValidator(WasmModule, WasmReadAdapter, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidate(out VmVerifierOutcome)` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateModule()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateLimits()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateFunctionTypes()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateStartFunction()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmValidator.TryValidateExports()` in `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` - Security=High, human line PENDING
@@ -1899,8 +1900,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1961 |
-| Units required to carry one | 1828 |
+| Units carrying a criterion | 1963 |
+| Units required to carry one | 1829 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1927,14 +1928,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1383 |
+| TrivialPropertyOrAccessor | 1385 |
 | ParameterAssigningConstructor | 162 |
 | TrivialExpressionBodiedMember | 64 |
 | CompilerSuppliedRecordOrEnumMember | 15 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
 | FieldDeclaringStorage | 774 |
-| EnumMemberOfADeclaredVocabulary | 1893 |
+| EnumMemberOfADeclaredVocabulary | 1898 |
 | DeclaredInSource | 31 |
 
 ## Per-unit exemptions
@@ -1984,7 +1985,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10204 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10215 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

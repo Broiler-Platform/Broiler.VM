@@ -1,0 +1,42 @@
+# per command family: pass / fail / excluded, before -> after
+# all                            18460 /  372 / 430 -> 18484 /  348 / 430
+# assert_exhaustion                  4 /   11 /   0 ->     4 /   11 /   0
+# assert_invalid                   955 /   34 /   0 ->   979 /   10 /   0
+# assert_malformed                 658 /    3 / 430 ->   658 /    3 / 430
+# assert_return                  13757 /  137 /   0 -> 13757 /  137 /   0
+# assert_return_arithmetic_nan     961 /    0 /   0 ->   961 /    0 /   0
+# assert_return_canonical_nan      933 /    0 /   0 ->   933 /    0 /   0
+# assert_trap                      438 /   22 /   0 ->   438 /   22 /   0
+# assert_unlinkable                 18 /   77 /   0 ->    18 /   77 /   0
+# func                               0 /    2 /   0 ->     0 /    2 /   0
+# invoke                            41 /    1 /   0 ->    41 /    1 /   0
+# memory                             0 /    1 /   0 ->     0 /    1 /   0
+# module                           695 /   84 /   0 ->   695 /   84 /   0
+# commands whose answer or verdict moved: 24
+# (k) assert_invalid fail -> pass: 17
+# (l) assert_invalid fail -> pass: 7
+(k) data.wast:42 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2602@19 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) data.wast:43 assert_invalid | before: refused InvalidArtifact/UnknownFeature/2601@17 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) data.wast:44 assert_invalid | before: refused InvalidArtifact/UnknownFeature/2601@17 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) data.wast:45 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2602@19 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) elem.wast:35 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2602@20 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) elem.wast:36 assert_invalid | before: refused InvalidArtifact/UnknownFeature/2601@18 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) elem.wast:37 assert_invalid | before: refused InvalidArtifact/UnknownFeature/2601@18 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) elem.wast:38 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2602@20 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) func_ptrs.wast:9 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2602@20 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) func_ptrs.wast:10 assert_invalid | before: refused InvalidArtifact/UnknownFeature/2601@18 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) globals.wast:51 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2602@18 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) globals.wast:52 assert_invalid | before: refused InvalidArtifact/UnknownFeature/2601@13 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) globals.wast:53 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2602@18 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) globals.wast:54 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2602@15 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) globals.wast:55 assert_invalid | before: refused InvalidArtifact/UnknownFeature/2601@13 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2714@0 [pass]
+(k) globals.wast:57 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2602@15 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2709@0 [pass]
+(k) globals.wast:58 assert_invalid | before: refused InvalidArtifact/UnknownFeature/2601@13 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2709@0 [pass]
+(l) memory.wast:22 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2305@14 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2712@0 [pass]
+(l) memory.wast:23 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2306@15 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2713@0 [pass]
+(l) memory.wast:24 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2306@17 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2713@0 [pass]
+(l) memory.wast:25 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2306@17 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2713@0 [pass]
+(l) memory.wast:26 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2306@16 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2713@0 [pass]
+(l) memory.wast:27 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2306@18 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2713@0 [pass]
+(l) memory.wast:28 assert_invalid | before: refused InvalidArtifact/InconsistentStructure/2306@18 [fail] | after: refused InvalidArtifact/SemanticValidationFailed/2713@0 [pass]
+# NONE: 0

@@ -1,0 +1,53 @@
+$ /usr/local/bin/python3 eng/wasm-corpus-integrity.py --corpus src/tests/wasm/corpus -- dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --corpus src/tests/wasm/corpus
+THE WEBASSEMBLY RETAINED CORPUS, CHECKED AGAINST ITS MANIFEST AND THEN MOVED.
+
+A corpus is only evidence while the thing that reads it would notice if the bytes moved.
+Three passes: the manifest's own shape, every file against its recorded digest in both
+directions, and four entries flipped by one byte and required to fail the replay.
+
+corpus:  src/tests/wasm/corpus
+replay:  dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --corpus src/tests/wasm/corpus
+
+[manifest shape] PASS
+    rows:      307
+    columns:   10
+    derived:   113
+    recorded:  194
+
+[hashes] PASS
+    files re-hashed and matched: 307 of 307
+
+[control-canonical-module-with-a-padded-section-length] PASS
+    file:      src/tests/wasm/corpus/control-canonical-module-with-a-padded-section-length.wasm
+    mutation:  the last byte, exclusive-or 0xFF
+    injected:  exit 1
+    reverted:  exit 0
+    noticed:   THE DIGEST ALONE - the verification answer did not move
+      FAIL control-canonical-module-with-a-padded-section-length: hash MISMATCH
+
+[preamble-wrong-magic] PASS
+    file:      src/tests/wasm/corpus/preamble-wrong-magic.wasm
+    mutation:  the last byte, exclusive-or 0xFF
+    injected:  exit 1
+    reverted:  exit 0
+    noticed:   THE DIGEST ALONE - the verification answer did not move
+      FAIL preamble-wrong-magic: hash MISMATCH
+
+[validation-an-operand-stack-underflow-in-reachable-code] PASS
+    file:      src/tests/wasm/corpus/validation-an-operand-stack-underflow-in-reachable-code.wasm
+    mutation:  the last byte, exclusive-or 0xFF
+    injected:  exit 1
+    reverted:  exit 0
+    noticed:   THE DIGEST ALONE - the verification answer did not move
+      FAIL validation-an-operand-stack-underflow-in-reachable-code: hash MISMATCH
+
+[ceiling-a-vector-length-above-the-declared-count-ceiling] PASS
+    file:      src/tests/wasm/corpus/ceiling-a-vector-length-above-the-declared-count-ceiling.wasm
+    mutation:  the last byte, exclusive-or 0xFF
+    injected:  exit 1
+    reverted:  exit 0
+    noticed:   the verification answer moved, and the digest as well
+      FAIL ceiling-a-vector-length-above-the-declared-count-ceiling: hash MISMATCH; expected ResourceExhaustion/CeilingReached/0/DeclaredCount/Artifact, observed InvalidArtifact/MalformedEncoding/2201/-/-; invariant exhausts: must exhaust a named dimension, and answered InvalidArtifact/MalformedEncoding/2201/-/-
+
+entries mutated: 4; detected: 4
+# exit 0

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   49
 // Annotated:        49/49
-// Exempt:           44
+// Exempt:           46
 // Human-reviewed:   0/49
 // IP risk:          Low
 // Security risk:    Critical
@@ -20,35 +20,57 @@ using Broiler.VM;
 namespace Broiler.VM.Profile.WebAssembly;
 
 /// <summary>
-/// One constant expression, in the only shape this format version admits: a single instruction and
-/// the byte that closes it.
+/// One constant expression, as the decoder read it: its first instruction, how many instructions it
+/// holds, and whether each of them is constant.
 /// </summary>
 /// <remarks>
-/// It is held decoded rather than as bytes because it has exactly two fields and re-reading it at
-/// instantiation would be a second decoder for one instruction. <see cref="Bits"/> carries whatever
-/// the opcode's immediate was: a sign-extended integer, a raw float bit pattern, or a global index.
+/// <para>
+/// It is held decoded rather than as bytes, because the only expression the validator admits is
+/// one constant instruction, and re-reading it at instantiation would be a second decoder for one
+/// instruction. <see cref="Bits"/> carries whatever the first instruction's immediate was: a
+/// sign-extended integer, a raw float bit pattern, or a global index. It is zero where the first
+/// instruction is not constant or there is none.
+/// </para>
+/// <para>
+/// <i>(Corrected 2026-09-28. The summary read "One constant expression, in the only shape this format
+/// version admits: a single instruction and the byte that closes it", which was the decoder's shape.
+/// The decoder now reads the format's instruction sequence and the validator decides the shape, so
+/// the count and the constancy travel with the first instruction.)</i>
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=Specification; IP=Low; Security=Medium; Resources=1; Fingerprint=55DC20
 // Broiler-Human:        PENDING
 internal readonly struct WasmConstantExpression
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1D8D04
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=62ED88
     // Broiler-Human:        PENDING
-    internal WasmConstantExpression(byte opcode, ulong bits)
+    internal WasmConstantExpression(byte opcode, ulong bits, int instructionCount, bool isConstant)
     {
         Opcode = opcode;
         Bits = bits;
+        InstructionCount = instructionCount;
+        IsConstant = isConstant;
     }
 
-    /// <summary>The single instruction's opcode byte.</summary>
+    /// <summary>The first instruction's opcode byte, or zero where there is none.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=71A8B4
     // Broiler-Human:        PENDING
     internal byte Opcode { get; }
 
-    /// <summary>The instruction's immediate, as raw bits.</summary>
+    /// <summary>The first instruction's immediate, as raw bits, where it is constant.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3E1229
     // Broiler-Human:        PENDING
     internal ulong Bits { get; }
+
+    /// <summary>How many instructions the expression holds before its closing byte.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=861487
+    // Broiler-Human:        PENDING
+    internal int InstructionCount { get; }
+
+    /// <summary>Whether every instruction the expression holds is one of the five constant ones.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=96361E
+    // Broiler-Human:        PENDING
+    internal bool IsConstant { get; }
 }
 
 /// <summary>The four kinds of entity an export can name, as the format encodes them.</summary>

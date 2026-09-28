@@ -1,0 +1,45 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+index 16782ae..13836c1 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+@@ -287,6 +287,8 @@ internal ref struct WasmDecoder
+             return false;
+         }
+ 
++        var fused = false;
++
+         while (reader.Remaining > 0)
+         {
+             if (!TryReadOneSection())
+@@ -294,6 +296,31 @@ internal ref struct WasmDecoder
+                 outcome = refusal;
+                 return false;
+             }
++
++            // The control: validate what has been decoded as soon as the code section is, before the
++            // rest of the module is decoded. Copies, because a body is sealed by the one validation it
++            // is given.
++            if (!fused && bodies.Length > 0 && bodies.Length == functionTypeIndices.Length)
++            {
++                fused = true;
++                var copies = new WasmFunctionBody[bodies.Length];
++
++                for (var body = 0; body < bodies.Length; body++)
++                {
++                    copies[body] = new WasmFunctionBody(
++                        bodies[body].Locals.ToArray(), bodies[body].Code.ToArray());
++                }
++
++                var partial = new WasmModule(
++                    types, functionTypeIndices, tables, memories, globals, exports, elements, data,
++                    copies, startFunctionIndex, declaresDataCount, customSections);
++
++                if (!new WasmValidator(partial, adapter, 1).TryValidate(out var early))
++                {
++                    outcome = early;
++                    return false;
++                }
++            }
+         }
+ 
+         sectionOrdinal = -1;

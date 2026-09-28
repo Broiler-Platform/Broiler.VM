@@ -1,0 +1,75 @@
+$ git apply docs/evidence/wa-spec-002/control-immediates.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release
+code.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.59
+# exit 0
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --corpus src/tests/wasm/corpus
+# module: 99 bytes, hand-encoded in this root
+verification Normal/NormalCompleted
+types                  1
+functions              1
+tables                 1
+memories               1
+globals                1
+exports                2
+element segments       1
+data segments          1
+custom sections        1 (skipped)
+start function         -1
+declares data count    False
+total code bytes       6
+execution bounds       computed by validation
+  export[0]          "add" Function #0
+  export[1]          "mem" Memory #0
+  body[0]            0 locals, 6 code bytes
+instantiation          Normal/NormalCompleted
+invocation             Normal/NormalCompleted, add(2, 3) = 5
+
+# retained corpus: 307 entries under src/tests/wasm/corpus
+FAIL constant-expression-holding-a-load: expected InvalidArtifact/SemanticValidationFailed/2714/-/-, observed InvalidArtifact/MalformedEncoding/2605/-/-; invariant refuses-validation: must be refused by the validator, and answered InvalidArtifact/MalformedEncoding/2605/-/-
+  ceiling                   5 entries     5 derived     0 recorded  invariants accepts,exhausts
+  constant-expression      11 entries    11 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  control                   9 entries     9 derived     0 recorded  invariants accepts
+  feature                   7 entries     7 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  inversion-sweep          99 entries     0 derived    99 recorded  invariants sound-either-way
+  limits                    5 entries     5 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  name                     13 entries    13 derived     0 recorded  invariants accepts,refuses-decoding
+  preamble                  3 entries     3 derived     0 recorded  invariants refuses-decoding
+  section                  10 entries    10 derived     0 recorded  invariants refuses-decoding
+  truncation-sweep         99 entries     4 derived    95 recorded  invariants accepts,refuses
+  type                      4 entries     4 derived     0 recorded  invariants refuses-decoding
+  validation-control       12 entries    12 derived     0 recorded  invariants refuses-validation
+  validation-index          7 entries     7 derived     0 recorded  invariants refuses-validation
+  validation-module        10 entries    10 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  validation-type           6 entries     6 derived     0 recorded  invariants accepts,refuses-validation
+  varint                    7 entries     7 derived     0 recorded  invariants accepts,refuses-decoding
+# retained corpus: 306 of 307 entries reproduced, 307 hashes re-computed and matched, 24 entries verify, replayed twice with no residue
+# retained corpus: 283 entries answered by the translator, 24 translated and answered by the core, 0 of them refused - class (r) is empty
+
+# execution: 168 checks
+# execution: 168 of 168 checks passed
+# differential: 43 checks
+# differential: 43 of 43 checks passed
+broiler-wasm-harness: 1 checks FAILED
+# exit 1
+$ git apply -R docs/evidence/wa-spec-002/control-immediates.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release
+code.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.91
+# exit 0

@@ -1,0 +1,210 @@
+# broiler.webassembly diagnostic-code registry
+#
+# registry-revision: 1
+# published-at-milestone: none. Revision 1 was written on 2026-09-28 as WA-3 work, and WA-3 is In
+#                         progress: publishing this file is one clause of its gate, and the row
+#                         moves on an owner's decision, not on this file existing.
+# owning-milestone: WA-3 (roadmap.delivery.md), under roadmap.md section 8, "The diagnostic registry"
+# vocabulary: WebAssemblyDiagnosticCode, in src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs
+# corpus: src/tests/wasm/corpus/corpus.manifest
+# execution-checks: src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ExecutionChecks.cs
+# feature-manifest: broiler.webassembly.slice
+# binary-version: 1
+#
+# code|name|pass|carrier|reason|reachability|case|since
+#
+# code           the member's number. A code is never reused for another meaning: a refusal whose
+#                meaning changes takes a new number, and the old one is retired and stays taken.
+# name           the member of WebAssemblyDiagnosticCode that has that number.
+# pass           every pass that emits the code, joined with `+`, in this order:
+#                decode     WasmDecoder, which frames every section and reads every grammar except
+#                           a function body's instructions.
+#                validate   WasmValidator, which checks the module's index spaces and walks each
+#                           function body once, decoding and typing each instruction in one step
+#                           (draft decision WAD-0004).
+#                hook       the family's verifier hook, WasmFamilyVerifier and WasmFamilyData, over
+#                           a universal bytecode artifact's module definitions and at every family
+#                           instruction.
+#                translate  the lowering of a validated module into universal bytecode, WasmLowering
+#                           and WasmTranslator.
+#                execute    the family's execution, which maps a trap kind onto its code.
+#                bare-module  the bare-module verifier milestone UBC-4 retired. Retired rows only.
+#                The shared mapping in WebAssemblyDiagnostics.cs, WasmRefusal, is called by the
+#                decoder and the validator both, so a code only it emits is `decode+validate`.
+# carrier        where the code travels, joined with `+` when its passes use more than one:
+#                translation  the translation's answer, in the fields the core's verifier outcome
+#                             has - this code and a position record - and never in a core result.
+#                             Every decode, validate and translate code.
+#                outcome      the core's own code and reason pair on the verifier outcome, with the
+#                             universal bytecode walk's position. Every hook code, and the two the
+#                             retired bare-module verifier emitted.
+#                payload      the typed payload of a ProfileFault, WebAssemblyTrap, beside the trap
+#                             kind. The core's diagnostics have nowhere to put it.
+# reason         the ONE core VmReason every emission of this code carries. A code emitted with two
+#                reasons is a registry violation, not a code with two meanings. On a payload row it is
+#                the reason the core gives every profile fault, ProfileFaultUnspecified, which the
+#                profile does not choose. On a retired row it is the reason the code last carried.
+# reachability   corpus     the case column names a derived entry of the corpus manifest: its answer
+#                           was written down before the profile was asked, and it records an invalid
+#                           artifact with exactly this code and this reason. Every entry recording
+#                           the code records the same reason.
+#                execution  the case column names a trap kind a named check of the harness root's
+#                           execution lane expects. The check reads the trap's kind and its code off
+#                           the payload, and holds the code to the execution checks' own table of
+#                           this registry's codes, which rule W3 holds to these rows. It is weaker
+#                           than `corpus` in one way, which is why it is its own word: the module is
+#                           assembled by the harness at every run, and no bytes or answer are
+#                           retained and pinned. *(Corrected 2026-09-28, the day revision 1 was
+#                           written: this read "The check reads the trap's kind, and the code travels
+#                           beside it, mapped from the kind by one switch in WasmFamily; no check reads
+#                           the code off the payload." The checks read the code since. No row and no
+#                           code's meaning changed, so the revision did not move.)*
+#                unreached  no named case reaches the code, and the case column says why, in the
+#                           words rule W3 lists. WHICH ROWS MAY SAY THIS IS FIXED BY THE RULE, not
+#                           by this file. These rows are the part of WA-3's gate clause "every code
+#                           in it is reachable from a named case" that is not met.
+#                retired    nothing emits the code. The number stays taken.
+# case           the corpus entry, the trap kind, the rule's words for an unreached row, or `-`.
+# since          the registry revision the code was published in. The revision and this column date
+#                a code's MEANING: a new corpus entry for an existing code moves neither.
+#
+# THE BAND TELLS THE PASS, NOT THE CATEGORY. Codes below 2700 are the decoder's, 2700 to 2849 the
+# validator's, 2850 to 2869 the hook's own, 2870 to 2899 the translation's, 2900 to 2999 a defect of
+# this assembly, and 3000 and up execution. A code the hook shares with the decoder or the validator
+# keeps that code's number and reason. A malformation the validator meets inside a function body
+# carries a 2800-band code with a malformation reason (UnknownOpcode, ReservedImmediateNotZero): the
+# category a refusal names is its reason. Draft decision WAD-0004 records why.
+#
+# POSITIONS. Every carrier uses the core's position record, VmSourcePosition: a section index, a
+# byte offset and two coordinates the core does not interpret. What this profile puts in them:
+#   decode       section index: the ordinal of the section being read, counting every section framed
+#                so far from 0, custom sections included, and -1 in the preamble. Byte offset: from
+#                the start of the payload. Coordinate 0: the identifier of that section, and -1
+#                between sections. Coordinate 1: the ordinal of the item in the section's vector,
+#                and -1 outside one.
+#   validate     section index: -1, which here means "the validator does not know section ordinals".
+#                Byte offset: within a function body, from the first byte of its instructions, after
+#                its locals; for a refusal about the module rather than a body, 0. Coordinate 0: the
+#                identifier of the section the refused item came from. Coordinate 1: the item's
+#                ordinal in that section, which for a body is its function index.
+#   translate    as validate, with coordinate 0 the code section's identifier, 10. A defect answers
+#                -1, 0, -1, -1.
+#   hook         the universal bytecode walk's position in the artifact, which is the core's
+#                convention and not this profile's.
+#   payload      section index: 10, the code section's IDENTIFIER rather than an ordinal. Byte
+#                offset: within the function's body. Coordinate 0: the function index. Coordinate 1:
+#                the byte offset again. THIS DISAGREES WITH THE VERIFICATION PATH'S USE OF THE SAME
+#                FIELDS and is recorded here as found: the trap payload keeps the retired executor's
+#                layout. Choosing one layout is WA-5's, or an amendment to this registry.
+#
+# THE REVISION IS RECORDED WITH THE CORPUS. The core carries a revision for its own reason registry
+# and none for a profile's, so this profile records it in the corpus manifest's header, as
+# "# registry-revision: N", written by the harness root's writer from CorpusStore.RegistryRevision.
+# Every entry in a manifest is dated by that line. Rule W3 holds the writer's constant to this
+# file's revision, and a manifest's line to at most it.
+#
+# Held by rule W3 (src/tests/Broiler.VM.Architecture.Tests/WebAssemblyRegistryRules.cs) in both
+# directions: every member of WebAssemblyDiagnosticCode has exactly one row and every row names a
+# member of its number; every emission site in the profile assembly's source carries the row's
+# reason and is in one of the row's passes, and each of the row's passes has a site; the carrier is
+# the one its passes use; a corpus row's entry exists, is derived and records exactly this code and
+# reason, and no entry records a code with another reason; an execution row's trap kind is mapped to
+# this code by the profile and by the execution checks' table, and a check expects it; the unreached
+# rows are the ones the rule lists;
+# and a retired row's code is named nowhere in the assembly's source.
+2001|WrongMagic|decode|translation|MalformedEncoding|corpus|preamble-wrong-magic|1
+2002|UnsupportedBinaryVersion|decode|translation|UnknownFormatVersion|corpus|preamble-wrong-binary-version|1
+2003|UnsupportedArtifactFormatVersion|bare-module|outcome|UnsupportedProfileFormatVersion|retired|-|1
+2004|UnacceptedFeatureManifest|bare-module|outcome|UnsupportedFeatureManifest|retired|-|1
+2101|UnknownSectionId|decode|translation|InconsistentStructure|corpus|section-unknown-identifier|1
+2102|SectionOutOfOrder|decode|translation|InconsistentStructure|corpus|section-out-of-canonical-order|1
+2103|DuplicateSection|decode|translation|InconsistentStructure|corpus|section-duplicated|1
+2104|SectionLengthMismatch|decode|translation|InconsistentStructure|corpus|section-body-shorter-than-its-declared-length|1
+2105|TagSectionNotAdmitted|decode|translation|UnknownFeature|corpus|feature-a-tag-section|1
+2106|Truncated|decode+validate|translation|Truncated|corpus|preamble-truncated|1
+2107|ReaderMalformedEncoding|decode+validate|translation|MalformedEncoding|unreached|The profile reads through none of the bounded reader's operations that latch a malformation but the section exit, and the decoder answers that one as SectionLengthMismatch.|1
+2201|IntegerRepresentationTooLong|decode+validate|translation|MalformedEncoding|corpus|varint-section-length-over-long|1
+2202|IntegerTooLarge|decode+validate|translation|MalformedEncoding|corpus|varint-section-length-terminal-byte-has-unused-bits-set|1
+2203|IntegerSignExtensionInvalid|decode+validate|translation|MalformedEncoding|corpus|varint-a-signed-constant-immediate-with-an-invalid-sign-extension|1
+2301|MalformedFunctionTypeTag|decode|translation|MalformedEncoding|corpus|type-function-tag-is-not-0x60|1
+2302|UnknownValueType|decode+validate+hook|translation+outcome|MalformedEncoding|corpus|type-value-type-byte-names-nothing|1
+2303|ValueTypeNotAdmitted|decode+validate|translation|UnknownFeature|corpus|feature-a-vector-value-type|1
+2304|MalformedLimitsFlag|decode+hook|translation+outcome|MalformedEncoding|corpus|limits-flag-is-neither-form|1
+2305|LimitsMinimumAboveMaximum|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2306|MemoryPagesAboveFormatMaximum|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2307|UnknownElementType|decode|translation|MalformedEncoding|corpus|type-table-element-type-is-not-funcref|1
+2308|MalformedMutabilityFlag|decode+hook|translation+outcome|MalformedEncoding|corpus|type-global-mutability-flag-is-neither-form|1
+2401|MalformedNameEncoding|decode+hook|translation+outcome|MalformedEncoding|corpus|name-overlong-two-byte-form|1
+2402|UnknownExternalKind|decode+hook|translation+outcome|MalformedEncoding|corpus|name-export-kind-byte-names-nothing|1
+2403|ImportNotAdmitted|decode|translation|UnknownFeature|corpus|feature-an-import|1
+2501|FunctionAndCodeCountMismatch|decode|translation|InconsistentStructure|corpus|module-a-function-section-without-a-code-section|1
+2502|DataCountMismatch|decode|translation|InconsistentStructure|corpus|module-a-data-count-that-disagrees-with-the-data-section|1
+2503|FunctionBodyLengthMismatch|decode|translation|InconsistentStructure|corpus|module-a-function-body-whose-locals-run-past-its-declared-size|1
+2504|MultipleMemoriesNotAdmitted|decode|translation|UnknownFeature|corpus|feature-two-memories|1
+2505|MultipleTablesNotAdmitted|decode|translation|UnknownFeature|corpus|feature-two-tables|1
+2601|UnsupportedConstantExpressionOpcode|decode|translation|UnknownFeature|retired|-|1
+2602|ConstantExpressionNotTerminated|decode|translation|InconsistentStructure|retired|-|1
+2603|UnsupportedSegmentKind|decode|translation|UnknownFeature|corpus|feature-an-element-segment-whose-first-field-is-not-zero|1
+2604|ConstantExpressionOpcodeNotAdmitted|decode|translation|UnknownFeature|corpus|constant-expression-holding-an-instruction-a-later-version-defines|1
+2605|ConstantExpressionUnknownOpcode|decode|translation|MalformedEncoding|corpus|constant-expression-holding-a-byte-that-names-no-instruction|1
+2701|FunctionTypeIndexOutOfRange|validate|translation|SemanticValidationFailed|corpus|module-a-function-whose-type-index-addresses-no-type|1
+2702|StartFunctionIndexOutOfRange|validate+hook|translation+outcome|SemanticValidationFailed|corpus|module-a-start-section-naming-a-function-that-does-not-exist|1
+2703|StartFunctionSignatureInvalid|validate+hook|translation+outcome|SemanticValidationFailed|corpus|module-a-start-function-that-takes-a-parameter|1
+2704|ExportIndexOutOfRange|validate+hook|translation+outcome|SemanticValidationFailed|corpus|module-an-export-naming-an-index-its-kind-does-not-have|1
+2705|DuplicateExportName|validate+hook|translation+outcome|SemanticValidationFailed|corpus|module-two-exports-publishing-one-name|1
+2706|ElementSegmentTableIndexOutOfRange|validate+hook|translation+outcome|SemanticValidationFailed|corpus|module-an-element-segment-with-no-table-declared|1
+2707|ElementSegmentFunctionIndexOutOfRange|validate+hook|translation+outcome|SemanticValidationFailed|corpus|module-an-element-segment-writing-an-unknown-function-index|1
+2708|DataSegmentMemoryIndexOutOfRange|validate+hook|translation+outcome|SemanticValidationFailed|corpus|module-a-data-segment-with-no-memory-declared|1
+2709|ConstantExpressionTypeMismatch|validate|translation|SemanticValidationFailed|corpus|constant-expression-of-two-constant-instructions|1
+2710|ConstantExpressionGlobalUnavailable|validate|translation|SemanticValidationFailed|corpus|constant-expression-reading-a-global|1
+2711|FunctionTypeResultArityAboveOne|validate|translation|SemanticValidationFailed|corpus|module-a-function-type-with-two-results|1
+2712|TableOrMemoryMinimumAboveMaximum|validate|translation|SemanticValidationFailed|corpus|limits-minimum-above-maximum|1
+2713|MemoryPagesAboveFormatLimit|validate|translation|SemanticValidationFailed|corpus|limits-memory-minimum-above-the-formats-own-maximum|1
+2714|ConstantExpressionNotConstant|validate|translation|SemanticValidationFailed|corpus|constant-expression-is-not-a-constant-instruction|1
+2801|UnknownOpcode|validate|translation|MalformedEncoding|corpus|validation-a-byte-that-names-no-instruction|1
+2802|OperandTypeMismatch|validate|translation|SemanticValidationFailed|corpus|validation-a-type-mismatch-between-an-operand-and-its-instruction|1
+2803|OperandStackUnderflow|validate|translation|SemanticValidationFailed|corpus|validation-an-operand-stack-underflow-in-reachable-code|1
+2804|BlockResultTypeUnmet|validate|translation|SemanticValidationFailed|corpus|validation-a-block-whose-declared-result-type-is-unmet|1
+2805|BlockLeavesExtraOperands|validate|translation|SemanticValidationFailed|corpus|validation-a-block-that-leaves-an-operand-above-its-entry-height|1
+2806|ElseWithoutIf|validate|translation|SemanticValidationFailed|corpus|validation-an-else-where-no-if-is-open|1
+2807|IfWithoutElseResultMismatch|validate|translation|SemanticValidationFailed|corpus|validation-a-conditional-with-a-result-and-no-else-arm|1
+2808|UnterminatedFunctionBody|validate|translation|SemanticValidationFailed|corpus|validation-a-function-body-that-ends-with-a-block-still-open|1
+2809|InstructionsAfterFunctionEnd|validate|translation|SemanticValidationFailed|corpus|validation-a-body-carrying-bytes-after-the-end-that-closed-it|1
+2810|BranchDepthOutOfRange|validate|translation|SemanticValidationFailed|corpus|validation-a-branch-to-a-label-depth-that-does-not-exist|1
+2811|BranchTableArityMismatch|validate|translation|SemanticValidationFailed|corpus|validation-a-branch-table-whose-labels-carry-different-arities|1
+2812|LocalIndexOutOfRange|validate|translation|SemanticValidationFailed|corpus|validation-a-local-index-past-the-parameters-and-locals|1
+2813|GlobalIndexOutOfRange|validate+hook|translation+outcome|SemanticValidationFailed|corpus|validation-a-global-index-the-module-does-not-declare|1
+2814|GlobalIsImmutable|validate+hook|translation+outcome|SemanticValidationFailed|corpus|validation-a-write-to-a-global-the-module-declared-immutable|1
+2815|FunctionIndexOutOfRange|validate|translation|SemanticValidationFailed|corpus|validation-a-call-whose-index-addresses-no-function|1
+2816|TypeIndexOutOfRange|validate|translation|SemanticValidationFailed|corpus|validation-an-indirect-call-naming-no-declared-type|1
+2817|MemoryNotDeclared|validate+hook|translation+outcome|SemanticValidationFailed|corpus|validation-a-memory-instruction-with-no-memory-declared|1
+2818|TableNotDeclared|validate+hook|translation+outcome|SemanticValidationFailed|corpus|validation-an-indirect-call-with-no-table-declared|1
+2819|AlignmentAboveNaturalAlignment|validate+hook|translation+outcome|SemanticValidationFailed|corpus|validation-a-load-whose-alignment-is-above-its-natural-alignment|1
+2820|BlockTypeNotAdmitted|validate|translation|UnknownFeature|corpus|feature-a-block-type-in-the-type-index-form|1
+2821|ReservedImmediateNotZero|validate+hook|translation+outcome|MalformedEncoding|corpus|validation-a-reserved-immediate-that-is-not-zero|1
+2822|OpcodeNotAdmitted|validate|translation|UnknownFeature|corpus|feature-a-bulk-memory-prefixed-instruction|1
+2851|ModuleDefinitionsMissing|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2852|ModuleDefinitionsTruncated|hook|outcome|Truncated|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2853|ModuleDefinitionsTrailingBytes|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2854|ModuleDefinitionsVersionUnsupported|hook|outcome|UnknownFormatVersion|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2855|ModuleDefinitionsMalformedPresence|hook|outcome|MalformedEncoding|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2856|GlobalInitialValueOutOfRange|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2857|ValueSlotNotAdmitted|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2858|ExportedFunctionNotAnEntry|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2859|PositionsNotOrdered|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2860|GlobalRowTypeMismatch|hook|outcome|SemanticValidationFailed|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2871|TranslationLocalsAboveMaximum|translate|translation|UnknownFeature|unreached|No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.|1
+2872|TranslationOperandHeightAboveMaximum|translate|translation|UnknownFeature|unreached|No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.|1
+2873|TranslationJumpTablesAboveMaximum|translate|translation|UnknownFeature|unreached|No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.|1
+2874|TranslationOperandOutOfRange|translate|translation|UnknownFeature|unreached|No module the validator admits reaches it, as the enumeration's remark on it says.|1
+2901|VerifierDefect|validate+hook+translate|translation+outcome|InconsistentStructure|unreached|It is the answer a defect in this assembly gives, and a retained entry recording it would be a bug report.|1
+2902|ReaderStopped|decode+validate|translation|InconsistentStructure|unreached|The reader's mapping has an arm for every status the core's bounded reader defines, so its default arm answers a status no failed read latches.|1
+3001|TrapUnreachable|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.Unreachable|1
+3002|TrapIntegerDivideByZero|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.IntegerDivideByZero|1
+3003|TrapIntegerOverflow|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.IntegerOverflow|1
+3004|TrapInvalidConversionToInteger|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.InvalidConversionToInteger|1
+3005|TrapOutOfBoundsMemoryAccess|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.OutOfBoundsMemoryAccess|1
+3006|TrapOutOfBoundsTableAccess|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.OutOfBoundsTableAccess|1
+3007|TrapUndefinedElement|execute|payload|ProfileFaultUnspecified|unreached|No trap this build raises has that kind: an indirect call past the table's end is reported under the current revision's name, 3006.|1
+3008|TrapIndirectCallTypeMismatch|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.IndirectCallTypeMismatch|1
+3009|TrapUninitializedElement|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.UninitializedElement|1

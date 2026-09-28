@@ -1,0 +1,77 @@
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --corpus src/tests/wasm/corpus
+# module: 99 bytes, hand-encoded in this root
+verification Normal/NormalCompleted
+types                  1
+functions              1
+tables                 1
+memories               1
+globals                1
+exports                2
+element segments       1
+data segments          1
+custom sections        1 (skipped)
+start function         -1
+declares data count    False
+total code bytes       6
+execution bounds       computed by validation
+  export[0]          "add" Function #0
+  export[1]          "mem" Memory #0
+  body[0]            0 locals, 6 code bytes
+instantiation          Normal/NormalCompleted
+invocation             Normal/NormalCompleted, add(2, 3) = 5
+
+# retained corpus: 307 entries under src/tests/wasm/corpus
+  ceiling                   5 entries     5 derived     0 recorded  invariants accepts,exhausts
+  constant-expression      11 entries    11 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  control                   9 entries     9 derived     0 recorded  invariants accepts
+  feature                   7 entries     7 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  inversion-sweep          99 entries     0 derived    99 recorded  invariants sound-either-way
+  limits                    5 entries     5 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  name                     13 entries    13 derived     0 recorded  invariants accepts,refuses-decoding
+  preamble                  3 entries     3 derived     0 recorded  invariants refuses-decoding
+  section                  10 entries    10 derived     0 recorded  invariants refuses-decoding
+  truncation-sweep         99 entries     4 derived    95 recorded  invariants accepts,refuses
+  type                      4 entries     4 derived     0 recorded  invariants refuses-decoding
+  validation-control       12 entries    12 derived     0 recorded  invariants refuses-validation
+  validation-index          7 entries     7 derived     0 recorded  invariants refuses-validation
+  validation-module        10 entries    10 derived     0 recorded  invariants refuses-decoding,refuses-validation
+  validation-type           6 entries     6 derived     0 recorded  invariants accepts,refuses-validation
+  varint                    7 entries     7 derived     0 recorded  invariants accepts,refuses-decoding
+# retained corpus: 307 of 307 entries reproduced, 307 hashes re-computed and matched, 24 entries verify, replayed twice with no residue
+# retained corpus: 283 entries answered by the translator, 24 translated and answered by the core, 0 of them refused - class (r) is empty
+
+# execution: 168 checks
+# execution: 168 of 168 checks passed
+# differential: 43 checks
+# differential: 43 of 43 checks passed
+broiler-wasm-harness: every check passed, core contract version 1
+# exit 0
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --expect <root>/src/tests/wasm/spec/wasm-spec.pin
+# self-check ok   self-check.wast:1 L1 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:3 L8 assert_return | values i32:0000002A | pass (declared pass)
+# self-check ok   self-check.wast:4 L9 assert_return | values i32:0000002A | fail (declared fail)
+# self-check ok   self-check.wast:5 L10 assert_trap | trap IntegerDivideByZero | pass (declared pass)
+# self-check ok   self-check.wast:6 L11 assert_trap | trap IntegerDivideByZero | fail (declared fail)
+# self-check ok   self-check.wast:7 L12 assert_return_canonical_nan | values f32:7FC00000 | pass (declared pass)
+# self-check ok   self-check.wast:8 L13 assert_return_arithmetic_nan | values i32:00000002 | fail (declared fail)
+# self-check ok   self-check.wast:9 L14 assert_return | no-surface get | fail (declared fail)
+# self-check ok   self-check.wast:10 L15 assert_return | fault UnknownExport | fail (declared fail)
+# self-check ok   self-check.wast:11 L16 invoke | values i32:00000003 | pass (declared pass)
+# self-check ok   self-check.wast:12 L17 assert_invalid | refused InvalidArtifact/SemanticValidationFailed/2804@1 | pass (declared pass)
+# self-check ok   self-check.wast:13 L18 assert_invalid | instance | fail (declared fail)
+# self-check ok   self-check.wast:14 L19 assert_malformed | refused InvalidArtifact/UnknownFormatVersion/2002@8 | pass (declared pass)
+# self-check ok   self-check.wast:15 L20 assert_malformed | excluded (t) | excluded (declared excluded)
+# self-check ok   self-check.wast:16 L21 assert_unlinkable | refused InvalidArtifact/UnknownFeature/2403@17 | fail (declared fail)
+# self-check ok   self-check.wast:17 L22 assert_unlinkable | instantiation ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess | pass (declared pass)
+# self-check ok   self-check.wast:18 L23 assert_malformed | refused InvalidArtifact/InconsistentStructure/2101@12 | pass (declared pass)
+# self-check ok   self-check.wast:19 L24 assert_invalid | refused InvalidArtifact/InconsistentStructure/2101@12 | fail (declared fail)
+# self-check ok   self-check.wast:20 L25 assert_malformed | refused InvalidArtifact/SemanticValidationFailed/2804@1 | fail (declared fail)
+# self-check ok   self-check.wast:21 L26 assert_invalid | refused InvalidArtifact/UnknownFormatVersion/2002@8 | fail (declared fail)
+# self-check ok   self-check.wast:22 L27 assert_invalid | refused InvalidArtifact/UnknownFeature/2504@11 | fail (declared fail)
+# self-check ok   self-check.wast:23 L28 assert_malformed | refused InvalidArtifact/MalformedEncoding/2821@1 | pass (declared pass)
+# self-check ok   self-check.wast:24 L29 assert_trap | instantiation ProfileFault/ProfileFaultUnspecified trap=Unreachable | pass (declared pass)
+# self-check ok   self-check.wast:25 L30 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:26 L31 assert_return | values i32:00000001 | pass (declared pass)
+# self-check ok   self-check.wast:27 L32 assert_exhaustion | ResourceExhaustion/CeilingReached/CallDepth/Runtime | pass (declared pass)
+# self-check: 26 commands for 26 declared verdicts, every one as declared
+# exit 0

@@ -1,0 +1,41 @@
+$ git apply docs/evidence/wa-spec-003/control-two-reasons.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release
+code.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.05
+# exit 0
+$ dotnet test src/tests/Broiler.VM.Architecture.Tests -c Release --no-build --filter FullyQualifiedName~W3_The_Checkout_Holds_Every_Clause
+Test run for <root>/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:02.52]     Broiler.VM.Architecture.Tests.WebAssemblyRegistryRuleTests.W3_The_Checkout_Holds_Every_Clause [FAIL]
+  Failed Broiler.VM.Architecture.Tests.WebAssemblyRegistryRuleTests.W3_The_Checkout_Holds_Every_Clause [2 s]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs("···, "FunctionBodyLengthMismatch is emitted with 2 reaso"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.WebAssemblyRegistryRuleTests.W3_The_Checkout_Holds_Every_Clause() in <root>/src/tests/Broiler.VM.Architecture.Tests/WebAssemblyRegistryRuleTests.cs:line 36
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+# exit 1
+$ git apply -R docs/evidence/wa-spec-003/control-two-reasons.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release
+code.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.27
+# exit 0

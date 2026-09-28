@@ -1,0 +1,53 @@
+# closure rid=linux-x64, read off each publish's output directory
+
+[harness trimmed] 52 files, 20 .dll files, 7 of them Broiler assemblies
+  Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary.dll
+  Broiler.VM.Composition.WebAssembly.Harness.dll
+  Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc.dll
+
+[harness aot] 15 files, 0 .dll files, 0 of them Broiler assemblies
+  Broiler.VM.Abstractions.pdb
+  Broiler.VM.Abstractions.xml
+  Broiler.VM.Binary.pdb
+  Broiler.VM.Binary.xml
+  Broiler.VM.Composition.WebAssembly.Harness
+  Broiler.VM.Composition.WebAssembly.Harness.dbg
+  Broiler.VM.Composition.WebAssembly.Harness.xml
+  Broiler.VM.Emitter.Bytecode.pdb
+  Broiler.VM.Emitter.Bytecode.xml
+  Broiler.VM.Profile.WebAssembly.pdb
+  Broiler.VM.Profile.WebAssembly.xml
+  Broiler.VM.Runtime.pdb
+  Broiler.VM.Runtime.xml
+  Broiler.VM.Ubc.pdb
+  Broiler.VM.Ubc.xml
+
+[execution trimmed] 50 files, 18 .dll files, 7 of them Broiler assemblies
+  Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary.dll
+  Broiler.VM.Composition.WebAssembly.Execution.dll
+  Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc.dll
+
+[execution aot] 15 files, 0 .dll files, 0 of them Broiler assemblies
+  Broiler.VM.Abstractions.pdb
+  Broiler.VM.Abstractions.xml
+  Broiler.VM.Binary.pdb
+  Broiler.VM.Binary.xml
+  Broiler.VM.Composition.WebAssembly.Execution
+  Broiler.VM.Composition.WebAssembly.Execution.dbg
+  Broiler.VM.Composition.WebAssembly.Execution.xml
+  Broiler.VM.Emitter.Bytecode.pdb
+  Broiler.VM.Emitter.Bytecode.xml
+  Broiler.VM.Profile.WebAssembly.pdb
+  Broiler.VM.Profile.WebAssembly.xml
+  Broiler.VM.Runtime.pdb
+  Broiler.VM.Runtime.xml
+  Broiler.VM.Ubc.pdb
+  Broiler.VM.Ubc.xml

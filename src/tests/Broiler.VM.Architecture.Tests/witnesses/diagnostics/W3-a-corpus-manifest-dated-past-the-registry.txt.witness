@@ -1,0 +1,7 @@
+# broiler.webassembly retained corpus, feature manifest broiler.webassembly.slice, binary version 1
+# registry-revision: 2
+# A corpus manifest dated by a registry revision the registry has not had. Its one entry records a
+# code whose meaning a later revision could have changed, and the date is how a reader would know
+# which meaning it recorded; a date from the future is a date nothing can be read against.
+# name|sha256|family|outcome|reason|diagnostic|dimension|scope|provenance|invariant
+preamble-wrong-magic|f06bbe201258e8a4b314d001cd79fa2bc290085ba3e51d46c0f153692e15abce|preamble|InvalidArtifact|MalformedEncoding|2001|-|-|derived|refuses-decoding

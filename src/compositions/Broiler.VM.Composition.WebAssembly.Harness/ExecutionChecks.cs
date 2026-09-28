@@ -796,11 +796,11 @@ internal static class ExecutionChecks
             var published = instantiated.TryGetInstance(out _);
             var carried = WebAssemblyProfile.TryGetTrap(in instantiated, out var trap);
 
-            var passed = !published && carried && trap.Kind is WasmTrapKind.Unreachable;
+            var passed = !published && carried && IsTrap(trap, WasmTrapKind.Unreachable);
 
             return (Name, passed,
                 $"{instantiated.Outcome}/{instantiated.Reason} " +
-                $"trap={(carried ? trap.Kind.ToString() : "none")} instance-published={published}");
+                $"trap={(carried ? $"{trap.Kind}/{trap.DiagnosticCode}" : "none")} instance-published={published}");
         }
     }
 
@@ -822,7 +822,7 @@ internal static class ExecutionChecks
             var carried = WebAssemblyProfile.TryGetTrap(in instantiated, out var trap);
 
             var passed =
-                !published && carried && trap.Kind is WasmTrapKind.OutOfBoundsMemoryAccess;
+                !published && carried && IsTrap(trap, WasmTrapKind.OutOfBoundsMemoryAccess);
 
             // THE SECOND HALF OF THE SEGMENT RULE IS NOT OBSERVED HERE AND IS NOT CLAIMED. The
             // first segment was applied before the second was refused, which is what per-segment
@@ -832,7 +832,7 @@ internal static class ExecutionChecks
             // assert it.
             return (Name, passed,
                 $"{instantiated.Outcome}/{instantiated.Reason} " +
-                $"trap={(carried ? trap.Kind.ToString() : "none")} instance-published={published}");
+                $"trap={(carried ? $"{trap.Kind}/{trap.DiagnosticCode}" : "none")} instance-published={published}");
         }
     }
 
@@ -1365,11 +1365,11 @@ internal static class ExecutionChecks
 
             return (name,
                 carried &&
-                    trap.Kind == expected.Trap.Value &&
+                    IsTrap(trap, expected.Trap.Value) &&
                     answered.Outcome is VmOutcome.ProfileFault,
                 $"{answered.Outcome}/{answered.Reason} " +
                 $"trap={(carried ? $"{trap.Kind}/{trap.DiagnosticCode}" : "none")} " +
-                $"expected trap={expected.Trap}");
+                $"expected trap={expected.Trap}/{(int)RegistryCodeOf(expected.Trap.Value)}");
         }
 
         if (!WebAssemblyProfile.TryGetResults(in answered, out var results))
@@ -1461,4 +1461,40 @@ internal static class ExecutionChecks
 
     private static Expectation Trap(WasmTrapKind kind) =>
         new(WebAssemblyValueKind.I32, 0, kind);
+
+    /// <summary>
+    /// Whether a trap is of <paramref name="kind"/> AND carries the code the published registry gives
+    /// that kind.
+    /// </summary>
+    /// <remarks>
+    /// The kind alone is what these checks read until 2026-09-28, and the code travelled beside it
+    /// unread: the registry's execution rows named a check that observed the kind and not the code. A
+    /// payload whose code disagreed with its kind would have passed every check here.
+    /// </remarks>
+    private static bool IsTrap(WebAssemblyTrap trap, WasmTrapKind kind) =>
+        trap.Kind == kind && trap.DiagnosticCode == (int)RegistryCodeOf(kind);
+
+    /// <summary>
+    /// The code the profile's published diagnostic registry,
+    /// <c>src/Broiler.VM.Profile.WebAssembly/docs/diagnostics/registry.txt</c>, gives each trap kind
+    /// whose execution row names a check here.
+    /// </summary>
+    /// <remarks>
+    /// Written from the registry's rows and not from the profile's own mapping, which it is compared
+    /// against at every trap. Rule W3 reads it as it reads the profile's: a kind this table maps onto
+    /// another code than its row's fails the rule. The discard arm names the one kind with no
+    /// execution row, so a check expecting it fails here rather than passing on a guess.
+    /// </remarks>
+    private static WebAssemblyDiagnosticCode RegistryCodeOf(WasmTrapKind kind) => kind switch
+    {
+        WasmTrapKind.Unreachable => WebAssemblyDiagnosticCode.TrapUnreachable,
+        WasmTrapKind.IntegerDivideByZero => WebAssemblyDiagnosticCode.TrapIntegerDivideByZero,
+        WasmTrapKind.IntegerOverflow => WebAssemblyDiagnosticCode.TrapIntegerOverflow,
+        WasmTrapKind.InvalidConversionToInteger => WebAssemblyDiagnosticCode.TrapInvalidConversionToInteger,
+        WasmTrapKind.OutOfBoundsMemoryAccess => WebAssemblyDiagnosticCode.TrapOutOfBoundsMemoryAccess,
+        WasmTrapKind.OutOfBoundsTableAccess => WebAssemblyDiagnosticCode.TrapOutOfBoundsTableAccess,
+        WasmTrapKind.IndirectCallTypeMismatch => WebAssemblyDiagnosticCode.TrapIndirectCallTypeMismatch,
+        WasmTrapKind.UninitializedElement => WebAssemblyDiagnosticCode.TrapUninitializedElement,
+        _ => WebAssemblyDiagnosticCode.VerifierDefect,
+    };
 }

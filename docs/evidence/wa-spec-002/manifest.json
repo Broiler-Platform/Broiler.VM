@@ -1,0 +1,53 @@
+{
+  "bundle": "wa-spec-002",
+  "milestone": "WA-3",
+  "evidence-class": "working-record",
+  "collected-at": "ec7f4f9af3345c7204cd10c6c86dde77502ff324",
+  "worktree-clean": true,
+  "hash-method": "sources: git blob id at source-revision; inputs and retained files: sha256 of the LF bytes git stores",
+  "note": "The WebAssembly profile's three validation rules the decoder answered as malformations - limits whose minimum exceeds their maximum, a memory of more pages than the format allows, constant expressions of other than one constant instruction - moved to the validator: the specification's core test scripts before (f842c2f) and after, each run twice; the harness root's run over the retained corpus; the corpus integrity check; four negative controls. A working record, not a milestone bundle: it moves no ledger row",
+  "source-revision": "ec7f4f9af3345c7204cd10c6c86dde77502ff324",
+  "sources": {
+    "eng/wasm-corpus-integrity.py": "4fdc651c05c89f7bcd233b6f66ddc0a43451b078",
+    "src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs": "bd1bb97455015610ae7a83ec9fb30481ac4958b3",
+    "src/Broiler.VM.Profile.WebAssembly/WasmModule.cs": "0e3364aec200b3898098d9605dd7e4c962143272",
+    "src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs": "1f90dedb56016e48b93caf6122d916fd93fa505d",
+    "src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs": "d8eb73a57bf3f0fd056da209b68d34e6011aa2e9",
+    "src/Broiler.VM.Profile.WebAssembly/docs/api/public-api.txt": "a43ae70b5cced448f741c15f95c8803eec2fa8a6",
+    "src/Broiler.VM.Profile.WebAssembly/docs/decisions/0004-decode-and-validate-fused-within-a-function-body.md": "9f0c0eeb4da2bfd2abfe58b8913bfebbac7f5a2a",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs": "326038a0e17bf3d52c07ef12f2f15e300ef8f743",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs": "be1a1ccc8ad3068b2c203756d16ef3117547461c",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecSuite.cs": "e4c03925145b99381793a27d871cbbaceed44705",
+    "src/tests/wasm/corpus/corpus.manifest": "32e374b80c8761bfeed27ed9b7713b9b9d1e599b",
+    "src/tests/wasm/spec/wasm-spec-977f97014c962f7bd1291fcc6d28b41a924882bf-test-core.tar.gz": "5376d01f8a3473b4946d73b9678807c00f521395",
+    "src/tests/wasm/spec/wasm-spec.pin": "ed11707fe2213538ca6188bad2b59fff5ec97646"
+  },
+  "inputs": {
+    "src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll": "65d83409c07588d5a29ae621bff82d23c681d8f380c748ca61ca5640e2a84690",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll": "946a00297fdfa892d2146b752a7156280917e4f84927dfb029065f5aa265b5f3"
+  },
+  "retained": {
+    "README.md": "06101adb21a178be7b5c7a03eb8d5be44c3e465f3ce522fde9fafdf4311b126c",
+    "after-run.log": "a12ef8e4a0ef78fe6babdc01de4608dff1e78cd2d91b65ba07b6c19e453c35dd",
+    "base-build.log": "058798d416e0e679c96736e93cb4b365273013d1f5f17f5a1194051764846a28",
+    "base-tree.log": "e0c0ac7fd2c50776aad0ff59261aa91aadb711e69d0f6bf1fa69e90b6f0d8a07",
+    "before-run.log": "5fdb9275de01379f2b2ad02747e83e6f4f7a8c413714ff6eaac0eef34beec57d",
+    "build.log": "9763c19fb8705137181739986b83318857d8ce975680079e42e317eadc49712f",
+    "collect.py": "4ffe75ac787230b7d9a17ec6b996c8dcab6fdd63fc194b206bbe13d4b6d879c7",
+    "compare.py": "09113f4e3ace1e887c30c247a3fe20a68df6dfb4b5e7fe1492b87b82f829ccd1",
+    "comparison.log": "e3d73fabd3fa67ea07f75237b8861395fa677220e3ce4a7d0890f23bf775aca0",
+    "control-constant.log": "c33e6623437ff034225b84bcba53b71c8c249f2c52226aa951cbb20de5a2f6b0",
+    "control-constant.patch": "59eef837ab006710fb535d7253889fea14b7373117c4fcff9aa7be5016b96746",
+    "control-depth.log": "71aefbe685d8b3e86e444fdbb89369683f49e2c1a1c9a174207cfc3b4a510cda",
+    "control-depth.patch": "42b61d2c7d6c4d64028acbba18add76b3ace94978b8df099883595bb3da20f8c",
+    "control-immediates.log": "7e9a512c370cfe761b887b191f60976cca531e49dd0dde3d05eb658c2817e8ba",
+    "control-immediates.patch": "3ccf0b63fd0864c733a21b021fed9bf25bfa428a6fb71246b2a6082397a80f2c",
+    "control-limits.log": "6d835f1fac1e38d4cf6b50b19cb8e08d1c8484f9d61ef758c87b74b2b996b2ca",
+    "control-limits.patch": "08031064fe2489b45fd86e5fbb16733eeb021c5fe7f9f47c049ede17c33d6966",
+    "controls-passing.log": "9ec7eaa53bc3075b88341bf0fe36072b75ef8af1c1e659e65c47d78a783e9d4b",
+    "corpus-integrity.log": "25967454446e5ced94fae057c6ad5d7c6123bae5ed33757f1f6b84073e918522",
+    "determinism.log": "2d23450f35140c28e24af900376b86fd3c09612c4c6295ea87fc23acd5247a87",
+    "harness.log": "d11861b50f00066af06f78786259d1be393df2a091f7f35abc03b96b0488d301",
+    "tests.log": "2c77c0f8a872567675b9c1982336a71da94fe832cd682f263cb6acda4bcc0510"
+  }
+}

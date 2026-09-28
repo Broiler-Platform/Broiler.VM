@@ -1,0 +1,6 @@
+# harness trimmed: prints the jit run's lines: yes
+# harness aot: prints the jit run's lines: yes
+# execution trimmed: prints the jit run's lines: yes
+# execution aot: prints the jit run's lines: yes
+# harness --closure trimmed: prints the jit run's lines: yes
+# harness --closure aot: prints the jit run's lines: yes

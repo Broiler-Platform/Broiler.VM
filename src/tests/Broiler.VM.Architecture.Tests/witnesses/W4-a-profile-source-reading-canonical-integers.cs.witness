@@ -1,0 +1,19 @@
+// A profile source that reads an integer with the core's canonical reader, and bounds a count a second time.
+//
+// Not compiled by anything; rule W4 reads it as though it were a file of Broiler.VM.Profile.WebAssembly.
+// The first member reads a section length with VmBoundedReader.TryReadVarUInt32, which refuses the
+// five-byte padded length a single-pass compiler writes and this format admits. The second reads a
+// table count with the profile's own integer reader and then compares it with the declared-count
+// ceiling itself - the comparison WasmLeb128.TryReadBoundedCount exists to make once, and without the
+// charge that member makes beside it.
+namespace Broiler.VM.Profile.WebAssembly;
+
+internal ref struct WasmSectionWitness
+{
+    private VmBoundedReader reader;
+
+    internal bool TryReadSectionLength(out uint length) => reader.TryReadVarUInt32(out length);
+
+    internal bool TryReadTableCount(out uint count) =>
+        WasmLeb128.TryReadVarU32(ref reader, out count, out _) && count <= reader.Bounds.MaxDeclaredCount;
+}

@@ -1,0 +1,16 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+index 16782ae..a0965be 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+@@ -818,7 +818,10 @@ internal ref struct WasmDecoder
+         }
+ 
+         memory = new WasmMemoryType(limits);
+-        return true;
++        return !(limits.HasMaximum && limits.Minimum > limits.Maximum) || Stop(Invalid(
++            VmReason.SemanticValidationFailed,
++            WebAssemblyDiagnosticCode.TableOrMemoryMinimumAboveMaximum,
++            reader.Position));
+     }
+ 
+     /// <summary>Reads the globals and their initializing expressions.</summary>

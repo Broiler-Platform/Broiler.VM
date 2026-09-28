@@ -1,0 +1,80 @@
+--- harness TRIMMED ---
+$ dotnet publish src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release -r linux-x64 -o <scratch>/publish-harness-trimmed -p:TreatWarningsAsErrors=true --self-contained true -p:PublishTrimmed=true
+  Determining projects to restore...
+  Restored <root>/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 1.43 sec).
+  Restored <root>/src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj (in 1.43 sec).
+  Restored <root>/src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj (in 1.43 sec).
+  Restored <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Broiler.VM.Composition.WebAssembly.Harness.csproj (in 1.43 sec).
+  Restored <root>/src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj (in 8 ms).
+  Restored <root>/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 11 ms).
+  Restored <root>/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 10 ms).
+  Broiler.VM.Binary -> <root>/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> <root>/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> <root>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc -> <root>/src/Broiler.VM.Ubc/bin/Release/net10.0/Broiler.VM.Ubc.dll
+  Broiler.VM.Emitter.Bytecode -> <root>/src/Broiler.VM.Emitter.Bytecode/bin/Release/net10.0/Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.WebAssembly.Harness.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.WebAssembly.Harness -> <scratch>/publish-harness-trimmed/
+# exit 0
+--- harness AOT ---
+$ dotnet publish src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release -r linux-x64 -o <scratch>/publish-harness-aot -p:TreatWarningsAsErrors=true -p:PublishAot=true
+  Determining projects to restore...
+  Restored <root>/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 716 ms).
+  Restored <root>/src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj (in 721 ms).
+  Restored <root>/src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj (in 721 ms).
+  Restored <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Broiler.VM.Composition.WebAssembly.Harness.csproj (in 721 ms).
+  Restored <root>/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 18 ms).
+  Restored <root>/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 23 ms).
+  Restored <root>/src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj (in 23 ms).
+  Broiler.VM.Binary -> <root>/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> <root>/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> <root>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc -> <root>/src/Broiler.VM.Ubc/bin/Release/net10.0/Broiler.VM.Ubc.dll
+  Broiler.VM.Emitter.Bytecode -> <root>/src/Broiler.VM.Emitter.Bytecode/bin/Release/net10.0/Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.WebAssembly.Harness.dll
+  Generating native code
+  Broiler.VM.Composition.WebAssembly.Harness -> <scratch>/publish-harness-aot/
+# exit 0
+--- execution TRIMMED ---
+$ dotnet publish src/compositions/Broiler.VM.Composition.WebAssembly.Execution -c Release -r linux-x64 -o <scratch>/publish-execution-trimmed -p:TreatWarningsAsErrors=true --self-contained true -p:PublishTrimmed=true
+  Determining projects to restore...
+  Restored <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Execution/Broiler.VM.Composition.WebAssembly.Execution.csproj (in 446 ms).
+  Restored <root>/src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj (in 446 ms).
+  Restored <root>/src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj (in 446 ms).
+  Restored <root>/src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj (in 446 ms).
+  Restored <root>/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 4 ms).
+  Restored <root>/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 6 ms).
+  Restored <root>/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 6 ms).
+  Broiler.VM.Binary -> <root>/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> <root>/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> <root>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc -> <root>/src/Broiler.VM.Ubc/bin/Release/net10.0/Broiler.VM.Ubc.dll
+  Broiler.VM.Emitter.Bytecode -> <root>/src/Broiler.VM.Emitter.Bytecode/bin/Release/net10.0/Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Execution -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Execution/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.WebAssembly.Execution.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.WebAssembly.Execution -> <scratch>/publish-execution-trimmed/
+# exit 0
+--- execution AOT ---
+$ dotnet publish src/compositions/Broiler.VM.Composition.WebAssembly.Execution -c Release -r linux-x64 -o <scratch>/publish-execution-aot -p:TreatWarningsAsErrors=true -p:PublishAot=true
+  Determining projects to restore...
+  Restored <root>/src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj (in 427 ms).
+  Restored <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Execution/Broiler.VM.Composition.WebAssembly.Execution.csproj (in 427 ms).
+  Restored <root>/src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj (in 427 ms).
+  Restored <root>/src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj (in 427 ms).
+  Restored <root>/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 9 ms).
+  Restored <root>/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 9 ms).
+  Restored <root>/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 10 ms).
+  Broiler.VM.Binary -> <root>/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> <root>/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> <root>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc -> <root>/src/Broiler.VM.Ubc/bin/Release/net10.0/Broiler.VM.Ubc.dll
+  Broiler.VM.Emitter.Bytecode -> <root>/src/Broiler.VM.Emitter.Bytecode/bin/Release/net10.0/Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Execution -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Execution/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.WebAssembly.Execution.dll
+  Generating native code
+  Broiler.VM.Composition.WebAssembly.Execution -> <scratch>/publish-execution-aot/
+# exit 0

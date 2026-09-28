@@ -21,6 +21,7 @@ says so in its own text.
 | [WAD-0001](0001-the-memory-representation.md) | That a linear memory is a pinned managed byte array, reallocated on a successful growth with its base republished; that a growth invalidates every view; what the base's stability means for a form that addresses it; and what the route keeps | none in the `WA-` series; programme milestone UBC-4, decision UBC-D-2 |
 | [WAD-0002](0002-the-family-table-stays-under-the-slice-identity.md) | That the WebAssembly family's instruction table is selected by `broiler.webassembly.slice`, that `broiler.webassembly.numeric1` is not minted, and the recorded consequence that the table admits more than the identity's definition | none in the `WA-` series; programme milestone UBC-4, decision UBC-D-3 |
 | [WAD-0003](0003-the-value-store-and-frame-routes-under-the-universal-bytecode.md) | Where each of the nine value, store and frame routes stands once the universal bytecode executes this profile's modules: which carry over, which the universal bytecode now answers, and which is reversed | none in the `WA-` series; programme milestone UBC-4 |
+| [WAD-0004](0004-decode-and-validate-fused-within-a-function-body.md) | **Proposed, not taken.** That decoding and validation are fused within one function body and ordered at module granularity; what a body invalid before it is malformed then answers; and that the reason, not the code band, carries the category | WA-3 |
 
 ## What a record must carry
 
