@@ -1092,9 +1092,12 @@ re-base; the parity bundle; the retired interpreter; rules W1, W2 revised; the `
 `docs/evidence/ubc-4-001/`: the decision rule and the base run. `docs/evidence/ubc-4-002/`: the run
 after; the comparison per the rule; the float-comparison check's failing and passing logs; the
 determinism check's log; the corpus re-base log; the publish-and-run logs and closures per mode.
-*(Added 2026-09-28: two bundles were added to these. `docs/evidence/ubc-4-003/` holds clause 3's second
+*(Added 2026-09-28: three bundles were added to these. `docs/evidence/ubc-4-003/` holds clause 3's second
 half for the region rows. `docs/evidence/ubc-4-004/` holds clause 6 on its revised gate: the harness's
-retention checks in the three modes, and the negative controls failing and reverted.)*
+retention checks in the three modes, and the negative controls failing and reverted.
+`docs/evidence/ubc-4-005/` holds clauses 4 and 5 under a new dated rule quoting `ubc-4-001`'s. The
+specification's suite is pinned there, and population A's base run and run after are compared under
+that rule, whose decision is NOT MET.)*
 
 ### Does not do
 

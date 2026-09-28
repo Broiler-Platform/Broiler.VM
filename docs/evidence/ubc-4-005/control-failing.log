@@ -1,0 +1,73 @@
+$ git apply docs/evidence/ubc-4-005/control.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release
+code.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.12
+# exit 0
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --primitives src/tests/corpus/ubc-2/primitives.txt
+# module: 99 bytes, hand-encoded in this root
+verification Normal/NormalCompleted
+types                  1
+functions              1
+tables                 1
+memories               1
+globals                1
+exports                2
+element segments       1
+data segments          1
+custom sections        1 (skipped)
+start function         -1
+declares data count    False
+total code bytes       6
+execution bounds       computed by validation
+  export[0]          "add" Function #0
+  export[1]          "mem" Memory #0
+  body[0]            0 locals, 6 code bytes
+instantiation          Normal/NormalCompleted
+invocation             Normal/NormalCompleted, add(2, 3) = 5
+
+# retained corpus: not replayed - no --corpus <directory> was given, and the retained one is at src/tests/wasm/corpus
+
+# execution: 166 checks
+# execution: 166 of 166 checks passed
+# differential: 43 checks
+# differential: 43 of 43 checks passed
+
+# primitive-differential: 123 numeric primitive rows of broiler.webassembly.slice table version 1, NaN canonicalised yes, inputs from src/tests/corpus/ubc-2/primitives.txt
+# primitive-differential: 111 of 111 rows outside the control agreed
+# primitive-differential control: 12 rows, the float comparisons 0x5B-0x66, against the profile's reference arms
+FAIL wasm.f32.eq (0x5B, F32Eq): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 0000000080000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 000000003F800000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 00000000BF800000) the reference arms have no answer, and the primitive answers 0000000000000000
+FAIL wasm.f32.ne (0x5C, F32Ne): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 0000000080000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 000000003F800000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 00000000BF800000) the reference arms have no answer, and the primitive answers 0000000000000001
+FAIL wasm.f32.lt (0x5D, F32Lt): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 0000000080000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 000000003F800000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 00000000BF800000) the reference arms have no answer, and the primitive answers 0000000000000000
+FAIL wasm.f32.gt (0x5E, F32Gt): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 0000000080000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 000000003F800000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 00000000BF800000) the reference arms have no answer, and the primitive answers 0000000000000001
+FAIL wasm.f32.le (0x5F, F32Le): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 0000000080000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 000000003F800000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 00000000BF800000) the reference arms have no answer, and the primitive answers 0000000000000000
+FAIL wasm.f32.ge (0x60, F32Ge): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 0000000080000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 000000003F800000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 00000000BF800000) the reference arms have no answer, and the primitive answers 0000000000000001
+FAIL wasm.f64.eq (0x61, F64Eq): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 8000000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 3FF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, BFF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000000
+FAIL wasm.f64.ne (0x62, F64Ne): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 8000000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 3FF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, BFF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000001
+FAIL wasm.f64.lt (0x63, F64Lt): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 8000000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 3FF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, BFF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000000
+FAIL wasm.f64.gt (0x64, F64Gt): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 8000000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, 3FF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, BFF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000001
+FAIL wasm.f64.le (0x65, F64Le): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 8000000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 3FF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, BFF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000000
+FAIL wasm.f64.ge (0x66, F64Ge): 0 inputs agreed, 625 disagreed: (0000000000000000, 0000000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 8000000000000000) the reference arms have no answer, and the primitive answers 0000000000000001; (0000000000000000, 3FF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000000; (0000000000000000, BFF0000000000000) the reference arms have no answer, and the primitive answers 0000000000000001
+# primitive-differential control: 0 of 12 rows agreed
+broiler-wasm-harness: 12 checks FAILED
+# exit 1
+$ git apply -R docs/evidence/ubc-4-005/control.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release
+code.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.15
+# exit 0

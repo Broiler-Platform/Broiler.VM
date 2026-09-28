@@ -1,0 +1,21 @@
+$ git worktree add --detach <scratch>/base a56180b
+Preparing worktree (detached HEAD a56180b)
+Updating files:  64% (2632/4070)Updating files:  65% (2646/4070)Updating files:  66% (2687/4070)Updating files:  67% (2727/4070)Updating files:  68% (2768/4070)Updating files:  69% (2809/4070)Updating files:  70% (2849/4070)Updating files:  71% (2890/4070)Updating files:  72% (2931/4070)Updating files:  73% (2972/4070)Updating files:  74% (3012/4070)Updating files:  75% (3053/4070)Updating files:  76% (3094/4070)Updating files:  77% (3134/4070)Updating files:  78% (3175/4070)Updating files:  79% (3216/4070)Updating files:  80% (3256/4070)Updating files:  81% (3297/4070)Updating files:  82% (3338/4070)Updating files:  83% (3379/4070)Updating files:  84% (3419/4070)Updating files:  85% (3460/4070)Updating files:  86% (3501/4070)Updating files:  87% (3541/4070)Updating files:  88% (3582/4070)Updating files:  89% (3623/4070)Updating files:  90% (3663/4070)Updating files:  91% (3704/4070)Updating files:  92% (3745/4070)Updating files:  93% (3786/4070)Updating files:  94% (3826/4070)Updating files:  95% (3867/4070)Updating files:  96% (3908/4070)Updating files:  97% (3948/4070)Updating files:  98% (3989/4070)Updating files:  99% (4030/4070)Updating files: 100% (4070/4070)Updating files: 100% (4070/4070), done.
+HEAD is now at a56180b Runtime: complete a parked instantiation into the profile's state, and dispose one that ends otherwise
+# exit 0
+$ git rev-parse HEAD
+a56180b38dd07ecc8f56941ba8ebb81d80a2b096
+# exit 0
+$ git status --porcelain
+ M src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Program.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptText.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptVerification.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecSuite.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/TextInstructions.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/TextModule.cs
+# exit 0
+$ git diff --stat
+ .../Broiler.VM.Composition.WebAssembly.Harness/Program.cs           | 6 ++++++
+ 1 file changed, 6 insertions(+)
+# exit 0
