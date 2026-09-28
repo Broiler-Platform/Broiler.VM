@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+index 16782ae..c36988d 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+@@ -1038,7 +1038,7 @@ internal ref struct WasmDecoder
+             {
+                 return Stop(Invalid(
+                     VmReason.Truncated,
+-                    WebAssemblyDiagnosticCode.Truncated,
++                    WebAssemblyDiagnosticCode.FunctionBodyLengthMismatch,
+                     reader.Position));
+             }
+ 
