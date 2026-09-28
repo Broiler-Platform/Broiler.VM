@@ -1180,7 +1180,14 @@ public sealed class ReviewRecordRuleTests
         // state kept. And the charge-and-poll pacing the family's instantiation charges its segments
         // through moved out of the deleted interpreter into a file of its own, WasmPacing.cs, which is
         // covered on the same terms as every other product file; nothing in it has been read by a human.
-        Assert.Equal(234, AssuranceSources.Files.Count);
+        //
+        // AND THE PROFILE'S MEMORY ARMS, WasmReferenceMemory.cs, recovered from the retired interpreter
+        // for UBC-4's clause 3: the load, store and memory.size arms obligation E2 compares with the
+        // primitive table's region primitive, as the numeric arms are compared in
+        // WasmReferenceNumerics.cs. Nothing executes through it, and it reads and writes a caller's
+        // bytes at a guest-shaped address, which is a reason to read it. It is covered on the same terms
+        // as every other product file, and nothing in it has been read by a human.
+        Assert.Equal(235, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

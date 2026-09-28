@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5747 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5755 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 234 |
-| Code units | 10187 |
-| Relevant | 5747 |
+| Files scanned | 235 |
+| Code units | 10195 |
+| Relevant | 5755 |
 | Exempt | 4440 |
-| Assessed | 5747 of 5747 (100%) |
-| Human reviewed | 0 of 5747 (0%) |
-| Unverified | 5747 |
+| Assessed | 5755 of 5755 (100%) |
+| Human reviewed | 0 of 5755 (0%) |
+| Unverified | 5755 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5747 |
+| HUMAN_PENDING | 5755 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -300,6 +300,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.WebAssembly/WasmOpcode.cs` | 173 | 1 | 172 | 1 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmPacing.cs` | 7 | 4 | 3 | 4 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` | 14 | 12 | 2 | 12 | Low | High | 8/8 |
+| `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` | 7 | 7 | 0 | 7 | Low | Critical | 5/5 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` | 20 | 19 | 1 | 19 | Low | Critical | 10/10 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmTable.cs` | 8 | 7 | 1 | 7 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.WebAssembly/WasmTranslator.cs` | 41 | 24 | 17 | 24 | Low | Critical | 7/7 |
@@ -308,7 +309,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs` | 113 | 75 | 38 | 75 | Low | Critical | 52/52 |
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyDiagnostics.cs` | 95 | 5 | 90 | 5 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.WebAssembly/WebAssemblyPayloads.cs` | 42 | 15 | 27 | 15 | Low | High | 2/2 |
-| `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` | 18 | 14 | 4 | 14 | Low | High | 6/6 |
+| `src/Broiler.VM.Profile.WebAssembly/WebAssemblyProfile.cs` | 19 | 15 | 4 | 15 | Low | High | 7/6 |
 | `src/Broiler.VM.Runtime/VmAggregateBudget.cs` | 42 | 23 | 19 | 23 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs` | 17 | 6 | 11 | 6 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Runtime/VmBudgetLevel.cs` | 16 | 12 | 4 | 12 | Low | Medium | 1/0 |
@@ -3598,6 +3599,16 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a level charged here is not released when it closes, so nesting is counted as a running total
 - `Broiler.VM.Profile.WebAssembly.WasmReadAdapter.ReleaseStructuralDepth(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` - Security=High, Spec=none cited, `0E44B7`, PENDING
   - Falsified if: it releases more levels than were charged, so a ceiling admits a nesting it should refuse
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceMemory` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` - Security=High, Spec=ADR-0013, `494A15`, PENDING
+  - Falsified if: an arm here answers differently from the retired interpreter arm it was moved from, or the effective address is summed in thirty-two-bit arithmetic
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceMemory.TryEvaluate(byte, System.Span<byte>, uint, uint, ulong, out ulong, out WasmTrapKind)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` - Security=High, Spec=ADR-0013, `ABA14E`, PENDING
+  - Falsified if: an answer is given for a byte that is no region row, or a trapping store writes any byte
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceMemory.MemoryAccess(byte, System.Span<byte>, uint, uint, ulong, out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` - Security=Critical, Spec=none cited, `FFD238`, PENDING
+  - Falsified if: an effective address is computed in 32-bit arithmetic, or a width here disagrees with the one validation typed
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceMemory.TryLoad(System.Span<byte>, ulong, int, out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` - Security=Critical, Spec=none cited, `7E104D`, PENDING
+  - Falsified if: it reads a byte at or past the current size, or the range check is performed in 32-bit arithmetic
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceMemory.TryStore(System.Span<byte>, ulong, int, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` - Security=Critical, Spec=none cited, `47D921`, PENDING
+  - Falsified if: it writes a byte at or past the current size, or the range check is performed in 32-bit arithmetic
 - `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, Spec=ADR-0013, `8A1B77`, PENDING
   - Falsified if: an arm here answers differently from the interpreter arm it was moved from, or the reference evaluation reads an operand the row does not pop
 - `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryEvaluate(byte, ulong, ulong, out ulong, out WasmTrapKind)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, Spec=ADR-0013, `39575B`, PENDING
@@ -4026,7 +4037,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5624 of the 5747 assessed units declare
+That is not a figure of speech. 5632 of the 5755 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

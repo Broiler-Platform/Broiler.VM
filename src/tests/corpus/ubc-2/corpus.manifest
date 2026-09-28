@@ -1,4 +1,4 @@
-# the universal bytecode fixture family's retained corpora: programs, the guest program, the primitive inputs
+# the universal bytecode fixture family's retained corpora: programs, the guest program, the primitive inputs, the region inputs
 # program|name|sha256|entry|transcript (lines joined by ' | ')
 # file|name|sha256
 program|sum|a379efb798fa8616acd8fc6d9dca2e04e3fd617469bca40bdcc248bfb4b70ec4|main|completed words=[5] tallies=[]
@@ -38,3 +38,4 @@ program|mixed-call|6b8b78ad63b741d47b74c8aeaafb89d280b6104d1274fe8940a73464bc9e1
 program|wide-frame|f28266b3aa5a1b6437f3a89bb2740fee814c72088d90673d535b7b52006d1f31|main|completed words=[10] tallies=[]
 file|guest-1.bubc|6ae0fddbf8bdbf5b9674e4ca15491515038079c7641bd4e2ceec3e91409b994f
 file|primitives.txt|6cb0e4c319f4c3b7c56f586c67da37a85ff4ffdbf5d98b56f77df0a613583985
+file|regions.txt|476aae0861255f68536252f0757f36a45c1067492e04e90bd6b127a0524a154f

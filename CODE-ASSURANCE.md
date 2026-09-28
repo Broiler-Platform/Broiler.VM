@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 234 |
-| Files carrying an annotation | 234 |
-| Code units | 10187 |
-| Relevant | 5747 |
+| Files scanned | 235 |
+| Files carrying an annotation | 235 |
+| Code units | 10195 |
+| Relevant | 5755 |
 | Exempt by predicate | 4440 |
-| Annotated | 5747 of 5747 (100%) |
-| Human reviewed | 0 of 5747 (0%) |
-| Unverified | 5747 |
+| Annotated | 5755 of 5755 (100%) |
+| Human reviewed | 0 of 5755 (0%) |
+| Unverified | 5755 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5747 |
+| HUMAN_PENDING | 5755 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -39,7 +39,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 1539 |
-| Low | 5340 |
+| Low | 5348 |
 | Medium | 81 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,9 +51,9 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 9 |
 | Low | 952 |
-| Medium | 4179 |
-| High | 1570 |
-| Critical | 250 |
+| Medium | 4182 |
+| High | 1572 |
+| Critical | 253 |
 | *not annotated* | 0 |
 
 ## Resource impact
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 5747 |
+| Units scored | 5755 |
 
 ## High-security review areas
 
@@ -1683,6 +1683,11 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.WebAssembly.WasmReadAdapter.TryChargeDeclaredCount(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmReadAdapter.TryChargeStructuralDepth(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmReadAdapter.ReleaseStructuralDepth(ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReadAdapter.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceMemory` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceMemory.TryEvaluate(byte, System.Span<byte>, uint, uint, ulong, out ulong, out WasmTrapKind)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceMemory.MemoryAccess(byte, System.Span<byte>, uint, uint, ulong, out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceMemory.TryLoad(System.Span<byte>, ulong, int, out ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` - Security=Critical, human line PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmReferenceMemory.TryStore(System.Span<byte>, ulong, int, ulong)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceMemory.cs` - Security=Critical, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryEvaluate(byte, ulong, ulong, out ulong, out WasmTrapKind)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.WebAssembly.WasmReferenceNumerics.TryNumeric(byte, Operand[], ref int, out WasmTrapKind?)` in `src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs` - Security=High, human line PENDING
@@ -1891,8 +1896,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1951 |
-| Units required to carry one | 1820 |
+| Units carrying a criterion | 1957 |
+| Units required to carry one | 1825 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1976,7 +1981,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10187 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10195 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -1984,7 +1989,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 234 of them - with a
+Beside the units it lists **every covered file** - 235 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
+// Relevant units:   15
+// Annotated:        15/15
 // Exempt:           4
-// Human-reviewed:   0/14
+// Human-reviewed:   0/15
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         6/6
+// Criteria:         7/6
 // Resource impact:  2/10 max
-// Unverified:       14
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -190,6 +190,41 @@ public static class WebAssemblyProfile
     // Broiler-Human:        PENDING
     public static bool TryEvaluateReference(byte opcode, ulong a, ulong b, out ulong bits, out WasmTrapKind trap) =>
         WasmReferenceNumerics.TryEvaluate(opcode, a, b, out bits, out trap);
+
+    /// <summary>
+    /// Evaluates one region row - a load, a store or <c>memory.size</c> - with this profile's own
+    /// arms, the reference handler, over <paramref name="memory"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A load reads at <paramref name="address"/> plus the static <paramref name="offset"/>, summed
+    /// without wrapping, and answers its bits, a thirty-two-bit result's in the low half; a store
+    /// writes the low bytes of <paramref name="value"/> there, into <paramref name="memory"/>, and
+    /// answers zero bits; <c>memory.size</c> answers the memory's length in whole pages. An access
+    /// past the memory answers true with the trap in <paramref name="trap"/>, zero bits and nothing
+    /// written. <paramref name="trap"/> is zero, which names no trap, when none was raised. Answers
+    /// false for a byte that is not a region row of the family's table.
+    /// </para>
+    /// <para>
+    /// <b>It is the door obligation E2 reads the profile's region rows through</b>, as
+    /// <see cref="TryEvaluateReference"/> is for the numeric rows. The arms are the retired
+    /// bare-module interpreter's own. The family executes these rows through the primitive table's
+    /// region primitive, so the comparison is between two implementations and not the table with
+    /// itself.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Medium; Resources=1; Fingerprint=6E7B92
+    // Broiler-Falsified-If: it answers through the primitive table rather than the profile's own arms, or a trapping store changes a byte of the memory
+    // Broiler-Human:        PENDING
+    public static bool TryEvaluateReferenceAccess(
+        byte opcode,
+        System.Span<byte> memory,
+        uint address,
+        uint offset,
+        ulong value,
+        out ulong bits,
+        out WasmTrapKind trap) =>
+        WasmReferenceMemory.TryEvaluate(opcode, memory, address, offset, value, out bits, out trap);
 
     /// <summary>
     /// The family's declaration: the descriptor's own rows, in one full-arity construction, at

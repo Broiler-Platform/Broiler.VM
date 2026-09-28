@@ -182,6 +182,7 @@
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.SliceManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TrapKindId : const System.Int32 = 2002
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryEvaluateReference(System.Byte opcode, System.UInt64 a, System.UInt64 b, out System.UInt64 bits, out Broiler.VM.Profile.WebAssembly.WasmTrapKind trap) : static System.Boolean
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryEvaluateReferenceAccess(System.Byte opcode, System.Span<System.Byte> memory, System.UInt32 address, System.UInt32 offset, System.UInt64 value, out System.UInt64 bits, out Broiler.VM.Profile.WebAssembly.WasmTrapKind trap) : static System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetEntryPointFault(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyEntryPointFault fault) : static System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetResults(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyResults results) : static System.Boolean
   Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.TryGetTrap(in Broiler.VM.VmInstantiationResult result, out Broiler.VM.Profile.WebAssembly.WebAssemblyTrap trap) : static System.Boolean

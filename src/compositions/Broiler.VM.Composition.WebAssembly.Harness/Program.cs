@@ -43,14 +43,17 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// the answer did not change.
 /// </para>
 /// <para>
-/// <b>Two lanes run only when asked for, and neither is part of the corpus replay, the execution
+/// <b>Three lanes run only when asked for, and none is part of the corpus replay, the execution
 /// checks or the differential lane.</b> <c>--determinism</c> translates every corpus module, and
 /// every module the execution and differential lanes built, twice and compares the artifacts byte for
 /// byte. <c>--primitives &lt;file&gt;</c> is obligation E2 of the universal bytecode: every numeric
 /// primitive row of the family's table, the profile's reference arms against the primitive table
 /// over the retained primitive input corpus, with the twelve float comparisons reported apart as the
-/// negative control. Neither lane's header opens with a name the headers of those three lanes open
-/// with, and a run without the flags prints neither lane.
+/// negative control. <c>--regions &lt;file&gt;</c> is the same obligation for the region rows - the
+/// loads, the stores and <c>memory.size</c> - the profile's memory arms against the table's region
+/// primitive over the retained region input corpus, the regions compared after every store. No
+/// lane's header opens with a name the headers of those three lanes open with, and a run without the
+/// flags prints none of them.
 /// </para>
 /// <para>
 /// <b>What is still NOT here.</b> There is no reader for the specification's text format and so no
@@ -105,6 +108,7 @@ internal static class Program
 
             var corpus = Argument(args, "--corpus");
             var primitives = Argument(args, "--primitives");
+            var regions = Argument(args, "--regions");
             var determinism = args.Contains("--determinism", StringComparer.Ordinal);
             var failed = ReportTheDecodedModule(runtime);
 
@@ -144,6 +148,13 @@ internal static class Program
             {
                 Console.WriteLine();
                 failed += PrimitiveDifferential.Report(primitives, verbose);
+            }
+
+            // The region rows' half of the same obligation, under the same rule for a flag with no file.
+            if (regions is not null || args.Contains("--regions", StringComparer.Ordinal))
+            {
+                Console.WriteLine();
+                failed += RegionDifferential.Report(regions, verbose);
             }
 
             Console.WriteLine(
