@@ -95,7 +95,10 @@ amendment procedure. What is **not** deferred is everything that decides whether
 the build and the suites still gate, a rule that fails still fails, the status vocabulary still
 means what the ledger says it means, no composition is advertised and the packable set is still
 exactly the three core assemblies, nothing is published, and an untruthful support claim remains a
-stop condition rather than a price worth paying for speed. **The cost is that a deferred decision is
+stop condition rather than a price worth paying for speed. *(Corrected 2026-09-28: the packable set
+and "nothing is published" no longer hold. Ten assemblies pack, and eight packages were published
+to nuget.org on 2026-09-23 while `HUMAN_REVIEW.md` read `PENDING`. The core ledger and the support
+table carry the facts in dated notes. No composition is advertised.)* **The cost is that a deferred decision is
 a decision nobody took**, not a decision that went a particular way — so where this component takes
 a design route that an unmade decision would have chosen between, the route is recorded as
 taken-without-a-decision at the place its consequence lands, and a reader who wants the list of what
@@ -131,7 +134,10 @@ declares. Adding the second profile changed no file in any product project.
 **What the core does not do is a language, and that is a different sentence from "no language
 exists here".** The core ships no language profile: the packable set is exactly the three core
 assemblies, every profile project declares no `PackageId` and carries `IsPackable=false`, and no
-composition is advertised. What does exist in this repository is a JavaScript profile — a product
+composition is advertised. *(Corrected 2026-09-28: the core's three packages carry no profile, but
+every profile-family project has packed under its assembly name since 2026-09-19, rule N4 holds it,
+and five profile packages were published to nuget.org on 2026-09-23. No composition is
+advertised.)* What does exist in this repository is a JavaScript profile — a product
 project family with its own bytecode format, verifier, interpreter, compiler front end, end-user
 command line, ledger and evidence tree — and that ledger retains a whole conformance run and a whole
 benchmark run, taken on one machine on 2026-09-05 and held as

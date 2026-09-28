@@ -271,6 +271,19 @@ row naming a root that does not exist.
 This is the release half of update rule 8 and the whole of ADR 0001's binding rule, and it is
 unconditional rather than pending.
 
+*(Noted 2026-09-28, and the rule above is kept as written.)* Packages have been published.
+
+- **What was published:** on 2026-09-23 the repository's Publish workflow pushed eight packages to
+  nuget.org, at `0.1.0-preview.4`, built from `aca8cab`, and `0.1.0-preview.5`, built from
+  `ebd7079`. They are the three core packages and the five profile-family packages the owner made
+  packable on 2026-09-19.
+- **Review:** `HUMAN_REVIEW.md` was `PENDING` then and is now.
+- **What is still held:** no runtime identifier is claimed, and no composition is advertised.
+
+This record does not revise the rule and does not answer the publication; both are the owner's. The
+paragraph after next says 3.5 "forbids something nobody is currently doing", and that has not
+described the repository since that date.
+
 **The failure it prevents.** Handing a consumer a component nobody has read. It is stated separately
 from 3.4 for a reason a reader should not have to reconstruct: 3.4 is about what this repository
 *declares*, and 3.5 is about what it *emits*. A composition could be left unadvertised and a package
