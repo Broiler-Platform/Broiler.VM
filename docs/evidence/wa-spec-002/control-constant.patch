@@ -1,0 +1,21 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs b/src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs
+index 1f90ded..74e2ada 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmValidator.cs
+@@ -821,16 +821,6 @@ internal ref struct WasmValidator
+     {
+         produced = WasmValueType.I32;
+ 
+-        if (!expression.IsConstant)
+-        {
+-            return Fail(WebAssemblyDiagnosticCode.ConstantExpressionNotConstant, 0);
+-        }
+-
+-        if (expression.InstructionCount != 1)
+-        {
+-            return Fail(WebAssemblyDiagnosticCode.ConstantExpressionTypeMismatch, 0);
+-        }
+-
+         switch ((WasmOpcode)expression.Opcode)
+         {
+             case WasmOpcode.I32Const:

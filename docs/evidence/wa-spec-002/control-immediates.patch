@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+index bd1bb97..fcb8fda 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+@@ -1528,7 +1528,7 @@ internal ref struct WasmDecoder
+ 
+             default:
+                 return opcode is < (byte)WasmOpcode.I32Load or > (byte)WasmOpcode.I64Store32 ||
+-                    TryReadVarU32(out _) && TryReadVarU32(out _);
++                    TryReadVarU32(out _);
+         }
+     }
+ 

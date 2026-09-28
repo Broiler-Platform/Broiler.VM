@@ -1,0 +1,19 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+index bd1bb97..fdfc627 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+@@ -1357,13 +1357,7 @@ internal ref struct WasmDecoder
+ 
+             if (opcode == WasmFormat.EndOpcode)
+             {
+-                if (depth == 0)
+-                {
+-                    break;
+-                }
+-
+-                depth--;
+-                continue;
++                break;
+             }
+ 
+             count++;
