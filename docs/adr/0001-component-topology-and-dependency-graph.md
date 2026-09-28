@@ -1854,3 +1854,40 @@ No composition root is packable, and section 1 of the composition register still
 advertises nothing.
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-09-28 - rule N4 held to the packable profile families
+
+**What changes.** No project and no edge. Rule N4 is revised. It read that every
+project of a profile family "carries the literal element IsPackable false", which
+held the JS-0 revision's statement that "packaging the profile is milestone
+JS-10's decision and it will need its own revision here". The owner made the
+profile families packable on 2026-09-19 for the preview feed: every project of
+the JavaScript, WebAssembly and machine-code families carries `IsPackable` true
+and no `PackageId`. The change that did so commented out the test asserting N4,
+so from that day the register listed the rule `Active` and nothing asserted it.
+The revision this record's section 1 asks for before a fourth packable assembly
+was not written then. The universal bytecode revision of 2026-09-25 above
+recorded that the packable identities were no longer three, and did not name
+the rule.
+
+N4 now holds the decision that was taken. Every profile-family project carries
+the literal element `IsPackable` true, every definition unconditional, and
+declares no `PackageId`, so each packs under its assembly name. It reads the
+element the way rule U1 reads it for `Broiler.VM.Ubc`. The test asserting it is
+restored, with a witness for each way a project file can fail to show it packs.
+The reader of the literal `false`, which nothing else called, is removed.
+
+**What is now true.** Ten assemblies pack: the three core assemblies,
+`Broiler.VM.Ubc`, `Broiler.VM.Emitter.Bytecode`, and the five profile-family
+projects. Eight of them were published to nuget.org on 2026-09-23, as
+`0.1.0-preview.4` built from `aca8cab` and `0.1.0-preview.5` built from
+`ebd7079`: the three core assemblies and the five family projects. The two
+universal bytecode assemblies were not packable then and have not been
+published. `HUMAN_REVIEW.md` was `PENDING` then and is now, so no completed
+review names a published commit. This record's binding rule, that no Broiler.VM
+package is published without a completed review naming the reviewed commit, is
+not revised here: revising it, or answering the publication, is the owner's
+decision. No composition root is packable, and section 1 of the composition
+register still advertises nothing. The graph's size is unchanged.
+
+**What is not edited.** Every revision above stands as written.

@@ -1,0 +1,14 @@
+<!-- Violates N4: a profile-family project carrying the literal IsPackable true, and a target that
+     sets it to false before the pack reads it. The definition is the rule's, and the target turns
+     it off for the pack that follows. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <Target Name="NotPackable" BeforeTargets="GenerateNuspec">
+    <PropertyGroup>
+      <IsPackable>false</IsPackable>
+    </PropertyGroup>
+  </Target>
+</Project>

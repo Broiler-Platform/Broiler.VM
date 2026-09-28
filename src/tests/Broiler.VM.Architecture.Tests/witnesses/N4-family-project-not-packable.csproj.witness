@@ -1,0 +1,9 @@
+<!-- Violates N4: a profile-family project carrying the literal IsPackable false, which was the rule
+     before the owner made the families packable on 2026-09-19. It drops the package from the
+     feed, and nothing else in the component would notice. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+</Project>

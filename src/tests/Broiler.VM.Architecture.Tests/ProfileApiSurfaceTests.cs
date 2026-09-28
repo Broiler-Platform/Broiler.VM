@@ -26,6 +26,10 @@ namespace Broiler.VM.Architecture.Tests;
 /// that it covers the packable assemblies AND NOTHING ELSE, and these three are not packable -
 /// rule N4 keeps every one of them unpackable until JS-10 takes the packaging decision. Two
 /// subjects, two baselines, one describer.
+/// <i>(Corrected 2026-09-28. The three have been packable since the owner's decision of
+/// 2026-09-19, and rule N4 now holds them packable; this baseline is what a consumer of their
+/// packages binds to as well as what a composition root here binds to. M1's baseline still covers
+/// the three core assemblies only, so two baselines remain.)</i>
 /// </para>
 /// </remarks>
 public sealed class ProfileApiSurfaceTests
@@ -254,10 +258,11 @@ public sealed class ProfileApiSurfaceTests
         var text = new System.Text.StringBuilder();
 
         text.Append("# The frozen public surface of the Broiler.VM.Profile.JavaScript family's\n");
-        text.Append("# three assemblies. NONE OF THEM PACKS - rule N4 keeps every one of them\n");
-        text.Append("# unpackable until JS-10 takes the packaging decision - so this file freezes\n");
-        text.Append("# what a composition root in this repository can bind to, not what a consumer\n");
-        text.Append("# outside it can. The packable three are frozen separately in docs/api/.\n");
+        text.Append("# three assemblies. Each packs under its assembly name - rule N4 holds the\n");
+        text.Append("# owner's decision of 2026-09-19 that made the profile families packable - so\n");
+        text.Append("# this file freezes what a consumer of those packages binds to, as well as what\n");
+        text.Append("# a composition root in this repository does. The core's three are frozen\n");
+        text.Append("# separately in docs/api/.\n");
         text.Append("#\n");
         text.Append("# GENERATED - regenerate with:\n");
         text.Append("#   BROILER_API_WRITE=1 dotnet test Broiler.VM.slnx -c Release\n");

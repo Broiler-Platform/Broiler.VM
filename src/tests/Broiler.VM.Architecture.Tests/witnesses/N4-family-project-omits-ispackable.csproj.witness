@@ -1,7 +1,8 @@
-<!-- Violates N4: a JavaScript-family project omitting the literal IsPackable false. The vendored
+<!-- Violates N4: a profile-family project omitting the literal IsPackable true. The vendored
      packaging props default IsPackable to true for any project whose name matches none of their
-     test-and-tooling suffixes, which none of these does, so an omission packs rather than
-     defaulting to safe. -->
+     test-and-tooling suffixes, so this project packs today; but that is an import's answer, which a
+     reader of the project file cannot see and a change to the props can turn, and the rule asks for
+     the project's own element. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
