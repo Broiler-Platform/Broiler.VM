@@ -1,0 +1,12 @@
+# A WebAssembly registry that is not the vocabulary it publishes.
+#
+# Three defects, each one a real edit could introduce: a declared code with no row at all
+# (UnsupportedBinaryVersion, 2002), a row whose name does not belong to its number, and a row dated
+# from a revision the registry does not have. The rows it does carry are otherwise the real ones.
+#
+# registry-revision: 1
+#
+# code|name|pass|carrier|reason|reachability|case|since
+2001|WrongMagic|decode|translation|MalformedEncoding|corpus|preamble-wrong-magic|1
+2002|UnsupportedBinaryVersionExtended|decode|translation|UnknownFormatVersion|corpus|preamble-wrong-binary-version|1
+2101|UnknownSectionId|decode|translation|InconsistentStructure|corpus|section-unknown-identifier|2

@@ -184,6 +184,11 @@ internal static class CorpusReplay
         {
             "# broiler.webassembly retained corpus, feature manifest " +
                 WebAssemblyProfile.SliceManifest + ", binary version 1",
+            "# registry-revision: " +
+                CorpusStore.RegistryRevision.ToString(CultureInfo.InvariantCulture),
+            "# registry-revision is the revision of " +
+                "src/Broiler.VM.Profile.WebAssembly/docs/diagnostics/registry.txt every code below " +
+                "is read against",
             "# name|sha256|family|outcome|reason|diagnostic|dimension|scope|provenance|invariant",
             "# diagnostic is the profile diagnostic code, and 0 where the answer carries none",
             "# dimension and scope are the budget dimension a resource exhaustion named and the " +

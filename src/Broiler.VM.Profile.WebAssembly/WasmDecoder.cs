@@ -1010,7 +1010,7 @@ internal ref struct WasmDecoder
     /// would carry the work between two polls past the uncharged-work bound.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=Critical; Resources=5; Fingerprint=58F41D
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=Critical; Resources=5; Fingerprint=C51574
     // Broiler-Falsified-If: a body's byte count is taken from anywhere but its declared size, the expanded local count is not held to the declared-count ceiling, or a body's instruction bytes are read in one charge larger than the read window
     // Broiler-Human:        PENDING
     private bool TryDecodeCodeSection()
@@ -1030,11 +1030,15 @@ internal ref struct WasmDecoder
                 return false;
             }
 
+            // A body declared longer than what is left of the payload is truncated, and it carries the
+            // truncation code, as a section declared past the payload's end does. (Corrected
+            // 2026-09-28: it carried FunctionBodyLengthMismatch with Truncated, and the locals check
+            // below carries that code with InconsistentStructure, so one code had two reasons.)
             if (bodySize > reader.Remaining)
             {
                 return Stop(Invalid(
                     VmReason.Truncated,
-                    WebAssemblyDiagnosticCode.FunctionBodyLengthMismatch,
+                    WebAssemblyDiagnosticCode.Truncated,
                     reader.Position));
             }
 

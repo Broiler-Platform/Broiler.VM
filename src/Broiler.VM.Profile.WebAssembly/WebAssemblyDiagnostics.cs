@@ -38,6 +38,12 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// a corpus entry that recorded a code has dated it.
 /// </para>
 /// <para>
+/// <b>The published registry is <c>docs/diagnostics/registry.txt</c> beside this assembly</b>, since
+/// 2026-09-28. It states each code's passes, its carrier, its one reason and the named case that
+/// reaches it, and rule W3 holds it to this enumeration, to the sites that emit each member and to
+/// the retained corpus. A member added here without a row fails that rule.
+/// </para>
+/// <para>
 /// <b>The two thousand and the twenty-one hundred through twenty-six hundred bands are decoding;
 /// the twenty-seven hundred and twenty-eight hundred bands are validation.</b> The split is
 /// observable and it is meant to be: decoding completes before validation begins at module
@@ -194,6 +200,11 @@ public enum WebAssemblyDiagnosticCode
     DataCountMismatch = 2502,
 
     /// <summary>A function body did not consume exactly its declared size.</summary>
+    /// <remarks>
+    /// Its reason is <c>InconsistentStructure</c>. Until 2026-09-28 a body whose declared size ran
+    /// past the end of the payload carried it too, with <c>Truncated</c>, so one code had two reasons;
+    /// that body now carries <see cref="Truncated"/>.
+    /// </remarks>
     FunctionBodyLengthMismatch = 2503,
 
     /// <summary>A module declares more than one memory, which this format version does not admit.</summary>

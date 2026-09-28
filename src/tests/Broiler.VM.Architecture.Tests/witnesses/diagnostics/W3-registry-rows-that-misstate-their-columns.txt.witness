@@ -1,0 +1,20 @@
+# A WebAssembly registry whose rows state themselves in words the registry does not have.
+#
+# One defect per row, each a column a real edit could get wrong: passes out of the registry's order;
+# a pass that is not one; a carrier that is not the one the row's passes travel on - the hook's codes
+# travel on the core's outcome, not the translation's answer; a reason the core does not have; a
+# reason the core has that is not an invalid-artifact one; a payload row with a reason the core does
+# not give a profile fault; the retired bare-module verifier on a row that is not retired; and a
+# corpus row that names no entry.
+#
+# registry-revision: 1
+#
+# code|name|pass|carrier|reason|reachability|case|since
+2001|WrongMagic|validate+decode|translation|MalformedEncoding|corpus|preamble-wrong-magic|1
+2102|SectionOutOfOrder|parse|translation|InconsistentStructure|corpus|section-out-of-canonical-order|1
+2302|UnknownValueType|decode+validate+hook|translation|MalformedEncoding|corpus|type-value-type-byte-names-nothing|1
+2303|ValueTypeNotAdmitted|decode+validate|translation|MalformedBytes|corpus|feature-a-vector-value-type|1
+2101|UnknownSectionId|decode|translation|Cancelled|corpus|section-unknown-identifier|1
+3001|TrapUnreachable|execute|payload|MalformedEncoding|execution|WasmTrapKind.Unreachable|1
+2003|UnsupportedArtifactFormatVersion|bare-module|outcome|UnsupportedProfileFormatVersion|corpus|preamble-wrong-magic|1
+2403|ImportNotAdmitted|decode|translation|UnknownFeature|corpus|-|1

@@ -48,6 +48,18 @@ internal static class CorpusStore
     /// <summary>The manifest file the writer emits and the replay reads.</summary>
     internal const string ManifestFileName = "corpus.manifest";
 
+    /// <summary>
+    /// The revision of the profile's published diagnostic registry the writer dates a manifest with.
+    /// </summary>
+    /// <remarks>
+    /// The registry is <c>src/Broiler.VM.Profile.WebAssembly/docs/diagnostics/registry.txt</c>. A
+    /// code that changed meaning would silently invalidate every entry that recorded it, so every
+    /// manifest states the revision its codes are read against, and rule W3 holds this constant to
+    /// the registry's own. The core carries no field for a profile's registry revision, which is why
+    /// it is a line of the manifest rather than a column of each entry.
+    /// </remarks>
+    internal const int RegistryRevision = 1;
+
     // =============================================================================================
     // The invariant vocabulary. Six words, each one a claim a person made about a family.
     // =============================================================================================
@@ -121,6 +133,7 @@ internal static class CorpusStore
         entries.AddRange(ValidationTypes());
         entries.AddRange(ValidationIndices());
         entries.AddRange(ValidationModule());
+        entries.AddRange(PhaseOrder());
         entries.AddRange(TruncationSweep());
         entries.AddRange(InversionSweep());
         return entries;
@@ -555,6 +568,33 @@ internal static class CorpusStore
             VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
             WebAssemblyDiagnosticCode.UnknownSectionId),
 
+        // Section 13 is the tag section a later version defines. No manifest here admits it, so the
+        // module is refused as unadmitted, not as a section identifier that names nothing.
+        new("feature-a-tag-section", "feature",
+            [.. Preamble, .. Section(13, [0x00])], RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.UnknownFeature,
+            WebAssemblyDiagnosticCode.TagSectionNotAdmitted),
+
+        // A segment's first field is a table or memory index at this format version and a segment
+        // kind at a later one. Reading 1 as an index would decode a later version's segment as an
+        // active one, so anything but zero is refused as a form this build does not define.
+        new("feature-an-element-segment-whose-first-field-is-not-zero", "feature",
+            FunctionModule(
+                [], [], [],
+                tableSection: [0x01, 0x70, 0x00, 0x01],
+                elementSection: [0x01, 0x01, 0x41, 0x00, 0x0B, 0x01, 0x00]),
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.UnknownFeature,
+            WebAssemblyDiagnosticCode.UnsupportedSegmentKind),
+
+        new("feature-a-data-segment-whose-first-field-is-not-zero", "feature",
+            [.. Preamble,
+             .. Section(5, [0x01, 0x00, 0x01]),
+             .. Section(11, [0x01, 0x01, 0x41, 0x00, 0x0B, 0x00])],
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.UnknownFeature,
+            WebAssemblyDiagnosticCode.UnsupportedSegmentKind),
+
         new("feature-two-memories", "feature",
             [.. Preamble, .. Section(5, [0x02, 0x00, 0x01, 0x00, 0x01])], RefusesDecoding,
             VmOutcome.InvalidArtifact, VmReason.UnknownFeature,
@@ -938,6 +978,35 @@ internal static class CorpusStore
             VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
             WebAssemblyDiagnosticCode.FunctionAndCodeCountMismatch),
 
+        // The data count section says one segment, and no data section follows.
+        new("module-a-data-count-that-disagrees-with-the-data-section", "validation-module",
+            [.. Preamble, .. Section(12, [0x01])], RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
+            WebAssemblyDiagnosticCode.DataCountMismatch),
+
+        // The body declares one byte, and its locals alone are three: one entry, of one local, of
+        // i32. The body ends inside its own locals.
+        new("module-a-function-body-whose-locals-run-past-its-declared-size", "validation-module",
+            [.. Preamble,
+             .. Section(1, [0x01, 0x60, 0x00, 0x00]),
+             .. Section(3, [0x01, 0x00]),
+             .. Section(10, [0x01, 0x01, 0x01, 0x01, 0x7F, 0x0B])],
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
+            WebAssemblyDiagnosticCode.FunctionBodyLengthMismatch),
+
+        // The body declares five bytes, and two follow its size before the artifact ends. Until
+        // 2026-09-28 this carried FunctionBodyLengthMismatch with Truncated, which gave that code a
+        // second reason beside the entry above's.
+        new("module-a-function-body-whose-size-runs-past-the-end-of-the-artifact", "validation-module",
+            [.. Preamble,
+             .. Section(1, [0x01, 0x60, 0x00, 0x00]),
+             .. Section(3, [0x01, 0x00]),
+             .. Section(10, [0x01, 0x05, 0x00, 0x0B])],
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.Truncated,
+            WebAssemblyDiagnosticCode.Truncated),
+
         new("module-a-function-whose-type-index-addresses-no-type", "validation-module",
             [.. Preamble,
              .. Section(1, [0x01, 0x60, 0x00, 0x00]),
@@ -1004,6 +1073,44 @@ internal static class CorpusStore
             RefusesValidation,
             VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed,
             WebAssemblyDiagnosticCode.DataSegmentMemoryIndexOutOfRange),
+    ];
+
+    // =============================================================================================
+    // Phase order at module granularity. Each module is invalid at a byte before the one at which
+    // it is malformed, so a build that validated a type, a memory or a body before it had decoded
+    // the rest of the module would answer invalid. The format says a module that is both is
+    // malformed, and this profile decodes the whole module before it validates any of it: WA-3's
+    // gate asks for a named case that fails when the two phases are fused at module granularity,
+    // and these are those cases. Draft decision WAD-0004 records the fusion WITHIN a body, which
+    // none of them reaches.
+    // =============================================================================================
+
+    private static IEnumerable<CorpusEntry> PhaseOrder() =>
+    [
+        // Two function types in one section. The first has two results, which validation refuses,
+        // and the second does not begin with 0x60, which decoding refuses.
+        new("phase-order-an-invalid-function-type-before-a-malformed-one", "phase-order",
+            [.. Preamble, .. Section(1, [0x02, 0x60, 0x00, 0x02, 0x7F, 0x7F, 0x61, 0x00, 0x00])],
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.MalformedEncoding,
+            WebAssemblyDiagnosticCode.MalformedFunctionTypeTag),
+
+        // A memory whose minimum, two pages, is above its maximum, one, which validation refuses;
+        // then a section identifier that names nothing.
+        new("phase-order-an-invalid-memory-before-a-malformed-section", "phase-order",
+            [.. Preamble, .. Section(5, [0x01, 0x01, 0x02, 0x01]), 0x0E, 0x00],
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
+            WebAssemblyDiagnosticCode.UnknownSectionId),
+
+        // A body that adds with nothing on the stack, which validation refuses; then, after the
+        // code section, a section identifier that names nothing. A build that validated each body
+        // as the code section was decoded would answer the body.
+        new("phase-order-an-invalid-body-before-a-malformed-section", "phase-order",
+            [.. FunctionModule([], [], [0x6A]), 0x0E, 0x00],
+            RefusesDecoding,
+            VmOutcome.InvalidArtifact, VmReason.InconsistentStructure,
+            WebAssemblyDiagnosticCode.UnknownSectionId),
     ];
 
     // =============================================================================================

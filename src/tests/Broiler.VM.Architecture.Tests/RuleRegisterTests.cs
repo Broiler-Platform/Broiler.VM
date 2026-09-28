@@ -373,10 +373,17 @@ public sealed class RuleRegisterTests
         // UBC-4 takes decision UBC-D-5 early and turns U1's packability clause round: the project must
         // now carry the literal IsPackable true, still with no PackageId, and its witnesses are renamed
         // from packable to not-packable. No row is added or removed, and no count moves.
-        Assert.Equal(101, byStatus["Active"]);
+        // WA-3's registry adds W3 to group W, and it is U8's shape over a profile whose codes travel on
+        // three carriers: the WebAssembly profile's published diagnostic registry, held in both
+        // directions to its enumeration, to the source that emits each code with its one reason and in
+        // the passes the row names, to the corpus and the execution checks that reach each row or to
+        // the rule's own list of the rows nothing reaches, and to the corpus manifest its revision
+        // dates. It is Active from the moment it is minted, because what it is about exists; neither the
+        // Vacuous nor the Deferred count moves.
+        Assert.Equal(102, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(103, Loaded.Rules.Count);
+        Assert.Equal(104, Loaded.Rules.Count);
     }
 
     private static Register Load()

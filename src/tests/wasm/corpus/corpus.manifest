@@ -1,4 +1,6 @@
 # broiler.webassembly retained corpus, feature manifest broiler.webassembly.slice, binary version 1
+# registry-revision: 1
+# registry-revision is the revision of src/Broiler.VM.Profile.WebAssembly/docs/diagnostics/registry.txt every code below is read against
 # name|sha256|family|outcome|reason|diagnostic|dimension|scope|provenance|invariant
 # diagnostic is the profile diagnostic code, and 0 where the answer carries none
 # dimension and scope are the budget dimension a resource exhaustion named and the scope that refused, or - where the row is not an exhaustion
@@ -58,6 +60,9 @@ type-global-mutability-flag-is-neither-form|14daac5cb5f98387aa80d5f7faf7d5296c25
 feature-a-vector-value-type|9ff8fc2d357cea6495fd6782f407a2bed0822cfd50b739ca619355630075a53f|feature|InvalidArtifact|UnknownFeature|2303|-|-|derived|refuses-decoding
 feature-an-import|46de6d1d76501e89786e9449dae0ecabcc3556ecb3a6d9776924e0969d2b27b4|feature|InvalidArtifact|UnknownFeature|2403|-|-|derived|refuses-decoding
 feature-an-import-in-a-module-malformed-after-it|4327c3dfcbdc7c5b2a17f6f8d667663c3d40870ef9fb07bf76558df74472da1b|feature|InvalidArtifact|InconsistentStructure|2101|-|-|derived|refuses-decoding
+feature-a-tag-section|08c16bf85ead324484b2e7c709705a9db73c80958d9aac31ae17b59a21ffd702|feature|InvalidArtifact|UnknownFeature|2105|-|-|derived|refuses-decoding
+feature-an-element-segment-whose-first-field-is-not-zero|ed916ec771b3a0383ecaf8c9a7de213b85691ccde58db028fee82b936ab5dcfc|feature|InvalidArtifact|UnknownFeature|2603|-|-|derived|refuses-decoding
+feature-a-data-segment-whose-first-field-is-not-zero|e32fb2ecef50d957034286576b6a9feefc0cb85c2909ca7fd336eec63b2c6e37|feature|InvalidArtifact|UnknownFeature|2603|-|-|derived|refuses-decoding
 feature-two-memories|a51ea11ea8803e51de8595f544f187db47f1ec64b957dc160bfb64ecfd3e3fdf|feature|InvalidArtifact|UnknownFeature|2504|-|-|derived|refuses-decoding
 feature-two-tables|8c1dd92342556ad3913a92223c3674cf271d8e5512d76ca94ef8d2f4841ce962|feature|InvalidArtifact|UnknownFeature|2505|-|-|derived|refuses-decoding
 feature-a-bulk-memory-prefixed-instruction|9e7d196b583b9c03bccf7cc63e2cc9ed7aaab6f7d75a2fbb79c8621c344a7aa2|feature|InvalidArtifact|UnknownFeature|2822|-|-|derived|refuses-validation
@@ -105,6 +110,9 @@ validation-an-indirect-call-with-no-table-declared|cd31beaa7d9fef9c1c88643bec12e
 validation-an-indirect-call-naming-no-declared-type|ba5ba4f96d4d6b30f579535e49d562bb96d53099c62b6835362fec03a28a708d|validation-index|InvalidArtifact|SemanticValidationFailed|2816|-|-|derived|refuses-validation
 module-a-function-type-with-two-results|e073348866b8b00447b31217245790b19af9622ce8d7ff0e4202f366f729a9e5|validation-module|InvalidArtifact|SemanticValidationFailed|2711|-|-|derived|refuses-validation
 module-a-function-section-without-a-code-section|d34554201294a6135024ed24267c1128119ae0b6217d2b034af6f4b80d623820|validation-module|InvalidArtifact|InconsistentStructure|2501|-|-|derived|refuses-decoding
+module-a-data-count-that-disagrees-with-the-data-section|b85f93ac15029fc4b72a43ca05a1fc75ca8e1f66ca24eeb54f4616d604bcf507|validation-module|InvalidArtifact|InconsistentStructure|2502|-|-|derived|refuses-decoding
+module-a-function-body-whose-locals-run-past-its-declared-size|21fa83fbd4c3cc72e8c084a0289673d4cc71cd90ed897b5973c0d45a7dfc4d54|validation-module|InvalidArtifact|InconsistentStructure|2503|-|-|derived|refuses-decoding
+module-a-function-body-whose-size-runs-past-the-end-of-the-artifact|ceae13f0a47ce0e171a3e3fe99d27e7daba79cd5699d9fa4207796f424f67fd6|validation-module|InvalidArtifact|Truncated|2106|-|-|derived|refuses-decoding
 module-a-function-whose-type-index-addresses-no-type|7af02a117d5758694573f20fdd5fd1ed3615b9bab0ff2da6e3e65aadf3fc274d|validation-module|InvalidArtifact|SemanticValidationFailed|2701|-|-|derived|refuses-validation
 module-a-start-section-naming-a-function-that-does-not-exist|5239795798d928f3b12b5ac4ab80a76842be152d5912008418df5127a0b75edc|validation-module|InvalidArtifact|SemanticValidationFailed|2702|-|-|derived|refuses-validation
 module-a-start-function-that-takes-a-parameter|db536649e23270f7415f87376deabda5d9640a0639d8f2bfa5949f5abd8136f9|validation-module|InvalidArtifact|SemanticValidationFailed|2703|-|-|derived|refuses-validation
@@ -113,6 +121,9 @@ module-an-export-naming-an-index-its-kind-does-not-have|a825892e5146f299f95d4680
 module-an-element-segment-with-no-table-declared|336d82d8add7c860d36baaed2ff2a8db7b140ae05041bb15427cab70662fd83a|validation-module|InvalidArtifact|SemanticValidationFailed|2706|-|-|derived|refuses-validation
 module-an-element-segment-writing-an-unknown-function-index|6adb337768886b3b4101f5e1a027cbd88b5c5f62b9cfb341836bfa4f9eee4be7|validation-module|InvalidArtifact|SemanticValidationFailed|2707|-|-|derived|refuses-validation
 module-a-data-segment-with-no-memory-declared|ee8febc14683feb96a0b4b28653aa2b6946973af7268ee723afb086d2b0d67e3|validation-module|InvalidArtifact|SemanticValidationFailed|2708|-|-|derived|refuses-validation
+phase-order-an-invalid-function-type-before-a-malformed-one|f62a2626ac025cb226e3d330af86aaa0fec02bb523f39046b885144dca3438bd|phase-order|InvalidArtifact|MalformedEncoding|2301|-|-|derived|refuses-decoding
+phase-order-an-invalid-memory-before-a-malformed-section|6d7fe17914e6ec4015ff4984fbcae7edf9a14182e67c6efc2aef2efa1a91fa5c|phase-order|InvalidArtifact|InconsistentStructure|2101|-|-|derived|refuses-decoding
+phase-order-an-invalid-body-before-a-malformed-section|30be4055e206f3b105d7a8288e456e2d97c9b59a2c3a9aa6aee55efa9daedada|phase-order|InvalidArtifact|InconsistentStructure|2101|-|-|derived|refuses-decoding
 truncation-0000|e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855|truncation-sweep|InvalidArtifact|Truncated|2106|-|-|recorded|refuses
 truncation-0001|6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d|truncation-sweep|InvalidArtifact|Truncated|2106|-|-|recorded|refuses
 truncation-0002|022a6979e6dab7aa5ae4c3e5e45f7e977112a7e63593820dbec1ec738a24f93c|truncation-sweep|InvalidArtifact|Truncated|2106|-|-|recorded|refuses
@@ -283,7 +294,7 @@ inversion-0067|7e982fc41cfe5b3829865912edc55b8cf3eae9711cff101b930c3fa69195268d|
 inversion-0068|deed4597896d435572e98eb0adfc16d7ebd880e5a8d368700f3fc5049fb9d6da|inversion-sweep|InvalidArtifact|InconsistentStructure|2101|-|-|recorded|sound-either-way
 inversion-0069|9e8236ebb470b4cd873f4a9d2ded553ea22b9e7dd40fc252675bee34a1cf1d2e|inversion-sweep|InvalidArtifact|Truncated|2106|-|-|recorded|sound-either-way
 inversion-0070|1b525ea9075b98b636d95bd5c360bfb592739e383181948ed8c3ceb3e91a15dc|inversion-sweep|InvalidArtifact|MalformedEncoding|2302|-|-|recorded|sound-either-way
-inversion-0071|e78ff4c83ff62824a272b62c44ac98de70c16f91122c6a83c0f5545ae6783423|inversion-sweep|InvalidArtifact|Truncated|2503|-|-|recorded|sound-either-way
+inversion-0071|e78ff4c83ff62824a272b62c44ac98de70c16f91122c6a83c0f5545ae6783423|inversion-sweep|InvalidArtifact|Truncated|2106|-|-|recorded|sound-either-way
 inversion-0072|a250c48e7841dc49f4d29fcd368404c73b1511aaa5403824be9bd078ef5853a5|inversion-sweep|InvalidArtifact|MalformedEncoding|2302|-|-|recorded|sound-either-way
 inversion-0073|2f7ac3f113488ebe58ddb0ee4b61ad608632f44d623819e695e4949126abcf81|inversion-sweep|InvalidArtifact|MalformedEncoding|2801|-|-|recorded|sound-either-way
 inversion-0074|7dce8eff07853df0c1e4235860b4d6280b683f1884de0f5cb0a6f518c3b21d83|inversion-sweep|InvalidArtifact|SemanticValidationFailed|2812|-|-|recorded|sound-either-way

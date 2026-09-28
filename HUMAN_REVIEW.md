@@ -3341,7 +3341,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a name that is not well formed under this format's own UTF-8 rule is accepted
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeElementSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `07BA66`, PENDING
   - Falsified if: a segment encoding form this format version does not define is decoded as though it were the classic form
-- `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeCodeSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=Critical, Spec=none cited, `58F41D`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeCodeSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=Critical, Spec=none cited, `C51574`, PENDING
   - Falsified if: a body's byte count is taken from anywhere but its declared size, the expanded local count is not held to the declared-count ceiling, or a body's instruction bytes are read in one charge larger than the read window
 - `Broiler.VM.Profile.WebAssembly.WasmDecoder.TryDecodeDataSection()` in `src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs` - Security=High, Spec=none cited, `B0C933`, PENDING
   - Falsified if: a segment encoding form this format version does not define is decoded as though it were the classic form, or a segment's contents are read in one charge larger than the read window

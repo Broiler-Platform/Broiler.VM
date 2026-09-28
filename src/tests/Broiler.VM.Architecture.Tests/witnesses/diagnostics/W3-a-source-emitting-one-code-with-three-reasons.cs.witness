@@ -1,0 +1,50 @@
+// A source that emits one diagnostic code with three core reasons, one per shape rule W3 follows.
+//
+// Not compiled by anything; rule W3 reads it as though it were a file of
+// Broiler.VM.Profile.WebAssembly. The first site is the decoder's own: a payload too short to hold
+// the magic is refused with WrongMagic and MalformedEncoding. The second is written the way the
+// validator writes its ordinary refusals - through a helper that takes the code and supplies the
+// reason from its own body - and the third the way the family hook writes its: through a helper that
+// hands the core the answer of a reason table, whose arm for this code says Truncated. A code emitted
+// with three reasons is three rejections sharing a number, and the rule has to read both helpers and
+// the table to see two of them.
+namespace Broiler.VM.Profile.WebAssembly;
+
+internal sealed class WasmMagicWitness
+{
+    internal VmVerifierOutcome Refusal { get; private set; }
+
+    internal UbcHookAnswer Answer { get; private set; }
+
+    internal bool ReadMagic(ReadOnlySpan<byte> payload)
+    {
+        if (payload.Length < 4)
+        {
+            Refusal = WasmRefusal.Invalid(VmReason.MalformedEncoding, WebAssemblyDiagnosticCode.WrongMagic, default);
+            return false;
+        }
+
+        if (payload[0] != 0x00)
+        {
+            return Fail(WebAssemblyDiagnosticCode.WrongMagic);
+        }
+
+        Answer = Refuse(WebAssemblyDiagnosticCode.WrongMagic);
+        return false;
+    }
+
+    private bool Fail(WebAssemblyDiagnosticCode code)
+    {
+        Refusal = WasmRefusal.Invalid(VmReason.InconsistentStructure, code, default);
+        return false;
+    }
+
+    private static UbcHookAnswer Refuse(WebAssemblyDiagnosticCode code) =>
+        UbcHookAnswer.Refuse((int)code, ReasonOf(code));
+
+    private static VmReason ReasonOf(WebAssemblyDiagnosticCode code) => code switch
+    {
+        WebAssemblyDiagnosticCode.WrongMagic => VmReason.Truncated,
+        _ => VmReason.InconsistentStructure,
+    };
+}
