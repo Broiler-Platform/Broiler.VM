@@ -32,6 +32,7 @@ internal static class ExecutionChecks
         checks.AddRange(FloatComparisons(runtime));
         checks.AddRange(Control(runtime));
         checks.AddRange(Memory(runtime));
+        checks.AddRange(Retention(runtime));
         checks.AddRange(Calls(runtime));
         checks.AddRange(Traps(runtime));
         checks.AddRange(GlobalsAndStart(runtime));
@@ -361,6 +362,252 @@ internal static class ExecutionChecks
         ]);
 
         return results;
+    }
+
+    // =============================================================================================
+    // What an instance retains: at instantiation, at a growth, at either refusal, and at disposal
+    // =============================================================================================
+
+    /// <summary>
+    /// The live bytes one instance holds, read off the runtime's budget after every step: its
+    /// memory's and its table's at instantiation, the pages a growth adds, nothing for either kind of
+    /// refused growth, and every byte back at disposal.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THESE ARE THE AMOUNTS UBC-4'S EXIT-GATE CLAUSE 6 ASKS FOR.</b> The bare-module executor this
+    /// profile carried until that milestone reported a growth's retention after it allocated; the
+    /// store that replaced it charges the retention before, so a refused one allocates nothing. The
+    /// owner kept the new order and revised the clause to ask for the amounts rather than the order:
+    /// a page for each page of the minimum and four bytes for each table entry at instantiation, the
+    /// added pages at a growth, nothing at a refusal, and all of it back at disposal. They are what
+    /// the retired executor reported, and they are spelled out here rather than read from the profile.
+    /// What comes back at disposal the core would reclaim even if the store forgot it, since it
+    /// releases whatever an instance's level still holds, so those checks answer for what a host sees
+    /// and not for the store's own release.
+    /// </para>
+    /// <para>
+    /// <b>The two kinds of refusal are different refusals.</b> The page ceiling's is the guest's:
+    /// nothing is charged, and the module reads the minus one. A core budget's is the core's: the
+    /// charge is refused, the operation ends as an exhaustion naming the dimension and the scope that
+    /// refused, no guest code runs past it, and the core faults the instance. The retired executor
+    /// answered the guest minus one when the allocation was refused, and had already grown the memory
+    /// when the retention was; each is checked here under an instance ceiling of its own that admits
+    /// the instantiation and not the page.
+    /// </para>
+    /// </remarks>
+    private static List<(string, bool, string)> Retention(VmRuntime runtime)
+    {
+        const int Entries = 3;
+        const ulong Page = 65_536;
+        const ulong AtInstantiation = Page + (Entries * sizeof(int));
+        const string Label = "retention";
+
+        var assembler = new WasmAssembler();
+        assembler.Memory(1, null);
+        assembler.Table(Entries);
+
+        var nullary = assembler.Type([], [WasmAssembler.I32]);
+        var unary = assembler.Type([WasmAssembler.I32], [WasmAssembler.I32]);
+
+        assembler.Export("size", WasmAssembler.ExportFunction, assembler.Function(
+            nullary, [], Instruction.Cat([Instruction.MemorySize], [0x00])));
+
+        assembler.Export("grow", WasmAssembler.ExportFunction, assembler.Function(
+            unary, [], Instruction.Cat(Instruction.LocalGet(0), [Instruction.MemoryGrow], [0x00])));
+
+        // A growth, then a loop the guest would run if it were let past a refused one.
+        assembler.Export("growthenspin", WasmAssembler.ExportFunction, assembler.Function(
+            unary, [WasmAssembler.I32], Instruction.Cat(
+                Instruction.LocalGet(0), [Instruction.MemoryGrow], [0x00],
+                Instruction.I32Const(Spin), Instruction.LocalSet(1),
+                Instruction.Loop(Instruction.EmptyBlock),
+                Instruction.LocalGet(1), Instruction.I32Const(1), [Instruction.I32Sub], Instruction.LocalTee(1),
+                Instruction.BrIf(0),
+                Instruction.End())));
+
+        var results = new List<(string, bool, string)>();
+        var verified = ModuleVerification.Verify(runtime, assembler.Build(), Caller, Label);
+
+        if (!verified.TryGetArtifact(out var artifact))
+        {
+            results.Add(($"{Label}: verification", false, $"{verified.Outcome}/{verified.Reason}"));
+            return results;
+        }
+
+        using (artifact)
+        {
+            var baseline = LiveBytes(runtime);
+            var admitted = runtime.Instantiate(artifact, CancellationToken.None);
+
+            if (admitted.TryGetInstance(out var instance))
+            {
+                results.Add(Held(
+                    $"{Label}: instantiation retains its minimum page and four bytes a table entry",
+                    runtime, baseline, AtInstantiation, (true, $"{admitted.Outcome}/{admitted.Reason}")));
+
+                results.Add(Held(
+                    $"{Label}: grow(2) retains the two pages it added",
+                    runtime, baseline, AtInstantiation + (2 * Page), Call(instance, Entry("grow", I32(2)), Int32(1))));
+
+                results.Add(Held(
+                    $"{Label}: grow(2000), past the page ceiling, retains nothing",
+                    runtime, baseline, AtInstantiation + (2 * Page), Call(instance, Entry("grow", I32(2000)), Int32(-1))));
+
+                results.Add(Held(
+                    $"{Label}: size after both",
+                    runtime, baseline, AtInstantiation + (2 * Page), Call(instance, Entry("size"), Int32(3))));
+
+                var disposal = instance.Dispose();
+
+                results.Add(Held(
+                    $"{Label}: disposal gives every byte back",
+                    runtime, baseline, 0, (disposal.IsSuccess, $"disposal {disposal.Kind}")));
+            }
+            else
+            {
+                results.Add(($"{Label}: instantiation", false, $"{admitted.Outcome}/{admitted.Reason}"));
+            }
+
+            // The page a growth asks for is refused by each budget it is charged against: the live
+            // bytes it would retain, and the bytes it would allocate. Each instance's own ceiling
+            // admits what instantiation took and half a page more, so a growth of none still answers.
+            results.AddRange(RefusedGrowth(
+                runtime, artifact, $"{Label}-refused-by-live-bytes", VmBudgetDimension.LiveBytes,
+                AtInstantiation + (Page / 2), AtInstantiation));
+
+            results.AddRange(RefusedGrowth(
+                runtime, artifact, $"{Label}-refused-by-allocated-bytes", VmBudgetDimension.AllocatedBytes,
+                AtInstantiation + (Page / 2), AtInstantiation));
+        }
+
+        return results;
+    }
+
+    /// <summary>The iterations of the loop after a growth, each of which costs at least one unit of fuel.</summary>
+    private const int Spin = 50_000;
+
+    /// <summary>
+    /// One instance under a ceiling of its own on <paramref name="dimension"/>: a growth of no pages
+    /// answers and runs the loop after it, and a growth of one is refused by that budget, retains
+    /// nothing, and ends the operation before the loop.
+    /// </summary>
+    /// <remarks>
+    /// <b>THE FUEL IS WHAT SHOWS THE GUEST WAS NOT LET PAST THE REFUSAL.</b> Every other thing this
+    /// reads answers the same if it was: the core ranks the exhaustion the refusal latched above
+    /// whatever the step did next, the instance is faulted either way, and a loop reads no memory. The
+    /// runtime's fuel account is the one witness outside the instance, so the call that grows by none
+    /// shows what the loop costs, and the refused one must cost less than one unit an iteration.
+    /// With the family doctored to answer the guest minus one and go on, as the retired executor
+    /// did, the refused call costs what the admitted one does, and every other check here still
+    /// passes.
+    /// </remarks>
+    private static List<(string, bool, string)> RefusedGrowth(
+        VmRuntime runtime,
+        VmVerifiedArtifact artifact,
+        string label,
+        VmBudgetDimension dimension,
+        ulong ceiling,
+        ulong retained)
+    {
+        var results = new List<(string, bool, string)>();
+        var baseline = LiveBytes(runtime);
+        var instantiated = runtime.Instantiate(artifact, VmLimitOverrides.Of(dimension, ceiling), CancellationToken.None);
+
+        if (!instantiated.TryGetInstance(out var instance))
+        {
+            results.Add(($"{label}: instantiation", false, $"{instantiated.Outcome}/{instantiated.Reason}"));
+            return results;
+        }
+
+        results.Add(Held(
+            $"{label}: instantiation under an instance ceiling half a page over what it takes",
+            runtime, baseline, retained, (true, $"{instantiated.Outcome}/{instantiated.Reason}")));
+
+        // The call itself fits under the ceiling, so what the next one is refused is its page.
+        var before = Fuel(runtime);
+        var admitted = Call(instance, Entry("growthenspin", I32(0)), Int32(1));
+        var loop = Fuel(runtime) - before;
+
+        results.Add(Held(
+            $"{label}: grow(0) answers the size, retains nothing, and runs the loop after it",
+            runtime, baseline, retained,
+            (admitted.Passed && loop >= Spin,
+                $"{admitted.Detail}; fuel {loop.ToString(CultureInfo.InvariantCulture)} over {Spin.ToString(CultureInfo.InvariantCulture)} iterations")));
+
+        before = Fuel(runtime);
+        var answered = Invoke(instance, Entry("growthenspin", I32(1)));
+        var spent = Fuel(runtime) - before;
+        var diagnostics = answered.Diagnostics;
+
+        var exhausted =
+            answered.Outcome is VmOutcome.ResourceExhaustion &&
+            diagnostics.ExhaustedDimension == dimension &&
+            diagnostics.ExhaustedScope is VmBudgetScope.Instance;
+
+        results.Add(Held(
+            $"{label}: grow(1) is refused by that ceiling, retains nothing, and runs nothing after it",
+            runtime, baseline, retained,
+            (exhausted && spent < Spin,
+                $"{answered.Outcome}/{answered.Reason}/" +
+                $"{diagnostics.ExhaustedDimension}/{diagnostics.ExhaustedScope}; " +
+                $"fuel {spent.ToString(CultureInfo.InvariantCulture)}")));
+
+        // NOTHING RUNS PAST THE REFUSAL, THE GUEST INCLUDED. The core faults an instance whose
+        // operation was exhausted, always, so its memory's size is not there to be read after: the
+        // retention is what shows the refused growth allocated nothing, and a faulted instance goes
+        // on holding what it retained until it is disposed.
+        var after = Invoke(instance, Entry("size"));
+
+        results.Add(Held(
+            $"{label}: the instance is faulted after the refusal and still holds its bytes",
+            runtime, baseline, retained,
+            (after.Outcome is VmOutcome.InvalidState && after.Reason is VmReason.TerminalFault,
+                $"{after.Outcome}/{after.Reason}")));
+
+        var disposal = instance.Dispose();
+
+        results.Add(Held(
+            $"{label}: disposal gives every byte back",
+            runtime, baseline, 0, (disposal.IsSuccess, $"disposal {disposal.Kind}")));
+
+        return results;
+    }
+
+    /// <summary>The live bytes the runtime's budget has retained, from every level below it.</summary>
+    private static ulong LiveBytes(VmRuntime runtime) =>
+        runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes);
+
+    /// <summary>The fuel the runtime's budget has spent, at every level below it.</summary>
+    private static ulong Fuel(VmRuntime runtime) =>
+        runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.Fuel);
+
+    /// <summary>
+    /// A step that passes when what it answered passed and the runtime holds exactly
+    /// <paramref name="expected"/> live bytes over <paramref name="baseline"/>.
+    /// </summary>
+    private static (string, bool, string) Held(
+        string name, VmRuntime runtime, ulong baseline, ulong expected, (bool Passed, string Detail) answered)
+    {
+        var held = (long)LiveBytes(runtime) - (long)baseline;
+        var retained = held == (long)expected;
+
+        return (name, answered.Passed && retained,
+            $"{answered.Detail}; live bytes +{held.ToString(CultureInfo.InvariantCulture)}" +
+            (retained ? string.Empty : $", expected +{expected.ToString(CultureInfo.InvariantCulture)}"));
+    }
+
+    private static VmInvocationResult Invoke(VmInstance instance, string entry)
+    {
+        var request = new VmInvocationRequest(new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(entry)));
+        return instance.Invoke(in request, CancellationToken.None);
+    }
+
+    private static (bool Passed, string Detail) Call(VmInstance instance, string entry, Expectation expected)
+    {
+        var answered = Invoke(instance, entry);
+        var (_, passed, detail) = Judge(entry, answered, expected);
+        return (passed, detail);
     }
 
     // =============================================================================================
