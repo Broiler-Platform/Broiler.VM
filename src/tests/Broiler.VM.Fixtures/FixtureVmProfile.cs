@@ -90,9 +90,16 @@ public enum FixtureVmProfileVariant
     /// the instance was created.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The limiting case of breaking the bound: nothing the profile does afterwards takes a poll, so
     /// no poll can find the breach and only the core's own reading of the uncharged-work counter at
     /// the end of the step can.
+    /// </para>
+    /// <para>
+    /// Like every variant that misbehaves while instantiating, it first reports
+    /// <see cref="FixtureVmExecutor.InstantiationRetention"/> bytes retained and never gives them
+    /// back itself, so what a refused instantiation leaves counted is visible to a test.
+    /// </para>
     /// </remarks>
     BreachesBoundDuringInstantiation = 18,
 
@@ -117,6 +124,28 @@ public enum FixtureVmProfileVariant
     /// dropped, as every other refused parking at instantiation is.
     /// </remarks>
     BreachesBoundThenParksDuringInstantiation = 20,
+
+    /// <summary>
+    /// Calls the doubling capability while instantiating, ignores what the call answered, and
+    /// answers that the instance was created.
+    /// </summary>
+    /// <remarks>
+    /// The doubling capability declares that a fault terminates the operation. A test that registers
+    /// a throwing handler for it therefore makes a host failure the right answer, and a profile that
+    /// carries on regardless is the case where its own answer has to be discarded.
+    /// </remarks>
+    CallsHostDuringInstantiation = 21,
+
+    /// <summary>
+    /// Declares asynchronous instantiation, calls the doubling capability while instantiating, and
+    /// then parks.
+    /// </summary>
+    /// <remarks>
+    /// With a handler that completes, it is the one variant whose instantiation parks legally, so it
+    /// is what exercises a declared asynchronous instantiation. With a throwing handler, it shows
+    /// that the continuation of a step refused for a host failure is unwound rather than dropped.
+    /// </remarks>
+    CallsHostThenParksDuringInstantiation = 22,
 }
 
 /// <summary>
@@ -300,6 +329,7 @@ public static class FixtureDescriptorFactory
 
         var asynchronous = variant is FixtureVmProfileVariant.DeclaresAsynchronousInstantiation
             or FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation
+            or FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation
             ? VmDeclaration.Declared
             : VmDeclaration.NotDeclared;
 

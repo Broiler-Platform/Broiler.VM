@@ -665,6 +665,152 @@ public sealed class ContractSurfaceTests
         Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(instance).Outcome);
     }
 
+    [Fact]
+    public void A_Terminating_Host_Failure_While_Instantiating_Is_A_Host_Failure_And_Publishes_Nothing()
+    {
+        // The capability declares that a fault terminates the operation, and the profile carries on
+        // and answers that it created the instance. Instantiation is an operation like any other, so
+        // the host failure is the answer and the instance is not published - billing a host defect
+        // to the guest because it happened before the guest had an instance is still billing it.
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.CallsHostDuringInstantiation));
+
+        using var runtime = FixtureComposition.Runtime(
+            catalog, FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(ThrowingHostCall)));
+
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var result = runtime.Instantiate(artifact, CancellationToken.None);
+
+        Assert.Equal(VmOutcome.HostFailure, result.Outcome);
+        Assert.Equal(VmReason.HostCapabilityFaulted, result.Reason);
+        Assert.Equal(FixtureHostCapabilities.DoubleId, result.Diagnostics.CapabilityId);
+        Assert.Equal(1, result.Diagnostics.CapabilityVersion);
+        Assert.False(result.TryGetInstance(out _));
+        Assert.Equal(VmRuntimeState.Ready, runtime.State);
+    }
+
+    [Fact]
+    public void A_Host_Call_That_Completes_While_Instantiating_Leaves_The_Instance_Published()
+    {
+        // The control for the test above: the same profile and the same call, with a handler that
+        // completes, instantiates normally. What refused the instance there was the failure alone.
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(FixtureVmProfileVariant.CallsHostDuringInstantiation));
+
+        using var runtime = FixtureComposition.Runtime(catalog);
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+        Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(instance).Outcome);
+    }
+
+    [Fact]
+    public void A_Continuation_Parked_After_A_Host_Failure_While_Instantiating_Is_Unwound()
+    {
+        // Parking is declared, so the host failure is the only thing wrong with the step. Nothing is
+        // suspended, and the continuation is handed back to the profile to unwind.
+        FixtureVmExecutor? executor = null;
+
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(
+                FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation,
+                environmentObserver: null,
+                executorObserver: created => executor = created));
+
+        using var runtime = FixtureComposition.Runtime(
+            catalog, FixtureComposition.Options(capabilities: FixtureComposition.CapabilitiesWithDouble(ThrowingHostCall)));
+
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var result = runtime.Instantiate(artifact, CancellationToken.None);
+
+        Assert.Equal(VmOutcome.HostFailure, result.Outcome);
+        Assert.Equal(VmReason.HostCapabilityFaulted, result.Reason);
+        Assert.False(result.TryGetInstance(out _));
+        Assert.False(result.TryGetSuspension(out _));
+        Assert.Equal(1, executor!.UnwoundCount);
+    }
+
+    [Fact]
+    public void A_Parked_Instantiation_Is_Unwound_Through_Its_Pending_Instance_When_The_Runtime_Is_Disposed()
+    {
+        // The operation an instantiation parks is the one its step ran under, and it is handed its
+        // pending instance only when it parks. Disposal abandons it and unwinds the continuation
+        // through that instance, so an operation that parked without one would drop the
+        // continuation instead of unwinding it.
+        FixtureVmExecutor? executor = null;
+
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(
+                FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation,
+                environmentObserver: null,
+                executorObserver: created => executor = created));
+
+        var runtime = FixtureComposition.Runtime(catalog);
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var result = runtime.Instantiate(artifact, CancellationToken.None);
+
+        Assert.Equal(VmOutcome.Suspension, result.Outcome);
+        Assert.True(result.TryGetSuspension(out _));
+        Assert.False(result.TryGetInstance(out _));
+        Assert.Equal(0, executor!.UnwoundCount);
+
+        Assert.Equal(VmControlOutcome.Accepted, runtime.Dispose().Kind);
+        Assert.Equal(1, executor.UnwoundCount);
+    }
+
+    [Fact]
+    public void An_Instantiation_Whose_Caller_Cancelled_Is_Cancelled_Although_The_Profile_Never_Polled()
+    {
+        // The conforming profile does not poll while instantiating, so it never observes the
+        // cancellation. The caller cancelled all the same, and is answered as an invoker would be:
+        // cancelled, with no instance - and the runtime is not poisoned by having said so.
+        using var runtime = FixtureComposition.Runtime(FixtureComposition.AlphaCatalog());
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var result = runtime.Instantiate(artifact, new CancellationToken(canceled: true));
+
+        Assert.Equal(VmOutcome.Cancellation, result.Outcome);
+        Assert.Equal(VmReason.Cancelled, result.Reason);
+        Assert.False(result.TryGetInstance(out _));
+
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+        Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(instance).Outcome);
+    }
+
+    [Fact]
+    public void A_Continuation_Parked_By_A_Cancelled_Instantiation_Is_Unwound()
+    {
+        // Parking is declared and the call completes, so cancellation is the only thing wrong with
+        // the step. Nothing is suspended, and the continuation is handed back to be unwound.
+        FixtureVmExecutor? executor = null;
+
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.DescriptorFor(
+                FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation,
+                environmentObserver: null,
+                executorObserver: created => executor = created));
+
+        using var runtime = FixtureComposition.Runtime(catalog);
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+
+        var result = runtime.Instantiate(artifact, new CancellationToken(canceled: true));
+
+        Assert.Equal(VmOutcome.Cancellation, result.Outcome);
+        Assert.False(result.TryGetInstance(out _));
+        Assert.False(result.TryGetSuspension(out _));
+        Assert.Equal(1, executor!.UnwoundCount);
+    }
+
+    private static VmHostCallOutcome ThrowingHostCall(ReadOnlySpan<long> arguments, out long result)
+    {
+        result = 0;
+        throw new InvalidOperationException("host defect");
+    }
+
     private static VmDiagnosticsIdentity DiagnosticsFor(VmProfileId profileId)
     {
         VmDiagnosticsIdentity.TryCreate(profileId, profileId + ".diagnostics", out var identity);

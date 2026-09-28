@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   24
-// Annotated:        24/24
+// Relevant units:   25
+// Annotated:        25/25
 // Exempt:           16
-// Human-reviewed:   0/24
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         6/2
+// Criteria:         7/2
 // Resource impact:  6/10 max
-// Unverified:       24
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -455,9 +455,22 @@ internal sealed class VmInstanceImplementation : VmInstance
     /// this method: the ceiling-class dimensions are released, and the allowance-class ones are
     /// deliberately not, because an allowance never refunds.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=F871C8
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=8225DF
     // Broiler-Human:        PENDING
-    private void ReleaseRetained()
+    private void ReleaseRetained() => ReleaseRetained(runtime, instanceLevel);
+
+    /// <summary>
+    /// Gives back what one instance level holds, at every scope that recorded it.
+    /// </summary>
+    /// <remarks>
+    /// Shared with the instantiation stage, whose refused steps own an instance level that no
+    /// instance was ever built around. It reads what the level holds and releases exactly that, so a
+    /// second call releases nothing.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=B2225A
+    // Broiler-Falsified-If: an allowance-class dimension is released, or a ceiling-class one is released at one level and not at the others that recorded it
+    // Broiler-Human:        PENDING
+    internal static void ReleaseRetained(VmRuntime runtime, VmBudgetLevel instanceLevel)
     {
         foreach (var dimension in VmBudgetDimensions.All)
         {

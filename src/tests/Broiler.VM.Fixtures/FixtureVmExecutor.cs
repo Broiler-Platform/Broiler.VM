@@ -29,14 +29,25 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
     public const uint PollWindow = 64;
 
     /// <summary>
-    /// What the two instantiation-breaching variants charge while instantiating, in one charge after
-    /// no poll.
+    /// What the three instantiation-breaching variants charge while instantiating, in one charge
+    /// after no poll.
     /// </summary>
     /// <remarks>
     /// Their declared bound is one unit less, so the charge breaks it by exactly one unit: the
     /// smallest breach there is, which is the one a check that compared the wrong way would miss.
     /// </remarks>
     public const uint InstantiationCharge = 1025;
+
+    /// <summary>
+    /// What every variant that misbehaves while instantiating reports retained before it does, in
+    /// bytes.
+    /// </summary>
+    /// <remarks>
+    /// An engine builds its instance's memory before it runs anything that can go wrong, and reports
+    /// it then. The fixture never releases it on its own, so the bytes are given back only if the
+    /// core gives back what a refused instantiation's instance level holds.
+    /// </remarks>
+    public const ulong InstantiationRetention = 4096;
 
     private readonly IVmExecutionEnvironment environment;
     private readonly FixtureVmProfileVariant variant;
@@ -101,11 +112,30 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
             return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
         }
 
+        if (variant is FixtureVmProfileVariant.CallsHostDuringInstantiation
+            or FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation)
+        {
+            environment.Meter.ReportRetained(VmBudgetDimension.LiveBytes, InstantiationRetention);
+
+            System.Span<long> arguments = stackalloc long[1];
+            arguments[0] = 1;
+
+            // What the call answered is deliberately not looked at. A profile that carries on after
+            // a failed call is the case where the core has to discard its answer.
+            _ = environment.Capabilities.Invoke(FixtureHostCapabilities.DoubleBinding, arguments, out _);
+
+            return variant is FixtureVmProfileVariant.CallsHostThenParksDuringInstantiation
+                ? VmExecutionStep.Suspended(new FixtureContinuation(0, new long[1], 0), null)
+                : VmExecutionStep.Instantiated(new FixtureInstanceState(verified), null);
+        }
+
         if (variant is FixtureVmProfileVariant.BreachesBoundDuringInstantiation
             or FixtureVmProfileVariant.BreachesBoundThenPollsDuringInstantiation
             or FixtureVmProfileVariant.BreachesBoundThenParksDuringInstantiation)
         {
             var meter = environment.Meter;
+
+            meter.ReportRetained(VmBudgetDimension.LiveBytes, InstantiationRetention);
 
             if (!meter.TryCharge(VmBudgetDimension.Fuel, InstantiationCharge))
             {

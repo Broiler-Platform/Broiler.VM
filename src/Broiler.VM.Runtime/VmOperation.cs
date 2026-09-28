@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   26
+// Annotated:        26/26
 // Exempt:           29
-// Human-reviewed:   0/25
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         1/0
+// Criteria:         2/0
 // Resource impact:  5/10 max
-// Unverified:       25
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -39,12 +39,12 @@ internal sealed class VmOperation
 {
     private readonly object gate = new();
     private readonly VmRuntime runtime;
-    private readonly VmInstanceImplementation? instance;
     private readonly VmProfileDescriptor profile;
     private readonly VmMeter meter;
     private readonly System.Threading.CancellationTokenSource cancellation;
     private readonly System.Diagnostics.Stopwatch parkedFor = new();
 
+    private VmInstanceImplementation? instance;
     private IVmProfileContinuation? continuation;
     private VmSuspension? pending;
     private VmOperationState state = VmOperationState.Running;
@@ -157,6 +157,27 @@ internal sealed class VmOperation
             HostFailure = reason;
             HostFailureCapability = capability;
             HostFailureCapabilityVersion = version;
+        }
+    }
+
+    /// <summary>
+    /// Names the instance a parked instantiation is resumed against, once.
+    /// </summary>
+    /// <remarks>
+    /// An instantiation is an operation before it has an instance. It is created before the
+    /// profile's step so that a host failure the step produces has something to latch onto, and
+    /// only a step that parks gives it the placeholder instance a resume runs against. The first
+    /// instance named stays: an operation resumed against one instance and unwound through another
+    /// would be two operations wearing one identity.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=0; Fingerprint=62ABA6
+    // Broiler-Falsified-If: an operation that already has an instance is moved to another
+    // Broiler-Human:        PENDING
+    internal void AttachInstance(VmInstanceImplementation parked)
+    {
+        lock (gate)
+        {
+            instance ??= parked;
         }
     }
 
