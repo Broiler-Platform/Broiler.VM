@@ -1,0 +1,15 @@
+$ <scratch>/publish-harness-aot/Broiler.VM.Composition.WebAssembly.Harness --closure
+# broiler-vm-composition core-contract-version=1 ubc-contract-version=2
+composition Broiler.VM.Composition.WebAssembly.Harness
+label none
+advertised no
+profiles 1
+profile broiler.webassembly Broiler.VM.Profile.WebAssembly 2 0
+manifest broiler.webassembly.slice
+translator broiler.webassembly.translator 1
+form bytecode 2
+corpus-entries 316
+corpus-retained yes src/tests/wasm/corpus
+interpreter yes
+linker no
+# exit 0

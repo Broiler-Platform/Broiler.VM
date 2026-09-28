@@ -1,0 +1,44 @@
+{
+  "bundle": "wa-modes-001",
+  "milestone": "WA-0",
+  "evidence-class": "working-record",
+  "collected-at": "165057b684fa6f1a3d5025f94d97d25631e992de",
+  "worktree-clean": true,
+  "hash-method": "sources: git blob id at source-revision; inputs and retained files: sha256 of the LF bytes git stores",
+  "note": "The WebAssembly profile's two composition roots published trimmed self-contained and Native AOT for linux-x64 with trim and AOT warnings as errors, and run in each mode beside the JIT build: the harness root's corpus replay with its nesting entries, execution and differential checks and closure report, and the execution root's checks, each compared line by line with the JIT run; the closure read off each published output; the corpus integrity check with the Native AOT image as the replay. A working record, not a milestone bundle: it moves no ledger row and claims no runtime identifier",
+  "source-revision": "165057b684fa6f1a3d5025f94d97d25631e992de",
+  "sources": {
+    "eng/wasm-corpus-integrity.py": "4fdc651c05c89f7bcd233b6f66ddc0a43451b078",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Execution/Broiler.VM.Composition.WebAssembly.Execution.csproj": "d768eb01f82a018ff3c75827aca566f72fbef774",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Execution/Program.cs": "fea0be86bda23203f600c70441ce635ab7440b27",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Broiler.VM.Composition.WebAssembly.Harness.csproj": "895b372922f160c81094b435941f4c5c2ac9a2e5",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusReplay.cs": "7f7c4000a46c78c9e9f4b8b5cff792bf9caaa2f6",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/CorpusStore.cs": "195df9cac859af73624465a1dd2ef810f9bd7060",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ExecutionChecks.cs": "11ad17ca0649e313f7e8ee9b2bc941972db5de1a",
+    "src/tests/wasm/corpus/corpus.manifest": "9f401fb9a61588ba1836fcfd1d080e4186b8381a"
+  },
+  "inputs": {
+    "src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll": "4ffddf41cd8d6d46263f40f32afa9663c2062c82af67db9858cd9846859bce85",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Execution/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Execution.dll": "f30a7c66e96d8949683369c05b5418dfa230922fc1535c2c83fd064ff9724a7c",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll": "45c71f9d47f7a678ffb3386c0feb235385a4264001acb823d4887534bddfb359"
+  },
+  "retained": {
+    "README.md": "07e318378f8fa0efc6ece9e7d0e6860448ab70c1b46be185de1a90bdd4f0c05f",
+    "build.log": "bc172cea21122cc5608af80c9b57ad0c3eeccb8e40e6779727899d52d4e4128b",
+    "closure.txt": "12245c5c7ff91bffa057223108189714ae605ba9e990095dfb235028a6171a39",
+    "collect.py": "e37400bdd9269e1e523f68b784594f4da1a4879e7cb2b1ae4c80f6409210c775",
+    "corpus-integrity-aot.log": "e8fcf50c1991713e933f816631d3965e4b7bcaa186f2662f1144b9931ebc91ba",
+    "execution-aot.log": "6a4001d43bf7a60083c0c4448215328c0cc31262bbe3986609d2cc302c369a3d",
+    "execution-jit.log": "9c990a6d8d5c540be5c731709193b59e2c1bf0f5d3707ec828af60fcb60136c5",
+    "execution-trimmed.log": "58b3e4201183eafb7dd852b7bd8a0f21986d9cd9cead2c09a2bd2cbb02559b2f",
+    "harness-aot.log": "55d6d0ee811a735d15b89e47686d7991ced8c5a139a97c2f85a5a583c7cae196",
+    "harness-closure-aot.log": "3e0513d749fbb7fa2112925dbcb8fa0940deeef902e4da8f79e47348bdd08d2c",
+    "harness-closure-jit.log": "d0c7861f54fda21a8c03cdf9997e0dc234e8c6e9e79f6038ff8252f296f85aea",
+    "harness-closure-trimmed.log": "31fde63870afddf04cd60eae877cd2a8ce3045306c0f2b55bfed5397c3e089a8",
+    "harness-jit.log": "66614bd9c928a39544d34e5f5e3b297a3590faa14d5946edd947b3752c92451b",
+    "harness-trimmed.log": "19ea5aa04e9227223a8361633c4af18199820bae15763b54a6dc56edcfaab93c",
+    "modes.log": "e4c6712fb8c2465308cbfd687d1d76b5b2cb867db42a8d64828fa4e0ff0177c9",
+    "publish.log": "09047e7a0775e6421b7c59e0664bba12f8eced2964338fb4f1233fe67bd9f266",
+    "tests.log": "25d0641740d985840d2b496ad4116b0acada629d7329e119e1048bbadf957b51"
+  }
+}
