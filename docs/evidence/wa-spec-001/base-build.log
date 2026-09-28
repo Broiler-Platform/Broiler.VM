@@ -1,0 +1,23 @@
+$ dotnet build src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release -warnaserror
+  Determining projects to restore...
+  Restored <scratch>/base/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 126 ms).
+  Restored <scratch>/base/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 127 ms).
+  Restored <scratch>/base/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 34 ms).
+  Restored <scratch>/base/src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj (in 34 ms).
+  Restored <scratch>/base/src/Broiler.VM.Ubc/Broiler.VM.Ubc.csproj (in 285 ms).
+  Restored <scratch>/base/src/Broiler.VM.Emitter.Bytecode/Broiler.VM.Emitter.Bytecode.csproj (in 64 ms).
+  Restored <scratch>/base/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Broiler.VM.Composition.WebAssembly.Harness.csproj (in 285 ms).
+  Broiler.VM.Binary -> <scratch>/base/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> <scratch>/base/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> <scratch>/base/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Ubc -> <scratch>/base/src/Broiler.VM.Ubc/bin/Release/net10.0/Broiler.VM.Ubc.dll
+  Broiler.VM.Emitter.Bytecode -> <scratch>/base/src/Broiler.VM.Emitter.Bytecode/bin/Release/net10.0/Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Profile.WebAssembly -> <scratch>/base/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <scratch>/base/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.27
+# exit 0

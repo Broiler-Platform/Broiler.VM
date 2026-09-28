@@ -1,0 +1,19 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+index f3bd709..b9422a5 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+@@ -470,13 +470,7 @@ internal ref struct WasmDecoder
+     private bool TryReadCustomSection(uint declaredLength)
+     {
+         var start = reader.Position;
+-
+-        if (!TryReadName(out _))
+-        {
+-            return false;
+-        }
+-
+-        var consumed = reader.Position - start;
++        var consumed = 0UL;
+ 
+         if (consumed > declaredLength)
+         {

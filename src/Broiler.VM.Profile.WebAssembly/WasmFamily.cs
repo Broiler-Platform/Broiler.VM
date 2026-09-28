@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   35
-// Annotated:        35/35
+// Relevant units:   36
+// Annotated:        36/36
 // Exempt:           19
-// Human-reviewed:   0/35
+// Human-reviewed:   0/36
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         20/17
+// Criteria:         21/18
 // Resource impact:  4/10 max
-// Unverified:       35
+// Unverified:       36
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -467,13 +467,26 @@ public struct WasmFamily : IUbcFamily
     /// order, and a callee that fits is requested.
     /// </summary>
     /// <remarks>
-    /// The type check is nominal, as the base interpreter's is: the callee's unit must carry the very
-    /// type index the instruction names, so two identical signatures declared under two indices do not
-    /// match. The translation writes the module's types one for one, so the unit's type index is the
-    /// module's.
+    /// <para>
+    /// The type check is structural, as the format's is: the callee's function type must equal the
+    /// named one parameter for parameter and result for result, so two identical signatures declared
+    /// under two indices match. The translation writes the module's types one for one, and the
+    /// universal slot types keep the four value types apart, so the Types rows compare as the
+    /// module's types do. The same index is the common case and is answered without comparing.
+    /// </para>
+    /// <para>
+    /// The comparison is no longer than the call's own signature, whose parameters the call moves
+    /// anyway, so it adds no work a guest could make larger than the call.
+    /// </para>
+    /// <para>
+    /// <i>(Corrected 2026-09-28. The check was nominal, "as the base interpreter's is": the callee's unit
+    /// had to carry the very type index the instruction named, so two identical signatures declared
+    /// under two indices did not match. That kept milestone UBC-4's parity with the retired interpreter,
+    /// and the specification's scripts showed it trapping where the format asks for a call.)</i>
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=0; Fingerprint=422CCD
-    // Broiler-Falsified-If: an index past the table, a null entry or a callee of another type index is requested rather than trapped, or the traps are raised in another order than the base interpreter's
+    // Broiler-AI:           Origin=AI; Spec=ADR-0013; IP=Low; Security=Critical; Resources=1; Fingerprint=80CC2C
+    // Broiler-Falsified-If: an index past the table, a null entry or a callee of another function type is requested rather than trapped, a callee whose function type equals the named one under another index is trapped, or the traps are raised in another order than bounds, null, type
     // Broiler-Human:        PENDING
     private static UbcStatus CallIndirect(ref UbcActivation activation, WasmInstanceState state, ulong operand)
     {
@@ -502,7 +515,20 @@ public struct WasmFamily : IUbcFamily
             return UbcStatus.Defect;
         }
 
-        if (program.Units[entry].Unit.TypeIndex != operand)
+        var calleeType = program.Units[entry].Unit.TypeIndex;
+
+        if (calleeType == operand)
+        {
+            activation.CallRequest = new UbcCallRequest(entry);
+            return UbcStatus.Request;
+        }
+
+        if (calleeType >= (uint)program.Artifact.Types.Length)
+        {
+            return UbcStatus.Defect;
+        }
+
+        if (!SameSignature(program.Artifact.Types[(int)calleeType], program.Artifact.Types[(int)operand]))
         {
             return UbcStatus.Trap((ushort)WasmTrapKind.IndirectCallTypeMismatch);
         }
@@ -510,6 +536,14 @@ public struct WasmFamily : IUbcFamily
         activation.CallRequest = new UbcCallRequest(entry);
         return UbcStatus.Request;
     }
+
+    /// <summary>Whether two Types rows are one function type: the same parameters and results, in order.</summary>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=0; Fingerprint=5DBED5
+    // Broiler-Falsified-If: two rows differing in one parameter or result, or in their counts, are answered equal
+    // Broiler-Human:        PENDING
+    private static bool SameSignature(UbcSignature left, UbcSignature right) =>
+        System.MemoryExtensions.SequenceEqual(left.Parameters.AsSpan(), right.Parameters.AsSpan()) &&
+        System.MemoryExtensions.SequenceEqual(left.Results.AsSpan(), right.Results.AsSpan());
 
     /// <summary>A trap payload at a function index and a body-relative offset, as the base executor built one.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=DE4B9F

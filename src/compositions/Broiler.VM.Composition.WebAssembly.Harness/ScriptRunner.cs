@@ -6,13 +6,39 @@ using System.Text;
 
 namespace Broiler.VM.Composition.WebAssembly.Harness;
 
+/// <summary>What a refusal says of the module: that it did not decode, that it decoded and is invalid, or neither.</summary>
+/// <remarks>
+/// <para>
+/// <b>The core's reasons carry the category, and the pass that found it does not decide it.</b>
+/// <c>SemanticValidationFailed</c> is a module that decoded and failed validation. <c>Truncated</c>,
+/// <c>MalformedEncoding</c>, <c>UnknownFormatVersion</c> and <c>InconsistentStructure</c> are one that
+/// did not decode. This profile's validator reads the function bodies, so a malformation inside one is
+/// found by the validator: it carries a validation-band code and the reason <c>MalformedEncoding</c>,
+/// and it says the module is malformed.
+/// </para>
+/// <para>
+/// <b>A refusal says neither</b> when it is not an invalid artifact, when its code is not one of the
+/// profile's module codes (2000 up to the reserved 2900 band), or when its reason is
+/// <c>UnknownFeature</c>. A resource exhaustion is a host declining to spend, a code from the core or the
+/// universal walk is not the profile judging the module, and an unadmitted feature is the profile
+/// declining a construct before it judged whether the module is malformed or invalid.
+/// </para>
+/// </remarks>
+internal enum ScriptJudgement
+{
+    None,
+    Malformed,
+    Invalid,
+}
+
 /// <summary>What verifying a script's module answered: an artifact, or the refusal's fields.</summary>
 internal sealed class ScriptModule
 {
-    private ScriptModule(VmVerifiedArtifact? artifact, string refusal)
+    private ScriptModule(VmVerifiedArtifact? artifact, string refusal, ScriptJudgement judgement)
     {
         Artifact = artifact;
         Refusal = refusal;
+        Judgement = judgement;
     }
 
     /// <summary>The verified artifact, or null when the module was refused.</summary>
@@ -21,13 +47,27 @@ internal sealed class ScriptModule
     /// <summary>The refusal as its answer line prints it, or empty when the module was admitted.</summary>
     internal string Refusal { get; }
 
-    internal static ScriptModule Admitted(VmVerifiedArtifact artifact) => new(artifact, string.Empty);
+    /// <summary>What the refusal says of the module, or none.</summary>
+    internal ScriptJudgement Judgement { get; }
+
+    internal static ScriptModule Admitted(VmVerifiedArtifact artifact) => new(artifact, string.Empty, ScriptJudgement.None);
 
     internal static ScriptModule Refused(
         VmOutcome outcome, VmReason reason, int code, ulong offset, VmBudgetDimension dimension, VmBudgetScope scope) =>
         new(null,
             $"refused {outcome}/{reason}/{code.ToString(CultureInfo.InvariantCulture)}@{offset.ToString(CultureInfo.InvariantCulture)}" +
-            (outcome is VmOutcome.ResourceExhaustion ? $"/{dimension}/{scope}" : string.Empty));
+            (outcome is VmOutcome.ResourceExhaustion ? $"/{dimension}/{scope}" : string.Empty),
+            JudgementOf(outcome, reason, code));
+
+    private static ScriptJudgement JudgementOf(VmOutcome outcome, VmReason reason, int code) =>
+        outcome is not VmOutcome.InvalidArtifact || code is < 2000 or >= 2900 ? ScriptJudgement.None
+        : reason switch
+        {
+            VmReason.SemanticValidationFailed => ScriptJudgement.Invalid,
+            VmReason.Truncated or VmReason.MalformedEncoding or VmReason.UnknownFormatVersion or VmReason.InconsistentStructure =>
+                ScriptJudgement.Malformed,
+            _ => ScriptJudgement.None,
+        };
 }
 
 /// <summary>What the specification expects of a command, as the verdict reads it.</summary>
@@ -239,7 +279,7 @@ internal sealed class ScriptRunner : IDisposable
 
         if (verified.Artifact is not { } artifact)
         {
-            return Keep(new Loaded(null, verified.Refusal));
+            return Keep(new Loaded(null, verified.Refusal) { Judgement = verified.Judgement });
         }
 
         using (artifact)
@@ -508,6 +548,27 @@ internal sealed class ScriptRunner : IDisposable
         return new ScriptCommand(file, ordinal, command.Line, "assert_exhaustion", action.Text, pass ? ScriptVerdict.Pass : ScriptVerdict.Fail);
     }
 
+    /// <summary>
+    /// A module assertion: malformed, invalid or unlinkable, each scored by what the refusal says.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A refusal passes only the assertion its category answers</b> (see <see cref="ScriptJudgement"/>).
+    /// A malformed module has to be refused as one that did not decode, an invalid one as one that
+    /// decoded and failed validation. An unlinkable one has to verify and then fail to instantiate. A
+    /// module that is both malformed and invalid is malformed, so a profile that validated before it
+    /// finished decoding fails it. A resource exhaustion, a feature this profile does not admit, and a
+    /// verification refusal of a module the script calls unlinkable pass none of them: the profile
+    /// declined the module before it answered what the script asks.
+    /// </para>
+    /// <para>
+    /// <i>(Corrected 2026-09-28. The malformed and invalid assertions passed on any refusal, and the
+    /// unlinkable one on any module without an instance. So a module this profile refused because it
+    /// imports passed as unlinkable, and one it refused as the other category, or for want of a
+    /// feature, passed as malformed or invalid. Bundles UBC-4-005 and UBC-4-006 scored their runs that way, and
+    /// their comparisons were over answers, which this does not change.)</i>
+    /// </para>
+    /// </remarks>
     private ScriptCommand AssertModule(SExpr command, string head)
     {
         var subject = Required(command, 1);
@@ -521,9 +582,12 @@ internal sealed class ScriptRunner : IDisposable
         var module = Define(subject);
         Discard(module);
 
-        var pass = head is "assert_unlinkable"
-            ? module.Instance is null
-            : module.Answer.StartsWith("refused ", StringComparison.Ordinal);
+        var pass = head switch
+        {
+            "assert_unlinkable" => module.Instance is null && module.Answer.StartsWith("instantiation ", StringComparison.Ordinal),
+            "assert_malformed" => module.Judgement is ScriptJudgement.Malformed,
+            _ => module.Judgement is ScriptJudgement.Invalid,
+        };
 
         return new ScriptCommand(file, ordinal, command.Line, head, module.Answer, pass ? ScriptVerdict.Pass : ScriptVerdict.Fail);
     }
@@ -587,6 +651,9 @@ internal sealed class ScriptRunner : IDisposable
         internal VmInstance? Instance { get; } = instance;
 
         internal string Answer { get; } = answer;
+
+        /// <summary>What verification's refusal said of the module, or none.</summary>
+        internal ScriptJudgement Judgement { get; init; }
 
         internal string? Name { get; set; }
 

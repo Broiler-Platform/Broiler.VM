@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   5
 // Annotated:        5/5
-// Exempt:           90
+// Exempt:           91
 // Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    High
@@ -65,7 +65,7 @@ namespace Broiler.VM.Profile.WebAssembly;
 /// be several dozen separately assessed fixed values saying the same thing worse.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D805C6
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=2C6DFE
 // Broiler-Human:        PENDING
 public enum WebAssemblyDiagnosticCode
 {
@@ -238,6 +238,14 @@ public enum WebAssemblyDiagnosticCode
     /// <c>global.get</c> in a constant expression reaches this code.
     /// </remarks>
     ConstantExpressionGlobalUnavailable = 2710,
+
+    /// <summary>A function type declares more than one result, which this format version's validation refuses.</summary>
+    /// <remarks>
+    /// The binary grammar reads a result vector of any length, and validation holds it to one: a
+    /// function type with two results decodes and is invalid. The second standardised group admits
+    /// multiple results, and no feature manifest here admits that group.
+    /// </remarks>
+    FunctionTypeResultArityAboveOne = 2711,
 
     // ---- 2800: validation of one function body ----------------------------------------------
 

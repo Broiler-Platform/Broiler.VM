@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs b/src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs
+index a3fc3c8..243e429 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmFamily.cs
+@@ -528,7 +528,7 @@ public struct WasmFamily : IUbcFamily
+             return UbcStatus.Defect;
+         }
+ 
+-        if (!SameSignature(program.Artifact.Types[(int)calleeType], program.Artifact.Types[(int)operand]))
++        if (calleeType != operand)
+         {
+             return UbcStatus.Trap((ushort)WasmTrapKind.IndirectCallTypeMismatch);
+         }

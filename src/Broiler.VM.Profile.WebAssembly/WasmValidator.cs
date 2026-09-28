@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   75
-// Annotated:        75/75
+// Relevant units:   76
+// Annotated:        76/76
 // Exempt:           38
-// Human-reviewed:   0/75
+// Human-reviewed:   0/76
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         52/52
+// Criteria:         53/52
 // Resource impact:  8/10 max
-// Unverified:       75
+// Unverified:       76
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -399,7 +399,7 @@ internal ref struct WasmValidator
     /// function's declared type and a type index that addresses nothing would otherwise have to be
     /// discovered twice.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=210294
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=43DA7E
     // Broiler-Falsified-If: a function body is walked before the type indices it reads have been held to the type space
     // Broiler-Human:        PENDING
     private bool TryValidateModule()
@@ -409,7 +409,8 @@ internal ref struct WasmValidator
             return false;
         }
 
-        if (!TryValidateFunctionTypes() ||
+        if (!TryValidateTypes() ||
+            !TryValidateFunctionTypes() ||
             !TryValidateStartFunction() ||
             !TryValidateExports() ||
             !TryValidateGlobals() ||
@@ -433,6 +434,31 @@ internal ref struct WasmValidator
     // =============================================================================================
     // The module's own index spaces
     // =============================================================================================
+
+    /// <summary>Holds every declared function type to one result at most.</summary>
+    /// <remarks>
+    /// Every declared type is held, used or not, as the format's validation of the type section
+    /// holds it. A module whose unused type has two results is invalid all the same.
+    /// </remarks>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=Medium; Resources=1; Fingerprint=9A799A
+    // Broiler-Falsified-If: a function type declaring more than one result reaches the body walk
+    // Broiler-Human:        PENDING
+    private bool TryValidateTypes()
+    {
+        sectionIdentifier = (int)WasmSectionId.Type;
+
+        for (var index = 0; index < module.TypeCount; index++)
+        {
+            itemOrdinal = index;
+
+            if (module.Types[index].ResultCount > 1)
+            {
+                return Fail(WebAssemblyDiagnosticCode.FunctionTypeResultArityAboveOne, 0);
+            }
+        }
+
+        return true;
+    }
 
     /// <summary>Holds every defined function's type index to the declared type space.</summary>
     // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=1; Fingerprint=52A978

@@ -1,0 +1,16 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+index f3bd709..abc9152 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmDecoder.cs
+@@ -621,6 +621,11 @@ internal ref struct WasmDecoder
+ 
+         var at = reader.Position;
+ 
++        if (count > 0)
++        {
++            return Stop(Invalid(VmReason.UnknownFeature, WebAssemblyDiagnosticCode.ImportNotAdmitted, at));
++        }
++
+         for (var index = 0u; index < count; index++)
+         {
+             itemOrdinal = (int)index;

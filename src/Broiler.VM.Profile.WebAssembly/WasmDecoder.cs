@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   41
-// Annotated:        41/41
-// Exempt:           25
-// Human-reviewed:   0/41
+// Relevant units:   45
+// Annotated:        45/45
+// Exempt:           27
+// Human-reviewed:   0/45
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         26/26
+// Criteria:         28/28
 // Resource impact:  8/10 max
-// Unverified:       41
+// Unverified:       45
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -179,6 +179,18 @@ internal ref struct WasmDecoder
     // Broiler-Human:        PENDING
     private bool declaresDataCount;
 
+    /// <summary>
+    /// The refusal a declared import earns, held until decoding completes; see
+    /// <see cref="TryDecodeImportSection"/>.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=670E55
+    // Broiler-Human:        PENDING
+    private VmVerifierOutcome unadmittedImport;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=872B04
+    // Broiler-Human:        PENDING
+    private bool declaresImport;
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5E586D
     // Broiler-Human:        PENDING
     private uint declaredDataCount;
@@ -198,7 +210,7 @@ internal ref struct WasmDecoder
     /// read here charges at most one window, so the work charged between two polls never exceeds it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=68FDF9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=765C18
     // Broiler-Falsified-If: any field is left uninitialised so a failed decode hands back an array nothing filled, or the reader is built polling at the whole bound rather than at the rest of it after one read window
     // Broiler-Human:        PENDING
     internal WasmDecoder(
@@ -231,6 +243,8 @@ internal ref struct WasmDecoder
         startFunctionIndex = -1;
         declaresDataCount = false;
         declaredDataCount = 0;
+        unadmittedImport = default;
+        declaresImport = false;
     }
 
     /// <summary>
@@ -245,12 +259,21 @@ internal ref struct WasmDecoder
     /// this decoder disagree about where the next section starts.
     /// </para>
     /// <para>
-    /// A custom section is entered, skipped and exited without a byte of its body being looked at,
-    /// and it is counted so that a caller can see it was there. It takes no position in the order
-    /// and it may repeat.
+    /// A custom section's name is read and held to the format's UTF-8 rule, and the rest of its body
+    /// is stepped over without a byte of it being looked at. It is counted so that a caller can see
+    /// it was there. It takes no position in the order and it may repeat.
+    /// <i>(Corrected 2026-09-28. This paragraph read "A custom section is entered, skipped and exited
+    /// without a byte of its body being looked at", and the decoder did that: a custom section whose
+    /// name was not UTF-8, or whose name ran past the section, was accepted. The format makes the name
+    /// part of the section's grammar, and the specification's own scripts refuse both as malformed.)</i>
+    /// </para>
+    /// <para>
+    /// A declared import is refused only after the last section has been read and the sections agree,
+    /// so a module malformed anywhere is answered as malformed. The refusal itself is made where the
+    /// import section is read and held until then.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=6; Fingerprint=E26D08
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=6; Fingerprint=1F900B
     // Broiler-Falsified-If: a module is returned while any section body did not consume exactly its declared length, or a non-custom section repeated or ran out of canonical order
     // Broiler-Human:        PENDING
     internal bool TryDecode(out WasmModule? module, out VmVerifierOutcome outcome)
@@ -280,6 +303,12 @@ internal ref struct WasmDecoder
         if (!TryCheckSectionAgreement())
         {
             outcome = refusal;
+            return false;
+        }
+
+        if (declaresImport)
+        {
+            outcome = unadmittedImport;
             return false;
         }
 
@@ -340,7 +369,7 @@ internal ref struct WasmDecoder
     }
 
     /// <summary>Reads one section: its identifier, its length, its framing and its body.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=C16F65
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=5; Fingerprint=15EEDF
     // Broiler-Falsified-If: the order and duplicate rules are applied after the section body is decoded rather than before
     // Broiler-Human:        PENDING
     private bool TryReadOneSection()
@@ -386,9 +415,7 @@ internal ref struct WasmDecoder
         {
             customSections++;
 
-            // Stepped over in pieces rather than skipped: the reader's skip charges the whole body
-            // in one charge, and a custom section is as long as its producer likes.
-            if (!TryReadPaced(declaredLength, default))
+            if (!TryReadCustomSection(declaredLength))
             {
                 return false;
             }
@@ -414,6 +441,52 @@ internal ref struct WasmDecoder
         sectionIdentifier = -1;
         itemOrdinal = -1;
         return true;
+    }
+
+    /// <summary>
+    /// Reads a custom section's name, and steps over the rest of its body unread.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The name is the one part of a custom section the format gives a grammar</b>, and it is a
+    /// name like any other: a length and bytes that are well formed under the format's own UTF-8
+    /// rule. What follows it is the producer's, and nothing here reads it.
+    /// </para>
+    /// <para>
+    /// <b>A name that runs past its section is refused here, before the rest is stepped over.</b> The
+    /// reader holds a section to its declared length only when the section is exited, so a name longer
+    /// than the section reads the next section's bytes as its own, and what is left of the section
+    /// would be a negative length. It is the same disagreement the exit reports, and it carries the
+    /// same code.
+    /// </para>
+    /// <para>
+    /// The rest is stepped over in pieces rather than skipped: the reader's skip charges the whole
+    /// run in one charge, and a custom section is as long as its producer likes.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=3C1FC6
+    // Broiler-Falsified-If: a custom section whose name is not well formed under this format's own UTF-8 rule, or whose name runs past the section, is accepted, or a byte after the name is examined
+    // Broiler-Human:        PENDING
+    private bool TryReadCustomSection(uint declaredLength)
+    {
+        var start = reader.Position;
+
+        if (!TryReadName(out _))
+        {
+            return false;
+        }
+
+        var consumed = reader.Position - start;
+
+        if (consumed > declaredLength)
+        {
+            return Stop(Invalid(
+                VmReason.InconsistentStructure,
+                WebAssemblyDiagnosticCode.SectionLengthMismatch,
+                reader.Position));
+        }
+
+        return TryReadPaced(declaredLength - consumed, default);
     }
 
     /// <summary>Holds one non-custom section to the canonical order and to appearing once.</summary>
@@ -516,14 +589,28 @@ internal ref struct WasmDecoder
     /// Reads the import section, and refuses a module that declares an import.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>No feature manifest this profile accepts admits an import, and a manifest is refused
-    /// rather than degraded.</b> So the count is read - the grammar is exercised and the framing is
-    /// held to its declared length either way - and a non-empty one is an unadmitted feature rather
-    /// than a malformation. An empty import section is a legal encoding of a module that imports
-    /// nothing, and it is accepted.
+    /// rather than degraded.</b> A non-empty import section is an unadmitted feature rather than a
+    /// malformation. An empty one is a legal encoding of a module that imports nothing, and it is
+    /// accepted.
+    /// </para>
+    /// <para>
+    /// <b>The refusal waits until the whole module has decoded, because a malformed module is
+    /// malformed whatever this profile admits.</b> Every entry is read: the two names are held to the
+    /// format's UTF-8 rule, the kind byte to the four kinds, and each kind's description to its own
+    /// grammar, by the readers the module's own definitions use. Nothing read is kept. The section is
+    /// then framed and exited like any other, and so is every section after it, so a malformation
+    /// anywhere in the module is answered first. The refusal is made here and held, so it names this
+    /// section and the position after the count, as it did when the count was all that was read.
+    /// <i>(Corrected 2026-09-28. The section was refused as soon as its count was read, so an import
+    /// whose name was not UTF-8, whose kind named nothing or whose description was malformed, or a
+    /// module malformed after its imports, was answered as unadmitted. That told a caller nothing about
+    /// a module the format calls malformed, which is what the specification's scripts ask.)</i>
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=14DFDD
-    // Broiler-Falsified-If: a module declaring an import verifies, or the refusal is reported as a malformed artifact
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=87EB93
+    // Broiler-Falsified-If: a module declaring an import verifies, the refusal is reported as a malformed artifact for a well-formed module, or a module malformed anywhere is refused as unadmitted
     // Broiler-Human:        PENDING
     private bool TryDecodeImportSection()
     {
@@ -532,12 +619,46 @@ internal ref struct WasmDecoder
             return false;
         }
 
+        var at = reader.Position;
+
+        for (var index = 0u; index < count; index++)
+        {
+            itemOrdinal = (int)index;
+
+            if (!TryReadName(out _) ||
+                !TryReadName(out _) ||
+                !TryReadByte(out var kind))
+            {
+                return false;
+            }
+
+            var described = (WasmExportKind)kind switch
+            {
+                WasmExportKind.Function => TryReadVarU32(out _),
+                WasmExportKind.Table => TryReadTableType(out _),
+                WasmExportKind.Memory => TryReadMemoryType(out _),
+                WasmExportKind.Global => TryReadGlobalType(out _),
+                _ => Stop(Invalid(
+                    VmReason.MalformedEncoding,
+                    WebAssemblyDiagnosticCode.UnknownExternalKind,
+                    reader.Position - 1)),
+            };
+
+            if (!described)
+            {
+                return false;
+            }
+        }
+
+        itemOrdinal = -1;
+
         if (count > 0)
         {
-            return Stop(Invalid(
+            unadmittedImport = Invalid(
                 VmReason.UnknownFeature,
                 WebAssemblyDiagnosticCode.ImportNotAdmitted,
-                reader.Position));
+                at);
+            declaresImport = true;
         }
 
         return true;
@@ -571,7 +692,7 @@ internal ref struct WasmDecoder
     }
 
     /// <summary>Reads the tables the module defines.</summary>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=3A047B
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=4FB934
     // Broiler-Falsified-If: a second table is accepted at a format version that defines only one
     // Broiler-Human:        PENDING
     private bool TryDecodeTableSection()
@@ -598,33 +719,49 @@ internal ref struct WasmDecoder
         {
             itemOrdinal = (int)index;
 
-            if (!TryReadByte(out var elementType))
+            if (!TryReadTableType(out var table))
             {
                 return false;
             }
 
-            if (elementType != (byte)WasmValueType.FuncRef)
-            {
-                return Stop(Invalid(
-                    VmReason.MalformedEncoding,
-                    WebAssemblyDiagnosticCode.UnknownElementType,
-                    reader.Position - 1));
-            }
-
-            if (!TryReadLimits(out var limits))
-            {
-                return false;
-            }
-
-            decoded[index] = new WasmTableType(WasmValueType.FuncRef, limits);
+            decoded[index] = table;
         }
 
         tables = decoded;
         return true;
     }
 
+    /// <summary>Reads a table type: the element type, then the limits.</summary>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=Medium; Resources=1; Fingerprint=054FFF
+    // Broiler-Human:        PENDING
+    private bool TryReadTableType(out WasmTableType table)
+    {
+        table = default;
+
+        if (!TryReadByte(out var elementType))
+        {
+            return false;
+        }
+
+        if (elementType != (byte)WasmValueType.FuncRef)
+        {
+            return Stop(Invalid(
+                VmReason.MalformedEncoding,
+                WebAssemblyDiagnosticCode.UnknownElementType,
+                reader.Position - 1));
+        }
+
+        if (!TryReadLimits(out var limits))
+        {
+            return false;
+        }
+
+        table = new WasmTableType(WasmValueType.FuncRef, limits);
+        return true;
+    }
+
     /// <summary>Reads the linear memories the module defines.</summary>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=BC38E0
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=2; Fingerprint=032266
     // Broiler-Falsified-If: a memory declaring more pages than a 32-bit address space holds is accepted
     // Broiler-Human:        PENDING
     private bool TryDecodeMemorySection()
@@ -651,29 +788,46 @@ internal ref struct WasmDecoder
         {
             itemOrdinal = (int)index;
 
-            if (!TryReadLimits(out var limits))
+            if (!TryReadMemoryType(out var memory))
             {
                 return false;
             }
 
-            if (limits.Minimum > WasmTypeGrammar.MaximumMemoryPages ||
-                (limits.HasMaximum && limits.Maximum > WasmTypeGrammar.MaximumMemoryPages))
-            {
-                return Stop(Invalid(
-                    VmReason.InconsistentStructure,
-                    WebAssemblyDiagnosticCode.MemoryPagesAboveFormatMaximum,
-                    reader.Position));
-            }
-
-            decoded[index] = new WasmMemoryType(limits);
+            decoded[index] = memory;
         }
 
         memories = decoded;
         return true;
     }
 
+    /// <summary>Reads a memory type: limits no larger than a 32-bit address space holds.</summary>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=High; Resources=1; Fingerprint=3B0387
+    // Broiler-Falsified-If: a memory type declaring more pages than a 32-bit address space holds is read
+    // Broiler-Human:        PENDING
+    private bool TryReadMemoryType(out WasmMemoryType memory)
+    {
+        memory = default;
+
+        if (!TryReadLimits(out var limits))
+        {
+            return false;
+        }
+
+        if (limits.Minimum > WasmTypeGrammar.MaximumMemoryPages ||
+            (limits.HasMaximum && limits.Maximum > WasmTypeGrammar.MaximumMemoryPages))
+        {
+            return Stop(Invalid(
+                VmReason.InconsistentStructure,
+                WebAssemblyDiagnosticCode.MemoryPagesAboveFormatMaximum,
+                reader.Position));
+        }
+
+        memory = new WasmMemoryType(limits);
+        return true;
+    }
+
     /// <summary>Reads the globals and their initializing expressions.</summary>
-    // Broiler-AI:           Origin=Specification; IP=Low; Security=Medium; Resources=2; Fingerprint=BE7723
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=Medium; Resources=2; Fingerprint=6A7ADF
     // Broiler-Human:        PENDING
     private bool TryDecodeGlobalSection()
     {
@@ -687,30 +841,41 @@ internal ref struct WasmDecoder
         {
             itemOrdinal = (int)index;
 
-            if (!TryReadValueType(out var valueType) ||
-                !TryReadByte(out var mutability))
+            if (!TryReadGlobalType(out var type) ||
+                !TryReadConstantExpression(out var initializer))
             {
                 return false;
             }
 
-            if (mutability > 1)
-            {
-                return Stop(Invalid(
-                    VmReason.MalformedEncoding,
-                    WebAssemblyDiagnosticCode.MalformedMutabilityFlag,
-                    reader.Position - 1));
-            }
-
-            if (!TryReadConstantExpression(out var initializer))
-            {
-                return false;
-            }
-
-            decoded[index] = new WasmGlobal(
-                new WasmGlobalType(valueType, mutability == 1), initializer);
+            decoded[index] = new WasmGlobal(type, initializer);
         }
 
         globals = decoded;
+        return true;
+    }
+
+    /// <summary>Reads a global type: the value type, then a mutability byte of zero or one.</summary>
+    // Broiler-AI:           Origin=Specification; IP=Low; Security=Medium; Resources=1; Fingerprint=9CC4CB
+    // Broiler-Human:        PENDING
+    private bool TryReadGlobalType(out WasmGlobalType type)
+    {
+        type = default;
+
+        if (!TryReadValueType(out var valueType) ||
+            !TryReadByte(out var mutability))
+        {
+            return false;
+        }
+
+        if (mutability > 1)
+        {
+            return Stop(Invalid(
+                VmReason.MalformedEncoding,
+                WebAssemblyDiagnosticCode.MalformedMutabilityFlag,
+                reader.Position - 1));
+        }
+
+        type = new WasmGlobalType(valueType, mutability == 1);
         return true;
     }
 
