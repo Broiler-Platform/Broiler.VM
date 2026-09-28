@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs b/src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs
+index 6d57739..532a66b 100644
+--- a/src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs
++++ b/src/Broiler.VM.Profile.WebAssembly/WasmReferenceNumerics.cs
+@@ -117,7 +117,6 @@ internal static class WasmReferenceNumerics
+         // integer arm, which has no case for them.
+         return opcode switch
+         {
+-            >= 0x5B and <= 0x66 => FloatComparison(opcode, stack, ref top),
+             >= 0x45 and <= 0x8A => Integer(opcode, stack, ref top, ref trap),
+             >= 0x8B and <= 0xA6 => Float(opcode, stack, ref top),
+             >= 0xA7 and <= 0xBF => Convert(opcode, stack, ref top, ref trap),

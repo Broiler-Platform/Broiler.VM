@@ -1,0 +1,20 @@
+$ git worktree add --detach <scratch>/base a56180b
+Preparing worktree (detached HEAD a56180b)
+HEAD is now at a56180b Runtime: complete a parked instantiation into the profile's state, and dispose one that ends otherwise
+# exit 0
+$ git rev-parse HEAD
+a56180b38dd07ecc8f56941ba8ebb81d80a2b096
+# exit 0
+$ git status --porcelain
+ M src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Program.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptText.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptVerification.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecSuite.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/TextInstructions.cs
+?? src/compositions/Broiler.VM.Composition.WebAssembly.Harness/TextModule.cs
+# exit 0
+$ git diff --stat
+ .../Broiler.VM.Composition.WebAssembly.Harness/Program.cs           | 6 ++++++
+ 1 file changed, 6 insertions(+)
+# exit 0

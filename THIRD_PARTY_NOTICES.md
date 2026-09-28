@@ -133,6 +133,7 @@ was confirmed.
 | `Broiler.VM.Composition.JavaScript.Conformance` | **test262**, the ECMAScript conformance suite, at `tc39/test262` commit `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` — archived as the retrieved archive at [`src/tests/conformance/pins/`](src/tests/conformance/pins/README.md), with its licence beside it | 2026-09-03 |
 | `Broiler.VM.Profile.JavaScript`, `Broiler.VM.Profile.JavaScript.Format` | **The Unicode Character Database 17.0.0** - thirteen UCD files and the Unicode licence text, archived at [`src/tests/unicode/pins/`](src/tests/unicode/pins/README.md) - and **tables derived from it that are compiled into both assemblies**; see [below](#unicode-data-and-the-tables-derived-from-it) | **not yet confirmed** |
 | `Broiler.VM.Composition.JavaScript.Cli` | **Octane**, the retired JavaScript benchmark suite, at `chromium/octane` commit `570ad1ccfe86e3eecba0636c8f932ac08edec517` — archived as the retrieved archive at [`src/tests/octane/pins/`](src/tests/octane/pins/README.md), BSD 3-Clause, with its licence beside it as that licence requires | **not yet confirmed** |
+| `Broiler.VM.Composition.WebAssembly.Harness` | **The WebAssembly specification's core test scripts**, the 73 `.wast` files of `test/core` at `WebAssembly/spec` commit `977f97014c962f7bd1291fcc6d28b41a924882bf` (tag `wg-1.0`) — archived unmodified at [`src/tests/wasm/spec/`](src/tests/wasm/spec/README.md), Apache-2.0, with its licence beside it | **not yet confirmed** |
 
 **What that entry is and what it is not.** It is a **normative reference document**, archived
 because roadmap section 24 asks for the pinned edition to be retrieved, hashed **and archived**,
@@ -216,6 +217,25 @@ archive is a `.tar.gz` under `src/tests/`, no project includes it, the host is h
 files as paths on a command line and packs nothing, and rule **N13** now names `tests/octane`
 alongside `tests/conformance` as a directory no project file may mention — so a benchmark file that
 reached a shipped image would fail that rule rather than survive as a missing row here.
+
+**The last row is the WebAssembly specification's core test scripts, and it lands in the change that
+first ingests them**, as the WebAssembly profile's roadmap section 4.4 asks. The harness root
+`Broiler.VM.Composition.WebAssembly.Harness` reads them for the universal bytecode programme's UBC-4
+decision rule. They are © the WebAssembly Community Group and its contributors under the **Apache
+License 2.0**, whose text the upstream repository's `test/LICENSE` carries and which is retained at
+[`src/tests/wasm/spec/wasm-spec-test-LICENSE.txt`](src/tests/wasm/spec/wasm-spec-test-LICENSE.txt), as
+section 4(a) of that licence requires. **The suite is unmodified**: it is retained as an archive of
+`test/core` at the pinned commit, whose digest and whose extracted files' digest the pin beside it names.
+The harness checks the extracted files against that digest before reading any, so no file is marked as
+changed because none is. The upstream repository carries no NOTICE file, so section 4(d) carries nothing
+forward.
+
+**The opening sentence of this file is unaffected, and the mechanism is the one the rows above use.** The
+archive is a `.tar.gz` under `src/tests/`. No project includes it. The harness root is handed the
+extracted directory on a command line and packs nothing. Rule **N13** names `tests/wasm/spec` beside
+`tests/conformance` and `tests/octane` as a directory no project file may mention. **The release owner's
+confirmation is not made here**, for the reason the Octane row gives: it is a release-facing statement a
+person makes. It is recorded as owed.
 
 **One obligation moved inside this repository on 2026-08-31 and is recorded here rather than
 left to be discovered.** The JavaScript profile's snapshot copy of an Apache-2.0 engine now lands

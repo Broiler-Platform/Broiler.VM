@@ -56,11 +56,24 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// flags prints none of them.
 /// </para>
 /// <para>
+/// <b><c>--spec &lt;directory&gt;</c> is a lane of its own, and it runs alone.</b> It reads the
+/// specification's core test scripts from the directory, checks them against the pin <c>--expect</c>
+/// names, and runs every command through the core in a runtime per script. It prints one line per
+/// command with the profile's answer and the specification's verdict. <see cref="SpecSuite"/> says
+/// what the lane is and <see cref="ScriptRunner"/> how a command is answered. It is the population A of
+/// bundle UBC-4-005's decision rule.
+/// </para>
+/// <para>
 /// <b>What is still NOT here.</b> There is no reader for the specification's text format and so no
 /// way to run the published conformance assertions; every module in this root was written by hand
 /// by the same person who wrote its expected answer, and a corpus like that cannot find a refusal
 /// nobody thought of. There is no replay under a second publish mode, because this root publishes
 /// one. And no corpus row records an execution answer - every row stops at verification.
+/// <i>(Corrected 2026-09-28: the first sentence no longer holds. The <c>--spec</c> lane is that reader,
+/// over the core test scripts pinned at <c>src/tests/wasm/spec</c>. What this root's own modules can and
+/// cannot find is unchanged. The second no longer holds either, and had not since bundles
+/// <c>ubc-4-003</c> and <c>ubc-4-004</c> ran this root in three publish modes. Both sentences are kept as
+/// what this paragraph said.)</i>
 /// </para>
 /// </remarks>
 internal static class Program
@@ -85,6 +98,12 @@ internal static class Program
             if (args.Contains("--closure", StringComparer.Ordinal))
             {
                 return ReportClosure();
+            }
+
+            // The specification's scripts are a lane of their own, in runtimes of their own.
+            if (args.Contains("--spec", StringComparer.Ordinal))
+            {
+                return SpecSuite.Run(args);
             }
 
             using var runtime = Runtime(out var creationFailure);

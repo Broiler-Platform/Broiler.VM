@@ -37,8 +37,15 @@ public sealed class IngestionPathRuleTests
     /// end-user host takes the extracted files as paths on a command line exactly as the harness
     /// takes a suite, so no project file needs to name this one either.
     /// </para>
+    /// <para>
+    /// <b>The third entry is the WebAssembly specification's core test scripts</b>, pinned on
+    /// 2026-09-28 for the universal bytecode programme's UBC-4 rule. The notice file names this rule as
+    /// what keeps them out of a shipped image, for the reason it gives for the other two, so the
+    /// directory is listed here. The WebAssembly harness root is handed the extracted scripts on a
+    /// command line, as this rule's harness is handed its suite.
+    /// </para>
     /// </remarks>
-    private static readonly string[] SuiteDirectories = ["tests/conformance", "tests/octane"];
+    private static readonly string[] SuiteDirectories = ["tests/conformance", "tests/octane", "tests/wasm/spec"];
 
     [Fact]
     public void N13_The_Harness_And_Its_Suite_Reach_No_Package_And_No_Advertised_Closure()

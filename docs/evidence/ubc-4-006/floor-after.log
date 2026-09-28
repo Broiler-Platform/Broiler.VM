@@ -1,0 +1,18 @@
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --expect <root>/src/tests/wasm/spec/wasm-spec.pin --floor <root>/docs/evidence/ubc-4-006/base-verdicts.txt
+# spec: revision 977f97014c962f7bd1291fcc6d28b41a924882bf, 73 scripts, each in a runtime of its own
+# spec: effective limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+# spec: assert_exhaustion: 15 commands, 4 pass, 11 fail, 0 excluded
+# spec: assert_invalid: 989 commands, 985 pass, 4 fail, 0 excluded
+# spec: assert_malformed: 1091 commands, 481 pass, 180 fail, 430 excluded
+# spec: assert_return: 13894 commands, 13736 pass, 158 fail, 0 excluded
+# spec: assert_return_arithmetic_nan: 961 commands, 961 pass, 0 fail, 0 excluded
+# spec: assert_return_canonical_nan: 933 commands, 933 pass, 0 fail, 0 excluded
+# spec: assert_trap: 460 commands, 438 pass, 22 fail, 0 excluded
+# spec: assert_unlinkable: 95 commands, 95 pass, 0 fail, 0 excluded
+# spec: func: 2 commands, 0 pass, 2 fail, 0 excluded
+# spec: invoke: 42 commands, 41 pass, 1 fail, 0 excluded
+# spec: memory: 1 commands, 0 pass, 1 fail, 0 excluded
+# spec: module: 779 commands, 695 pass, 84 fail, 0 excluded
+# spec: 19262 commands, 18369 pass, 463 fail, 430 excluded
+# spec: floor <root>/docs/evidence/ubc-4-006/base-verdicts.txt: 13309 passing commands held, 0 regressed
+# exit 0

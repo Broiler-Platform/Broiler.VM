@@ -1,0 +1,351 @@
+using Broiler.VM;
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace Broiler.VM.Composition.WebAssembly.Harness;
+
+/// <summary>
+/// The specification's core test scripts through the core, one line per command: the lane bundle
+/// UBC-4-005's population A is read by.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>A pinned directory, or nothing.</b> Given <c>--expect</c>, the lane digests every file of the
+/// directory it was handed, as the pin defines the digest, and refuses a directory that is not the one
+/// the pin names before it reads a script. A run without a pin says it is unpinned, which no bundle
+/// accepts.
+/// </para>
+/// <para>
+/// <b>Every command is printed</b>, whatever its verdict, because the bundle compares answers line by
+/// line. A failing verdict is not a failing run: a module that imports, which this profile cannot link,
+/// fails its verdict in every run. The run fails only when the directory does not match its pin, or when
+/// a command the floor says passes no longer does.
+/// </para>
+/// <para>
+/// <b><c>--encode-to</c> reads and encodes, and runs nothing.</b> It writes every text module the
+/// scripts define, a quoted one excepted, as the binary the reader would hand the core. The reader's
+/// encoder can then be compared with another encoder's without any module being verified, instantiated
+/// or invoked.
+/// </para>
+/// </remarks>
+internal static class SpecSuite
+{
+    /// <summary>Runs the lane with the process's arguments.</summary>
+    internal static int Run(string[] args)
+    {
+        var directory = Argument(args, "--spec");
+
+        if (directory is null || !Directory.Exists(directory))
+        {
+            Console.WriteLine("broiler-wasm-harness: --spec needs the directory holding the scripts");
+            return 2;
+        }
+
+        var pin = Argument(args, "--expect");
+        var revision = "unpinned";
+
+        if (pin is not null)
+        {
+            var (checkedRevision, failure) = CheckPin(directory, pin);
+
+            if (failure is not null)
+            {
+                Console.WriteLine($"broiler-wasm-harness: {failure}");
+                return 2;
+            }
+
+            revision = checkedRevision!;
+        }
+
+        var scripts = Directory.GetFiles(directory, "*.wast")
+            .Select(static path => (Name: Path.GetFileName(path), Path: path))
+            .OrderBy(static script => script.Name, StringComparer.Ordinal)
+            .ToList();
+
+        var encodeTo = Argument(args, "--encode-to");
+
+        if (encodeTo is not null)
+        {
+            return Encode(scripts, encodeTo);
+        }
+
+        if (!SelfCheck())
+        {
+            Console.WriteLine("broiler-wasm-harness: the reader's self-check failed, so no script was run");
+            return 3;
+        }
+
+        Console.WriteLine($"# spec: revision {revision}, {scripts.Count.ToString(CultureInfo.InvariantCulture)} scripts, each in a runtime of its own");
+        Console.WriteLine($"# spec: effective limits {Limits()}");
+
+        var all = new List<ScriptCommand>();
+
+        foreach (var (name, path) in scripts)
+        {
+            foreach (var command in ScriptRunner.Run(name, File.ReadAllBytes(path)))
+            {
+                Console.WriteLine(command);
+                all.Add(command);
+            }
+        }
+
+        foreach (var group in all.GroupBy(static command => command.Command).OrderBy(static group => group.Key, StringComparer.Ordinal))
+        {
+            Console.WriteLine(
+                $"# spec: {group.Key}: {group.Count().ToString(CultureInfo.InvariantCulture)} commands, " +
+                $"{Count(group, ScriptVerdict.Pass)} pass, {Count(group, ScriptVerdict.Fail)} fail, " +
+                $"{Count(group, ScriptVerdict.Excluded)} excluded");
+        }
+
+        Console.WriteLine(
+            $"# spec: {all.Count.ToString(CultureInfo.InvariantCulture)} commands, " +
+            $"{Count(all, ScriptVerdict.Pass)} pass, {Count(all, ScriptVerdict.Fail)} fail, {Count(all, ScriptVerdict.Excluded)} excluded");
+
+        var verdicts = Argument(args, "--write-verdicts");
+
+        if (verdicts is not null)
+        {
+            File.WriteAllText(verdicts, Verdicts(revision, all), new UTF8Encoding(false));
+            Console.WriteLine($"# spec: verdicts written to {verdicts}");
+        }
+
+        var floor = Argument(args, "--floor");
+        return floor is null ? 0 : CheckFloor(floor, revision, all);
+    }
+
+    /// <summary>
+    /// A script this root wrote, every command of which declares its verdict, run before any script of
+    /// the suite: the reader has to answer each one as declared.
+    /// </summary>
+    /// <remarks>
+    /// <b>Half of its commands are declared to fail</b>: a wrong value, a wrong trap message, a global
+    /// read, a missing export. A reader whose verdicts passed everything would pass the other half, and
+    /// these catch it. Every command kind the suite uses is here at least once, and so is each way a
+    /// module can end: instantiated, refused at verification, trapped at instantiation, unlinkable and
+    /// excluded. It holds no suite material.
+    /// </remarks>
+    private static bool SelfCheck()
+    {
+        const string Script = """
+            (module $M
+              (func (export "add") (param i32 i32) (result i32) (i32.add (local.get 0) (local.get 1)))
+              (func (export "div") (param i32 i32) (result i32) (i32.div_s (local.get 0) (local.get 1)))
+              (func (export "nan") (result f32) (f32.div (f32.const 0) (f32.const 0)))
+              (func $deep (export "deep") (result i32) (call $deep))
+              (global (export "g") i32 (i32.const 7)))
+            (register "M" $M)
+            (assert_return (invoke "add" (i32.const 40) (i32.const 2)) (i32.const 42))
+            (assert_return (invoke "add" (i32.const 40) (i32.const 2)) (i32.const 43))
+            (assert_trap (invoke "div" (i32.const 1) (i32.const 0)) "integer divide by zero")
+            (assert_trap (invoke "div" (i32.const 1) (i32.const 0)) "unreachable")
+            (assert_return_canonical_nan (invoke "nan"))
+            (assert_return_arithmetic_nan (invoke "add" (i32.const 1) (i32.const 1)))
+            (assert_return (get "g") (i32.const 7))
+            (assert_return (invoke "absent"))
+            (invoke $M "add" (i32.const 1) (i32.const 2))
+            (assert_invalid (module (func (result i32))) "type mismatch")
+            (assert_invalid (module (func (result i32) (i32.const 0))) "type mismatch")
+            (assert_malformed (module binary "\00asm" "\02\00\00\00") "unknown binary version")
+            (assert_malformed (module quote "(func") "unexpected end")
+            (assert_unlinkable (module (import "nowhere" "f" (func))) "unknown import")
+            (assert_trap (module (func $start unreachable) (start $start)) "unreachable")
+            (module (func (export "one") (result i32) (i32.const 1)))
+            (assert_return (invoke "one") (i32.const 1))
+            (assert_exhaustion (invoke $M "deep") "call stack exhausted")
+            """;
+
+        ScriptVerdict[] declared =
+        [
+            ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Fail, ScriptVerdict.Pass, ScriptVerdict.Fail,
+            ScriptVerdict.Pass, ScriptVerdict.Fail, ScriptVerdict.Fail, ScriptVerdict.Fail, ScriptVerdict.Pass,
+            ScriptVerdict.Pass, ScriptVerdict.Fail, ScriptVerdict.Pass, ScriptVerdict.Excluded, ScriptVerdict.Pass,
+            ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Pass,
+        ];
+
+        var commands = ScriptRunner.Run("self-check.wast", Encoding.UTF8.GetBytes(Script));
+        var passed = commands.Count == declared.Length;
+
+        for (var index = 0; index < commands.Count; index++)
+        {
+            var expected = index < declared.Length ? declared[index] : (ScriptVerdict?)null;
+            var agrees = expected == commands[index].Verdict;
+            passed &= agrees;
+            Console.WriteLine($"# self-check {(agrees ? "ok  " : "FAIL")} {commands[index]} (declared {expected?.ToString().ToLowerInvariant() ?? "nothing"})");
+        }
+
+        Console.WriteLine($"# self-check: {commands.Count.ToString(CultureInfo.InvariantCulture)} commands for {declared.Length.ToString(CultureInfo.InvariantCulture)} declared verdicts, {(passed ? "every one as declared" : "NOT as declared")}");
+        return passed;
+    }
+
+    /// <summary>Digests the directory as the pin defines it and compares the digest, the count and the revision.</summary>
+    private static (string? Revision, string? Failure) CheckPin(string directory, string pinFile)
+    {
+        var fields = File.ReadAllLines(pinFile)
+            .Where(static line => line.Length > 0 && line[0] != '#')
+            .Select(static line => line.Split(' ', 2))
+            .Where(static parts => parts.Length == 2)
+            .ToDictionary(static parts => parts[0], static parts => parts[1], StringComparer.Ordinal);
+
+        if (!fields.TryGetValue("revision", out var revision) ||
+            !fields.TryGetValue("content-sha256", out var expected) ||
+            !fields.TryGetValue("files", out var count))
+        {
+            return (null, $"the pin {pinFile} does not name a revision, a content digest and a file count");
+        }
+
+        var files = Directory.GetFiles(directory, "*", SearchOption.AllDirectories)
+            .Select(path => (Path: Path.GetRelativePath(directory, path).Replace('\\', '/'), Hash: Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path)))))
+            .OrderBy(static file => file.Path, StringComparer.Ordinal)
+            .ToList();
+
+        var text = new StringBuilder();
+
+        foreach (var (path, hash) in files)
+        {
+            text.Append(path).Append('\n').Append(hash).Append('\n');
+        }
+
+        var digest = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(text.ToString())));
+
+        if (!string.Equals(files.Count.ToString(CultureInfo.InvariantCulture), count, StringComparison.Ordinal) ||
+            !string.Equals(digest, expected, StringComparison.Ordinal))
+        {
+            return (null,
+                $"the directory {directory} is not the pinned suite: {files.Count.ToString(CultureInfo.InvariantCulture)} files digesting to {digest}, " +
+                $"where the pin names {count} files digesting to {expected}");
+        }
+
+        return (revision, null);
+    }
+
+    private static string Limits()
+    {
+        using var runtime = ScriptRunner.CreateRuntime(out var failure) ??
+            throw new InvalidOperationException(failure);
+
+        var snapshot = runtime.GetBudgetSnapshot();
+
+        return string.Join(" ", VmBudgetDimensions.All.ToArray().Select(dimension =>
+            $"{dimension}={snapshot.EffectiveCeiling(dimension).ToString(CultureInfo.InvariantCulture)}"));
+    }
+
+    private static int Encode(List<(string Name, string Path)> scripts, string into)
+    {
+        Directory.CreateDirectory(into);
+        var written = 0;
+        var refused = 0;
+
+        foreach (var (name, path) in scripts)
+        {
+            var commands = ScriptText.Read(File.ReadAllBytes(path));
+            var ordinal = 0;
+
+            foreach (var command in commands)
+            {
+                ordinal++;
+
+                foreach (var module in Modules(command))
+                {
+                    var file = Path.Combine(into, $"{name}.{ordinal.ToString(CultureInfo.InvariantCulture)}.wasm");
+
+                    try
+                    {
+                        File.WriteAllBytes(file, TextModule.Encode(module));
+                        written++;
+                    }
+                    catch (ScriptReadException failure)
+                    {
+                        File.WriteAllText(file + ".refused", failure.Message);
+                        refused++;
+                    }
+                }
+            }
+        }
+
+        Console.WriteLine($"# spec: {written.ToString(CultureInfo.InvariantCulture)} text modules encoded, {refused.ToString(CultureInfo.InvariantCulture)} refused by the reader, nothing run");
+        return 0;
+    }
+
+    /// <summary>The text modules a command defines: its own, or the one an assertion wraps; never a quoted or binary one.</summary>
+    private static IEnumerable<SExpr> Modules(SExpr command)
+    {
+        var module = command.Head is "module" ? command
+            : command.Head is "assert_malformed" or "assert_invalid" or "assert_unlinkable" or "assert_trap" && command.Items!.Count > 1 && command.Items[1].Head is "module" ? command.Items[1]
+            : null;
+
+        if (module is null || module.Items!.Any(static item => item.IsWord("binary") || item.IsWord("quote")))
+        {
+            yield break;
+        }
+
+        yield return module;
+    }
+
+    private static string Verdicts(string revision, List<ScriptCommand> commands)
+    {
+        var text = new StringBuilder();
+        text.Append("# revision ").Append(revision).Append('\n');
+
+        foreach (var command in commands)
+        {
+            text.Append(command.Id).Append(' ').Append(command.Verdict.ToString().ToLowerInvariant()).Append('\n');
+        }
+
+        return text.ToString();
+    }
+
+    /// <summary>Fails the run for every command the floor records as passing that does not pass now.</summary>
+    private static int CheckFloor(string floor, string revision, List<ScriptCommand> commands)
+    {
+        var lines = File.ReadAllLines(floor);
+        var header = lines.FirstOrDefault(static line => line.StartsWith("# revision ", StringComparison.Ordinal));
+
+        if (header is null || !string.Equals(header["# revision ".Length..], revision, StringComparison.Ordinal))
+        {
+            Console.WriteLine($"# spec: FLOOR the floor {floor} was not set under revision {revision}, and a floor is never compared across revisions");
+            return 1;
+        }
+
+        var now = commands.ToDictionary(static command => command.Id, static command => command.Verdict, StringComparer.Ordinal);
+        var regressions = 0;
+        var held = 0;
+
+        foreach (var line in lines.Where(static line => line.Length > 0 && line[0] != '#'))
+        {
+            var parts = line.Split(' ');
+
+            if (parts.Length < 2 || !string.Equals(parts[1], "pass", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            held++;
+
+            if (!now.TryGetValue(parts[0], out var verdict) || verdict is not ScriptVerdict.Pass)
+            {
+                Console.WriteLine($"# spec: FLOOR {parts[0]} passes in the floor and not now");
+                regressions++;
+            }
+        }
+
+        Console.WriteLine($"# spec: floor {floor}: {held.ToString(CultureInfo.InvariantCulture)} passing commands held, {regressions.ToString(CultureInfo.InvariantCulture)} regressed");
+        return regressions == 0 ? 0 : 1;
+    }
+
+    private static string Count(IEnumerable<ScriptCommand> commands, ScriptVerdict verdict) =>
+        commands.Count(command => command.Verdict == verdict).ToString(CultureInfo.InvariantCulture);
+
+    private static string? Argument(string[] args, string name)
+    {
+        for (var index = 0; index < args.Length - 1; index++)
+        {
+            if (string.Equals(args[index], name, StringComparison.Ordinal))
+            {
+                return args[index + 1];
+            }
+        }
+
+        return null;
+    }
+}

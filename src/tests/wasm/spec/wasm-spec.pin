@@ -1,0 +1,32 @@
+# broiler-wasm retained suite pin 1
+#
+# A pin this repository holds for the WebAssembly specification's core test scripts. `revision` is the
+# immutable upstream commit - never a branch name - and `content-sha256` is the digest over every path
+# and content the archive extracts to under test/core, computed as the JavaScript conformance harness
+# computes its suites' digests: SHA-256 over one "path\nsha256\n" pair per file, the paths relative to
+# test/core with forward slashes, ordered by their UTF-8 bytes, each sha256 the lower-case hexadecimal
+# digest of the file's bytes.
+#
+# HOW IT WAS TAKEN. On 2026-09-28, on the WebAssembly profile owner's direction, twice and by two paths:
+# a sparse git clone of github.com/WebAssembly/spec at the tag wg-1.0, which names this commit directly,
+# and each of the 76 files of test/core fetched one by one from raw.githubusercontent.com at the commit
+# itself. The two were byte-identical. The archive is `git archive --format=tar.gz -9` of test/core at
+# the commit, built twice to the same bytes, and extracts to the same 76 files.
+#
+# WHAT IS HERE. The archive, unmodified material under the Apache License 2.0 that the upstream
+# repository's test/LICENSE states, which is retained beside it. The harness root reads the extracted
+# test/core directory given to it on a command line, and checks it against this pin before reading any
+# script.
+
+suite wasm-spec-core
+upstream WebAssembly/spec
+revision 977f97014c962f7bd1291fcc6d28b41a924882bf
+tag wg-1.0
+path test/core
+archive git archive --format=tar.gz -9 977f97014c962f7bd1291fcc6d28b41a924882bf test/core
+archive-sha256 cf95b3fe7a0aca7a30f95c181506bd6334590377dc1f8b373322af573f2b6126
+content-sha256 f9b7af49430ea98e1a8f75b49d15d142450a73c0f6ed17f5f2fc890f1fc0af19
+files 76
+scripts 73
+archived yes
+archived-at src/tests/wasm/spec/wasm-spec-977f97014c962f7bd1291fcc6d28b41a924882bf-test-core.tar.gz
