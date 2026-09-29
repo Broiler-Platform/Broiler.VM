@@ -9702,3 +9702,133 @@ corrections the programme's milestone UBC-3 owes this plan are filed by that mil
 
 **Authority and date.** The concept, its programme roadmap and ledger, and
 [ADR 0013](../../../docs/adr/0013-the-universal-bytecode-extraction-record.md), all 2026-09-25.
+
+---
+
+### JSC-229
+
+**Where:** the parity roadmap's [section 4.7](roadmap.parity.md#47-where-the-profile-contradicts-itself),
+the bullet recording that a top-level `for await` in a module makes the lowering emit an artifact this
+component's own verifier rejects, and the first clause of
+[JSP-8](roadmap.parity.md#jsp-8--the-places-this-component-disagrees-with-itself)'s gate, which asks for
+it to be diagnosed and repaired as [JSW-1](roadmap.workloads.md#jsw-1--the-two-defects-the-workloads-already-found)
+requires of a defect of that shape.
+
+**What the plan said.** That `for await (… of …)` at a module's top level ends at exit 4 with a verifier
+refusal, "the shape [JSC-81](#jsc-81) records for `pdfjs`, in a construct nothing had asked before" -
+and, by pointing at JSC-81, that the question to settle is JSW-1's: whether the lowering emitted
+something the format does not admit, or the format admits something the verifier then rejects.
+
+**Which component was wrong.** **Neither of the two, and not the lowering's composition of
+instructions either, which is where JSC-81 found its answer: it was the parser's record of the
+module body.** The verifier refused `IterateStartAsync` with `1630` (`AsyncIterationOutsideAsync`)
+because the module body unit did not carry the async flag, and that refusal is right: the flag is what
+tells the executor a frame may suspend, and the instructions of a `for await` head are refused in a
+unit without it by design. The lowering sets that flag on a module body from one parser fact,
+`SawTopLevelAwait`. The parser recorded it for a top-level `await` expression and for a top-level
+`await using`, and not at the `for await` head, where it consumed the `await` token and set only the
+loop's own flag. The same loop inside an async function always ran, because there the flag comes from
+the function. So a lowering can be handed a wrong fact about its input and emit exactly what that fact
+asks for; a stage looking at the lowering and the verifier alone would have found each consistent.
+
+**What replaced it.** The `for await` head records a top-level await when it stands at function depth
+zero, as the other two forms do. A module whose only suspension is a top-level `for await` is now an
+async module: it runs, and it is evaluated asynchronously in its graph like any other module with a
+top-level await. The regression fixture is `src/tests/cli/modules/a-top-level-for-await.mjs` - an
+async generator, the array fall-back that awaits each value, and a `var` head with a `break` that
+closes the iterator - and its rows in `src/tests/cli/expected.txt` assert the three answers the
+comparison engine gives rather than the exit code alone. With the repair reverted the rows answer the
+exit-4 refusal instead of those values, and the acceptance driver judges them failed rather than
+stopping.
+
+**Why the pinned conformance suite did not find it.** Thirteen modules in the pinned test262
+checkout write `for await`. Twelve are the `top-level-await/syntax/for-await-*` files, and each also
+awaits an expression in the loop's head or body, which set the flag the loop did not, so they passed.
+The thirteenth, under `import.meta/syntax`, is a parse-phase negative test that never runs. No file
+asks the question alone. The fixture above does.
+
+**Authority and date.** The implementation of 2026-09-29 in this checkout and
+[record JSP-PARITY-001](../../../docs/evidence/jsp-parity-001/README.md), which retains the
+fixture's run, its control, and the pinned test262 subtree
+`test/language/module-code/top-level-await` either side of the change. 2026-09-29.
+
+### JSC-230
+
+**Where:** the parity roadmap's [section 4.7](roadmap.parity.md#47-where-the-profile-contradicts-itself),
+four of its bullets - the host's usage text, the `d` flag, the two refusal diagnostics that degrade to
+token level, and the prototypes that answer `Object.prototype.toString` from a slot they do not carry -
+and the matching clauses of [JSP-8](roadmap.parity.md#jsp-8--the-places-this-component-disagrees-with-itself)'s
+gate.
+
+**What the plan said.** That the `d` flag is accepted and `hasIndices` answers `true` while a match
+carries no `indices`; that a rest-element early error reports an expected bracket and that under
+`--slice` a class static block is refused as an unexpected brace; that `Object.prototype.toString`
+answers `[object Error]`, `[object Date]` and `[object global]` for two prototypes and the global
+object; and that the host's usage text describes a wide surface that is not the one it runs.
+
+**What replaced it, clause by clause, observed on 2026-09-29.**
+
+- **The prototypes and the global object** answer `[object Object]` already. The realm was changed
+  before this date and the section kept the earlier reading; this entry records the reading changing,
+  not a repair made today.
+- **The `d` flag builds `indices`.** A result of a pattern carrying it has an `indices` array of
+  code-unit `[start, end]` pairs, `undefined` for a group that did not take part, and a `groups`
+  object with no prototype, or `undefined` when the pattern names no group - MakeMatchIndicesIndexPairArray
+  of ES2026 22.2.7.8. `indices` is defined after `groups`, so a result's keys enumerate in the order
+  the language gives. Fixture: `src/tests/cli/runs/a-match-with-indices.js`, whose value was taken
+  from the comparison engine.
+- **A comma after a rest in a binding position names the rest.** A rest element of an array binding
+  pattern, a rest property of an object binding pattern, and a rest parameter of a function, a method
+  or an arrow are each refused with `2101` and a message naming the construct, where each answered
+  for a missing `]`, `}` or `)`. The same comma in an assignment pattern already named it with `2205`.
+  `2101` is kept for the binding side because a binding is not an assignment target. It is the first
+  refusal the host reports; under `--all` the parser's usual refusals of the tokens after it follow.
+  Fixtures: four files under `src/tests/cli/refused/`.
+- **Under `--slice` a class static block is refused for the class.** The slice front end took `static`
+  as a modifier and `{` as the key after it, so the block's statements were read as further members and
+  the program was refused at a brace; it now walks the block as a member of the class, and a program
+  whose first construct outside the slice manifest is that class is refused with `2104` naming it.
+  Fixture: `src/tests/cli/refused/a-class-static-block-under-the-slice.js`, which the wide surface
+  runs.
+- **The usage text names the manifests by the profile's own identities**, read from
+  `JavaScriptProfile` rather than typed in, and it now says which one a run without `--slice` or
+  `--numeric` uses. Three acceptance rows hold the `--help` lines to the name `--version` prints. The
+  description of the wide surface the section quotes had already left the text before this date: it
+  was corrected on 2026-09-08, and that paragraph already read the wide manifest's name from the
+  profile. The BigInt paragraph still types the optional surfaces' names, and no row holds them.
+
+**What must not be read as repaired.** This entry takes no other bullet of section 4.7. Of those,
+`FinalizationRegistry.prototype.cleanupSome` is still shipped (`typeof` answers `function`) and
+`read` and `$262` are still present, both observed on this date; the rest were not re-probed. With
+[JSC-229](#jsc-229) and the `v` flag's compile-time refusal, which predates this entry, every clause of
+JSP-8's gate has a change behind it in this checkout. That is a gate's clauses met in a working tree
+and read by nobody but their author: it is not acceptance, the stage has no owner, and no row moves.
+
+**Authority and date.** The implementation of 2026-09-29 in this checkout and
+[record JSP-PARITY-001](../../../docs/evidence/jsp-parity-001/README.md). 2026-09-29.
+
+### JSC-231
+
+**Where:** the parity roadmap's [section 4.8](roadmap.parity.md#48-the-host-and-what-an-embedder-meets),
+the `Math.random` bullet, and the severable first clause of
+[JSP-10](roadmap.parity.md#jsp-10--the-host-surface-an-embedder-meets-first)'s gate.
+
+**What the plan said.** That `Math.random` returns a fixed sequence, identical on every process and in
+two distinct realms of one process. The realm's own remark gave the reason it was built that way: "a
+run is therefore reproducible: the same program over a fresh realm draws the same sequence, which is
+what makes a differential corpus comparable across runs and a failing case replayable."
+
+**What replaced it.** Each realm seeds its generator once, from the platform's entropy source, so two
+realms of one process and two processes draw different sequences. The generator is unchanged - the
+same 64-bit xorshift, the same scaling to `[0, 1)` - and it is still not cryptographic; only its seed
+stopped being a constant. **The reproducibility the constant bought was not being spent**: no retained
+program, differential probe, corpus entry or acceptance row in this checkout draws from `Math.random`,
+and the programs that need a replayable sequence install their own, as the Octane harness does.
+Two checks in the slice-compiler root assert the clause as the gate words it, each able to fail
+against a fixed sequence: three realms of one process draw three different sequences, and two
+processes of that root, each with one fresh realm, draw two. Each was watched failing: against the
+constant seed both fail, and against a seed that counts the realms a process has made only the second
+does.
+
+**Authority and date.** The implementation of 2026-09-29 in this checkout and
+[record JSP-PARITY-001](../../../docs/evidence/jsp-parity-001/README.md). 2026-09-29.

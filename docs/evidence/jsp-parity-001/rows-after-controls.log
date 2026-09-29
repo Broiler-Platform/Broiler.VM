@@ -1,0 +1,23 @@
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-8.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 18 command lines from artifacts/jsp-parity-001/jsp-8.expected.txt
+ok   modules/a-top-level-for-await.mjs
+ok   modules/a-top-level-for-await.mjs
+ok   modules/a-top-level-for-await.mjs
+ok   runs/a-match-with-indices.js
+ok   refused/a-rest-binding-element-with-a-comma-after-it.js
+ok   refused/a-rest-binding-element-with-a-comma-after-it.js
+ok   refused/a-rest-binding-property-with-a-comma-after-it.js
+ok   refused/a-rest-binding-property-with-a-comma-after-it.js
+ok   refused/a-rest-parameter-with-a-comma-after-it.js
+ok   refused/a-rest-parameter-with-a-comma-after-it.js
+ok   refused/an-arrow-rest-parameter-with-a-trailing-comma.js
+ok   refused/an-arrow-rest-parameter-with-a-trailing-comma.js
+ok   --slice refused/a-class-static-block-under-the-slice.js
+ok   --slice refused/a-class-static-block-under-the-slice.js
+ok   refused/a-class-static-block-under-the-slice.js
+ok   --help
+ok   --help
+ok   --help
+# 18 of 18 command lines answered as declared
+# exit 0

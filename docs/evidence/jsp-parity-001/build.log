@@ -1,0 +1,14 @@
+# collected at 371015c69d34907c213ad923c857e7488a776168
+# base 3b54373e7cadb7c401f2244cbe6e16febb060a71
+$ dotnet build Broiler.VM.slnx -c Release -warnaserror
+M.Composition.JavaScript.Conformance.dll
+  Broiler.VM.Composition.PolyglotCli -> <root>/src/compositions/Broiler.VM.Composition.PolyglotCli/bin/Release/net10.0/Broiler.VM.Composition.PolyglotCli.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+  Broiler.VM.Composition.Ubc.Fixture -> <root>/src/compositions/Broiler.VM.Composition.Ubc.Fixture/bin/Release/net10.0/Broiler.VM.Composition.Ubc.Fixture.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:41.16
+# exit 0

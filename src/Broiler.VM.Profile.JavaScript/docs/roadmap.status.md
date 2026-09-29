@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-09-22 (JSeal implementation observation; milestone rows unchanged)
+**Last updated:** 2026-09-29 (JSP-8 and JSP-10 observation; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -415,6 +415,19 @@ retains Windows checks against current Broiler.JS and Node. The Windows/Linux CI
 but its Linux result has not been observed; local WSL disks are unavailable. This is unreviewed
 implementation/validation material, not accepted milestone evidence. JSP-1's broader N17 audit
 remains open and no milestone row advances.
+
+**JSP-8 and JSP-10 observation, 2026-09-29.** The parity roadmap's JSP-8 names the places this
+component disagreed with itself, and every clause of its gate now has a change behind it in this
+checkout. A top-level `for await` made the verifier refuse this component's own artifact; the
+parser's record of the module body was wrong, which [JSC-229](roadmap.corrections.md#jsc-229)
+diagnoses as JSW-1 asks. The `d` flag builds `indices`, a comma after a rest in a binding position
+names the rest, `--slice` refuses a class static block for its class, and the usage text names the
+manifests from the profile's own identities ([JSC-230](roadmap.corrections.md#jsc-230)). JSP-10's
+severable clause is taken too: `Math.random` is seeded per realm from the platform's entropy source
+([JSC-231](roadmap.corrections.md#jsc-231)). [Record JSP-PARITY-001](../../../docs/evidence/jsp-parity-001/README.md)
+retains each change's fixture, its control and the pinned test262 subtrees either side. This is
+unreviewed implementation and validation material, not accepted milestone evidence; the stages have
+no owner and no milestone row advances.
 
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:

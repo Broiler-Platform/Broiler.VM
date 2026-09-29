@@ -1,0 +1,56 @@
+$ git apply docs/evidence/jsp-parity-001/control-rest.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+VM.Profile.MachineCode.dll
+  Broiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.02
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-8.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 18 command lines from artifacts/jsp-parity-001/jsp-8.expected.txt
+ok   modules/a-top-level-for-await.mjs
+ok   modules/a-top-level-for-await.mjs
+ok   modules/a-top-level-for-await.mjs
+ok   runs/a-match-with-indices.js
+FAIL refused/a-rest-binding-element-with-a-comma-after-it.js: output does not contain `2101:UnexpectedToken`
+       broiler-js: refused/a-rest-binding-element-with-a-comma-after-it.js: 2102:ExpectedToken at 5:13: `]` was expected and `,` was found
+FAIL refused/a-rest-binding-element-with-a-comma-after-it.js: output does not contain `a rest element is admitted only as the last element of a pattern`
+       broiler-js: refused/a-rest-binding-element-with-a-comma-after-it.js: 2102:ExpectedToken at 5:13: `]` was expected and `,` was found
+FAIL refused/a-rest-binding-property-with-a-comma-after-it.js: output does not contain `2101:UnexpectedToken`
+       broiler-js: refused/a-rest-binding-property-with-a-comma-after-it.js: 2102:ExpectedToken at 4:14: `}` was expected and `,` was found
+FAIL refused/a-rest-binding-property-with-a-comma-after-it.js: output does not contain `a rest property is admitted only as the last entry of a pattern`
+       broiler-js: refused/a-rest-binding-property-with-a-comma-after-it.js: 2102:ExpectedToken at 4:14: `}` was expected and `,` was found
+FAIL refused/a-rest-parameter-with-a-comma-after-it.js: output does not contain `2101:UnexpectedToken`
+       broiler-js: refused/a-rest-parameter-with-a-comma-after-it.js: 2102:ExpectedToken at 4:25: `)` was expected and `,` was found
+FAIL refused/a-rest-parameter-with-a-comma-after-it.js: output does not contain `a rest parameter is admitted only as the last parameter`
+       broiler-js: refused/a-rest-parameter-with-a-comma-after-it.js: 2102:ExpectedToken at 4:25: `)` was expected and `,` was found
+FAIL refused/an-arrow-rest-parameter-with-a-trailing-comma.js: output does not contain `a rest parameter is admitted only as the last parameter`
+       broiler-js: refused/an-arrow-rest-parameter-with-a-trailing-comma.js: 2102:ExpectedToken at 4:23: `)` was expected and `,` was found
+FAIL refused/an-arrow-rest-parameter-with-a-trailing-comma.js: output contains `was expected` and must not
+       broiler-js: refused/an-arrow-rest-parameter-with-a-trailing-comma.js: 2102:ExpectedToken at 4:23: `)` was expected and `,` was found
+ok   --slice refused/a-class-static-block-under-the-slice.js
+ok   --slice refused/a-class-static-block-under-the-slice.js
+ok   refused/a-class-static-block-under-the-slice.js
+ok   --help
+ok   --help
+ok   --help
+# 8 of 18 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-parity-001/control-rest.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+  Broiler.VM.Profile.JavaScript.Compiler -> <root>/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.21
+# exit 0

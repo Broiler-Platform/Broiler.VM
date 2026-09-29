@@ -1,0 +1,29 @@
+$ git apply docs/evidence/jsp-parity-001/control-counter-seed.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler -c Release
+roiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.53
+# exit 0
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --checks --verbose
+ok   three realms of one process draw three different Math.random sequences: 3 realms drew 3 different sequences of 8, each draw in [0, 1)
+FAIL two processes draw two different Math.random sequences: 2 processes drew only 1 different sequences, so the seed is not per realm
+broiler-js-slice-compiler: 1 of 588 checks FAILED, 3 not run on this machine and claimed by nothing
+# exit 1
+$ git apply -R docs/evidence/jsp-parity-001/control-counter-seed.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler -c Release
+roiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.46
+# exit 0
