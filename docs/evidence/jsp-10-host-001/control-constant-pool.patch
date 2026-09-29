@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -10209,7 +10209,7 @@
+             {
+                 constantPoolFull = true;
+                 Refuse(
+-                    new SliceSourceSpan(System.Math.Max(0, buffer.LastLine), System.Math.Max(0, buffer.LastColumn)),
++                    default,
+                     SliceSourceDiagnosticCode.TooManyConstants,
+                     "the constant pool is full: an artifact of this format holds at most 65,535 distinct " +
+                     "constants - numbers, strings, BigInts and names together - and this one needs more");

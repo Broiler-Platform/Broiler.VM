@@ -1,0 +1,11 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -6577,7 +6577,6 @@
+         // parse records it in its own flag; until 2026-09-29 nothing carried that flag out, so a
+         // module whose only suspension stood in a substitution was lowered as a unit that may not
+         // await, and the lowering refused the `await` as if it stood outside an async function.
+-        sawTopLevelAwait |= inner.SawTopLevelAwait;
+ 
+         foreach (var diagnostic in inner.Diagnostics)
+         {

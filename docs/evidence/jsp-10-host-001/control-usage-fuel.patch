@@ -1,0 +1,12 @@
+diff --git a/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Program.cs b/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Program.cs
+--- a/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Program.cs
++++ b/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Program.cs
+@@ -1034,7 +1034,7 @@
+         // limits/an-ordinary-loop-past-the-default-allowance.js is the program the sentence names.
+         Console.WriteLine(
+             "              " +
+-            JavaScriptProfile.Descriptor.LimitDefaults[VmBudgetDimension.Fuel].ToString("N0", System.Globalization.CultureInfo.InvariantCulture) +
++            "5,000,000" +
+             " instructions, which ORDINARY CODE REACHES: a loop adding up three");
+         Console.WriteLine("              million numbers spends it and exits 5. Raise it with --fuel.");
+         Console.WriteLine("  --wall <ms> the wall-clock allowance per run; the profile's 10,000 ms otherwise");
