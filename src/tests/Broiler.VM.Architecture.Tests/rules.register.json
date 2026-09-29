@@ -1029,6 +1029,16 @@
       "witness": "witnesses/W4-a-profile-source-reading-canonical-integers.cs.witness"
     },
     {
+      "id": "W5",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "Nothing reachable from the WebAssembly profile's verified state is mutable. The scan starts at WasmDefinitions - the family state the hook answers with when a verification ends, which the universal bytecode's verified program keeps and the core's handle wraps - and walks, through the declarations of Broiler.VM.Profile.WebAssembly, every type a stored member of a walked type names: an instance field, or an auto-implemented property. Every such field is readonly and no such property has a set accessor. What a stored member names is a built-in value type or a string, an enumeration of the assembly, an ImmutableArray or a ReadOnlyMemory of what may itself be named, another type of the assembly - which the scan then walks - or a type outside the assembly the rule lists with the reason it is immutable, today UbcPosition alone. An array, any other generic type such as a List or a Memory, and a type the scan cannot find are each a failure, and so is a root no source declares. The structural scan WA-5's exit gate names for its invariant: 'everything reachable from a verified state must be immutable once verification returns'.",
+      "evidence": "Every source file of Broiler.VM.Profile.WebAssembly, parsed with Roslyn; witnesses/W5-a-verified-state-that-keeps-something-mutable.cs.witness",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The definitions keep an immutable array of each of their four kinds of part, two limits and a position index, so the clean direction walks seven types of the assembly rather than an empty list agreeing with an empty scan, and the test asserts exactly which seven. The witness carries one defect per stored member - a field that is not readonly, an array, a setter, a list, a type outside the assembly the rule does not admit, and a writable memory window in a part reached through an immutable array - beside a static field, a computed property and an enumeration the rule does not read as kept, and the rule reports exactly the six. The real sources with one thing altered are asserted too: the defect the rule was minted beside, the position index keeping the array its keys were sorted into, which it held until 2026-09-29. A root no source declares, and so an empty scan, is a failure. STATED LIMITS. Syntax, not semantics. A ReadOnlyMemory may view an array another holder writes to; the scan holds the type, and that the definitions' windows view the artifact's own immutable section bytes is the family reader's claim, not this rule's. A type outside the assembly is held by its listed reason and not read. Static members are not reached from an instance and are not scanned. The other half of the gate's clause - safe for unsynchronised concurrent readers - is not here.",
+      "witness": "witnesses/W5-a-verified-state-that-keeps-something-mutable.cs.witness"
+    },
+    {
       "id": "X1",
       "owningAdr": "0001",
       "status": "Active",

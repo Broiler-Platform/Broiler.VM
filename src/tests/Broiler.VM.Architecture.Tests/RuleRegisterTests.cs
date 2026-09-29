@@ -383,10 +383,13 @@ public sealed class RuleRegisterTests
         // WA-2's scan adds W4: the profile names none of the core's canonical variable-length readers,
         // which refuse the padded encodings the format admits, and compares a declared count with its
         // ceiling only in the two members the rule lists. Active when minted; no other count moves.
-        Assert.Equal(103, byStatus["Active"]);
+        // WA-5's scan adds W5: nothing reachable from the profile's verified state, the module
+        // definitions the family hook answers with, is mutable - every stored member readonly and
+        // holding an immutable type. Active when minted; no other count moves.
+        Assert.Equal(104, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(105, Loaded.Rules.Count);
+        Assert.Equal(106, Loaded.Rules.Count);
     }
 
     private static Register Load()
