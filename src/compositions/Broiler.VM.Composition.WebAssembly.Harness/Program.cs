@@ -151,6 +151,7 @@ internal static class Program
 
             failed += ExecutionChecks.Report(runtime, verbose);
             failed += HookChecks.Report(runtime, verbose);
+            failed += OutcomeChecks.Report(runtime, verbose);
             failed += DifferentialChecks.Report(runtime, verbose);
 
             var built = ModuleVerification.Recorded;
