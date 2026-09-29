@@ -62,6 +62,17 @@ internal static class SpecSuite
             revision = checkedRevision!;
         }
 
+        var ratchet = Argument(args, "--ratchet");
+        var writeRatchet = Argument(args, "--write-ratchet");
+
+        // A ratchet is bound to the suite revision it was set under, so neither reading nor writing one
+        // means anything for a directory the lane cannot name a revision for.
+        if ((ratchet is not null || writeRatchet is not null) && pin is null)
+        {
+            Console.WriteLine("# spec: CONFIGURATION FAILURE missing suite revision: a ratchet is read or written only for a pinned directory, and no --expect was given");
+            return 4;
+        }
+
         var scripts = Directory.GetFiles(directory, "*.wast")
             .Select(static path => (Name: Path.GetFileName(path), Path: path))
             .OrderBy(static script => script.Name, StringComparer.Ordinal)
@@ -114,7 +125,7 @@ internal static class SpecSuite
             $"# spec: {all.Count.ToString(CultureInfo.InvariantCulture)} commands, " +
             $"{Count(all, ScriptVerdict.Pass)} pass, {Count(all, ScriptVerdict.Fail)} fail, {Count(all, ScriptVerdict.Excluded)} excluded");
 
-        var failures = Families(all);
+        var failures = Families(all, out var totals);
 
         var verdicts = Argument(args, "--write-verdicts");
 
@@ -130,8 +141,23 @@ internal static class SpecSuite
         }
 
         var floor = Argument(args, "--floor");
-        return floor is null ? 0 : CheckFloor(floor, revision, all);
+        var code = floor is null ? 0 : CheckFloor(floor, revision, all);
+
+        if (ratchet is not null)
+        {
+            code = Math.Max(code, Ratchet.Check(ratchet, revision, Limits(), totals));
+        }
+
+        if (writeRatchet is not null)
+        {
+            code = Math.Max(code, Ratchet.Write(writeRatchet, revision, Limits(), totals));
+        }
+
+        return code;
     }
+
+    /// <summary>One assertion family's totals, in the roadmap's counts; timed out is zero by construction.</summary>
+    internal readonly record struct FamilyTotals(int Selected, int Executed, int Passed, int Failed, int Skipped);
 
     /// <summary>The assertion families the roadmap names, and the commands each is made of.</summary>
     private static readonly (string Family, string[] Commands)[] AssertionFamilies =
@@ -168,9 +194,10 @@ internal static class SpecSuite
     /// which is the roadmap's "a named configuration failure, not a small total".
     /// </para>
     /// </remarks>
-    private static int Families(List<ScriptCommand> all)
+    private static int Families(List<ScriptCommand> all, out Dictionary<string, FamilyTotals> totals)
     {
         var failures = 0;
+        totals = new Dictionary<string, FamilyTotals>(StringComparer.Ordinal);
 
         foreach (var (family, kinds) in AssertionFamilies)
         {
@@ -179,6 +206,7 @@ internal static class SpecSuite
             var failed = selected.Count(static command => command.Verdict is ScriptVerdict.Fail);
             var skipped = selected.Count(static command => command.Verdict is ScriptVerdict.Excluded);
             var executed = passed + failed;
+            totals[family] = new FamilyTotals(selected.Count, executed, passed, failed, skipped);
 
             Console.WriteLine(
                 $"# spec: family {family}: selected {Text(selected.Count)}, executed {Text(executed)}, passed {Text(passed)}, " +
