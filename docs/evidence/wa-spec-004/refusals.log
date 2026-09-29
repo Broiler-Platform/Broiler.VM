@@ -1,0 +1,331 @@
+## a floor above the run: exit 1, expected 1, as expected
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --expect src/tests/wasm/spec/wasm-spec.pin --ratchet <scratch>/raised.ratchet
+# self-check ok   self-check.wast:1 L1 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:3 L8 assert_return | values i32:0000002A | pass (declared pass)
+# self-check ok   self-check.wast:4 L9 assert_return | values i32:0000002A | fail (declared fail)
+# self-check ok   self-check.wast:5 L10 assert_trap | trap IntegerDivideByZero | pass (declared pass)
+# self-check ok   self-check.wast:6 L11 assert_trap | trap IntegerDivideByZero | fail (declared fail)
+# self-check ok   self-check.wast:7 L12 assert_return_canonical_nan | values f32:7FC00000 | pass (declared pass)
+# self-check ok   self-check.wast:8 L13 assert_return_arithmetic_nan | values i32:00000002 | fail (declared fail)
+# self-check ok   self-check.wast:9 L14 assert_return | no-surface get | fail (declared fail)
+# self-check ok   self-check.wast:10 L15 assert_return | fault UnknownExport | fail (declared fail)
+# self-check ok   self-check.wast:11 L16 invoke | values i32:00000003 | pass (declared pass)
+# self-check ok   self-check.wast:12 L17 assert_invalid | refused InvalidArtifact/SemanticValidationFailed/2804@1 | pass (declared pass)
+# self-check ok   self-check.wast:13 L18 assert_invalid | instance | fail (declared fail)
+# self-check ok   self-check.wast:14 L19 assert_malformed | refused InvalidArtifact/UnknownFormatVersion/2002@8 | pass (declared pass)
+# self-check ok   self-check.wast:15 L20 assert_malformed | excluded (t) | excluded (declared excluded)
+# self-check ok   self-check.wast:16 L21 assert_unlinkable | refused InvalidArtifact/UnknownFeature/2403@17 | fail (declared fail)
+# self-check ok   self-check.wast:17 L22 assert_unlinkable | instantiation ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess | pass (declared pass)
+# self-check ok   self-check.wast:18 L23 assert_malformed | refused InvalidArtifact/InconsistentStructure/2101@12 | pass (declared pass)
+# self-check ok   self-check.wast:19 L24 assert_invalid | refused InvalidArtifact/InconsistentStructure/2101@12 | fail (declared fail)
+# self-check ok   self-check.wast:20 L25 assert_malformed | refused InvalidArtifact/SemanticValidationFailed/2804@1 | fail (declared fail)
+# self-check ok   self-check.wast:21 L26 assert_invalid | refused InvalidArtifact/UnknownFormatVersion/2002@8 | fail (declared fail)
+# self-check ok   self-check.wast:22 L27 assert_invalid | refused InvalidArtifact/UnknownFeature/2504@11 | fail (declared fail)
+# self-check ok   self-check.wast:23 L28 assert_malformed | refused InvalidArtifact/MalformedEncoding/2821@1 | pass (declared pass)
+# self-check ok   self-check.wast:24 L29 assert_trap | instantiation ProfileFault/ProfileFaultUnspecified trap=Unreachable | pass (declared pass)
+# self-check ok   self-check.wast:25 L30 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:26 L31 assert_return | values i32:00000001 | pass (declared pass)
+# self-check ok   self-check.wast:27 L32 assert_exhaustion | ResourceExhaustion/CeilingReached/CallDepth/Runtime | pass (declared pass)
+# self-check ok   self-check.wast:28 L33 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:29 L34 assert_return | values i32:00000002 | pass (declared pass)
+# self-check: 28 commands for 28 declared verdicts, every one as declared
+# self-check control: a scorer passing any refusal as malformed or invalid disagrees with 3 declared verdicts, and it is reverted
+# spec: revision 977f97014c962f7bd1291fcc6d28b41a924882bf, 73 scripts, each in a runtime of its own
+# spec: effective limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+# spec: assert_exhaustion: 15 commands, 4 pass, 11 fail, 0 excluded
+# spec: assert_invalid: 989 commands, 979 pass, 10 fail, 0 excluded
+# spec: assert_malformed: 1091 commands, 658 pass, 3 fail, 430 excluded
+# spec: assert_return: 13894 commands, 13757 pass, 137 fail, 0 excluded
+# spec: assert_return_arithmetic_nan: 961 commands, 961 pass, 0 fail, 0 excluded
+# spec: assert_return_canonical_nan: 933 commands, 933 pass, 0 fail, 0 excluded
+# spec: assert_trap: 460 commands, 438 pass, 22 fail, 0 excluded
+# spec: assert_unlinkable: 95 commands, 18 pass, 77 fail, 0 excluded
+# spec: invoke: 42 commands, 41 pass, 1 fail, 0 excluded
+# spec: module: 780 commands, 696 pass, 84 fail, 0 excluded
+# spec: 19260 commands, 18485 pass, 345 fail, 430 excluded
+# spec: family malformed: selected 1091, executed 661, passed 658, failed 3, skipped 430, timed out 0
+# spec: family invalid: selected 989, executed 989, passed 979, failed 10, skipped 0, timed out 0
+# spec: family unlinkable: selected 95, executed 95, passed 18, failed 77, skipped 0, timed out 0
+# spec: family uninstantiable: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family trap: selected 460, executed 460, passed 438, failed 22, skipped 0, timed out 0
+# spec: family exception: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family exhaustion: selected 15, executed 15, passed 4, failed 11, skipped 0, timed out 0
+# spec: family return: selected 15788, executed 15788, passed 15651, failed 137, skipped 0, timed out 0
+# spec: RATCHET family malformed passed 658, below its floor of 1658
+# spec: ratchet <scratch>/raised.ratchet: malformed 658 against 1658, invalid 979 against 979; REGRESSED
+# exit 1
+## a floor of another revision: exit 1, expected 1, as expected
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --expect src/tests/wasm/spec/wasm-spec.pin --ratchet <scratch>/other.ratchet
+# self-check ok   self-check.wast:1 L1 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:3 L8 assert_return | values i32:0000002A | pass (declared pass)
+# self-check ok   self-check.wast:4 L9 assert_return | values i32:0000002A | fail (declared fail)
+# self-check ok   self-check.wast:5 L10 assert_trap | trap IntegerDivideByZero | pass (declared pass)
+# self-check ok   self-check.wast:6 L11 assert_trap | trap IntegerDivideByZero | fail (declared fail)
+# self-check ok   self-check.wast:7 L12 assert_return_canonical_nan | values f32:7FC00000 | pass (declared pass)
+# self-check ok   self-check.wast:8 L13 assert_return_arithmetic_nan | values i32:00000002 | fail (declared fail)
+# self-check ok   self-check.wast:9 L14 assert_return | no-surface get | fail (declared fail)
+# self-check ok   self-check.wast:10 L15 assert_return | fault UnknownExport | fail (declared fail)
+# self-check ok   self-check.wast:11 L16 invoke | values i32:00000003 | pass (declared pass)
+# self-check ok   self-check.wast:12 L17 assert_invalid | refused InvalidArtifact/SemanticValidationFailed/2804@1 | pass (declared pass)
+# self-check ok   self-check.wast:13 L18 assert_invalid | instance | fail (declared fail)
+# self-check ok   self-check.wast:14 L19 assert_malformed | refused InvalidArtifact/UnknownFormatVersion/2002@8 | pass (declared pass)
+# self-check ok   self-check.wast:15 L20 assert_malformed | excluded (t) | excluded (declared excluded)
+# self-check ok   self-check.wast:16 L21 assert_unlinkable | refused InvalidArtifact/UnknownFeature/2403@17 | fail (declared fail)
+# self-check ok   self-check.wast:17 L22 assert_unlinkable | instantiation ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess | pass (declared pass)
+# self-check ok   self-check.wast:18 L23 assert_malformed | refused InvalidArtifact/InconsistentStructure/2101@12 | pass (declared pass)
+# self-check ok   self-check.wast:19 L24 assert_invalid | refused InvalidArtifact/InconsistentStructure/2101@12 | fail (declared fail)
+# self-check ok   self-check.wast:20 L25 assert_malformed | refused InvalidArtifact/SemanticValidationFailed/2804@1 | fail (declared fail)
+# self-check ok   self-check.wast:21 L26 assert_invalid | refused InvalidArtifact/UnknownFormatVersion/2002@8 | fail (declared fail)
+# self-check ok   self-check.wast:22 L27 assert_invalid | refused InvalidArtifact/UnknownFeature/2504@11 | fail (declared fail)
+# self-check ok   self-check.wast:23 L28 assert_malformed | refused InvalidArtifact/MalformedEncoding/2821@1 | pass (declared pass)
+# self-check ok   self-check.wast:24 L29 assert_trap | instantiation ProfileFault/ProfileFaultUnspecified trap=Unreachable | pass (declared pass)
+# self-check ok   self-check.wast:25 L30 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:26 L31 assert_return | values i32:00000001 | pass (declared pass)
+# self-check ok   self-check.wast:27 L32 assert_exhaustion | ResourceExhaustion/CeilingReached/CallDepth/Runtime | pass (declared pass)
+# self-check ok   self-check.wast:28 L33 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:29 L34 assert_return | values i32:00000002 | pass (declared pass)
+# self-check: 28 commands for 28 declared verdicts, every one as declared
+# self-check control: a scorer passing any refusal as malformed or invalid disagrees with 3 declared verdicts, and it is reverted
+# spec: revision 977f97014c962f7bd1291fcc6d28b41a924882bf, 73 scripts, each in a runtime of its own
+# spec: effective limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+# spec: assert_exhaustion: 15 commands, 4 pass, 11 fail, 0 excluded
+# spec: assert_invalid: 989 commands, 979 pass, 10 fail, 0 excluded
+# spec: assert_malformed: 1091 commands, 658 pass, 3 fail, 430 excluded
+# spec: assert_return: 13894 commands, 13757 pass, 137 fail, 0 excluded
+# spec: assert_return_arithmetic_nan: 961 commands, 961 pass, 0 fail, 0 excluded
+# spec: assert_return_canonical_nan: 933 commands, 933 pass, 0 fail, 0 excluded
+# spec: assert_trap: 460 commands, 438 pass, 22 fail, 0 excluded
+# spec: assert_unlinkable: 95 commands, 18 pass, 77 fail, 0 excluded
+# spec: invoke: 42 commands, 41 pass, 1 fail, 0 excluded
+# spec: module: 780 commands, 696 pass, 84 fail, 0 excluded
+# spec: 19260 commands, 18485 pass, 345 fail, 430 excluded
+# spec: family malformed: selected 1091, executed 661, passed 658, failed 3, skipped 430, timed out 0
+# spec: family invalid: selected 989, executed 989, passed 979, failed 10, skipped 0, timed out 0
+# spec: family unlinkable: selected 95, executed 95, passed 18, failed 77, skipped 0, timed out 0
+# spec: family uninstantiable: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family trap: selected 460, executed 460, passed 438, failed 22, skipped 0, timed out 0
+# spec: family exception: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family exhaustion: selected 15, executed 15, passed 4, failed 11, skipped 0, timed out 0
+# spec: family return: selected 15788, executed 15788, passed 15651, failed 137, skipped 0, timed out 0
+# spec: RATCHET <scratch>/other.ratchet was set under revision 0000000000000000000000000000000000000000, and this run is of 977f97014c962f7bd1291fcc6d28b41a924882bf, and a floor is compared only where it was set
+# exit 1
+## a floor set under other limits: exit 1, expected 1, as expected
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --expect src/tests/wasm/spec/wasm-spec.pin --ratchet <scratch>/tighter.ratchet
+# self-check ok   self-check.wast:1 L1 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:3 L8 assert_return | values i32:0000002A | pass (declared pass)
+# self-check ok   self-check.wast:4 L9 assert_return | values i32:0000002A | fail (declared fail)
+# self-check ok   self-check.wast:5 L10 assert_trap | trap IntegerDivideByZero | pass (declared pass)
+# self-check ok   self-check.wast:6 L11 assert_trap | trap IntegerDivideByZero | fail (declared fail)
+# self-check ok   self-check.wast:7 L12 assert_return_canonical_nan | values f32:7FC00000 | pass (declared pass)
+# self-check ok   self-check.wast:8 L13 assert_return_arithmetic_nan | values i32:00000002 | fail (declared fail)
+# self-check ok   self-check.wast:9 L14 assert_return | no-surface get | fail (declared fail)
+# self-check ok   self-check.wast:10 L15 assert_return | fault UnknownExport | fail (declared fail)
+# self-check ok   self-check.wast:11 L16 invoke | values i32:00000003 | pass (declared pass)
+# self-check ok   self-check.wast:12 L17 assert_invalid | refused InvalidArtifact/SemanticValidationFailed/2804@1 | pass (declared pass)
+# self-check ok   self-check.wast:13 L18 assert_invalid | instance | fail (declared fail)
+# self-check ok   self-check.wast:14 L19 assert_malformed | refused InvalidArtifact/UnknownFormatVersion/2002@8 | pass (declared pass)
+# self-check ok   self-check.wast:15 L20 assert_malformed | excluded (t) | excluded (declared excluded)
+# self-check ok   self-check.wast:16 L21 assert_unlinkable | refused InvalidArtifact/UnknownFeature/2403@17 | fail (declared fail)
+# self-check ok   self-check.wast:17 L22 assert_unlinkable | instantiation ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess | pass (declared pass)
+# self-check ok   self-check.wast:18 L23 assert_malformed | refused InvalidArtifact/InconsistentStructure/2101@12 | pass (declared pass)
+# self-check ok   self-check.wast:19 L24 assert_invalid | refused InvalidArtifact/InconsistentStructure/2101@12 | fail (declared fail)
+# self-check ok   self-check.wast:20 L25 assert_malformed | refused InvalidArtifact/SemanticValidationFailed/2804@1 | fail (declared fail)
+# self-check ok   self-check.wast:21 L26 assert_invalid | refused InvalidArtifact/UnknownFormatVersion/2002@8 | fail (declared fail)
+# self-check ok   self-check.wast:22 L27 assert_invalid | refused InvalidArtifact/UnknownFeature/2504@11 | fail (declared fail)
+# self-check ok   self-check.wast:23 L28 assert_malformed | refused InvalidArtifact/MalformedEncoding/2821@1 | pass (declared pass)
+# self-check ok   self-check.wast:24 L29 assert_trap | instantiation ProfileFault/ProfileFaultUnspecified trap=Unreachable | pass (declared pass)
+# self-check ok   self-check.wast:25 L30 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:26 L31 assert_return | values i32:00000001 | pass (declared pass)
+# self-check ok   self-check.wast:27 L32 assert_exhaustion | ResourceExhaustion/CeilingReached/CallDepth/Runtime | pass (declared pass)
+# self-check ok   self-check.wast:28 L33 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:29 L34 assert_return | values i32:00000002 | pass (declared pass)
+# self-check: 28 commands for 28 declared verdicts, every one as declared
+# self-check control: a scorer passing any refusal as malformed or invalid disagrees with 3 declared verdicts, and it is reverted
+# spec: revision 977f97014c962f7bd1291fcc6d28b41a924882bf, 73 scripts, each in a runtime of its own
+# spec: effective limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+# spec: assert_exhaustion: 15 commands, 4 pass, 11 fail, 0 excluded
+# spec: assert_invalid: 989 commands, 979 pass, 10 fail, 0 excluded
+# spec: assert_malformed: 1091 commands, 658 pass, 3 fail, 430 excluded
+# spec: assert_return: 13894 commands, 13757 pass, 137 fail, 0 excluded
+# spec: assert_return_arithmetic_nan: 961 commands, 961 pass, 0 fail, 0 excluded
+# spec: assert_return_canonical_nan: 933 commands, 933 pass, 0 fail, 0 excluded
+# spec: assert_trap: 460 commands, 438 pass, 22 fail, 0 excluded
+# spec: assert_unlinkable: 95 commands, 18 pass, 77 fail, 0 excluded
+# spec: invoke: 42 commands, 41 pass, 1 fail, 0 excluded
+# spec: module: 780 commands, 696 pass, 84 fail, 0 excluded
+# spec: 19260 commands, 18485 pass, 345 fail, 430 excluded
+# spec: family malformed: selected 1091, executed 661, passed 658, failed 3, skipped 430, timed out 0
+# spec: family invalid: selected 989, executed 989, passed 979, failed 10, skipped 0, timed out 0
+# spec: family unlinkable: selected 95, executed 95, passed 18, failed 77, skipped 0, timed out 0
+# spec: family uninstantiable: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family trap: selected 460, executed 460, passed 438, failed 22, skipped 0, timed out 0
+# spec: family exception: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family exhaustion: selected 15, executed 15, passed 4, failed 11, skipped 0, timed out 0
+# spec: family return: selected 15788, executed 15788, passed 15651, failed 137, skipped 0, timed out 0
+# spec: RATCHET <scratch>/tighter.ratchet was set under the limits Fuel=40000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615, and this run is under Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615, and a floor is compared only where it was set
+# exit 1
+## a floor naming a family WA-4 does not ratchet: exit 4, expected 4, as expected
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --expect src/tests/wasm/spec/wasm-spec.pin --ratchet <scratch>/foreign.ratchet
+# self-check ok   self-check.wast:1 L1 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:3 L8 assert_return | values i32:0000002A | pass (declared pass)
+# self-check ok   self-check.wast:4 L9 assert_return | values i32:0000002A | fail (declared fail)
+# self-check ok   self-check.wast:5 L10 assert_trap | trap IntegerDivideByZero | pass (declared pass)
+# self-check ok   self-check.wast:6 L11 assert_trap | trap IntegerDivideByZero | fail (declared fail)
+# self-check ok   self-check.wast:7 L12 assert_return_canonical_nan | values f32:7FC00000 | pass (declared pass)
+# self-check ok   self-check.wast:8 L13 assert_return_arithmetic_nan | values i32:00000002 | fail (declared fail)
+# self-check ok   self-check.wast:9 L14 assert_return | no-surface get | fail (declared fail)
+# self-check ok   self-check.wast:10 L15 assert_return | fault UnknownExport | fail (declared fail)
+# self-check ok   self-check.wast:11 L16 invoke | values i32:00000003 | pass (declared pass)
+# self-check ok   self-check.wast:12 L17 assert_invalid | refused InvalidArtifact/SemanticValidationFailed/2804@1 | pass (declared pass)
+# self-check ok   self-check.wast:13 L18 assert_invalid | instance | fail (declared fail)
+# self-check ok   self-check.wast:14 L19 assert_malformed | refused InvalidArtifact/UnknownFormatVersion/2002@8 | pass (declared pass)
+# self-check ok   self-check.wast:15 L20 assert_malformed | excluded (t) | excluded (declared excluded)
+# self-check ok   self-check.wast:16 L21 assert_unlinkable | refused InvalidArtifact/UnknownFeature/2403@17 | fail (declared fail)
+# self-check ok   self-check.wast:17 L22 assert_unlinkable | instantiation ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess | pass (declared pass)
+# self-check ok   self-check.wast:18 L23 assert_malformed | refused InvalidArtifact/InconsistentStructure/2101@12 | pass (declared pass)
+# self-check ok   self-check.wast:19 L24 assert_invalid | refused InvalidArtifact/InconsistentStructure/2101@12 | fail (declared fail)
+# self-check ok   self-check.wast:20 L25 assert_malformed | refused InvalidArtifact/SemanticValidationFailed/2804@1 | fail (declared fail)
+# self-check ok   self-check.wast:21 L26 assert_invalid | refused InvalidArtifact/UnknownFormatVersion/2002@8 | fail (declared fail)
+# self-check ok   self-check.wast:22 L27 assert_invalid | refused InvalidArtifact/UnknownFeature/2504@11 | fail (declared fail)
+# self-check ok   self-check.wast:23 L28 assert_malformed | refused InvalidArtifact/MalformedEncoding/2821@1 | pass (declared pass)
+# self-check ok   self-check.wast:24 L29 assert_trap | instantiation ProfileFault/ProfileFaultUnspecified trap=Unreachable | pass (declared pass)
+# self-check ok   self-check.wast:25 L30 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:26 L31 assert_return | values i32:00000001 | pass (declared pass)
+# self-check ok   self-check.wast:27 L32 assert_exhaustion | ResourceExhaustion/CeilingReached/CallDepth/Runtime | pass (declared pass)
+# self-check ok   self-check.wast:28 L33 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:29 L34 assert_return | values i32:00000002 | pass (declared pass)
+# self-check: 28 commands for 28 declared verdicts, every one as declared
+# self-check control: a scorer passing any refusal as malformed or invalid disagrees with 3 declared verdicts, and it is reverted
+# spec: revision 977f97014c962f7bd1291fcc6d28b41a924882bf, 73 scripts, each in a runtime of its own
+# spec: effective limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+# spec: assert_exhaustion: 15 commands, 4 pass, 11 fail, 0 excluded
+# spec: assert_invalid: 989 commands, 979 pass, 10 fail, 0 excluded
+# spec: assert_malformed: 1091 commands, 658 pass, 3 fail, 430 excluded
+# spec: assert_return: 13894 commands, 13757 pass, 137 fail, 0 excluded
+# spec: assert_return_arithmetic_nan: 961 commands, 961 pass, 0 fail, 0 excluded
+# spec: assert_return_canonical_nan: 933 commands, 933 pass, 0 fail, 0 excluded
+# spec: assert_trap: 460 commands, 438 pass, 22 fail, 0 excluded
+# spec: assert_unlinkable: 95 commands, 18 pass, 77 fail, 0 excluded
+# spec: invoke: 42 commands, 41 pass, 1 fail, 0 excluded
+# spec: module: 780 commands, 696 pass, 84 fail, 0 excluded
+# spec: 19260 commands, 18485 pass, 345 fail, 430 excluded
+# spec: family malformed: selected 1091, executed 661, passed 658, failed 3, skipped 430, timed out 0
+# spec: family invalid: selected 989, executed 989, passed 979, failed 10, skipped 0, timed out 0
+# spec: family unlinkable: selected 95, executed 95, passed 18, failed 77, skipped 0, timed out 0
+# spec: family uninstantiable: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family trap: selected 460, executed 460, passed 438, failed 22, skipped 0, timed out 0
+# spec: family exception: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family exhaustion: selected 15, executed 15, passed 4, failed 11, skipped 0, timed out 0
+# spec: family return: selected 15788, executed 15788, passed 15651, failed 137, skipped 0, timed out 0
+# spec: CONFIGURATION FAILURE ratchet <scratch>/foreign.ratchet: it names the family trap, and the ratchet holds malformed and invalid and no others
+# exit 4
+## a write lower than the floor it would replace: exit 1, expected 1, as expected
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --expect src/tests/wasm/spec/wasm-spec.pin --write-ratchet <scratch>/higher.ratchet
+# self-check ok   self-check.wast:1 L1 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:3 L8 assert_return | values i32:0000002A | pass (declared pass)
+# self-check ok   self-check.wast:4 L9 assert_return | values i32:0000002A | fail (declared fail)
+# self-check ok   self-check.wast:5 L10 assert_trap | trap IntegerDivideByZero | pass (declared pass)
+# self-check ok   self-check.wast:6 L11 assert_trap | trap IntegerDivideByZero | fail (declared fail)
+# self-check ok   self-check.wast:7 L12 assert_return_canonical_nan | values f32:7FC00000 | pass (declared pass)
+# self-check ok   self-check.wast:8 L13 assert_return_arithmetic_nan | values i32:00000002 | fail (declared fail)
+# self-check ok   self-check.wast:9 L14 assert_return | no-surface get | fail (declared fail)
+# self-check ok   self-check.wast:10 L15 assert_return | fault UnknownExport | fail (declared fail)
+# self-check ok   self-check.wast:11 L16 invoke | values i32:00000003 | pass (declared pass)
+# self-check ok   self-check.wast:12 L17 assert_invalid | refused InvalidArtifact/SemanticValidationFailed/2804@1 | pass (declared pass)
+# self-check ok   self-check.wast:13 L18 assert_invalid | instance | fail (declared fail)
+# self-check ok   self-check.wast:14 L19 assert_malformed | refused InvalidArtifact/UnknownFormatVersion/2002@8 | pass (declared pass)
+# self-check ok   self-check.wast:15 L20 assert_malformed | excluded (t) | excluded (declared excluded)
+# self-check ok   self-check.wast:16 L21 assert_unlinkable | refused InvalidArtifact/UnknownFeature/2403@17 | fail (declared fail)
+# self-check ok   self-check.wast:17 L22 assert_unlinkable | instantiation ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess | pass (declared pass)
+# self-check ok   self-check.wast:18 L23 assert_malformed | refused InvalidArtifact/InconsistentStructure/2101@12 | pass (declared pass)
+# self-check ok   self-check.wast:19 L24 assert_invalid | refused InvalidArtifact/InconsistentStructure/2101@12 | fail (declared fail)
+# self-check ok   self-check.wast:20 L25 assert_malformed | refused InvalidArtifact/SemanticValidationFailed/2804@1 | fail (declared fail)
+# self-check ok   self-check.wast:21 L26 assert_invalid | refused InvalidArtifact/UnknownFormatVersion/2002@8 | fail (declared fail)
+# self-check ok   self-check.wast:22 L27 assert_invalid | refused InvalidArtifact/UnknownFeature/2504@11 | fail (declared fail)
+# self-check ok   self-check.wast:23 L28 assert_malformed | refused InvalidArtifact/MalformedEncoding/2821@1 | pass (declared pass)
+# self-check ok   self-check.wast:24 L29 assert_trap | instantiation ProfileFault/ProfileFaultUnspecified trap=Unreachable | pass (declared pass)
+# self-check ok   self-check.wast:25 L30 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:26 L31 assert_return | values i32:00000001 | pass (declared pass)
+# self-check ok   self-check.wast:27 L32 assert_exhaustion | ResourceExhaustion/CeilingReached/CallDepth/Runtime | pass (declared pass)
+# self-check ok   self-check.wast:28 L33 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:29 L34 assert_return | values i32:00000002 | pass (declared pass)
+# self-check: 28 commands for 28 declared verdicts, every one as declared
+# self-check control: a scorer passing any refusal as malformed or invalid disagrees with 3 declared verdicts, and it is reverted
+# spec: revision 977f97014c962f7bd1291fcc6d28b41a924882bf, 73 scripts, each in a runtime of its own
+# spec: effective limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+# spec: assert_exhaustion: 15 commands, 4 pass, 11 fail, 0 excluded
+# spec: assert_invalid: 989 commands, 979 pass, 10 fail, 0 excluded
+# spec: assert_malformed: 1091 commands, 658 pass, 3 fail, 430 excluded
+# spec: assert_return: 13894 commands, 13757 pass, 137 fail, 0 excluded
+# spec: assert_return_arithmetic_nan: 961 commands, 961 pass, 0 fail, 0 excluded
+# spec: assert_return_canonical_nan: 933 commands, 933 pass, 0 fail, 0 excluded
+# spec: assert_trap: 460 commands, 438 pass, 22 fail, 0 excluded
+# spec: assert_unlinkable: 95 commands, 18 pass, 77 fail, 0 excluded
+# spec: invoke: 42 commands, 41 pass, 1 fail, 0 excluded
+# spec: module: 780 commands, 696 pass, 84 fail, 0 excluded
+# spec: 19260 commands, 18485 pass, 345 fail, 430 excluded
+# spec: family malformed: selected 1091, executed 661, passed 658, failed 3, skipped 430, timed out 0
+# spec: family invalid: selected 989, executed 989, passed 979, failed 10, skipped 0, timed out 0
+# spec: family unlinkable: selected 95, executed 95, passed 18, failed 77, skipped 0, timed out 0
+# spec: family uninstantiable: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family trap: selected 460, executed 460, passed 438, failed 22, skipped 0, timed out 0
+# spec: family exception: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family exhaustion: selected 15, executed 15, passed 4, failed 11, skipped 0, timed out 0
+# spec: family return: selected 15788, executed 15788, passed 15651, failed 137, skipped 0, timed out 0
+# spec: RATCHET not written: family invalid passed 979, below the floor of 1979 already set under this revision, manifest and limits, and a ratchet never lowers
+# exit 1
+## a ratchet with no pinned revision: exit 4, expected 4, as expected
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --ratchet <root>/docs/evidence/wa-spec-004/wasm-spec.ratchet
+# spec: CONFIGURATION FAILURE missing suite revision: a ratchet is read or written only for a pinned directory, and no --expect was given
+# exit 4
+## an empty selection: exit 4, expected 4, as expected
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/empty
+# spec: CONFIGURATION FAILURE empty selection: <scratch>/empty holds no script
+# exit 4
+## a selection whose every command is skipped: exit 4, expected 4, as expected
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/skipped
+# self-check ok   self-check.wast:1 L1 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:3 L8 assert_return | values i32:0000002A | pass (declared pass)
+# self-check ok   self-check.wast:4 L9 assert_return | values i32:0000002A | fail (declared fail)
+# self-check ok   self-check.wast:5 L10 assert_trap | trap IntegerDivideByZero | pass (declared pass)
+# self-check ok   self-check.wast:6 L11 assert_trap | trap IntegerDivideByZero | fail (declared fail)
+# self-check ok   self-check.wast:7 L12 assert_return_canonical_nan | values f32:7FC00000 | pass (declared pass)
+# self-check ok   self-check.wast:8 L13 assert_return_arithmetic_nan | values i32:00000002 | fail (declared fail)
+# self-check ok   self-check.wast:9 L14 assert_return | no-surface get | fail (declared fail)
+# self-check ok   self-check.wast:10 L15 assert_return | fault UnknownExport | fail (declared fail)
+# self-check ok   self-check.wast:11 L16 invoke | values i32:00000003 | pass (declared pass)
+# self-check ok   self-check.wast:12 L17 assert_invalid | refused InvalidArtifact/SemanticValidationFailed/2804@1 | pass (declared pass)
+# self-check ok   self-check.wast:13 L18 assert_invalid | instance | fail (declared fail)
+# self-check ok   self-check.wast:14 L19 assert_malformed | refused InvalidArtifact/UnknownFormatVersion/2002@8 | pass (declared pass)
+# self-check ok   self-check.wast:15 L20 assert_malformed | excluded (t) | excluded (declared excluded)
+# self-check ok   self-check.wast:16 L21 assert_unlinkable | refused InvalidArtifact/UnknownFeature/2403@17 | fail (declared fail)
+# self-check ok   self-check.wast:17 L22 assert_unlinkable | instantiation ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess | pass (declared pass)
+# self-check ok   self-check.wast:18 L23 assert_malformed | refused InvalidArtifact/InconsistentStructure/2101@12 | pass (declared pass)
+# self-check ok   self-check.wast:19 L24 assert_invalid | refused InvalidArtifact/InconsistentStructure/2101@12 | fail (declared fail)
+# self-check ok   self-check.wast:20 L25 assert_malformed | refused InvalidArtifact/SemanticValidationFailed/2804@1 | fail (declared fail)
+# self-check ok   self-check.wast:21 L26 assert_invalid | refused InvalidArtifact/UnknownFormatVersion/2002@8 | fail (declared fail)
+# self-check ok   self-check.wast:22 L27 assert_invalid | refused InvalidArtifact/UnknownFeature/2504@11 | fail (declared fail)
+# self-check ok   self-check.wast:23 L28 assert_malformed | refused InvalidArtifact/MalformedEncoding/2821@1 | pass (declared pass)
+# self-check ok   self-check.wast:24 L29 assert_trap | instantiation ProfileFault/ProfileFaultUnspecified trap=Unreachable | pass (declared pass)
+# self-check ok   self-check.wast:25 L30 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:26 L31 assert_return | values i32:00000001 | pass (declared pass)
+# self-check ok   self-check.wast:27 L32 assert_exhaustion | ResourceExhaustion/CeilingReached/CallDepth/Runtime | pass (declared pass)
+# self-check ok   self-check.wast:28 L33 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:29 L34 assert_return | values i32:00000002 | pass (declared pass)
+# self-check: 28 commands for 28 declared verdicts, every one as declared
+# self-check control: a scorer passing any refusal as malformed or invalid disagrees with 3 declared verdicts, and it is reverted
+# spec: revision unpinned, 1 scripts, each in a runtime of its own
+# spec: effective limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+# spec: assert_malformed: 1 commands, 0 pass, 0 fail, 1 excluded
+# spec: 1 commands, 0 pass, 0 fail, 1 excluded
+# spec: family malformed: selected 1, executed 0, passed 0, failed 0, skipped 1, timed out 0
+# spec: CONFIGURATION FAILURE family malformed selected 1 commands and executed none
+# spec: family invalid: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family unlinkable: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family uninstantiable: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family trap: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family exception: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family exhaustion: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family return: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: CONFIGURATION FAILURE no executed tests: 1 commands read, none scored
+# exit 4

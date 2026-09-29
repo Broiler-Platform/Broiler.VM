@@ -32,13 +32,16 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// row claims and what a recorded one does not. The EXECUTION CHECKS drive real modules through the
 /// whole core lifecycle. The DIFFERENTIAL LANE scores the interpreter against answers derived
 /// somewhere other than the interpreter, which is the only kind of answer worth comparing against.
-/// <i>(Noted 2026-09-29: four lanes have joined these four, and each runs on every run. The HOOK
+/// <i>(Noted 2026-09-29: six lanes have joined these four, and each runs on every run. The HOOK
 /// CHECKS alter a translator-written artifact and expect the family hook's code (<see cref="HookChecks"/>).
 /// The OUTCOME CHECKS hold the verifier outcomes and positions no corpus entry can hold
 /// (<see cref="OutcomeChecks"/>). The PROPORTIONALITY CHECKS measure what <c>memory.grow</c> is
 /// charged against its declared function, in runtimes of their own (<see cref="ProportionalityChecks"/>).
 /// The DECODING CHECKS measure what a translation charges for each byte it reads, and translate every
-/// retained module to show none is answered with the code an exception becomes (<see cref="DecodeChecks"/>).)</i>
+/// retained module to show none is answered with the code an exception becomes (<see cref="DecodeChecks"/>).
+/// The SHARING CHECKS drive one verified handle from two runtimes on two threads at once, in runtimes of
+/// their own (<see cref="SharingChecks"/>). The CORPUS EXECUTION calls every function of every retained
+/// module that verifies, to show no exception escapes execution (<see cref="CorpusExecution"/>).)</i>
 /// </para>
 /// <para>
 /// <b>Every module goes through the translator first.</b> Since the universal bytecode programme's
@@ -162,6 +165,8 @@ internal static class Program
             failed += DifferentialChecks.Report(runtime, verbose);
             failed += ProportionalityChecks.Report(verbose);
             failed += DecodeChecks.Report(runtime, corpus, verbose);
+            failed += SharingChecks.Report(verbose);
+            failed += CorpusExecution.Report(runtime, corpus, verbose);
 
             var built = ModuleVerification.Recorded;
             ModuleVerification.Recorded = null;

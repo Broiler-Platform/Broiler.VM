@@ -600,6 +600,13 @@ internal sealed class ScriptRunner : IDisposable
     }
 
     /// <summary>
+    /// The scoring regression the self-check's negative control injects: a malformed or an invalid
+    /// assertion passing on any refusal, as both did until 2026-09-28. Set only by that control, which
+    /// reverts it before any script of the suite is read.
+    /// </summary>
+    internal static bool ScoresAnyRefusal { get; set; }
+
+    /// <summary>
     /// A module assertion: malformed, invalid or unlinkable, each scored by what the refusal says.
     /// </summary>
     /// <remarks>
@@ -636,6 +643,7 @@ internal sealed class ScriptRunner : IDisposable
         var pass = head switch
         {
             "assert_unlinkable" => module.Instance is null && module.Answer.StartsWith("instantiation ", StringComparison.Ordinal),
+            _ when ScoresAnyRefusal => module.Judgement is not ScriptJudgement.None,
             "assert_malformed" => module.Judgement is ScriptJudgement.Malformed,
             _ => module.Judgement is ScriptJudgement.Invalid,
         };

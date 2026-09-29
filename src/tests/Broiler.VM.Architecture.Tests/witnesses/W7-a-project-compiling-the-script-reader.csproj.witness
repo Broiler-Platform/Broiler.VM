@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    RULE W7'S OWN CLAUSE: the script reader compiled into another project without any reference.
+
+    No project reference changes, so N13's clauses see nothing, and the link stays inside the component,
+    so rule A3 sees nothing either. The script reader is simply compiled a second time into the image
+    that ships.
+  -->
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.WebAssembly.Execution</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.WebAssembly.Execution</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\compositions\Broiler.VM.Composition.WebAssembly.Harness\ScriptText.cs" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,59 @@
+$ git apply docs/evidence/wa-spec-004/control-ignored-injection.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release
+code.dll
+  Broiler.VM.Profile.WebAssembly -> <root>/src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.59
+# exit 0
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --expect src/tests/wasm/spec/wasm-spec.pin
+# self-check ok   self-check.wast:1 L1 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:3 L8 assert_return | values i32:0000002A | pass (declared pass)
+# self-check ok   self-check.wast:4 L9 assert_return | values i32:0000002A | fail (declared fail)
+# self-check ok   self-check.wast:5 L10 assert_trap | trap IntegerDivideByZero | pass (declared pass)
+# self-check ok   self-check.wast:6 L11 assert_trap | trap IntegerDivideByZero | fail (declared fail)
+# self-check ok   self-check.wast:7 L12 assert_return_canonical_nan | values f32:7FC00000 | pass (declared pass)
+# self-check ok   self-check.wast:8 L13 assert_return_arithmetic_nan | values i32:00000002 | fail (declared fail)
+# self-check ok   self-check.wast:9 L14 assert_return | no-surface get | fail (declared fail)
+# self-check ok   self-check.wast:10 L15 assert_return | fault UnknownExport | fail (declared fail)
+# self-check ok   self-check.wast:11 L16 invoke | values i32:00000003 | pass (declared pass)
+# self-check ok   self-check.wast:12 L17 assert_invalid | refused InvalidArtifact/SemanticValidationFailed/2804@1 | pass (declared pass)
+# self-check ok   self-check.wast:13 L18 assert_invalid | instance | fail (declared fail)
+# self-check ok   self-check.wast:14 L19 assert_malformed | refused InvalidArtifact/UnknownFormatVersion/2002@8 | pass (declared pass)
+# self-check ok   self-check.wast:15 L20 assert_malformed | excluded (t) | excluded (declared excluded)
+# self-check ok   self-check.wast:16 L21 assert_unlinkable | refused InvalidArtifact/UnknownFeature/2403@17 | fail (declared fail)
+# self-check ok   self-check.wast:17 L22 assert_unlinkable | instantiation ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess | pass (declared pass)
+# self-check ok   self-check.wast:18 L23 assert_malformed | refused InvalidArtifact/InconsistentStructure/2101@12 | pass (declared pass)
+# self-check ok   self-check.wast:19 L24 assert_invalid | refused InvalidArtifact/InconsistentStructure/2101@12 | fail (declared fail)
+# self-check ok   self-check.wast:20 L25 assert_malformed | refused InvalidArtifact/SemanticValidationFailed/2804@1 | fail (declared fail)
+# self-check ok   self-check.wast:21 L26 assert_invalid | refused InvalidArtifact/UnknownFormatVersion/2002@8 | fail (declared fail)
+# self-check ok   self-check.wast:22 L27 assert_invalid | refused InvalidArtifact/UnknownFeature/2504@11 | fail (declared fail)
+# self-check ok   self-check.wast:23 L28 assert_malformed | refused InvalidArtifact/MalformedEncoding/2821@1 | pass (declared pass)
+# self-check ok   self-check.wast:24 L29 assert_trap | instantiation ProfileFault/ProfileFaultUnspecified trap=Unreachable | pass (declared pass)
+# self-check ok   self-check.wast:25 L30 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:26 L31 assert_return | values i32:00000001 | pass (declared pass)
+# self-check ok   self-check.wast:27 L32 assert_exhaustion | ResourceExhaustion/CeilingReached/CallDepth/Runtime | pass (declared pass)
+# self-check ok   self-check.wast:28 L33 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:29 L34 assert_return | values i32:00000002 | pass (declared pass)
+# self-check: 28 commands for 28 declared verdicts, every one as declared
+# self-check control: a scorer passing any refusal as malformed or invalid disagrees with 0 declared verdicts, so the self-check could not see the regression
+broiler-wasm-harness: the reader's self-check failed, so no script was run
+# exit 3
+$ git apply -R docs/evidence/wa-spec-004/control-ignored-injection.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.WebAssembly.Harness -c Release
+e.WebAssembly.dll
+  Broiler.VM.Emitter.Bytecode -> <root>/src/Broiler.VM.Emitter.Bytecode/bin/Release/net10.0/Broiler.VM.Emitter.Bytecode.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.43
+# exit 0

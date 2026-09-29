@@ -35,6 +35,7 @@ internal static class ExecutionChecks
         checks.AddRange(Retention(runtime));
         checks.AddRange(Calls(runtime));
         checks.AddRange(Traps(runtime));
+        checks.AddRange(CallStack(runtime));
         checks.AddRange(GlobalsAndStart(runtime));
         checks.AddRange(EntryPointEncoding(runtime));
         checks.AddRange(LongerThanTheUnchargedWorkBound(runtime));
@@ -608,6 +609,137 @@ internal static class ExecutionChecks
         var answered = Invoke(instance, entry);
         var (_, passed, detail) = Judge(entry, answered, expected);
         return (passed, detail);
+    }
+
+    // =============================================================================================
+    // A call stack deeper than the ceiling: an exhaustion naming CallDepth, not a dead process
+    // =============================================================================================
+
+    /// <summary>
+    /// A recursion the call-depth ceiling admits completes, one frame deeper is refused, and a
+    /// recursion with no end is answered as a resource exhaustion naming <c>CallDepth</c> and its scope,
+    /// in a process that goes on running.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The gate's clause, and why it is the one a stack overflow would fail.</b> WA-5 asks that "a
+    /// call-stack exhaustion is <c>ResourceExhaustion</c> naming <c>CallDepth</c> and its scope rather
+    /// than terminating the process". A stack overflow cannot be caught, so the only way to show it
+    /// does not happen is a run that continues past the recursion, which every check after these is.
+    /// The bytecode emitter keeps a guest's frames in an array and charges <c>CallDepth</c> per frame,
+    /// so the meter refuses the recursion and the process's own stack is never what stops it.
+    /// </para>
+    /// <para>
+    /// <b>The ceiling is counted in frames, the entry's included.</b> <c>down(n)</c> stands n + 1
+    /// frames, so under this profile's default ceiling of 1,024 - which the harness runtime adopts, and
+    /// every level below it inherits - <c>down(1023)</c> is the deepest that completes and
+    /// <c>down(1024)</c> the shallowest refused. Every level holds the same ceiling, so every level
+    /// would refuse the frame, and the core's meter names the outermost that would - aggregate, then
+    /// runtime, then artifact, then instance, then invocation - which here, with no aggregate budget,
+    /// is the runtime's. The default is the placeholder the profile's remarks call it until a frame's
+    /// native cost is measured per claimed runtime identifier, and these checks move with it.
+    /// </para>
+    /// <para>
+    /// <b>A refused instance is faulted</b>, as ADR 0004 makes every resource exhaustion fault its
+    /// instance, so each exhausting call has an instance of its own and the one after it is refused as
+    /// terminal.
+    /// </para>
+    /// </remarks>
+    private static List<(string, bool, string)> CallStack(VmRuntime runtime)
+    {
+        const string Label = "call-stack";
+        const int Ceiling = 1_024;
+
+        var assembler = new WasmAssembler();
+        var unary = assembler.Type([WasmAssembler.I32], [WasmAssembler.I32]);
+        var nullary = assembler.Type([], [WasmAssembler.I32]);
+
+        // (func $down (param i32) (result i32)
+        //   (if (result i32) (i32.eqz (local.get 0)) (then (i32.const 0))
+        //     (else (i32.add (call $down (i32.sub (local.get 0) (i32.const 1))) (i32.const 1)))))
+        var down = assembler.Function(unary, [], Instruction.Cat(
+            Instruction.LocalGet(0), [Instruction.I32Eqz],
+            Instruction.If(WasmAssembler.I32),
+            Instruction.I32Const(0),
+            Instruction.Else(),
+            Instruction.LocalGet(0), Instruction.I32Const(1), [Instruction.I32Sub],
+            Instruction.Call(0),
+            Instruction.I32Const(1), [Instruction.I32Add],
+            Instruction.End()));
+
+        // (func $forever (result i32) (call $forever))
+        var forever = assembler.Function(nullary, [], Instruction.Call(1));
+
+        assembler.Export("down", WasmAssembler.ExportFunction, down);
+        assembler.Export("forever", WasmAssembler.ExportFunction, forever);
+
+        var results = new List<(string, bool, string)>();
+        var verified = ModuleVerification.Verify(runtime, assembler.Build(), Caller, Label);
+
+        if (!verified.TryGetArtifact(out var artifact))
+        {
+            results.Add(($"{Label}: verification", false, $"{verified.Outcome}/{verified.Reason}"));
+            return results;
+        }
+
+        using (artifact)
+        {
+            results.Add(Deepest(runtime, artifact, $"{Label}: down({Ceiling - 1}) stands as many frames as the ceiling and completes",
+                Entry("down", I32(Ceiling - 1)), Int32(Ceiling - 1)));
+
+            results.Add(Exhausted(runtime, artifact, $"{Label}: down({Ceiling}) stands one frame more and is refused",
+                Entry("down", I32(Ceiling))));
+
+            results.Add(Exhausted(runtime, artifact, $"{Label}: a recursion with no end is refused, and the process goes on",
+                Entry("forever")));
+        }
+
+        return results;
+    }
+
+    private static (string, bool, string) Deepest(VmRuntime runtime, VmVerifiedArtifact artifact, string name, string entry, Expectation expected)
+    {
+        var instantiated = runtime.Instantiate(artifact, CancellationToken.None);
+
+        if (!instantiated.TryGetInstance(out var instance))
+        {
+            return (name, false, $"instantiation {instantiated.Outcome}/{instantiated.Reason}");
+        }
+
+        using (instance)
+        {
+            var (passed, detail) = Call(instance, entry, expected);
+            return (name, passed, detail);
+        }
+    }
+
+    /// <summary>An instance of its own whose call is refused naming <c>CallDepth</c> at runtime scope, and is faulted after.</summary>
+    private static (string, bool, string) Exhausted(VmRuntime runtime, VmVerifiedArtifact artifact, string name, string entry)
+    {
+        var instantiated = runtime.Instantiate(artifact, CancellationToken.None);
+
+        if (!instantiated.TryGetInstance(out var instance))
+        {
+            return (name, false, $"instantiation {instantiated.Outcome}/{instantiated.Reason}");
+        }
+
+        using (instance)
+        {
+            var answered = Invoke(instance, entry);
+            var diagnostics = answered.Diagnostics;
+            var after = Invoke(instance, Entry("down", I32(0)));
+
+            var passed =
+                answered.Outcome is VmOutcome.ResourceExhaustion &&
+                diagnostics.ExhaustedDimension is VmBudgetDimension.CallDepth &&
+                diagnostics.ExhaustedScope is VmBudgetScope.Runtime &&
+                after.Outcome is VmOutcome.InvalidState && after.Reason is VmReason.TerminalFault;
+
+            return (name, passed,
+                $"{answered.Outcome}/{answered.Reason}/{diagnostics.ExhaustedDimension}/{diagnostics.ExhaustedScope}, " +
+                $"then {after.Outcome}/{after.Reason}" +
+                (passed ? string.Empty : "; expected ResourceExhaustion naming CallDepth at Runtime scope, then InvalidState/TerminalFault"));
+        }
     }
 
     // =============================================================================================

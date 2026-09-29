@@ -14,6 +14,7 @@ population A is every command of these scripts.
 | [`wasm-spec.pin`](wasm-spec.pin) | The revision, the archive's SHA-256, the content digest over the 76 files it extracts to, and how both were taken |
 | `wasm-spec-977f97014c962f7bd1291fcc6d28b41a924882bf-test-core.tar.gz` | `test/core` at the commit, unmodified: the 73 `.wast` scripts, and the directory's `.gitignore`, `README.md` and `run.py` |
 | [`wasm-spec-test-LICENSE.txt`](wasm-spec-test-LICENSE.txt) | The Apache License 2.0 text of the upstream repository's `test/LICENSE`, which covers everything under `test/` |
+| [`wasm-spec.ratchet`](wasm-spec.ratchet) | This profile's own file, not suite material: WA-4's ratchet, the passing totals of the malformed and invalid families at this revision, which no later run under the same manifest and limits falls below. Set by record [WA-SPEC-004](../../../docs/evidence/wa-spec-004/README.md) on 2026-09-29; the lane holds a run to it with `--ratchet` |
 
 **Why this revision.** The profile runs the surface of the original standardised WebAssembly: the
 numeric instructions with floats, structured control, one memory, one table, globals, the start function

@@ -1,0 +1,21 @@
+// A profile source that answers for execution in the core's vocabulary rather than through the family's status.
+//
+// Not compiled by anything; rule W6 reads it as though it were a file of Broiler.VM.Profile.WebAssembly.
+// An import of the members of the outcome type; a handler that answers the core's outcome category for
+// a trap; a handler that makes the execution step itself; and a qualified spelling of a category. Each
+// is reported where it is spelled, a return type included. Beside them, what the rule does not read as
+// naming a category: a result the core handed back, passed on.
+using static Broiler.VM.VmOutcome;
+
+namespace Broiler.VM.Profile.WebAssembly;
+
+internal static class WasmVocabularyWitness
+{
+    internal static VmOutcome Trapped() => VmOutcome.ProfileFault;
+
+    internal static VmExecutionStep Completed() => VmExecutionStep.Completed(default);
+
+    internal static bool Finished(VmInvocationResult result) => result.Outcome == Broiler.VM.VmOutcome.Normal;
+
+    internal static object Passed(VmInvocationResult result) => result.Outcome;
+}
