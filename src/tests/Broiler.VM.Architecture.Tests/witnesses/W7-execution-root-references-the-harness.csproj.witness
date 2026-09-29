@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    THE NEGATIVE CONTROL WA-4'S GATE NAMES FOR RULE W7: a reference to the script reader from the
+    execution root.
+
+    The WebAssembly execution root is the image a host would run. Somebody wants the harness's
+    encoder to build a module at run time, or its script reader to load a test, and adds one line.
+    From then on the reader, the corpus store and the encoders are in that root's closure, and the
+    specification's scripts are one command-line argument away from an image that ships.
+  -->
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.WebAssembly.Execution</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.WebAssembly.Execution</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj" />
+    <ProjectReference Include="..\compositions\Broiler.VM.Composition.WebAssembly.Harness\Broiler.VM.Composition.WebAssembly.Harness.csproj" />
+  </ItemGroup>
+
+</Project>

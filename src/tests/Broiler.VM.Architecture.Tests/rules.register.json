@@ -1049,6 +1049,16 @@
       "witness": "witnesses/W6-a-family-handler-naming-the-cores-outcome-and-step.cs.witness"
     },
     {
+      "id": "W7",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The WebAssembly harness root, Broiler.VM.Composition.WebAssembly.Harness, which holds the script reader, the script runner, the text-format and binary encoders and the corpus store, is referenced by no other project, declares no package identity, carries the literal element IsPackable false, has no advertised row in the composition register and appears in no advertised composition's retained closure report; no project file names the specification's core scripts, tests/wasm/spec; and no other project's source, content or import item lands in the harness root's directory. The first six clauses are rule N13's, held over this harness; the seventh is this root's own, because a file linked into another project inside the component is refused by neither N13 nor A3. The scan WA-4's exit gate asks for: 'the script reader, the corpus store, the encoder, and every suite file appear in no package and in no advertised composition's closure report', with a negative control that adds a reference to the script reader from the execution root.",
+      "evidence": "Project files, the composition register, and the retained closure reports; witnesses/W7-execution-root-references-the-harness.csproj.witness, witnesses/W7-a-project-compiling-the-script-reader.csproj.witness",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Exactly one project builds the harness, which the test asserts, and the closure reports were read; a checkout without the harness is reported as a rule quantifying over nothing rather than a clean one. The files the gate names are asserted to be in the harness root, so the seventh clause does not hold over files moved elsewhere. The execution root referencing the harness - the control the gate names - is reported as that reference, and a project compiling the script reader through a link is reported by the seventh clause alone, with A3 asserted clean over the same witness. STATED LIMITS. The reading is the project files as written: a file reached by a wildcard is judged by the path the wildcard resolves to, not by what a build would expand it into, and an item a target adds at build time is not seen, as it is not by N13. That no published image of an advertised root carries a suite file is held through that root's closure report, which is retained evidence, not a build this rule runs.",
+      "witness": "witnesses/W7-execution-root-references-the-harness.csproj.witness, witnesses/W7-a-project-compiling-the-script-reader.csproj.witness"
+    },
+    {
       "id": "X1",
       "owningAdr": "0001",
       "status": "Active",

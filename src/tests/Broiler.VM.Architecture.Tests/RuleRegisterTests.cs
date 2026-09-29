@@ -389,10 +389,13 @@ public sealed class RuleRegisterTests
         // WA-5's step-kind clause adds W6: no source of the profile names the execution step, and
         // none names a core outcome category but the translator, which names only the four a
         // verification answers. Active when minted; no other count moves.
-        Assert.Equal(105, byStatus["Active"]);
+        // WA-4's ingestion-path scan adds W7: rule N13's six clauses held over the WebAssembly harness
+        // root and the specification's scripts, and a seventh refusing a harness file linked into
+        // another project. Active when minted; no other count moves.
+        Assert.Equal(106, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(107, Loaded.Rules.Count);
+        Assert.Equal(108, Loaded.Rules.Count);
     }
 
     private static Register Load()
