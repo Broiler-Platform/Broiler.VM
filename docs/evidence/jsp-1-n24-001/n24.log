@@ -1,0 +1,5 @@
+$ dotnet test src/tests/Broiler.VM.Architecture.Tests -c Release --filter FullyQualifiedName~N24 --logger console;verbosity=normal
+Passed Broiler.VM.Architecture.Tests.N24AbsenceClaimsRuleTests.N24_Reports_Each_Injected_Stale_Claim_By_Its_Shape [196 ms]
+Passed Broiler.VM.Architecture.Tests.N24AbsenceClaimsRuleTests.N24_No_Document_Calls_A_Present_Global_Absent [291 ms]
+Total tests: 2
+# exit 0

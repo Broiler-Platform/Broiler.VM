@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-09-29 (JSP-8 and JSP-10 observation; milestone rows unchanged)
+**Last updated:** 2026-09-29 (JSP-8, JSP-10 and JSP-1 observations; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -428,6 +428,17 @@ severable clause is taken too: `Math.random` is seeded per realm from the platfo
 retains each change's fixture, its control and the pinned test262 subtrees either side. This is
 unreviewed implementation and validation material, not accepted milestone evidence; the stages have
 no owner and no milestone row advances.
+
+**JSP-1 observation, 2026-09-29.** The absent-globals block below is no longer the only claim of
+absence a rule decides. Rule N24, beside N17, reads every Markdown document under the profile's
+directory, except the corrections file and the evidence bundles. It refuses a claim that a global
+the realm publishes is absent, in a block, a clause or a bullet under a heading about absence. Text
+a document keeps as it was written is marked with a dated span. Its first run found stale claims in
+the parity and workload roadmaps, each marked or corrected in the same change
+([JSC-232](roadmap.corrections.md#jsc-232)). [Record JSP-1-N24-001](../../../docs/evidence/jsp-1-n24-001/README.md)
+retains that run, the rule failing against an injected stale claim, and its other controls. This is
+unreviewed implementation and validation material, not accepted milestone evidence; JSP-1 has no
+owner and no milestone row advances.
 
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:
