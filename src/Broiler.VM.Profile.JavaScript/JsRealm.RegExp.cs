@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   53
-// Annotated:        53/53
+// Relevant units:   54
+// Annotated:        54/54
 // Exempt:           12
-// Human-reviewed:   0/53
+// Human-reviewed:   0/54
 // IP risk:          Medium
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       53
+// Unverified:       54
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -69,11 +69,15 @@ using Broiler.VM.Profile.JavaScript.Format;
 /// <c>v</c> is the language's early <c>SyntaxError</c> (JSeal slice JSD-0031-later).
 /// </item>
 /// <item>
-/// <b><c>d</c> is parsed, ordered and reported, and builds no <c>indices</c>.</b> The flag is
-/// accepted, appears in <c>flags</c> in the specification's position, and <c>hasIndices</c> answers
-/// for it - but an <c>exec</c> result has no <c>indices</c> property, so code that reads one gets
-/// <c>undefined</c> rather than the array of offset pairs. The offsets exist inside the matcher;
-/// what is missing is the object, and it is missing because nothing this profile runs asks for it.
+/// <b><c>d</c> builds <c>indices</c></b> (since 2026-09-29): an <c>exec</c> result of a pattern
+/// carrying it has an <c>indices</c> array of code-unit <c>[start, end]</c> pairs, with its own
+/// <c>groups</c>, as MakeMatchIndicesIndexPairArray builds it. Until then this item read: "<c>d</c>
+/// is parsed, ordered and reported, and builds no <c>indices</c>. The flag is accepted, appears in
+/// <c>flags</c> in the specification's position, and <c>hasIndices</c> answers for it - but an
+/// <c>exec</c> result has no <c>indices</c> property, so code that reads one gets <c>undefined</c>
+/// rather than the array of offset pairs." <c>hasIndices</c> answering <c>true</c> for a result
+/// with no <c>indices</c> was one of the places the parity roadmap's JSP-8 finds this component
+/// disagreeing with itself.
 /// </item>
 /// <item>
 /// <b>Canonicalize reads the pinned tables, and differs in one known place.</b> Under <c>u</c> it
@@ -1920,7 +1924,7 @@ internal sealed partial class JsRealm
     private JsRegExpCharge RegExpMeter(JsEngine owner) => regExpCharge ??= owner.Charge;
 
     /// <summary>The Array an <c>exec</c> answers with.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=C8955D
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=C2F6D6
     // Broiler-Human:        PENDING
     private JsArray RegExpResult(
         JsEngine engine, RegExpObject target, JsRegExpMatch match, string input)
@@ -1942,7 +1946,59 @@ internal sealed partial class JsRealm
         result.DefineOrdinary("index", JsValue.Number(match.Index));
         result.DefineOrdinary("input", JsValue.String(input));
         result.DefineOrdinary("groups", RegExpNamedGroups(target, match, input));
+
+        // `indices` IS DEFINED LAST, after `groups`, which is where RegExpBuiltinExec's step 34
+        // puts it - so a result's own keys enumerate in the language's order.
+        if (RegExpHasFlag(target.Flags, 'd'))
+        {
+            result.DefineOrdinary("indices", JsValue.Object(RegExpMatchIndices(engine, target, match)));
+        }
+
         return result;
+    }
+
+    /// <summary>
+    /// The <c>indices</c> array a <c>d</c> result carries: a <c>[start, end]</c> pair per group,
+    /// <c>undefined</c> for a group that did not participate, and <c>groups</c>.
+    /// </summary>
+    /// <remarks>
+    /// ES2026 22.2.7.8, MakeMatchIndicesIndexPairArray. The offsets are code units, under <c>u</c>
+    /// as well, because the matcher's are. <c>groups</c> is <c>undefined</c> when the pattern named
+    /// nothing, and otherwise an object with no prototype holding each named group's pair. This
+    /// profile refuses a duplicate group name, so each name has one group and no pair is
+    /// overwritten. Every element, pair and name is created by definition, never by a set that an
+    /// inherited setter could see.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=D8A04F
+    // Broiler-Human:        PENDING
+    private JsArray RegExpMatchIndices(JsEngine engine, RegExpObject target, JsRegExpMatch match)
+    {
+        var indices = NewArray();
+        var groups = target.Matcher.HasGroupNames ? new JsObject(null) : null;
+
+        for (var at = 0; at <= match.CaptureCount; at++)
+        {
+            engine.Charge(1);
+            var pair = JsValue.Undefined;
+
+            if (match.Participated(at))
+            {
+                var bounds = NewArray();
+                bounds.Push(JsValue.Number(match.StartOf(at)));
+                bounds.Push(JsValue.Number(match.EndOf(at)));
+                pair = JsValue.Object(bounds);
+            }
+
+            indices.Push(pair);
+
+            if (at > 0 && groups is not null && target.Matcher.NameOf(at) is { } name)
+            {
+                groups.DefineOrdinary(name, pair);
+            }
+        }
+
+        indices.DefineOrdinary("groups", groups is null ? JsValue.Undefined : JsValue.Object(groups));
+        return indices;
     }
 
     /// <summary><c>replace</c> with a string on the left, which replaces the first occurrence only.</summary>

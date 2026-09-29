@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   127
-// Annotated:        127/127
+// Relevant units:   129
+// Annotated:        129/129
 // Exempt:           97
-// Human-reviewed:   0/127
+// Human-reviewed:   0/129
 // IP risk:          Medium
 // Security risk:    Medium
 // Criteria:         1/0
 // Resource impact:  6/10 max
-// Unverified:       127
+// Unverified:       129
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -450,6 +450,22 @@ public sealed class JsRegExpMatch
     // Broiler-Human:        PENDING
     public bool Participated(int group) => slots[group * 2] >= 0 && slots[(group * 2) + 1] >= 0;
 
+    /// <summary>
+    /// Where the numbered group's match begins, as a code-unit offset. Only a group that
+    /// <see cref="Participated"/> has one.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=82DBD5
+    // Broiler-Human:        PENDING
+    public int StartOf(int group) => slots[group * 2];
+
+    /// <summary>
+    /// One past where the numbered group's match ends, as a code-unit offset. Only a group that
+    /// <see cref="Participated"/> has one.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=754AB5
+    // Broiler-Human:        PENDING
+    public int EndOf(int group) => slots[(group * 2) + 1];
+
     /// <summary>The text the numbered group matched.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=02A248
     // Broiler-Human:        PENDING
@@ -519,8 +535,10 @@ public sealed class JsRegExpMatch
 /// <b>What it does not do.</b> No <c>v</c> flag, none of its set operations and none of the seven
 /// properties of strings: a pattern naming one (<c>\p{RGI_Emoji}</c>) is a <c>SyntaxError</c> under
 /// <c>u</c>, as the language says; the realm refuses the flag itself, and the front end refuses a
-/// literal carrying it when the source is compiled, naming the flag. The <c>d</c> flag is parsed, ordered
-/// and reported by <c>hasIndices</c>, and no <c>indices</c> array is built for a result. Case
+/// literal carrying it when the source is compiled, naming the flag. The <c>d</c> flag's
+/// <c>indices</c> array is built by the realm from <see cref="JsRegExpMatch.StartOf"/> and
+/// <see cref="JsRegExpMatch.EndOf"/> (since 2026-09-29; this sentence read "no <c>indices</c>
+/// array is built for a result" until then). Case
 /// folding under <c>u</c> is the pinned <c>CaseFolding.txt</c> table; without <c>u</c> it is the
 /// pinned <c>UnicodeData.txt</c> simple upper case, which differs from the specification's full
 /// upper-casing for 27 Greek letters <see cref="JsRegExpCase"/> names. Group names are classified

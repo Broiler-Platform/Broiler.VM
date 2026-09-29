@@ -969,8 +969,14 @@ internal static class Program
         Console.WriteLine("              (a .mjs file is read as a module without it)");
         Console.WriteLine("  --strict    compile every script as strict-mode code");
         Console.WriteLine("  --sweep     run each named file in a realm of its own rather than sharing one");
-        Console.WriteLine("  --slice     use the narrow broiler.javascript.slice surface instead");
-        Console.WriteLine("  --numeric   use the broiler.javascript.numeric surface instead");
+        // THE MANIFEST NAMES ARE THE PROFILE'S OWN IDENTITIES, read here rather than written out,
+        // and the acceptance suite holds these lines to the name --version prints. Until
+        // 2026-09-29 they were typed into this text, which is how an earlier version of it came
+        // to describe a wide surface that was not the one this host runs.
+        Console.WriteLine($"  --slice     use the narrow {JavaScriptProfile.SliceManifest} surface instead of");
+        Console.WriteLine($"              {JavaScriptProfile.WideManifest}, which every other run uses");
+        Console.WriteLine($"  --numeric   use the {JavaScriptProfile.NumericManifest} surface instead of");
+        Console.WriteLine($"              {JavaScriptProfile.WideManifest}");
         Console.WriteLine("  --native <backend>");
         Console.WriteLine("              emit machine code beside the bytecode with the named backend.");
         Console.WriteLine($"              This build names three - {string.Join(", ", JsNativeBackends.Names)} -");

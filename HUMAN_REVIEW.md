@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5765 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5770 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 235 |
-| Code units | 10215 |
-| Relevant | 5765 |
+| Code units | 10220 |
+| Relevant | 5770 |
 | Exempt | 4450 |
-| Assessed | 5765 of 5765 (100%) |
-| Human reviewed | 0 of 5765 (0%) |
-| Unverified | 5765 |
+| Assessed | 5770 of 5770 (100%) |
+| Human reviewed | 0 of 5770 (0%) |
+| Unverified | 5770 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5765 |
+| HUMAN_PENDING | 5770 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -152,7 +152,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeBackend.cs` | 23 | 12 | 11 | 12 | None | Medium | 4/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeCompiler.cs` | 9 | 7 | 2 | 7 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` | 14 | 12 | 2 | 12 | None | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 185 | 162 | 23 | 162 | Low | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 186 | 163 | 23 | 163 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 99 | 83 | 16 | 83 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Abi.cs` | 11 | 9 | 2 | 9 | Low | High | 8/8 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Assembler.cs` | 97 | 65 | 32 | 65 | Low | Critical | 20/20 |
@@ -187,7 +187,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` | 70 | 45 | 25 | 45 | Low | Critical | 11/11 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNumericManifest.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 168 | 23 | 145 | 23 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 224 | 127 | 97 | 127 | Medium | Medium | 1/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 226 | 129 | 97 | 129 | Medium | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 12 | 12 | 0 | 12 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.cs` | 12 | 12 | 0 | 12 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs` | 7 | 1 | 6 | 1 | Low | Low | 0/0 |
@@ -250,13 +250,13 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.IteratorHelpers.cs` | 27 | 18 | 9 | 18 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs` | 42 | 36 | 6 | 36 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Lexical.cs` | 10 | 5 | 5 | 5 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs` | 19 | 18 | 1 | 18 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs` | 20 | 19 | 1 | 19 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs` | 24 | 24 | 0 | 24 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs` | 50 | 33 | 17 | 33 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` | 36 | 30 | 6 | 30 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Proxy.cs` | 8 | 6 | 2 | 6 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Reflect.cs` | 6 | 6 | 0 | 6 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs` | 65 | 53 | 12 | 53 | Medium | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs` | 66 | 54 | 12 | 54 | Medium | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` | 21 | 21 | 0 | 21 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 31 | 10 | 21 | 10 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.cs` | 39 | 19 | 20 | 19 | Low | Medium | 0/0 |
@@ -755,7 +755,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a generator or an async function is counted as a plain function
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceParser.ParseClass(SliceSourceSpan)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` - Security=High, Spec=none cited, `79DEE6`, PENDING
   - Falsified if: a class body's members are not walked, so what is inside a class is counted as nothing
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceParser.ParseMember(bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` - Security=High, Spec=none cited, `236DBE`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceParser.ParseMember(bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` - Security=High, Spec=none cited, `10C0AE`, PENDING
   - Falsified if: a property named `get`, `set`, `static` or `async` is read as an accessor or a modifier
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceParser.ParseAssignment(bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` - Security=High, Spec=none cited, `7DFF55`, PENDING
   - Falsified if: an arrow function's head is parsed as a parenthesised expression, or a compound assignment is recorded as a plain one
@@ -4045,7 +4045,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5632 of the 5765 assessed units declare
+That is not a figure of speech. 5637 of the 5770 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

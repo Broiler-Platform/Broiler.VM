@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 90
+runs|0|# Completed: 91
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -719,3 +719,45 @@ global-declarations/b-first-script-declares-a-let.js global-declarations/b-secon
 global-declarations/b-first-script-declares-a-let.js global-declarations/b-second-script-declares-it-again.js|1|!ran|out
 global-declarations/c-a-let-over-a-restricted-global.js|1|SyntaxError
 global-declarations/c-a-let-over-a-restricted-global.js|1|!ran|out
+
+# JSP-8, THE PLACES THIS COMPONENT DISAGREED WITH ITSELF (2026-09-29).
+#
+# A `for await` at a module's top level made this host's own verifier refuse, at exit 4, bytes this
+# host's own lowering produced - the shape JSC-81 records for `pdfjs`. The parser recorded a top-level
+# `await` and a top-level `await using` as suspending the module body, and not this loop, so the
+# body was lowered as a unit that may not await *(JSC-229)*. Each row is an ANSWER, taken from the
+# comparison engine with `print` bound to `console.log`, so reverting the repair moves a value.
+modules/a-top-level-for-await.mjs|0|generator 3
+modules/a-top-level-for-await.mjs|0|fallback p,q,r
+modules/a-top-level-for-await.mjs|0|break 3 true
+
+# The `d` flag builds `indices`, where `hasIndices` used to answer `true` for a result that carried
+# none. The value was taken from the comparison engine's `node -p`.
+runs/a-match-with-indices.js|0|[[2,4],null,[3,4]] / letter:undefined / true / 0,1,2,index,input,groups,indices / [[0,3],[0,2],[2,3]] / {"first":[0,2],"second":[2,3]} / undefined / false
+
+# A comma after a rest in a BINDING position names the rest, as the same comma in an assignment
+# pattern already did, rather than answering for a missing bracket, brace or parenthesis. `2101`
+# and not `2205`: a binding is not an assignment target, and the comma is a position the grammar
+# has no production for.
+refused/a-rest-binding-element-with-a-comma-after-it.js|3|2101:UnexpectedToken
+refused/a-rest-binding-element-with-a-comma-after-it.js|3|a rest element is admitted only as the last element of a pattern
+refused/a-rest-binding-property-with-a-comma-after-it.js|3|2101:UnexpectedToken
+refused/a-rest-binding-property-with-a-comma-after-it.js|3|a rest property is admitted only as the last entry of a pattern
+refused/a-rest-parameter-with-a-comma-after-it.js|3|2101:UnexpectedToken
+refused/a-rest-parameter-with-a-comma-after-it.js|3|a rest parameter is admitted only as the last parameter
+refused/an-arrow-rest-parameter-with-a-trailing-comma.js|3|a rest parameter is admitted only as the last parameter
+refused/an-arrow-rest-parameter-with-a-trailing-comma.js|3|!was expected
+
+# Under --slice a class static block is refused for the class the slice manifest does not admit,
+# where it used to be refused as an unexpected brace: `static` was taken as a modifier, `{` as the
+# key after it, and the block's statements as further members.
+--slice refused/a-class-static-block-under-the-slice.js|3|2104:ConstructOutsideManifest at 5:1: the construct Class is not admitted
+--slice refused/a-class-static-block-under-the-slice.js|3|!begins no expression
+refused/a-class-static-block-under-the-slice.js|0|undefined
+
+# The usage text names the manifests by the identities the profile publishes, and these rows hold
+# it to the name --version prints for the wide surface. An earlier text described a wide surface
+# that was not the one this host runs.
+--help|0|--slice     use the narrow broiler.javascript.slice surface instead of|out
+--help|0|broiler.javascript.wide, which every other run uses|out
+--help|0|--numeric   use the broiler.javascript.numeric surface instead of|out
