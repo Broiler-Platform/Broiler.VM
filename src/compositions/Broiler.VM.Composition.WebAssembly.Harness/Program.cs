@@ -32,6 +32,11 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// row claims and what a recorded one does not. The EXECUTION CHECKS drive real modules through the
 /// whole core lifecycle. The DIFFERENTIAL LANE scores the interpreter against answers derived
 /// somewhere other than the interpreter, which is the only kind of answer worth comparing against.
+/// <i>(Noted 2026-09-29: three lanes have joined these four, and each runs on every run. The HOOK
+/// CHECKS alter a translator-written artifact and expect the family hook's code (<see cref="HookChecks"/>).
+/// The OUTCOME CHECKS hold the verifier outcomes and positions no corpus entry can hold
+/// (<see cref="OutcomeChecks"/>). The PROPORTIONALITY CHECKS measure what <c>memory.grow</c> is
+/// charged against its declared function, in runtimes of their own (<see cref="ProportionalityChecks"/>).)</i>
 /// </para>
 /// <para>
 /// <b>Every module goes through the translator first.</b> Since the universal bytecode programme's
@@ -153,6 +158,7 @@ internal static class Program
             failed += HookChecks.Report(runtime, verbose);
             failed += OutcomeChecks.Report(runtime, verbose);
             failed += DifferentialChecks.Report(runtime, verbose);
+            failed += ProportionalityChecks.Report(verbose);
 
             var built = ModuleVerification.Recorded;
             ModuleVerification.Recorded = null;
@@ -371,7 +377,7 @@ internal static class Program
         return 0;
     }
 
-    private static VmRuntime? Runtime(out string failure)
+    internal static VmRuntime? Runtime(out string failure)
     {
         var catalog = VmCatalog.CreateBuilder()
             .Add(ModuleVerification.Descriptor)
