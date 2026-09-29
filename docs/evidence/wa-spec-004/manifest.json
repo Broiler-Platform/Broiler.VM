@@ -1,0 +1,37 @@
+{
+  "bundle": "wa-spec-004",
+  "milestone": "WA-4",
+  "evidence-class": "working-record",
+  "collected-at": "dc80b67354ce2827cef7d35e588053b7fd7a0cad",
+  "worktree-clean": true,
+  "hash-method": "sources: git blob id at source-revision; inputs and retained files: sha256 of the LF bytes git stores",
+  "note": "WA-4's ratchet set for the malformed and invalid families: the specification's core scripts at the pinned revision through the --spec lane, the first run writing the ratchet (retained here as wasm-spec.ratchet, and copied byte for byte to src/tests/wasm/spec/wasm-spec.ratchet by the retaining commit) and the second held to it; every refusal the lane names with its exit code; the self-check's negative control with the injection ignored; the harness root's run over the retained corpus and the solution's tests. A working record: it moves no ledger row",
+  "source-revision": "dc80b67354ce2827cef7d35e588053b7fd7a0cad",
+  "sources": {
+    "docs/evidence/wa-spec-004/collect.py": "cb65666f2ce3e283b17a907c3f8adcad38f345bf",
+    "docs/evidence/wa-spec-004/control-ignored-injection.patch": "43971bac2f58536dd886c649a98576a83e25e367",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Ratchet.cs": "b6a89cd589b419de9cd98a606ad34b3a32b90335",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ScriptRunner.cs": "c8b5941da13b58ead0d6af2a6d5975c6c00dafb0",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecSuite.cs": "cc5a8d28e6a18ae306bd55aba01f306c4f91d786",
+    "src/tests/wasm/spec/wasm-spec-977f97014c962f7bd1291fcc6d28b41a924882bf-test-core.tar.gz": "5376d01f8a3473b4946d73b9678807c00f521395",
+    "src/tests/wasm/spec/wasm-spec.pin": "ed11707fe2213538ca6188bad2b59fff5ec97646"
+  },
+  "inputs": {
+    "src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll": "0b70c4e0ca42cf6acc808c90fcf97d460736b15ff3b399516254e7ad8bc9727f",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll": "1c21c4bfc183972cf61b864c409a0ebc3ff103243634d46e135561c1d2411bc5"
+  },
+  "retained": {
+    "README.md": "e8f5036a3f87770aafdc6d43f464652284832fda9c103c555847e8d725f3cb2e",
+    "build.log": "19564cfc7b5ef4ea3f18d16f89ffcdb7c3c23cc83f68b9147af81d1387050d04",
+    "collect.py": "95346cc5f27e523f5b9d43b7bff305dfa20c2ab4b78dafb7d8abb2ec82f0ccb5",
+    "control-ignored-injection.log": "efe14e9a3a5b516d087a09d6c45ff8e5ccda6211a4bbfbd2ffaf93c4553f2bee",
+    "control-ignored-injection.patch": "594c0b863180169a3a94af054fdb600abd580b49b63daf3dd3c484e31e8a5e1e",
+    "determinism.log": "ce68a55750e3cb473984907b405fc1345178c01533a587513f40646189fa8ac5",
+    "harness.log": "195fbbee10316855850dfa73d91754cb48483a4ceb827733ecd71bb7da92930b",
+    "hold-run.log": "549bb2cb92d515dea5036c20c2b0157ee534e2141b7ebf4e00df5c2cdbfce996",
+    "refusals.log": "ea69c50543065f4d67be61c2d981b93899487063350175701c50dd6e041b69d7",
+    "set-run.log": "969f8d1a3b4db345d0b18ed76b2484f38e0af193cf54fd0202ee289c5aaac241",
+    "tests.log": "79e3a6088912b9b763ecdf20eea0d0ec455eb91ff113c937e58e99bcf8d139f3",
+    "wasm-spec.ratchet": "ed986e92f603e7d80d23921173678790ec0a965aeba7992b40b9850871150121"
+  }
+}

@@ -1,0 +1,8 @@
+# The WebAssembly profile's conformance ratchet: the passing totals of the families WA-4 scores,
+# the floor no run of the same revision, manifest and limits falls below. Written by the harness
+# root's --spec lane with --write-ratchet; read with --ratchet. See Ratchet.cs.
+revision 977f97014c962f7bd1291fcc6d28b41a924882bf
+manifest broiler.webassembly.slice
+limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+family malformed passed 658 of 661 executed, 1091 selected
+family invalid passed 979 of 989 executed, 989 selected
