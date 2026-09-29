@@ -9832,3 +9832,53 @@ does.
 
 **Authority and date.** The implementation of 2026-09-29 in this checkout and
 [record JSP-PARITY-001](../../../docs/evidence/jsp-parity-001/README.md). 2026-09-29.
+
+### JSC-232
+
+**Where:** the parity roadmap's [section 4.3](roadmap.parity.md#43-the-types-and-surfaces-that-are-absent),
+the survey of the names the wide realm lacks, and its [section 4.1](roadmap.parity.md#41-what-is-no-longer-a-gap-and-what-that-costs-the-record),
+which says the workload roadmap's prose about absent globals is "a second claim about the same subject
+that nothing checks"; with them the first clause of
+[JSP-1](roadmap.parity.md#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable)'s
+gate that names rule N17.
+
+**What the plan said.** That the wide realm lacks, among others, `BigInt` with its two typed arrays and
+the `DataView` accessors, `Float16Array`, the resizable `ArrayBuffer`, `JSON.rawJSON` and
+`JSON.isRawJSON`, an own `Array.prototype.toLocaleString`, the `Iterator` global and its helpers,
+`Array.fromAsync`, the disposal symbols with the `DisposableStack` pair and `SuppressedError`, and the
+`using` declaration. Also that `normalize` throws for any non-ASCII string and `\p{…}` is refused. And
+that only the ledger's fenced block is checked against the realm, so a stale absence claim anywhere
+else survives.
+
+**What replaced it.** The survey is kept as written, between markers dated 2026-09-21, the day the
+JSeal slices began adding what it lists. A note after it, asked of the same realm the same way on
+2026-09-29, says which names are present now and which are still absent. `Intl`, `Temporal`,
+`SharedArrayBuffer`, `Atomics`, the `Uint8Array` base64 and hex methods, the reviver's source
+argument, `Error.prototype.stack`, the `Annex B` members and `Error.isError` are still absent, and a
+decorator and an `accessor` element are still refused. `normalize` and the property escapes run, and
+case conversion is still one-to-one.
+
+**And the claim is checked where it is made.** Rule **N24**, beside N17, reads every Markdown document
+under the profile's directory, not the ledger alone. It refuses a claim that a global the realm
+publishes is absent in any of three shapes:
+- an `absent-globals` block;
+- a clause saying "`Name` is absent";
+- a bullet leading with the name under a heading about absence.
+
+Text a document keeps as it was written is marked with a dated
+`<!-- as-written, superseded YYYY-MM-DD -->` span that the rule skips and checks for form. The
+corrections file and the evidence bundles are outside it. The first run found six stale claims:
+- this survey's `BigInt` and `Float16Array` bullets;
+- section 4.2's kept paragraphs, which this file already reads in the past tense;
+- the workload roadmap's "Absent still" paragraph, overtaken by its own note of 2026-09-22;
+- its description of bundle JS-4-001, whose present tense this change makes past.
+
+Each was marked or corrected in the same change.
+
+**What N24 does not see.** A claim phrased any other way, "lacks", "has no", "answers `undefined`",
+is outside its three shapes. This survey's introduction is one: "the wide realm lacks these names".
+It is caught through its bullets, not its sentence.
+
+**Authority and date.** The realm's published set, `docs/realm/globals.txt`, and the probes of
+2026-09-29 retained in [record JSP-1-N24-001](../../../docs/evidence/jsp-1-n24-001/README.md), which
+also retains N24's first run over the unmarked documents and its controls. 2026-09-29.

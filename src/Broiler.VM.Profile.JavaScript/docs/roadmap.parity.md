@@ -188,7 +188,7 @@ anything**, because it is the document a plan is written from. Rule **N17** exis
 this and does not reach it: it checks the ledger's own machine-readable absent-globals block against
 the set the realm publishes, and the workload roadmap's prose is a second claim about the same
 subject that nothing checks. That is [JSP-1](#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable)'s
-second clause.
+second clause. *(corrected: [JSC-232](roadmap.corrections.md#jsc-232))*
 
 ### 4.2 The refusal that was lost
 
@@ -199,6 +199,7 @@ what it said. **Read them in the past tense**, and read the record that closes t
 them. The heading is unchanged because two documents outside this file link to it by anchor
 *(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*.
 
+<!-- as-written, superseded 2026-09-08 -->
 **A BigInt literal is admitted by the front end and evaluated as a Number.** `typeof 1n` answers
 `"number"`; `1n === 1` is `true`; `9007199254740993n` — a value chosen because no Number can hold
 it — answers a different integer; `1n + 1` produces `2` where the language requires a `TypeError`;
@@ -214,6 +215,7 @@ place where the front end admits a construct the value model cannot represent. T
 visible one line away: the regular-expression `v` flag is *also* unimplemented, and it is refused
 with its own diagnostic naming the flag. The host's own usage text, meanwhile, describes a wide
 manifest that admits neither async functions nor class fields nor `Proxy`, all of which run.
+<!-- /as-written -->
 
 **The refusal was restored on 2026-09-08, and what changed is narrower than deleting the paragraphs
 above would suggest.** The superseded reading is the one quoted at the head of this section: *"A
@@ -252,6 +254,7 @@ family carries one. **Nothing here is accepted, no row moved, and no bundle reta
 
 ### 4.3 The types and surfaces that are absent
 
+<!-- as-written, superseded 2026-09-21 -->
 Asked with `typeof`, which answers for an undeclared name without throwing so that one absence
 hides no other, the wide realm lacks these names that the comparison engine has:
 
@@ -292,6 +295,42 @@ database this component has not acquired is already an open external dependency 
 escapes are refused, why case conversion implements only the one-to-one mappings, and why one
 identifier-start classification disagrees. That is a wider blast radius than a regular-expression
 stage, and section 5 records it as owned-but-under-scoped rather than as new work.
+<!-- /as-written -->
+
+**What holds on 2026-09-29, asked of the same realm the same way** *(corrected:
+[JSC-232](roadmap.corrections.md#jsc-232))*. The list above was a survey of 2026-09-06, and the
+JSeal slices added about half of it from 2026-09-21 on, under proposed, unsigned records.
+
+- **Present now:**
+  - `BigInt` with `BigInt64Array`, `BigUint64Array` and the `DataView` big-integer accessors, behind
+    an optional surface;
+  - `Float16Array` and `DataView`'s float16 accessors;
+  - the resizable `ArrayBuffer`;
+  - `JSON.rawJSON` and `JSON.isRawJSON`;
+  - an own `Array.prototype.toLocaleString`;
+  - `Iterator` and its helpers, `Array.fromAsync`, `Symbol.dispose` and `Symbol.asyncDispose`,
+    `DisposableStack`, `AsyncDisposableStack` and `SuppressedError`;
+  - the `using` declaration.
+- **Absent still:**
+  - `Intl`, with `localeCompare` an ordinal comparison over code units;
+  - `Temporal`, `SharedArrayBuffer` and `Atomics`;
+  - the `Uint8Array` base64 and hex methods;
+  - the reviver's source-text argument;
+  - `Error.prototype.stack`;
+  - the `Annex B` `String` HTML-tag family, `trimLeft` and `trimRight`, and `Date`'s `getYear`,
+    `setYear` and `toGMTString`, while `escape` is present;
+  - `Error.isError`, which the comparison engine this was asked of on 2026-09-29 (Node 22) lacks
+    too.
+- **Refused at compile time still:**
+  - a decorator, as a construct outside the manifest;
+  - an `accessor` class element, as a class field missing its terminator, which names a token
+    rather than the construct.
+- **Of the Unicode paragraph:** `normalize` and the `u`-mode property escapes now run on Unicode
+  17.0.0 tables generated from archived files (F07-F09). Case conversion is still the one-to-one
+  mapping, so `"\u00df".toUpperCase()` answers `ß` where the language answers `SS`.
+
+Rule N24 reads this section, and the survey above is inside a span marked as written, because it
+states in the present tense names the realm now publishes.
 
 ### 4.4 The mechanisms the realm publishes and does not honour
 
@@ -554,6 +593,16 @@ a milestone with a ledger row.
   [validation record](../../../docs/evidence/jsp-1-j01/README.md). Windows checks ran; Linux CI is
   wired but unobserved. The N17 document audit and accepted platform evidence remain outside this
   slice, so this note does not complete JSP-1 or move any milestone to Accepted.
+- **2026-09-29 implementation note:** the N17 clause has a rule behind it. Rule N24, beside N17,
+  reads every Markdown document under the profile's directory for a claim that a global the realm
+  publishes is absent: in a block, in a clause, or in a bullet under a heading about absence. Text
+  kept as written is marked with a dated span. It was watched failing against an injected stale
+  claim and against the six stale claims it found on its first run, which were marked or corrected
+  in the same change ([JSC-232](roadmap.corrections.md#jsc-232),
+  [record JSP-1-N24-001](../../../docs/evidence/jsp-1-n24-001/README.md)). A claim phrased any other
+  way is outside it. With J01 this is every clause of the gate in this checkout. Linux CI for the
+  runner is still unobserved in a retained record, and nothing is accepted: no milestone or stage
+  moves.
 - **Objective.** A reader can tell which engine any recorded divergence was taken against, and the
   comparison can be re-run on a declared platform against either.
 - **Waits on.** Nothing.

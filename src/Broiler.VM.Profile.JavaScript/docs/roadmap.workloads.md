@@ -143,6 +143,7 @@ own `print`.
 `WeakSet`, `ArrayBuffer`, `SharedArrayBuffer`, `DataView`, every typed array constructor,
 `Atomics`, `Intl`, `Temporal`, and `eval`.
 
+<!-- as-written, superseded 2026-09-22 -->
 **Absent still, and the list is shorter again** *(corrected: JSC-87, JSC-187)*. `BigInt` is absent,
 with `BigInt64Array` and `BigUint64Array`; `Intl` and `Temporal` are absent, deferred by name;
 `SharedArrayBuffer` and `Atomics` are absent **deliberately**, excluded by name from the binary
@@ -152,6 +153,7 @@ direction. `Proxy` and `Reflect` are present, each with a differential probe of 
 `Symbol`, `Promise`, the keyed collections, the weak references, `ArrayBuffer`, `DataView`, the
 typed array constructors and `eval` — are present, three of them behind an optional surface a
 composition may decline.
+<!-- /as-written -->
 
 *(Implementation note, 2026-09-22: in the working tree, JSeal slices have since added `Float16Array`
 (F01-F03), admitted `BigInt` through an optional surface (B01-B05) and built `BigInt64Array`,
@@ -170,7 +172,7 @@ it.
 **That set is wider than the retained bundle's exclusion list, and the difference is the reason
 this section exists rather than pointing.** Bundle [JS-4-001](evidence/js-4-001/README.md) names
 `Proxy`, `Reflect`, `Symbol`, `BigInt`, every typed array and `eval` as absent from the realm; the
-keyed collections and `Promise` are absent too and are not on that list. The bundle is not wrong —
+keyed collections and `Promise` were absent too and are not on that list. The bundle is not wrong —
 its list is of the absences a reader would most expect to ask about, and it does not claim to be
 exhaustive — but a plan has to work from the whole set, and an exclusion list that a later reader
 mistakes for the whole set is how a gap survives a review. **JSW-6 carries the obligation to make

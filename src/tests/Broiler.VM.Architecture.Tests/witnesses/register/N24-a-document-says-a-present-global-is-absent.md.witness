@@ -1,0 +1,40 @@
+# A document that has gone stale about the realm
+
+The realm published `Proxy`, `Reflect` and `Promise` long before this page was last read. Every
+claim below that calls one of them absent is an injected stale claim, one per shape rule N24 reads.
+
+## The clause shape
+
+`Proxy` is absent from the realm, so a program that traps property access cannot run. `Intl` and
+`Reflect` are still absent as well. `Intl` is absent too, and that one is true. `Symbol` was
+absent once, which is history rather than a claim, and `Symbol` is present now.
+
+## The surfaces that are absent
+
+- **`Promise`**, which a benchmark harness reaches for first.
+- **`Intl`**, deferred by name.
+
+## The surfaces that run
+
+- **`Array`**, which is not called absent by being listed here.
+
+```absent-globals
+Intl
+Object
+```
+
+<!-- as-written, superseded 2026-09-01 -->
+`Map` is absent, and this paragraph is kept exactly as it was written.
+<!-- /as-written -->
+
+<!-- as-written -->
+A marker with no date is refused rather than honoured.
+<!-- /as-written -->
+
+<!-- as-written, superseded 2026-09-02 -->
+<!-- as-written, superseded 2026-09-03 -->
+A span opened inside another is refused.
+<!-- /as-written -->
+
+<!-- as-written, superseded 2026-09-04 -->
+And a span never closed is refused as well.
