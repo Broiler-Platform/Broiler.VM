@@ -43,10 +43,17 @@ SLICE = ["dotnet", os.path.join(ROOT, SLICE_PROJECT, "bin", "Release", "net10.0"
                                 "Broiler.VM.Composition.JavaScript.SliceCompiler.dll")]
 CONFORMANCE_PROJECT = "src/compositions/Broiler.VM.Composition.JavaScript.Conformance"
 ARCHIVE = "src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz"
+# Every area a change here could reach: modules and their top-level awaits, `for await`, the whole
+# RegExp surface the `d` flag lives in, Math, and the binding positions a rest may stand in.
 SUBTREES = [
-    "test/language/module-code/top-level-await",
-    "test/built-ins/RegExp/match-indices",
-    "test/built-ins/Math/random",
+    "test/language/module-code",
+    "test/language/statements/for-await-of",
+    "test/built-ins/RegExp",
+    "test/built-ins/Math",
+    "test/language/rest-parameters",
+    "test/language/expressions/arrow-function",
+    "test/language/statements/variable",
+    "test/language/statements/function",
 ]
 EXPECTED = "src/tests/cli/expected.txt"
 MARKER = "# JSP-8, THE PLACES THIS COMPONENT DISAGREED WITH ITSELF"
@@ -168,7 +175,7 @@ def main():
             ("change", os.path.join(ROOT, CONFORMANCE_PROJECT, "bin", "Release", "net10.0"))):
         out = os.path.join(SCRATCH, "test262-" + name)
         command = ["python3", "eng/run-test262.py", "--suite", suite, "--binary-directory", directory,
-                   "--shards", "1", "--jobs", "1", "--out", out]
+                   "--jobs", "2", "--out", out]
         for subtree in SUBTREES:
             command += ["--dir", subtree]
         code, text = run(command)
