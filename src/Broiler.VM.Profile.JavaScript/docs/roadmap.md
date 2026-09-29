@@ -955,6 +955,23 @@ What the format carries from the first version, because retrofitting any of it i
 - declared maxima for operand stack, locals, frames, and constants — **declared for checking,
   never used to size an allocation before the bound comparison**.
 
+**The ceilings a source program can meet, stated (2026-09-29)** *(corrected:
+[JSC-233](roadmap.corrections.md#jsc-233))*. Three of this format's limits are met by what a
+program says, not by what an artifact is, and each is a declared property of the format. None is a
+statement about the language.
+- **A call or a construction passes at most 255 arguments written out**, the width of the
+  instruction's count operand. Past it the source is refused at compile time with `2104`, naming the
+  ceiling, at the call. A spread argument or `apply` carries its arguments in an array, and is not
+  limited this way.
+- **An artifact holds at most 65,535 distinct constants**, numbers, strings, BigInts and interned
+  names together, the width of a constant index. A program needing more is refused once with
+  `2302`, naming the ceiling, at the construct being compiled when it was met.
+- **A unit or a module declares at most 60,000 bindings.** Past it the source is refused with
+  `2301`, at the unit.
+
+The parity roadmap named a third ceiling: top-level `await` refused inside a template substitution.
+It was not one. It was a parser defect, and the construct now runs.
+
 The format is internal and versioned during development. Compatibility is promised only when a
 persisted-artifact version is explicitly accepted, which
 [section 16](#16-persistence-and-the-code-cache) gates and no milestone here grants.

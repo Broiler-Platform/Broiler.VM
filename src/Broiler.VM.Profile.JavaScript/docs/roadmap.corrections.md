@@ -9882,3 +9882,60 @@ It is caught through its bullets, not its sentence.
 **Authority and date.** The realm's published set, `docs/realm/globals.txt`, and the probes of
 2026-09-29 retained in [record JSP-1-N24-001](../../../docs/evidence/jsp-1-n24-001/README.md), which
 also retains N24's first run over the unmarked documents and its controls. 2026-09-29.
+
+### JSC-233
+
+**Where:** the parity roadmap's [section 4.8](roadmap.parity.md#48-the-host-and-what-an-embedder-meets),
+three of its bullets: the default allowance, the three artifact-format ceilings and the source
+encoding. With them the matching clauses of
+[JSP-10](roadmap.parity.md#jsp-10--the-host-surface-an-embedder-meets-first)'s gate, and
+[section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s account of the format.
+
+**What the plan said.**
+- No document records that the default instruction allowance is reachable by ordinary code.
+- Three format ceilings surface as refusals with no basis in the language:
+  - more than a couple of hundred arguments;
+  - more than about sixty-five thousand distinct constants, refused at position zero with no source
+    location;
+  - top-level `await` inside a template substitution, refused with a diagnostic naming the wrong
+    reason.
+- A UTF-16LE file with a byte-order mark is unreadable to this host.
+
+**What replaced it, observed on 2026-09-29.**
+- **The allowance.** The host's usage text states the default: 50,000,000 instructions, read from
+  the profile's descriptor rather than typed. It says that an ordinary loop reaches it.
+  `src/tests/cli/limits/an-ordinary-loop-past-the-default-allowance.js` is that loop: three million
+  additions, exit 5 at the default, and the comparison engine's sum with `--fuel` raised. What the
+  default should be is still [ADR 0004](decisions/0004-limit-defaults-hard-maxima-and-the-budget-matrix.md)'s
+  owner's to decide; this entry documents it and changes nothing.
+- **The arguments ceiling** was already refused at compile time with `2104` naming "more than 255
+  arguments", at the call. Section 7 now records it as a property of the format, beside the other
+  two limits a source program can meet.
+- **The constant pool** is refused once with `2302`. The refusal names the ceiling (65,535 distinct
+  constants of every kind together) and carries the position of the construct being compiled when it
+  was met, where it said "the constant pool is full" at 0:0, once per constant past it. A program
+  reaching it is too large to retain as a file, so the slice-compiler root's checks write one and
+  hold the refusal to that shape. A program of 60,000 constants still compiles.
+- **Top-level `await` in a template substitution was not a ceiling.** A substitution is parsed by
+  a parser of its own, handed the module's `await` context. That parser recorded an `await` at the
+  module's top level in its own flag, and nothing carried the flag out. So a module whose only
+  suspension stood in a substitution was lowered as a unit that may not await. The lowering's own
+  guard then refused the `await` as outside an async function, which is untrue of a module. It is
+  the defect of [JSC-229](#jsc-229) in a second place. The flag is now carried out, and plain,
+  tagged and nested substitutions run: `src/tests/cli/modules/a-top-level-await-in-a-template.mjs`,
+  with the comparison engine's answer. Under the script goal the same text is still a syntax error,
+  as the language says.
+- **The source encoding.** The usage text states the set: UTF-8, with or without a byte-order mark,
+  and nothing else. A file that opens with a UTF-16 or UTF-32 byte-order mark is refused naming that
+  encoding, where a UTF-16LE file was refused as "not valid UTF-8 at byte 0". There is one fixture per
+  UTF-16 byte order. The section's claim that the comparison engine runs such a file was not
+  reproduced: Node 22 on this Linux machine refuses the UTF-16LE fixture too.
+
+**What must not be read as repaired.** JSP-10's other clauses are not taken:
+- a host capability present and throwing (`read`, and `$262`'s `createRealm`, `evalScript` and
+  `detachArrayBuffer`, still present on this date);
+- the truth of every refusal reason;
+- the allowance defaults themselves, which are a decision.
+
+**Authority and date.** The implementation of 2026-09-29 in this checkout and
+[record JSP-10-HOST-001](../../../docs/evidence/jsp-10-host-001/README.md). 2026-09-29.

@@ -106,6 +106,16 @@ internal static class SourceFiles
         return found;
     }
 
+    /// <summary>The encoding another byte-order mark at the start of a file names, or nothing.</summary>
+    private static string? Marked(byte[] bytes) => bytes switch
+    {
+        [0xFF, 0xFE, 0x00, 0x00, ..] => "UTF-32LE",
+        [0x00, 0x00, 0xFE, 0xFF, ..] => "UTF-32BE",
+        [0xFF, 0xFE, ..] => "UTF-16LE",
+        [0xFE, 0xFF, ..] => "UTF-16BE",
+        _ => null,
+    };
+
     /// <summary>Reads one file as source, or says why it is not source.</summary>
     internal static SourceFile Read(string path)
     {
@@ -131,6 +141,21 @@ internal static class SourceFiles
         if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF)
         {
             start = 3;
+        }
+
+        // A FILE THAT SAYS WHAT IT IS IS REFUSED BY NAME. The set this host reads is UTF-8, with or
+        // without a byte-order mark, and a file that opens with another encoding's mark is refused
+        // naming that encoding rather than as bytes that are not UTF-8, which is true and does not
+        // tell a person what to convert from. Until 2026-09-29 a UTF-16LE file was refused as "not
+        // valid UTF-8 at byte 0". UTF-32 is asked first, because its little-endian mark begins with
+        // UTF-16LE's.
+        if (Marked(bytes) is { } encoding)
+        {
+            return new SourceFile(
+                shown,
+                string.Empty,
+                $"a {encoding} file, by its byte-order mark: this host reads UTF-8 only, with or without a " +
+                "byte-order mark, and does not convert");
         }
 
         try

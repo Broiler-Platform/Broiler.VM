@@ -495,6 +495,7 @@ anything unusual:
   about a second. The allowance is a declared property of this host and not a defect — but a
   default that an unremarkable loop exceeds is a default a first-time embedder meets before
   anything else, and no document records that it is reachable by ordinary code.
+  *(corrected: [JSC-233](roadmap.corrections.md#jsc-233))*
 - **`Math.random` returns a fixed sequence.** It is identical on every process and identical in two
   distinct realms of one process. The language requires distinct realms to produce distinct
   sequences, and an implementation is expected to choose its seed. This is the one finding in this
@@ -506,8 +507,9 @@ anything unusual:
   constants is refused with a diagnostic reported at position zero and no source location; and
   top-level `await` is refused inside a template-literal substitution while admitted in every other
   top-level position, with a diagnostic that names the wrong reason.
+  *(corrected: [JSC-233](roadmap.corrections.md#jsc-233))*
 - **Source encoding differs**: a UTF-16LE file with a byte-order mark is unreadable to this host and
-  runs on the comparison engine.
+  runs on the comparison engine. *(corrected: [JSC-233](roadmap.corrections.md#jsc-233))*
 - **A throw in shared-realm multi-file mode abandons every remaining file**, and the diagnostic names
   the whole file list as the site of the error rather than the file that threw.
 
@@ -843,6 +845,19 @@ a milestone with a ledger row.
   that counts realms ([JSC-231](roadmap.corrections.md#jsc-231),
   [record JSP-PARITY-001](../../../docs/evidence/jsp-parity-001/README.md)). The rest of the gate is
   untouched. Unreviewed, not accepted evidence, and no milestone or stage moves.
+- **2026-09-29 implementation note, the reporting half:**
+  - The default allowance is stated in the usage text from the descriptor, with a fixture loop that
+    reaches it.
+  - The constant pool's refusal names its ceiling and where it was met.
+  - Top-level `await` in a template substitution runs. It was a parser defect, not a ceiling.
+  - The format's three source-level limits are recorded in the roadmap's section 7.
+  - The encoding set is stated, and a UTF-16 or UTF-32 file is refused naming its encoding
+    ([JSC-233](roadmap.corrections.md#jsc-233),
+    [record JSP-10-HOST-001](../../../docs/evidence/jsp-10-host-001/README.md)).
+
+  Still open: host capabilities present and throwing, and the truth of every refusal reason. The
+  allowance defaults stay a decision. Unreviewed, not accepted evidence, and no milestone or stage
+  moves.
 - **Objective.** The host's defaults, its capabilities and its format ceilings are things a reader
   can find out before meeting them, and none of them is a surprise reachable by ordinary code.
 - **Waits on.** Nothing for the reporting half. The allowance defaults are a decision rather than a

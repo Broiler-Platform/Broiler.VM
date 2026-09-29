@@ -6535,7 +6535,7 @@ internal sealed class JsParser
     /// encloses it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8495AE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=57D77F
     // Broiler-Human:        PENDING
     private JsExpression ParseInterpolation(string text, int line, int column)
     {
@@ -6572,6 +6572,12 @@ internal sealed class JsParser
         // refused by the inner parse exactly as the word is outside the template.
         inner.awaitIsReserved = awaitIsReserved;
         var value = inner.ParseInterpolationBody();
+
+        // AND AN `await` IN IT AT A MODULE'S TOP LEVEL IS THE MODULE'S TOP-LEVEL AWAIT. The inner
+        // parse records it in its own flag; until 2026-09-29 nothing carried that flag out, so a
+        // module whose only suspension stood in a substitution was lowered as a unit that may not
+        // await, and the lowering refused the `await` as if it stood outside an async function.
+        sawTopLevelAwait |= inner.SawTopLevelAwait;
 
         foreach (var diagnostic in inner.Diagnostics)
         {

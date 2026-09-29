@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   228
 // Annotated:        228/228
-// Exempt:           121
+// Exempt:           122
 // Human-reviewed:   0/228
 // IP risk:          Low
 // Security risk:    High
@@ -332,6 +332,11 @@ public sealed class JsCompiler
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.Dictionary<string, ushort> constantIndex =
         new(System.StringComparer.Ordinal);
+
+    /// <summary>Whether the constant pool's ceiling has been met and refused, so it is refused once.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FE7A04
+    // Broiler-Human:        PENDING
+    private bool constantPoolFull;
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=90F5D0
     // Broiler-Human:        PENDING
@@ -10184,7 +10189,7 @@ public sealed class JsCompiler
     private ushort InternedName(string value) =>
         Intern("i" + value, JsArtifactWriter.InternedNameConstant(value));
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=542486
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A9AA1D
     // Broiler-Human:        PENDING
     private ushort Intern(string key, byte[] encoded)
     {
@@ -10195,10 +10200,20 @@ public sealed class JsCompiler
 
         if (constants.Count >= 65535)
         {
-            Refuse(
-                default,
-                SliceSourceDiagnosticCode.TooManyConstants,
-                "the constant pool is full");
+            // THE REFUSAL NAMES THE CEILING AND WHERE IT WAS MET, once. The pool is one per
+            // artifact and an index is two bytes, so the ceiling is a property of the format and
+            // not of the program; the position is the construct being compiled when the first
+            // constant past it was asked for. Until 2026-09-29 this said only "the constant pool
+            // is full", at 0:0, on every constant past the ceiling.
+            if (!constantPoolFull)
+            {
+                constantPoolFull = true;
+                Refuse(
+                    new SliceSourceSpan(System.Math.Max(0, buffer.LastLine), System.Math.Max(0, buffer.LastColumn)),
+                    SliceSourceDiagnosticCode.TooManyConstants,
+                    "the constant pool is full: an artifact of this format holds at most 65,535 distinct " +
+                    "constants - numbers, strings, BigInts and names together - and this one needs more");
+            }
 
             return 0;
         }
