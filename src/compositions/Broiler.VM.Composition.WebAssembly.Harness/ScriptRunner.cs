@@ -162,7 +162,7 @@ internal sealed class ScriptRunner : IDisposable
 
         try
         {
-            commands = ScriptText.Read(source);
+            commands = InlineModules(ScriptText.Read(source));
         }
         catch (ScriptReadException failure)
         {
@@ -189,6 +189,57 @@ internal sealed class ScriptRunner : IDisposable
         }
 
         return results;
+    }
+
+    /// <summary>The fields a module is made of, any of which may open a script written as a bare module.</summary>
+    private static readonly string[] ModuleFields =
+        ["type", "import", "func", "table", "memory", "global", "export", "start", "elem", "data"];
+
+    /// <summary>
+    /// The script's commands with every run of bare module fields read as one module, as the
+    /// specification's own interpreter reads them.
+    /// </summary>
+    /// <remarks>
+    /// The script grammar lets a script be a module's fields written at the top level, with no
+    /// <c>module</c> around them; the suite's <c>inline-module.wast</c> is such a script. Read one form at
+    /// a time, each field was a command the reader did not know, and the module was never asked about.
+    /// (Added 2026-09-29.)
+    /// </remarks>
+    private static List<SExpr> InlineModules(List<SExpr> commands)
+    {
+        var read = new List<SExpr>(commands.Count);
+        List<SExpr>? fields = null;
+        var line = 0;
+
+        foreach (var command in commands)
+        {
+            if (command.Head is { } head && ModuleFields.Contains(head, StringComparer.Ordinal))
+            {
+                if (fields is null)
+                {
+                    fields = [SExpr.Atom(command.Line, AtomKind.Word, "module")];
+                    line = command.Line;
+                }
+
+                fields.Add(command);
+                continue;
+            }
+
+            if (fields is not null)
+            {
+                read.Add(SExpr.List(line, fields));
+                fields = null;
+            }
+
+            read.Add(command);
+        }
+
+        if (fields is not null)
+        {
+            read.Add(SExpr.List(line, fields));
+        }
+
+        return read;
     }
 
     public void Dispose()

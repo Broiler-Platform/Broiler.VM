@@ -139,6 +139,12 @@ internal static class SpecSuite
     /// <i>(Added 2026-09-28, with the scoring those fixtures pin. The import was declared to pass as
     /// unlinkable, and the scoring passed it.)</i>
     /// </para>
+    /// <para>
+    /// <b>A module written as bare fields</b>, with no <c>module</c> around them, is read as one module
+    /// and instantiated, and the assertion after it reads its export. The script grammar allows it and
+    /// the suite's <c>inline-module.wast</c> is written that way; a reader taking each field for a command
+    /// of its own refuses both. <i>(Added 2026-09-29.)</i>
+    /// </para>
     /// </remarks>
     private static bool SelfCheck()
     {
@@ -175,6 +181,8 @@ internal static class SpecSuite
             (module (func (export "one") (result i32) (i32.const 1)))
             (assert_return (invoke "one") (i32.const 1))
             (assert_exhaustion (invoke $M "deep") "call stack exhausted")
+            (func (export "two") (result i32) (i32.const 2))
+            (assert_return (invoke "two") (i32.const 2))
             """;
 
         ScriptVerdict[] declared =
@@ -184,7 +192,7 @@ internal static class SpecSuite
             ScriptVerdict.Pass, ScriptVerdict.Fail, ScriptVerdict.Pass, ScriptVerdict.Excluded, ScriptVerdict.Fail,
             ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Fail, ScriptVerdict.Fail, ScriptVerdict.Fail,
             ScriptVerdict.Fail, ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Pass,
-            ScriptVerdict.Pass,
+            ScriptVerdict.Pass, ScriptVerdict.Pass, ScriptVerdict.Pass,
         ];
 
         var commands = ScriptRunner.Run("self-check.wast", Encoding.UTF8.GetBytes(Script));
