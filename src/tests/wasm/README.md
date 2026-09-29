@@ -24,7 +24,7 @@ the right module for the wrong reason from one that does not.
 **`derived`** — a person wrote the answer down from the format before the profile was asked. The
 writer refuses to emit a manifest at all when the profile contradicts one: the declaration wins and
 the run stops, so a regeneration cannot quietly record the profile's answer over the person's. Of
-the three hundred and twenty-eight rows, a hundred and thirty-four are derived. *(Corrected 2026-09-28: the
+the three hundred and thirty rows, a hundred and thirty-six are derived. *(Corrected 2026-09-28: the
 corpus had two hundred and ninety rows, ninety-six derived, until eight derived rows were added for
 custom-section names, import entries and a function type with two results. Nine more were added the
 same day, when limits and constant expressions moved to validation: two for limits and seven for
@@ -32,7 +32,8 @@ constant expressions. Nine more again when the diagnostic registry was published
 tag section, the data count and a body whose locals overrun it, two for a segment's first field, one
 for a body declared past the artifact's end, and the three phase-order rows below. Twelve more for the
 section-order table: every adjacent pair it forbids that no row held, and one pair it requires where
-the identifiers descend.)*
+the identifiers descend.)* *(Noted 2026-09-29: two more, the `translation` family's pair at and one
+past the bound on the locals one universal bytecode unit declares.)*
 
 **`recorded`** — the answer came from the profile at the moment the corpus was written. It detects
 a change between one regeneration and the next and it **proves no correctness**. Nobody hand-derives
@@ -50,6 +51,11 @@ numbered it — diagnostic codes below 2700 are the decoder's and 2700 and above
 claim about the profile's internal call order. The family hook's codes and the translation's own
 limit codes, numbered in the upper half of the 2800s since the universal bytecode programme's
 milestone UBC-4, fall on the validator's side of that line, and no retained row records one.
+*(Noted 2026-09-29: one retained row records a translation limit code now, the `translation`
+family's refusal of a function with one local more than a unit declares. The module validates and
+the lowering refuses it, and no invariant word names the lowering, so its invariant is `refuses`
+and its triple pins the code. The hook's codes are reached by the harness root's hook lane and not
+here.)*
 *(Noted 2026-09-28: the band tells the PASS, and the category a refusal names is its reason. A
 malformation the validator meets inside a function body carries a 2800-band code with a malformation
 reason, as draft decision WAD-0004 in the profile's decisions records.)*

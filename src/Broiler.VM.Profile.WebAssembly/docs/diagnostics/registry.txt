@@ -204,9 +204,9 @@
 2858|ExportedFunctionNotAnEntry|hook|outcome|InconsistentStructure|hook-check|hook-an-export-naming-a-unit-that-is-not-an-entry|1
 2859|PositionsNotOrdered|hook|outcome|InconsistentStructure|hook-check|hook-positions-rows-out-of-order|1
 2860|GlobalRowTypeMismatch|hook|outcome|SemanticValidationFailed|hook-check|hook-a-global-read-typed-other-than-its-global|1
-2871|TranslationLocalsAboveMaximum|translate|translation|UnknownFeature|unreached|No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.|1
-2872|TranslationOperandHeightAboveMaximum|translate|translation|UnknownFeature|unreached|No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.|1
-2873|TranslationJumpTablesAboveMaximum|translate|translation|UnknownFeature|unreached|No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.|1
+2871|TranslationLocalsAboveMaximum|translate|translation|UnknownFeature|corpus|translation-a-function-with-one-local-more-than-a-unit-holds|1
+2872|TranslationOperandHeightAboveMaximum|translate|translation|UnknownFeature|unreached|Reaching it takes more than sixty-five thousand operands on one stack, and the module at the bound, which a refusing entry needs beside it, leaves the lanes after the replay a few mebibytes of the harness root's shared runtime's allocation ceiling when the replay verifies it twice.|1
+2873|TranslationJumpTablesAboveMaximum|translate|translation|UnknownFeature|unreached|Reaching it takes more than sixty-five thousand branch tables, and the module at the bound, which a refusing entry needs beside it, passes the harness root's shared runtime's allocation ceiling when the replay verifies it twice.|1
 2874|TranslationOperandOutOfRange|translate|translation|UnknownFeature|unreached|No module the validator admits reaches it, as the enumeration's remark on it says.|1
 2901|VerifierDefect|validate+hook+translate|translation+outcome|InconsistentStructure|unreached|It is the answer a defect in this assembly gives, and a retained entry recording it would be a bug report.|1
 2902|ReaderStopped|decode+validate|translation|InconsistentStructure|unreached|The reader's mapping has an arm for every status the core's bounded reader defines, so its default arm answers a status no failed read latches.|1

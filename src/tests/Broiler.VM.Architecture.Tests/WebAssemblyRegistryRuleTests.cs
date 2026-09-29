@@ -253,19 +253,20 @@ public sealed class WebAssemblyRegistryRuleTests
         Assert.Empty(WebAssemblyRegistryRules.W3Reachability(
             Registry, Corpus, CheckedKinds, Emissions.Payload, CheckedCodes, HookChecks, WebAssemblyRegistryRules.Unreached));
 
-        // Non-vacuous, and the figures that matter: sixty-four rows name a derived corpus entry, twelve
+        // Non-vacuous, and the figures that matter: sixty-five rows name a derived corpus entry, twelve
         // name a check of the hook lane, eight name a trap kind the execution checks expect, four are
-        // retired, and eight are the rows the RULE lists as unreached - which is the count this file
-        // fixes, not the registry. Those eight are the part of WA-3's reachability clause that is not
-        // met: the translation's bounds, the two defect codes, the reader's malformation, and the trap
-        // the earlier specification revision named. The twelve hook rows stood among them until
-        // 2026-09-29, when the hook lane gave each a check of its own.
-        Assert.Equal(64, Registry.Rows.Count(static row => row.Reachability == "corpus"));
+        // retired, and seven are the rows the RULE lists as unreached - which is the count this file
+        // fixes, not the registry. Those seven are the part of WA-3's reachability clause that is not
+        // met: three of the translation's bounds, the two defect codes, the reader's malformation, and
+        // the trap the earlier specification revision named. The twelve hook rows stood among them
+        // until 2026-09-29, when the hook lane gave each a check of its own, and so did the bound on a
+        // unit's locals until a corpus pair reached it the same day.
+        Assert.Equal(65, Registry.Rows.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(12, Registry.Rows.Count(static row => row.Reachability == "hook-check"));
         Assert.Equal(8, Registry.Rows.Count(static row => row.Reachability == "execution"));
         Assert.Equal(4, Registry.Rows.Count(static row => row.Reachability == "retired"));
-        Assert.Equal(8, WebAssemblyRegistryRules.Unreached.Length);
-        Assert.Equal(8, Registry.Rows.Count(static row => row.Reachability == "unreached"));
+        Assert.Equal(7, WebAssemblyRegistryRules.Unreached.Length);
+        Assert.Equal(7, Registry.Rows.Count(static row => row.Reachability == "unreached"));
         Assert.True(Corpus.Count > Registry.Rows.Count);
 
         // The hook lane was read whole: its twelve refusals and its three controls, each control

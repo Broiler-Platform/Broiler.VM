@@ -116,16 +116,21 @@ internal static class WebAssemblyRegistryRules
     /// the part of WA-3's gate clause "every code in it is reachable from a named case" that is not met,
     /// and the ledger names them as that. (Twelve more stood here until 2026-09-29: the family hook's
     /// own codes and the two it shares only with a retired decoder check, which the harness root's hook
-    /// lane now reaches, each with a check of its own.)
+    /// lane now reaches, each with a check of its own. One more stood here until the same day: the
+    /// translation's bound on a unit's locals, which a corpus pair now reaches, at the bound and one
+    /// past it.)
     /// </remarks>
     internal static readonly UnreachedCode[] Unreached =
     [
         new(2107, "ReaderMalformedEncoding",
             "The profile reads through none of the bounded reader's operations that latch a malformation but the section exit, " +
             "and the decoder answers that one as SectionLengthMismatch."),
-        new(2871, "TranslationLocalsAboveMaximum", PastABound),
-        new(2872, "TranslationOperandHeightAboveMaximum", PastABound),
-        new(2873, "TranslationJumpTablesAboveMaximum", PastABound),
+        new(2872, "TranslationOperandHeightAboveMaximum",
+            "Reaching it takes more than sixty-five thousand operands on one stack, and the module at the bound, which a refusing entry " +
+            "needs beside it, leaves the lanes after the replay a few mebibytes of the harness root's shared runtime's allocation ceiling when the replay verifies it twice."),
+        new(2873, "TranslationJumpTablesAboveMaximum",
+            "Reaching it takes more than sixty-five thousand branch tables, and the module at the bound, which a refusing entry " +
+            "needs beside it, passes the harness root's shared runtime's allocation ceiling when the replay verifies it twice."),
         new(2874, "TranslationOperandOutOfRange",
             "No module the validator admits reaches it, as the enumeration's remark on it says."),
         new(2901, "VerifierDefect",
@@ -154,9 +159,6 @@ internal static class WebAssemblyRegistryRules
         new("src/Broiler.VM.Profile.WebAssembly/WasmTranslator.cs", "Code", "a property type",
             "the translation's answer exposes the code it carries"),
     ];
-
-    private const string PastABound =
-        "No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.";
 
     /// <summary>The carrier a pass's codes travel on.</summary>
     internal static string CarrierOf(string pass) => pass switch

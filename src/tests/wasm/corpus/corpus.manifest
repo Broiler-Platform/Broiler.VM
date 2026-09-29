@@ -95,6 +95,8 @@ ceiling-a-code-section-count-above-the-declared-count-ceiling|95a4ff0779cd34c23a
 ceiling-nesting-at-the-structural-depth-ceiling|2846fcadae97965d5bd64cf5bb175a7058f386c5ce89972a5d8bd88e9825fad0|ceiling|Normal|NormalCompleted|0|-|-|derived|accepts
 ceiling-nesting-one-level-beyond-the-structural-depth-ceiling|a59a15f95779e3e818926cadff090eca1161ad99da5fd8e808d6bc789ecdc8f8|ceiling|ResourceExhaustion|CeilingReached|0|StructuralDepth|Artifact|derived|exhausts
 ceiling-more-sections-than-the-section-count-ceiling|868c7dea87fcb85bddb2dfbf7d8c90a67fcacc68515d41479b26f4c2eb601a53|ceiling|ResourceExhaustion|CeilingReached|0|SectionCount|Artifact|derived|exhausts
+translation-a-function-with-as-many-locals-as-a-unit-holds|abb719bef999fed774f9a376e07b1c38dc138e0eac97ab9f1ed8ab4898fdaa36|translation|Normal|NormalCompleted|0|-|-|derived|accepts
+translation-a-function-with-one-local-more-than-a-unit-holds|1963ac9a4d6807232c6433fbf23a9bf370082fa5074bc4508ba0a00ac3e2bbed|translation|InvalidArtifact|UnknownFeature|2871|-|-|derived|refuses
 validation-an-operand-stack-underflow-in-reachable-code|a86afb60f51cdedbd3b4e1365e4a5643cf70962d2e3c4af450193606940687a4|validation-control|InvalidArtifact|SemanticValidationFailed|2803|-|-|derived|refuses-validation
 validation-a-branch-to-a-label-depth-that-does-not-exist|991dd03ff5af084b5cb6366b54c96658575d8228a93416d7e7b4b6b6a2f15aec|validation-control|InvalidArtifact|SemanticValidationFailed|2810|-|-|derived|refuses-validation
 validation-a-branch-one-depth-past-the-last-open-label|482bc4d50d1063e2a93cea5cf53c9c71066e79cae3ec00ec32474ac33e33de51|validation-control|InvalidArtifact|SemanticValidationFailed|2810|-|-|derived|refuses-validation

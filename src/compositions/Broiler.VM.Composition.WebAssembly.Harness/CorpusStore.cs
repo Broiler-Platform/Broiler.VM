@@ -1,5 +1,6 @@
 using Broiler.VM;
 using Broiler.VM.Profile.WebAssembly;
+using Broiler.VM.Ubc;
 
 namespace Broiler.VM.Composition.WebAssembly.Harness;
 
@@ -130,6 +131,7 @@ internal static class CorpusStore
         entries.AddRange(FeatureRefusals());
         entries.AddRange(ConstantExpressions());
         entries.AddRange(Ceilings());
+        entries.AddRange(TranslationBounds());
         entries.AddRange(ValidationControl());
         entries.AddRange(ValidationTypes());
         entries.AddRange(ValidationIndices());
@@ -821,6 +823,36 @@ internal static class CorpusStore
     }
 
     // =============================================================================================
+    // Translation bounds. Every module here DECODES AND VALIDATES; what refuses one is the lowering,
+    // because it would need more than one universal bytecode unit holds. The refusal is an invalid
+    // artifact with a code of the translation's band and the unknown-feature reason, and no invariant
+    // word names the lowering, so the refusing side is `refuses` with its triple pinned. The bound is
+    // retained as a pair, at it and one past it, for the reason the nesting pair is: a corpus holding
+    // only the refusing side would be satisfied by a lowering that refused at any size.
+    //
+    // The operand-height and jump-table bounds are not here. Reaching either takes more than
+    // sixty-five thousand pushes or branch tables, and the twin at the bound is the expensive side: the
+    // core verifies it, twice a replay, under the one runtime every lane of this root shares. Measured
+    // when this family was written, the height twin alone left the lanes after the replay a few
+    // mebibytes of that runtime's allocation ceiling, and the jump-table twin passed it. The rule that
+    // lists the rows nothing reaches says so in its own words.
+    // =============================================================================================
+
+    private static IEnumerable<CorpusEntry> TranslationBounds()
+    {
+        // A local is named by a sixteen-bit operand, so a unit declares at most 65,536 of them,
+        // parameters included. The declared-count ceiling is far above that, so the validator admits
+        // both; the lowering admits the first and refuses the second before it writes a row.
+        yield return new("translation-a-function-with-as-many-locals-as-a-unit-holds", "translation",
+            ManyLocals(UbcFormat.MaxLocals), Accepts, VmOutcome.Normal, VmReason.NormalCompleted);
+
+        yield return new("translation-a-function-with-one-local-more-than-a-unit-holds", "translation",
+            ManyLocals(UbcFormat.MaxLocals + 1), Refuses,
+            VmOutcome.InvalidArtifact, VmReason.UnknownFeature,
+            WebAssemblyDiagnosticCode.TranslationLocalsAboveMaximum);
+    }
+
+    // =============================================================================================
     // Validation: control flow. Everything from here down DECODES CLEANLY and is refused by the
     // validator, which this profile makes observable by numbering validation diagnostics above
     // 2700. A module that is both malformed and invalid appears in a decode family and never here.
@@ -1344,6 +1376,20 @@ internal static class CorpusStore
         }
 
         return FunctionModule([], [], [.. code]);
+    }
+
+    /// <summary>One function of no parameters and no results declaring <paramref name="count"/> locals of i32, in one run.</summary>
+    private static byte[] ManyLocals(int count)
+    {
+        byte[] body = [0x01, .. Leb((uint)count), 0x7F, 0x0B];
+
+        return
+        [
+            .. Preamble,
+            .. Section(1, [0x01, 0x60, 0x00, 0x00]),
+            .. Section(3, [0x01, 0x00]),
+            .. Section(10, [0x01, .. Leb((uint)body.Length), .. body]),
+        ];
     }
 
     /// <summary>A module carrying <paramref name="count"/> custom sections and nothing else.</summary>
