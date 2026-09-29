@@ -20,7 +20,11 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// <b>Every command is printed</b>, whatever its verdict, because the bundle compares answers line by
 /// line. A failing verdict is not a failing run: a module that imports, which this profile cannot link,
 /// fails its verdict in every run. The run fails only when the directory does not match its pin, or when
-/// a command the floor says passes no longer does.
+/// a command the floor says passes no longer does. <i>(Noted 2026-09-29: and, for WA-4's gate, when the
+/// self-check or its negative control fails, and on a named configuration failure - an empty selection,
+/// no executed tests, or a family that selected commands and executed none - which exits with four
+/// rather than reporting a small total. Each assertion family's totals are printed in the roadmap's six
+/// counts.)</i>
 /// </para>
 /// <para>
 /// <b><c>--encode-to</c> reads and encodes, and runs nothing.</b> It writes every text module the
@@ -63,6 +67,14 @@ internal static class SpecSuite
             .OrderBy(static script => script.Name, StringComparer.Ordinal)
             .ToList();
 
+        // A CONFIGURATION FAILURE IS A FAILURE, NOT A SMALL TOTAL. A directory holding no script would
+        // otherwise report zero of everything and exit as cleanly as a full run.
+        if (scripts.Count == 0)
+        {
+            Console.WriteLine($"# spec: CONFIGURATION FAILURE empty selection: {directory} holds no script");
+            return 4;
+        }
+
         var encodeTo = Argument(args, "--encode-to");
 
         if (encodeTo is not null)
@@ -102,6 +114,8 @@ internal static class SpecSuite
             $"# spec: {all.Count.ToString(CultureInfo.InvariantCulture)} commands, " +
             $"{Count(all, ScriptVerdict.Pass)} pass, {Count(all, ScriptVerdict.Fail)} fail, {Count(all, ScriptVerdict.Excluded)} excluded");
 
+        var failures = Families(all);
+
         var verdicts = Argument(args, "--write-verdicts");
 
         if (verdicts is not null)
@@ -110,8 +124,82 @@ internal static class SpecSuite
             Console.WriteLine($"# spec: verdicts written to {verdicts}");
         }
 
+        if (failures > 0)
+        {
+            return 4;
+        }
+
         var floor = Argument(args, "--floor");
         return floor is null ? 0 : CheckFloor(floor, revision, all);
+    }
+
+    /// <summary>The assertion families the roadmap names, and the commands each is made of.</summary>
+    private static readonly (string Family, string[] Commands)[] AssertionFamilies =
+    [
+        ("malformed", ["assert_malformed"]),
+        ("invalid", ["assert_invalid"]),
+        ("unlinkable", ["assert_unlinkable"]),
+        ("uninstantiable", ["assert_uninstantiable"]),
+        ("trap", ["assert_trap"]),
+        ("exception", ["assert_exception"]),
+        ("exhaustion", ["assert_exhaustion"]),
+        ("return", ["assert_return", "assert_return_canonical_nan", "assert_return_arithmetic_nan"]),
+    ];
+
+    /// <summary>
+    /// Prints each assertion family's totals in the shape the roadmap asks for, and every configuration
+    /// failure the run shows; answers how many there were.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Six counts a family, never a percentage.</b> Selected is every command of the family's kinds;
+    /// executed is those the lane scored; skipped is those it excluded, a quoted text module being the
+    /// one class today; passed and failed split the executed. Timed out is zero by construction: the
+    /// lane runs no timer, and every command is bounded by its runtime's budget, whose breach is an
+    /// answer and not a timeout. A family the revision holds no command of reports zeros.
+    /// </para>
+    /// <para>
+    /// <b>The configuration failures a run can show.</b> The roadmap's closed set is inconsistent shard
+    /// configuration, a missing suite revision, an empty selection, no executed tests, and a scope
+    /// manifest naming a file the suite does not contain. This lane runs no shards and reads no scope
+    /// manifest, so the first and the last cannot arise; an empty selection is refused before any
+    /// script is read, and a missing revision where a ratchet needs one is refused with it. Here are the
+    /// other two: a run that executed nothing, and a family that selected commands and executed none -
+    /// which is the roadmap's "a named configuration failure, not a small total".
+    /// </para>
+    /// </remarks>
+    private static int Families(List<ScriptCommand> all)
+    {
+        var failures = 0;
+
+        foreach (var (family, kinds) in AssertionFamilies)
+        {
+            var selected = all.Where(command => kinds.Contains(command.Command, StringComparer.Ordinal)).ToList();
+            var passed = selected.Count(static command => command.Verdict is ScriptVerdict.Pass);
+            var failed = selected.Count(static command => command.Verdict is ScriptVerdict.Fail);
+            var skipped = selected.Count(static command => command.Verdict is ScriptVerdict.Excluded);
+            var executed = passed + failed;
+
+            Console.WriteLine(
+                $"# spec: family {family}: selected {Text(selected.Count)}, executed {Text(executed)}, passed {Text(passed)}, " +
+                $"failed {Text(failed)}, skipped {Text(skipped)}, timed out 0");
+
+            if (selected.Count > 0 && executed == 0)
+            {
+                Console.WriteLine($"# spec: CONFIGURATION FAILURE family {family} selected {Text(selected.Count)} commands and executed none");
+                failures++;
+            }
+        }
+
+        if (all.All(static command => command.Verdict is ScriptVerdict.Excluded))
+        {
+            Console.WriteLine($"# spec: CONFIGURATION FAILURE no executed tests: {Text(all.Count)} commands read, none scored");
+            failures++;
+        }
+
+        return failures;
+
+        static string Text(int value) => value.ToString(CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -196,18 +284,60 @@ internal static class SpecSuite
         ];
 
         var commands = ScriptRunner.Run("self-check.wast", Encoding.UTF8.GetBytes(Script));
-        var passed = commands.Count == declared.Length;
+        var passed = Disagreements(commands, declared, print: true) == 0;
+
+        Console.WriteLine($"# self-check: {commands.Count.ToString(CultureInfo.InvariantCulture)} commands for {declared.Length.ToString(CultureInfo.InvariantCulture)} declared verdicts, {(passed ? "every one as declared" : "NOT as declared")}");
+
+        if (!passed)
+        {
+            return false;
+        }
+
+        // THE NEGATIVE CONTROL: a scoring regression injected, observed and reverted. The scorer is made
+        // to pass a malformed or an invalid assertion on any refusal, as it did until 2026-09-28, and the
+        // same script run again must disagree with its declared verdicts; the regression is reverted
+        // before any script of the suite is read, whatever happens.
+        int regressed;
+        ScriptRunner.ScoresAnyRefusal = true;
+
+        try
+        {
+            regressed = Disagreements(ScriptRunner.Run("self-check.wast", Encoding.UTF8.GetBytes(Script)), declared, print: false);
+        }
+        finally
+        {
+            ScriptRunner.ScoresAnyRefusal = false;
+        }
+
+        Console.WriteLine(
+            $"# self-check control: a scorer passing any refusal as malformed or invalid disagrees with {regressed.ToString(CultureInfo.InvariantCulture)} " +
+            $"declared verdicts{(regressed > 0 ? ", and it is reverted" : ", so the self-check could not see the regression")}");
+
+        return regressed > 0;
+    }
+
+    /// <summary>How many commands answer other than declared, a missing or an extra command each counting once.</summary>
+    private static int Disagreements(List<ScriptCommand> commands, ScriptVerdict[] declared, bool print)
+    {
+        var disagreements = Math.Abs(commands.Count - declared.Length);
 
         for (var index = 0; index < commands.Count; index++)
         {
             var expected = index < declared.Length ? declared[index] : (ScriptVerdict?)null;
             var agrees = expected == commands[index].Verdict;
-            passed &= agrees;
-            Console.WriteLine($"# self-check {(agrees ? "ok  " : "FAIL")} {commands[index]} (declared {expected?.ToString().ToLowerInvariant() ?? "nothing"})");
+
+            if (!agrees && index < declared.Length)
+            {
+                disagreements++;
+            }
+
+            if (print)
+            {
+                Console.WriteLine($"# self-check {(agrees ? "ok  " : "FAIL")} {commands[index]} (declared {expected?.ToString().ToLowerInvariant() ?? "nothing"})");
+            }
         }
 
-        Console.WriteLine($"# self-check: {commands.Count.ToString(CultureInfo.InvariantCulture)} commands for {declared.Length.ToString(CultureInfo.InvariantCulture)} declared verdicts, {(passed ? "every one as declared" : "NOT as declared")}");
-        return passed;
+        return disagreements;
     }
 
     /// <summary>Digests the directory as the pin defines it and compares the digest, the count and the revision.</summary>
