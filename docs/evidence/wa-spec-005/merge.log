@@ -1,0 +1,28 @@
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --merge <scratch>/shards --ratchet src/tests/wasm/spec/wasm-spec.ratchet --write-queue <root>/docs/evidence/wa-spec-005/wasm-spec.queue
+# tooling ok   sharding-assigns-each-script-the-shard-its-recorded-hash-gives: 5 names, each in its recorded shard of four and of seven
+# tooling ok   scope-refuses-a-manifest-naming-a-file-the-suite-does-not-contain: a scope manifest naming a file the suite does not contain: <fixture> names absent.wast
+# tooling ok   scope-refuses-a-manifest-naming-a-file-twice: scope manifest <fixture> names a.wast twice
+# tooling ok   merge-sums-a-complete-set-and-proves-it-covers-the-selection: 2 scripts, malformed passed 12 and failed 1
+# tooling ok   merge-reports-a-missing-shard-as-incomplete-coverage: incomplete coverage: shard 1 of 2 has no report; incomplete coverage: the shards ran 1 scripts of the 2 the pipeline selected before sharding
+# tooling ok   merge-names-a-field-that-differs-between-shards: inconsistent shard configuration: limits is "Fuel=1" in 0.report and "Fuel=2" in 1.report
+# tooling ok   merge-classifies-a-report-cut-short-as-a-shard-that-did-not-finish: shard report 1.report ends before its closing line: the shard did not finish, and what it reported is not a total; incomplete coverage: shard 1 of 2 has no report; incomplete coverage: the shards ran 1 scripts of the 2 the pipeline selected before sharding
+# tooling ok   merge-refuses-a-script-reported-by-a-shard-that-does-not-own-it: inconsistent shard configuration: shard 0 is reported by 0.report and 1.report; incomplete coverage: shard 1 of 2 has no report; inconsistent shard configuration: 1.report ran fixture-5.wast, which shard 1 owns and not shard 0
+# tooling ok   queue-confirms-a-listed-script-that-still-fails: no disagreement
+# tooling ok   queue-reports-a-listed-script-that-passes-now: the queue lists b.wast, and every command of it passes now: it leaves the queue in a change carrying its regression
+# tooling ok   queue-does-not-keep-a-hand-written-entry-the-run-cannot-confirm: the queue lists written-by-hand.wast, which this run's selection does not hold, so the entry is not confirmed and does not survive
+# tooling ok   queue-reports-a-failure-it-does-not-list: c.wast fails 1 commands, and the queue does not list it: a failure joins the queue by a run writing it
+# tooling ok   queue-leaves-another-shards-script-to-the-merge: no disagreement
+# tooling: 13 checks, every one as declared
+# merge: 4 shard reports of 4, revision 977f97014c962f7bd1291fcc6d28b41a924882bf, 73 scripts of the 73 selected before sharding: the whole selection
+# merge: effective limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+# merge: family malformed: selected 1091, executed 661, passed 658, failed 3, skipped 430, timed out 0
+# merge: family invalid: selected 989, executed 989, passed 979, failed 10, skipped 0, timed out 0
+# merge: family unlinkable: selected 95, executed 95, passed 18, failed 77, skipped 0, timed out 0
+# merge: family uninstantiable: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# merge: family trap: selected 460, executed 460, passed 438, failed 22, skipped 0, timed out 0
+# merge: family exception: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# merge: family exhaustion: selected 15, executed 15, passed 4, failed 11, skipped 0, timed out 0
+# merge: family return: selected 15788, executed 15788, passed 15651, failed 137, skipped 0, timed out 0
+# spec: ratchet src/tests/wasm/spec/wasm-spec.ratchet: malformed 658 against 658, invalid 979 against 979; held
+# spec: failure queue written to <root>/docs/evidence/wa-spec-005/wasm-spec.queue
+# exit 0

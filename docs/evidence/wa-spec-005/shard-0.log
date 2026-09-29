@@ -1,0 +1,66 @@
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll --spec <scratch>/suite/test/core --expect src/tests/wasm/spec/wasm-spec.pin --scope src/tests/wasm/spec/wasm-spec.slice.scope --shard 0/4 --report <scratch>/shards/0.report
+# tooling ok   sharding-assigns-each-script-the-shard-its-recorded-hash-gives: 5 names, each in its recorded shard of four and of seven
+# tooling ok   scope-refuses-a-manifest-naming-a-file-the-suite-does-not-contain: a scope manifest naming a file the suite does not contain: <fixture> names absent.wast
+# tooling ok   scope-refuses-a-manifest-naming-a-file-twice: scope manifest <fixture> names a.wast twice
+# tooling ok   merge-sums-a-complete-set-and-proves-it-covers-the-selection: 2 scripts, malformed passed 12 and failed 1
+# tooling ok   merge-reports-a-missing-shard-as-incomplete-coverage: incomplete coverage: shard 1 of 2 has no report; incomplete coverage: the shards ran 1 scripts of the 2 the pipeline selected before sharding
+# tooling ok   merge-names-a-field-that-differs-between-shards: inconsistent shard configuration: limits is "Fuel=1" in 0.report and "Fuel=2" in 1.report
+# tooling ok   merge-classifies-a-report-cut-short-as-a-shard-that-did-not-finish: shard report 1.report ends before its closing line: the shard did not finish, and what it reported is not a total; incomplete coverage: shard 1 of 2 has no report; incomplete coverage: the shards ran 1 scripts of the 2 the pipeline selected before sharding
+# tooling ok   merge-refuses-a-script-reported-by-a-shard-that-does-not-own-it: inconsistent shard configuration: shard 0 is reported by 0.report and 1.report; incomplete coverage: shard 1 of 2 has no report; inconsistent shard configuration: 1.report ran fixture-5.wast, which shard 1 owns and not shard 0
+# tooling ok   queue-confirms-a-listed-script-that-still-fails: no disagreement
+# tooling ok   queue-reports-a-listed-script-that-passes-now: the queue lists b.wast, and every command of it passes now: it leaves the queue in a change carrying its regression
+# tooling ok   queue-does-not-keep-a-hand-written-entry-the-run-cannot-confirm: the queue lists written-by-hand.wast, which this run's selection does not hold, so the entry is not confirmed and does not survive
+# tooling ok   queue-reports-a-failure-it-does-not-list: c.wast fails 1 commands, and the queue does not list it: a failure joins the queue by a run writing it
+# tooling ok   queue-leaves-another-shards-script-to-the-merge: no disagreement
+# tooling: 13 checks, every one as declared
+# self-check ok   self-check.wast:1 L1 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:3 L8 assert_return | values i32:0000002A | pass (declared pass)
+# self-check ok   self-check.wast:4 L9 assert_return | values i32:0000002A | fail (declared fail)
+# self-check ok   self-check.wast:5 L10 assert_trap | trap IntegerDivideByZero | pass (declared pass)
+# self-check ok   self-check.wast:6 L11 assert_trap | trap IntegerDivideByZero | fail (declared fail)
+# self-check ok   self-check.wast:7 L12 assert_return_canonical_nan | values f32:7FC00000 | pass (declared pass)
+# self-check ok   self-check.wast:8 L13 assert_return_arithmetic_nan | values i32:00000002 | fail (declared fail)
+# self-check ok   self-check.wast:9 L14 assert_return | no-surface get | fail (declared fail)
+# self-check ok   self-check.wast:10 L15 assert_return | fault UnknownExport | fail (declared fail)
+# self-check ok   self-check.wast:11 L16 invoke | values i32:00000003 | pass (declared pass)
+# self-check ok   self-check.wast:12 L17 assert_invalid | refused InvalidArtifact/SemanticValidationFailed/2804@1 | pass (declared pass)
+# self-check ok   self-check.wast:13 L18 assert_invalid | instance | fail (declared fail)
+# self-check ok   self-check.wast:14 L19 assert_malformed | refused InvalidArtifact/UnknownFormatVersion/2002@8 | pass (declared pass)
+# self-check ok   self-check.wast:15 L20 assert_malformed | excluded (t) | excluded (declared excluded)
+# self-check ok   self-check.wast:16 L21 assert_unlinkable | refused InvalidArtifact/UnknownFeature/2403@17 | fail (declared fail)
+# self-check ok   self-check.wast:17 L22 assert_unlinkable | instantiation ProfileFault/ProfileFaultUnspecified trap=OutOfBoundsMemoryAccess | pass (declared pass)
+# self-check ok   self-check.wast:18 L23 assert_malformed | refused InvalidArtifact/InconsistentStructure/2101@12 | pass (declared pass)
+# self-check ok   self-check.wast:19 L24 assert_invalid | refused InvalidArtifact/InconsistentStructure/2101@12 | fail (declared fail)
+# self-check ok   self-check.wast:20 L25 assert_malformed | refused InvalidArtifact/SemanticValidationFailed/2804@1 | fail (declared fail)
+# self-check ok   self-check.wast:21 L26 assert_invalid | refused InvalidArtifact/UnknownFormatVersion/2002@8 | fail (declared fail)
+# self-check ok   self-check.wast:22 L27 assert_invalid | refused InvalidArtifact/UnknownFeature/2504@11 | fail (declared fail)
+# self-check ok   self-check.wast:23 L28 assert_malformed | refused InvalidArtifact/MalformedEncoding/2821@1 | pass (declared pass)
+# self-check ok   self-check.wast:24 L29 assert_trap | instantiation ProfileFault/ProfileFaultUnspecified trap=Unreachable | pass (declared pass)
+# self-check ok   self-check.wast:25 L30 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:26 L31 assert_return | values i32:00000001 | pass (declared pass)
+# self-check ok   self-check.wast:27 L32 assert_exhaustion | ResourceExhaustion/CeilingReached/CallDepth/Runtime | pass (declared pass)
+# self-check ok   self-check.wast:28 L33 module | instance | pass (declared pass)
+# self-check ok   self-check.wast:29 L34 assert_return | values i32:00000002 | pass (declared pass)
+# self-check: 28 commands for 28 declared verdicts, every one as declared
+# self-check control: a scorer passing any refusal as malformed or invalid disagrees with 3 declared verdicts, and it is reverted
+# spec: revision 977f97014c962f7bd1291fcc6d28b41a924882bf, 12 scripts, each in a runtime of its own
+# spec: effective limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+# spec: selection: 73 candidates, 0 known incorrect, 0 out of scope, 0 unselectable, 73 selected before sharding; scope manifest wasm-spec.slice.scope for broiler.webassembly.slice
+# spec: shard 0 of 4: 12 scripts
+# spec: assert_exhaustion: 2 commands, 1 pass, 1 fail, 0 excluded
+# spec: assert_invalid: 170 commands, 170 pass, 0 fail, 0 excluded
+# spec: assert_malformed: 179 commands, 176 pass, 0 fail, 3 excluded
+# spec: assert_return: 3344 commands, 3316 pass, 28 fail, 0 excluded
+# spec: assert_trap: 73 commands, 72 pass, 1 fail, 0 excluded
+# spec: module: 19 commands, 18 pass, 1 fail, 0 excluded
+# spec: 3787 commands, 3753 pass, 31 fail, 3 excluded
+# spec: family malformed: selected 179, executed 176, passed 176, failed 0, skipped 3, timed out 0
+# spec: family invalid: selected 170, executed 170, passed 170, failed 0, skipped 0, timed out 0
+# spec: family unlinkable: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family uninstantiable: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family trap: selected 73, executed 73, passed 72, failed 1, skipped 0, timed out 0
+# spec: family exception: selected 0, executed 0, passed 0, failed 0, skipped 0, timed out 0
+# spec: family exhaustion: selected 2, executed 2, passed 1, failed 1, skipped 0, timed out 0
+# spec: family return: selected 3344, executed 3344, passed 3316, failed 28, skipped 0, timed out 0
+# spec: shard report written to <scratch>/shards/0.report
+# exit 0

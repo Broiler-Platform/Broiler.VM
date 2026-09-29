@@ -1,0 +1,56 @@
+# broiler-wasm-harness spec shard report: see SpecReport.cs
+report 1
+revision 977f97014c962f7bd1291fcc6d28b41a924882bf
+manifest broiler.webassembly.slice
+limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+scope scope manifest wasm-spec.slice.scope for broiler.webassembly.slice
+candidates 73
+known-incorrect 0
+out-of-scope 0
+unselectable 0
+selected 73
+shards 4
+shard 3
+script call_indirect.wast
+script conversions.wast
+script exports.wast
+script f32.wast
+script func.wast
+script inline-module.wast
+script local_get.wast
+script memory.wast
+script memory_grow.wast
+script memory_size.wast
+script memory_trap.wast
+script return.wast
+script stack.wast
+script start.wast
+script store.wast
+script utf8-custom-section-id.wast
+script utf8-invalid-encoding.wast
+family malformed selected 386 executed 176 passed 176 failed 0 skipped 210 timed-out 0
+family invalid selected 226 executed 226 passed 224 failed 2 skipped 0 timed-out 0
+family unlinkable selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family uninstantiable selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family trap selected 254 executed 254 passed 254 failed 0 skipped 0 timed-out 0
+family exception selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family exhaustion selected 2 executed 2 passed 1 failed 1 skipped 0 timed-out 0
+family return selected 3287 executed 3287 passed 3259 failed 28 skipped 0 timed-out 0
+failing call_indirect.wast 26
+failing conversions.wast 0
+failing exports.wast 3
+failing f32.wast 0
+failing func.wast 0
+failing inline-module.wast 0
+failing local_get.wast 0
+failing memory.wast 2
+failing memory_grow.wast 0
+failing memory_size.wast 0
+failing memory_trap.wast 0
+failing return.wast 0
+failing stack.wast 0
+failing start.wast 3
+failing store.wast 0
+failing utf8-custom-section-id.wast 0
+failing utf8-invalid-encoding.wast 0
+end
