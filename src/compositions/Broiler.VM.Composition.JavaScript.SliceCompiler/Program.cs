@@ -105,9 +105,16 @@ internal static class Program
                 return passed ? 0 : 1;
             }
 
+            // ONE FRESH REALM'S Math.random DRAWS, which the checks lane starts this root again to
+            // read, so that two processes' sequences can be compared (IsolationChecks).
+            if (args.Contains("--random-draws", StringComparer.Ordinal))
+            {
+                return IsolationChecks.PrintRandomDraws();
+            }
+
             Console.WriteLine(
                 "usage: --write <directory> | --checks [--verbose] | --closure | --globals " +
-                "[--write <file>] | " +
+                "[--write <file>] | --random-draws | " +
                 "--census <directory> [<directory> ...] | " +
                 "--fuzz <source directory> [--seed <n>] [--iterations <n>] | " +
                 "--fuzz-words [--seed <n>] [--iterations <n>] [--stress]");

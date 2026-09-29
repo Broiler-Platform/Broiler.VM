@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
+// Relevant units:   19
+// Annotated:        19/19
 // Exempt:           1
-// Human-reviewed:   0/18
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       18
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -39,20 +39,44 @@ namespace Broiler.VM.Profile.JavaScript;
 /// <c>expm1</c> and <c>log1p</c>, are the platform's with the sign of a zero put back.
 /// </para>
 /// <para>
-/// <b><c>Math.random</c> is a realm-local xorshift seeded from a constant.</b> A run is therefore
-/// reproducible: the same program over a fresh realm draws the same sequence, which is what makes a
-/// differential corpus comparable across runs and a failing case replayable. It is not a source of
-/// unpredictability and nothing in this profile should treat it as one.
+/// <b><c>Math.random</c> is a realm-local xorshift seeded per realm from the platform's entropy
+/// source.</b> ES2026 21.3.2.27 requires each realm to produce a distinct sequence, and the seed is
+/// the implementation's to choose, so two realms of one process and two processes draw different
+/// sequences. Until 2026-09-29 the seed was a constant, and every realm of every process drew one
+/// sequence. The reason given then was replay: "the same program over a fresh realm draws the same
+/// sequence, which is what makes a differential corpus comparable across runs and a failing case
+/// replayable". No retained program in this checkout draws from it, and a program that needs a
+/// replayable sequence installs its own, as every benchmark harness does. It is still not a source
+/// of unpredictability to rely on: the generator is not cryptographic, and only its seed is not a
+/// constant.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=60DD8D
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    /// <summary>The state of the realm's own generator. Non-zero, and never reseeded from a clock.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E852E9
+    /// <summary>
+    /// The state of the realm's own generator: drawn once per realm from the platform's entropy
+    /// source, non-zero, and never reseeded from a clock.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C07584
     // Broiler-Human:        PENDING
-    private ulong mathRandomState = 0x2545F4914F6CDD1DUL;
+    private ulong mathRandomState = MathRandomSeed();
+
+    /// <summary>A seed for one realm's generator, drawn from the platform's entropy source.</summary>
+    /// <remarks>
+    /// A xorshift state of zero stays zero, so a zero draw is replaced by the constant that seeded
+    /// every realm until 2026-09-29. The odds of that draw are one in 2^64.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BB57EE
+    // Broiler-Human:        PENDING
+    private static ulong MathRandomSeed()
+    {
+        System.Span<byte> bytes = stackalloc byte[sizeof(ulong)];
+        System.Security.Cryptography.RandomNumberGenerator.Fill(bytes);
+        var seed = System.Buffers.Binary.BinaryPrimitives.ReadUInt64LittleEndian(bytes);
+        return seed != 0 ? seed : 0x2545F4914F6CDD1DUL;
+    }
 
     /// <summary>Builds <c>Math</c> and defines it on the global object.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F8EBF6

@@ -1,0 +1,42 @@
+$ broiler-js modules/a-top-level-for-await.mjs
+generator 3
+fallback p,q,r
+break 3 true
+undefined
+# exit 0
+$ broiler-js runs/a-match-with-indices.js
+[[2,4],null,[3,4]] / letter:undefined / true / 0,1,2,index,input,groups,indices / [[0,3],[0,2],[2,3]] / {"first":[0,2],"second":[2,3]} / undefined / false
+# exit 0
+$ broiler-js refused/a-rest-binding-element-with-a-comma-after-it.js
+broiler-js: refused/a-rest-binding-element-with-a-comma-after-it.js: 2101:UnexpectedToken at 5:6: a rest element is admitted only as the last element of a pattern
+# exit 3
+$ broiler-js refused/a-rest-binding-property-with-a-comma-after-it.js
+broiler-js: refused/a-rest-binding-property-with-a-comma-after-it.js: 2101:UnexpectedToken at 4:7: a rest property is admitted only as the last entry of a pattern
+# exit 3
+$ broiler-js refused/a-rest-parameter-with-a-comma-after-it.js
+broiler-js: refused/a-rest-parameter-with-a-comma-after-it.js: 2101:UnexpectedToken at 4:18: a rest parameter is admitted only as the last parameter
+# exit 3
+$ broiler-js refused/an-arrow-rest-parameter-with-a-trailing-comma.js
+broiler-js: refused/an-arrow-rest-parameter-with-a-trailing-comma.js: 2101:UnexpectedToken at 4:16: a rest parameter is admitted only as the last parameter
+# exit 3
+$ broiler-js refused/a-rest-element-with-a-comma-after-it.js
+broiler-js: refused/a-rest-element-with-a-comma-after-it.js: 2205:InvalidAssignmentTarget at 11:5: a rest element is admitted only as the last element of a pattern
+# exit 3
+$ broiler-js --slice runs/a-class-static-block.js
+broiler-js: runs/a-class-static-block.js: 2104:ConstructOutsideManifest at 6:11: an array literal is not admitted by the declared feature manifest
+# exit 3
+$ broiler-js --version
+broiler-js broiler.javascript manifest broiler.javascript.wide format 2
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+# exit 0
+$ broiler-js --help (the lines naming a manifest)
+  --slice     use the narrow broiler.javascript.slice surface instead of
+              broiler.javascript.wide, which every other run uses
+  --numeric   use the broiler.javascript.numeric surface instead of
+              broiler.javascript.wide
+This host runs the feature manifest broiler.javascript.wide by
+naming `BigInt` declares broiler.javascript.bigint, which a composition
+either constructor declares it beside broiler.javascript.binary. --numeric
+--slice selects broiler.javascript.slice instead, which admits
+--numeric selects broiler.javascript.numeric, which admits
+# exit 0

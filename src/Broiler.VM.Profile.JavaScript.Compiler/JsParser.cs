@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   162
-// Annotated:        162/162
+// Relevant units:   163
+// Annotated:        163/163
 // Exempt:           23
-// Human-reviewed:   0/162
+// Human-reviewed:   0/163
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       162
+// Unverified:       163
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1698,7 +1698,7 @@ internal sealed class JsParser
         return new JsDoWhileStatement(span, body, test);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2CFBBF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7742F9
     // Broiler-Human:        PENDING
     private JsStatement ParseFor()
     {
@@ -1727,6 +1727,12 @@ internal sealed class JsParser
                 return new JsEmptyStatement(span);
             }
 
+            // A MODULE'S TOP-LEVEL `for await` IS A TOP-LEVEL AWAIT, as a bare `await` and an
+            // `await using` there are: the module body suspends at every step of it. Until
+            // 2026-09-29 this form alone was not recorded, so the body was lowered as a unit
+            // that may not await, and this component's own verifier refused the loop's first
+            // asynchronous instruction (1630) on bytes this component's own lowering produced.
+            sawTopLevelAwait |= functionDepth == 0;
             isAwait = true;
             Advance();
         }
@@ -2274,7 +2280,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C4D664
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E8EA60
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsParameter> ParseParameterList()
     {
@@ -2291,6 +2297,12 @@ internal sealed class JsParser
             {
                 Advance();
                 parameters.Add(new JsParameter(span, ParseBindingTarget(), null, IsRest: true));
+
+                if (RefusedAfterRest(span, "a rest parameter is admitted only as the last parameter"))
+                {
+                    return parameters;
+                }
+
                 break;
             }
 
@@ -2352,7 +2364,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A55543
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BC9FF0
     // Broiler-Human:        PENDING
     private JsPattern ParseArrayBindingPattern(SliceSourceSpan span)
     {
@@ -2373,8 +2385,15 @@ internal sealed class JsParser
 
             if (Current.Kind == SliceTokenKind.DotDotDot)
             {
+                var restSpan = Span();
                 Advance();
                 rest = ParseBindingTarget();
+
+                if (RefusedAfterRest(restSpan, "a rest element is admitted only as the last element of a pattern"))
+                {
+                    return new JsArrayPattern(span, elements, rest);
+                }
+
                 break;
             }
 
@@ -2392,7 +2411,7 @@ internal sealed class JsParser
         return new JsArrayPattern(span, elements, rest);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B023AE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=88E588
     // Broiler-Human:        PENDING
     private JsPattern ParseObjectBindingPattern(SliceSourceSpan span)
     {
@@ -2406,8 +2425,15 @@ internal sealed class JsParser
         {
             if (Current.Kind == SliceTokenKind.DotDotDot)
             {
+                var restSpan = Span();
                 Advance();
                 rest = ParseBindingTarget();
+
+                if (RefusedAfterRest(restSpan, "a rest property is admitted only as the last entry of a pattern"))
+                {
+                    return new JsObjectPattern(span, properties, rest);
+                }
+
                 break;
             }
 
@@ -6934,6 +6960,31 @@ internal sealed class JsParser
             span,
             SliceSourceDiagnosticCode.ConstructOutsideManifest,
             what + " is not admitted by the declared feature manifest");
+
+    /// <summary>
+    /// Refuses a comma after a rest element, parameter or property by naming the construct, and
+    /// answers whether it did.
+    /// </summary>
+    /// <remarks>
+    /// Nothing may follow a rest in a binding position, not even the trailing comma a list is
+    /// otherwise free to end with. Until 2026-09-29 the comma reached the closing token's
+    /// <c>Expect</c> and was answered as a missing bracket, brace or parenthesis, while the same
+    /// comma in an assignment pattern already named the construct. The caller returns without
+    /// that <c>Expect</c>, so the first refusal is the named one; under <c>--all</c> the tokens
+    /// after it still draw the refusals this parser gives any input it does not recover from.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B9483A
+    // Broiler-Human:        PENDING
+    private bool RefusedAfterRest(SliceSourceSpan rest, string message)
+    {
+        if (Current.Kind != SliceTokenKind.Comma)
+        {
+            return false;
+        }
+
+        Refuse(rest, SliceSourceDiagnosticCode.UnexpectedToken, message);
+        return true;
+    }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3032B3
     // Broiler-Human:        PENDING

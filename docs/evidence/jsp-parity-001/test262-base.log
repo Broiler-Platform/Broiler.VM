@@ -1,0 +1,26 @@
+$ python3 eng/run-test262.py --suite <scratch>/suite/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e --binary-directory <scratch>/base/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0 --jobs 2 --out <scratch>/test262-base --dir test/language/module-code --dir test/language/statements/for-await-of --dir test/built-ins/RegExp --dir test/built-ins/Math --dir test/language/rest-parameters --dir test/language/expressions/arrow-function --dir test/language/statements/variable --dir test/language/statements/function
+tatements/variable  e.g. test/language/statements/variable/binding-resolution.js [sloppy]
+#   by declared feature (481 of 503 failing variants declare one; a variant with two is in two rows): 16 distinct, 663 taggings over 481 variants
+#         262  regexp-v-flag  e.g. test/built-ins/RegExp/property-escapes/generated/strings/Basic_Emoji.js [sloppy]
+#         148  regexp-unicode-property-escapes  e.g. test/built-ins/RegExp/property-escapes/generated/strings/Basic_Emoji.js [sloppy]
+#         140  regexp-modifiers  e.g. test/built-ins/RegExp/regexp-modifiers/add-dotAll-does-not-affect-alternatives-outside.js [sloppy]
+#          30  regexp-match-indices  e.g. test/built-ins/RegExp/match-indices/indices-array-element.js [sloppy]
+#          24  String.fromCodePoint  e.g. test/built-ins/RegExp/CharacterClassEscapes/character-class-digit-class-escape-negative-cases.js [sloppy]
+#          24  cross-realm  e.g. test/built-ins/RegExp/escape/cross-realm.js [sloppy]
+#          14  regexp-named-groups  e.g. test/built-ins/RegExp/match-indices/indices-array-non-unicode-match.js [sloppy]
+#           5  arbitrary-module-namespace-names  e.g. test/language/module-code/export-expname-from-as-unpaired-surrogate.js [module]
+#           4  regexp-dotall  e.g. test/built-ins/RegExp/prototype/dotAll/cross-realm.js [sloppy]
+#           2  Reflect  e.g. test/built-ins/RegExp/proto-from-ctor-realm.js [sloppy]
+#           2  RegExp.escape  e.g. test/built-ins/RegExp/escape/cross-realm.js [sloppy]
+#           2  Symbol  e.g. test/built-ins/RegExp/prototype/unicodeSets/this-val-non-obj.js [sloppy]
+#           2  Symbol.species  e.g. test/built-ins/RegExp/prototype/Symbol.split/splitter-proto-from-ctor-realm.js [sloppy]
+#           2  Symbol.split  e.g. test/built-ins/RegExp/prototype/Symbol.split/splitter-proto-from-ctor-realm.js [sloppy]
+#           1  generators  e.g. test/language/module-code/parse-err-hoist-lex-gen.js [module]
+#           1  top-level-await  e.g. test/language/module-code/top-level-await/await-expr-reject-throws.js [module]
+# test262 5171 files, 9335 variants: pass 8666, fail 503, unsupported 0, exhausted 0, skipped 166
+coverage partial a named selection rather than the whole test tree: test/language/module-code test/language/statements/for-await-of test/built-ins/RegExp test/built-ins/Math test/language/rest-parameters test/language/expressions/arrow-function test/language/statements/variable test/language/statements/function
+# the whole-run report is <scratch>/test262-base/test262.report
+# the machine-readable report is <scratch>/test262-base/test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language/module-code test/language/statements/for-await-of test/built-ins/RegExp test/built-ins/Math test/language/rest-parameters test/language/expressions/arrow-function test/language/statements/variable test/language/statements/function
+# exit 1

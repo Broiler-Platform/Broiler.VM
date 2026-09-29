@@ -829,7 +829,7 @@ public sealed class SliceParser
     }
 
     /// <summary>One member of a class body or an object literal.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=236DBE
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=10C0AE
     // Broiler-Falsified-If: a property named `get`, `set`, `static` or `async` is read as an accessor or a modifier
     // Broiler-Human:        PENDING
     private SliceNode ParseMember(bool inClass)
@@ -837,6 +837,17 @@ public sealed class SliceParser
         var span = Here();
         var children = new System.Collections.Generic.List<SliceNode>();
         var kind = inClass ? SliceConstructKind.Class : SliceConstructKind.ObjectLiteral;
+
+        // A CLASS STATIC BLOCK IS A MEMBER OF THE CLASS, walked like a method's body. Until
+        // 2026-09-29 `static` was taken as a modifier and `{` as the key after it, so the block's
+        // statements were read as further members and the program was refused as an unexpected
+        // brace rather than for the class the manifest does not admit.
+        if (inClass && Current.Kind == SliceTokenKind.Static && Peek(1).Kind == SliceTokenKind.OpenBrace)
+        {
+            Advance();
+            children.Add(ParseBlock());
+            return new SliceConstructExpression(span, kind, children);
+        }
 
         // Modifiers, each of which is also a legal key on its own - `{ get: 1 }` is a property
         // named `get` - so each is consumed only when something follows that a key can precede.

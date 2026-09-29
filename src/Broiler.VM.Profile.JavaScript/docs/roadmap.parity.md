@@ -406,20 +406,22 @@ documents or its own components, found while comparing:
 
 - **The host's usage text describes a manifest that is not the one it runs**, naming async functions,
   class fields, private names and `Proxy` as outside the wide surface when all of them run.
+  *(corrected: [JSC-230](roadmap.corrections.md#jsc-230))*
 - **A top-level `for await` in a module makes the lowering emit an artifact this component's own
   verifier rejects** — exit 4, which the host's own contract reserves for a defect in this host
   rather than in the input. That is the shape [JSC-81](roadmap.corrections.md#jsc-81) records for
-  `pdfjs`, in a construct nothing had asked before.
+  `pdfjs`, in a construct nothing had asked before. *(corrected: [JSC-229](roadmap.corrections.md#jsc-229))*
 - **The `v` flag passes `--check` and throws at run time**, so a refusal that is a compile-time
   refusal for every other unimplemented flag is invisible to compile-time verification for this one.
 - **The `d` flag is accepted and `hasIndices` answers `true`**, but a match carries no `indices`.
+  *(corrected: [JSC-230](roadmap.corrections.md#jsc-230))*
 - **Two refusal diagnostics degrade to token level** rather than naming the construct: a rest-element
   early error reports an expected bracket, and under `--slice` a class static block is refused as an
   unexpected brace. Naming the construct is the property section 3.3 of the workload roadmap calls
-  load-bearing.
+  load-bearing. *(corrected: [JSC-230](roadmap.corrections.md#jsc-230))*
 - **`Object.prototype.toString` answers `[object Error]` and `[object Date]` for the prototypes**,
   which carry no such internal slot, and `[object global]` for the global object with no tag on its
-  chain.
+  chain. *(corrected: [JSC-230](roadmap.corrections.md#jsc-230))*
 - **`FinalizationRegistry.prototype.cleanupSome` is shipped** and is not in the language — a
   feature-detection hazard rather than a wrong answer, and the only *library* member found in that
   direction.
@@ -436,8 +438,8 @@ documents or its own components, found while comparing:
   identifier `undefined` at compile time although the usage text says the slice manifest admits it.
 - **The front end knows what a BigInt literal is**: it names the construct in a `--slice` refusal,
   while the wide surface — whose own manifest text excludes BigInt — admits it silently. The
-  machinery for the refusal of section 4.2 already exists and is not reached. **This is the one
-  entry on this list that has been repaired: the wide parser reaches that machinery from 2026-09-08**
+  machinery for the refusal of section 4.2 already exists and is not reached. **This was the first
+  entry on this list to be repaired: the wide parser reaches that machinery from 2026-09-08**
   and both surfaces now refuse the literal by name, which is the disagreement closing rather than
   being explained *(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*.
 - **`GeneratorFunction`, `AsyncFunction` and `AsyncGeneratorFunction` refuse with a reason about
@@ -458,7 +460,7 @@ anything unusual:
   distinct realms of one process. The language requires distinct realms to produce distinct
   sequences, and an implementation is expected to choose its seed. This is the one finding in this
   document a reader should not have to be told twice about: any guest relying on unpredictability
-  gets none.
+  gets none. *(corrected: [JSC-231](roadmap.corrections.md#jsc-231))*
 - **Three artifact-format ceilings surface as refusals with no basis in the language**: a call with
   more than a couple of hundred arguments is refused at compile time while the identical call
   through `apply` is admitted; a program with more than about sixty-five thousand distinct literal
@@ -731,6 +733,16 @@ a milestone with a ledger row.
 
 ### JSP-8 — The places this component disagrees with itself
 
+- **2026-09-29 implementation note:** every clause of the gate below has a change behind it in this
+  checkout. The top-level `for await` was the parser's record of the module body, not the lowering
+  or the verifier, and is diagnosed in [JSC-229](roadmap.corrections.md#jsc-229) with a fixture and
+  rows that answer values. The `d` flag builds `indices`; a comma after a rest in a binding position
+  names the rest; under `--slice` a class static block is refused for its class; and the usage text
+  names the manifests from the profile's own identities, held by acceptance rows to what `--version`
+  prints ([JSC-230](roadmap.corrections.md#jsc-230)). The `v` flag's compile-time refusal and the
+  prototypes' `toString` answers were already in the tree. Each change was watched failing and
+  passing as [record JSP-PARITY-001](../../../docs/evidence/jsp-parity-001/README.md) retains.
+  Unreviewed, not accepted evidence, and no milestone or stage moves.
 - **Objective.** No document, diagnostic or usage text in this component describes a surface other
   than the one it has, and no lowering emits an artifact this component's own verifier rejects.
 - **Waits on.** Nothing.
@@ -775,6 +787,13 @@ a milestone with a ledger row.
   Local implementation in the working tree, validated as recorded in the named
   `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
   moves.
+- **2026-09-29 implementation note:** the severable `Math.random` clause has a change behind it:
+  each realm seeds its generator from the platform's entropy source, and two checks in the
+  slice-compiler root assert that three realms of one process and two processes draw different
+  sequences. Both fail against a constant seed, and the two-process one also fails against a seed
+  that counts realms ([JSC-231](roadmap.corrections.md#jsc-231),
+  [record JSP-PARITY-001](../../../docs/evidence/jsp-parity-001/README.md)). The rest of the gate is
+  untouched. Unreviewed, not accepted evidence, and no milestone or stage moves.
 - **Objective.** The host's defaults, its capabilities and its format ceilings are things a reader
   can find out before meeting them, and none of them is a surprise reachable by ordinary code.
 - **Waits on.** Nothing for the reporting half. The allowance defaults are a decision rather than a

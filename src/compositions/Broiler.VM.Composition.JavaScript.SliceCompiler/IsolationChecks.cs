@@ -64,6 +64,8 @@ internal static class IsolationChecks
         OneShareableHandleIsInstantiatedByTwoRuntimes(),
         TwoRuntimesReadOneHandleConcurrently(),
         AHandleCarriesNothingTheRunsThatUsedItChanged(),
+        ThreeRealmsOfOneProcessDrawThreeSequences(),
+        TwoProcessesDrawTwoSequences(),
     ];
 
     /// <summary>
@@ -356,6 +358,220 @@ internal static class IsolationChecks
             "store from nothing. This is behavioural and not the structural scan the gate names: " +
             "a per-instance structure these programs never observe would not be caught here, and " +
             "what bounds that is the construction rather than this check");
+    }
+
+    // =============================================================================================
+    // Math.random: one sequence per realm (roadmap.parity.md, JSP-10's severable clause)
+    // =============================================================================================
+
+    /// <summary>How many draws each realm answers: enough that two agreeing by chance is not a case.</summary>
+    private const int RandomDraws = 8;
+
+    /// <summary>The program each realm runs: its first draws, in order, as one line.</summary>
+    private const string RandomProgram =
+        "var draws = []; for (var i = 0; i < 8; i++) { draws.push(Math.random()); } draws.join(',');";
+
+    /// <summary>
+    /// Three realms of one process draw three different sequences: two instances of one handle in
+    /// one runtime, and one in a second runtime.
+    /// </summary>
+    /// <remarks>
+    /// ES2026 21.3.2.27 requires distinct realms to produce distinct sequences. Against a seed that
+    /// is a constant, which is what this profile had until 2026-09-29, all three answer the same line
+    /// and the check fails. The two-process check below catches a seed that differs by realm but
+    /// repeats between processes, such as a count of the realms made so far.
+    /// </remarks>
+    private static (string, bool, string) ThreeRealmsOfOneProcessDrawThreeSequences()
+    {
+        const string Name = "three realms of one process draw three different Math.random sequences";
+
+        var artifact = Compile(RandomProgram);
+
+        if (artifact is null)
+        {
+            return (Name, false, "the program did not compile, so the check judged nothing");
+        }
+
+        using var runtimeA = Runtime();
+        using var runtimeB = Runtime();
+
+        if (runtimeA is null || runtimeB is null)
+        {
+            return (Name, false, "a runtime refused creation");
+        }
+
+        var descriptor = Descriptor();
+        var verified = runtimeA.Verify(in descriptor, artifact, System.Threading.CancellationToken.None);
+
+        if (!verified.TryGetArtifact(out var handle))
+        {
+            return (Name, false, $"verification: {verified.Outcome}/{verified.Reason}");
+        }
+
+        var answers = new System.Collections.Generic.List<string>();
+
+        foreach (var runtime in (VmRuntime[])[runtimeA, runtimeA, runtimeB])
+        {
+            if (!TryRun(runtime, handle, out var answer, out var why))
+            {
+                return (Name, false, $"realm {answers.Count}: {why}");
+            }
+
+            answers.Add(answer);
+        }
+
+        return JudgeSequences(Name, answers, "realms");
+    }
+
+    /// <summary>Two processes, each with one fresh realm, draw two different sequences.</summary>
+    /// <remarks>
+    /// Each child is this root again, run with <c>--random-draws</c>, which prints one realm's draws
+    /// and exits. The root may be a Native AOT image, an app host or an assembly under the
+    /// <c>dotnet</c> host, and <see cref="SelfCommand"/> handles all three. A child that cannot be
+    /// started fails the check, because a check that could not run has judged nothing.
+    /// </remarks>
+    private static (string, bool, string) TwoProcessesDrawTwoSequences()
+    {
+        const string Name = "two processes draw two different Math.random sequences";
+
+        var answers = new System.Collections.Generic.List<string>();
+
+        for (var index = 0; index < 2; index++)
+        {
+            if (!TryRunSelf(out var answer, out var why))
+            {
+                return (Name, false, $"process {index}: {why}");
+            }
+
+            answers.Add(answer);
+        }
+
+        return JudgeSequences(Name, answers, "processes");
+    }
+
+    /// <summary>What <c>--random-draws</c> prints: one fresh realm's draws, or why there are none.</summary>
+    internal static int PrintRandomDraws()
+    {
+        var artifact = Compile(RandomProgram);
+        using var runtime = Runtime();
+
+        if (artifact is null || runtime is null)
+        {
+            Console.WriteLine("no draws: the program did not compile or the runtime refused creation");
+            return 1;
+        }
+
+        if (!TryRun(runtime, artifact, out var answer, out var why))
+        {
+            Console.WriteLine("no draws: " + why);
+            return 1;
+        }
+
+        Console.WriteLine(answer);
+        return 0;
+    }
+
+    /// <summary>
+    /// Holds every answer to eight draws in <c>[0, 1)</c> and every pair of answers to different
+    /// sequences. The draws are not printed, so the check's line is the same on every run.
+    /// </summary>
+    private static (string, bool, string) JudgeSequences(
+        string name, System.Collections.Generic.List<string> answers, string sources)
+    {
+        foreach (var answer in answers)
+        {
+            var draws = answer.Split(',');
+            var valid = draws.Length == RandomDraws && System.Array.TrueForAll(draws, static draw =>
+                double.TryParse(draw, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var value) &&
+                value >= 0 && value < 1);
+
+            if (!valid)
+            {
+                return (name, false, $"an answer is not {RandomDraws} draws in [0, 1): {answer}");
+            }
+        }
+
+        var distinct = answers.Distinct(System.StringComparer.Ordinal).Count();
+
+        return (
+            name,
+            distinct == answers.Count,
+            distinct == answers.Count
+                ? $"{answers.Count} {sources} drew {answers.Count} different sequences of {RandomDraws}, each draw in [0, 1)"
+                : $"{answers.Count} {sources} drew only {distinct} different sequences, so the seed is not per realm");
+    }
+
+    /// <summary>Runs this root with <c>--random-draws</c> and reads the one line it prints.</summary>
+    private static bool TryRunSelf(out string answer, out string why)
+    {
+        answer = string.Empty;
+        var (file, arguments) = SelfCommand();
+
+        if (file is null)
+        {
+            why = "this process has no path to start again";
+            return false;
+        }
+
+        var start = new System.Diagnostics.ProcessStartInfo(file)
+        {
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+        };
+
+        foreach (var argument in arguments)
+        {
+            start.ArgumentList.Add(argument);
+        }
+
+        start.ArgumentList.Add("--random-draws");
+
+        using var child = System.Diagnostics.Process.Start(start);
+
+        if (child is null)
+        {
+            why = "the child did not start";
+            return false;
+        }
+
+        var output = child.StandardOutput.ReadToEnd();
+        child.StandardError.ReadToEnd();
+
+        if (!child.WaitForExit(60_000))
+        {
+            child.Kill();
+            why = "the child did not exit within a minute";
+            return false;
+        }
+
+        answer = output.Trim();
+        why = child.ExitCode == 0 ? string.Empty : $"the child exited {child.ExitCode}: {answer}";
+        return child.ExitCode == 0;
+    }
+
+    /// <summary>
+    /// The command that starts this root again: the image itself, or the <c>dotnet</c> host with
+    /// this assembly when the root runs under it.
+    /// </summary>
+    private static (string? File, string[] Arguments) SelfCommand()
+    {
+        var process = Environment.ProcessPath;
+
+        if (process is null)
+        {
+            return (null, []);
+        }
+
+        var host = string.Equals(
+            System.IO.Path.GetFileNameWithoutExtension(process), "dotnet", System.StringComparison.OrdinalIgnoreCase);
+
+        // An AOT image or an app host is started as itself. The dotnet host needs the assembly,
+        // which is beside it in the application directory whenever the host started this root.
+        return host
+            ? (process, [System.IO.Path.Combine(AppContext.BaseDirectory, typeof(IsolationChecks).Assembly.GetName().Name + ".dll")])
+            : (process, []);
     }
 
     /// <summary>Compiles one script, or answers nothing.</summary>

@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs
+@@ -842,7 +842,7 @@
+         // 2026-09-29 `static` was taken as a modifier and `{` as the key after it, so the block's
+         // statements were read as further members and the program was refused as an unexpected
+         // brace rather than for the class the manifest does not admit.
+-        if (inClass && Current.Kind == SliceTokenKind.Static && Peek(1).Kind == SliceTokenKind.OpenBrace)
++        if (false && inClass && Current.Kind == SliceTokenKind.Static && Peek(1).Kind == SliceTokenKind.OpenBrace)
+         {
+             Advance();
+             children.Add(ParseBlock());

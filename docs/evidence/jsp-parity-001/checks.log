@@ -1,0 +1,5 @@
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --checks --verbose
+ok   three realms of one process draw three different Math.random sequences: 3 realms drew 3 different sequences of 8, each draw in [0, 1)
+ok   two processes draw two different Math.random sequences: 2 processes drew 2 different sequences of 8, each draw in [0, 1)
+broiler-js-slice-compiler: 588 checks passed, 3 not run on this machine and claimed by nothing
+# exit 0

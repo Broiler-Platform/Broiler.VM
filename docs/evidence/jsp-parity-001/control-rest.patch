@@ -1,0 +1,18 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -6977,13 +6977,7 @@
+     // Broiler-Human:        PENDING
+     private bool RefusedAfterRest(SliceSourceSpan rest, string message)
+     {
+-        if (Current.Kind != SliceTokenKind.Comma)
+-        {
+-            return false;
+-        }
+-
+-        Refuse(rest, SliceSourceDiagnosticCode.UnexpectedToken, message);
+-        return true;
++        return false;
+     }
+ 
+     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3032B3

@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 235 |
 | Files carrying an annotation | 235 |
-| Code units | 10215 |
-| Relevant | 5765 |
+| Code units | 10220 |
+| Relevant | 5770 |
 | Exempt by predicate | 4450 |
-| Annotated | 5765 of 5765 (100%) |
-| Human reviewed | 0 of 5765 (0%) |
-| Unverified | 5765 |
+| Annotated | 5770 of 5770 (100%) |
+| Human reviewed | 0 of 5770 (0%) |
+| Unverified | 5770 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5765 |
+| HUMAN_PENDING | 5770 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -38,9 +38,9 @@ figures below are the measurement of how far from that claim the component is.
 
 | Value | Units |
 |---|---:|
-| None | 1539 |
-| Low | 5362 |
-| Medium | 81 |
+| None | 1540 |
+| Low | 5365 |
+| Medium | 82 |
 | High | 0 |
 | Unknown | 0 |
 | *not annotated* | 0 |
@@ -50,8 +50,8 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 953 |
-| Medium | 4191 |
+| Low | 954 |
+| Medium | 4195 |
 | High | 1576 |
 | Critical | 253 |
 | *not annotated* | 0 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 5765 |
+| Units scored | 5770 |
 
 ## High-security review areas
 
@@ -1985,7 +1985,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10215 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10220 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

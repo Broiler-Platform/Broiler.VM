@@ -1,0 +1,11 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -1732,7 +1732,6 @@
+             // 2026-09-29 this form alone was not recorded, so the body was lowered as a unit
+             // that may not await, and this component's own verifier refused the loop's first
+             // asynchronous instruction (1630) on bytes this component's own lowering produced.
+-            sawTopLevelAwait |= functionDepth == 0;
+             isAwait = true;
+             Advance();
+         }

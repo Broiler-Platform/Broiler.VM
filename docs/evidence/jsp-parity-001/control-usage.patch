@@ -1,0 +1,12 @@
+diff --git a/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Program.cs b/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Program.cs
+--- a/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Program.cs
++++ b/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Program.cs
+@@ -973,7 +973,7 @@
+         // and the acceptance suite holds these lines to the name --version prints. Until
+         // 2026-09-29 they were typed into this text, which is how an earlier version of it came
+         // to describe a wide surface that was not the one this host runs.
+-        Console.WriteLine($"  --slice     use the narrow {JavaScriptProfile.SliceManifest} surface instead of");
++        Console.WriteLine("  --slice     use the narrow broiler.javascript.slim surface instead of");
+         Console.WriteLine($"              {JavaScriptProfile.WideManifest}, which every other run uses");
+         Console.WriteLine($"  --numeric   use the {JavaScriptProfile.NumericManifest} surface instead of");
+         Console.WriteLine($"              {JavaScriptProfile.WideManifest}");

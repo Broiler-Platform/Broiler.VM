@@ -2239,9 +2239,11 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch..ctor(System.Int32[] captured) : void
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.CaptureCount : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.End : System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.EndOf(System.Int32 group) : System.Int32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.Index : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.Length : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.Participated(System.Int32 group) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.StartOf(System.Int32 group) : System.Int32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.TextOf(System.String input, System.Int32 group) : System.String
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.Advance(System.String input, System.Int32 index, System.Boolean unicode) : static System.Int32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.CaptureCount : System.Int32 { get; }

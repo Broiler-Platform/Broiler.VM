@@ -1,0 +1,27 @@
+# 9335 variants on the base, 9335 on the change; 26 change verdict
+test/built-ins/RegExp/match-indices/indices-array-element.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-element.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-matched.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-matched.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-non-unicode-match.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-non-unicode-match.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-properties.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-properties.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-unicode-match.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-unicode-match.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-unicode-property-names.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-unicode-property-names.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-unmatched.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array-unmatched.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-array.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-groups-object-undefined.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-groups-object-undefined.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-groups-object-unmatched.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-groups-object-unmatched.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-groups-object.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-groups-object.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-groups-properties.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-groups-properties.js [strict] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-property.js [sloppy] Failed -> Passed
+test/built-ins/RegExp/match-indices/indices-property.js [strict] Failed -> Passed
