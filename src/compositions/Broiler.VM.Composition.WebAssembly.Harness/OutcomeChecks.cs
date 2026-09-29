@@ -52,6 +52,7 @@ internal static class OutcomeChecks
                 CorpusStore.FunctionModule([], [], [0x6A]),
                 VmReason.SemanticValidationFailed, WebAssemblyDiagnosticCode.OperandStackUnderflow, new(-1, 1, 10, 0)),
 
+            SuspensionRefused(runtime),
             TranslationCancelled(runtime),
             VerificationCancelled(runtime),
             UnsupportedProfile(runtime),
@@ -90,6 +91,48 @@ internal static class OutcomeChecks
         return (name, passed,
             $"{verified.Outcome}/{verified.Reason}/{verified.Code.ToString(CultureInfo.InvariantCulture)}@{Describe(at)}" +
             (passed ? string.Empty : $", expected InvalidArtifact/{reason}/{((int)code).ToString(CultureInfo.InvariantCulture)}@{Describe(expected)}"));
+    }
+
+    /// <summary>
+    /// The execution step <c>Suspended</c> is unreachable from this profile, and the refusal that says so
+    /// is tested rather than an instruction minted to reach it: the profile declares no external
+    /// suspension, so a request to suspend an operation of its is refused as undeclared.
+    /// </summary>
+    private static (string, bool, string) SuspensionRefused(VmRuntime runtime)
+    {
+        const string Name = "step-a-suspension-request-is-refused-as-undeclared";
+        var verified = ModuleVerification.Verify(runtime, CorpusStore.FunctionModule([], [], [], exportSection: [0x01, 0x01, 0x66, 0x00, 0x00]), Caller, Name);
+
+        if (!verified.TryGetArtifact(out var artifact))
+        {
+            return (Name, false, $"verification {verified.Outcome}/{verified.Reason}");
+        }
+
+        using (artifact)
+        {
+            var instantiated = runtime.Instantiate(artifact, CancellationToken.None);
+
+            if (!instantiated.TryGetInstance(out var instance))
+            {
+                return (Name, false, $"instantiation {instantiated.Outcome}/{instantiated.Reason}");
+            }
+
+            using (instance)
+            {
+                var request = new VmInvocationRequest(new VmUtf8Text("1:f"u8.ToArray()));
+                var answered = instance.Invoke(in request, CancellationToken.None, out var handle);
+
+                using (handle)
+                {
+                    var refused = handle.RequestSuspend();
+                    var passed = answered.Outcome == VmOutcome.Normal &&
+                        refused.Kind == VmControlOutcome.Unsupported &&
+                        refused.Reason == VmReason.ExternalSuspensionNotDeclared;
+
+                    return (Name, passed, $"invocation {answered.Outcome}, suspension {refused.Kind}/{refused.Reason}");
+                }
+            }
+        }
     }
 
     /// <summary>A translation handed a token already cancelled answers a cancellation, not a module.</summary>
