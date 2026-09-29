@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs
+@@ -75,7 +75,7 @@
+         System.Span<byte> bytes = stackalloc byte[sizeof(ulong)];
+         System.Security.Cryptography.RandomNumberGenerator.Fill(bytes);
+         var seed = System.Buffers.Binary.BinaryPrimitives.ReadUInt64LittleEndian(bytes);
+-        return seed != 0 ? seed : 0x2545F4914F6CDD1DUL;
++        return seed != 0 ? 0x2545F4914F6CDD1DUL : 0x2545F4914F6CDD1DUL;
+     }
+ 
+     /// <summary>Builds <c>Math</c> and defines it on the global object.</summary>

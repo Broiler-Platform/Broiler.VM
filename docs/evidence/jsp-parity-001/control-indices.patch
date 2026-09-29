@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs
+@@ -1949,7 +1949,7 @@
+ 
+         // `indices` IS DEFINED LAST, after `groups`, which is where RegExpBuiltinExec's step 34
+         // puts it - so a result's own keys enumerate in the language's order.
+-        if (RegExpHasFlag(target.Flags, 'd'))
++        if (RegExpHasFlag(target.Flags, 'D'))
+         {
+             result.DefineOrdinary("indices", JsValue.Object(RegExpMatchIndices(engine, target, match)));
+         }
