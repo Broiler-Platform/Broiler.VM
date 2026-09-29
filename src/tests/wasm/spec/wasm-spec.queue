@@ -1,0 +1,20 @@
+# The WebAssembly profile's failure queue: every script of the suite with a failing command, and how many.
+# Written by the harness root's --spec or --merge with --write-queue from a whole selection; held with --queue.
+# A path leaves it only in a change carrying its regression. See FailureQueue.cs.
+revision 977f97014c962f7bd1291fcc6d28b41a924882bf
+manifest broiler.webassembly.slice
+path binary-leb128.wast failing 3
+path binary.wast failing 3
+path call.wast failing 29
+path call_indirect.wast failing 26
+path data.wast failing 19
+path elem.wast failing 23
+path exports.wast failing 3
+path func_ptrs.wast failing 6
+path globals.wast failing 1
+path imports.wast failing 129
+path linking.wast failing 87
+path memory.wast failing 2
+path names.wast failing 2
+path skip-stack-guard-page.wast failing 9
+path start.wast failing 3

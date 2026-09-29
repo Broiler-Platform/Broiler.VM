@@ -1,0 +1,46 @@
+# broiler-wasm-harness spec shard report: see SpecReport.cs
+report 1
+revision 977f97014c962f7bd1291fcc6d28b41a924882bf
+manifest broiler.webassembly.slice
+limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+scope scope manifest wasm-spec.slice.scope for broiler.webassembly.slice
+candidates 73
+known-incorrect 0
+out-of-scope 0
+unselectable 0
+selected 73
+shards 4
+shard 0
+script address.wast
+script br.wast
+script call.wast
+script f64_cmp.wast
+script forward.wast
+script labels.wast
+script loop.wast
+script names.wast
+script traps.wast
+script unreached-invalid.wast
+script unwind.wast
+script utf8-import-field.wast
+family malformed selected 179 executed 176 passed 176 failed 0 skipped 3 timed-out 0
+family invalid selected 170 executed 170 passed 170 failed 0 skipped 0 timed-out 0
+family unlinkable selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family uninstantiable selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family trap selected 73 executed 73 passed 72 failed 1 skipped 0 timed-out 0
+family exception selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family exhaustion selected 2 executed 2 passed 1 failed 1 skipped 0 timed-out 0
+family return selected 3344 executed 3344 passed 3316 failed 28 skipped 0 timed-out 0
+failing address.wast 0
+failing br.wast 0
+failing call.wast 29
+failing f64_cmp.wast 0
+failing forward.wast 0
+failing labels.wast 0
+failing loop.wast 0
+failing names.wast 2
+failing traps.wast 0
+failing unreached-invalid.wast 0
+failing unwind.wast 0
+failing utf8-import-field.wast 0
+end

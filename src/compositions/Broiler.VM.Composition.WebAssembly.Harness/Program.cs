@@ -116,6 +116,12 @@ internal static class Program
                 return SpecSuite.Run(args);
             }
 
+            // So is the merge of that lane's shard reports.
+            if (args.Contains("--merge", StringComparer.Ordinal))
+            {
+                return SpecSuite.Merge(args);
+            }
+
             using var runtime = Runtime(out var creationFailure);
 
             if (runtime is null)

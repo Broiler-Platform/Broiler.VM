@@ -1,0 +1,76 @@
+# broiler-wasm-harness spec shard report: see SpecReport.cs
+report 1
+revision 977f97014c962f7bd1291fcc6d28b41a924882bf
+manifest broiler.webassembly.slice
+limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+scope scope manifest wasm-spec.slice.scope for broiler.webassembly.slice
+candidates 73
+known-incorrect 0
+out-of-scope 0
+unselectable 0
+selected 73
+shards 4
+shard 2
+script align.wast
+script binary.wast
+script block.wast
+script br_if.wast
+script br_table.wast
+script const.wast
+script data.wast
+script endianness.wast
+script f32_bitwise.wast
+script f64.wast
+script f64_bitwise.wast
+script fac.wast
+script float_exprs.wast
+script float_memory.wast
+script globals.wast
+script i32.wast
+script i64.wast
+script imports.wast
+script left-to-right.wast
+script linking.wast
+script memory_redundancy.wast
+script select.wast
+script skip-stack-guard-page.wast
+script token.wast
+script type.wast
+script unreachable.wast
+script utf8-import-module.wast
+family malformed selected 344 executed 246 passed 243 failed 3 skipped 98 timed-out 0
+family invalid selected 397 executed 397 passed 390 failed 7 skipped 0 timed-out 0
+family unlinkable selected 83 executed 83 passed 10 failed 73 skipped 0 timed-out 0
+family uninstantiable selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family trap selected 111 executed 111 passed 90 failed 21 skipped 0 timed-out 0
+family exception selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family exhaustion selected 11 executed 11 passed 2 failed 9 skipped 0 timed-out 0
+family return selected 5788 executed 5788 passed 5716 failed 72 skipped 0 timed-out 0
+failing align.wast 0
+failing binary.wast 3
+failing block.wast 0
+failing br_if.wast 0
+failing br_table.wast 0
+failing const.wast 0
+failing data.wast 19
+failing endianness.wast 0
+failing f32_bitwise.wast 0
+failing f64.wast 0
+failing f64_bitwise.wast 0
+failing fac.wast 0
+failing float_exprs.wast 0
+failing float_memory.wast 0
+failing globals.wast 1
+failing i32.wast 0
+failing i64.wast 0
+failing imports.wast 129
+failing left-to-right.wast 0
+failing linking.wast 87
+failing memory_redundancy.wast 0
+failing select.wast 0
+failing skip-stack-guard-page.wast 9
+failing token.wast 0
+failing type.wast 0
+failing unreachable.wast 0
+failing utf8-import-module.wast 0
+end

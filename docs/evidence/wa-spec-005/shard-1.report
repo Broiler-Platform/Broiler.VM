@@ -1,0 +1,56 @@
+# broiler-wasm-harness spec shard report: see SpecReport.cs
+report 1
+revision 977f97014c962f7bd1291fcc6d28b41a924882bf
+manifest broiler.webassembly.slice
+limits Fuel=50000000 WallClock=10000 AllocatedBytes=67108864 HostCalls=1000000 NestedLoadFanOut=4096 NestedLoadBytes=16777216 VerifierWork=100000000 LiveBytes=67108864 CallDepth=1024 NestedLoadDepth=4 ArtifactBytes=33554432 SectionCount=64 DeclaredCount=4194304 StructuralDepth=256 LiveRuntimes=18446744073709551615
+scope scope manifest wasm-spec.slice.scope for broiler.webassembly.slice
+candidates 73
+known-incorrect 0
+out-of-scope 0
+unselectable 0
+selected 73
+shards 4
+shard 1
+script binary-leb128.wast
+script break-drop.wast
+script comments.wast
+script custom.wast
+script elem.wast
+script f32_cmp.wast
+script float_literals.wast
+script float_misc.wast
+script func_ptrs.wast
+script if.wast
+script int_exprs.wast
+script int_literals.wast
+script load.wast
+script local_set.wast
+script local_tee.wast
+script nop.wast
+script switch.wast
+family malformed selected 182 executed 63 passed 63 failed 0 skipped 119 timed-out 0
+family invalid selected 196 executed 196 passed 195 failed 1 skipped 0 timed-out 0
+family unlinkable selected 12 executed 12 passed 8 failed 4 skipped 0 timed-out 0
+family uninstantiable selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family trap selected 22 executed 22 passed 22 failed 0 skipped 0 timed-out 0
+family exception selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family exhaustion selected 0 executed 0 passed 0 failed 0 skipped 0 timed-out 0
+family return selected 3369 executed 3369 passed 3360 failed 9 skipped 0 timed-out 0
+failing binary-leb128.wast 3
+failing break-drop.wast 0
+failing comments.wast 0
+failing custom.wast 0
+failing elem.wast 23
+failing f32_cmp.wast 0
+failing float_literals.wast 0
+failing float_misc.wast 0
+failing func_ptrs.wast 6
+failing if.wast 0
+failing int_exprs.wast 0
+failing int_literals.wast 0
+failing load.wast 0
+failing local_set.wast 0
+failing local_tee.wast 0
+failing nop.wast 0
+failing switch.wast 0
+end

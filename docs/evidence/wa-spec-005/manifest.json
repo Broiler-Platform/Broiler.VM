@@ -1,0 +1,51 @@
+{
+  "bundle": "wa-spec-005",
+  "milestone": "WA-4",
+  "evidence-class": "working-record",
+  "collected-at": "33feb0d4bff9fb1328dc1bdbda5192eb33910b4a",
+  "worktree-clean": true,
+  "hash-method": "sources: git blob id at source-revision; inputs and retained files: sha256 of the LF bytes git stores",
+  "note": "WA-4's selection pipeline, content-independent sharding, merge, failure queue and tooling regression suite over the pinned scripts: a whole run under the slice's scope manifest held to the ratchet; the same selection in four shards, their answer lines the whole run's line for line; the merge of the four held to the ratchet and writing the failure queue (retained here as wasm-spec.queue, and copied byte for byte to src/tests/wasm/spec/wasm-spec.queue by the retaining commit), then held to it; every refusal with its exit code; the tooling suite failing a merge patched to sum a partial set. A working record: it moves no ledger row",
+  "source-revision": "33feb0d4bff9fb1328dc1bdbda5192eb33910b4a",
+  "sources": {
+    "docs/evidence/wa-spec-005/collect.py": "2726fccc470505fa0b103765c4ae719f474abb52",
+    "docs/evidence/wa-spec-005/control-partial-merge.patch": "1b064302987a2e571e7dff8a3d5093034bdaa315",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/FailureQueue.cs": "04a1b4364b2146f2d5af71010b8604f48a24768f",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Ratchet.cs": "b6a89cd589b419de9cd98a606ad34b3a32b90335",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecReport.cs": "5ba17702d3d6521187ff2a723b0b439b2a04120a",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecSelection.cs": "d4ae8787b26318fea2b1c83391aa96586b3ccff2",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecSuite.cs": "a06132cd152017abe28a0a7599ad4437f3542ceb",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ToolingChecks.cs": "e1ddfef27321c94b2a755746308869d73d2315ed",
+    "src/tests/wasm/spec/wasm-spec-977f97014c962f7bd1291fcc6d28b41a924882bf-test-core.tar.gz": "5376d01f8a3473b4946d73b9678807c00f521395",
+    "src/tests/wasm/spec/wasm-spec.pin": "ed11707fe2213538ca6188bad2b59fff5ec97646",
+    "src/tests/wasm/spec/wasm-spec.ratchet": "f3361d3068efbfd6b6994fe9ca893ba5122d7e8e",
+    "src/tests/wasm/spec/wasm-spec.slice.scope": "517cccd496353b46891621ddfac1fc5576469067"
+  },
+  "inputs": {
+    "src/Broiler.VM.Profile.WebAssembly/bin/Release/net10.0/Broiler.VM.Profile.WebAssembly.dll": "927db22bf1adc56d9b27f9f6023bd72b46ec7fca22b8c7189fe9269781cbdb84",
+    "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll": "47508ff46c1e715733ee7cc95f9bb3e809e0c6dbd95f3dcc623e24de09421ab9"
+  },
+  "retained": {
+    "README.md": "aabc1b290c6d97eb9701ebe44858854d6f532c4027702298a09a515ee2b0dddb",
+    "build.log": "182ad4ee4b1aebab9b0a7ae1b94377833895a6f446d52d9a4facd584563975cd",
+    "collect.py": "9da2e96c17d7f66ddab4d706c302e579cb8334fa4bfefbfe5b399fe51151b5ab",
+    "comparison.log": "ae75a877eea6e56da0f0179a849bd514c8b0d03d2f73e3b96b684220049599c9",
+    "control-partial-merge.log": "d70dc1132479bd416aeac8be5957114506b16e74b44a92e4eb5f06a124dbb79c",
+    "control-partial-merge.patch": "1ac4d23b2291e454123952412a1cb1c25659d35f08f03983dc2e6ef7640612ed",
+    "harness.log": "195fbbee10316855850dfa73d91754cb48483a4ceb827733ecd71bb7da92930b",
+    "merge-queue.log": "74954522f5dd7f0b3dc5ded47efebbbbb465e46312b9abffb40abc3da6425cc0",
+    "merge.log": "9f0e3e4f1c4c42a01555e30e71d94f18affc139c5c50ebbea981cfaebd418e24",
+    "refusals.log": "228893a2e4ccda7b479529154ec58032cc057cd4222c110ec77e95ded5990356",
+    "shard-0.log": "7874617ff86505d4f6e7e73be5d47761642ffb1ccb27ca84453d9c2bd8a36d88",
+    "shard-0.report": "a3c4b62b00f59ecefeec6c5deb33753b4206750fe8e52ee4d7239addbc654f29",
+    "shard-1.log": "a3e32ddc5aa071c672c9db0f55204dc0e2bb0d7bc53e0c64ea39afdafc9079a7",
+    "shard-1.report": "2d9e71d202b600da89749cf7fe1845e021dfce51389125d517a3cc5910aa3b9b",
+    "shard-2.log": "6733be335b6ab3294fab507245141d33589854bac1017dc57c20f2c098b55107",
+    "shard-2.report": "95add8027162e9d97c4200b2dfadf9ce362ee3fa167a6475b9ce63f30ef2734e",
+    "shard-3.log": "da57b55cc7820bf6586bdebf31ac69cec15298acd8b562142262a88f2be7aa4d",
+    "shard-3.report": "65a0b58a1c9d30a8e60999371e06f880a8b0a5aca776be3b35c8c04df1860b4a",
+    "tests.log": "07f9a27dfac25a6b44742f48825a08c0ff8736bc01626e77d8c847c493ec13cd",
+    "wasm-spec.queue": "25409f9ef7b76ea6ccfc9db80e383ddf0a60b0dca3e886df475775747f6dc2fa",
+    "whole-run.log": "500e1eec62272cd3663ceffe2440df103ad382b69d28722547ece5afb890d748"
+  }
+}

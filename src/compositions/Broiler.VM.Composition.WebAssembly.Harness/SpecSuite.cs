@@ -24,7 +24,12 @@ namespace Broiler.VM.Composition.WebAssembly.Harness;
 /// self-check or its negative control fails, and on a named configuration failure - an empty selection,
 /// no executed tests, or a family that selected commands and executed none - which exits with four
 /// rather than reporting a small total. Each assertion family's totals are printed in the roadmap's six
-/// counts.)</i>
+/// counts.)</i> <i>(Noted again 2026-09-29: the lane selects through the recorded pipeline of
+/// <see cref="SpecSelection"/>, runs one shard of it with <c>--shard i/n</c>, and writes the shard's
+/// report with <c>--report</c>; <c>--merge</c> reads a directory of reports, proves they cover the whole
+/// selection (<see cref="SpecReport"/>), and holds the merged totals to the ratchet and the merged
+/// failures to the queue (<see cref="FailureQueue"/>). The tooling's own regression suite,
+/// <see cref="ToolingChecks"/>, runs before any shard and before any merge.)</i>
 /// </para>
 /// <para>
 /// <b><c>--encode-to</c> reads and encodes, and runs nothing.</b> It writes every text module the
@@ -73,24 +78,50 @@ internal static class SpecSuite
             return 4;
         }
 
-        var scripts = Directory.GetFiles(directory, "*.wast")
-            .Select(static path => (Name: Path.GetFileName(path), Path: path))
-            .OrderBy(static script => script.Name, StringComparer.Ordinal)
-            .ToList();
+        var queue = Argument(args, "--queue");
+        var writeQueue = Argument(args, "--write-queue");
 
-        // A CONFIGURATION FAILURE IS A FAILURE, NOT A SMALL TOTAL. A directory holding no script would
-        // otherwise report zero of everything and exit as cleanly as a full run.
-        if (scripts.Count == 0)
+        if ((queue is not null || writeQueue is not null) && pin is null)
         {
-            Console.WriteLine($"# spec: CONFIGURATION FAILURE empty selection: {directory} holds no script");
+            Console.WriteLine("# spec: CONFIGURATION FAILURE missing suite revision: a failure queue is read or written only for a pinned directory, and no --expect was given");
             return 4;
         }
 
+        if (!SpecSelection.TryParseShard(Argument(args, "--shard"), out var shard, out var shards))
+        {
+            Console.WriteLine("broiler-wasm-harness: --shard takes i/n, a shard index below a shard count of at least one");
+            return 2;
+        }
+
+        // A RATCHET AND A QUEUE ARE WRITTEN FROM A WHOLE SELECTION, and a ratchet is held by one: one
+        // shard's totals are part of a total, and the merge is where the whole is held.
+        if (shards > 1 && (ratchet is not null || writeRatchet is not null || writeQueue is not null))
+        {
+            Console.WriteLine("# spec: CONFIGURATION FAILURE a ratchet is held, and a ratchet or a queue written, by a whole selection: run unsharded, or give them to --merge");
+            return 4;
+        }
+
+        // A CONFIGURATION FAILURE IS A FAILURE, NOT A SMALL TOTAL. A directory holding no script would
+        // otherwise report zero of everything and exit as cleanly as a full run.
+        if (!SpecSelection.TrySelect(directory, Argument(args, "--scope"), Argument(args, "--known-incorrect"), shard, shards, out var selection, out var selectionFailure))
+        {
+            Console.WriteLine($"# spec: CONFIGURATION FAILURE {selectionFailure}");
+            return 4;
+        }
+
+        var scripts = selection.InShard.ToList();
         var encodeTo = Argument(args, "--encode-to");
 
         if (encodeTo is not null)
         {
-            return Encode(scripts, encodeTo);
+            return Encode([.. selection.Selected], encodeTo);
+        }
+
+        // THE HARNESS'S OWN REGRESSION SUITE, then the reader's self-check, before any shard starts.
+        if (!ToolingChecks.Run())
+        {
+            Console.WriteLine("broiler-wasm-harness: the tooling's regression suite failed, so no script was run");
+            return 3;
         }
 
         if (!SelfCheck())
@@ -101,6 +132,7 @@ internal static class SpecSuite
 
         Console.WriteLine($"# spec: revision {revision}, {scripts.Count.ToString(CultureInfo.InvariantCulture)} scripts, each in a runtime of its own");
         Console.WriteLine($"# spec: effective limits {Limits()}");
+        SpecSelection.Print(selection);
 
         var all = new List<ScriptCommand>();
 
@@ -143,14 +175,147 @@ internal static class SpecSuite
         var floor = Argument(args, "--floor");
         var code = floor is null ? 0 : CheckFloor(floor, revision, all);
 
+        var failing = scripts.ToDictionary(
+            static script => script.Name,
+            script => all.Count(command => command.File == script.Name && command.Verdict is ScriptVerdict.Fail),
+            StringComparer.Ordinal);
+
+        var report = Argument(args, "--report");
+
+        if (report is not null)
+        {
+            File.WriteAllText(report, SpecReport.Write(Configuration(revision, selection), shard, scripts.Select(static script => script.Name), totals, failing), new UTF8Encoding(false));
+            Console.WriteLine($"# spec: shard report written to {report}");
+        }
+
+        return Hold(code, revision, Limits(), totals, failing,
+            selection.Selected.Select(static script => script.Name).ToHashSet(StringComparer.Ordinal),
+            scripts.Select(static script => script.Name).ToHashSet(StringComparer.Ordinal),
+            ratchet, writeRatchet, queue, writeQueue);
+    }
+
+    /// <summary>
+    /// Merges the shard reports in a directory, proves they cover the whole selection, and holds the merged
+    /// totals to a ratchet and the merged failures to a queue.
+    /// </summary>
+    internal static int Merge(string[] args)
+    {
+        var directory = Argument(args, "--merge");
+
+        if (directory is null || !Directory.Exists(directory))
+        {
+            Console.WriteLine("broiler-wasm-harness: --merge needs the directory holding the shard reports");
+            return 2;
+        }
+
+        if (!ToolingChecks.Run())
+        {
+            Console.WriteLine("broiler-wasm-harness: the tooling's regression suite failed, so nothing was merged");
+            return 3;
+        }
+
+        var reports = Directory.GetFiles(directory, "*.report")
+            .OrderBy(static path => path, StringComparer.Ordinal)
+            .Select(static path => (Source: Path.GetFileName(path), Text: File.ReadAllText(path)))
+            .ToList();
+
+        var failures = new List<string>();
+        var (families, failing, scripts, configuration) = SpecReport.Merge(reports, failures);
+
+        foreach (var failure in failures)
+        {
+            Console.WriteLine($"# merge: CONFIGURATION FAILURE {failure}");
+        }
+
+        if (failures.Count > 0)
+        {
+            return 4;
+        }
+
+        Console.WriteLine(
+            $"# merge: {reports.Count.ToString(CultureInfo.InvariantCulture)} shard reports of {configuration["shards"]}, revision {configuration["revision"]}, " +
+            $"{scripts.Count.ToString(CultureInfo.InvariantCulture)} scripts of the {configuration["selected"]} selected before sharding: the whole selection");
+        Console.WriteLine($"# merge: effective limits {configuration["limits"]}");
+
+        foreach (var (family, _) in AssertionFamilies)
+        {
+            var totals = families.GetValueOrDefault(family);
+            Console.WriteLine(
+                $"# merge: family {family}: selected {totals.Selected.ToString(CultureInfo.InvariantCulture)}, executed {totals.Executed.ToString(CultureInfo.InvariantCulture)}, " +
+                $"passed {totals.Passed.ToString(CultureInfo.InvariantCulture)}, failed {totals.Failed.ToString(CultureInfo.InvariantCulture)}, " +
+                $"skipped {totals.Skipped.ToString(CultureInfo.InvariantCulture)}, timed out 0");
+        }
+
+        return Hold(0, configuration["revision"], configuration["limits"], families, failing, scripts, scripts,
+            Argument(args, "--ratchet"), Argument(args, "--write-ratchet"), Argument(args, "--queue"), Argument(args, "--write-queue"));
+    }
+
+    /// <summary>A run's configuration, as its shard report states it.</summary>
+    private static Dictionary<string, string> Configuration(string revision, SpecSelection.Selection selection) =>
+        new(StringComparer.Ordinal)
+        {
+            ["report"] = "1",
+            ["revision"] = revision,
+            ["manifest"] = Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.SliceManifest.ToString(),
+            ["limits"] = Limits(),
+            ["scope"] = selection.Scope,
+            ["candidates"] = selection.Candidates.ToString(CultureInfo.InvariantCulture),
+            ["known-incorrect"] = selection.KnownIncorrect.Count.ToString(CultureInfo.InvariantCulture),
+            ["out-of-scope"] = selection.OutOfScope.Count.ToString(CultureInfo.InvariantCulture),
+            ["unselectable"] = selection.Unselectable.Count.ToString(CultureInfo.InvariantCulture),
+            ["selected"] = selection.Selected.Count.ToString(CultureInfo.InvariantCulture),
+            ["shards"] = selection.Shards.ToString(CultureInfo.InvariantCulture),
+        };
+
+    /// <summary>Holds totals to a ratchet and failures to a queue, and writes either; answers the exit code.</summary>
+    private static int Hold(
+        int code, string revision, string limits,
+        IReadOnlyDictionary<string, FamilyTotals> totals, IReadOnlyDictionary<string, int> failing,
+        IReadOnlySet<string> selected, IReadOnlySet<string> ran,
+        string? ratchet, string? writeRatchet, string? queue, string? writeQueue)
+    {
         if (ratchet is not null)
         {
-            code = Math.Max(code, Ratchet.Check(ratchet, revision, Limits(), totals));
+            code = Math.Max(code, Ratchet.Check(ratchet, revision, limits, totals));
         }
 
         if (writeRatchet is not null)
         {
-            code = Math.Max(code, Ratchet.Write(writeRatchet, revision, Limits(), totals));
+            code = Math.Max(code, Ratchet.Write(writeRatchet, revision, limits, totals));
+        }
+
+        if (queue is not null)
+        {
+            if (!File.Exists(queue))
+            {
+                Console.WriteLine($"# spec: CONFIGURATION FAILURE queue {queue}: no such file");
+                return 4;
+            }
+
+            if (!FailureQueue.TryParse(File.ReadAllText(queue), out var parsed, out var failure))
+            {
+                Console.WriteLine($"# spec: CONFIGURATION FAILURE queue {queue}: {failure}");
+                return 4;
+            }
+
+            var violations = FailureQueue.Check(parsed, revision, selected, ran, failing);
+
+            foreach (var violation in violations)
+            {
+                Console.WriteLine($"# spec: QUEUE {violation}");
+            }
+
+            var judged = parsed.Entries.Keys.Count(ran.Contains);
+            Console.WriteLine(
+                $"# spec: queue {queue}: {judged.ToString(CultureInfo.InvariantCulture)} of {parsed.Entries.Count.ToString(CultureInfo.InvariantCulture)} entries judged by this run; " +
+                (violations.Count == 0 ? "every one confirmed, and no failure unlisted" : $"{violations.Count.ToString(CultureInfo.InvariantCulture)} disagreements"));
+            code = Math.Max(code, violations.Count == 0 ? 0 : 1);
+        }
+
+        if (writeQueue is not null)
+        {
+            File.WriteAllText(writeQueue, FailureQueue.Write(revision, failing), new UTF8Encoding(false));
+            Console.WriteLine($"# spec: failure queue written to {writeQueue}");
         }
 
         return code;
