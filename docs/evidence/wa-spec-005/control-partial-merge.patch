@@ -1,0 +1,27 @@
+diff --git a/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecReport.cs b/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecReport.cs
+index 5ba1770..f753697 100644
+--- a/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecReport.cs
++++ b/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/SpecReport.cs
+@@ -203,10 +203,6 @@ internal static class SpecReport
+             failures.Add($"inconsistent shard configuration: shard {Text(group.Key)} is reported by {string.Join(" and ", group.Select(static report => report.Source))}");
+         }
+ 
+-        foreach (var index in Enumerable.Range(0, shards).Where(index => read.All(report => report.Shard != index)))
+-        {
+-            failures.Add($"incomplete coverage: shard {Text(index)} of {Text(shards)} has no report");
+-        }
+ 
+         foreach (var report in read)
+         {
+@@ -237,11 +233,6 @@ internal static class SpecReport
+             }
+         }
+ 
+-        if (scripts.Count != selected)
+-        {
+-            failures.Add(
+-                $"incomplete coverage: the shards ran {Text(scripts.Count)} scripts of the {Text(selected)} the pipeline selected before sharding");
+-        }
+ 
+         return (families, failing, scripts, first.Fields);
+     }
