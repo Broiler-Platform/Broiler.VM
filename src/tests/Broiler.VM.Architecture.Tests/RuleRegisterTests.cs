@@ -386,10 +386,13 @@ public sealed class RuleRegisterTests
         // WA-5's scan adds W5: nothing reachable from the profile's verified state, the module
         // definitions the family hook answers with, is mutable - every stored member readonly and
         // holding an immutable type. Active when minted; no other count moves.
-        Assert.Equal(104, byStatus["Active"]);
+        // WA-5's step-kind clause adds W6: no source of the profile names the execution step, and
+        // none names a core outcome category but the translator, which names only the four a
+        // verification answers. Active when minted; no other count moves.
+        Assert.Equal(105, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(106, Loaded.Rules.Count);
+        Assert.Equal(107, Loaded.Rules.Count);
     }
 
     private static Register Load()
