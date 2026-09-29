@@ -150,6 +150,7 @@ internal static class Program
             ModuleVerification.Recorded = determinism ? [] : null;
 
             failed += ExecutionChecks.Report(runtime, verbose);
+            failed += HookChecks.Report(runtime, verbose);
             failed += DifferentialChecks.Report(runtime, verbose);
 
             var built = ModuleVerification.Recorded;

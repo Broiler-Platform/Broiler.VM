@@ -59,12 +59,22 @@
 #                           beside it, mapped from the kind by one switch in WasmFamily; no check reads
 #                           the code off the payload." The checks read the code since. No row and no
 #                           code's meaning changed, so the revision did not move.)*
+#                hook-check the case column names a check of the harness root's hook lane
+#                           (HookChecks.cs), which takes the artifact the translator wrote for a small
+#                           module, alters one thing in it that the translator never would, hands it to
+#                           the core's verification, and expects an invalid artifact with exactly this
+#                           code and this reason. The expected answer is written beside the check before
+#                           the core is asked. It is a check and not a corpus entry because every retained
+#                           entry is a WebAssembly module, and the translator writes definitions the hook
+#                           admits. *(Added 2026-09-29, with no new code and no changed meaning, so the
+#                           revision did not move: twelve rows that read `unreached` name a check since.)*
 #                unreached  no named case reaches the code, and the case column says why, in the
 #                           words rule W3 lists. WHICH ROWS MAY SAY THIS IS FIXED BY THE RULE, not
 #                           by this file. These rows are the part of WA-3's gate clause "every code
 #                           in it is reachable from a named case" that is not met.
 #                retired    nothing emits the code. The number stays taken.
-# case           the corpus entry, the trap kind, the rule's words for an unreached row, or `-`.
+# case           the corpus entry, the hook check, the trap kind, the rule's words for an unreached
+#                row, or `-`.
 # since          the registry revision the code was published in. The revision and this column date
 #                a code's MEANING: a new corpus entry for an existing code moves neither.
 #
@@ -108,7 +118,8 @@
 # member of its number; every emission site in the profile assembly's source carries the row's
 # reason and is in one of the row's passes, and each of the row's passes has a site; the carrier is
 # the one its passes use; a corpus row's entry exists, is derived and records exactly this code and
-# reason, and no entry records a code with another reason; an execution row's trap kind is mapped to
+# reason, and no entry records a code with another reason; a hook-check row's check expects exactly
+# this code and reason; an execution row's trap kind is mapped to
 # this code by the profile and by the execution checks' table, and a check expects it; the unreached
 # rows are the ones the rule lists;
 # and a retired row's code is named nowhere in the assembly's source.
@@ -130,8 +141,8 @@
 2302|UnknownValueType|decode+validate+hook|translation+outcome|MalformedEncoding|corpus|type-value-type-byte-names-nothing|1
 2303|ValueTypeNotAdmitted|decode+validate|translation|UnknownFeature|corpus|feature-a-vector-value-type|1
 2304|MalformedLimitsFlag|decode+hook|translation+outcome|MalformedEncoding|corpus|limits-flag-is-neither-form|1
-2305|LimitsMinimumAboveMaximum|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
-2306|MemoryPagesAboveFormatMaximum|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2305|LimitsMinimumAboveMaximum|hook|outcome|InconsistentStructure|hook-check|hook-memory-limits-minimum-above-maximum|1
+2306|MemoryPagesAboveFormatMaximum|hook|outcome|InconsistentStructure|hook-check|hook-memory-minimum-above-the-formats-page-maximum|1
 2307|UnknownElementType|decode|translation|MalformedEncoding|corpus|type-table-element-type-is-not-funcref|1
 2308|MalformedMutabilityFlag|decode+hook|translation+outcome|MalformedEncoding|corpus|type-global-mutability-flag-is-neither-form|1
 2401|MalformedNameEncoding|decode+hook|translation+outcome|MalformedEncoding|corpus|name-overlong-two-byte-form|1
@@ -183,16 +194,16 @@
 2820|BlockTypeNotAdmitted|validate|translation|UnknownFeature|corpus|feature-a-block-type-in-the-type-index-form|1
 2821|ReservedImmediateNotZero|validate+hook|translation+outcome|MalformedEncoding|corpus|validation-a-reserved-immediate-that-is-not-zero|1
 2822|OpcodeNotAdmitted|validate|translation|UnknownFeature|corpus|feature-a-bulk-memory-prefixed-instruction|1
-2851|ModuleDefinitionsMissing|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
-2852|ModuleDefinitionsTruncated|hook|outcome|Truncated|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
-2853|ModuleDefinitionsTrailingBytes|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
-2854|ModuleDefinitionsVersionUnsupported|hook|outcome|UnknownFormatVersion|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
-2855|ModuleDefinitionsMalformedPresence|hook|outcome|MalformedEncoding|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
-2856|GlobalInitialValueOutOfRange|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
-2857|ValueSlotNotAdmitted|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
-2858|ExportedFunctionNotAnEntry|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
-2859|PositionsNotOrdered|hook|outcome|InconsistentStructure|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
-2860|GlobalRowTypeMismatch|hook|outcome|SemanticValidationFailed|unreached|Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an artifact written other than by the translator.|1
+2851|ModuleDefinitionsMissing|hook|outcome|InconsistentStructure|hook-check|hook-module-definitions-missing|1
+2852|ModuleDefinitionsTruncated|hook|outcome|Truncated|hook-check|hook-module-definitions-ending-after-the-version|1
+2853|ModuleDefinitionsTrailingBytes|hook|outcome|InconsistentStructure|hook-check|hook-module-definitions-with-a-byte-after-the-start-field|1
+2854|ModuleDefinitionsVersionUnsupported|hook|outcome|UnknownFormatVersion|hook-check|hook-module-definitions-of-layout-version-two|1
+2855|ModuleDefinitionsMalformedPresence|hook|outcome|MalformedEncoding|hook-check|hook-module-definitions-memory-presence-byte-of-two|1
+2856|GlobalInitialValueOutOfRange|hook|outcome|InconsistentStructure|hook-check|hook-thirty-two-bit-global-with-initial-bits-above-its-width|1
+2857|ValueSlotNotAdmitted|hook|outcome|InconsistentStructure|hook-check|hook-a-unit-declaring-a-local-of-value-slots|1
+2858|ExportedFunctionNotAnEntry|hook|outcome|InconsistentStructure|hook-check|hook-an-export-naming-a-unit-that-is-not-an-entry|1
+2859|PositionsNotOrdered|hook|outcome|InconsistentStructure|hook-check|hook-positions-rows-out-of-order|1
+2860|GlobalRowTypeMismatch|hook|outcome|SemanticValidationFailed|hook-check|hook-a-global-read-typed-other-than-its-global|1
 2871|TranslationLocalsAboveMaximum|translate|translation|UnknownFeature|unreached|No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.|1
 2872|TranslationOperandHeightAboveMaximum|translate|translation|UnknownFeature|unreached|No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.|1
 2873|TranslationJumpTablesAboveMaximum|translate|translation|UnknownFeature|unreached|No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.|1
