@@ -440,6 +440,21 @@ retains that run, the rule failing against an injected stale claim, and its othe
 unreviewed implementation and validation material, not accepted milestone evidence; JSP-1 has no
 owner and no milestone row advances.
 
+**JSP-10 observation, the reporting half, 2026-09-29.** Four clauses of the parity roadmap's JSP-10 have
+a change behind them:
+- The host's usage text states the default instruction allowance, read from the descriptor, and says
+  that ordinary code reaches it, with a fixture loop that does.
+- The constant pool's refusal names its ceiling and where it was met.
+- Top-level `await` in a template substitution runs. It was a parser defect of the shape
+  [JSC-229](roadmap.corrections.md#jsc-229) records, not a ceiling.
+- The source-encoding set is stated, and a UTF-16 or UTF-32 file is refused naming its encoding
+  ([JSC-233](roadmap.corrections.md#jsc-233)).
+
+[Record JSP-10-HOST-001](../../../docs/evidence/jsp-10-host-001/README.md) retains each with its
+control. The capabilities present and throwing and the allowance defaults are untouched. This is
+unreviewed implementation and validation material, not accepted milestone evidence; JSP-10 has no
+owner and no milestone row advances.
+
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:
 

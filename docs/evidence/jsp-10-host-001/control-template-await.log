@@ -1,0 +1,38 @@
+$ git apply docs/evidence/jsp-10-host-001/control-template-await.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+VM.Profile.MachineCode.dll
+  Broiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.58
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-10.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 7 command lines from artifacts/jsp-10-host-001/jsp-10.expected.txt
+FAIL modules/a-top-level-await-in-a-template.mjs: exit 3, expected 0; output does not contain `plain tag-ged outer-inner-3`
+       broiler-js: modules/a-top-level-await-in-a-template.mjs: 2104:ConstructOutsideManifest at 9:18: `await` is only admitted inside an async function
+ok   limits/an-ordinary-loop-past-the-default-allowance.js
+ok   --fuel 1000000000 limits/an-ordinary-loop-past-the-default-allowance.js
+ok   --help
+ok   --help
+ok   encoding/utf-16le-with-a-byte-order-mark.js
+ok   encoding/utf-16be-with-a-byte-order-mark.js
+# 1 of 7 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-10-host-001/control-template-await.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+  Broiler.VM.Profile.JavaScript.Compiler -> <root>/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.31
+# exit 0
