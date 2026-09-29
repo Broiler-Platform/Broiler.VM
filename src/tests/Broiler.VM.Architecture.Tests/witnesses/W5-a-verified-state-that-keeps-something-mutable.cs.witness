@@ -1,0 +1,36 @@
+// A profile's verified state that keeps something another holder can change.
+//
+// Not compiled by anything; rule W5 reads it as though it were a file of Broiler.VM.Profile.WebAssembly,
+// starting at WasmStateWitness. One defect per stored member: a field that is not readonly, a property
+// with a setter, an array, a list, a type outside the assembly the rule does not admit, and - through a
+// part the scan walks to - a writable memory window. Beside them, what the rule does not read as
+// kept: a static field, a property with a body, an enumeration, and an immutable array of the part.
+namespace Broiler.VM.Profile.WebAssembly;
+
+internal sealed class WasmStateWitness
+{
+    internal static int Created;
+
+    private readonly ImmutableArray<WasmStatePartWitness> parts;
+
+    private int reads;
+
+    private readonly ulong[] keys;
+
+    internal uint Start { get; set; }
+
+    internal System.Collections.Generic.List<uint> Functions { get; }
+
+    internal System.Text.StringBuilder Name { get; }
+
+    internal WasmExportKind Kind { get; }
+
+    internal int Twice => reads * 2;
+}
+
+internal readonly struct WasmStatePartWitness
+{
+    internal uint Offset { get; }
+
+    internal System.Memory<byte> Contents { get; }
+}

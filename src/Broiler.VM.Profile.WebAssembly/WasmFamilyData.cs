@@ -293,21 +293,21 @@ internal sealed class WasmDefinitions
 // Broiler-Human:        PENDING
 internal sealed class WasmPositionIndex
 {
-    private readonly ulong[] keys;
+    private readonly ImmutableArray<ulong> keys;
     private readonly ImmutableArray<UbcPosition> rows;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=89C7A5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=257C29
     // Broiler-Human:        PENDING
-    private WasmPositionIndex(ulong[] keys, ImmutableArray<UbcPosition> rows)
+    private WasmPositionIndex(ImmutableArray<ulong> keys, ImmutableArray<UbcPosition> rows)
     {
         this.keys = keys;
         this.rows = rows;
     }
 
     /// <summary>An index of no rows.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EF3633
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0FE306
     // Broiler-Human:        PENDING
-    internal static WasmPositionIndex Empty { get; } = new([], ImmutableArray<UbcPosition>.Empty);
+    internal static WasmPositionIndex Empty { get; } = new(ImmutableArray<ulong>.Empty, ImmutableArray<UbcPosition>.Empty);
 
     /// <summary>The estimated bytes one row of the index keeps, and those of the array holding them.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F024B2
@@ -318,7 +318,7 @@ internal sealed class WasmPositionIndex
     /// Builds the index over <paramref name="positions"/>, charging its work and its bytes before
     /// either is spent, or refuses the rows when they do not strictly ascend.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=AF9449
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A08ADD
     // Broiler-Falsified-If: rows out of order or stated twice are indexed, or the key array is allocated before its bytes are reserved
     // Broiler-Human:        PENDING
     internal static UbcHookAnswer TryBuild(ImmutableArray<UbcPosition> positions, WasmHookMeter meter, out WasmPositionIndex index)
@@ -347,17 +347,21 @@ internal sealed class WasmPositionIndex
             }
         }
 
-        index = new WasmPositionIndex(keys, positions);
+        // The index is reachable from the verified state, and everything reachable from it is immutable
+        // (rule W5): the array built here is handed over whole, and nothing keeps a reference to write
+        // through. (Corrected 2026-09-29: the index held the array itself.)
+        index = new WasmPositionIndex(
+            System.Runtime.InteropServices.ImmutableCollectionsMarshal.AsImmutableArray(keys), positions);
         return UbcHookAnswer.Admit;
     }
 
     /// <summary>The coordinates of the row of <paramref name="unit"/> at <paramref name="offset"/>, or false when there is none.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=792161
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=574276
     // Broiler-Falsified-If: a unit and offset no row states answers coordinates
     // Broiler-Human:        PENDING
     internal bool TryFind(int unit, uint offset, out int coordinate0, out int coordinate1)
     {
-        var at = unit < 0 ? -1 : System.Array.BinarySearch(keys, Key((uint)unit, offset));
+        var at = unit < 0 ? -1 : System.MemoryExtensions.BinarySearch(keys.AsSpan(), Key((uint)unit, offset));
 
         if (at < 0)
         {

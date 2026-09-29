@@ -5,7 +5,8 @@
 # before it was asked; a row claiming no named case reaches it when a derived entry does, and the
 # rule does not list it; a row the rule lists as unreached, in other words than the rule's; a row
 # the rule lists as unreached claiming a corpus entry; a trap kind the payload mapping maps onto
-# another code; and a trap kind no execution check expects.
+# another code; a trap kind no execution check expects; a check the hook lane does not have; and a
+# check the hook lane has, which expects another code and reason.
 #
 # registry-revision: 1
 #
@@ -18,3 +19,5 @@
 2107|ReaderMalformedEncoding|decode+validate|translation|MalformedEncoding|corpus|preamble-truncated|1
 3001|TrapUnreachable|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.IntegerOverflow|1
 3002|TrapIntegerDivideByZero|execute|payload|ProfileFaultUnspecified|execution|WasmTrapKind.UndefinedElement|1
+2851|ModuleDefinitionsMissing|hook|outcome|InconsistentStructure|hook-check|hook-a-check-nobody-wrote|1
+2852|ModuleDefinitionsTruncated|hook|outcome|Truncated|hook-check|hook-module-definitions-missing|1

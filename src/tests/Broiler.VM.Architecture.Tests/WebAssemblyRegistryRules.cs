@@ -42,6 +42,10 @@ internal static class WebAssemblyRegistryRules
     internal const string CorpusManifestFile = "src/tests/wasm/corpus/corpus.manifest";
 
     /// <summary>The harness root's execution checks, which name the trap kinds an execution row claims.</summary>
+    internal const string HookChecksFile =
+        "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/HookChecks.cs";
+
+    /// <summary>The harness root's execution checks, which name the trap kinds an execution row claims.</summary>
     internal const string ExecutionChecksFile =
         "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/ExecutionChecks.cs";
 
@@ -79,7 +83,7 @@ internal static class WebAssemblyRegistryRules
     internal static readonly string[] Carriers = ["translation", "outcome", "payload"];
 
     /// <summary>The four reachability kinds a row may claim.</summary>
-    internal static readonly string[] Reachabilities = ["corpus", "execution", "unreached", "retired"];
+    internal static readonly string[] Reachabilities = ["corpus", "hook-check", "execution", "unreached", "retired"];
 
     /// <summary>
     /// The pass each file of the profile assembly that emits a code belongs to. A file that emits and
@@ -110,29 +114,23 @@ internal static class WebAssemblyRegistryRules
     /// <b>The list is here and not in the registry</b>, as rule U8's defensive list is: a registry that
     /// could admit its own unreached rows could excuse any row from the corpus by being edited. They are
     /// the part of WA-3's gate clause "every code in it is reachable from a named case" that is not met,
-    /// and the ledger names them as that.
+    /// and the ledger names them as that. (Twelve more stood here until 2026-09-29: the family hook's
+    /// own codes and the two it shares only with a retired decoder check, which the harness root's hook
+    /// lane now reaches, each with a check of its own. One more stood here until the same day: the
+    /// translation's bound on a unit's locals, which a corpus pair now reaches, at the bound and one
+    /// past it.)
     /// </remarks>
     internal static readonly UnreachedCode[] Unreached =
     [
         new(2107, "ReaderMalformedEncoding",
             "The profile reads through none of the bounded reader's operations that latch a malformation but the section exit, " +
             "and the decoder answers that one as SectionLengthMismatch."),
-        .. HookOnly(
-            (2305, "LimitsMinimumAboveMaximum"),
-            (2306, "MemoryPagesAboveFormatMaximum"),
-            (2851, "ModuleDefinitionsMissing"),
-            (2852, "ModuleDefinitionsTruncated"),
-            (2853, "ModuleDefinitionsTrailingBytes"),
-            (2854, "ModuleDefinitionsVersionUnsupported"),
-            (2855, "ModuleDefinitionsMalformedPresence"),
-            (2856, "GlobalInitialValueOutOfRange"),
-            (2857, "ValueSlotNotAdmitted"),
-            (2858, "ExportedFunctionNotAnEntry"),
-            (2859, "PositionsNotOrdered"),
-            (2860, "GlobalRowTypeMismatch")),
-        new(2871, "TranslationLocalsAboveMaximum", PastABound),
-        new(2872, "TranslationOperandHeightAboveMaximum", PastABound),
-        new(2873, "TranslationJumpTablesAboveMaximum", PastABound),
+        new(2872, "TranslationOperandHeightAboveMaximum",
+            "Reaching it takes more than sixty-five thousand operands on one stack, and the module at the bound, which a refusing entry " +
+            "needs beside it, leaves the lanes after the replay a few mebibytes of the harness root's shared runtime's allocation ceiling when the replay verifies it twice."),
+        new(2873, "TranslationJumpTablesAboveMaximum",
+            "Reaching it takes more than sixty-five thousand branch tables, and the module at the bound, which a refusing entry " +
+            "needs beside it, passes the harness root's shared runtime's allocation ceiling when the replay verifies it twice."),
         new(2874, "TranslationOperandOutOfRange",
             "No module the validator admits reaches it, as the enumeration's remark on it says."),
         new(2901, "VerifierDefect",
@@ -161,16 +159,6 @@ internal static class WebAssemblyRegistryRules
         new("src/Broiler.VM.Profile.WebAssembly/WasmTranslator.cs", "Code", "a property type",
             "the translation's answer exposes the code it carries"),
     ];
-
-    private const string PastABound =
-        "No retained entry is a valid module past a bound one universal bytecode unit or artifact holds.";
-
-    private static IEnumerable<UnreachedCode> HookOnly(params (int Code, string Name)[] codes) =>
-        codes.Select(static code => new UnreachedCode(
-            code.Code,
-            code.Name,
-            "Only the family hook emits it, over module definitions an artifact carries, and no retained entry is an " +
-            "artifact written other than by the translator."));
 
     /// <summary>The carrier a pass's codes travel on.</summary>
     internal static string CarrierOf(string pass) => pass switch
@@ -212,6 +200,9 @@ internal static class WebAssemblyRegistryRules
 
     /// <summary>One corpus manifest entry, reduced to what a registry row is compared with.</summary>
     internal sealed record CorpusEntry(string Name, string Outcome, string Reason, int Code, string Provenance);
+
+    /// <summary>One check of the harness root's hook lane: its name, and the answer written down for it.</summary>
+    internal sealed record HookCheck(string Name, string Outcome, string Reason, string? Code);
 
     /// <summary>A code no named case reaches, and why.</summary>
     internal sealed record UnreachedCode(int Code, string Name, string Why);
@@ -340,6 +331,34 @@ internal static class WebAssemblyRegistryRules
         .Where(static access => string.Equals(Rightmost(access.Expression), TrapKindType, StringComparison.Ordinal))
         .Select(static access => access.Name.Identifier.ValueText)
         .ToHashSet(StringComparer.Ordinal);
+
+    /// <summary>
+    /// Every check the hook lane declares: a construction whose first argument is a string literal and
+    /// whose arguments name one <c>VmOutcome</c>, one <c>VmReason</c> and at most one member of the
+    /// code type, read as its name and the answer written down for it.
+    /// </summary>
+    internal static IReadOnlyList<HookCheck> HookChecks(SyntaxTree tree) => tree.GetRoot()
+        .DescendantNodes()
+        .OfType<BaseObjectCreationExpressionSyntax>()
+        .Where(static created => created.ArgumentList is { Arguments.Count: > 0 } arguments &&
+            arguments.Arguments[0].Expression is LiteralExpressionSyntax { Token.Value: string })
+        .Select(static created =>
+        {
+            var arguments = created.ArgumentList!.Arguments;
+            string? Member(string type) => arguments
+                .Select(static argument => argument.Expression)
+                .OfType<MemberAccessExpressionSyntax>()
+                .Where(access => string.Equals(Rightmost(access.Expression), type, StringComparison.Ordinal))
+                .Select(static access => access.Name.Identifier.ValueText)
+                .FirstOrDefault();
+
+            return new HookCheck(
+                (string)((LiteralExpressionSyntax)arguments[0].Expression).Token.Value!,
+                Member("VmOutcome") ?? "(none)",
+                Member(ReasonType) ?? "(none)",
+                Member(CodeType));
+        })
+        .ToArray();
 
     /// <summary>
     /// The arms of every switch from a trap kind to a code in a file that is not a source of the
@@ -1149,8 +1168,9 @@ internal static class WebAssemblyRegistryRules
     /// W3's fourth clause: every row is reachable from a named case or is one the rule lists - a corpus
     /// row names a derived entry recording exactly its code and reason; every entry recording a code
     /// records its row's reason and belongs to a corpus row; an execution row names a trap kind the
-    /// execution checks name and the payload mapping maps onto its code; and the unreached rows are
-    /// the ones <paramref name="admitted"/> lists, in its words.
+    /// execution checks name and the payload mapping maps onto its code; a hook-check row names a check
+    /// of the hook lane expecting exactly its code and reason; and the unreached rows are the ones
+    /// <paramref name="admitted"/> lists, in its words.
     /// </summary>
     internal static IEnumerable<string> W3Reachability(
         Registry registry,
@@ -1158,8 +1178,13 @@ internal static class WebAssemblyRegistryRules
         IReadOnlySet<string> checkedKinds,
         IReadOnlyList<PayloadArm> payload,
         IReadOnlyList<PayloadArm> checkedCodes,
+        IReadOnlyList<HookCheck> hookChecks,
         IReadOnlyList<UnreachedCode> admitted)
     {
+        var hooks = hookChecks
+            .GroupBy(static check => check.Name, StringComparer.Ordinal)
+            .ToDictionary(static group => group.Key, static group => group.First(), StringComparer.Ordinal);
+
         var entries = corpus
             .GroupBy(static entry => entry.Name, StringComparer.Ordinal)
             .ToDictionary(static group => group.Key, static group => group.First(), StringComparer.Ordinal);
@@ -1208,6 +1233,29 @@ internal static class WebAssemblyRegistryRules
                         yield return
                             $"{name} names the entry {row.Case}, which records {entry.Outcome} with code {entry.Code} " +
                             $"rather than InvalidArtifact with code {row.Code}";
+                    }
+
+                    break;
+                }
+
+                case "hook-check":
+                {
+                    if (!hooks.TryGetValue(row.Case, out var check))
+                    {
+                        yield return $"{name} names the check {row.Case}, and the hook lane has no check of that name";
+                        break;
+                    }
+
+                    if (check.Outcome != "InvalidArtifact" || check.Code != row.Name || check.Reason != row.Reason)
+                    {
+                        yield return
+                            $"{name} names the check {row.Case}, which expects {check.Outcome} with {check.Reason} and " +
+                            $"{check.Code ?? "no code"} rather than InvalidArtifact with {row.Reason} and {row.Name}";
+                    }
+
+                    if (!row.Pass.Split('+').Contains("hook", StringComparer.Ordinal))
+                    {
+                        yield return $"{name} names a check of the hook lane, and the hook is not one of its passes";
                     }
 
                     break;
@@ -1288,6 +1336,13 @@ internal static class WebAssemblyRegistryRules
             }
         }
 
+        var names = registry.Rows.Select(static row => row.Name).ToHashSet(StringComparer.Ordinal);
+
+        foreach (var check in hookChecks.Where(check => check.Code is not null && !names.Contains(check.Code)))
+        {
+            yield return $"the hook check {check.Name} expects {check.Code}, which the registry has no row for";
+        }
+
         foreach (var code in admitted.Where(code => !registry.Rows.Any(row => row.Code == code.Code && row.Reachability == "unreached")))
         {
             yield return $"the rule lists {code.Code} {code.Name} as unreached, and the registry has no unreached row for it";
@@ -1336,6 +1391,7 @@ internal static class WebAssemblyRegistryRules
         var corpus = ReadCorpus(manifest, problems);
         var checkedKinds = NamedTrapKinds(Parse(ExecutionChecksFile));
         var checkedCodes = CheckedCodes(ExecutionChecksFile, problems);
+        var hookChecks = HookChecks(Parse(HookChecksFile));
         var writer = WriterRevision(Parse(CorpusWriterFile));
 
         return
@@ -1344,7 +1400,7 @@ internal static class WebAssemblyRegistryRules
             .. W3Vocabulary(registry, vocabulary),
             .. W3Columns(registry, CoreReasons()),
             .. W3Reasons(registry, vocabulary, emissions),
-            .. W3Reachability(registry, corpus, checkedKinds, emissions.Payload, checkedCodes, Unreached),
+            .. W3Reachability(registry, corpus, checkedKinds, emissions.Payload, checkedCodes, hookChecks, Unreached),
             .. W3Revision(registry.Revision, ManifestRevision(manifest), writer),
         ];
     }

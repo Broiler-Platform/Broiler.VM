@@ -3421,7 +3421,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a member here can change after the hook has answered it, or an export found by name is not the one of exactly that name
 - `Broiler.VM.Profile.WebAssembly.WasmDefinitions.TryFindExport(System.ReadOnlySpan<byte>, out WasmExportDefinition)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `8B6C8F`, PENDING
   - Falsified if: a name no export carries answers an export, or a name one carries answers false
-- `Broiler.VM.Profile.WebAssembly.WasmPositionIndex.TryBuild(ImmutableArray<UbcPosition>, WasmHookMeter, out WasmPositionIndex)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `AF9449`, PENDING
+- `Broiler.VM.Profile.WebAssembly.WasmPositionIndex.TryBuild(ImmutableArray<UbcPosition>, WasmHookMeter, out WasmPositionIndex)` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `A08ADD`, PENDING
   - Falsified if: rows out of order or stated twice are indexed, or the key array is allocated before its bytes are reserved
 - `Broiler.VM.Profile.WebAssembly.WasmHookMeter` in `src/Broiler.VM.Profile.WebAssembly/WasmFamilyData.cs` - Security=High, Spec=none cited, `FA12FE`, PENDING
   - Falsified if: a charge made through this adapter reaches a dimension other than the one named, or a refusal is answered as an exhaustion of another dimension
