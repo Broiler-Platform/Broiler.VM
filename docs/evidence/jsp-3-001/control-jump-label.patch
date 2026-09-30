@@ -1,0 +1,11 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -2009,7 +2009,7 @@
+         // THE LABEL A JUMP NAMES IS ANY NAME A LABEL MAY BE, contextual keywords and `yield` and
+         // `await` included where they are names. Until 2026-09-30 only a plain identifier was read
+         // here, so `of: for (;;) break of;` declared a label no jump could reach.
+-        if (IsIdentifierName(Current.Kind) && !Current.PrecededByLineTerminator)
++        if (Current.Kind == SliceTokenKind.Identifier && !Current.PrecededByLineTerminator)
+         {
+             _ = RefuseEscapedReservedWord(Current);
+             label = Current.RawText;

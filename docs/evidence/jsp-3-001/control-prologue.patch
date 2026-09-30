@@ -1,0 +1,11 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -647,7 +647,7 @@
+ 
+             for (var entry = 0; entry < first; entry++)
+             {
+-                if (passed[entry].IsLegacyOctal)
++                if (passed[entry].IsLegacyOctal && passed[entry].Line < 0)
+                 {
+                     RefuseLegacyEscape(passed[entry]);
+                 }

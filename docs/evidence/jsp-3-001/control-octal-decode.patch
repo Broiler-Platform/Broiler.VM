@@ -1,0 +1,20 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs
+@@ -1315,7 +1315,7 @@
+                     legacy = true;
+                     var octal = escape - '0';
+ 
+-                    for (var more = escape <= '3' ? 2 : 1;
++                    for (var more = 0;
+                         more > 0 && index < source.Length && source[index] is >= '0' and <= '7';
+                         more--)
+                     {
+@@ -1323,7 +1323,7 @@
+                         index++;
+                     }
+ 
+-                    value.Append((char)octal);
++                    value.Append(escape);
+                     break;
+ 
+                 case '8':

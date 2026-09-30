@@ -1,0 +1,11 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -6517,7 +6517,7 @@
+                 reader.Step();
+                 return null;
+ 
+-            case >= '0' and <= '9':
++            case >= '0' and <= '9' when reader.At < 0:
+                 reader.Step();
+                 return "a template admits no octal escape: `\\1` to `\\9`, and `\\0` before a digit, are escapes only a string literal outside strict code has";
+ 
