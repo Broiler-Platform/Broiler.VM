@@ -5,7 +5,10 @@
 
 Retained answers detect regressions; a second engine exposes differences, not a
 conformance score. Authored #diverges <engine> <case> <reason> records are scoped
-to that comparison engine. See src/tests/differential/README.md for the contract.
+to that comparison engine, and #diverges <engine> run <reason> declares that the
+engine's run of the probe fails as a whole: a crash, an exit, a timeout, malformed
+output, or cases in another order. See src/tests/differential/README.md for the
+contract.
 """
 
 import argparse
@@ -56,6 +59,9 @@ def numbered(output):
     return cases
 
 
+RUN = "run"  # A declaration naming the run rather than a case; never a case ID.
+
+
 def answers(path):
     if not path.exists():
         return None, {}
@@ -64,8 +70,8 @@ def answers(path):
         if line.startswith("#diverges "):
             parts = line.split(" ", 3)
             if (len(parts) != 4 or not re.fullmatch(r"[a-z][a-z0-9-]*", parts[1])
-                    or not re.fullmatch(CASE, parts[2]) or not parts[3].strip()):
-                raise ValueError(f"{path.name}: use #diverges <engine> <case> <reason>")
+                    or not (re.fullmatch(CASE, parts[2]) or parts[2] == RUN) or not parts[3].strip()):
+                raise ValueError(f"{path.name}: use #diverges <engine> <case|run> <reason>")
             _, engine, case, reason = parts
             key = (engine, case)
             if key in declared:
@@ -203,9 +209,19 @@ def checked_output(result):
 
 def compare(mine, theirs, declared, engine):
     failures, accepted = [], []
-    if mine.keys() == theirs.keys() and list(mine) != list(theirs):
-        failures.append("comparison case order differs from host output")
     selected = {case: reason for (name, case), reason in declared.items() if name == engine}
+    # A RUN-LEVEL DECLARATION ACCEPTS A DIFFERENCE IN ORDER, and every case is still compared: the
+    # answers are keyed by case, so the order is the one thing the cases cannot say for themselves.
+    run = selected.pop(RUN, None)
+    if mine.keys() == theirs.keys():
+        if list(mine) != list(theirs):
+            if run is None:
+                failures.append("comparison case order differs from host output")
+            else:
+                accepted.append({"case": RUN, "reason": run,
+                                 "failure": "comparison case order differs from host output"})
+        elif run is not None:
+            failures.append(f"stale divergence {engine}/{RUN}: the run completed and its cases came in the host's order")
     def case_order(case):
         number, suffix = re.fullmatch(r"([0-9]+)([a-z]*)", case).groups()
         return int(number), suffix
@@ -305,11 +321,19 @@ def main(argv=None):
                 with tempfile.TemporaryDirectory(prefix="broiler-differential-") as scratch:
                     shim = pathlib.Path(scratch) / "print.cjs"
                     shim.write_text(SHIM, encoding="utf-8")
-                    outputs = []
-                    for engine in report["engines"]:
+                    outputs, broken = [], None
+                    for index, engine in enumerate(report["engines"]):
                         run = execute(engine, probe, args.timeout, shim)
                         entry["runs"].append(run)
-                        outputs.append(checked_output(run))
+                        try:
+                            outputs.append(checked_output(run))
+                        except ValueError as error:
+                            # ONLY A COMPARISON ENGINE'S RUN MAY BE DECLARED BROKEN. The host's is
+                            # the thing under test, and a declaration never excuses it.
+                            if index == 0 or (engine["name"], RUN) not in declared:
+                                raise
+                            outputs.append(None)
+                            broken = str(error)
                 produced = outputs[0]
                 if args.write:
                     retain(expected, produced)
@@ -321,12 +345,25 @@ def main(argv=None):
                     entry["failures"].append("host output differs from retained answers")
                     entry["retainedAnswers"] = retained
                 if len(report["engines"]) == 2:
-                    failures, accepted = compare(numbered(produced), numbered(outputs[1]), declared,
-                                                 report["engines"][1]["name"])
+                    name = report["engines"][1]["name"]
+                    if broken is not None:
+                        # THE RUN FAILED AS A WHOLE AND WAS DECLARED TO: there are no cases to
+                        # compare, so a case-level declaration for this engine is reported as not
+                        # checked rather than as holding.
+                        failures = []
+                        accepted = [{"case": RUN, "reason": declared[(name, RUN)], "failure": broken}]
+                        unchecked = sorted(case for (engine, case) in declared if engine == name and case != RUN)
+                        if unchecked:
+                            entry["uncheckedDeclarations"] = unchecked
+                            print(f"    not checked, the run failed: {', '.join(unchecked)}")
+                    else:
+                        failures, accepted = compare(numbered(produced), numbered(outputs[1]), declared, name)
                     entry["failures"].extend(failures)
                     entry["declaredDivergences"] = accepted
                     for divergence in accepted:
                         print(f"    declared {divergence['case']}: {divergence['reason']}")
+                        if "failure" in divergence:
+                            print(f"      the run: {divergence['failure'][:300]}")
             except (OSError, ValueError, subprocess.SubprocessError) as error:
                 entry["failures"].append(str(error))
             for failure in entry["failures"]:

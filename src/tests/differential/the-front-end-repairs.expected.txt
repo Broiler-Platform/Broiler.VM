@@ -1,4 +1,5 @@
 # Retained host answers; not a conformance oracle.
+#diverges broiler-js 66 Broiler.JS does not raise the early error the language requires: four of strict code's reserved words are read as identifier references, `static`, `let`, `private` in a class and `package` under a function's own directive
 1 1
 2 2
 3 "ReferenceError"

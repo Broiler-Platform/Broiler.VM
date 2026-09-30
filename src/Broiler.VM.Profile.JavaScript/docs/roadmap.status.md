@@ -471,6 +471,18 @@ retains each change's control and the pinned test262 subtrees either side. This 
 implementation and validation material, not accepted milestone evidence; JSP-3 has no owner and no
 milestone row advances.
 
+**JSP-9 observation, 2026-09-30.** The parity roadmap's catalogue of what must not be taken from the
+comparison engine was re-taken against Broiler.JS at a named commit. Each entry that still holds is
+declared for that engine in the differential probes' answer files, with what the language requires,
+so a comparison run reports it as declared and reports it stale once it stops holding. The driver
+can now declare a comparison run that fails as a whole. The poisoned global store is stated where a
+comparison run is started. Entries that stopped holding, and two whose wording overstated the
+language, are corrected ([JSC-235](roadmap.corrections.md#jsc-235)).
+[Record JSP-9-001](../../../docs/evidence/jsp-9-001/README.md) retains the runs and their controls.
+A run against Broiler.JS still reports findings outside the catalogue, not adjudicated. This is
+unreviewed implementation and validation material, not accepted milestone evidence; JSP-9 has no
+owner and no milestone row advances.
+
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:
 

@@ -10025,3 +10025,70 @@ name rules, the two structural early errors, `??` beside `||` or `&&` with a lin
 
 **Authority and date.** The implementation of 2026-09-30 in this checkout and
 [record JSP-3-001](../../../docs/evidence/jsp-3-001/README.md). 2026-09-30.
+
+### JSC-235
+
+**Where:** the parity roadmap's [section 4.9](roadmap.parity.md#49-what-must-not-be-taken-from-the-comparison-engine),
+the catalogue of what must not be taken from the comparison engine, and
+[JSP-9](roadmap.parity.md#jsp-9--what-must-not-be-taken-from-the-comparison-engine)'s gate. With them,
+[the differential probes' README](../../tests/differential/README.md) and the `node` declaration on case
+62 of `the-statement-and-object-surface.js`.
+
+**What the plan said.**
+- Section 4.9 listed the legacy engine's defects as of the 2026-09-06 survey. No answer file declared
+  any of them for that engine, so a run against it reported each one as a finding.
+- A comparison run that failed as a whole could not be declared at all. That covers a crash, a
+  timeout, a case numbered twice, or cases in another order.
+- Two entries overstated the language: one said ordinary functions carry own `caller` and
+  `arguments` properties "the language removed", and the other that the global object carries names
+  "the language deliberately does not expose".
+- The poisoned global store was recorded in section 4.9 and nowhere a person taking a comparison run
+  would meet it.
+
+**What replaced it, observed on 2026-09-30 against Broiler.JS at commit `c249764`.**
+- **Every entry that still holds is declared.** Each is a `#diverges broiler-js` line in the answer
+  file of the probe that shows it, and its reason says what the language requires. Most sit on cases
+  the probes already had: the early errors, `Annex B` block functions and name inference.
+  - `the-comparison-engine-catalogue.js` asks what no case did: `console.log`, the `console` object's
+    names, what an error hands to guest code, `String.prototype`'s names, `for … in` through a
+    `Proxy`, a global named `import`, and the poisoned store, last.
+  - `the-recursive-built-ins.js` stands alone because Broiler.JS's process ends there.
+  - Case 74 of `the-async-family.js` reports a rejection as well as a value, since an engine that
+    rejected there printed nothing and a missing case cannot be declared. The host's answer did not
+    move.
+- **The driver declares a whole run.** `#diverges <engine> run <reason>` accepts a comparison
+  engine's run that fails as a whole, and prints the failure beside the reason.
+  - A run that only answers in another order is still compared case by case.
+  - A run that completes cleanly, in the host's order, makes the declaration stale.
+  - The host's run is never excused.
+  - Six tests beside the driver's own cover it.
+- **The hazard is where a run starts.** The probes' README states the poisoned store before a
+  comparison run against Broiler.JS. The run declaration on `the-with-statement.js` says it, and the
+  driver prints it each time the store renumbers that probe's cases.
+- **Entries that moved.**
+  - The suspension machinery's five named forms no longer differ in any probe case. What differs now
+    is an `await` in a `case` clause, rejected with a platform error, and the order the asynchronous
+    iteration probe settles in.
+  - A cyclic import completes. What hangs is an `import()` of a module that leaves a pending promise
+    after its first top-level `await`, which times out two module probes.
+  - A date-only string, `Promise.all`'s `resolve`, an exported `async function*`, an arbitrary
+    namespace name and an `import` in a script no longer differ.
+- **Entries whose wording overstated the language.** Section 17.1 forbids own `caller` and
+  `arguments` for strict functions and every other function kind. It permits them for a non-strict
+  function as an extension, which Node makes too. A host may add globals, so the `import` property
+  is host-defined rather than forbidden. Both are declared as divergences whose reasons say so. The
+  `node` declaration on case 62, which also said "the language removed them", now says the same.
+- **Not observed on this platform.** `JSON.stringify`'s line ending is the platform's by Broiler.JS's
+  source, and on Linux that is the language's. It is not declared, because a declaration cannot be
+  scoped to a platform. A source file with an invalid byte still runs under Broiler.JS; the host
+  refuses it, so it cannot be a probe, and the host's acceptance table keeps the refusal.
+
+**What must not be read as repaired.**
+- A run against Broiler.JS still fails. It reports findings outside the catalogue, and nobody has
+  adjudicated those against the language; some may be this host's.
+- The declarations hold against one commit of Broiler.JS, and a later commit may make any of them
+  stale, which is what the driver is for.
+- JSP-9 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-09-30 in this checkout and
+[record JSP-9-001](../../../docs/evidence/jsp-9-001/README.md). 2026-09-30.

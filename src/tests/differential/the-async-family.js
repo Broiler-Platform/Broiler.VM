@@ -605,6 +605,8 @@ function say(x) { print(x); }
 })();
 
 // ---- 74. await in a switch discriminant and a case -------------------------------------------------------------------------------------------------------------------------
+// A rejection is reported too, since 2026-09-30: an engine that rejected here printed nothing, and a case that is
+// missing cannot be declared.
 (function () {
   async function f() {
     switch (await 2) {
@@ -613,7 +615,7 @@ function say(x) { print(x); }
       default: return "other";
     }
   }
-  f().then(function (v) { say("74 " + v); });
+  f().then(function (v) { say("74 " + v); }, function (e) { say("74 rejected " + e.name); });
 })();
 
 // ---- 75. await in a do-while condition ----------------------------------------------------------------------------------------------------------------------------------------

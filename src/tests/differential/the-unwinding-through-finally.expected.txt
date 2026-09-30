@@ -1,4 +1,14 @@
 # Retained host answers; not a conformance oracle.
+#diverges broiler-js 26 Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so `let await` is refused
+#diverges broiler-js 27 Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so `const await` is refused
+#diverges broiler-js 28 Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so `var await` is refused
+#diverges broiler-js 29 Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a class named `await` is refused
+#diverges broiler-js 30 Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a function named `await` is refused
+#diverges broiler-js 31 Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a label named `await` is refused
+#diverges broiler-js 32 Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a reference to `await` is refused
+#diverges broiler-js 33 Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a reference to it in an arrow's default parameter is refused
+#diverges broiler-js 34 Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a catch parameter named `await` is refused
+#diverges broiler-js 35 Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a reference to it in a template substitution is refused
 1 "fin,a,caught a"
 2 "fin,a,caught a"
 3 "fin0,a0,caught a0"

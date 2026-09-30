@@ -528,22 +528,22 @@ are recorded so that a stage closing a difference never closes it by imitation, 
   that catches a rejected `await` and returns a value fulfils with `undefined`; `await` of a
   fulfilled native promise costs an extra turn while a thenable costs one too few; `yield*` over an
   async generator takes the wrong value; an async generator's `return` does not await its operand;
-  a `for await` closes an iterator the language forbids closing.
+  a `for await` closes an iterator the language forbids closing. *(corrected: [JSC-235](roadmap.corrections.md#jsc-235))*
 - **`JSON.stringify` separates members with the platform's line ending** rather than the one the
   language mandates.
 - **`Annex B` block-scoped function semantics are wrong in the common case**, where an inner
   declaration should overwrite an outer function of the same name and does not.
 - **Function name inference is missing in the ordinary `var f = function () {}` case.**
-- **A date-only string is parsed as local time** where the language requires UTC.
+- **A date-only string is parsed as local time** where the language requires UTC. *(corrected: [JSC-235](roadmap.corrections.md#jsc-235))*
 - **Several early errors are not raised**: a catch block redeclaring its parameter, an arrow body
   redeclaring a parameter, `arguments` in a class static block, `delete this.#x`, two `default`
   clauses in a `switch`.
-- **`Promise.all` does not pass elements through the constructor's `resolve`.**
+- **`Promise.all` does not pass elements through the constructor's `resolve`.** *(corrected: [JSC-235](roadmap.corrections.md#jsc-235))*
 - **A cyclic import hangs forever**, an exported `async function*` does not parse, an arbitrary
   module namespace name does not parse, and an `import` declaration in a script terminates the
-  process with an unhandled platform exception.
+  process with an unhandled platform exception. *(corrected: [JSC-235](roadmap.corrections.md#jsc-235))*
 - **Ordinary functions carry own `caller` and `arguments` properties** the language removed, and the
-  global object carries names the language deliberately does not expose.
+  global object carries names the language deliberately does not expose. *(corrected: [JSC-235](roadmap.corrections.md#jsc-235))*
 - **`Object.getOwnPropertyNames(console)` throws**, and the message leaks a platform type name and a
   source path — as does every error it raises, which bakes its own build-tree source paths into
   `stack` and hands them to ordinary guest code.
@@ -559,6 +559,44 @@ are recorded so that a stage closing a difference never closes it by imitation, 
 - **The recursive built-ins have no depth guard**, so a deeply nested structure through
   `JSON.stringify` or `Array.prototype.join` overflows the platform stack and terminates the
   process, where the same engine guards its guest-level calls.
+
+**2026-09-30 note: the catalogue re-taken against Broiler.JS at commit `c249764`.** Each entry was
+run on this host, on Broiler.JS and on Node `v22.22.2`. Where it still holds it is now a declaration
+in the differential probes' answer files, naming `broiler-js` and saying what the language
+requires, so a comparison run reports it as declared. A declaration that stops holding is reported
+stale ([JSC-235](roadmap.corrections.md#jsc-235)). Entry by entry:
+- **Still holding, and declared:**
+  - the poisoned global store, in `the-with-statement.js` for the run and in the new catalogue probe
+    for two cases;
+  - `Annex B` block functions, including an async function hoisted out of a `switch` clause;
+  - name inference, in the forms the general-surface probe asks;
+  - the five early errors named above, and more of the same kind: strict reserved words, `await`
+    in a class static block, generator duplicates, a comma after a rest;
+  - `console.log`, listing the `console` object's names, and the platform type and build paths an
+    error hands to guest code;
+  - `String.prototype`'s duplicated name, and `for … in` through a `Proxy`;
+  - the recursive built-ins, in a probe of their own, because the process ends.
+- **Still holding in a different form:**
+  - The suspension machinery: an `await` in a `case` clause is rejected with a platform error, and
+    the asynchronous iteration probe settles in another order. The five forms named above no
+    longer differ in any probe case.
+  - The module hang: a cyclic import completes. What never settles is an `import()` of a module that
+    leaves a pending promise after its first top-level `await`.
+- **Corrected rather than declared as a defect:** a sloppy function's own `caller` and `arguments`
+  are an extension section 17.1 permits for a non-strict function, and Node makes it too. The
+  global `import` property is host-defined, which the language allows. Both are declared as
+  divergences whose reasons say so.
+- **No longer holding:**
+  - a date-only string as local time;
+  - `Promise.all` and the constructor's `resolve`;
+  - an exported `async function*`;
+  - an arbitrary module namespace name;
+  - an `import` declaration in a script, which is now a `SyntaxError`.
+- **Not observed here:** `JSON.stringify`'s line ending is the platform's by the engine's source, a
+  .NET `StringWriter`. On Linux that is the language's, so it is not declared: a declaration cannot
+  be scoped to a platform. A source file holding an invalid byte still runs with a substitution
+  character. It is not a probe, because a probe is a program both engines run and this host refuses
+  the file; the refusal is kept by the host's acceptance table.
 
 ---
 
@@ -824,6 +862,22 @@ a milestone with a ledger row.
 
 ### JSP-9 — What must not be taken from the comparison engine
 
+- **2026-09-30 implementation note:** every clause of the gate has a change behind it in this
+  checkout, taken against Broiler.JS at commit `c249764`.
+  - Each section 4.9 entry that still holds is a `broiler-js` declaration in the differential probes'
+    answer files, stating what the language requires. Most sit on cases the probes already had. A
+    new probe asks what no case did, and another holds the recursive built-ins alone.
+  - The driver gained `#diverges <engine> run <reason>`, for a run that fails as a whole — a crash,
+    a timeout, a case numbered twice, or cases in another order. A run that completes makes it
+    stale, as a case declaration that stops differing already was.
+  - The poisoned global store is stated in the probes' README, where a comparison run is started,
+    and in a run declaration the driver prints on every run it spoils.
+  - Entries that no longer hold, and two whose wording overstated the language, are corrected in
+    section 4.9 ([JSC-235](roadmap.corrections.md#jsc-235),
+    [record JSP-9-001](../../../docs/evidence/jsp-9-001/README.md)).
+
+  A run against Broiler.JS still reports findings outside the catalogue, which nobody has
+  adjudicated. Unreviewed, not accepted evidence, and no milestone or stage moves.
 - **Objective.** The catalogue of section 4.9 is maintained, so that a later stage closing a
   difference never closes it by imitation.
 - **Waits on.** [JSP-1](#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable),
