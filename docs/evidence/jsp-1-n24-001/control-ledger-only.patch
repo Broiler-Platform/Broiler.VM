@@ -1,0 +1,13 @@
+diff --git a/src/tests/Broiler.VM.Architecture.Tests/N24AbsenceClaimsRuleTests.cs b/src/tests/Broiler.VM.Architecture.Tests/N24AbsenceClaimsRuleTests.cs
+--- a/src/tests/Broiler.VM.Architecture.Tests/N24AbsenceClaimsRuleTests.cs
++++ b/src/tests/Broiler.VM.Architecture.Tests/N24AbsenceClaimsRuleTests.cs
+@@ -297,7 +297,8 @@
+     private static string[] Documents() =>
+         Directory.EnumerateFiles(Path.Combine(ComponentGraph.Root, ProfileDirectory), "*.md", SearchOption.AllDirectories)
+             .Select(static path => Path.GetRelativePath(ComponentGraph.Root, path).Replace('\\', '/'))
+-            .Where(static path => !path.Contains("/bin/", StringComparison.Ordinal) &&
++            .Where(static path => path.EndsWith("/roadmap.status.md", StringComparison.Ordinal) &&
++                                  !path.Contains("/bin/", StringComparison.Ordinal) &&
+                                   !path.Contains("/obj/", StringComparison.Ordinal) &&
+                                   !path.Contains("/docs/evidence/", StringComparison.Ordinal) &&
+                                   !path.EndsWith("/roadmap.corrections.md", StringComparison.Ordinal))

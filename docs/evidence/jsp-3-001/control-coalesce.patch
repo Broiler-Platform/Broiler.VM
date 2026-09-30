@@ -1,0 +1,11 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -4829,7 +4829,7 @@
+     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9C767F
+     // Broiler-Human:        PENDING
+     private bool MixesCoalesce(SliceTokenKind kind, JsExpression operand) =>
+-        operand is JsLogicalExpression logical &&
++        operand is JsLogicalExpression logical && logical.Span.Line < 0 &&
+         !parenthesised.Contains(operand) &&
+         (kind == SliceTokenKind.QuestionQuestion) != (logical.Operator == SliceTokenKind.QuestionQuestion);
+ 

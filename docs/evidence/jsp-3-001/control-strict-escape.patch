@@ -1,0 +1,11 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -6950,7 +6950,7 @@
+         // rule is about the literal and not about where it stands. This parser never rewinds, so
+         // each token is judged once, under the strictness in force when it is passed. A prologue
+         // that turns strictness on after such a string is judged in ParseDirectives.
+-        if (strict && Current is { Kind: SliceTokenKind.StringLiteral, IsLegacyOctal: true })
++        if (strict && Current is { Kind: SliceTokenKind.StringLiteral, IsLegacyOctal: true, Line: < 0 })
+         {
+             RefuseLegacyEscape(Current);
+         }

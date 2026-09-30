@@ -1,0 +1,12 @@
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-10.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 7 command lines from artifacts/jsp-10-host-001/jsp-10.expected.txt
+ok   modules/a-top-level-await-in-a-template.mjs
+ok   limits/an-ordinary-loop-past-the-default-allowance.js
+ok   --fuel 1000000000 limits/an-ordinary-loop-past-the-default-allowance.js
+ok   --help
+ok   --help
+ok   encoding/utf-16le-with-a-byte-order-mark.js
+ok   encoding/utf-16be-with-a-byte-order-mark.js
+# 7 of 7 command lines answered as declared
+# exit 0

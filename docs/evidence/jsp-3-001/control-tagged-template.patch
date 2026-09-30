@@ -1,0 +1,11 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -6422,7 +6422,7 @@
+             {
+                 if (CookEscape(reader, chunk) is { } undefinedEscape)
+                 {
+-                    if (!tagged)
++                    if (!tagged || reader.At >= 0)
+                     {
+                         Refuse(span, SliceSourceDiagnosticCode.UnknownEscapeSequence, undefinedEscape);
+                         return new JsTemplateLiteral(span, [string.Empty], [string.Empty], []);

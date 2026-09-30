@@ -392,10 +392,14 @@ public sealed class RuleRegisterTests
         // WA-4's ingestion-path scan adds W7: rule N13's six clauses held over the WebAssembly harness
         // root and the specification's scripts, and a seventh refusing a harness file linked into
         // another project. Active when minted; no other count moves.
-        Assert.Equal(106, byStatus["Active"]);
+        // The parity roadmap's JSP-1 adds N24 beside N17: no Markdown document of the JavaScript
+        // profile calls a global absent that the realm publishes, in a block, a clause or a bullet
+        // under an absent heading, with text kept as written marked and dated. Active when minted;
+        // no other count moves.
+        Assert.Equal(107, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(108, Loaded.Rules.Count);
+        Assert.Equal(109, Loaded.Rules.Count);
     }
 
     private static Register Load()

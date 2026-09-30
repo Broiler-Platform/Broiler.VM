@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   228
 // Annotated:        228/228
-// Exempt:           121
+// Exempt:           122
 // Human-reviewed:   0/228
 // IP risk:          Low
 // Security risk:    High
@@ -332,6 +332,11 @@ public sealed class JsCompiler
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.Dictionary<string, ushort> constantIndex =
         new(System.StringComparer.Ordinal);
+
+    /// <summary>Whether the constant pool's ceiling has been met and refused, so it is refused once.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FE7A04
+    // Broiler-Human:        PENDING
+    private bool constantPoolFull;
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=90F5D0
     // Broiler-Human:        PENDING
@@ -9015,19 +9020,19 @@ public sealed class JsCompiler
     /// move.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3E5E65
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=22497C
     // Broiler-Falsified-If: a substitution coerces through `valueOf` before `toString`, or a Symbol substitution does not throw
     // Broiler-Human:        PENDING
     private void CompileTemplate(JsTemplateLiteral template)
     {
-        Emit(JsOpcode.LoadConstant, StringConstant(template.Cooked[0]));
+        Emit(JsOpcode.LoadConstant, StringConstant(template.Cooked[0]!));
 
         for (var index = 0; index < template.Substitutions.Count; index++)
         {
             EmitToString(template.Substitutions[index]);
             Emit(JsOpcode.Add);
 
-            var tail = template.Cooked[index + 1];
+            var tail = template.Cooked[index + 1]!;
 
             if (tail.Length != 0)
             {
@@ -9121,7 +9126,7 @@ public sealed class JsCompiler
     /// substitutions is refused by <see cref="CompileTaggedTemplate"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=28BE61
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E86907
     // Broiler-Falsified-If: two evaluations of one call site produce two strings objects, or the cache is reachable from guest code
     // Broiler-Human:        PENDING
     private void EmitTemplateStrings(JsTemplateLiteral quasi)
@@ -9130,7 +9135,16 @@ public sealed class JsCompiler
 
         for (var index = 0; index < count; index++)
         {
-            Emit(JsOpcode.LoadConstant, StringConstant(quasi.Cooked[index]));
+            // A CHUNK AN UNDEFINED ESCAPE SPOILED IS `undefined` in the strings array, and only a
+            // tagged template can carry one: the parser refuses it in an untagged template.
+            if (quasi.Cooked[index] is { } chunk)
+            {
+                Emit(JsOpcode.LoadConstant, StringConstant(chunk));
+            }
+            else
+            {
+                Emit(JsOpcode.LoadUndefined);
+            }
         }
 
         for (var index = 0; index < count; index++)
@@ -10184,7 +10198,7 @@ public sealed class JsCompiler
     private ushort InternedName(string value) =>
         Intern("i" + value, JsArtifactWriter.InternedNameConstant(value));
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=542486
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A9AA1D
     // Broiler-Human:        PENDING
     private ushort Intern(string key, byte[] encoded)
     {
@@ -10195,10 +10209,20 @@ public sealed class JsCompiler
 
         if (constants.Count >= 65535)
         {
-            Refuse(
-                default,
-                SliceSourceDiagnosticCode.TooManyConstants,
-                "the constant pool is full");
+            // THE REFUSAL NAMES THE CEILING AND WHERE IT WAS MET, once. The pool is one per
+            // artifact and an index is two bytes, so the ceiling is a property of the format and
+            // not of the program; the position is the construct being compiled when the first
+            // constant past it was asked for. Until 2026-09-29 this said only "the constant pool
+            // is full", at 0:0, on every constant past the ceiling.
+            if (!constantPoolFull)
+            {
+                constantPoolFull = true;
+                Refuse(
+                    new SliceSourceSpan(System.Math.Max(0, buffer.LastLine), System.Math.Max(0, buffer.LastColumn)),
+                    SliceSourceDiagnosticCode.TooManyConstants,
+                    "the constant pool is full: an artifact of this format holds at most 65,535 distinct " +
+                    "constants - numbers, strings, BigInts and names together - and this one needs more");
+            }
 
             return 0;
         }

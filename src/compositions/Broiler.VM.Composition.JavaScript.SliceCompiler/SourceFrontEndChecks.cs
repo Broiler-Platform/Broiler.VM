@@ -35,7 +35,63 @@ internal static class SourceFrontEndChecks
         EveryLineTerminatorInsideALiteralIsCountedOnce(),
         ASourceNameReachesTheDiagnosticsAndNothingElse(),
         AModuleCompiledWithoutTopLevelAwaitRefusesIt(),
+        TheConstantPoolCeilingIsRefusedWhereItIsMet(),
     ];
+
+    /// <summary>
+    /// A program needing more distinct constants than the format holds is refused once, naming the
+    /// ceiling and the place it was met, and a program just under it compiles.
+    /// </summary>
+    /// <remarks>
+    /// The parity roadmap's JSP-10 asks for each artifact-format ceiling to be raised or refused with
+    /// a diagnostic that names the ceiling and carries a source location. Until 2026-09-29 this one
+    /// was refused as "the constant pool is full" at 0:0, once per constant past it. A program that
+    /// reaches it is too large to retain as a file, so it is written here: one distinct number per
+    /// statement, one statement per line, so the line the refusal names says how many constants the
+    /// program had asked for when it met the ceiling.
+    /// </remarks>
+    private static (string, bool, string) TheConstantPoolCeilingIsRefusedWhereItIsMet()
+    {
+        static string Program(int statements)
+        {
+            var text = new System.Text.StringBuilder("var a;\n");
+
+            for (var index = 0; index < statements; index++)
+            {
+                text.Append("a = ").Append(index.ToString(System.Globalization.CultureInfo.InvariantCulture)).Append(".5;\n");
+            }
+
+            return text.ToString();
+        }
+
+        var failed = new List<string>();
+        var past = JsCompiler.Compile([new JsScriptUnit("main", Program(70_000), SliceParseOptions.Script)]);
+        var ceiling = past.Diagnostics.Where(static d => d.Code == SliceSourceDiagnosticCode.TooManyConstants).ToArray();
+
+        if (past.Succeeded || past.Artifact is not null || ceiling.Length != 1 || past.Diagnostics.Count != 1)
+        {
+            failed.Add("past the ceiling, the refusals were: " + string.Join(" | ", past.Diagnostics.Take(3)));
+        }
+        else if (ceiling[0].Line < 60_000 || ceiling[0].Column < 1 ||
+                 !ceiling[0].Message.Contains("65,535", StringComparison.Ordinal))
+        {
+            failed.Add("the refusal does not name the ceiling where it was met: " + ceiling[0]);
+        }
+
+        var under = JsCompiler.Compile([new JsScriptUnit("main", Program(60_000), SliceParseOptions.Script)]);
+
+        if (!under.Succeeded)
+        {
+            failed.Add("60,000 distinct constants were refused: " + string.Join(" | ", under.Diagnostics.Take(3)));
+        }
+
+        return (
+            "the constant pool's ceiling is refused once, naming it and where it was met",
+            failed.Count == 0,
+            failed.Count == 0
+                ? $"70,000 distinct constants refused once, at line {ceiling[0].Line} column {ceiling[0].Column}, naming 65,535; 60,000 compiled"
+                : string.Join("; ", failed));
+    }
 
     /// <summary>
     /// A module compiled with <c>AllowTopLevelAwait</c> false refuses a top-level <c>await</c> with

@@ -1,0 +1,80 @@
+$ broiler-js docs/evidence/jsp-1-n24-001/survey-4.3.js
+BigInt=function
+BigInt64Array=function
+BigUint64Array=function
+DataView.getBigInt64=function
+Intl=undefined
+localeCompare=1
+Array.prototype.toLocaleString own=true
+Temporal=undefined
+SharedArrayBuffer=undefined
+Atomics=undefined
+Float16Array=function
+DataView.getFloat16=function
+resizable=true
+Uint8Array.fromBase64=undefined
+Uint8Array.prototype.toHex=undefined
+JSON.rawJSON=function
+JSON.isRawJSON=function
+reviver source=undefined
+Error.prototype.stack=false
+String.prototype.anchor=undefined
+trimLeft=undefined
+trimRight=undefined
+getYear=undefined
+setYear=undefined
+toGMTString=undefined
+escape=function
+Iterator=function
+Iterator.prototype.map=function
+Array.fromAsync=function
+Error.isError=undefined
+Symbol.dispose=symbol
+Symbol.asyncDispose=symbol
+DisposableStack=function
+AsyncDisposableStack=function
+SuppressedError=function
+# exit 0
+$ node v22.22.2 -p <survey-4.3.js>
+BigInt=function
+BigInt64Array=function
+BigUint64Array=function
+DataView.getBigInt64=function
+Intl=object
+localeCompare=-1
+Array.prototype.toLocaleString own=true
+Temporal=undefined
+SharedArrayBuffer=function
+Atomics=object
+Float16Array=undefined
+DataView.getFloat16=undefined
+resizable=true
+Uint8Array.fromBase64=undefined
+Uint8Array.prototype.toHex=undefined
+JSON.rawJSON=function
+JSON.isRawJSON=function
+reviver source=12
+Error.prototype.stack=true
+String.prototype.anchor=function
+trimLeft=function
+trimRight=function
+getYear=function
+setYear=function
+toGMTString=function
+escape=function
+Iterator=function
+Iterator.prototype.map=function
+Array.fromAsync=function
+Error.isError=undefined
+Symbol.dispose=symbol
+Symbol.asyncDispose=symbol
+DisposableStack=undefined
+AsyncDisposableStack=undefined
+SuppressedError=undefined
+# exit 0
+$ broiler-js docs/evidence/jsp-1-n24-001/unicode.js
+1 2 true ß 1
+# exit 0
+$ node v22.22.2 -p <unicode.js>
+1 2 true SS 2
+# exit 0

@@ -1,0 +1,11 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -2911,7 +2911,7 @@
+             // AND THERE IS ONE CONSTRUCTOR. ClassBody's early errors refuse a second method named
+             // `constructor`, however it is spelled; until 2026-09-30 the second was admitted and
+             // one of the two silently lost.
+-            if (++constructors > 1)
++            if (++constructors > 2)
+             {
+                 Refuse(
+                     member.Span,

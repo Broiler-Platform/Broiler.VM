@@ -1,0 +1,11 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -560,7 +560,7 @@
+                     // the nested label was admitted and a `break a` went to the inner one.
+                     var declared = labels.Add(label);
+ 
+-                    if (!declared)
++                    if (!declared && label.Length == 0)
+                     {
+                         Refuse(
+                             span,

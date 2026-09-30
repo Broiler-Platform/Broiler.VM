@@ -1,0 +1,11 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -7129,7 +7129,7 @@
+     // Broiler-Human:        PENDING
+     private void ExpectArrow()
+     {
+-        if (Current is { Kind: SliceTokenKind.EqualsGreaterThan, PrecededByLineTerminator: true })
++        if (Current is { Kind: SliceTokenKind.EqualsGreaterThan, PrecededByLineTerminator: true, Line: < 0 })
+         {
+             Refuse(
+                 Span(),

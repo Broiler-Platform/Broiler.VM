@@ -5,6 +5,14 @@
 #diverges node 301 the same, for a Symbol-keyed computed member, whose inferred name is the description in brackets
 #diverges node 313 Function.prototype.toString reports `[native code]` for a function written in the guest: the artifact carries no source text, so the source this owes cannot be produced from it
 #diverges node 321 an error object carries no `stack`: it is not a member the language defines, and producing one would need the executor to keep a frame list it does not keep
+#diverges broiler-js 284 Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the variable it initialises
+#diverges broiler-js 298 Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the variable even through parentheses
+#diverges broiler-js 299 Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after each declarator's variable
+#diverges broiler-js 302 Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the variable for a generator expression too
+#diverges broiler-js 306 Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the target of a logical assignment `||=`
+#diverges broiler-js 307 Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the target of a logical assignment `??=`
+#diverges broiler-js 311 Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the variable it initialises; the length is right
+#diverges broiler-js 312 Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the variable it first initialises, and copying it to another binding does not rename it
 1 "[object Object]"
 2 "[object Object]"
 3 true

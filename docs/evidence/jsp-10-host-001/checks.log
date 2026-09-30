@@ -1,0 +1,4 @@
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --checks --verbose
+ok   the constant pool's ceiling is refused once, naming it and where it was met: 70,000 distinct constants refused once, at line 65536 column 5, naming 65,535; 60,000 compiled
+broiler-js-slice-compiler: 589 checks passed, 3 not run on this machine and claimed by nothing
+# exit 0

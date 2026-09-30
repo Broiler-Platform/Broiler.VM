@@ -105,6 +105,8 @@ public enum SliceSourceDiagnosticCode
     /// <c>constructor</c> and <c>prototype</c> are declared by the class DEFINITION rather than by
     /// its body, so a body element of either name is the second declaration of a name the
     /// definition has already made. All four are the same fact and take the same code.
+    /// A LABEL already in force, declared again by a statement inside it, is the same fact about
+    /// the other namespace a statement declares names in, and takes it too (since 2026-09-30).
     /// </remarks>
     DuplicateLexicalDeclaration = 2201,
 

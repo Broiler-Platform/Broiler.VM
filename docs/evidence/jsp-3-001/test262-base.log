@@ -1,0 +1,29 @@
+$ python3 eng/run-test262.py --suite <scratch>/suite/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e --binary-directory <scratch>/base/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0 --jobs 2 --out <scratch>/test262-base --dir test/language --dir test/annexB
+ test/annexB/built-ins/Date/prototype/getYear/not-a-constructor.js [sloppy]
+#          30  cross-realm  e.g. test/language/eval-code/indirect/realm.js [sloppy]
+#          30  object-spread  e.g. test/language/expressions/array/spread-obj-spread-order.js [sloppy]
+#          24  computed-property-names  e.g. test/language/expressions/class/elements/computed-name-toprimitive-symbol.js [sloppy]
+#          22  Proxy  e.g. test/language/destructuring/binding/keyed-destructuring-property-reference-target-evaluation-order-with-bindings.js [sloppy]
+#          20  generators  e.g. test/language/expressions/generators/eval-body-proto-realm.js [sloppy]
+#          19  dynamic-import  e.g. test/language/expressions/dynamic-import/catch/nested-arrow-import-catch-eval-script-code-target.js [module]
+#          18  class-fields-private  e.g. test/language/expressions/class/elements/syntax/early-errors/grammar-private-environment-on-class-heritage-chained-usage.js [sloppy]
+#          17  class-methods-private  e.g. test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js [sloppy]
+#          16  Symbol.toPrimitive  e.g. test/language/expressions/class/elements/computed-name-toprimitive-symbol.js [sloppy]
+#          16  string-trimming  e.g. test/annexB/built-ins/String/prototype/trimLeft/length.js [sloppy]
+#          12  import-attributes  e.g. test/language/expressions/dynamic-import/import-attributes/2nd-param-with-enumeration-enumerable.js [sloppy]
+#          12  json-modules  e.g. test/language/expressions/dynamic-import/import-attributes/2nd-param-with-enumeration-enumerable.js [sloppy]
+#          11  async-iteration  e.g. test/language/expressions/async-generator/eval-body-proto-realm.js [sloppy]
+#          10  coalesce-expression  e.g. test/language/expressions/coalesce/cannot-chain-head-with-logical-and.js [sloppy]
+#          10  destructuring-binding  e.g. test/language/expressions/assignment/dstr/obj-rest-order.js [sloppy]
+#          10  let  e.g. test/language/statements/for-in/scope-body-lex-boundary.js [sloppy]
+#          10  object-rest  e.g. test/language/expressions/assignment/dstr/obj-rest-order.js [sloppy]
+#           8  Symbol.iterator  e.g. test/language/expressions/yield/star-iterable.js [sloppy]
+#           8  import.meta  e.g. test/language/expressions/import.meta/syntax/escape-sequence-meta.js [module]
+#          22  further row(s) not printed here; every one of them is in the report
+# test262 24995 files, 45629 variants: pass 44019, fail 818, unsupported 0, exhausted 16, skipped 776
+coverage partial a named selection rather than the whole test tree: test/language test/annexB
+# the whole-run report is <scratch>/test262-base/test262.report
+# the machine-readable report is <scratch>/test262-base/test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language test/annexB
+# exit 1

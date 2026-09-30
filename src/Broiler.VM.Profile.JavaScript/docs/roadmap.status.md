@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-09-29 (JSP-8 and JSP-10 observation; milestone rows unchanged)
+**Last updated:** 2026-09-29 (JSP-8, JSP-10 and JSP-1 observations; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -428,6 +428,60 @@ severable clause is taken too: `Math.random` is seeded per realm from the platfo
 retains each change's fixture, its control and the pinned test262 subtrees either side. This is
 unreviewed implementation and validation material, not accepted milestone evidence; the stages have
 no owner and no milestone row advances.
+
+**JSP-1 observation, 2026-09-29.** The absent-globals block below is no longer the only claim of
+absence a rule decides. Rule N24, beside N17, reads every Markdown document under the profile's
+directory, except the corrections file and the evidence bundles. It refuses a claim that a global
+the realm publishes is absent, in a block, a clause or a bullet under a heading about absence. Text
+a document keeps as it was written is marked with a dated span. Its first run found stale claims in
+the parity and workload roadmaps, each marked or corrected in the same change
+([JSC-232](roadmap.corrections.md#jsc-232)). [Record JSP-1-N24-001](../../../docs/evidence/jsp-1-n24-001/README.md)
+retains that run, the rule failing against an injected stale claim, and its other controls. This is
+unreviewed implementation and validation material, not accepted milestone evidence; JSP-1 has no
+owner and no milestone row advances.
+
+**JSP-10 observation, the reporting half, 2026-09-29.** Four clauses of the parity roadmap's JSP-10 have
+a change behind them:
+- The host's usage text states the default instruction allowance, read from the descriptor, and says
+  that ordinary code reaches it, with a fixture loop that does.
+- The constant pool's refusal names its ceiling and where it was met.
+- Top-level `await` in a template substitution runs. It was a parser defect of the shape
+  [JSC-229](roadmap.corrections.md#jsc-229) records, not a ceiling.
+- The source-encoding set is stated, and a UTF-16 or UTF-32 file is refused naming its encoding
+  ([JSC-233](roadmap.corrections.md#jsc-233)).
+
+[Record JSP-10-HOST-001](../../../docs/evidence/jsp-10-host-001/README.md) retains each with its
+control. The capabilities present and throwing and the allowance defaults are untouched. This is
+unreviewed implementation and validation material, not accepted milestone evidence; JSP-10 has no
+owner and no milestone row advances.
+
+**JSP-3 observation, 2026-09-30.** Every family of the parity roadmap's JSP-3 exit gate has a fixture
+in the host's acceptance table, and each answers as the comparison engine does, with one exception.
+A class element's string name holding a legacy octal escape is refused because the specification
+makes a class strict code, and the engine admits it. The repaired families:
+- the legacy escapes, decoded outside strict code and refused inside it;
+- a tagged template's illegal escape, cooked to `undefined` where the program was refused;
+- a second `constructor` and a nested duplicate label, refused;
+- `??` beside `||` or `&&`, and a line terminator before `=>`, refused naming the construct.
+
+The strict-mode name rules, a unary operand of `**` and the dead zone in a function body already
+held. `yield` and `await` as labels were refused correct programs, and are repaired
+([JSC-234](roadmap.corrections.md#jsc-234)). [Record JSP-3-001](../../../docs/evidence/jsp-3-001/README.md)
+retains each change's control and the pinned test262 subtrees either side. This is unreviewed
+implementation and validation material, not accepted milestone evidence; JSP-3 has no owner and no
+milestone row advances.
+
+**JSP-9 observation, 2026-09-30.** The parity roadmap's catalogue of what must not be taken from the
+comparison engine was re-taken against Broiler.JS at a named commit. Each entry that still holds is
+declared for that engine in the differential probes' answer files, with what the language requires,
+so a comparison run reports it as declared and reports it stale once it stops holding. The driver
+can now declare a comparison run that fails as a whole. The poisoned global store is stated where a
+comparison run is started. Entries that stopped holding, and two whose wording overstated the
+language, are corrected ([JSC-235](roadmap.corrections.md#jsc-235)).
+[Record JSP-9-001](../../../docs/evidence/jsp-9-001/README.md) retains the runs and their controls.
+A run against Broiler.JS still reports findings outside the catalogue, not adjudicated. This is
+unreviewed implementation and validation material, not accepted milestone evidence; JSP-9 has no
+owner and no milestone row advances.
 
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:

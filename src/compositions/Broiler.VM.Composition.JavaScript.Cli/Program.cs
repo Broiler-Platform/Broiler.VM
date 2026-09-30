@@ -954,7 +954,10 @@ internal static class Program
         Console.WriteLine();
         Console.WriteLine("  broiler-js [options] <path>...");
         Console.WriteLine();
-        Console.WriteLine("  <path>      a .js or .mjs file to run, or a directory swept for both");
+        Console.WriteLine("  <path>      a .js or .mjs file to run, or a directory swept for both. A file is");
+        Console.WriteLine("              read as UTF-8, with or without a byte-order mark, and nothing else:");
+        Console.WriteLine("              one in another encoding is refused (exit 6), by name when its");
+        Console.WriteLine("              byte-order mark says which, and never decoded with replacements.");
         Console.WriteLine();
         Console.WriteLine("Several named files are run as separate scripts sharing ONE realm - which");
         Console.WriteLine("is what a benchmark harness and its benchmark, or a conformance harness and");
@@ -1024,7 +1027,16 @@ internal static class Program
         Console.WriteLine("  --check     compile and verify only; do not run");
         Console.WriteLine("  --all       report every refusal in a file rather than the first");
         Console.WriteLine("  --quiet     do not print the completion value");
-        Console.WriteLine("  --fuel <n>  the instruction allowance per run; the profile's default otherwise");
+        Console.WriteLine("  --fuel <n>  the instruction allowance per run; the profile's default otherwise,");
+
+        // THE DEFAULT IS READ FROM THE DESCRIPTOR AND SAID TO BE REACHABLE, because it is: an
+        // unremarkable loop spends it, and a first-time user met that before reading anything.
+        // limits/an-ordinary-loop-past-the-default-allowance.js is the program the sentence names.
+        Console.WriteLine(
+            "              " +
+            JavaScriptProfile.Descriptor.LimitDefaults[VmBudgetDimension.Fuel].ToString("N0", System.Globalization.CultureInfo.InvariantCulture) +
+            " instructions, which ORDINARY CODE REACHES: a loop adding up three");
+        Console.WriteLine("              million numbers spends it and exits 5. Raise it with --fuel.");
         Console.WriteLine("  --wall <ms> the wall-clock allowance per run; the profile's 10,000 ms otherwise");
         Console.WriteLine("  --live-bytes <n> the live-memory allowance per run; the profile's default otherwise");
         Console.WriteLine("  --call-depth <n> the call-depth allowance per run, in frames; the profile's default otherwise");

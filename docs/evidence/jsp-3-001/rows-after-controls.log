@@ -1,0 +1,31 @@
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-3.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 26 command lines from artifacts/jsp-3-001/jsp-3.expected.txt
+ok   runs/a-legacy-octal-escape-in-sloppy-code.js
+ok   refused/a-legacy-octal-escape-in-strict-code.js
+ok   refused/a-legacy-octal-escape-before-use-strict.js
+ok   refused/a-non-octal-decimal-escape-in-a-class-body.js
+ok   refused/a-legacy-octal-escape-in-a-class-element-name.js
+ok   runs/a-tagged-template-with-an-invalid-escape.js
+ok   refused/an-octal-escape-in-an-untagged-template.js
+ok   refused/a-second-constructor.js
+ok   refused/a-second-constructor.js
+ok   runs/a-class-with-one-constructor-and-a-static-one.js
+ok   refused/a-label-nested-in-itself.js
+ok   refused/a-label-nested-in-itself.js
+ok   runs/a-label-reused-where-it-is-not-in-force.js
+ok   runs/yield-and-await-as-labels.js
+ok   refused/a-coalesce-beside-an-or.js
+ok   refused/a-coalesce-beside-an-or.js
+ok   runs/a-coalesce-mixed-with-parentheses.js
+ok   refused/a-line-break-before-an-arrow.js
+ok   refused/a-line-break-before-an-arrow.js
+ok   runs/an-arrow-body-on-the-next-line.js
+ok   refused/a-restricted-name-as-a-function-name-under-its-directive.js
+ok   refused/a-future-reserved-word-as-a-class-name.js
+ok   refused/eval-as-a-parameter-under-a-body-directive.js
+ok   refused/a-unary-operand-of-exponentiation.js
+ok   refused/a-unary-operand-of-exponentiation.js
+ok   dead-zone/a-read-before-the-initialiser-in-a-function-body.js
+# 26 of 26 command lines answered as declared
+# exit 0

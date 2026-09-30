@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/docs/roadmap.workloads.md b/src/Broiler.VM.Profile.JavaScript/docs/roadmap.workloads.md
+--- a/src/Broiler.VM.Profile.JavaScript/docs/roadmap.workloads.md
++++ b/src/Broiler.VM.Profile.JavaScript/docs/roadmap.workloads.md
+@@ -178,6 +178,8 @@
+ mistakes for the whole set is how a gap survives a review. **JSW-6 carries the obligation to make
+ the two agree**, by publishing the realm's admitted set from the realm itself rather than from
+ prose.
++
++`Proxy` is absent from the realm, so a program that traps property access cannot run here.
+ 
+ ### 3.3 The syntax that is refused by name
+ 

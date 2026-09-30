@@ -1,0 +1,10 @@
+$ dotnet test Broiler.VM.slnx -c Release --no-build
+Test run for <root>/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for <root>/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   473, Skipped:     0, Total:   473, Duration: 2 s - Broiler.VM.Contract.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:   314, Skipped:     0, Total:   314, Duration: 24 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+# exit 0

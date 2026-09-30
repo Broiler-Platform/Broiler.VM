@@ -1,0 +1,5 @@
+$ python3 eng/run-cli-acceptance.py
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 278 command lines from src/tests/cli/expected.txt
+# 278 of 278 command lines answered as declared
+# exit 0

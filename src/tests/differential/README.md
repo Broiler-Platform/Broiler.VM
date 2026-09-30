@@ -73,6 +73,21 @@ and duplicate declarations are errors.
 - A case missing from either engine fails even if declared; a declaration for an absent case also
   fails. Duplicate IDs, reordered cases, empty output and non-case output cannot pass unnoticed.
 
+**A comparison engine's run can also fail as a whole, and since 2026-09-30 that is declarable too.**
+`#diverges <engine> run <reason>` says the named engine's run of this probe does not complete as a
+set of cases: it exits, crashes, times out, numbers a case twice, or answers the cases in another
+order. `run` is never a case ID.
+
+- A run that fails that way is reported as a **declared divergence** of the run, with the failure
+  beside the reason.
+- A run that answers only in another order is still compared **case by case**, so every other
+  difference in it is still a finding or a declaration.
+- Where the run failed, no case can be compared, and the file's case declarations for that engine
+  are reported as **not checked** rather than as holding.
+- A run that completes cleanly, in the host's order, makes the declaration **stale**, and the driver
+  exits non-zero.
+- The host's run is never excused. A declaration for one engine never excuses another.
+
 Retained host answers remain an independent exact-line check. Only CRLF/LF transport differences
 are normalized: numeric spelling, spaces, Unicode and case order are preserved. Stderr is recorded
 separately and treated as a failure, even with exit zero. Nonzero exits, missing executables, invalid
@@ -116,6 +131,8 @@ declaration that points at another.
 | `the-unicode-property-escapes.js` | `\p{...}` and `\P{...}` under `u`: the lone and `name=value` forms, supplementary code points, classes, complements, the early SyntaxErrors of exact name matching, `\p` outside `u`, properties of strings and `v` still refused, `iu` through `CaseFolding.txt` over every `\p{Lu}` pair, and greedy runs over a whole code space (JSeal F09, JSD-0031 U4) |
 | `the-unicode-lexical-grammar.js` | The Unicode half of the lexical grammar: literal and escaped identifiers against the pinned `ID_Start`/`ID_Continue` (supplementary ones, private names and escaped reserved words included), `WhiteSpace` as TAB, VT, FF, ZWNBSP and `Zs` (U+0085 refused), a literal's flags as an early error with `v` refused by name, group names from the same sets, the non-`u` Canonicalize from `UnicodeData.txt` over every BMP code unit it moves, and a `u`-mode `lastIndex` inside a surrogate pair (JSeal slice JSD-0031-later) |
 | `the-generic-to-json-and-array-search.js` | `Date.prototype.toJSON` on any receiver (ToObject, ToPrimitive with hint number, `null` for a non-finite Number, then `toISOString` invoked), ToObject at the start of `Array.prototype.entries`/`keys`/`values`, `indexOf`/`lastIndexOf` start positions through ToIntegerOrInfinity (-0, the infinities, `lastIndexOf`'s default), `Array.of` over a BigInt typed array constructor, and the array iterator's `LengthOfArrayLike` length and element-free key step (JSeal VM-FIX-J) |
+| `the-comparison-engine-catalogue.js` | What must not be taken from Broiler.JS that no other probe asks (the parity roadmap's section 4.9, JSP-9): what `console.log` writes and returns, listing the `console` object's own names, the platform type in an error's message and the build paths in its `stack`, `String.prototype`'s own names listed once, `for … in` through a `Proxy` on the chain, a global named `import`, and, **last because nothing may follow it**, the poisoned global variable store |
+| `the-recursive-built-ins.js` | `JSON.stringify` and `Array.prototype.join` over values nested a hundred thousand deep: a `RangeError` a program can catch. It stands alone because Broiler.JS terminates the process here, and its declaration is for the run |
 
 ## Running them
 
@@ -136,7 +153,20 @@ look identical in the file and different in the diff.
 python eng/run-differential.py --against D:/Broiler.JS/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS.exe --against-kind broiler-js --against-root D:/Broiler.JS --timeout 30 --report artifacts/differential/broiler-js.json
 ```
 
-On Linux use the equivalent `BroilerJS` apphost without `.exe`. The default VM apphost is resolved
+On Linux use the equivalent `BroilerJS` apphost without `.exe`.
+
+**Before a comparison run against Broiler.JS, know its poisoned global store.** Under Broiler.JS a
+`with` whose head completes abruptly makes every later indirect `eval` restore the global `var`
+bindings to their values at that moment, permanently. Every answer after it in the same process is
+untrustworthy and nothing reports it: `the-with-statement.js` numbers its cases again under it,
+because its case counter is a global `var`. Each probe runs in a process of its own, so the hazard
+ends with the probe that triggers it. The probes that trigger it carry a declaration that says so,
+and the driver prints it on every such run.
+
+The `broiler-js` declarations in these answer files were taken against Broiler.JS at commit
+`c249764` on 2026-09-30. They cover the catalogue in section 4.9 of the parity roadmap and nothing
+else. A run against that engine still reports findings outside it, which nobody has adjudicated
+against the language. The default VM apphost is resolved
 with the current platform's executable suffix. Use `--binary-directory` for another VM build.
 
 For arbitrary engines or `dotnet <assembly>`, use `--host-config <json>` and/or

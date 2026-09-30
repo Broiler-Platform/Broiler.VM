@@ -1,0 +1,42 @@
+$ git apply docs/evidence/jsp-10-host-001/control-usage-fuel.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+0.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.32
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-10.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 7 command lines from artifacts/jsp-10-host-001/jsp-10.expected.txt
+ok   modules/a-top-level-await-in-a-template.mjs
+ok   limits/an-ordinary-loop-past-the-default-allowance.js
+ok   --fuel 1000000000 limits/an-ordinary-loop-past-the-default-allowance.js
+FAIL --help: standard output does not contain `50,000,000 instructions, which ORDINARY CODE REACHES`
+       broiler-js - run JavaScript on the Broiler.VM JavaScript profile
+       
+         broiler-js [options] <path>...
+       
+ok   --help
+ok   encoding/utf-16le-with-a-byte-order-mark.js
+ok   encoding/utf-16be-with-a-byte-order-mark.js
+# 1 of 7 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-10-host-001/control-usage-fuel.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+0.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.33
+# exit 0

@@ -1,0 +1,59 @@
+$ git apply docs/evidence/jsp-3-001/control-arrow.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+VM.Profile.MachineCode.dll
+  Broiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.04
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-3.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 26 command lines from artifacts/jsp-3-001/jsp-3.expected.txt
+ok   runs/a-legacy-octal-escape-in-sloppy-code.js
+ok   refused/a-legacy-octal-escape-in-strict-code.js
+ok   refused/a-legacy-octal-escape-before-use-strict.js
+ok   refused/a-non-octal-decimal-escape-in-a-class-body.js
+ok   refused/a-legacy-octal-escape-in-a-class-element-name.js
+ok   runs/a-tagged-template-with-an-invalid-escape.js
+ok   refused/an-octal-escape-in-an-untagged-template.js
+ok   refused/a-second-constructor.js
+ok   refused/a-second-constructor.js
+ok   runs/a-class-with-one-constructor-and-a-static-one.js
+ok   refused/a-label-nested-in-itself.js
+ok   refused/a-label-nested-in-itself.js
+ok   runs/a-label-reused-where-it-is-not-in-force.js
+ok   runs/yield-and-await-as-labels.js
+ok   refused/a-coalesce-beside-an-or.js
+ok   refused/a-coalesce-beside-an-or.js
+ok   runs/a-coalesce-mixed-with-parentheses.js
+FAIL refused/a-line-break-before-an-arrow.js: exit 0, expected 3; output does not contain `2101:UnexpectedToken at 4:3`
+       undefined
+FAIL refused/a-line-break-before-an-arrow.js: exit 0, expected 3; output does not contain `must stand on the line its parameters end on`
+       undefined
+ok   runs/an-arrow-body-on-the-next-line.js
+ok   refused/a-restricted-name-as-a-function-name-under-its-directive.js
+ok   refused/a-future-reserved-word-as-a-class-name.js
+ok   refused/eval-as-a-parameter-under-a-body-directive.js
+ok   refused/a-unary-operand-of-exponentiation.js
+ok   refused/a-unary-operand-of-exponentiation.js
+ok   dead-zone/a-read-before-the-initialiser-in-a-function-body.js
+# 2 of 26 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-3-001/control-arrow.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Runtime -> <root>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.83
+# exit 0

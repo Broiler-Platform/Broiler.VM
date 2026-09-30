@@ -1,0 +1,12 @@
+diff --git a/src/compositions/Broiler.VM.Composition.JavaScript.Cli/SourceFiles.cs b/src/compositions/Broiler.VM.Composition.JavaScript.Cli/SourceFiles.cs
+--- a/src/compositions/Broiler.VM.Composition.JavaScript.Cli/SourceFiles.cs
++++ b/src/compositions/Broiler.VM.Composition.JavaScript.Cli/SourceFiles.cs
+@@ -149,7 +149,7 @@
+         // tell a person what to convert from. Until 2026-09-29 a UTF-16LE file was refused as "not
+         // valid UTF-8 at byte 0". UTF-32 is asked first, because its little-endian mark begins with
+         // UTF-16LE's.
+-        if (Marked(bytes) is { } encoding)
++        if (Marked([]) is { } encoding)
+         {
+             return new SourceFile(
+                 shown,

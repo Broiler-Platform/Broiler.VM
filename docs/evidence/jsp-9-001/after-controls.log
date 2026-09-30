@@ -1,0 +1,23 @@
+$ python3 eng/run-differential.py --only the-comparison-engine-catalogue --against /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS --against-kind broiler-js --against-root /home/user/broiler-platform/broiler.js --timeout 30 --report <scratch>/after-the-comparison-engine-catalogue.json
+--- the-comparison-engine-catalogue.js
+    declared 1: Broiler.JS's `console.log` writes nothing and returns its argument, so a program that reports through `console` has no output. The Console Standard's `log` prints its arguments through the Logger and returns `undefined`
+    declared 2: Broiler.JS throws listing the `console` object's own names; `[[OwnPropertyKeys]]` of an ordinary object, which the `console` namespace is, never throws
+    declared 3: Broiler.JS's message for that error names a platform type; the language leaves message text to the implementation, and a type from the engine's own build is nothing a program can use
+    declared 4: Broiler.JS's error `stack` names source files of the engine's own build and hands them to guest code; the language defines no `stack`, and this realm gives an error none
+    declared 5: Broiler.JS lists one of `String.prototype`'s own names twice; `[[OwnPropertyKeys]]` of an ordinary object lists each key once
+    declared 6: Broiler.JS's `for … in` finds no key through a `Proxy` on the prototype chain and calls none of its traps; enumeration reads each object on the chain through its own `[[OwnPropertyKeys]]` and `[[GetOwnProperty]]`
+    declared 7: Broiler.JS's global object has an own property named `import`, which is host-defined: the language defines no global by that name, and a program cannot reference it as a binding
+    declared 8: Broiler.JS's poisoned global store: after a `with` head threw, an indirect `eval` restores the global `var` binding to its value at that moment, 1 where the program assigned 2. The language gives a `with` statement no such effect
+    declared 9: the same, a second time: the assignment of 3 is undone as well, because the snapshot is permanent rather than restored once
+Report: <scratch>/after-the-comparison-engine-catalogue.json
+# exit 0
+$ python3 eng/run-differential.py --only the-settling-of-promises --against /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS --against-kind broiler-js --against-root /home/user/broiler-platform/broiler.js --timeout 30 --report <scratch>/after-the-settling-of-promises.json
+--- the-settling-of-promises.js
+Report: <scratch>/after-the-settling-of-promises.json
+# exit 0
+$ python3 eng/run-differential.py --only the-with-statement --against /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS --against-kind broiler-js --against-root /home/user/broiler-platform/broiler.js --timeout 30 --report <scratch>/after-the-with-statement.json
+--- the-with-statement.js
+    declared run: THE POISONED GLOBAL STORE, a hazard to every comparison run: a `with` whose head completes abruptly makes each later indirect `eval` under Broiler.JS restore the global `var` bindings to their values at the moment the head threw. The language gives a `with` statement no such effect. Every answer after it in the same process is untrustworthy, and here the probe's own global case counter is restored, so its cases are numbered again
+      the run: duplicate case 54
+Report: <scratch>/after-the-with-statement.json
+# exit 0

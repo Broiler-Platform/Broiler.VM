@@ -1,0 +1,11 @@
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -545,7 +545,7 @@
+                 // IsIdentifierName knows both rules. Until 2026-09-30 `yield: ;` was refused as a
+                 // missing semicolon in exactly the code where it is a label.
+                 case SliceTokenKind.Yield or SliceTokenKind.Await when
+-                    IsIdentifierName(Current.Kind) && Peek(1).Kind == SliceTokenKind.Colon:
++                    IsIdentifierName(Current.Kind) && Peek(1).Kind == SliceTokenKind.Colon && Current.Line < 0:
+                 {
+                     _ = RefuseEscapedReservedWord(Current);
+                     RefuseStrictReservedIdentifier(span, Current);

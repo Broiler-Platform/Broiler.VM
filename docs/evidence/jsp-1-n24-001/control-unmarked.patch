@@ -1,0 +1,19 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/docs/roadmap.workloads.md b/src/Broiler.VM.Profile.JavaScript/docs/roadmap.workloads.md
+--- a/src/Broiler.VM.Profile.JavaScript/docs/roadmap.workloads.md
++++ b/src/Broiler.VM.Profile.JavaScript/docs/roadmap.workloads.md
+@@ -143,7 +143,6 @@
+ `WeakSet`, `ArrayBuffer`, `SharedArrayBuffer`, `DataView`, every typed array constructor,
+ `Atomics`, `Intl`, `Temporal`, and `eval`.
+ 
+-<!-- as-written, superseded 2026-09-22 -->
+ **Absent still, and the list is shorter again** *(corrected: JSC-87, JSC-187)*. `BigInt` is absent,
+ with `BigInt64Array` and `BigUint64Array`; `Intl` and `Temporal` are absent, deferred by name;
+ `SharedArrayBuffer` and `Atomics` are absent **deliberately**, excluded by name from the binary
+@@ -153,7 +152,6 @@
+ `Symbol`, `Promise`, the keyed collections, the weak references, `ArrayBuffer`, `DataView`, the
+ typed array constructors and `eval` — are present, three of them behind an optional surface a
+ composition may decline.
+-<!-- /as-written -->
+ 
+ *(Implementation note, 2026-09-22: in the working tree, JSeal slices have since added `Float16Array`
+ (F01-F03), admitted `BigInt` through an optional surface (B01-B05) and built `BigInt64Array`,

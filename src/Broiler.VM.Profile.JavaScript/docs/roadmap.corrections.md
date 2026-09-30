@@ -9832,3 +9832,263 @@ does.
 
 **Authority and date.** The implementation of 2026-09-29 in this checkout and
 [record JSP-PARITY-001](../../../docs/evidence/jsp-parity-001/README.md). 2026-09-29.
+
+### JSC-232
+
+**Where:** the parity roadmap's [section 4.3](roadmap.parity.md#43-the-types-and-surfaces-that-are-absent),
+the survey of the names the wide realm lacks, and its [section 4.1](roadmap.parity.md#41-what-is-no-longer-a-gap-and-what-that-costs-the-record),
+which says the workload roadmap's prose about absent globals is "a second claim about the same subject
+that nothing checks"; with them the first clause of
+[JSP-1](roadmap.parity.md#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable)'s
+gate that names rule N17.
+
+**What the plan said.** That the wide realm lacks, among others, `BigInt` with its two typed arrays and
+the `DataView` accessors, `Float16Array`, the resizable `ArrayBuffer`, `JSON.rawJSON` and
+`JSON.isRawJSON`, an own `Array.prototype.toLocaleString`, the `Iterator` global and its helpers,
+`Array.fromAsync`, the disposal symbols with the `DisposableStack` pair and `SuppressedError`, and the
+`using` declaration. Also that `normalize` throws for any non-ASCII string and `\p{…}` is refused. And
+that only the ledger's fenced block is checked against the realm, so a stale absence claim anywhere
+else survives.
+
+**What replaced it.** The survey is kept as written, between markers dated 2026-09-21, the day the
+JSeal slices began adding what it lists. A note after it, asked of the same realm the same way on
+2026-09-29, says which names are present now and which are still absent. `Intl`, `Temporal`,
+`SharedArrayBuffer`, `Atomics`, the `Uint8Array` base64 and hex methods, the reviver's source
+argument, `Error.prototype.stack`, the `Annex B` members and `Error.isError` are still absent, and a
+decorator and an `accessor` element are still refused. `normalize` and the property escapes run, and
+case conversion is still one-to-one.
+
+**And the claim is checked where it is made.** Rule **N24**, beside N17, reads every Markdown document
+under the profile's directory, not the ledger alone. It refuses a claim that a global the realm
+publishes is absent in any of three shapes:
+- an `absent-globals` block;
+- a clause saying "`Name` is absent";
+- a bullet leading with the name under a heading about absence.
+
+Text a document keeps as it was written is marked with a dated
+`<!-- as-written, superseded YYYY-MM-DD -->` span that the rule skips and checks for form. The
+corrections file and the evidence bundles are outside it. The first run found six stale claims:
+- this survey's `BigInt` and `Float16Array` bullets;
+- section 4.2's kept paragraphs, which this file already reads in the past tense;
+- the workload roadmap's "Absent still" paragraph, overtaken by its own note of 2026-09-22;
+- its description of bundle JS-4-001, whose present tense this change makes past.
+
+Each was marked or corrected in the same change.
+
+**What N24 does not see.** A claim phrased any other way, "lacks", "has no", "answers `undefined`",
+is outside its three shapes. This survey's introduction is one: "the wide realm lacks these names".
+It is caught through its bullets, not its sentence.
+
+**Authority and date.** The realm's published set, `docs/realm/globals.txt`, and the probes of
+2026-09-29 retained in [record JSP-1-N24-001](../../../docs/evidence/jsp-1-n24-001/README.md), which
+also retains N24's first run over the unmarked documents and its controls. 2026-09-29.
+
+### JSC-233
+
+**Where:** the parity roadmap's [section 4.8](roadmap.parity.md#48-the-host-and-what-an-embedder-meets),
+three of its bullets: the default allowance, the three artifact-format ceilings and the source
+encoding. With them the matching clauses of
+[JSP-10](roadmap.parity.md#jsp-10--the-host-surface-an-embedder-meets-first)'s gate, and
+[section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s account of the format.
+
+**What the plan said.**
+- No document records that the default instruction allowance is reachable by ordinary code.
+- Three format ceilings surface as refusals with no basis in the language:
+  - more than a couple of hundred arguments;
+  - more than about sixty-five thousand distinct constants, refused at position zero with no source
+    location;
+  - top-level `await` inside a template substitution, refused with a diagnostic naming the wrong
+    reason.
+- A UTF-16LE file with a byte-order mark is unreadable to this host.
+
+**What replaced it, observed on 2026-09-29.**
+- **The allowance.** The host's usage text states the default: 50,000,000 instructions, read from
+  the profile's descriptor rather than typed. It says that an ordinary loop reaches it.
+  `src/tests/cli/limits/an-ordinary-loop-past-the-default-allowance.js` is that loop: three million
+  additions, exit 5 at the default, and the comparison engine's sum with `--fuel` raised. What the
+  default should be is still [ADR 0004](decisions/0004-limit-defaults-hard-maxima-and-the-budget-matrix.md)'s
+  owner's to decide; this entry documents it and changes nothing.
+- **The arguments ceiling** was already refused at compile time with `2104` naming "more than 255
+  arguments", at the call. Section 7 now records it as a property of the format, beside the other
+  two limits a source program can meet.
+- **The constant pool** is refused once with `2302`. The refusal names the ceiling (65,535 distinct
+  constants of every kind together) and carries the position of the construct being compiled when it
+  was met, where it said "the constant pool is full" at 0:0, once per constant past it. A program
+  reaching it is too large to retain as a file, so the slice-compiler root's checks write one and
+  hold the refusal to that shape. A program of 60,000 constants still compiles.
+- **Top-level `await` in a template substitution was not a ceiling.** A substitution is parsed by
+  a parser of its own, handed the module's `await` context. That parser recorded an `await` at the
+  module's top level in its own flag, and nothing carried the flag out. So a module whose only
+  suspension stood in a substitution was lowered as a unit that may not await. The lowering's own
+  guard then refused the `await` as outside an async function, which is untrue of a module. It is
+  the defect of [JSC-229](#jsc-229) in a second place. The flag is now carried out, and plain,
+  tagged and nested substitutions run: `src/tests/cli/modules/a-top-level-await-in-a-template.mjs`,
+  with the comparison engine's answer. Under the script goal the same text is still a syntax error,
+  as the language says.
+- **The source encoding.** The usage text states the set: UTF-8, with or without a byte-order mark,
+  and nothing else. A file that opens with a UTF-16 or UTF-32 byte-order mark is refused naming that
+  encoding, where a UTF-16LE file was refused as "not valid UTF-8 at byte 0". There is one fixture per
+  UTF-16 byte order. The section's claim that the comparison engine runs such a file was not
+  reproduced: Node 22 on this Linux machine refuses the UTF-16LE fixture too.
+
+**What must not be read as repaired.** JSP-10's other clauses are not taken:
+- a host capability present and throwing (`read`, and `$262`'s `createRealm`, `evalScript` and
+  `detachArrayBuffer`, still present on this date);
+- the truth of every refusal reason;
+- the allowance defaults themselves, which are a decision.
+
+**Authority and date.** The implementation of 2026-09-29 in this checkout and
+[record JSP-10-HOST-001](../../../docs/evidence/jsp-10-host-001/README.md). 2026-09-29.
+
+### JSC-234
+
+**Where:** the parity roadmap's [section 4.6](roadmap.parity.md#46-the-static-semantics-and-where-declarations-live),
+its first five bullets: the legacy escapes and the tagged template's illegal escape, the strict-mode
+name rules, the two structural early errors, `??` beside `||` or `&&` with a line terminator before
+`=>`, and the temporal dead zone in a function body. With them every family of
+[JSP-3](roadmap.parity.md#jsp-3--the-static-semantics-the-wide-front-end-does-not-have)'s exit gate.
+
+**What the plan said.**
+- `"\101"` decodes as three characters in sloppy code, and none of the strict-mode early errors for
+  `\1` to `\7`, `\8` and `\9` is raised.
+- A tagged template with an illegal escape yields a decoded string where the cooked value must be
+  `undefined`.
+- Several strict-mode early errors are missing at binding positions: future reserved words as binding
+  names, the restricted names at a function's or class's name, and `arguments` or `eval` as a
+  parameter under a body directive.
+- A class body with two `constructor` methods compiles, and a label duplicated by a nested labelled
+  statement is accepted.
+- `??` unparenthesised beside `||` or `&&` compiles, and so does an arrow function with a line
+  terminator before `=>`.
+- A `let`, `const` or `class` declared directly in a function body has no temporal dead zone.
+
+**What replaced it, observed on 2026-09-30.**
+- **A string literal's legacy escapes.** Outside strict code they decode per Annex B:
+  - an escape starting 0 to 3 reads up to three octal digits;
+  - one starting 4 to 7 reads up to two;
+  - `\0` before a digit is one of them;
+  - `\8` and `\9` are the digits themselves.
+
+  Inside strict code each is refused with `2210` at the literal. That covers an entry of a prologue
+  that a later `use strict` makes strict, and a string anywhere in a class.
+- **The comparison engine admits one of these, and this host follows the specification.** Node 22
+  admits a legacy octal escape in a class element's string name, `class C { '\101'() {} }`, and in a
+  field initialiser. It checks only a class's method bodies as strict code. The specification makes
+  every part of a class strict code, so this host refuses both. The fixture for the element name says
+  so, and its row does not claim the comparison engine's answer.
+- **Templates.** A tagged template's chunk may hold an escape a string could not. It now cooks to
+  `undefined` and keeps its raw text, where this host refused the whole program. That was a correct
+  program refused, which is worse than the plan's account of a wrong cooked value.
+
+  An untagged template must be cooked, so an escape that cannot be cooked is refused with `2005`. The
+  octal forms are now among them: `\1` to `\9`, and `\0` before a digit. Before this date `` `a\01` ``
+  was "a", NUL and "1".
+- **A second `constructor`** is refused with `2201`. A static method or a computed key named
+  `constructor` is not the constructor, and a class with either still compiles.
+- **A label already in force** is refused with `2201` when a statement inside it declares it again.
+  The labels in force belong to one function body. A label inside a function written in a labelled
+  statement is a program, and so are two labels of one name one after the other.
+- **`??` beside `||` or `&&`** is refused with `2101`, and the message names the construct. With
+  parentheses around either side it compiles. Before this date the line was read as though its left
+  side were parenthesised.
+- **A line terminator before `=>`** is refused with `2101`, and the message names the construct.
+- **Why these two stay `2101`.** Each is a production the grammar does not have rather than an early
+  error, as the comma after a rest in [JSC-230](#jsc-230) is. Neither moves to a refusal as an
+  unexpected token in the gate's sense, because each message names the construct.
+- **Found on the way: `yield` and `await` as labels.** Where each is a name, it is a label:
+  - `yield` in sloppy code outside a generator;
+  - `await` in a script outside an async function and a static block.
+
+  Both were refused there as a missing semicolon. A `break` or `continue` also read only a plain
+  identifier as its label, so `of: for (;;) break of;` declared a label no jump could reach. Both are
+  repaired.
+- **The gate's other families held before this date.** They had no fixture here:
+  - the strict-mode name rules at a function's name, a class's name and a parameter under a body
+    directive;
+  - a unary operand of `**`;
+  - the dead zone of a lexical declaration in a function body.
+
+  Section 4.6's second and fifth bullets describe them as missing. On this date each refuses or
+  throws as the comparison engine does, and each now has a fixture. The JSP-3 note of 2026-09-21
+  names VM-FIX-D for the reserved words and `**`. This entry did not trace which change closed the
+  dead zone in a function body.
+- **The pinned test262 subtrees these families live in.** They were run on the commit before the
+  change and on the change. Every variant whose verdict moved went from failing to passing, and none
+  went the other way.
+
+**What must not be read as repaired.**
+- The rest of section 4.6 — global and direct `eval`, `for … in` with a `let` binding, the
+  function-expression name — is outside this entry.
+- `yield:` inside a generator and `await:` inside an async function are refused as they must be, but
+  with a token-level message that does not name the construct.
+- JSP-3 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-09-30 in this checkout and
+[record JSP-3-001](../../../docs/evidence/jsp-3-001/README.md). 2026-09-30.
+
+### JSC-235
+
+**Where:** the parity roadmap's [section 4.9](roadmap.parity.md#49-what-must-not-be-taken-from-the-comparison-engine),
+the catalogue of what must not be taken from the comparison engine, and
+[JSP-9](roadmap.parity.md#jsp-9--what-must-not-be-taken-from-the-comparison-engine)'s gate. With them,
+[the differential probes' README](../../tests/differential/README.md) and the `node` declaration on case
+62 of `the-statement-and-object-surface.js`.
+
+**What the plan said.**
+- Section 4.9 listed the legacy engine's defects as of the 2026-09-06 survey. No answer file declared
+  any of them for that engine, so a run against it reported each one as a finding.
+- A comparison run that failed as a whole could not be declared at all. That covers a crash, a
+  timeout, a case numbered twice, or cases in another order.
+- Two entries overstated the language: one said ordinary functions carry own `caller` and
+  `arguments` properties "the language removed", and the other that the global object carries names
+  "the language deliberately does not expose".
+- The poisoned global store was recorded in section 4.9 and nowhere a person taking a comparison run
+  would meet it.
+
+**What replaced it, observed on 2026-09-30 against Broiler.JS at commit `c249764`.**
+- **Every entry that still holds is declared.** Each is a `#diverges broiler-js` line in the answer
+  file of the probe that shows it, and its reason says what the language requires. Most sit on cases
+  the probes already had: the early errors, `Annex B` block functions and name inference.
+  - `the-comparison-engine-catalogue.js` asks what no case did: `console.log`, the `console` object's
+    names, what an error hands to guest code, `String.prototype`'s names, `for … in` through a
+    `Proxy`, a global named `import`, and the poisoned store, last.
+  - `the-recursive-built-ins.js` stands alone because Broiler.JS's process ends there.
+  - Case 74 of `the-async-family.js` reports a rejection as well as a value, since an engine that
+    rejected there printed nothing and a missing case cannot be declared. The host's answer did not
+    move.
+- **The driver declares a whole run.** `#diverges <engine> run <reason>` accepts a comparison
+  engine's run that fails as a whole, and prints the failure beside the reason.
+  - A run that only answers in another order is still compared case by case.
+  - A run that completes cleanly, in the host's order, makes the declaration stale.
+  - The host's run is never excused.
+  - Six tests beside the driver's own cover it.
+- **The hazard is where a run starts.** The probes' README states the poisoned store before a
+  comparison run against Broiler.JS. The run declaration on `the-with-statement.js` says it, and the
+  driver prints it each time the store renumbers that probe's cases.
+- **Entries that moved.**
+  - The suspension machinery's five named forms no longer differ in any probe case. What differs now
+    is an `await` in a `case` clause, rejected with a platform error, and the order the asynchronous
+    iteration probe settles in.
+  - A cyclic import completes. What hangs is an `import()` of a module that leaves a pending promise
+    after its first top-level `await`, which times out two module probes.
+  - A date-only string, `Promise.all`'s `resolve`, an exported `async function*`, an arbitrary
+    namespace name and an `import` in a script no longer differ.
+- **Entries whose wording overstated the language.** Section 17.1 forbids own `caller` and
+  `arguments` for strict functions and every other function kind. It permits them for a non-strict
+  function as an extension, which Node makes too. A host may add globals, so the `import` property
+  is host-defined rather than forbidden. Both are declared as divergences whose reasons say so. The
+  `node` declaration on case 62, which also said "the language removed them", now says the same.
+- **Not observed on this platform.** `JSON.stringify`'s line ending is the platform's by Broiler.JS's
+  source, and on Linux that is the language's. It is not declared, because a declaration cannot be
+  scoped to a platform. A source file with an invalid byte still runs under Broiler.JS; the host
+  refuses it, so it cannot be a probe, and the host's acceptance table keeps the refusal.
+
+**What must not be read as repaired.**
+- A run against Broiler.JS still fails. It reports findings outside the catalogue, and nobody has
+  adjudicated those against the language; some may be this host's.
+- The declarations hold against one commit of Broiler.JS, and a later commit may make any of them
+  stale, which is what the driver is for.
+- JSP-9 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-09-30 in this checkout and
+[record JSP-9-001](../../../docs/evidence/jsp-9-001/README.md). 2026-09-30.

@@ -1,0 +1,10 @@
+$ git apply docs/evidence/jsp-1-n24-001/control-ledger-only.patch
+# exit 0
+$ dotnet test src/tests/Broiler.VM.Architecture.Tests -c Release --filter FullyQualifiedName~N24 --logger console;verbosity=normal
+Passed Broiler.VM.Architecture.Tests.N24AbsenceClaimsRuleTests.N24_Reports_Each_Injected_Stale_Claim_By_Its_Shape [45 ms]
+Failed Broiler.VM.Architecture.Tests.N24AbsenceClaimsRuleTests.N24_No_Document_Calls_A_Present_Global_Absent [7 ms]
+Assert.Contains() Failure: Item not found in collection
+Total tests: 2
+# exit 1
+$ git apply -R docs/evidence/jsp-1-n24-001/control-ledger-only.patch
+# exit 0

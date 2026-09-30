@@ -1,0 +1,58 @@
+$ git apply docs/evidence/jsp-3-001/control-label-scope.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+Code/bin/Release/net10.0/Broiler.VM.Profile.MachineCode.dll
+  Broiler.VM.Runtime -> <root>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.72
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-3.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 26 command lines from artifacts/jsp-3-001/jsp-3.expected.txt
+ok   runs/a-legacy-octal-escape-in-sloppy-code.js
+ok   refused/a-legacy-octal-escape-in-strict-code.js
+ok   refused/a-legacy-octal-escape-before-use-strict.js
+ok   refused/a-non-octal-decimal-escape-in-a-class-body.js
+ok   refused/a-legacy-octal-escape-in-a-class-element-name.js
+ok   runs/a-tagged-template-with-an-invalid-escape.js
+ok   refused/an-octal-escape-in-an-untagged-template.js
+ok   refused/a-second-constructor.js
+ok   refused/a-second-constructor.js
+ok   runs/a-class-with-one-constructor-and-a-static-one.js
+ok   refused/a-label-nested-in-itself.js
+ok   refused/a-label-nested-in-itself.js
+FAIL runs/a-label-reused-where-it-is-not-in-force.js: exit 3, expected 0; output does not contain `first, second, inner 0`
+       broiler-js: runs/a-label-reused-where-it-is-not-in-force.js: 2201:DuplicateLexicalDeclaration at 14:5: the label `a` is already in force here, so a statement inside it cannot declare it again
+ok   runs/yield-and-await-as-labels.js
+ok   refused/a-coalesce-beside-an-or.js
+ok   refused/a-coalesce-beside-an-or.js
+ok   runs/a-coalesce-mixed-with-parentheses.js
+ok   refused/a-line-break-before-an-arrow.js
+ok   refused/a-line-break-before-an-arrow.js
+ok   runs/an-arrow-body-on-the-next-line.js
+ok   refused/a-restricted-name-as-a-function-name-under-its-directive.js
+ok   refused/a-future-reserved-word-as-a-class-name.js
+ok   refused/eval-as-a-parameter-under-a-body-directive.js
+ok   refused/a-unary-operand-of-exponentiation.js
+ok   refused/a-unary-operand-of-exponentiation.js
+ok   dead-zone/a-read-before-the-initialiser-in-a-function-body.js
+# 1 of 26 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-3-001/control-label-scope.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Runtime -> <root>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.90
+# exit 0

@@ -1,0 +1,576 @@
+$ python3 eng/run-differential.py --against /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS --against-kind broiler-js --against-root /home/user/broiler-platform/broiler.js --timeout 30 --report <scratch>/broiler-js.json
+--- the-array-from-async.js
+    FAIL: undeclared divergence broiler-js/10: host='3', comparison='4'
+    FAIL: undeclared divergence broiler-js/11: host='3,4', comparison=''
+    FAIL: undeclared divergence broiler-js/13: host='2,4', comparison='[object Promise],[object Promise]'
+    FAIL: undeclared divergence broiler-js/16: host='rejected TypeError', comparison='threw TypeError'
+    FAIL: undeclared divergence broiler-js/17: host='rejected TypeError', comparison='threw TypeError'
+    FAIL: undeclared divergence broiler-js/18: host='rejected TypeError', comparison='fulfilled'
+    FAIL: undeclared divergence broiler-js/19: host='RangeError:', comparison='MISSING'
+    FAIL: undeclared divergence broiler-js/20: host='SyntaxError:return', comparison='MISSING'
+    FAIL: undeclared divergence broiler-js/21: host='EvalError:next0,next0,return', comparison='MISSING'
+    FAIL: undeclared divergence broiler-js/22: host='URIError:return', comparison='MISSING'
+    FAIL: undeclared divergence broiler-js/23: host='5,1,3:call5,done5,call1,done1,call3,done3', comparison='[object Promise],[object Promise],[object Promise]:call5,call1,call3'
+    FAIL: undeclared divergence broiler-js/24: host='true:0:2:8:false', comparison='false:undefined:2:8:true'
+    FAIL: undeclared divergence broiler-js/25: host='true:1:2', comparison='false:undefined:2'
+    FAIL: undeclared divergence broiler-js/28: host='5', comparison='[object Object]'
+    FAIL: undeclared divergence broiler-js/29: host='TypeError:t', comparison='MISSING'
+    FAIL: undeclared divergence broiler-js/30: host='TypeError:next0,return', comparison='MISSING'
+    FAIL: undeclared divergence broiler-js/31: host='RangeError:len', comparison='MISSING'
+    FAIL: undeclared divergence broiler-js/32: host='ReferenceError', comparison='MISSING'
+    FAIL: undeclared divergence broiler-js/33: host='RangeError', comparison='fulfilled'
+    FAIL: undeclared divergence broiler-js/34: host='true', comparison='false'
+    FAIL: undeclared divergence broiler-js/35: host='async', comparison='sync'
+    FAIL: undeclared divergence broiler-js/36: host='return-settled,rejected stop', comparison='MISSING'
+    FAIL: undeclared divergence broiler-js/37: host='2,2:next0,next0,next0', comparison=':'
+    FAIL: undeclared divergence broiler-js/38: host='true:undefined:x', comparison='true:x:undefined'
+    FAIL: undeclared divergence broiler-js/40: host='1:1', comparison=':0'
+    FAIL: case 41 missing: host='done:0', broiler-js=None
+    FAIL: case 42 missing: host='TypeError:next0,return', broiler-js=None
+--- the-array-length-and-receiver-writes.js
+    FAIL: undeclared divergence broiler-js/33: host='TypeError', comparison='ab'
+    FAIL: undeclared divergence broiler-js/34: host='TypeError', comparison='1,2,3'
+    FAIL: undeclared divergence broiler-js/63: host='"true|x:value|2"', comparison='"true|x:value/writable/enumerable/configurable|2"'
+    FAIL: undeclared divergence broiler-js/65: host='"true|Symbol(s):value|2"', comparison='"true|Symbol(s):value/writable/enumerable/configurable|2"'
+    FAIL: undeclared divergence broiler-js/67: host='"false|x:value"', comparison='"false|x:value/writable/enumerable/configurable"'
+    FAIL: undeclared divergence broiler-js/68: host='"false|Symbol(s):value"', comparison='"false|Symbol(s):value/writable/enumerable/configurable"'
+    FAIL: undeclared divergence broiler-js/69: host='"x:value"', comparison='"x:value/writable/enumerable/configurable"'
+    FAIL: undeclared divergence broiler-js/70: host='"Symbol(s):value|5"', comparison='"Symbol(s):value/writable/enumerable/configurable|5"'
+    FAIL: undeclared divergence broiler-js/73: host='"true:1:1"', comparison='"true:3:1,2,3"'
+    FAIL: undeclared divergence broiler-js/74: host='RangeError', comparison='true'
+--- the-array-species-and-spreading.js
+    FAIL: undeclared divergence broiler-js/25: host='"new:1:2|23|2"', comparison='"new:1:2|23|undefined"'
+    FAIL: undeclared divergence broiler-js/27: host='"3:false:3:3"', comparison='"3:false:3:undefined"'
+--- the-async-family.js
+    declared run: only case 74's line moves: Broiler.JS rejects that case at once, so its answer comes before the cases that settle after their awaits, and every other case settles in the host's order
+      the run: comparison case order differs from host output
+    declared 74: Broiler.JS rejects an async function that awaits in a `case` clause, with a platform error that its compiled code is an invalid program; the language evaluates each `case` expression in turn, awaiting as it goes
+--- the-async-module-siblings.mjs
+    FAIL: undeclared divergence broiler-js/11: host='B run,releasing,slow end,A run,C run,slow settled,A settled,B settled,C settled', comparison='B run,releasing,slow end,A run,C run,slow settled,A settled,C settled,B settled'
+--- the-asynchronous-iteration-family.js
+    declared run: Broiler.JS settles these asynchronous cases in a different order from the one the language's job queue gives, which the host and Node produce identically: its `await` and asynchronous iteration take a different number of turns
+      the run: comparison case order differs from host output
+    FAIL: undeclared divergence broiler-js/9: host='constructor,next,return,throw AsyncGenerator', comparison='next,return,throw,constructor AsyncGenerator'
+--- the-bigint-arithmetic-boundary.js
+--- the-bigint-literal-boundary.js
+    FAIL: undeclared divergence broiler-js/3: host='SyntaxError', comparison='1'
+    FAIL: undeclared divergence broiler-js/4: host='SyntaxError', comparison='8'
+    FAIL: undeclared divergence broiler-js/5: host='SyntaxError', comparison='TypeError'
+--- the-bigint-public-surface.js
+    FAIL: undeclared divergence broiler-js/4: host='"123456789012345678901234567890-5"', comparison='"123456789012345678901234567890n-5"'
+    FAIL: undeclared divergence broiler-js/12: host='"TypeError,TypeError,TypeError|TypeError"', comparison='"TypeError,TypeError,TypeError|ReferenceError"'
+    FAIL: undeclared divergence broiler-js/31: host='"true,true,false,true,true,true,0"', comparison='"true,true,false,true,false,true,0"'
+    FAIL: undeclared divergence broiler-js/32: host='"true,true,true,false,false,true"', comparison='"true,true,true,false,true,true"'
+    FAIL: undeclared divergence broiler-js/44: host='"false,ab"', comparison='"false,a"'
+--- the-bigint-typed-arrays.js
+    FAIL: undeclared divergence broiler-js/27: host='"TypeError,TypeError,TypeError,TypeError"', comparison='"TypeError,TypeError,TypeError,5e-324,1e-323"'
+    FAIL: undeclared divergence broiler-js/47: host='"TypeError,{},\\"0,1\\""', comparison='"\\"{}\\",{},\\"0,1\\""'
+    FAIL: undeclared divergence broiler-js/48: host='"one,1,true,true"', comparison='"one,1,false,true"'
+--- the-binary-species.js
+    FAIL: undeclared divergence broiler-js/63: host='TypeError', comparison='Error'
+--- the-comparison-engine-catalogue.js
+    declared 1: Broiler.JS's `console.log` writes nothing and returns its argument, so a program that reports through `console` has no output. The Console Standard's `log` prints its arguments through the Logger and returns `undefined`
+    declared 2: Broiler.JS throws listing the `console` object's own names; `[[OwnPropertyKeys]]` of an ordinary object, which the `console` namespace is, never throws
+    declared 3: Broiler.JS's message for that error names a platform type; the language leaves message text to the implementation, and a type from the engine's own build is nothing a program can use
+    declared 4: Broiler.JS's error `stack` names source files of the engine's own build and hands them to guest code; the language defines no `stack`, and this realm gives an error none
+    declared 5: Broiler.JS lists one of `String.prototype`'s own names twice; `[[OwnPropertyKeys]]` of an ordinary object lists each key once
+    declared 6: Broiler.JS's `for … in` finds no key through a `Proxy` on the prototype chain and calls none of its traps; enumeration reads each object on the chain through its own `[[OwnPropertyKeys]]` and `[[GetOwnProperty]]`
+    declared 7: Broiler.JS's global object has an own property named `import`, which is host-defined: the language defines no global by that name, and a program cannot reference it as a binding
+    declared 8: Broiler.JS's poisoned global store: after a `with` head threw, an indirect `eval` restores the global `var` binding to its value at that moment, 1 where the program assigned 2. The language gives a `with` statement no such effect
+    declared 9: the same, a second time: the assignment of 3 is undone as well, because the snapshot is permanent rather than restored once
+--- the-detached-typed-array.js
+    FAIL: undeclared divergence broiler-js/26: host='TypeError', comparison='RangeError'
+    FAIL: undeclared divergence broiler-js/36: host='4', comparison='8'
+    FAIL: undeclared divergence broiler-js/43: host='"true undefined"', comparison='TypeError'
+--- the-direct-eval-boundary.js
+    FAIL: undeclared divergence broiler-js/4: host='9', comparison='"global"'
+    FAIL: undeclared divergence broiler-js/29: host='true', comparison='false'
+    FAIL: undeclared divergence broiler-js/49: host='false', comparison='true'
+    FAIL: undeclared divergence broiler-js/66: host='"global"', comparison='ReferenceError'
+    FAIL: undeclared divergence broiler-js/67: host='"global"', comparison='ReferenceError'
+    FAIL: undeclared divergence broiler-js/75: host='"global"', comparison='ReferenceError'
+--- the-direct-eval-in-a-module.mjs
+--- the-disposal-stacks.js
+    FAIL: undeclared divergence broiler-js/2: host='"Symbol.dispose Symbol.asyncDispose"', comparison='"@dispose @asyncDispose"'
+    FAIL: undeclared divergence broiler-js/41: host='"321 SuppressedError first last false"', comparison='"321 SuppressedError first last true"'
+    FAIL: undeclared divergence broiler-js/62: host='rejected TypeError', comparison='rejects TypeError Failed to convert this to JSAsyncDisposableStackObject'
+    FAIL: undeclared divergence broiler-js/70: host='function [Symbol.asyncDispose] 0 undefined 1:undefined', comparison='rejects TypeError AsyncIterator.prototype[Symbol.asyncDispose]: return must return an object'
+--- the-eval-code-import-referrer.mjs
+    FAIL: undeclared divergence broiler-js/1: host='true', comparison='TypeError'
+    FAIL: undeclared divergence broiler-js/3: host='true', comparison='TypeError'
+    FAIL: undeclared divergence broiler-js/4: host='true', comparison='TypeError'
+    FAIL: undeclared divergence broiler-js/5: host='true', comparison='TypeError'
+    FAIL: undeclared divergence broiler-js/6: host='true', comparison='TypeError'
+    FAIL: undeclared divergence broiler-js/7: host='true', comparison='TypeError'
+    FAIL: undeclared divergence broiler-js/8: host='true', comparison='TypeError'
+    FAIL: undeclared divergence broiler-js/9: host='true', comparison='TypeError'
+--- the-eval-declarations-in-strict-code.js
+--- the-eval-declarations.js
+    FAIL: undeclared divergence broiler-js/4: host='2', comparison='1'
+    FAIL: undeclared divergence broiler-js/7: host='1', comparison='ReferenceError'
+    FAIL: undeclared divergence broiler-js/8: host='2', comparison='ReferenceError'
+    FAIL: undeclared divergence broiler-js/9: host='"number"', comparison='"undefined"'
+    FAIL: undeclared divergence broiler-js/13: host='"undefined"', comparison='"number"'
+    FAIL: undeclared divergence broiler-js/23: host='"1,undefined"', comparison='"1,number"'
+    FAIL: undeclared divergence broiler-js/26: host='"number"', comparison='"function"'
+    FAIL: undeclared divergence broiler-js/34: host='SyntaxError', comparison='undefined'
+    FAIL: undeclared divergence broiler-js/39: host='2', comparison='SyntaxError'
+    FAIL: undeclared divergence broiler-js/42: host='"number"', comparison='"undefined"'
+    FAIL: undeclared divergence broiler-js/80: host='"param"', comparison='[object Arguments]'
+    FAIL: undeclared divergence broiler-js/88: host='1', comparison='ReferenceError'
+    FAIL: undeclared divergence broiler-js/92: host='1', comparison='2'
+    FAIL: undeclared divergence broiler-js/93: host='1', comparison='2'
+    FAIL: undeclared divergence broiler-js/94: host='"number"', comparison='"function"'
+    FAIL: undeclared divergence broiler-js/95: host='1', comparison='ReferenceError'
+    FAIL: undeclared divergence broiler-js/98: host='1', comparison='3'
+    FAIL: undeclared divergence broiler-js/99: host='1', comparison='3'
+--- the-eval-super-and-private-names.js
+    FAIL: undeclared divergence broiler-js/16: host='SyntaxError', comparison='Error'
+--- the-float16-surface.js
+    FAIL: undeclared divergence broiler-js/37: host='"1 1,2"', comparison='"2 1,2"'
+    FAIL: undeclared divergence broiler-js/66: host='"5,6 1 1.5,2.5"', comparison='"5,6 2 1.5,2.5"'
+--- the-follow-up-built-in-fixes.js
+--- the-front-end-repairs.js
+    declared 66: Broiler.JS does not raise the early error the language requires: four of strict code's reserved words are read as identifier references, `static`, `let`, `private` in a class and `package` under a function's own directive
+    FAIL: undeclared divergence broiler-js/32: host='false', comparison='true'
+--- the-general-surface.js
+    declared 284: Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the variable it initialises
+    declared 298: Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the variable even through parentheses
+    declared 299: Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after each declarator's variable
+    declared 302: Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the variable for a generator expression too
+    declared 306: Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the target of a logical assignment `||=`
+    declared 307: Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the target of a logical assignment `??=`
+    declared 311: Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the variable it initialises; the length is right
+    declared 312: Broiler.JS gives an anonymous function no name from what it is assigned to: NamedEvaluation names it after the variable it first initialises, and copying it to another binding does not rename it
+    FAIL: undeclared divergence broiler-js/271: host='160 0 1', comparison='160 1 1'
+    FAIL: undeclared divergence broiler-js/272: host='8232 0 1', comparison='8232 1 1'
+    FAIL: undeclared divergence broiler-js/273: host='8233 0 1', comparison='8233 1 1'
+    FAIL: undeclared divergence broiler-js/274: host='8192 0 1', comparison='8192 1 1'
+    FAIL: undeclared divergence broiler-js/282: host='11823 0 0', comparison='11823 1 1'
+    FAIL: undeclared divergence broiler-js/295: host='""', comparison='"dyn"'
+    FAIL: undeclared divergence broiler-js/301: host='""', comparison='"[tag]"'
+    FAIL: undeclared divergence broiler-js/313: host='"function foo() { [native code] }"', comparison='"function foo(a,b){ return 1; }"'
+    FAIL: undeclared divergence broiler-js/321: host='"false"', comparison='"true"'
+--- the-generic-to-json-and-array-search.js
+--- the-intrinsic-to-string-fallbacks.js
+--- the-iterator-helpers.js
+    FAIL: undeclared divergence broiler-js/8: host='TypeError', comparison='[object Object]'
+    FAIL: undeclared divergence broiler-js/9: host='TypeError', comparison='[object Object]'
+    FAIL: undeclared divergence broiler-js/31: host='"return {\\"done\\":true} {\\"done\\":true}"', comparison='"return {} {\\"done\\":true}"'
+    FAIL: undeclared divergence broiler-js/32: host='"next,return,RangeError {\\"done\\":true}"', comparison='RangeError'
+    FAIL: undeclared divergence broiler-js/44: host='"{\\"done\\":true}"', comparison='"{}"'
+    FAIL: undeclared divergence broiler-js/71: host='"next,return,RangeError true"', comparison='RangeError'
+--- the-json-date-and-regexp-surface.js
+    FAIL: undeclared divergence broiler-js/23: host='1583020800000', comparison='NaN'
+    FAIL: undeclared divergence broiler-js/123: host='"absent"', comparison='"has-anchor"'
+--- the-later-library-methods.js
+    FAIL: undeclared divergence broiler-js/36: host='1.2599210498948734', comparison='1.2599210498948732'
+    FAIL: undeclared divergence broiler-js/45: host='"x1y"', comparison='""'
+--- the-line-terminators-in-literals.js
+--- the-mapped-arguments-object.js
+    FAIL: undeclared divergence broiler-js/7: host='"undefined:1"', comparison='"5:1"'
+    FAIL: undeclared divergence broiler-js/43: host='"TypeError:9"', comparison='"TypeError:1"'
+--- the-module-evaluation-errors.mjs
+    declared run: Broiler.JS never settles an `import()` of a module that, after its first top-level `await`, leaves a promise that never settles, so this probe's run times out. The language settles a module's evaluation when its body completes, whatever promises it leaves pending
+      the run: broiler-js timed out after 30.0s
+--- the-module-goal.mjs
+    FAIL: undeclared divergence broiler-js/52: host='0', comparison='1'
+--- the-module-identity.mjs
+    declared run: Broiler.JS never settles an `import()` of a module that, after its first top-level `await`, leaves a promise that never settles, so this probe's run times out. The language settles a module's evaluation when its body completes, whatever promises it leaves pending
+      the run: broiler-js timed out after 30.0s
+--- the-module-namespace-integrity.mjs
+--- the-module-scoped-eval.mjs
+--- the-numeric-operand-order.js
+--- the-object-integrity-paths.js
+    FAIL: undeclared divergence broiler-js/71: host='"TypeError/0"', comparison='"RangeError/0"'
+    FAIL: undeclared divergence broiler-js/81: host='0', comparison='1'
+--- the-parameter-environment.js
+    FAIL: undeclared divergence broiler-js/2: host='"2,1"', comparison='"2,2"'
+    FAIL: undeclared divergence broiler-js/4: host='"function,1"', comparison='"function,function a() { }"'
+    FAIL: undeclared divergence broiler-js/5: host='1', comparison='5'
+    FAIL: undeclared divergence broiler-js/12: host='"2,1"', comparison='"2,2"'
+    FAIL: undeclared divergence broiler-js/14: host='"2,1"', comparison='"2,2"'
+    FAIL: undeclared divergence broiler-js/15: host='"2,1"', comparison='"2,2"'
+    FAIL: undeclared divergence broiler-js/16: host='"2,1"', comparison='"2,2"'
+    FAIL: undeclared divergence broiler-js/17: host='6', comparison='3'
+    FAIL: undeclared divergence broiler-js/18: host='"10,11,1"', comparison='"10,11,10"'
+    FAIL: undeclared divergence broiler-js/22: host='"1,undefined"', comparison='"1,number"'
+    FAIL: undeclared divergence broiler-js/24: host='"number,1"', comparison='"number,2"'
+    FAIL: undeclared divergence broiler-js/28: host='"2,1"', comparison='"2,2"'
+    FAIL: undeclared divergence broiler-js/30: host='"5,1"', comparison='"1,1"'
+    FAIL: undeclared divergence broiler-js/31: host='undefined', comparison='1'
+    FAIL: undeclared divergence broiler-js/32: host='"3,1"', comparison='"3,3"'
+    FAIL: undeclared divergence broiler-js/33: host='1', comparison='ReferenceError'
+    FAIL: undeclared divergence broiler-js/37: host='1', comparison='2'
+    FAIL: undeclared divergence broiler-js/38: host='1', comparison='2'
+    FAIL: undeclared divergence broiler-js/39: host='"number"', comparison='"function"'
+    FAIL: undeclared divergence broiler-js/40: host='1', comparison='ReferenceError'
+    FAIL: undeclared divergence broiler-js/41: host='"3,1"', comparison='"3,3"'
+    FAIL: undeclared divergence broiler-js/42: host='"3,1"', comparison='"3,3"'
+    FAIL: undeclared divergence broiler-js/45: host='undefined', comparison='1'
+    FAIL: undeclared divergence broiler-js/46: host='"undefined"', comparison='"object"'
+    FAIL: undeclared divergence broiler-js/47: host='2', comparison='1'
+    FAIL: undeclared divergence broiler-js/53: host='"3,1"', comparison='"3,3"'
+    FAIL: undeclared divergence broiler-js/54: host='"2,1,1"', comparison='"2,2,1"'
+    FAIL: undeclared divergence broiler-js/55: host='"2,1"', comparison='"2,2"'
+    FAIL: undeclared divergence broiler-js/57: host='"2,1,true"', comparison='"2,2,true"'
+    FAIL: undeclared divergence broiler-js/58: host='"5,1"', comparison='"5,2"'
+    FAIL: undeclared divergence broiler-js/59: host='1', comparison='2'
+    FAIL: undeclared divergence broiler-js/60: host='1', comparison='2'
+    FAIL: undeclared divergence broiler-js/61: host='"2,1"', comparison='"2,2"'
+    FAIL: undeclared divergence broiler-js/65: host='undefined', comparison='4'
+    FAIL: undeclared divergence broiler-js/66: host='undefined', comparison='6'
+--- the-proxy-and-its-invariants.js
+    FAIL: undeclared divergence broiler-js/13: host='"proxy,revoke"', comparison='""'
+    FAIL: undeclared divergence broiler-js/33: host='"{\\"value\\":7,\\"writable\\":false,\\"enumerable\\":false,\\"configurable\\":true}"', comparison='"{\\"configurable\\":true,\\"value\\":7}"'
+--- the-raw-json-values.js
+    FAIL: undeclared divergence broiler-js/9: host='"false,true,false"', comparison='"false,false,false"'
+    FAIL: undeclared divergence broiler-js/45: host='false', comparison='true'
+    FAIL: undeclared divergence broiler-js/51: host='"{\\"rawJSON\\":\\"1\\"}"', comparison='"{}"'
+--- the-recursive-built-ins.js
+    declared run: Broiler.JS's `JSON.stringify` and `Array.prototype.join` recurse on the platform stack with no guard, so a deeply nested value terminates the process with a stack overflow and every case is lost. The host and Node throw a `RangeError` a program can catch, as they do for a guest-level recursion
+      the run: broiler-js exited -6: 'Stack overflow.\n   at Broiler.JavaScript.Storage.SAUint32Map`1[[Broiler.JavaScript.Storage.JSObjectProperty, Broiler.JavaScript.Storage, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null]].GetNode(UInt32, Boolean)\n   at Broiler.JavaScript.Storage.SAUint32Map`1[[Broiler.J
+--- the-reference-key-and-exponent-edges.js
+    FAIL: undeclared divergence broiler-js/3: host='NaN', comparison='1'
+    FAIL: undeclared divergence broiler-js/4: host='NaN', comparison='1'
+    FAIL: undeclared divergence broiler-js/38: host='"<1.5>,<-2>,<0>:0,0,0"', comparison='"<1.5>,<-2>,<0>:2,2,2"'
+--- the-regexp-escape.js
+--- the-regexp-guards-in-string-search.js
+    FAIL: undeclared divergence broiler-js/15: host='"this,match,search,position=true"', comparison='"this,position,match,search=true"'
+    FAIL: undeclared divergence broiler-js/16: host='"this,match,search,position=false"', comparison='"this,match,position,search=false"'
+    FAIL: undeclared divergence broiler-js/17: host='"this,match,search,position=true"', comparison='"this,position,match,search=true"'
+--- the-regexp-protocols.js
+    FAIL: undeclared divergence broiler-js/23: host='"match,source,flags=/q/y"', comparison='"match,constructor,source,source,flags=/q/y"'
+    FAIL: undeclared divergence broiler-js/28: host='"aXb"', comparison='"X/X/gb"'
+    FAIL: undeclared divergence broiler-js/29: host='"a,b|c"', comparison='"a|b/|/c"'
+--- the-regexp-symbol-methods.js
+--- the-resizable-array-buffer.js
+    FAIL: undeclared divergence broiler-js/60: host='TypeError', comparison='RangeError'
+    FAIL: undeclared divergence broiler-js/66: host='"2,3,0,0,0,0,0,0|2,3,0,0,0,0,0,0"', comparison='Error'
+    FAIL: undeclared divergence broiler-js/72: host='TypeError', comparison='"true,false,6,6"'
+    FAIL: undeclared divergence broiler-js/80: host='RangeError', comparison='6'
+    FAIL: undeclared divergence broiler-js/81: host='TypeError', comparison='RangeError'
+--- the-script-declarations.js
+--- the-seam-between-generators-and-the-rest.js
+--- the-settling-of-promises.js
+--- the-small-correctness-gaps.js
+    FAIL: broiler-js exited 1: 'Uncaught SyntaxError: Unexpected token Divide: / at 71, 58\nat Compile in <root>/src/tests/differential/the-small-correctness-gaps.js:line 71\n\n    at Compile:<root>/src/tests/differential/the-small-correctness-gaps.js:71,1\n\n\n'
+--- the-statement-and-object-surface.js
+    declared 8: Broiler.JS keeps the outer function: in sloppy code Annex B.3.2.1 copies a block's function declaration to the function-scoped binding when the declaration is evaluated, so the inner one is what the name holds afterwards
+    declared 62: Broiler.JS gives a sloppy function own `caller` and `arguments` properties, as Node does. Section 17.1 forbids them for strict functions and every other function kind and permits them for a non-strict function as an extension; this realm does not add them, and neither answer is a defect
+    declared 234: Broiler.JS does not raise the early error the language requires: `arguments` is a Syntax Error in a class field initialiser (ContainsArguments)
+    declared 235: Broiler.JS does not raise the early error the language requires: `arguments` is a Syntax Error in a class static block (ContainsArguments)
+    declared 239: Broiler.JS does not raise the early error the language requires: `#constructor` is not a private name a class may declare
+    declared 244: Broiler.JS does not raise the early error the language requires: `delete` of a private reference is a Syntax Error
+    declared 341: Broiler.JS does not raise the early error the language requires: a block declaring one generator name twice; the Annex B.3.3 allowance for duplicates covers plain functions in sloppy code only
+    declared 351: Broiler.JS does not raise the early error the language requires: an arrow body's `let` redeclares a parameter
+    declared 352: Broiler.JS does not raise the early error the language requires: a catch block's `let` redeclares the catch parameter
+    declared 355: Broiler.JS does not raise the early error the language requires: a function declared in a catch block takes the catch parameter's name; Annex B.3.4 relaxes the rule for `var` only
+    declared 359: Broiler.JS does not raise the early error the language requires: a `switch` with two `default` clauses is not a production of the grammar
+    declared 362: Broiler.JS does not raise the early error the language requires: two generator declarations of one name across a `switch`'s clauses; the Annex B allowance is for plain functions
+    declared 374: Broiler.JS does not raise the early error the language requires: a generator declaration as the body of an `if` is not a production; Annex B.3.3 admits a plain function declaration there and nothing else
+    declared 375: Broiler.JS does not raise the early error the language requires: a class declaration as the body of an `if` is not a production of the grammar
+    declared 391: Broiler.JS does not raise the early error the language requires: `await` written with an escape is still reserved inside an async function
+    declared 396: Broiler.JS does not raise the early error the language requires: `yield` written with an escape is still reserved inside a generator
+    declared 413: Broiler.JS does not raise the early error the language requires: `break` written with an escape is a reserved word and cannot be a shorthand property's binding
+    declared 445: Broiler.JS hoists an async function declared in a `switch` clause out of its block: Annex B.3.2 applies to plain function declarations only, so the name is not visible after the block
+    declared 448: Broiler.JS keeps the outer function: in sloppy code Annex B.3.2.1 copies a block's function declaration to the function-scoped binding when the declaration is evaluated, so the inner one is what the name holds afterwards
+    declared 471: Broiler.JS does not raise the early error the language requires: a rest element in an array assignment pattern may not be followed by a comma
+    declared 472: Broiler.JS does not raise the early error the language requires: a rest property in an object assignment pattern may not be followed by a comma
+    declared 487: Broiler.JS does not raise the early error the language requires: a `yield` expression in a generator method's parameters
+    declared 488: Broiler.JS does not raise the early error the language requires: a `yield` expression in a class generator method's parameters
+    FAIL: undeclared divergence broiler-js/97: host='"0.0022002200220022002200220022002201"', comparison='"0.00220022002200220022002200220022010000210021000011010100020220112020121211021220201121200010202102221012011200102210101012020202002210201010020021011001000020222100102200220210212210211000201201022020202001100022202200120010210220200011202201010010221121201212202101221212001212001222121001102101022020000120212112002222211011112111220121211112022112100100222121000022102202101222002011202200112101201100111200000110110010101100220121020011020202102112021110010021012001020222211122120120110000221100220200011001122121021021001110002222110122112202001121200021001212100002220022011202201110220211200221011122012200011010121122012110100101101220112011200222101020211000020001210201200011121222222202012002200122111220010220220012220112211002120011000102000012110220211202102221100222212020021200112102200120010221120122021101012121000112200002202001222221022011002021010121102012212022112202011110211121122011201011211222121122202111100020201202010220221212101200022020212120001012222211011222010011000212111010121010112020201100101122022012010010202120020211120200211212020000002221222100220120012010"'
+    FAIL: undeclared divergence broiler-js/463: host='1', comparison='undefined'
+    FAIL: undeclared divergence broiler-js/495: host='"ok"', comparison='"SyntaxError"'
+--- the-string-normalization.js
+    FAIL: undeclared divergence broiler-js/31: host='"d800 | d800 | d800 | d800"', comparison='Error'
+    FAIL: undeclared divergence broiler-js/32: host='"dc00 | dc00 | dc00 | dc00"', comparison='Error'
+    FAIL: undeclared divergence broiler-js/33: host='"61 d800 301 62 | 61 d800 301 62 | 61 d800 301 62 | 61 d800 301 62"', comparison='Error'
+    FAIL: undeclared divergence broiler-js/34: host='"dc00 d800 | dc00 d800 | dc00 d800 | dc00 d800"', comparison='Error'
+    FAIL: undeclared divergence broiler-js/35: host='"65 d834 301 | 65 d834 301 | 65 d834 301 | 65 d834 301"', comparison='Error'
+--- the-symbol-keyed-integrity.js
+--- the-unicode-lexical-grammar.js
+    FAIL: undeclared divergence broiler-js/13: host='SyntaxError', comparison='undefined'
+    FAIL: undeclared divergence broiler-js/39: host='SyntaxError', comparison='undefined'
+    FAIL: undeclared divergence broiler-js/43: host='SyntaxError', comparison='2'
+    FAIL: undeclared divergence broiler-js/53: host='"9 A B C D 20 A0 1680 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 200A 2028 2029 202F 205F 3000 FEFF"', comparison='"9 A B C D 20 85 A0 1680 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 200A 2028 2029 202F 205F 3000 FEFF"'
+    FAIL: undeclared divergence broiler-js/54: host='SyntaxError', comparison='"v"'
+    FAIL: undeclared divergence broiler-js/55: host='false', comparison='true'
+    FAIL: undeclared divergence broiler-js/61: host='SyntaxError', comparison='"v"'
+    FAIL: undeclared divergence broiler-js/69: host='"a"', comparison='SyntaxError'
+    FAIL: undeclared divergence broiler-js/70: host='"a"', comparison='SyntaxError'
+    FAIL: undeclared divergence broiler-js/71: host='SyntaxError', comparison='"a"'
+    FAIL: undeclared divergence broiler-js/76: host='true', comparison='false'
+    FAIL: undeclared divergence broiler-js/77: host='true', comparison='false'
+    FAIL: undeclared divergence broiler-js/78: host='true', comparison='false'
+    FAIL: undeclared divergence broiler-js/79: host='true', comparison='false'
+    FAIL: undeclared divergence broiler-js/87: host='false', comparison='true'
+    FAIL: undeclared divergence broiler-js/88: host='"1169 0"', comparison='"1169 3 A7CF A7D3 A7D5"'
+    FAIL: undeclared divergence broiler-js/89: host='"1169 0"', comparison='"1169 3 A7CF A7D3 A7D5"'
+    FAIL: undeclared divergence broiler-js/90: host='"0 2 2"', comparison='"1 1 2"'
+    FAIL: undeclared divergence broiler-js/91: host='"0 2 2"', comparison='"1 1 2"'
+    FAIL: undeclared divergence broiler-js/92: host='"null 0"', comparison='"1 1 2"'
+    FAIL: undeclared divergence broiler-js/93: host='"0 0 0"', comparison='"1 0 1"'
+    FAIL: undeclared divergence broiler-js/94: host='"1 2 3"', comparison='"null 0"'
+--- the-unicode-normalization-invariants-000000.js
+    FAIL: broiler-js exited -6: "Unhandled exception. System.ArgumentException: String contains invalid Unicode code points. (Parameter 'strInput')\n   at System.Globalization.Normalization.IcuNormalize(String strInput, NormalizationForm normalizationForm)\n   at Broiler.JavaScript.BuiltIns.String.JSString.Normalize(Arguments& a) in /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript.BuiltIns/String/JSStringPrototype.Transform.cs:line 24\n   at Broiler.JavaScript.BuiltIns.Function.JSFunction.InvokeFunction(Arguments& a) in /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript.BuiltIns/Function/JSFunction.cs:line 1023\n   at body-:0,0(Closures, Arguments&)\n   at Broiler.JavaScript.Engine.JSContext.Eval(String code, String codeFilePath, JSValue this) in /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript.Engine/JSContext.cs:line 2636\n   at BroilerJS.Program.RunScriptHost(FileInfo file) in /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/Program.cs:line 258\n   at BroilerJS.Program.<>c__DisplayClass4_0.<RunScriptHostOnOwnThread>b__0() in /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/Program.cs:line 132\n   at BroilerJS.Program.<>c__DisplayClass5_0.<RunHostOnOwnThread>b__0() in /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/Program.cs:line 142\n--- End of stack trace from previous location ---\n   at BroilerJS.Program.RunHostOnOwnThread(Action body) in /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/Program.cs:line 170\n   at BroilerJS.Program.RunScriptHostOnOwnThread(FileInfo file) in /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/Program.cs:line 132\n   at BroilerJS.Program.Main(String[] args) in /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/Program.cs:line 99\n   at BroilerJS.Program.<Main>(String[] args)\n"
+--- the-unicode-normalization-invariants-020000.js
+--- the-unicode-normalization-invariants-040000.js
+--- the-unicode-normalization-invariants-060000.js
+--- the-unicode-normalization-invariants-080000.js
+--- the-unicode-normalization-invariants-0A0000.js
+--- the-unicode-normalization-invariants-0C0000.js
+--- the-unicode-normalization-invariants-0E0000.js
+--- the-unicode-normalization-invariants-100000.js
+--- the-unicode-normalization-part0.js
+--- the-unicode-normalization-part1-1-of-4.js
+    FAIL: undeclared divergence broiler-js/1: host='part 1, file lines 93 to 4364: 4272 vectors, 85440 checks, 0 failing', comparison='part 1, file lines 93 to 4364: 4272 vectors, 85440 checks, 1 failing'
+    FAIL: case 2 missing: host=None, broiler-js='line 2432 c1 [a7f1] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+--- the-unicode-normalization-part1-2-of-4.js
+--- the-unicode-normalization-part1-3-of-4.js
+--- the-unicode-normalization-part1-4-of-4.js
+    FAIL: undeclared divergence broiler-js/1: host='part 1, file lines 12909 to 17178: 4270 vectors, 85400 checks, 0 failing', comparison='part 1, file lines 12909 to 17178: 4270 vectors, 85400 checks, 56 failing'
+    FAIL: case 2 missing: host=None, broiler-js='line 15154 c1 [d801 ddc9] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 3 missing: host=None, broiler-js='line 15155 c1 [d801 dde4] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 4 missing: host=None, broiler-js='line 15219 c1 [d804 df83] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 5 missing: host=None, broiler-js='line 15220 c1 [d804 df85] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 6 missing: host=None, broiler-js='line 15221 c1 [d804 df8e] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 7 missing: host=None, broiler-js='line 15222 c1 [d804 df91] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 8 missing: host=None, broiler-js='line 15223 c1 [d804 dfc5] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 9 missing: host=None, broiler-js='line 15224 c1 [d804 dfc7] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 10 missing: host=None, broiler-js='line 15225 c1 [d804 dfc8] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 11 missing: host=None, broiler-js='line 15232 c1 [d818 dd21] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 12 missing: host=None, broiler-js='line 15233 c1 [d818 dd22] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 13 missing: host=None, broiler-js='line 15234 c1 [d818 dd23] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 14 missing: host=None, broiler-js='line 15235 c1 [d818 dd24] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 15 missing: host=None, broiler-js='line 15236 c1 [d818 dd25] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 16 missing: host=None, broiler-js='line 15237 c1 [d818 dd26] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 17 missing: host=None, broiler-js='line 15238 c1 [d818 dd27] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 18 missing: host=None, broiler-js='line 15239 c1 [d818 dd28] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 19 missing: host=None, broiler-js='line 15240 c1 [d81b dd68] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 20 missing: host=None, broiler-js='line 15241 c1 [d81b dd69] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 21 missing: host=None, broiler-js='line 15242 c1 [d81b dd6a] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 22 missing: host=None, broiler-js='line 15243 c1 [d833 dcd6] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 23 missing: host=None, broiler-js='line 15244 c1 [d833 dcd7] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 24 missing: host=None, broiler-js='line 15245 c1 [d833 dcd8] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 25 missing: host=None, broiler-js='line 15246 c1 [d833 dcd9] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 26 missing: host=None, broiler-js='line 15247 c1 [d833 dcda] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 27 missing: host=None, broiler-js='line 15248 c1 [d833 dcdb] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 28 missing: host=None, broiler-js='line 15249 c1 [d833 dcdc] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 29 missing: host=None, broiler-js='line 15250 c1 [d833 dcdd] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 30 missing: host=None, broiler-js='line 15251 c1 [d833 dcde] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 31 missing: host=None, broiler-js='line 15252 c1 [d833 dcdf] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 32 missing: host=None, broiler-js='line 15253 c1 [d833 dce0] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 33 missing: host=None, broiler-js='line 15254 c1 [d833 dce1] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 34 missing: host=None, broiler-js='line 15255 c1 [d833 dce2] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 35 missing: host=None, broiler-js='line 15256 c1 [d833 dce3] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 36 missing: host=None, broiler-js='line 15257 c1 [d833 dce4] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 37 missing: host=None, broiler-js='line 15258 c1 [d833 dce5] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 38 missing: host=None, broiler-js='line 15259 c1 [d833 dce6] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 39 missing: host=None, broiler-js='line 15260 c1 [d833 dce7] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 40 missing: host=None, broiler-js='line 15261 c1 [d833 dce8] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 41 missing: host=None, broiler-js='line 15262 c1 [d833 dce9] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 42 missing: host=None, broiler-js='line 15263 c1 [d833 dcea] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 43 missing: host=None, broiler-js='line 15264 c1 [d833 dceb] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 44 missing: host=None, broiler-js='line 15265 c1 [d833 dcec] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 45 missing: host=None, broiler-js='line 15266 c1 [d833 dced] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 46 missing: host=None, broiler-js='line 15267 c1 [d833 dcee] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 47 missing: host=None, broiler-js='line 15268 c1 [d833 dcef] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 48 missing: host=None, broiler-js='line 15269 c1 [d833 dcf0] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 49 missing: host=None, broiler-js='line 15270 c1 [d833 dcf1] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 50 missing: host=None, broiler-js='line 15271 c1 [d833 dcf2] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 51 missing: host=None, broiler-js='line 15272 c1 [d833 dcf3] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 52 missing: host=None, broiler-js='line 15273 c1 [d833 dcf4] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 53 missing: host=None, broiler-js='line 15274 c1 [d833 dcf5] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 54 missing: host=None, broiler-js='line 15275 c1 [d833 dcf6] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 55 missing: host=None, broiler-js='line 15276 c1 [d833 dcf7] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 56 missing: host=None, broiler-js='line 15277 c1 [d833 dcf8] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+    FAIL: case 57 missing: host=None, broiler-js='line 15278 c1 [d833 dcf9] NFKC(c1) NFKC(c2) NFKC(c3) NFKD(c1) NFKD(c2) NFKD(c3)'
+--- the-unicode-normalization-part2.js
+    FAIL: undeclared divergence broiler-js/1: host='part 2, file lines 17182 to 19117: 1936 vectors, 38720 checks, 0 failing', comparison='part 2, file lines 17182 to 19117: 1936 vectors, 38720 checks, 92 failing'
+    FAIL: case 2 missing: host=None, broiler-js='line 17744 c1 [61 315 300 5ae 897 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 3 missing: host=None, broiler-js='line 17745 c1 [61 897 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 4 missing: host=None, broiler-js='line 18102 c1 [61 315 300 5ae 1acf 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 5 missing: host=None, broiler-js='line 18103 c1 [61 1acf 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 6 missing: host=None, broiler-js='line 18104 c1 [61 315 300 5ae 1ad0 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 7 missing: host=None, broiler-js='line 18105 c1 [61 1ad0 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 8 missing: host=None, broiler-js='line 18106 c1 [61 315 300 5ae 1ad1 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 9 missing: host=None, broiler-js='line 18107 c1 [61 1ad1 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 10 missing: host=None, broiler-js='line 18108 c1 [61 315 300 5ae 1ad2 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 11 missing: host=None, broiler-js='line 18109 c1 [61 1ad2 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 12 missing: host=None, broiler-js='line 18110 c1 [61 315 300 5ae 1ad3 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 13 missing: host=None, broiler-js='line 18111 c1 [61 1ad3 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 14 missing: host=None, broiler-js='line 18112 c1 [61 315 300 5ae 1ad4 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 15 missing: host=None, broiler-js='line 18113 c1 [61 1ad4 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 16 missing: host=None, broiler-js='line 18114 c1 [61 315 300 5ae 1ad5 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 17 missing: host=None, broiler-js='line 18115 c1 [61 1ad5 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 18 missing: host=None, broiler-js='line 18116 c1 [61 315 300 5ae 1ad6 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 19 missing: host=None, broiler-js='line 18117 c1 [61 1ad6 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 20 missing: host=None, broiler-js='line 18118 c1 [61 315 300 5ae 1ad7 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 21 missing: host=None, broiler-js='line 18119 c1 [61 1ad7 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 22 missing: host=None, broiler-js='line 18120 c1 [61 315 300 5ae 1ad8 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 23 missing: host=None, broiler-js='line 18121 c1 [61 1ad8 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 24 missing: host=None, broiler-js='line 18122 c1 [61 315 300 5ae 1ad9 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 25 missing: host=None, broiler-js='line 18123 c1 [61 1ad9 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 26 missing: host=None, broiler-js='line 18124 c1 [61 315 300 5ae 1ada 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 27 missing: host=None, broiler-js='line 18125 c1 [61 1ada 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 28 missing: host=None, broiler-js='line 18126 c1 [61 315 300 5ae 1adb 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 29 missing: host=None, broiler-js='line 18127 c1 [61 1adb 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 30 missing: host=None, broiler-js='line 18128 c1 [61 315 300 5ae 1adc 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 31 missing: host=None, broiler-js='line 18129 c1 [61 1adc 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 32 missing: host=None, broiler-js='line 18130 c1 [61 59a 316 1dfa 1add 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 33 missing: host=None, broiler-js='line 18131 c1 [61 1add 59a 316 1dfa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 34 missing: host=None, broiler-js='line 18132 c1 [61 315 300 5ae 1ae0 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 35 missing: host=None, broiler-js='line 18133 c1 [61 1ae0 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 36 missing: host=None, broiler-js='line 18134 c1 [61 315 300 5ae 1ae1 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 37 missing: host=None, broiler-js='line 18135 c1 [61 1ae1 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 38 missing: host=None, broiler-js='line 18136 c1 [61 315 300 5ae 1ae2 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 39 missing: host=None, broiler-js='line 18137 c1 [61 1ae2 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 40 missing: host=None, broiler-js='line 18138 c1 [61 315 300 5ae 1ae3 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 41 missing: host=None, broiler-js='line 18139 c1 [61 1ae3 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 42 missing: host=None, broiler-js='line 18140 c1 [61 315 300 5ae 1ae4 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 43 missing: host=None, broiler-js='line 18141 c1 [61 1ae4 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 44 missing: host=None, broiler-js='line 18142 c1 [61 315 300 5ae 1ae5 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 45 missing: host=None, broiler-js='line 18143 c1 [61 1ae5 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 46 missing: host=None, broiler-js='line 18144 c1 [61 59a 316 1dfa 1ae6 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 47 missing: host=None, broiler-js='line 18145 c1 [61 1ae6 59a 316 1dfa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 48 missing: host=None, broiler-js='line 18146 c1 [61 315 300 5ae 1ae7 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 49 missing: host=None, broiler-js='line 18147 c1 [61 1ae7 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 50 missing: host=None, broiler-js='line 18148 c1 [61 315 300 5ae 1ae8 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 51 missing: host=None, broiler-js='line 18149 c1 [61 1ae8 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 52 missing: host=None, broiler-js='line 18150 c1 [61 315 300 5ae 1ae9 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 53 missing: host=None, broiler-js='line 18151 c1 [61 1ae9 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 54 missing: host=None, broiler-js='line 18152 c1 [61 315 300 5ae 1aea 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 55 missing: host=None, broiler-js='line 18153 c1 [61 1aea 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 56 missing: host=None, broiler-js='line 18154 c1 [61 345 35d 35c 1aeb 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 57 missing: host=None, broiler-js='line 18155 c1 [61 1aeb 345 35d 35c 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 58 missing: host=None, broiler-js='line 18690 c1 [61 315 300 5ae d803 dd69 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 59 missing: host=None, broiler-js='line 18691 c1 [61 d803 dd69 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 60 missing: host=None, broiler-js='line 18692 c1 [61 315 300 5ae d803 dd6a 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 61 missing: host=None, broiler-js='line 18693 c1 [61 d803 dd6a 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 62 missing: host=None, broiler-js='line 18694 c1 [61 315 300 5ae d803 dd6b 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 63 missing: host=None, broiler-js='line 18695 c1 [61 d803 dd6b 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 64 missing: host=None, broiler-js='line 18696 c1 [61 315 300 5ae d803 dd6c 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 65 missing: host=None, broiler-js='line 18697 c1 [61 d803 dd6c 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 66 missing: host=None, broiler-js='line 18698 c1 [61 315 300 5ae d803 dd6d 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 67 missing: host=None, broiler-js='line 18699 c1 [61 d803 dd6d 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 68 missing: host=None, broiler-js='line 18704 c1 [61 59a 316 1dfa d803 defa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 69 missing: host=None, broiler-js='line 18705 c1 [61 d803 defa 59a 316 1dfa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 70 missing: host=None, broiler-js='line 18706 c1 [61 59a 316 1dfa d803 defb 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 71 missing: host=None, broiler-js='line 18707 c1 [61 d803 defb 59a 316 1dfa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 72 missing: host=None, broiler-js='line 18808 c1 [61 5b0 94d 3099 d804 dfce 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 73 missing: host=None, broiler-js='line 18809 c1 [61 d804 dfce 5b0 94d 3099 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 74 missing: host=None, broiler-js='line 18810 c1 [61 5b0 94d 3099 d804 dfcf 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 75 missing: host=None, broiler-js='line 18811 c1 [61 d804 dfcf 5b0 94d 3099 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 76 missing: host=None, broiler-js='line 18812 c1 [61 5b0 94d 3099 d804 dfd0 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 77 missing: host=None, broiler-js='line 18813 c1 [61 d804 dfd0 5b0 94d 3099 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 78 missing: host=None, broiler-js='line 18868 c1 [61 5b0 94d 3099 d818 dd2f 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 79 missing: host=None, broiler-js='line 18869 c1 [61 d818 dd2f 5b0 94d 3099 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 80 missing: host=None, broiler-js='line 19076 c1 [61 315 300 5ae d839 ddee 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 81 missing: host=None, broiler-js='line 19077 c1 [61 d839 ddee 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 82 missing: host=None, broiler-js='line 19078 c1 [61 59a 316 1dfa d839 ddef 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 83 missing: host=None, broiler-js='line 19079 c1 [61 d839 ddef 59a 316 1dfa 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 84 missing: host=None, broiler-js='line 19080 c1 [61 315 300 5ae d839 dee3 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 85 missing: host=None, broiler-js='line 19081 c1 [61 d839 dee3 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 86 missing: host=None, broiler-js='line 19082 c1 [61 315 300 5ae d839 dee6 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 87 missing: host=None, broiler-js='line 19083 c1 [61 d839 dee6 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 88 missing: host=None, broiler-js='line 19084 c1 [61 315 300 5ae d839 deee 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 89 missing: host=None, broiler-js='line 19085 c1 [61 d839 deee 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 90 missing: host=None, broiler-js='line 19086 c1 [61 315 300 5ae d839 deef 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 91 missing: host=None, broiler-js='line 19087 c1 [61 d839 deef 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 92 missing: host=None, broiler-js='line 19088 c1 [61 315 300 5ae d839 def5 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+    FAIL: case 93 missing: host=None, broiler-js='line 19089 c1 [61 d839 def5 315 300 5ae 62] NFC(c1) NFD(c1) NFKC(c1) NFKD(c1)'
+--- the-unicode-normalization-part3.js
+    FAIL: undeclared divergence broiler-js/1: host='part 3, file lines 19121 to 19314: 194 vectors, 3880 checks, 0 failing', comparison='part 3, file lines 19121 to 19314: 194 vectors, 3880 checks, 4 failing'
+    FAIL: case 2 missing: host=None, broiler-js='line 19308 c1 [d818 dd21 334 d818 dd1f] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 3 missing: host=None, broiler-js='line 19309 c1 [d818 dd21 334 d818 dd20] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 4 missing: host=None, broiler-js='line 19310 c1 [d818 dd22 334 d818 dd1f] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 5 missing: host=None, broiler-js='line 19314 c1 [d81b dd69 334 d81b dd67] NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+--- the-unicode-normalization-part4.js
+    FAIL: undeclared divergence broiler-js/1: host='part 4, file lines 19318 to 20052: 735 vectors, 14700 checks, 0 failing', comparison='part 4, file lines 19318 to 20052: 735 vectors, 14700 checks, 8 failing'
+    FAIL: case 2 missing: host=None, broiler-js='line 20036 c1 [d818 dd1e d818 dd23] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 3 missing: host=None, broiler-js='line 20037 c1 [d818 dd21 d818 dd1f] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 4 missing: host=None, broiler-js='line 20038 c1 [d818 dd1e d818 dd24] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 5 missing: host=None, broiler-js='line 20039 c1 [d818 dd22 d818 dd1f] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 6 missing: host=None, broiler-js='line 20040 c1 [d818 dd1e d818 dd25] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 7 missing: host=None, broiler-js='line 20041 c1 [d818 dd21 d818 dd20] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 8 missing: host=None, broiler-js='line 20042 c1 [d81b dd63 d81b dd68] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 9 missing: host=None, broiler-js='line 20043 c1 [d81b dd69 d81b dd67] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+--- the-unicode-normalization-part5.js
+    FAIL: undeclared divergence broiler-js/1: host='part 5, file lines 20056 to 20093: 38 vectors, 760 checks, 0 failing', comparison='part 5, file lines 20056 to 20093: 38 vectors, 760 checks, 38 failing'
+    FAIL: case 2 missing: host=None, broiler-js='line 20056 c1 [d804 df8b d804 dfc7] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 3 missing: host=None, broiler-js='line 20057 c1 [d804 dfc2 d804 dfc7] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 4 missing: host=None, broiler-js='line 20058 c1 [d804 df8b d804 dfc5] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 5 missing: host=None, broiler-js='line 20059 c1 [d804 df8b d804 dfc5 d804 dfc2] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 6 missing: host=None, broiler-js='line 20060 c1 [d804 df8b d804 dfc5 d804 dfb8] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 7 missing: host=None, broiler-js='line 20061 c1 [d804 df8b d804 dfc5 d804 dfc9] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 8 missing: host=None, broiler-js='line 20062 c1 [d804 dfc2 d804 dfc5] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 9 missing: host=None, broiler-js='line 20063 c1 [d804 dfc2 d804 dfc5 d804 dfc2] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 10 missing: host=None, broiler-js='line 20064 c1 [d804 dfc2 d804 dfc5 d804 dfb8] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 11 missing: host=None, broiler-js='line 20065 c1 [d804 dfc2 d804 dfc5 d804 dfc9] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 12 missing: host=None, broiler-js='line 20066 c1 [d804 df8b d804 dfc8] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 13 missing: host=None, broiler-js='line 20067 c1 [d804 dfc2 d804 dfc8] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 14 missing: host=None, broiler-js='line 20068 c1 [d818 dd21 d818 dd1e d818 dd1f] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 15 missing: host=None, broiler-js='line 20069 c1 [d818 dd21 d818 dd29 d818 dd1f] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 16 missing: host=None, broiler-js='line 20070 c1 [d818 dd21 d818 dd1e d818 dd20] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 17 missing: host=None, broiler-js='line 20071 c1 [d818 dd1e d818 dd21] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 18 missing: host=None, broiler-js='line 20072 c1 [d818 dd1e d818 dd21 d818 dd1e] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 19 missing: host=None, broiler-js='line 20073 c1 [d818 dd1e d818 dd21 d818 dd29] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 20 missing: host=None, broiler-js='line 20074 c1 [d818 dd1e d818 dd26] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 21 missing: host=None, broiler-js='line 20075 c1 [d818 dd1e d818 dd21 d818 dd1f] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 22 missing: host=None, broiler-js='line 20076 c1 [d818 dd1e d818 dd28] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 23 missing: host=None, broiler-js='line 20077 c1 [d818 dd1e d818 dd21 d818 dd20] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 24 missing: host=None, broiler-js='line 20078 c1 [d818 dd1e d818 dd21 d818 dd23] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 25 missing: host=None, broiler-js='line 20079 c1 [d818 dd1e d818 dd21 d818 dd1e d818 dd1f] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 26 missing: host=None, broiler-js='line 20080 c1 [d818 dd1e d818 dd21 d818 dd24] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 27 missing: host=None, broiler-js='line 20081 c1 [d818 dd1e d818 dd21 d818 dd29 d818 dd1f] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 28 missing: host=None, broiler-js='line 20082 c1 [d818 dd1e d818 dd21 d818 dd25] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 29 missing: host=None, broiler-js='line 20083 c1 [d818 dd1e d818 dd21 d818 dd1e d818 dd20] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 30 missing: host=None, broiler-js='line 20084 c1 [d818 dd1e d818 dd27] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 31 missing: host=None, broiler-js='line 20085 c1 [d818 dd1e d818 dd22 d818 dd1f] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 32 missing: host=None, broiler-js='line 20086 c1 [d818 dd1e d818 dd22] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 33 missing: host=None, broiler-js='line 20087 c1 [d81b dd67 d81b dd68] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 34 missing: host=None, broiler-js='line 20088 c1 [d81b dd67 d81b dd68 d81b dd67] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 35 missing: host=None, broiler-js='line 20089 c1 [d81b dd63 d81b dd68 d81b dd67] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 36 missing: host=None, broiler-js='line 20090 c1 [d81b dd69 d81b dd68] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 37 missing: host=None, broiler-js='line 20091 c1 [d81b dd63 d81b dd67 d81b dd68] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 38 missing: host=None, broiler-js='line 20092 c1 [d81b dd69 d81b dd68 d81b dd67] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+    FAIL: case 39 missing: host=None, broiler-js='line 20093 c1 [d81b dd63 d81b dd67 d81b dd68 d81b dd67] NFC(c1) NFC(c3) NFC(c5) NFD(c1) NFD(c2) NFD(c4) NFKC(c1) NFKC(c3) NFKC(c5) NFKD(c1) NFKD(c2) NFKD(c4)'
+--- the-unicode-property-escapes.js
+    FAIL: undeclared divergence broiler-js/16: host='"false,false"', comparison='SyntaxError'
+    FAIL: undeclared divergence broiler-js/33: host='"false,false,false"', comparison='"false,false,true"'
+    FAIL: undeclared divergence broiler-js/34: host='SyntaxError', comparison='/\\p{letter}/u'
+    FAIL: undeclared divergence broiler-js/35: host='SyntaxError', comparison='/\\p{Letter }/u'
+    FAIL: undeclared divergence broiler-js/36: host='SyntaxError', comparison='/\\p{ Letter}/u'
+    FAIL: undeclared divergence broiler-js/37: host='SyntaxError', comparison='/\\p{Script_Extensions=greek}/u'
+    FAIL: undeclared divergence broiler-js/38: host='SyntaxError', comparison='/\\p{script_extensions=Greek}/u'
+    FAIL: undeclared divergence broiler-js/39: host='SyntaxError', comparison='/\\p{Scx=Greek}/u'
+    FAIL: undeclared divergence broiler-js/53: host='SyntaxError', comparison='/[\\p{L}-z]/u'
+    FAIL: undeclared divergence broiler-js/56: host='SyntaxError', comparison='/\\p{letter}/u'
+    FAIL: undeclared divergence broiler-js/57: host='"true,true,true"', comparison='"true,true,false"'
+    FAIL: undeclared divergence broiler-js/60: host='SyntaxError', comparison='true'
+--- the-unwinding-through-finally.js
+    declared 26: Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so `let await` is refused
+    declared 27: Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so `const await` is refused
+    declared 28: Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so `var await` is refused
+    declared 29: Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a class named `await` is refused
+    declared 30: Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a function named `await` is refused
+    declared 31: Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a label named `await` is refused
+    declared 32: Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a reference to `await` is refused
+    declared 33: Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a reference to it in an arrow's default parameter is refused
+    declared 34: Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a catch parameter named `await` is refused
+    declared 35: Broiler.JS does not raise the early error the language requires: `await` is not an identifier inside a class static block, so a reference to it in a template substitution is refused
+    FAIL: undeclared divergence broiler-js/25: host='"SyntaxError"', comparison='"ok"'
+--- the-using-declarations-in-a-module.mjs
+    FAIL: broiler-js exited 1: "Uncaught SyntaxError: 'using' is not allowed at the top level of a script\nat Compile in <root>/src/tests/differential/the-using-declarations-in-a-module.mjs:line 10\n\n    at Compile:<root>/src/tests/differential/the-using-declarations-in-a-module.mjs:10,1\n\n\n"
+--- the-using-declarations.js
+    FAIL: undeclared divergence broiler-js/4: host='"SyntaxError"', comparison='"ok"'
+    FAIL: undeclared divergence broiler-js/6: host='"SyntaxError"', comparison='"ok"'
+    FAIL: undeclared divergence broiler-js/8: host='"SyntaxError"', comparison='"ok"'
+    FAIL: undeclared divergence broiler-js/13: host='"SyntaxError"', comparison='"ok"'
+    FAIL: undeclared divergence broiler-js/29: host='"raw false"', comparison='"raw true"'
+--- the-with-statement.js
+    declared run: THE POISONED GLOBAL STORE, a hazard to every comparison run: a `with` whose head completes abruptly makes each later indirect `eval` under Broiler.JS restore the global `var` bindings to their values at the moment the head threw. The language gives a `with` statement no such effect. Every answer after it in the same process is untrustworthy, and here the probe's own global case counter is restored, so its cases are numbered again
+      the run: duplicate case 54
+Report: <scratch>/broiler-js.json
+# exit 1

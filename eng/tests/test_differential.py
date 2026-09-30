@@ -190,6 +190,46 @@ class DriverTests(unittest.TestCase):
     def test_unicode_line_separator_is_not_a_transport_newline(self):
         self.assertEqual(["1 x\u2028y"], driver.lines("1 x\u2028y\r\n"))
 
+    def test_run_declaration_accepts_a_comparison_run_that_fails_as_a_whole(self):
+        for payload, failure, extra in (({"comparison": {"exit": 7}}, "exited 7", ()),
+                                        ({"comparison": {"sleep": True}}, "timed out", ("--timeout", "1")),
+                                        ({"comparison": {"stdout": "1 42\n1 again\n"}}, "duplicate case 1", ())):
+            with self.subTest(failure=failure):
+                self.fixture(payload=payload, declarations="#diverges broiler-js run known reason\n")
+                done, report = self.run_driver(*extra)
+                self.assertEqual(0, done.returncode, done.stdout)
+                self.assertIn("declared run: known reason", done.stdout)
+                accepted = report["probes"][0]["declaredDivergences"]
+                self.assertEqual("run", accepted[0]["case"])
+                self.assertIn(failure, accepted[0]["failure"])
+
+    def test_run_declaration_accepts_order_and_still_compares_every_case(self):
+        declarations = "#diverges broiler-js run order reason\n"
+        self.fixture(payload={"comparison": {"stdout": "2 Grüße\n1 42\n"}}, declarations=declarations)
+        done, report = self.run_driver()
+        self.assertEqual(0, done.returncode, done.stdout)
+        self.assertIn("case order differs", report["probes"][0]["declaredDivergences"][0]["failure"])
+        self.assert_failure({"comparison": {"stdout": "2 Grüße\n1 7\n"}}, "undeclared divergence broiler-js/1",
+                            declarations)
+
+    def test_stale_run_declaration_fails(self):
+        self.assert_failure({}, "stale divergence broiler-js/run", "#diverges broiler-js run old reason\n")
+
+    def test_run_declaration_never_excuses_the_host_or_another_engine(self):
+        self.assert_failure({"host": {"exit": 4}}, "exited 4", "#diverges host run host reason\n")
+        self.assert_failure({"comparison": {"exit": 7}}, "exited 7", "#diverges node run Node-only reason\n")
+
+    def test_case_declarations_under_a_failed_run_are_reported_unchecked(self):
+        self.fixture(payload={"comparison": {"exit": 7}},
+                     declarations="#diverges broiler-js run known reason\n#diverges broiler-js 2 case reason\n")
+        done, report = self.run_driver()
+        self.assertEqual(0, done.returncode, done.stdout)
+        self.assertIn("not checked, the run failed: 2", done.stdout)
+        self.assertEqual(["2"], report["probes"][0]["uncheckedDeclarations"])
+
+    def test_run_is_not_a_case_id(self):
+        self.assert_failure({}, "use #diverges", "#diverges broiler-js runs reason\n")
+
     def test_existing_async_subcase_ids_are_compared(self):
         probe = self.fixture(payload={"host": {"stdout": "39a 1/2/\n39b 1/2/3/4\n"},
                                       "comparison": {"stdout": "39a 1/2/\n39b different\n"}})

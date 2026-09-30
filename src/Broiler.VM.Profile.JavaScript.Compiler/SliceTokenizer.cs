@@ -1225,7 +1225,7 @@ public sealed class SliceTokenizer
     /// this by re-tokenizing the source at validation time; carrying the raw text on the token is
     /// what deletes that scan.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B80E71
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=07DC3C
     // Broiler-Falsified-If: a directive is recognised from the string's value rather than from its raw text
     // Broiler-Human:        PENDING
     private SliceToken ReadStringLiteral(int startLine, int startColumn, bool sawNewline)
@@ -1234,6 +1234,10 @@ public sealed class SliceTokenizer
         var start = index;
         index++;
         var value = new System.Text.StringBuilder();
+
+        // WHETHER A LEGACY OCTAL OR A NON-OCTAL DECIMAL ESCAPE WAS READ, carried on the token as
+        // IsLegacyOctal so the parser, which knows the strictness, can refuse it in strict code.
+        var legacy = false;
 
         while (true)
         {
@@ -1294,7 +1298,39 @@ public sealed class SliceTokenizer
                 case 'b': value.Append('\b'); break;
                 case 'f': value.Append('\f'); break;
                 case 'v': value.Append('\v'); break;
-                case '0': value.Append('\0'); break;
+                // `\0` NOT FOLLOWED BY A DIGIT IS NUL, in any code. Every other octal escape is
+                // Annex B's LegacyOctalEscapeSequence: up to three octal digits when the first is
+                // 0 to 3, up to two when it is 4 to 7, read as one code unit - so `\101` is `A`
+                // and `\400` is a space and `0`. `\8` and `\9` are the NonOctalDecimalEscapeSequence
+                // and stand for themselves. Strict code refuses both kinds, which is why the token
+                // records that it held one. Until 2026-09-30 `\101` read as `101`: the `1` was taken
+                // as a character a backslash stood before, and `\0` swallowed no digits after it.
+                case >= '0' and <= '7':
+                    if (escape == '0' && (index >= source.Length || source[index] is < '0' or > '9'))
+                    {
+                        value.Append('\0');
+                        break;
+                    }
+
+                    legacy = true;
+                    var octal = escape - '0';
+
+                    for (var more = escape <= '3' ? 2 : 1;
+                        more > 0 && index < source.Length && source[index] is >= '0' and <= '7';
+                        more--)
+                    {
+                        octal = (octal * 8) + (source[index] - '0');
+                        index++;
+                    }
+
+                    value.Append((char)octal);
+                    break;
+
+                case '8':
+                case '9':
+                    legacy = true;
+                    value.Append(escape);
+                    break;
                 case '\\': value.Append('\\'); break;
                 case '\'': value.Append('\''); break;
                 case '"': value.Append('"'); break;
@@ -1366,7 +1402,7 @@ public sealed class SliceTokenizer
             startLine,
             startColumn,
             sawNewline,
-            false);
+            legacy);
     }
 
     /// <summary>

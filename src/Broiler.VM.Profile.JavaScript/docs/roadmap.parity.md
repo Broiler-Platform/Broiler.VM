@@ -188,7 +188,7 @@ anything**, because it is the document a plan is written from. Rule **N17** exis
 this and does not reach it: it checks the ledger's own machine-readable absent-globals block against
 the set the realm publishes, and the workload roadmap's prose is a second claim about the same
 subject that nothing checks. That is [JSP-1](#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable)'s
-second clause.
+second clause. *(corrected: [JSC-232](roadmap.corrections.md#jsc-232))*
 
 ### 4.2 The refusal that was lost
 
@@ -199,6 +199,7 @@ what it said. **Read them in the past tense**, and read the record that closes t
 them. The heading is unchanged because two documents outside this file link to it by anchor
 *(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*.
 
+<!-- as-written, superseded 2026-09-08 -->
 **A BigInt literal is admitted by the front end and evaluated as a Number.** `typeof 1n` answers
 `"number"`; `1n === 1` is `true`; `9007199254740993n` — a value chosen because no Number can hold
 it — answers a different integer; `1n + 1` produces `2` where the language requires a `TypeError`;
@@ -214,6 +215,7 @@ place where the front end admits a construct the value model cannot represent. T
 visible one line away: the regular-expression `v` flag is *also* unimplemented, and it is refused
 with its own diagnostic naming the flag. The host's own usage text, meanwhile, describes a wide
 manifest that admits neither async functions nor class fields nor `Proxy`, all of which run.
+<!-- /as-written -->
 
 **The refusal was restored on 2026-09-08, and what changed is narrower than deleting the paragraphs
 above would suggest.** The superseded reading is the one quoted at the head of this section: *"A
@@ -252,6 +254,7 @@ family carries one. **Nothing here is accepted, no row moved, and no bundle reta
 
 ### 4.3 The types and surfaces that are absent
 
+<!-- as-written, superseded 2026-09-21 -->
 Asked with `typeof`, which answers for an undeclared name without throwing so that one absence
 hides no other, the wide realm lacks these names that the comparison engine has:
 
@@ -292,6 +295,42 @@ database this component has not acquired is already an open external dependency 
 escapes are refused, why case conversion implements only the one-to-one mappings, and why one
 identifier-start classification disagrees. That is a wider blast radius than a regular-expression
 stage, and section 5 records it as owned-but-under-scoped rather than as new work.
+<!-- /as-written -->
+
+**What holds on 2026-09-29, asked of the same realm the same way** *(corrected:
+[JSC-232](roadmap.corrections.md#jsc-232))*. The list above was a survey of 2026-09-06, and the
+JSeal slices added about half of it from 2026-09-21 on, under proposed, unsigned records.
+
+- **Present now:**
+  - `BigInt` with `BigInt64Array`, `BigUint64Array` and the `DataView` big-integer accessors, behind
+    an optional surface;
+  - `Float16Array` and `DataView`'s float16 accessors;
+  - the resizable `ArrayBuffer`;
+  - `JSON.rawJSON` and `JSON.isRawJSON`;
+  - an own `Array.prototype.toLocaleString`;
+  - `Iterator` and its helpers, `Array.fromAsync`, `Symbol.dispose` and `Symbol.asyncDispose`,
+    `DisposableStack`, `AsyncDisposableStack` and `SuppressedError`;
+  - the `using` declaration.
+- **Absent still:**
+  - `Intl`, with `localeCompare` an ordinal comparison over code units;
+  - `Temporal`, `SharedArrayBuffer` and `Atomics`;
+  - the `Uint8Array` base64 and hex methods;
+  - the reviver's source-text argument;
+  - `Error.prototype.stack`;
+  - the `Annex B` `String` HTML-tag family, `trimLeft` and `trimRight`, and `Date`'s `getYear`,
+    `setYear` and `toGMTString`, while `escape` is present;
+  - `Error.isError`, which the comparison engine this was asked of on 2026-09-29 (Node 22) lacks
+    too.
+- **Refused at compile time still:**
+  - a decorator, as a construct outside the manifest;
+  - an `accessor` class element, as a class field missing its terminator, which names a token
+    rather than the construct.
+- **Of the Unicode paragraph:** `normalize` and the `u`-mode property escapes now run on Unicode
+  17.0.0 tables generated from archived files (F07-F09). Case conversion is still the one-to-one
+  mapping, so `"\u00df".toUpperCase()` answers `ß` where the language answers `SS`.
+
+Rule N24 reads this section, and the survey above is inside a span marked as written, because it
+states in the present tense names the realm now publishes.
 
 ### 4.4 The mechanisms the realm publishes and does not honour
 
@@ -376,17 +415,17 @@ And the evaluation order and the operators around them:
 - **The legacy octal escape is not implemented anywhere.** `"\101"` decodes as the three characters
   rather than `"A"` in sloppy code, and none of the strict-mode early errors for `\1`–`\7`, `\8` and
   `\9` are raised. A tagged template with an illegal escape yields a decoded string where the cooked
-  value must be `undefined`.
+  value must be `undefined`. *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*
 - **Several strict-mode early errors are missing**: most of the future reserved words are accepted as
   binding names on the wide surface, the restricted-name rule is not applied at the name position of
   a function or class, and a parameter named `arguments` or `eval` is accepted when the body carries
-  the directive.
+  the directive. *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*
 - **Two structural early errors are missing**: a class body with two `constructor` methods compiles,
-  and a label duplicated by a nested labelled statement is accepted.
+  and a label duplicated by a nested labelled statement is accepted. *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*
 - **`??` unparenthesised beside `||` or `&&` compiles**, and an arrow function with a line terminator
-  before `=>` compiles; both are early errors.
+  before `=>` compiles; both are early errors. *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*
 - **There is no temporal dead zone for `let`, `const` and `class` declared directly in a function
-  body**: `typeof` answers `"undefined"` and a read resolves rather than throwing.
+  body**: `typeof` answers `"undefined"` and a read resolves rather than throwing. *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*
 - **Global `eval` puts its declarations in the wrong place.** A `let`, `const` or `class` declared
   inside a direct `eval` at global scope leaks into the enclosing lexical scope and survives; a
   strict `eval`'s `var` becomes a global object property instead of staying in the eval's own
@@ -456,6 +495,7 @@ anything unusual:
   about a second. The allowance is a declared property of this host and not a defect — but a
   default that an unremarkable loop exceeds is a default a first-time embedder meets before
   anything else, and no document records that it is reachable by ordinary code.
+  *(corrected: [JSC-233](roadmap.corrections.md#jsc-233))*
 - **`Math.random` returns a fixed sequence.** It is identical on every process and identical in two
   distinct realms of one process. The language requires distinct realms to produce distinct
   sequences, and an implementation is expected to choose its seed. This is the one finding in this
@@ -467,8 +507,9 @@ anything unusual:
   constants is refused with a diagnostic reported at position zero and no source location; and
   top-level `await` is refused inside a template-literal substitution while admitted in every other
   top-level position, with a diagnostic that names the wrong reason.
+  *(corrected: [JSC-233](roadmap.corrections.md#jsc-233))*
 - **Source encoding differs**: a UTF-16LE file with a byte-order mark is unreadable to this host and
-  runs on the comparison engine.
+  runs on the comparison engine. *(corrected: [JSC-233](roadmap.corrections.md#jsc-233))*
 - **A throw in shared-realm multi-file mode abandons every remaining file**, and the diagnostic names
   the whole file list as the site of the error rather than the file that threw.
 
@@ -487,22 +528,22 @@ are recorded so that a stage closing a difference never closes it by imitation, 
   that catches a rejected `await` and returns a value fulfils with `undefined`; `await` of a
   fulfilled native promise costs an extra turn while a thenable costs one too few; `yield*` over an
   async generator takes the wrong value; an async generator's `return` does not await its operand;
-  a `for await` closes an iterator the language forbids closing.
+  a `for await` closes an iterator the language forbids closing. *(corrected: [JSC-235](roadmap.corrections.md#jsc-235))*
 - **`JSON.stringify` separates members with the platform's line ending** rather than the one the
   language mandates.
 - **`Annex B` block-scoped function semantics are wrong in the common case**, where an inner
   declaration should overwrite an outer function of the same name and does not.
 - **Function name inference is missing in the ordinary `var f = function () {}` case.**
-- **A date-only string is parsed as local time** where the language requires UTC.
+- **A date-only string is parsed as local time** where the language requires UTC. *(corrected: [JSC-235](roadmap.corrections.md#jsc-235))*
 - **Several early errors are not raised**: a catch block redeclaring its parameter, an arrow body
   redeclaring a parameter, `arguments` in a class static block, `delete this.#x`, two `default`
   clauses in a `switch`.
-- **`Promise.all` does not pass elements through the constructor's `resolve`.**
+- **`Promise.all` does not pass elements through the constructor's `resolve`.** *(corrected: [JSC-235](roadmap.corrections.md#jsc-235))*
 - **A cyclic import hangs forever**, an exported `async function*` does not parse, an arbitrary
   module namespace name does not parse, and an `import` declaration in a script terminates the
-  process with an unhandled platform exception.
+  process with an unhandled platform exception. *(corrected: [JSC-235](roadmap.corrections.md#jsc-235))*
 - **Ordinary functions carry own `caller` and `arguments` properties** the language removed, and the
-  global object carries names the language deliberately does not expose.
+  global object carries names the language deliberately does not expose. *(corrected: [JSC-235](roadmap.corrections.md#jsc-235))*
 - **`Object.getOwnPropertyNames(console)` throws**, and the message leaks a platform type name and a
   source path — as does every error it raises, which bakes its own build-tree source paths into
   `stack` and hands them to ordinary guest code.
@@ -518,6 +559,44 @@ are recorded so that a stage closing a difference never closes it by imitation, 
 - **The recursive built-ins have no depth guard**, so a deeply nested structure through
   `JSON.stringify` or `Array.prototype.join` overflows the platform stack and terminates the
   process, where the same engine guards its guest-level calls.
+
+**2026-09-30 note: the catalogue re-taken against Broiler.JS at commit `c249764`.** Each entry was
+run on this host, on Broiler.JS and on Node `v22.22.2`. Where it still holds it is now a declaration
+in the differential probes' answer files, naming `broiler-js` and saying what the language
+requires, so a comparison run reports it as declared. A declaration that stops holding is reported
+stale ([JSC-235](roadmap.corrections.md#jsc-235)). Entry by entry:
+- **Still holding, and declared:**
+  - the poisoned global store, in `the-with-statement.js` for the run and in the new catalogue probe
+    for two cases;
+  - `Annex B` block functions, including an async function hoisted out of a `switch` clause;
+  - name inference, in the forms the general-surface probe asks;
+  - the five early errors named above, and more of the same kind: strict reserved words, `await`
+    in a class static block, generator duplicates, a comma after a rest;
+  - `console.log`, listing the `console` object's names, and the platform type and build paths an
+    error hands to guest code;
+  - `String.prototype`'s duplicated name, and `for … in` through a `Proxy`;
+  - the recursive built-ins, in a probe of their own, because the process ends.
+- **Still holding in a different form:**
+  - The suspension machinery: an `await` in a `case` clause is rejected with a platform error, and
+    the asynchronous iteration probe settles in another order. The five forms named above no
+    longer differ in any probe case.
+  - The module hang: a cyclic import completes. What never settles is an `import()` of a module that
+    leaves a pending promise after its first top-level `await`.
+- **Corrected rather than declared as a defect:** a sloppy function's own `caller` and `arguments`
+  are an extension section 17.1 permits for a non-strict function, and Node makes it too. The
+  global `import` property is host-defined, which the language allows. Both are declared as
+  divergences whose reasons say so.
+- **No longer holding:**
+  - a date-only string as local time;
+  - `Promise.all` and the constructor's `resolve`;
+  - an exported `async function*`;
+  - an arbitrary module namespace name;
+  - an `import` declaration in a script, which is now a `SyntaxError`.
+- **Not observed here:** `JSON.stringify`'s line ending is the platform's by the engine's source, a
+  .NET `StringWriter`. On Linux that is the language's, so it is not declared: a declaration cannot
+  be scoped to a platform. A source file holding an invalid byte still runs with a substitution
+  character. It is not a probe, because a probe is a program both engines run and this host refuses
+  the file; the refusal is kept by the host's acceptance table.
 
 ---
 
@@ -554,6 +633,16 @@ a milestone with a ledger row.
   [validation record](../../../docs/evidence/jsp-1-j01/README.md). Windows checks ran; Linux CI is
   wired but unobserved. The N17 document audit and accepted platform evidence remain outside this
   slice, so this note does not complete JSP-1 or move any milestone to Accepted.
+- **2026-09-29 implementation note:** the N17 clause has a rule behind it. Rule N24, beside N17,
+  reads every Markdown document under the profile's directory for a claim that a global the realm
+  publishes is absent: in a block, in a clause, or in a bullet under a heading about absence. Text
+  kept as written is marked with a dated span. It was watched failing against an injected stale
+  claim and against the six stale claims it found on its first run, which were marked or corrected
+  in the same change ([JSC-232](roadmap.corrections.md#jsc-232),
+  [record JSP-1-N24-001](../../../docs/evidence/jsp-1-n24-001/README.md)). A claim phrased any other
+  way is outside it. With J01 this is every clause of the gate in this checkout. Linux CI for the
+  runner is still unobserved in a retained record, and nothing is accepted: no milestone or stage
+  moves.
 - **Objective.** A reader can tell which engine any recorded divergence was taken against, and the
   comparison can be re-run on a declared platform against either.
 - **Waits on.** Nothing.
@@ -617,6 +706,21 @@ a milestone with a ledger row.
   expression names and early errors on unary operands of `**`. Local implementation in the working
   tree, validated as recorded in the named `docs/evidence/jseal-*` records; unreviewed, not accepted
   evidence, and no milestone or stage moves.
+- **2026-09-30 implementation note:** every family of the exit gate has a fixture in
+  `src/tests/cli` and answers as the comparison engine does. The exception is a class element's
+  string name, where this host follows the specification and the engine does not. The repaired
+  families:
+  - the legacy escapes, decoded in sloppy code and refused in strict code, a prologue and a class;
+  - a tagged template's illegal escape, cooked to `undefined`;
+  - a second `constructor` and a nested duplicate label, refused;
+  - `??` beside `||` or `&&`, and a line terminator before `=>`, refused naming the construct.
+
+  The strict-mode name rules, a unary operand of `**` and the dead zone in a function body already
+  held and gained fixtures. `yield` and `await` as labels, and a jump to a contextual-keyword label,
+  were refused correct programs, found on the way and repaired *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*.
+  Local implementation in the working tree, validated as recorded in
+  [record JSP-3-001](../../../docs/evidence/jsp-3-001/README.md); unreviewed, not accepted evidence,
+  and no milestone or stage moves.
 - **Objective.** The wide surface raises the early errors the language requires, and its string
   lexer decodes what the language says it decodes.
 - **Waits on.** `JS-3b`, whose subject static semantics as a verification stage is.
@@ -758,6 +862,22 @@ a milestone with a ledger row.
 
 ### JSP-9 — What must not be taken from the comparison engine
 
+- **2026-09-30 implementation note:** every clause of the gate has a change behind it in this
+  checkout, taken against Broiler.JS at commit `c249764`.
+  - Each section 4.9 entry that still holds is a `broiler-js` declaration in the differential probes'
+    answer files, stating what the language requires. Most sit on cases the probes already had. A
+    new probe asks what no case did, and another holds the recursive built-ins alone.
+  - The driver gained `#diverges <engine> run <reason>`, for a run that fails as a whole — a crash,
+    a timeout, a case numbered twice, or cases in another order. A run that completes makes it
+    stale, as a case declaration that stops differing already was.
+  - The poisoned global store is stated in the probes' README, where a comparison run is started,
+    and in a run declaration the driver prints on every run it spoils.
+  - Entries that no longer hold, and two whose wording overstated the language, are corrected in
+    section 4.9 ([JSC-235](roadmap.corrections.md#jsc-235),
+    [record JSP-9-001](../../../docs/evidence/jsp-9-001/README.md)).
+
+  A run against Broiler.JS still reports findings outside the catalogue, which nobody has
+  adjudicated. Unreviewed, not accepted evidence, and no milestone or stage moves.
 - **Objective.** The catalogue of section 4.9 is maintained, so that a later stage closing a
   difference never closes it by imitation.
 - **Waits on.** [JSP-1](#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable),
@@ -794,6 +914,19 @@ a milestone with a ledger row.
   that counts realms ([JSC-231](roadmap.corrections.md#jsc-231),
   [record JSP-PARITY-001](../../../docs/evidence/jsp-parity-001/README.md)). The rest of the gate is
   untouched. Unreviewed, not accepted evidence, and no milestone or stage moves.
+- **2026-09-29 implementation note, the reporting half:**
+  - The default allowance is stated in the usage text from the descriptor, with a fixture loop that
+    reaches it.
+  - The constant pool's refusal names its ceiling and where it was met.
+  - Top-level `await` in a template substitution runs. It was a parser defect, not a ceiling.
+  - The format's three source-level limits are recorded in the roadmap's section 7.
+  - The encoding set is stated, and a UTF-16 or UTF-32 file is refused naming its encoding
+    ([JSC-233](roadmap.corrections.md#jsc-233),
+    [record JSP-10-HOST-001](../../../docs/evidence/jsp-10-host-001/README.md)).
+
+  Still open: host capabilities present and throwing, and the truth of every refusal reason. The
+  allowance defaults stay a decision. Unreviewed, not accepted evidence, and no milestone or stage
+  moves.
 - **Objective.** The host's defaults, its capabilities and its format ceilings are things a reader
   can find out before meeting them, and none of them is a surprise reachable by ordinary code.
 - **Waits on.** Nothing for the reporting half. The allowance defaults are a decision rather than a

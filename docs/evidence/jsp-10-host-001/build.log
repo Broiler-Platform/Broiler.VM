@@ -1,0 +1,12 @@
+# collected at 1e1bd41e5efd6fd09be58d625df82fa767ceb6c5
+$ dotnet build Broiler.VM.slnx -c Release -warnaserror
+ript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+  Broiler.VM.Composition.JavaScript.Conformance -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:15.45
+# exit 0
