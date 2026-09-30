@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 91
+runs|0|# Completed: 98
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -781,3 +781,62 @@ limits/an-ordinary-loop-past-the-default-allowance.js|5|AllowanceExhausted on Fu
 --help|0|read as UTF-8, with or without a byte-order mark, and nothing else|out
 encoding/utf-16le-with-a-byte-order-mark.js|6|a UTF-16LE file, by its byte-order mark
 encoding/utf-16be-with-a-byte-order-mark.js|6|a UTF-16BE file, by its byte-order mark
+
+# JSP-3, EARLY ERRORS THIS HOST ADMITTED, AND ONE PROGRAM IT REFUSED (2026-09-30).
+#
+# A string literal outside strict code keeps Annex B's legacy escapes, where every digit escape but
+# `\0` was read as its digit; inside strict code each one is refused, including an entry of a
+# prologue a later `use strict` makes strict and a string anywhere in a class. The runs' values were
+# taken from the comparison engine's `node -p`. The class element name is refused where the
+# comparison engine admits it: the specification makes every part of a class strict code, and the
+# engine checks only its method bodies *(JSC-234)*.
+runs/a-legacy-octal-escape-in-sloppy-code.js|0|65 / 0 / 0,56 / 10 / 255 / 32,48 / 83,52 / 7,97 / 56 / 57
+refused/a-legacy-octal-escape-in-strict-code.js|3|2210:LegacyOctalInStrictCode at 6:10
+refused/a-legacy-octal-escape-before-use-strict.js|3|2210:LegacyOctalInStrictCode at 4:3
+refused/a-non-octal-decimal-escape-in-a-class-body.js|3|2210:LegacyOctalInStrictCode at 5:12
+refused/a-legacy-octal-escape-in-a-class-element-name.js|3|2210:LegacyOctalInStrictCode at 7:3
+
+# A tagged template's chunk may hold an escape a string could not, and cooks to `undefined` with its
+# raw text kept, where the program was refused. The PROGRAM this host refused is that one. An
+# untagged template must be cooked, so an octal escape in one is refused, where it was read as NUL
+# and a digit.
+runs/a-tagged-template-with-an-invalid-escape.js|0|undefined:\unicode / undefined:\xg / undefined:\u{110000} / undefined:\01 / undefined:\1 / 4 / \8 and \u{
+refused/an-octal-escape-in-an-untagged-template.js|3|2005:UnknownEscapeSequence at 5:13
+
+# A class body declares one constructor; a static method and a computed key named `constructor` are
+# not it.
+refused/a-second-constructor.js|3|2201:DuplicateLexicalDeclaration at 8:3
+refused/a-second-constructor.js|3|a class body declares one `constructor`, and this is a second
+runs/a-class-with-one-constructor-and-a-static-one.js|0|7 / static / 1
+
+# A label already in force is not declared again inside it; two labels one after the other, and a
+# label inside a function written in a labelled statement, are programs.
+refused/a-label-nested-in-itself.js|3|2201:DuplicateLexicalDeclaration at 4:3
+refused/a-label-nested-in-itself.js|3|the label `outer` is already in force here
+runs/a-label-reused-where-it-is-not-in-force.js|0|first, second, inner 0
+
+# `yield` and `await` are labels where they are names, and a jump reaches a label by any name a label
+# may have, where each was refused as a missing semicolon.
+runs/yield-and-await-as-labels.js|0|yield 0, yield 2, await, of
+
+# `??` beside `||` or `&&` needs parentheses around one side, where the line was read as though it
+# had them on the left.
+refused/a-coalesce-beside-an-or.js|3|2101:UnexpectedToken at 6:13
+refused/a-coalesce-beside-an-or.js|3|`??` cannot stand beside
+runs/a-coalesce-mixed-with-parentheses.js|0|0 / fallback / 0 / last / 0
+
+# An arrow's `=>` stands on the line its parameters end on; its body may start on the next.
+refused/a-line-break-before-an-arrow.js|3|2101:UnexpectedToken at 4:3
+refused/a-line-break-before-an-arrow.js|3|must stand on the line its parameters end on
+runs/an-arrow-body-on-the-next-line.js|0|8 / 5 / -6
+
+# The gate's other families held before this date and had no fixture here: the strict-mode name
+# rules at a function's name, a class's name and a parameter under a body directive, a unary operand
+# of `**`, and the dead zone of a lexical declaration in a function body. Each row's refusal or
+# exception is also the comparison engine's.
+refused/a-restricted-name-as-a-function-name-under-its-directive.js|3|2209:ReservedWordAsBinding at 4:1
+refused/a-future-reserved-word-as-a-class-name.js|3|2209:ReservedWordAsBinding at 3:7
+refused/eval-as-a-parameter-under-a-body-directive.js|3|2209:ReservedWordAsBinding at 3:27
+refused/a-unary-operand-of-exponentiation.js|3|2101:UnexpectedToken at 4:18
+refused/a-unary-operand-of-exponentiation.js|3|a unary operator cannot be applied directly to the base of `**`
+dead-zone/a-read-before-the-initialiser-in-a-function-body.js|1|uncaught ReferenceError

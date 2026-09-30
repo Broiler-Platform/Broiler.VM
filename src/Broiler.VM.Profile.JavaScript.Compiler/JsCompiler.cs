@@ -9020,19 +9020,19 @@ public sealed class JsCompiler
     /// move.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3E5E65
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=22497C
     // Broiler-Falsified-If: a substitution coerces through `valueOf` before `toString`, or a Symbol substitution does not throw
     // Broiler-Human:        PENDING
     private void CompileTemplate(JsTemplateLiteral template)
     {
-        Emit(JsOpcode.LoadConstant, StringConstant(template.Cooked[0]));
+        Emit(JsOpcode.LoadConstant, StringConstant(template.Cooked[0]!));
 
         for (var index = 0; index < template.Substitutions.Count; index++)
         {
             EmitToString(template.Substitutions[index]);
             Emit(JsOpcode.Add);
 
-            var tail = template.Cooked[index + 1];
+            var tail = template.Cooked[index + 1]!;
 
             if (tail.Length != 0)
             {
@@ -9126,7 +9126,7 @@ public sealed class JsCompiler
     /// substitutions is refused by <see cref="CompileTaggedTemplate"/>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=28BE61
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E86907
     // Broiler-Falsified-If: two evaluations of one call site produce two strings objects, or the cache is reachable from guest code
     // Broiler-Human:        PENDING
     private void EmitTemplateStrings(JsTemplateLiteral quasi)
@@ -9135,7 +9135,16 @@ public sealed class JsCompiler
 
         for (var index = 0; index < count; index++)
         {
-            Emit(JsOpcode.LoadConstant, StringConstant(quasi.Cooked[index]));
+            // A CHUNK AN UNDEFINED ESCAPE SPOILED IS `undefined` in the strings array, and only a
+            // tagged template can carry one: the parser refuses it in an untagged template.
+            if (quasi.Cooked[index] is { } chunk)
+            {
+                Emit(JsOpcode.LoadConstant, StringConstant(chunk));
+            }
+            else
+            {
+                Emit(JsOpcode.LoadUndefined);
+            }
         }
 
         for (var index = 0; index < count; index++)

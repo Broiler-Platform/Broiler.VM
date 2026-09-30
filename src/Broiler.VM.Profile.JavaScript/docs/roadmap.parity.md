@@ -415,17 +415,17 @@ And the evaluation order and the operators around them:
 - **The legacy octal escape is not implemented anywhere.** `"\101"` decodes as the three characters
   rather than `"A"` in sloppy code, and none of the strict-mode early errors for `\1`–`\7`, `\8` and
   `\9` are raised. A tagged template with an illegal escape yields a decoded string where the cooked
-  value must be `undefined`.
+  value must be `undefined`. *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*
 - **Several strict-mode early errors are missing**: most of the future reserved words are accepted as
   binding names on the wide surface, the restricted-name rule is not applied at the name position of
   a function or class, and a parameter named `arguments` or `eval` is accepted when the body carries
-  the directive.
+  the directive. *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*
 - **Two structural early errors are missing**: a class body with two `constructor` methods compiles,
-  and a label duplicated by a nested labelled statement is accepted.
+  and a label duplicated by a nested labelled statement is accepted. *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*
 - **`??` unparenthesised beside `||` or `&&` compiles**, and an arrow function with a line terminator
-  before `=>` compiles; both are early errors.
+  before `=>` compiles; both are early errors. *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*
 - **There is no temporal dead zone for `let`, `const` and `class` declared directly in a function
-  body**: `typeof` answers `"undefined"` and a read resolves rather than throwing.
+  body**: `typeof` answers `"undefined"` and a read resolves rather than throwing. *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*
 - **Global `eval` puts its declarations in the wrong place.** A `let`, `const` or `class` declared
   inside a direct `eval` at global scope leaks into the enclosing lexical scope and survives; a
   strict `eval`'s `var` becomes a global object property instead of staying in the eval's own
@@ -668,6 +668,21 @@ a milestone with a ledger row.
   expression names and early errors on unary operands of `**`. Local implementation in the working
   tree, validated as recorded in the named `docs/evidence/jseal-*` records; unreviewed, not accepted
   evidence, and no milestone or stage moves.
+- **2026-09-30 implementation note:** every family of the exit gate has a fixture in
+  `src/tests/cli` and answers as the comparison engine does. The exception is a class element's
+  string name, where this host follows the specification and the engine does not. The repaired
+  families:
+  - the legacy escapes, decoded in sloppy code and refused in strict code, a prologue and a class;
+  - a tagged template's illegal escape, cooked to `undefined`;
+  - a second `constructor` and a nested duplicate label, refused;
+  - `??` beside `||` or `&&`, and a line terminator before `=>`, refused naming the construct.
+
+  The strict-mode name rules, a unary operand of `**` and the dead zone in a function body already
+  held and gained fixtures. `yield` and `await` as labels, and a jump to a contextual-keyword label,
+  were refused correct programs, found on the way and repaired *(corrected: [JSC-234](roadmap.corrections.md#jsc-234))*.
+  Local implementation in the working tree, validated as recorded in
+  [record JSP-3-001](../../../docs/evidence/jsp-3-001/README.md); unreviewed, not accepted evidence,
+  and no milestone or stage moves.
 - **Objective.** The wide surface raises the early errors the language requires, and its string
   lexer decodes what the language says it decodes.
 - **Waits on.** `JS-3b`, whose subject static semantics as a verification stage is.

@@ -455,6 +455,22 @@ control. The capabilities present and throwing and the allowance defaults are un
 unreviewed implementation and validation material, not accepted milestone evidence; JSP-10 has no
 owner and no milestone row advances.
 
+**JSP-3 observation, 2026-09-30.** Every family of the parity roadmap's JSP-3 exit gate has a fixture
+in the host's acceptance table, and each answers as the comparison engine does, with one exception.
+A class element's string name holding a legacy octal escape is refused because the specification
+makes a class strict code, and the engine admits it. The repaired families:
+- the legacy escapes, decoded outside strict code and refused inside it;
+- a tagged template's illegal escape, cooked to `undefined` where the program was refused;
+- a second `constructor` and a nested duplicate label, refused;
+- `??` beside `||` or `&&`, and a line terminator before `=>`, refused naming the construct.
+
+The strict-mode name rules, a unary operand of `**` and the dead zone in a function body already
+held. `yield` and `await` as labels were refused correct programs, and are repaired
+([JSC-234](roadmap.corrections.md#jsc-234)). [Record JSP-3-001](../../../docs/evidence/jsp-3-001/README.md)
+retains each change's control and the pinned test262 subtrees either side. This is unreviewed
+implementation and validation material, not accepted milestone evidence; JSP-3 has no owner and no
+milestone row advances.
+
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:
 

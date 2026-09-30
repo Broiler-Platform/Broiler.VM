@@ -9939,3 +9939,89 @@ encoding. With them the matching clauses of
 
 **Authority and date.** The implementation of 2026-09-29 in this checkout and
 [record JSP-10-HOST-001](../../../docs/evidence/jsp-10-host-001/README.md). 2026-09-29.
+
+### JSC-234
+
+**Where:** the parity roadmap's [section 4.6](roadmap.parity.md#46-the-static-semantics-and-where-declarations-live),
+its first five bullets: the legacy escapes and the tagged template's illegal escape, the strict-mode
+name rules, the two structural early errors, `??` beside `||` or `&&` with a line terminator before
+`=>`, and the temporal dead zone in a function body. With them every family of
+[JSP-3](roadmap.parity.md#jsp-3--the-static-semantics-the-wide-front-end-does-not-have)'s exit gate.
+
+**What the plan said.**
+- `"\101"` decodes as three characters in sloppy code, and none of the strict-mode early errors for
+  `\1` to `\7`, `\8` and `\9` is raised.
+- A tagged template with an illegal escape yields a decoded string where the cooked value must be
+  `undefined`.
+- Several strict-mode early errors are missing at binding positions: future reserved words as binding
+  names, the restricted names at a function's or class's name, and `arguments` or `eval` as a
+  parameter under a body directive.
+- A class body with two `constructor` methods compiles, and a label duplicated by a nested labelled
+  statement is accepted.
+- `??` unparenthesised beside `||` or `&&` compiles, and so does an arrow function with a line
+  terminator before `=>`.
+- A `let`, `const` or `class` declared directly in a function body has no temporal dead zone.
+
+**What replaced it, observed on 2026-09-30.**
+- **A string literal's legacy escapes.** Outside strict code they decode per Annex B:
+  - an escape starting 0 to 3 reads up to three octal digits;
+  - one starting 4 to 7 reads up to two;
+  - `\0` before a digit is one of them;
+  - `\8` and `\9` are the digits themselves.
+
+  Inside strict code each is refused with `2210` at the literal. That covers an entry of a prologue
+  that a later `use strict` makes strict, and a string anywhere in a class.
+- **The comparison engine admits one of these, and this host follows the specification.** Node 22
+  admits a legacy octal escape in a class element's string name, `class C { '\101'() {} }`, and in a
+  field initialiser. It checks only a class's method bodies as strict code. The specification makes
+  every part of a class strict code, so this host refuses both. The fixture for the element name says
+  so, and its row does not claim the comparison engine's answer.
+- **Templates.** A tagged template's chunk may hold an escape a string could not. It now cooks to
+  `undefined` and keeps its raw text, where this host refused the whole program. That was a correct
+  program refused, which is worse than the plan's account of a wrong cooked value.
+
+  An untagged template must be cooked, so an escape that cannot be cooked is refused with `2005`. The
+  octal forms are now among them: `\1` to `\9`, and `\0` before a digit. Before this date `` `a\01` ``
+  was "a", NUL and "1".
+- **A second `constructor`** is refused with `2201`. A static method or a computed key named
+  `constructor` is not the constructor, and a class with either still compiles.
+- **A label already in force** is refused with `2201` when a statement inside it declares it again.
+  The labels in force belong to one function body. A label inside a function written in a labelled
+  statement is a program, and so are two labels of one name one after the other.
+- **`??` beside `||` or `&&`** is refused with `2101`, and the message names the construct. With
+  parentheses around either side it compiles. Before this date the line was read as though its left
+  side were parenthesised.
+- **A line terminator before `=>`** is refused with `2101`, and the message names the construct.
+- **Why these two stay `2101`.** Each is a production the grammar does not have rather than an early
+  error, as the comma after a rest in [JSC-230](#jsc-230) is. Neither moves to a refusal as an
+  unexpected token in the gate's sense, because each message names the construct.
+- **Found on the way: `yield` and `await` as labels.** Where each is a name, it is a label:
+  - `yield` in sloppy code outside a generator;
+  - `await` in a script outside an async function and a static block.
+
+  Both were refused there as a missing semicolon. A `break` or `continue` also read only a plain
+  identifier as its label, so `of: for (;;) break of;` declared a label no jump could reach. Both are
+  repaired.
+- **The gate's other families held before this date.** They had no fixture here:
+  - the strict-mode name rules at a function's name, a class's name and a parameter under a body
+    directive;
+  - a unary operand of `**`;
+  - the dead zone of a lexical declaration in a function body.
+
+  Section 4.6's second and fifth bullets describe them as missing. On this date each refuses or
+  throws as the comparison engine does, and each now has a fixture. The JSP-3 note of 2026-09-21
+  names VM-FIX-D for the reserved words and `**`. This entry did not trace which change closed the
+  dead zone in a function body.
+- **The pinned test262 subtrees these families live in.** They were run on the commit before the
+  change and on the change. Every variant whose verdict moved went from failing to passing, and none
+  went the other way.
+
+**What must not be read as repaired.**
+- The rest of section 4.6 — global and direct `eval`, `for … in` with a `let` binding, the
+  function-expression name — is outside this entry.
+- `yield:` inside a generator and `await:` inside an async function are refused as they must be, but
+  with a token-level message that does not name the construct.
+- JSP-3 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-09-30 in this checkout and
+[record JSP-3-001](../../../docs/evidence/jsp-3-001/README.md). 2026-09-30.

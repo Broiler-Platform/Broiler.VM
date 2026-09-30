@@ -374,12 +374,18 @@ internal sealed record JsChainExpression(SliceSourceSpan Span, JsExpression Chai
 /// uses only the cooked ones, but the tree is the same tree either way and deciding which to keep
 /// at parse time would need the parser to know what it does not yet know.
 /// </para>
+/// <para>
+/// <b>A cooked chunk is <see langword="null"/> where a tagged template's chunk holds an escape the
+/// language does not define</b> - <c>\1</c>, <c>\0</c> before a digit, a short <c>\x</c> or a bad
+/// <c>\u</c>. The tag then receives <c>undefined</c> for it and the raw text beside it; an untagged
+/// template holding one is refused when it is parsed, so its cooked chunks are never null.
+/// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5DA672
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=08D530
 // Broiler-Human:        PENDING
 internal sealed record JsTemplateLiteral(
     SliceSourceSpan Span,
-    System.Collections.Generic.IReadOnlyList<string> Cooked,
+    System.Collections.Generic.IReadOnlyList<string?> Cooked,
     System.Collections.Generic.IReadOnlyList<string> Raw,
     System.Collections.Generic.IReadOnlyList<JsExpression> Substitutions) : JsExpression(Span);
 

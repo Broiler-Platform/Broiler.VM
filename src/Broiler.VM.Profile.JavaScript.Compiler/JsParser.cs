@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   163
-// Annotated:        163/163
-// Exempt:           23
-// Human-reviewed:   0/163
+// Relevant units:   166
+// Annotated:        166/166
+// Exempt:           25
+// Human-reviewed:   0/166
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       163
+// Unverified:       166
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -365,6 +365,17 @@ internal sealed class JsParser
     // Broiler-Human:        PENDING
     internal bool SawTopLevelAwait => sawTopLevelAwait;
 
+    /// <summary>The labels in force around the statement being parsed, within one function body.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D6FE18
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.HashSet<string> labels = new(System.StringComparer.Ordinal);
+
+    /// <summary>The logical expressions this parse read inside parentheses, by identity.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=20FE56
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.HashSet<JsExpression> parenthesised =
+        new(System.Collections.Generic.ReferenceEqualityComparer.Instance);
+
     /// <summary>Parses a whole program.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E18D66
     // Broiler-Human:        PENDING
@@ -414,7 +425,7 @@ internal sealed class JsParser
 
     // ---- statements ----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3CCC72
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5D3148
     // Broiler-Human:        PENDING
     private JsStatement ParseStatement()
     {
@@ -528,6 +539,13 @@ internal sealed class JsParser
                 case SliceTokenKind.Identifier or SliceTokenKind.Get or SliceTokenKind.Set or
                     SliceTokenKind.Of or SliceTokenKind.Static or SliceTokenKind.Async or
                     SliceTokenKind.Let when Peek(1).Kind == SliceTokenKind.Colon:
+
+                // AND SO ARE `yield` AND `await` WHERE THEY ARE NAMES: `yield` in sloppy code outside
+                // a generator, `await` in a script outside an async function and a static block.
+                // IsIdentifierName knows both rules. Until 2026-09-30 `yield: ;` was refused as a
+                // missing semicolon in exactly the code where it is a label.
+                case SliceTokenKind.Yield or SliceTokenKind.Await when
+                    IsIdentifierName(Current.Kind) && Peek(1).Kind == SliceTokenKind.Colon:
                 {
                     _ = RefuseEscapedReservedWord(Current);
                     RefuseStrictReservedIdentifier(span, Current);
@@ -535,11 +553,32 @@ internal sealed class JsParser
                     Advance();
                     Advance();
 
+                    // A LABEL ALREADY IN FORCE MAY NOT BE DECLARED AGAIN INSIDE IT (the early error
+                    // ContainsDuplicateLabels): `a: { a: ; }` is refused, and `a: {} a: {}` - two
+                    // labels one after the other - is a program. The set is the enclosing function
+                    // body's; ParseFunctionBody gives every body a set of its own. Until 2026-09-30
+                    // the nested label was admitted and a `break a` went to the inner one.
+                    var declared = labels.Add(label);
+
+                    if (!declared)
+                    {
+                        Refuse(
+                            span,
+                            SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                            "the label `" + label + "` is already in force here, so a statement inside it cannot declare it again");
+                    }
+
                     // A LABELLED ITEM IS A `Statement` OR A FUNCTION DECLARATION AND NOTHING ELSE,
                     // so `label: let x;` is a syntax error while `label: function f() {}` is the
                     // Annex B form every engine admits in sloppy code.
-                    return new JsLabelledStatement(
-                        span, label, ParseNestedStatement("a label", functionAllowed: !strict));
+                    var item = ParseNestedStatement("a label", functionAllowed: !strict);
+
+                    if (declared)
+                    {
+                        labels.Remove(label);
+                    }
+
+                    return new JsLabelledStatement(span, label, item);
                 }
 
                 default:
@@ -552,11 +591,13 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D4902E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1A7976
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsStringLiteral> ParseDirectives()
     {
         var directives = new System.Collections.Generic.List<JsStringLiteral>();
+        var wasStrict = strict;
+        var passed = new System.Collections.Generic.List<SliceToken>();
 
         // A DIRECTIVE MAY BE THE LAST THING IN A BODY, and until now one was not recognised there.
         // `function f() { "use strict" }` has a prologue - the string is an expression statement
@@ -581,6 +622,7 @@ internal sealed class JsParser
                 Span(), token.StringValue, token.RawText);
 
             directives.Add(literal);
+            passed.Add(token);
 
             if (string.Equals(token.RawText, "\"use strict\"", System.StringComparison.Ordinal) ||
                 string.Equals(token.RawText, "'use strict'", System.StringComparison.Ordinal))
@@ -593,6 +635,22 @@ internal sealed class JsParser
             if (Current.Kind == SliceTokenKind.Semicolon)
             {
                 Advance();
+            }
+        }
+
+        // A `use strict` LATER IN THE PROLOGUE MAKES THE WHOLE PROLOGUE STRICT, so an entry before
+        // it that holds a legacy octal escape is refused too, though it was passed while the code
+        // was still sloppy. The entries after it were judged as they were passed.
+        if (strict && !wasStrict)
+        {
+            var first = passed.FindIndex(static entry => entry.RawText is "\"use strict\"" or "'use strict'");
+
+            for (var entry = 0; entry < first; entry++)
+            {
+                if (passed[entry].IsLegacyOctal)
+                {
+                    RefuseLegacyEscape(passed[entry]);
+                }
             }
         }
 
@@ -1939,7 +1997,7 @@ internal sealed class JsParser
         return new JsEmptyStatement(span);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BEAD2B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=EAC9B4
     // Broiler-Human:        PENDING
     private JsStatement ParseBreakOrContinue()
     {
@@ -1948,7 +2006,10 @@ internal sealed class JsParser
         Advance();
         var label = string.Empty;
 
-        if (Current.Kind == SliceTokenKind.Identifier && !Current.PrecededByLineTerminator)
+        // THE LABEL A JUMP NAMES IS ANY NAME A LABEL MAY BE, contextual keywords and `yield` and
+        // `await` included where they are names. Until 2026-09-30 only a plain identifier was read
+        // here, so `of: for (;;) break of;` declared a label no jump could reach.
+        if (IsIdentifierName(Current.Kind) && !Current.PrecededByLineTerminator)
         {
             _ = RefuseEscapedReservedWord(Current);
             label = Current.RawText;
@@ -2544,7 +2605,7 @@ internal sealed class JsParser
             : new JsTargetPattern(span, new JsIdentifier(span, BindingName()));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9ECEAF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=58FD64
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
@@ -2598,6 +2659,11 @@ internal sealed class JsParser
         var outerUsing = usingAllowed;
         usingAllowed = true;
 
+        // A BODY STARTS WITH NO LABEL IN FORCE: a label does not reach into a function, a method,
+        // a static block or an arrow written inside the statement it labels.
+        var outerLabels = labels;
+        labels = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
             diagnostics.Count == 0)
@@ -2605,6 +2671,7 @@ internal sealed class JsParser
             body.Add(ParseStatement());
         }
 
+        labels = outerLabels;
         usingAllowed = outerUsing;
 
         if (!isArrow)
@@ -2764,13 +2831,15 @@ internal sealed class JsParser
     /// not spell at all.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=893659
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7E3180
     // Broiler-Human:        PENDING
     private void ValidateClassBody(System.Collections.Generic.List<JsClassMember> members)
     {
         var seen =
             new System.Collections.Generic.Dictionary<string, (JsMethodKind Kind, bool Static)>(
                 System.StringComparer.Ordinal);
+
+        var constructors = 0;
 
         foreach (var member in members)
         {
@@ -2835,6 +2904,19 @@ internal sealed class JsParser
                     SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
                     "the class definition declares `constructor`, so a field, an accessor, a " +
                         "generator or an async method cannot declare it again");
+
+                continue;
+            }
+
+            // AND THERE IS ONE CONSTRUCTOR. ClassBody's early errors refuse a second method named
+            // `constructor`, however it is spelled; until 2026-09-30 the second was admitted and
+            // one of the two silently lost.
+            if (++constructors > 1)
+            {
+                Refuse(
+                    member.Span,
+                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    "a class body declares one `constructor`, and this is a second");
             }
         }
     }
@@ -4334,7 +4416,7 @@ internal sealed class JsParser
     /// expression and allocates nothing, so a source with many parenthesised expressions costs a
     /// bracket count each and not a speculative parse.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F87432
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=335E47
     // Broiler-Human:        PENDING
     private bool TryParseArrow(SliceSourceSpan span, out JsExpression arrow)
     {
@@ -4379,7 +4461,7 @@ internal sealed class JsParser
                     }
 
                     Advance();
-                    Expect(SliceTokenKind.EqualsGreaterThan, "=>");
+                    ExpectArrow();
                     arrow = ParseArrowBody(span, only, isAsync: true);
                     return true;
                 }
@@ -4389,7 +4471,7 @@ internal sealed class JsParser
                 // `async (a = await 1) => { }` is refused whether or not an async function encloses
                 // it - the arrow supplies the context its own parameters may not use.
                 var asyncParameters = ParseArrowParameters();
-                Expect(SliceTokenKind.EqualsGreaterThan, "=>");
+                ExpectArrow();
                 arrow = ParseArrowBody(span, asyncParameters, isAsync: true);
                 return true;
             }
@@ -4417,7 +4499,7 @@ internal sealed class JsParser
             };
 
             Advance();
-            Advance();
+            ExpectArrow();
             arrow = ParseArrowBody(span, single);
             return true;
         }
@@ -4448,7 +4530,7 @@ internal sealed class JsParser
         }
 
         var parameters = ParseArrowParameters();
-        Expect(SliceTokenKind.EqualsGreaterThan, "=>");
+        ExpectArrow();
         arrow = ParseArrowBody(span, parameters);
         return true;
     }
@@ -4674,7 +4756,7 @@ internal sealed class JsParser
     private const int Relational = 8;
 
     /// <summary>Extends an already-parsed left operand with every operator that may follow it.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=89DEA2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=4E04EA
     // Broiler-Human:        PENDING
     private JsExpression Continue(JsExpression left, SliceSourceSpan span, int minimum, bool noIn)
     {
@@ -4704,6 +4786,21 @@ internal sealed class JsParser
                 var next = kind == SliceTokenKind.StarStar ? precedence : precedence + 1;
                 var right = ParseBinary(next, noIn);
 
+                // `??` DOES NOT MIX WITH `||` OR `&&` WITHOUT PARENTHESES. The grammar gives a
+                // CoalesceExpression no LogicalOR or LogicalAND operand and the other way round, so
+                // `a ?? b || c`, `a || b ?? c` and `a && b ?? c` are syntax errors and each needs
+                // its parentheses. Until 2026-09-30 all three were admitted and grouped by
+                // precedence, which is a meaning the language refuses to give them.
+                if (kind is SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
+                        SliceTokenKind.QuestionQuestion &&
+                    (MixesCoalesce(kind, left) || MixesCoalesce(kind, right)))
+                {
+                    Refuse(
+                        span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "`??` cannot stand beside `||` or `&&` without parentheses around one of them");
+                }
+
                 left = kind is SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
                     SliceTokenKind.QuestionQuestion
                     ? new JsLogicalExpression(span, kind, left, right)
@@ -4724,6 +4821,17 @@ internal sealed class JsParser
             treeDepth = savedDepth;
         }
     }
+
+    /// <summary>
+    /// Whether an operand of <paramref name="kind"/> is a logical expression of the other family,
+    /// written without parentheses.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9C767F
+    // Broiler-Human:        PENDING
+    private bool MixesCoalesce(SliceTokenKind kind, JsExpression operand) =>
+        operand is JsLogicalExpression logical &&
+        !parenthesised.Contains(operand) &&
+        (kind == SliceTokenKind.QuestionQuestion) != (logical.Operator == SliceTokenKind.QuestionQuestion);
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6D1A55
     // Broiler-Human:        PENDING
@@ -4969,7 +5077,7 @@ internal sealed class JsParser
     }
 
     /// <summary>The call-chain parse itself, inside the bound its caller entered.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F5C52A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=66FEF2
     // Broiler-Human:        PENDING
     private JsExpression ParseCallChainCore()
     {
@@ -5098,7 +5206,7 @@ internal sealed class JsParser
                             return new JsChainExpression(span, current);
                         }
 
-                        current = new JsTaggedTemplate(span, current, ParseTemplate());
+                        current = new JsTaggedTemplate(span, current, ParseTemplate(tagged: true));
                         break;
                     }
 
@@ -5261,7 +5369,7 @@ internal sealed class JsParser
     }
 
     /// <summary>Parses the callee of a <c>new</c>, which stops before the argument list.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=571CC1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=401A9C
     // Broiler-Human:        PENDING
     private JsExpression ParseMemberOnly()
     {
@@ -5308,7 +5416,7 @@ internal sealed class JsParser
                 // readings differ in which function is called with what, so the grammar's answer
                 // is the one to keep.
                 case SliceTokenKind.TemplateLiteral:
-                    current = new JsTaggedTemplate(span, current, ParseTemplate());
+                    current = new JsTaggedTemplate(span, current, ParseTemplate(tagged: true));
                     break;
 
                 default:
@@ -5351,7 +5459,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7A14B1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=821ABD
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -5519,6 +5627,15 @@ internal sealed class JsParser
                 Advance();
                 var inner = ParseExpression();
                 Expect(SliceTokenKind.CloseParen, ")");
+
+                // A LOGICAL EXPRESSION IN PARENTHESES MAY STAND BESIDE `??`, and the tree keeps no
+                // parentheses, so the ones that had them are remembered by identity for the check
+                // in Continue.
+                if (inner is JsLogicalExpression)
+                {
+                    parenthesised.Add(inner);
+                }
+
                 return inner;
             }
 
@@ -5539,7 +5656,7 @@ internal sealed class JsParser
                 return ParseSuper(span);
 
             case SliceTokenKind.TemplateLiteral:
-                return ParseTemplate();
+                return ParseTemplate(tagged: false);
 
             default:
                 Refuse(
@@ -6275,15 +6392,20 @@ internal sealed class JsParser
     /// break is regardless of how the file was saved.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BF0E92
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C7F08F
     // Broiler-Human:        PENDING
-    private JsTemplateLiteral ParseTemplate()
+    private JsTemplateLiteral ParseTemplate(bool tagged)
     {
         var token = Current;
         var span = new SliceSourceSpan(token.Line, token.Column);
         Advance();
 
-        var cooked = new System.Collections.Generic.List<string>();
+        // A TAGGED TEMPLATE KEEPS A CHUNK AN UNDEFINED ESCAPE SPOILS, as `undefined` beside its raw
+        // text (ES2018's template literal revision); an untagged one is refused for it. Until
+        // 2026-09-30 both were refused for a bad `\x` or `\u`, and `\1` or `\0` before a digit was
+        // cooked as a character in both.
+        var spoiled = false;
+        var cooked = new System.Collections.Generic.List<string?>();
         var raw = new System.Collections.Generic.List<string>();
         var substitutions = new System.Collections.Generic.List<JsExpression>();
         var reader = new TemplateReader(token.RawText, token.Line, token.Column);
@@ -6298,9 +6420,15 @@ internal sealed class JsParser
 
             if (c == '\\')
             {
-                if (!CookEscape(reader, chunk, span))
+                if (CookEscape(reader, chunk) is { } undefinedEscape)
                 {
-                    return new JsTemplateLiteral(span, [string.Empty], [string.Empty], []);
+                    if (!tagged)
+                    {
+                        Refuse(span, SliceSourceDiagnosticCode.UnknownEscapeSequence, undefinedEscape);
+                        return new JsTemplateLiteral(span, [string.Empty], [string.Empty], []);
+                    }
+
+                    spoiled = true;
                 }
 
                 continue;
@@ -6314,7 +6442,8 @@ internal sealed class JsParser
             if (c == '$' && reader.Peek(1) == '{')
             {
                 raw.Add(Normalise(reader.Slice(chunkStart, reader.At)));
-                cooked.Add(chunk.ToString());
+                cooked.Add(spoiled ? null : chunk.ToString());
+                spoiled = false;
                 chunk.Clear();
                 reader.Step();
                 reader.Step();
@@ -6344,40 +6473,53 @@ internal sealed class JsParser
         }
 
         raw.Add(Normalise(reader.Slice(chunkStart, reader.At)));
-        cooked.Add(chunk.ToString());
+        cooked.Add(spoiled ? null : chunk.ToString());
         return new JsTemplateLiteral(span, cooked, raw, substitutions);
     }
 
-    /// <summary>Reads one escape of a template chunk, appending what it means.</summary>
+    /// <summary>
+    /// Reads one escape of a template chunk, appending what it means, or answers why the language
+    /// defines no escape here.
+    /// </summary>
     /// <remarks>
-    /// The same rule a string literal follows, and for the same reason: every escape the language
-    /// does not name is the character itself, so <c>\d</c> is <c>d</c> and a backslash before a
-    /// line break is a continuation that contributes nothing at all. Only <c>\x</c> and <c>\u</c>
-    /// can be malformed, because only those two promise digits they may not have.
+    /// The same rule a string literal follows for the rest, and for the same reason: every escape
+    /// the language does not name is the character itself, so <c>\d</c> is <c>d</c> and a
+    /// backslash before a line break is a continuation that contributes nothing at all. What a
+    /// template does NOT share with a string is Annex B's octal escapes: <c>\1</c> to <c>\9</c>,
+    /// and <c>\0</c> before a digit, are NotEscapeSequences, as a short <c>\x</c> and a bad
+    /// <c>\u</c> are. The caller refuses one in an untagged template and spoils the chunk in a
+    /// tagged one; either way nothing is appended for it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=441AD8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C1BA2B
     // Broiler-Human:        PENDING
-    private bool CookEscape(
-        TemplateReader reader, System.Text.StringBuilder cooked, SliceSourceSpan span)
+    private static string? CookEscape(TemplateReader reader, System.Text.StringBuilder cooked)
     {
         reader.Step();
 
         if (reader.AtEnd)
         {
-            return true;
+            return null;
         }
 
         var escape = reader.Current;
 
         switch (escape)
         {
-            case 'n': cooked.Append('\n'); reader.Step(); return true;
-            case 't': cooked.Append('\t'); reader.Step(); return true;
-            case 'r': cooked.Append('\r'); reader.Step(); return true;
-            case 'b': cooked.Append('\b'); reader.Step(); return true;
-            case 'f': cooked.Append('\f'); reader.Step(); return true;
-            case 'v': cooked.Append('\v'); reader.Step(); return true;
-            case '0': cooked.Append('\0'); reader.Step(); return true;
+            case 'n': cooked.Append('\n'); reader.Step(); return null;
+            case 't': cooked.Append('\t'); reader.Step(); return null;
+            case 'r': cooked.Append('\r'); reader.Step(); return null;
+            case 'b': cooked.Append('\b'); reader.Step(); return null;
+            case 'f': cooked.Append('\f'); reader.Step(); return null;
+            case 'v': cooked.Append('\v'); reader.Step(); return null;
+
+            case '0' when reader.Peek(1) is < '0' or > '9':
+                cooked.Append('\0');
+                reader.Step();
+                return null;
+
+            case >= '0' and <= '9':
+                reader.Step();
+                return "a template admits no octal escape: `\\1` to `\\9`, and `\\0` before a digit, are escapes only a string literal outside strict code has";
 
             case 'x':
             {
@@ -6388,12 +6530,7 @@ internal sealed class JsParser
                 {
                     if (reader.AtEnd || !System.Uri.IsHexDigit(reader.Current))
                     {
-                        Refuse(
-                            span,
-                            SliceSourceDiagnosticCode.UnknownEscapeSequence,
-                            "a hexadecimal escape with fewer than two digits");
-
-                        return false;
+                        return "a hexadecimal escape with fewer than two digits";
                     }
 
                     value = (value * 16) + System.Uri.FromHex(reader.Current);
@@ -6401,7 +6538,7 @@ internal sealed class JsParser
                 }
 
                 cooked.Append((char)value);
-                return true;
+                return null;
             }
 
             case 'u':
@@ -6410,28 +6547,23 @@ internal sealed class JsParser
 
                 if (!ReadUnicodeEscape(reader, out var scalar))
                 {
-                    Refuse(
-                        span,
-                        SliceSourceDiagnosticCode.UnknownEscapeSequence,
-                        "a unicode escape that names no code point");
-
-                    return false;
+                    return "a unicode escape that names no code point";
                 }
 
                 AppendScalar(cooked, scalar);
-                return true;
+                return null;
             }
 
             default:
                 if (escape is '\n' or '\r' or '\u2028' or '\u2029')
                 {
                     reader.Step();
-                    return true;
+                    return null;
                 }
 
                 cooked.Append(escape);
                 reader.Step();
-                return true;
+                return null;
         }
     }
 
@@ -6809,15 +6941,34 @@ internal sealed class JsParser
     private SliceToken Peek(int ahead) =>
         at + ahead < tokens.Length ? tokens[at + ahead] : tokens[^1];
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B440C1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CD32DA
     // Broiler-Human:        PENDING
     private void Advance()
     {
+        // A STRING HOLDING A LEGACY OCTAL OR A NON-OCTAL DECIMAL ESCAPE IS REFUSED IN STRICT CODE
+        // wherever it is consumed - an expression, a property key, a module specifier - because the
+        // rule is about the literal and not about where it stands. This parser never rewinds, so
+        // each token is judged once, under the strictness in force when it is passed. A prologue
+        // that turns strictness on after such a string is judged in ParseDirectives.
+        if (strict && Current is { Kind: SliceTokenKind.StringLiteral, IsLegacyOctal: true })
+        {
+            RefuseLegacyEscape(Current);
+        }
+
         if (at < tokens.Length - 1)
         {
             at++;
         }
     }
+
+    /// <summary>Refuses a string that holds a legacy octal or a non-octal decimal escape.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=104AED
+    // Broiler-Human:        PENDING
+    private void RefuseLegacyEscape(SliceToken token) =>
+        Refuse(
+            new SliceSourceSpan(token.Line, token.Column),
+            SliceSourceDiagnosticCode.LegacyOctalInStrictCode,
+            "a legacy octal escape or `\\8` or `\\9` in a string literal is not admitted in strict code");
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D32F16
     // Broiler-Human:        PENDING
@@ -6966,6 +7117,28 @@ internal sealed class JsParser
             span,
             SliceSourceDiagnosticCode.ConstructOutsideManifest,
             what + " is not admitted by the declared feature manifest");
+
+    /// <summary>Consumes the <c>=&gt;</c> of an arrow function, refusing a line break before it.</summary>
+    /// <remarks>
+    /// ArrowFunction is <c>ArrowParameters [no LineTerminator here] =&gt; ConciseBody</c>, so a line
+    /// break between the parameters and the arrow is a syntax error however the parameters are
+    /// written. Until 2026-09-30 it was admitted: the arrow's detection looks for the token and
+    /// not for the space in front of it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=066040
+    // Broiler-Human:        PENDING
+    private void ExpectArrow()
+    {
+        if (Current is { Kind: SliceTokenKind.EqualsGreaterThan, PrecededByLineTerminator: true })
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "an arrow function's `=>` must stand on the line its parameters end on");
+        }
+
+        Expect(SliceTokenKind.EqualsGreaterThan, "=>");
+    }
 
     /// <summary>
     /// Refuses a comma after a rest element, parameter or property by naming the construct, and
