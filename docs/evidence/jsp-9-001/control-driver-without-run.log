@@ -1,0 +1,10 @@
+$ git apply docs/evidence/jsp-9-001/control-driver-without-run.patch
+# exit 0
+$ python3 eng/run-differential.py --only the-with-statement --against /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS --against-kind broiler-js --against-root /home/user/broiler-platform/broiler.js --timeout 30 --report <scratch>/control-driver-without-run.json
+--- the-with-statement.js
+    FAIL: the-with-statement.expected.txt: use #diverges <engine> <case> <reason>
+Report: <scratch>/control-driver-without-run.json
+# exit 1
+# the run reported `use #diverges <engine> <case> <reason>`
+$ git apply -R docs/evidence/jsp-9-001/control-driver-without-run.patch
+# exit 0

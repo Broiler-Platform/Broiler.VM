@@ -1,0 +1,10 @@
+$ git apply docs/evidence/jsp-9-001/control-run-declaration-removed.patch
+# exit 0
+$ python3 eng/run-differential.py --only the-with-statement --against /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS --against-kind broiler-js --against-root /home/user/broiler-platform/broiler.js --timeout 30 --report <scratch>/control-run-declaration-removed.json
+--- the-with-statement.js
+    FAIL: duplicate case 54
+Report: <scratch>/control-run-declaration-removed.json
+# exit 1
+# the run reported `duplicate case 54`
+$ git apply -R docs/evidence/jsp-9-001/control-run-declaration-removed.patch
+# exit 0

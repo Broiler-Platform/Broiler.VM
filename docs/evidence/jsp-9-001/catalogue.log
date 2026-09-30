@@ -1,0 +1,51 @@
+# broiler-js declarations in the answer files: 58
+# reported declared (or not checked under a declared run): 58
+# declarations the run did not report: 0
+# stale declarations: 0
+# findings outside the catalogue, by probe (not adjudicated): 430 in 46 probes
+    27  the-array-from-async.js
+    10  the-array-length-and-receiver-writes.js
+     2  the-array-species-and-spreading.js
+     1  the-async-module-siblings.mjs
+     1  the-asynchronous-iteration-family.js
+     3  the-bigint-literal-boundary.js
+     5  the-bigint-public-surface.js
+     3  the-bigint-typed-arrays.js
+     1  the-binary-species.js
+     3  the-detached-typed-array.js
+     6  the-direct-eval-boundary.js
+     4  the-disposal-stacks.js
+     8  the-eval-code-import-referrer.mjs
+    18  the-eval-declarations.js
+     1  the-eval-super-and-private-names.js
+     2  the-float16-surface.js
+     1  the-front-end-repairs.js
+     9  the-general-surface.js
+     6  the-iterator-helpers.js
+     2  the-json-date-and-regexp-surface.js
+     2  the-later-library-methods.js
+     2  the-mapped-arguments-object.js
+     1  the-module-goal.mjs
+     2  the-object-integrity-paths.js
+    35  the-parameter-environment.js
+     2  the-proxy-and-its-invariants.js
+     3  the-raw-json-values.js
+     3  the-reference-key-and-exponent-edges.js
+     3  the-regexp-guards-in-string-search.js
+     3  the-regexp-protocols.js
+     5  the-resizable-array-buffer.js
+     1  the-small-correctness-gaps.js
+     3  the-statement-and-object-surface.js
+     5  the-string-normalization.js
+    22  the-unicode-lexical-grammar.js
+     1  the-unicode-normalization-invariants-000000.js
+     2  the-unicode-normalization-part1-1-of-4.js
+    57  the-unicode-normalization-part1-4-of-4.js
+    93  the-unicode-normalization-part2.js
+     5  the-unicode-normalization-part3.js
+     9  the-unicode-normalization-part4.js
+    39  the-unicode-normalization-part5.js
+    12  the-unicode-property-escapes.js
+     1  the-unwinding-through-finally.js
+     1  the-using-declarations-in-a-module.mjs
+     5  the-using-declarations.js

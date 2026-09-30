@@ -1,0 +1,10 @@
+$ git apply docs/evidence/jsp-9-001/control-stale-run-declaration.patch
+# exit 0
+$ python3 eng/run-differential.py --only the-settling-of-promises --against /home/user/broiler-platform/broiler.js/Broiler.JS/Broiler.JavaScript/bin/Release/net10.0/BroilerJS --against-kind broiler-js --against-root /home/user/broiler-platform/broiler.js --timeout 30 --report <scratch>/control-stale-run-declaration.json
+--- the-settling-of-promises.js
+    FAIL: stale divergence broiler-js/run: the run completed and its cases came in the host's order
+Report: <scratch>/control-stale-run-declaration.json
+# exit 1
+# the run reported `stale divergence broiler-js/run`
+$ git apply -R docs/evidence/jsp-9-001/control-stale-run-declaration.patch
+# exit 0

@@ -1,0 +1,15 @@
+# collected at 7d26f0d27ee2a3edd10753f9f8ee53c1bcecf639
+# Broiler.JS at c24976423c2b5938bbb06c11f9310ff45c9275c8
+# Node v22.22.2
+$ dotnet build Broiler.VM.slnx -c Release -warnaserror
+WebAssembly.Execution.dll
+  Broiler.VM.Composition.Ubc.Fixture -> <root>/src/compositions/Broiler.VM.Composition.Ubc.Fixture/bin/Release/net10.0/Broiler.VM.Composition.Ubc.Fixture.dll
+  Broiler.VM.Composition.PolyglotCli -> <root>/src/compositions/Broiler.VM.Composition.PolyglotCli/bin/Release/net10.0/Broiler.VM.Composition.PolyglotCli.dll
+  Broiler.VM.Composition.WebAssembly.Harness -> <root>/src/compositions/Broiler.VM.Composition.WebAssembly.Harness/bin/Release/net10.0/Broiler.VM.Composition.WebAssembly.Harness.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:52.01
+# exit 0

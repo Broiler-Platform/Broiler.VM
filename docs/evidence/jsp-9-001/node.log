@@ -1,0 +1,12 @@
+$ python3 eng/run-differential.py --only the-comparison-engine-catalogue --against /opt/node22/bin/node --report <scratch>/node-the-comparison-engine-catalogue.json
+--- the-comparison-engine-catalogue.js
+Report: <scratch>/node-the-comparison-engine-catalogue.json
+# exit 0
+$ python3 eng/run-differential.py --only the-recursive-built-ins --against /opt/node22/bin/node --report <scratch>/node-the-recursive-built-ins.json
+--- the-recursive-built-ins.js
+Report: <scratch>/node-the-recursive-built-ins.json
+# exit 0
+$ python3 eng/run-differential.py --only the-async-family --against /opt/node22/bin/node --report <scratch>/node-the-async-family.json
+--- the-async-family.js
+Report: <scratch>/node-the-async-family.json
+# exit 0
