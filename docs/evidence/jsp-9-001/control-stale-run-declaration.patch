@@ -1,0 +1,10 @@
+--- a/src/tests/differential/the-settling-of-promises.expected.txt
++++ b/src/tests/differential/the-settling-of-promises.expected.txt
+@@ -5,6 +5,7 @@
+ #diverges node 18 the same, for the three cases that call it
+ #diverges node 19 the same, for the three cases that call it
+ #diverges node 2 `Promise.try` is ES2026 and the comparison engine predates it: this build has it and that engine answers `undefined`
++#diverges broiler-js run a control: a declaration for a run that completes in the host's order
+ 1 function
+ 2 function
+ 3 [object Promise]

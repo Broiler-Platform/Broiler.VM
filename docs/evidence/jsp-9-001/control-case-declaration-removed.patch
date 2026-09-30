@@ -1,0 +1,10 @@
+--- a/src/tests/differential/the-comparison-engine-catalogue.expected.txt
++++ b/src/tests/differential/the-comparison-engine-catalogue.expected.txt
+@@ -8,7 +8,6 @@
+ #diverges broiler-js 5 Broiler.JS lists one of `String.prototype`'s own names twice; `[[OwnPropertyKeys]]` of an ordinary object lists each key once
+ #diverges broiler-js 6 Broiler.JS's `for … in` finds no key through a `Proxy` on the prototype chain and calls none of its traps; enumeration reads each object on the chain through its own `[[OwnPropertyKeys]]` and `[[GetOwnProperty]]`
+ #diverges broiler-js 7 Broiler.JS's global object has an own property named `import`, which is host-defined: the language defines no global by that name, and a program cannot reference it as a binding
+-#diverges broiler-js 8 Broiler.JS's poisoned global store: after a `with` head threw, an indirect `eval` restores the global `var` binding to its value at that moment, 1 where the program assigned 2. The language gives a `with` statement no such effect
+ #diverges broiler-js 9 the same, a second time: the assignment of 3 is undone as well, because the snapshot is permanent rather than restored once
+ 1 written
+ 2 true
