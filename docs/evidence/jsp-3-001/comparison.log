@@ -1,0 +1,65 @@
+# comparison engine v22.22.2
+runs/a-legacy-octal-escape-in-sloppy-code.js  [same] agrees as declared
+  host   exit 0: 65 / 0 / 0,56 / 10 / 255 / 32,48 / 83,52 / 7,97 / 56 / 57
+  engine exit 0: 65 / 0 / 0,56 / 10 / 255 / 32,48 / 83,52 / 7,97 / 56 / 57
+refused/a-legacy-octal-escape-in-strict-code.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/a-legacy-octal-escape-in-strict-code.js: 2210:LegacyOctalInStrictCode at 6:10: a legacy octal escape or `\8` or `\9` in a string literal is not admitted in strict code
+  engine exit 1: SyntaxError: Octal escape sequences are not allowed in strict mode.
+refused/a-legacy-octal-escape-before-use-strict.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/a-legacy-octal-escape-before-use-strict.js: 2210:LegacyOctalInStrictCode at 4:3: a legacy octal escape or `\8` or `\9` in a string literal is not admitted in strict code
+  engine exit 1: SyntaxError: Octal escape sequences are not allowed in strict mode.
+refused/a-non-octal-decimal-escape-in-a-class-body.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/a-non-octal-decimal-escape-in-a-class-body.js: 2210:LegacyOctalInStrictCode at 5:12: a legacy octal escape or `\8` or `\9` in a string literal is not admitted in strict code
+  engine exit 1: SyntaxError: \8 and \9 are not allowed in strict mode.
+refused/a-legacy-octal-escape-in-a-class-element-name.js  [admitted] agrees as declared
+  host   exit 3: broiler-js: refused/a-legacy-octal-escape-in-a-class-element-name.js: 2210:LegacyOctalInStrictCode at 7:3: a legacy octal escape or `\8` or `\9` in a string literal is not admitted in strict code
+  engine exit 0: (ran, printed nothing)
+runs/a-tagged-template-with-an-invalid-escape.js  [same] agrees as declared
+  host   exit 0: undefined:\unicode / undefined:\xg / undefined:\u{110000} / undefined:\01 / undefined:\1 / 4 / \8 and \u{
+  engine exit 0: undefined:\unicode / undefined:\xg / undefined:\u{110000} / undefined:\01 / undefined:\1 / 4 / \8 and \u{
+refused/an-octal-escape-in-an-untagged-template.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/an-octal-escape-in-an-untagged-template.js: 2005:UnknownEscapeSequence at 5:13: a template admits no octal escape: `\1` to `\9`, and `\0` before a digit, are escapes only a string literal outside strict code has
+  engine exit 1: SyntaxError: Octal escape sequences are not allowed in template strings.
+refused/a-second-constructor.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/a-second-constructor.js: 2201:DuplicateLexicalDeclaration at 8:3: a class body declares one `constructor`, and this is a second
+  engine exit 1: SyntaxError: A class may only have one constructor
+runs/a-class-with-one-constructor-and-a-static-one.js  [same] agrees as declared
+  host   exit 0: 7 / static / 1
+  engine exit 0: 7 / static / 1
+refused/a-label-nested-in-itself.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/a-label-nested-in-itself.js: 2201:DuplicateLexicalDeclaration at 4:3: the label `outer` is already in force here, so a statement inside it cannot declare it again
+  engine exit 1: SyntaxError: Label 'outer' has already been declared
+runs/a-label-reused-where-it-is-not-in-force.js  [same] agrees as declared
+  host   exit 0: first, second, inner 0
+  engine exit 0: first, second, inner 0
+runs/yield-and-await-as-labels.js  [same] agrees as declared
+  host   exit 0: yield 0, yield 2, await, of
+  engine exit 0: yield 0, yield 2, await, of
+refused/a-coalesce-beside-an-or.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/a-coalesce-beside-an-or.js: 2101:UnexpectedToken at 6:13: `??` cannot stand beside `||` or `&&` without parentheses around one of them
+  engine exit 1: SyntaxError: Unexpected token '||'
+runs/a-coalesce-mixed-with-parentheses.js  [same] agrees as declared
+  host   exit 0: 0 / fallback / 0 / last / 0
+  engine exit 0: 0 / fallback / 0 / last / 0
+refused/a-line-break-before-an-arrow.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/a-line-break-before-an-arrow.js: 2101:UnexpectedToken at 4:3: an arrow function's `=>` must stand on the line its parameters end on
+  engine exit 1: SyntaxError: Unexpected token '=>'
+runs/an-arrow-body-on-the-next-line.js  [same] agrees as declared
+  host   exit 0: 8 / 5 / -6
+  engine exit 0: 8 / 5 / -6
+refused/a-restricted-name-as-a-function-name-under-its-directive.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/a-restricted-name-as-a-function-name-under-its-directive.js: 2209:ReservedWordAsBinding at 4:1: `arguments` is not a function name in strict code
+  engine exit 1: SyntaxError: Unexpected eval or arguments in strict mode
+refused/a-future-reserved-word-as-a-class-name.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/a-future-reserved-word-as-a-class-name.js: 2209:ReservedWordAsBinding at 3:7: `implements` is not a class name, because a class is strict code
+  engine exit 1: SyntaxError: Unexpected strict mode reserved word
+refused/eval-as-a-parameter-under-a-body-directive.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/eval-as-a-parameter-under-a-body-directive.js: 2209:ReservedWordAsBinding at 3:27: `eval` is not a parameter name in strict code
+  engine exit 1: SyntaxError: Unexpected eval or arguments in strict mode
+refused/a-unary-operand-of-exponentiation.js  [refused] agrees as declared
+  host   exit 3: broiler-js: refused/a-unary-operand-of-exponentiation.js: 2101:UnexpectedToken at 4:18: a unary operator cannot be applied directly to the base of `**`; parenthesise the operand or the power
+  engine exit 1: SyntaxError: Unary operator used immediately before exponentiation expression. Parenthesis must be used to disambiguate operator precedence
+dead-zone/a-read-before-the-initialiser-in-a-function-body.js  [threw ReferenceError] agrees as declared
+  host   exit 1: broiler-js: dead-zone/a-read-before-the-initialiser-in-a-function-body.js: uncaught ReferenceError: Cannot access a binding before initialisation
+  engine exit 1: ReferenceError: Cannot access 'later' before initialization
+# 0 of 21 fixtures do not agree as declared
