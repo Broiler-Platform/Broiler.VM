@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   231
-// Annotated:        231/231
+// Relevant units:   232
+// Annotated:        232/232
 // Exempt:           123
-// Human-reviewed:   0/231
+// Human-reviewed:   0/232
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         19/18
 // Resource impact:  3/10 max
-// Unverified:       231
+// Unverified:       232
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -2092,7 +2092,7 @@ public sealed class JsCompiler
     /// TypeError in the language, and the flag is what makes it one here.
     /// </param>
     /// <param name="isDerived">Whether this is the constructor of a class with a heritage.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E7294F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=00EB21
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
@@ -2174,6 +2174,22 @@ public sealed class JsCompiler
         if (!simple)
         {
             flags |= JsFormat.FunctionFlags.BindsParameters;
+        }
+
+        // THE ARITY A FUNCTION ROW CARRIES IS BOUNDED BY THE CALL CEILING, and the verifier holds
+        // every row to it, because for a simple list it is also the count the frame copies a
+        // call's arguments into. A list with more than 255 parameters before its first default or
+        // rest was lowered anyway, and the verifier refused the artifact this host produced, which
+        // is the exit the host reserves for its own defects. It is refused here instead, naming the
+        // ceiling, at the function *(corrected: JSC-240)*.
+        if (ExpectedArgumentCount(function.Parameters) is > (int)JsFormat.CeilingCallArguments and var arity)
+        {
+            Refuse(
+                function.Span,
+                SliceSourceDiagnosticCode.TooManyLocals,
+                "a function of this format declares at most 255 parameters before its first default " +
+                "or rest parameter - the count the frame copies a call's arguments into - and this " +
+                "one declares " + arity.ToString(System.Globalization.CultureInfo.InvariantCulture));
         }
 
         // A GENERATOR IS NOT A CONSTRUCTOR, and dropping the bit is what makes `new g()` a type
@@ -6812,7 +6828,7 @@ public sealed class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=91A880
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8752FE
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -7000,7 +7016,7 @@ public sealed class JsCompiler
             {
                 CompileExpression(construction.Callee);
 
-                if (HasSpread(construction.Arguments))
+                if (CarriesArgumentsInAnArray(construction.Arguments))
                 {
                     CompileArgumentArray(construction.Arguments);
                     Emit(JsOpcode.ConstructSpread);
@@ -7010,14 +7026,6 @@ public sealed class JsCompiler
                 foreach (var argument in construction.Arguments)
                 {
                     CompileExpression(argument);
-                }
-
-                if (construction.Arguments.Count > 255)
-                {
-                    Refuse(
-                        construction.Span,
-                        SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                        "a construction with more than 255 arguments is not admitted");
                 }
 
                 Emit(
@@ -7853,6 +7861,24 @@ public sealed class JsCompiler
 
         return false;
     }
+
+    /// <summary>
+    /// Whether an argument list travels as one Array rather than written out on the operand
+    /// stack: when it carries a spread, so the count is not a constant, or when it is longer
+    /// than the call instruction's one-byte count can say.
+    /// </summary>
+    /// <remarks>
+    /// The count of 255 is the operand's width, not a limit the language states, and refusing a
+    /// longer list as a construct outside the manifest named a reason that was not true
+    /// *(corrected: JSC-240)*. The spread instructions take an Array they did not build by
+    /// iterating, so a long list written out reaches the callee through the same path a spread
+    /// does, with every argument evaluated once and in order.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=601796
+    // Broiler-Human:        PENDING
+    private static bool CarriesArgumentsInAnArray(
+        System.Collections.Generic.IReadOnlyList<JsExpression> arguments) =>
+        arguments.Count > 255 || HasSpread(arguments);
 
     /// <summary>Builds the one Array a spread call or a spread construction passes its arguments in.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5BBE2C
@@ -9207,15 +9233,42 @@ public sealed class JsCompiler
 
     /// <summary>Lowers a tagged template to the call it is.</summary>
     /// <remarks>
+    /// <para>
     /// The tag is called with the strings object first and every substitution after it, in source
     /// order, and the template is never concatenated at all. The strings object is built by
     /// <see cref="EmitTemplateStrings"/>, which is where the identity rule lives.
+    /// </para>
+    /// <para>
+    /// <b>Past 255 arguments the call takes them in one Array</b>, as a long call written out does,
+    /// and the strings object is built from Arrays as well. Until 2026-10-03 a site with more than
+    /// 254 substitutions was refused as a construct outside the manifest, which it is not
+    /// *(corrected: JSC-240)*.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=04E30A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5BC1D6
     // Broiler-Human:        PENDING
     private void CompileTaggedTemplate(JsTaggedTemplate tagged)
     {
         EmitCallee(tagged.Tag);
+
+        var count = tagged.Quasi.Substitutions.Count + 1;
+
+        if (count > 255)
+        {
+            Emit(JsOpcode.NewArray, (ushort)0);
+            EmitTemplateStrings(tagged.Quasi);
+            Emit(JsOpcode.ArrayAppend);
+
+            foreach (var substitution in tagged.Quasi.Substitutions)
+            {
+                CompileExpression(substitution);
+                Emit(JsOpcode.ArrayAppend);
+            }
+
+            Emit(JsOpcode.CallSpread);
+            return;
+        }
+
         EmitTemplateStrings(tagged.Quasi);
 
         foreach (var substitution in tagged.Quasi.Substitutions)
@@ -9223,17 +9276,7 @@ public sealed class JsCompiler
             CompileExpression(substitution);
         }
 
-        var count = tagged.Quasi.Substitutions.Count + 1;
-
-        if (count > 255)
-        {
-            Refuse(
-                tagged.Span,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "a tagged template with more than 254 substitutions is not admitted");
-        }
-
-        Emit(JsOpcode.Call, (byte)System.Math.Min(count, 255));
+        Emit(JsOpcode.Call, (byte)count);
     }
 
     /// <summary>
@@ -9257,16 +9300,47 @@ public sealed class JsCompiler
     /// </para>
     /// <para>
     /// The chunks go on the stack as constants, cooked first, and the instruction discards them
-    /// after the first evaluation. The count fits the operand because a site with more than 254
-    /// substitutions is refused by <see cref="CompileTaggedTemplate"/>.
+    /// after the first evaluation. A site with more chunks than the one-byte count can say puts
+    /// them in a cooked Array and a raw Array instead, for <see cref="JsOpcode.GetTemplateObjectWide"/>,
+    /// which builds the same object from them.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E86907
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=5927B1
     // Broiler-Falsified-If: two evaluations of one call site produce two strings objects, or the cache is reachable from guest code
     // Broiler-Human:        PENDING
     private void EmitTemplateStrings(JsTemplateLiteral quasi)
     {
-        var count = System.Math.Min(quasi.Cooked.Count, 255);
+        var count = quasi.Cooked.Count;
+
+        if (count > 255)
+        {
+            Emit(JsOpcode.NewArray, (ushort)0);
+
+            for (var index = 0; index < count; index++)
+            {
+                if (quasi.Cooked[index] is { } chunk)
+                {
+                    Emit(JsOpcode.LoadConstant, StringConstant(chunk));
+                }
+                else
+                {
+                    Emit(JsOpcode.LoadUndefined);
+                }
+
+                Emit(JsOpcode.ArrayAppend);
+            }
+
+            Emit(JsOpcode.NewArray, (ushort)0);
+
+            for (var index = 0; index < count; index++)
+            {
+                Emit(JsOpcode.LoadConstant, StringConstant(quasi.Raw[index]));
+                Emit(JsOpcode.ArrayAppend);
+            }
+
+            Emit(JsOpcode.GetTemplateObjectWide);
+            return;
+        }
 
         for (var index = 0; index < count; index++)
         {
@@ -9440,7 +9514,7 @@ public sealed class JsCompiler
     /// spread test, the 255 ceiling and the choice of instruction live in one place. They did not,
     /// and a spread argument reached a lowering that had never heard of one.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CBE82E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8D0F12
     // Broiler-Human:        PENDING
     private void CompileArguments(JsCallExpression call, bool direct = false)
     {
@@ -9452,7 +9526,7 @@ public sealed class JsCompiler
         // call made the evaluation a silent global one; `CallEvalSpread` gets the answer
         // `CallEval` gets at the same site, which is a direct evaluation or the explicit refusal
         // (JSD-0026 step 1).
-        if (HasSpread(call.Arguments))
+        if (CarriesArgumentsInAnArray(call.Arguments))
         {
             CompileArgumentArray(call.Arguments);
 
@@ -9468,14 +9542,6 @@ public sealed class JsCompiler
         foreach (var argument in call.Arguments)
         {
             CompileExpression(argument);
-        }
-
-        if (call.Arguments.Count > 255)
-        {
-            Refuse(
-                call.Span,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "a call with more than 255 arguments is not admitted");
         }
 
         if (direct)
@@ -9618,7 +9684,7 @@ public sealed class JsCompiler
         Emit(JsOpcode.LoadSuperPropertyKeepKey);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2E5F93
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=93E764
     // Broiler-Human:        PENDING
     private void CompileSuperCall(JsSuperCallExpression call)
     {
@@ -9635,7 +9701,7 @@ public sealed class JsCompiler
         // superclass and the `new.target` from the FRAME, and there is nothing beneath the
         // argument Array for CallSpread to pop. The two families meeting is what
         // `SuperCallSpread` is for.
-        if (HasSpread(call.Arguments))
+        if (CarriesArgumentsInAnArray(call.Arguments))
         {
             CompileArgumentArray(call.Arguments);
             Emit(JsOpcode.SuperCallSpread);
@@ -9647,15 +9713,7 @@ public sealed class JsCompiler
             CompileExpression(argument);
         }
 
-        if (call.Arguments.Count > 255)
-        {
-            Refuse(
-                call.Span,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "a call with more than 255 arguments is not admitted");
-        }
-
-        Emit(JsOpcode.SuperCall, (byte)System.Math.Min(call.Arguments.Count, 255));
+        Emit(JsOpcode.SuperCall, (byte)call.Arguments.Count);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9BDB0D

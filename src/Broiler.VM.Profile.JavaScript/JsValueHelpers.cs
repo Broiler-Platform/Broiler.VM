@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   433
-// Annotated:        433/433
+// Relevant units:   436
+// Annotated:        436/436
 // Exempt:           1
-// Human-reviewed:   0/433
+// Human-reviewed:   0/436
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         434/434
+// Criteria:         437/437
 // Resource impact:  4/10 max
-// Unverified:       433
+// Unverified:       436
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,7 +58,7 @@ internal static unsafe class JsValueHelpers
     /// <b>A static constructor and not a module initializer</b>, so the table is built the first time a
     /// value-form instance asks for it and never in a process that runs no value form.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=33E1B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=E285CF
     // Broiler-Falsified-If: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
     // Broiler-Human:        PENDING
     static JsValueHelpers()
@@ -208,6 +208,7 @@ internal static unsafe class JsValueHelpers
         slots[(int)JsOpcode.Decrement] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Decrement;
         slots[(int)JsOpcode.LoadSuperPropertyKeepKey] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&LoadSuperPropertyKeepKey;
         slots[(int)JsOpcode.ThrowReferenceError] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&ThrowReferenceError;
+        slots[(int)JsOpcode.GetTemplateObjectWide] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&GetTemplateObjectWide;
 
         slots[JsValueAbi.SettleSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Settle;
         slots[JsValueAbi.PrepareSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, JsValueFrame*, int>)&Prepare;
@@ -1457,6 +1458,14 @@ internal static unsafe class JsValueHelpers
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
     private static int ThrowReferenceError(JsValueFrame* frame, int pc) =>
         JsNativeActivation.StepValue<ArmThrowReferenceError>(frame, pc, JsOpcode.ThrowReferenceError);
+
+    /// <summary>The entry point for <see cref="JsOpcode.GetTemplateObjectWide"/> (0xB5): one value step of it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E0FAB1
+    // Broiler-Falsified-If: this runs anything other than one GetTemplateObjectWide at the offset the managed side expects, through its own step
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int GetTemplateObjectWide(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.StepValue<ArmGetTemplateObjectWide>(frame, pc, JsOpcode.GetTemplateObjectWide);
 
     /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.Nop"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=EE2A74
@@ -4011,6 +4020,24 @@ internal static unsafe class JsValueHelpers
             [System.Runtime.CompilerServices.MethodImpl(
                 System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get => JsOpcode.ThrowReferenceError;
+        }
+    }
+
+    /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.GetTemplateObjectWide"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=9C792D
+    // Broiler-Falsified-If: this mode names an opcode other than GetTemplateObjectWide
+    // Broiler-Human:        PENDING
+    internal readonly struct ArmGetTemplateObjectWide : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.GetTemplateObjectWide"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=4A1EA7
+        // Broiler-Falsified-If: this answers any opcode other than GetTemplateObjectWide
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.GetTemplateObjectWide;
         }
     }
 }

@@ -10306,3 +10306,78 @@ gains the subsection the gate's Annex B clause asks for.
 
 **Authority and date.** The implementation of 2026-10-03 in this checkout and
 [record JSP-7-001](../../../docs/evidence/jsp-7-001/README.md). 2026-10-03.
+
+### JSC-240
+
+**Where:** the parity roadmap's [section 4.7](roadmap.parity.md#47-where-the-profile-contradicts-itself)
+bullets on host capabilities, on the order of several named files and on the three suspending
+constructors; the argument-count clause of
+[section 4.8](roadmap.parity.md#48-the-host-and-what-an-embedder-meets); and
+[JSP-10](roadmap.parity.md#jsp-10--the-host-surface-an-embedder-meets-first)'s gate. With them the
+roadmap's [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier) list of the ceilings a source
+program can meet, its [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)
+row for `broiler.javascript.dynamic`, and [section 13](roadmap.md#13-realms-agents-and-the-host-boundary),
+which gains the statement the gate's capability clause asks for.
+
+**What the plan said.**
+- Every host capability is a function that throws, so `typeof` cannot tell a capability this host
+  has from one it lacks. The gate: absent rather than present-and-throwing, or the profile states in
+  its own documentation that it does the opposite and why.
+- No refusal reason names a cause that is untrue of the realm it is raised in. `GeneratorFunction`,
+  `AsyncFunction` and `AsyncGeneratorFunction` gave the dynamic surface's reason.
+- The argument-count ceiling is raised, or refused with a diagnostic naming it at a source location.
+  Section 7 recorded the second since 2026-09-29 ([JSC-233](#jsc-233)): past 255 arguments written
+  out, a call was refused with `2104`.
+- Several named files run in the order given, or the usage text stops promising it.
+
+**What replaced it, observed on 2026-10-03.**
+- **The argument ceiling is raised.** Past 255, a call's, a construction's and a super call's
+  arguments travel in one Array, through the instructions a spread call uses. A direct `eval` keeps
+  its directness. Each argument is evaluated once and in order. A tagged template with more than 254
+  substitutions does the same, and its strings object is built from a cooked Array and a raw Array by
+  a new instruction, `GetTemplateObjectWide` (`0xB5`). It makes the same frozen object
+  `GetTemplateObject` makes, cached by the same site. The `2104` both refusals carried named the
+  manifest, which admits a call of any length.
+- **A fourth source ceiling was found, and it was a host defect.** A function with more than 255
+  parameters before its first default or rest was lowered, and the verifier refused the artifact
+  this host had produced: exit 4, which the host reserves for its own defects. The verifier bounds a
+  function row's arity by the call ceiling, because for a simple list the frame copies that many
+  arguments. The source is now refused at compile time with `2301`, naming the ceiling, at the
+  function, and section 7 lists it. Raising it would move a bound the verifier holds every artifact
+  to, which this change does not do.
+- **The suspending constructors build from source where `Function` does.** A realm whose composition
+  admitted `broiler.javascript.dynamic` builds a generator, an async function or an async generator
+  through the same door, so with no provider registered each is refused as `eval` is, with an
+  `EvalError` the guest catches. A realm that declined the surface refuses all four with a
+  `TypeError` saying so. `Function`'s own message read "the broiler.javascript.wide manifest does not
+  admit the Function constructor, because this profile declares no guest-initiated load". The wide
+  manifest decides nothing about it, and section 11 describes the guest-initiated load the profile
+  declares.
+- **`read`'s message said "no composition can register a reader"**, which the comment above it had
+  retracted with [JSC-212](#jsc-212): a composition can install a reader through the host-object
+  surface. It now says that no reader is installed in this realm and why the capability table could
+  not carry one. The other members were read again. `$262.detachArrayBuffer` and `evalScript` were
+  corrected on 2026-09-21, and `createRealm`, `gc` and `agent`'s members say what is true of every
+  realm this profile builds.
+- **Present and refusing is kept, and stated.** Section 13 lists each member with the reason absence
+  would be worse. `read` is read without being called by a shell probe. The conformance suite's
+  `INTERPRETING.md` requires `$262`'s members defined and `gc` to throw, and chooses tests by
+  declared features rather than by `typeof`. The constructors are the language's. `$262.IsHTMLDDA`
+  is the one member absent until a host installs it, as the same file says.
+- **The file-order clause already held.** The usage text has said that several named files run "in
+  ordinal order by path and not in the order you named them" since 2026-09-17, after the parity
+  roadmap's finding of 2026-09-06. [JSC-75](#jsc-75)'s "in order" is that order. A new acceptance
+  row names the two shared-realm files in reverse and gets the same transcript.
+
+**What must not be read as repaired.**
+- `typeof read` still answers `"function"`. The capability clause is met by its documented branch,
+  not by absence.
+- The parameter ceiling is refused, not raised.
+- A throw in shared-realm multi-file mode still abandons the remaining files, as section 4.8 says.
+  That is outside the gate.
+- JSP-10 has no owner. The allowance defaults stay a decision for whoever owns
+  [ADR 0004](decisions/0004-limit-defaults-hard-maxima-and-the-budget-matrix.md)'s budget matrix. No
+  gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-10-001](../../../docs/evidence/jsp-10-001/README.md). 2026-10-03.

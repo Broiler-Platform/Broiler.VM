@@ -2111,6 +2111,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GetIndex : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 36
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GetProperty : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 34
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GetTemplateObject : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 94
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GetTemplateObjectWide : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 181
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GreaterThan : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 76
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GreaterThanOrEqual : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 77
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.HasPrivate : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 120

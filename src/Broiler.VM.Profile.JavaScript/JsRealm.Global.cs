@@ -166,7 +166,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Defines <c>print</c>, <c>$262</c> and <c>console</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=723164
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5D7856
     // Broiler-Human:        PENDING
     private void SetupGlobalHostFunctions(JsObject host)
     {
@@ -204,13 +204,17 @@ internal sealed partial class JsRealm
         // realm has no reader unless somebody installed one *(corrected: JSC-212)*.
         //
         // The shape is `$262.agent`'s, one line below, and for the same stated reason: answering
-        // `undefined` would let a program proceed on a false premise.
+        // `undefined` would let a program proceed on a false premise. Its message said "no
+        // composition can register a reader", which the paragraph above had already retracted;
+        // it says what is true of the realm now (JSP-10, JSC-240), and section 13 of the roadmap
+        // states the choice of present-and-refusing over absent for every member here.
         GlobalRefuse(
             host,
             "read",
             1,
-            "read: this profile's host-capability surface cannot carry a file's contents back to a " +
-            "guest, so no composition can register a reader");
+            "read: no reader is installed in this realm - the host-capability table cannot carry " +
+            "a file's contents back to a guest, and this composition installed none through the " +
+            "host-object surface");
 
         var agent = new JsObject(ObjectPrototype);
 

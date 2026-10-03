@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   25
 // Annotated:        25/25
-// Exempt:           147
+// Exempt:           148
 // Human-reviewed:   0/25
 // IP risk:          None
 // Security risk:    Medium
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=AC62DD
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8BA226
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -1401,6 +1401,20 @@ public enum JsOpcode : byte
     /// would have left, so the lowering around it is an assignment's; it never completes.
     /// </remarks>
     ThrowReferenceError = 0xB4,
+
+    /// <summary>
+    /// Pop an Array of raw chunks and, under it, an Array of cooked chunks; push the template
+    /// object of the site at this instruction's offset.
+    /// </summary>
+    /// <remarks>
+    /// <b><see cref="GetTemplateObject"/> for a site with more chunks than its one-byte count can
+    /// say</b>, which is a tagged template with more than 254 substitutions. The chunks travel in
+    /// the two Arrays a call's spread arguments travel in, so the language's count is not the
+    /// operand's width. The object is built and cached exactly as <see cref="GetTemplateObject"/>
+    /// builds it, keyed by this instruction, and the Arrays are discarded after the first
+    /// evaluation.
+    /// </remarks>
+    GetTemplateObjectWide = 0xB5,
 }
 
 /// <summary>The operand shape that follows an opcode byte.</summary>
@@ -1582,7 +1596,7 @@ public static class JsOpcodes
         ElementIsMethod | ElementIsGetter | ElementIsSetter | ElementIsNamedValue;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3B6A1D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=5AE422
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1639,6 +1653,7 @@ public static class JsOpcodes
         JsOpcode.DisposeEnd,
         JsOpcode.ToNumeric, JsOpcode.Increment, JsOpcode.Decrement,
         JsOpcode.LoadSuperPropertyKeepKey, JsOpcode.ThrowReferenceError,
+        JsOpcode.GetTemplateObjectWide,
     ];
 
     /// <summary>Whether <paramref name="value"/> is an opcode format version 2 defines.</summary>
@@ -1687,7 +1702,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B164B2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EE5D73
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1722,7 +1737,8 @@ public static class JsOpcodes
         JsOpcode.EnterBody or JsOpcode.CallEvalSpread or JsOpcode.WithBaseObject or
         JsOpcode.DisposeScope or JsOpcode.DisposeFold or
         JsOpcode.ToNumeric or JsOpcode.Increment or JsOpcode.Decrement or
-        JsOpcode.LoadSuperPropertyKeepKey or JsOpcode.ThrowReferenceError
+        JsOpcode.LoadSuperPropertyKeepKey or JsOpcode.ThrowReferenceError or
+        JsOpcode.GetTemplateObjectWide
             => JsOperandShape.None,
 
         JsOpcode.Call or JsOpcode.CallEval or JsOpcode.Construct or JsOpcode.Pick or
@@ -1772,7 +1788,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=BCADF1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B5DE74
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1992,6 +2008,12 @@ public static class JsOpcodes
             // Each chunk is on the stack twice, cooked and raw, and one object comes back.
             case JsOpcode.GetTemplateObject:
                 pops = checked((int)operand * 2);
+                pushes = 1;
+                return true;
+
+            // The two Arrays carry the count, so the effect is fixed where the narrow one's varies.
+            case JsOpcode.GetTemplateObjectWide:
+                pops = 2;
                 pushes = 1;
                 return true;
 

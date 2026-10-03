@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   210
-// Annotated:        210/210
+// Relevant units:   211
+// Annotated:        211/211
 // Exempt:           33
-// Human-reviewed:   0/210
+// Human-reviewed:   0/211
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         83/81
+// Criteria:         84/82
 // Resource impact:  7/10 max
-// Unverified:       210
+// Unverified:       211
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -5143,10 +5143,33 @@ internal sealed partial class JsEngine
     /// Nothing here reads a global, so a guest that replaced <c>Object.freeze</c> or
     /// <c>Object.defineProperty</c> sees no call and cannot change the object.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=CEE75C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=2BA6C8
     // Broiler-Falsified-If: two evaluations of one site answer different objects, two sites answer one object, or the answer is observably not frozen
     // Broiler-Human:        PENDING
-    private JsObject TemplateObject(JsProgram program, int site, JsValue[] stack, int at, int count)
+    private JsObject TemplateObject(JsProgram program, int site, JsValue[] stack, int at, int count) =>
+        TemplateObject(
+            program,
+            site,
+            new System.ReadOnlySpan<JsValue>(stack, at, count),
+            new System.ReadOnlySpan<JsValue>(stack, at + count, count));
+
+    /// <summary>
+    /// Answers the template object of the site at <paramref name="site"/> from its cooked and raw
+    /// chunks, building it the first time the site is evaluated.
+    /// </summary>
+    /// <remarks>
+    /// The one construction both <see cref="JsOpcode.GetTemplateObject"/> and
+    /// <see cref="JsOpcode.GetTemplateObjectWide"/> reach, so a site's object is the same thing
+    /// whichever width its count needed.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=6BB548
+    // Broiler-Falsified-If: two evaluations of one site answer different objects, two sites answer one object, or the answer is observably not frozen
+    // Broiler-Human:        PENDING
+    private JsObject TemplateObject(
+        JsProgram program,
+        int site,
+        System.ReadOnlySpan<JsValue> cookedChunks,
+        System.ReadOnlySpan<JsValue> rawChunks)
     {
         var registry = templates.GetOrCreateValue(program);
 
@@ -5158,11 +5181,11 @@ internal sealed partial class JsEngine
         var cooked = new JsArray(Realm.ArrayPrototype);
         var raw = new JsArray(Realm.ArrayPrototype);
 
-        for (var index = 0; index < count; index++)
+        for (var index = 0; index < cookedChunks.Length; index++)
         {
             Charge(1);
-            cooked.Push(stack[at + index]);
-            raw.Push(stack[at + count + index]);
+            cooked.Push(cookedChunks[index]);
+            raw.Push(rawChunks[index]);
         }
 
         JsRealm.ObjectSetIntegrity(this, raw, freeze: true);
@@ -7324,7 +7347,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=590C02
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=3767CE
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -9142,6 +9165,21 @@ internal sealed partial class JsEngine
                             sp -= 2 * count;
                             stack[sp++] = JsValue.Object(strings);
                             pc += 2;
+                            break;
+                        }
+
+                        case JsOpcode.GetTemplateObjectWide:
+                        {
+                            var raw = ArgumentsOf(stack[--sp]);
+                            var cooked = ArgumentsOf(stack[sp - 1]);
+                            var strings = TemplateObject(
+                                program,
+                                pc,
+                                new System.ReadOnlySpan<JsValue>(cooked),
+                                new System.ReadOnlySpan<JsValue>(raw));
+
+                            stack[sp - 1] = JsValue.Object(strings);
+                            pc++;
                             break;
                         }
 

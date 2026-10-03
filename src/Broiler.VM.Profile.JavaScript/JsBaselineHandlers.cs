@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   203
-// Annotated:        203/203
+// Relevant units:   204
+// Annotated:        204/204
 // Exempt:           1
-// Human-reviewed:   0/203
+// Human-reviewed:   0/204
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         204/204
+// Criteria:         205/205
 // Resource impact:  4/10 max
-// Unverified:       203
+// Unverified:       204
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -82,7 +82,7 @@ internal static unsafe class JsBaselineHandlers
     /// <b>A static constructor and not a module initializer</b>, so the table is built the first time
     /// a baseline instance asks for it and never in a process that runs only bytecode.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=BA2AEA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=7C1BF6
     // Broiler-Falsified-If: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
     // Broiler-Human:        PENDING
     static JsBaselineHandlers()
@@ -236,6 +236,7 @@ internal static unsafe class JsBaselineHandlers
         slots[(int)JsOpcode.Decrement] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&Decrement;
         slots[(int)JsOpcode.LoadSuperPropertyKeepKey] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&LoadSuperPropertyKeepKey;
         slots[(int)JsOpcode.ThrowReferenceError] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&ThrowReferenceError;
+        slots[(int)JsOpcode.GetTemplateObjectWide] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&GetTemplateObjectWide;
         if (!Sound(slots, undefined))
         {
             Table = 0;
@@ -1464,6 +1465,14 @@ internal static unsafe class JsBaselineHandlers
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
     private static int ThrowReferenceError(JsBaselineFrame* frame, int pc) =>
         JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.ThrowReferenceError);
+
+    /// <summary>The entry point for <see cref="JsOpcode.GetTemplateObjectWide"/> (0xB5): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=96DF75
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one GetTemplateObjectWide at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int GetTemplateObjectWide(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.GetTemplateObjectWide);
 
     /// <summary>The entry point for <see cref="JsOpcode.DisposeStep"/> (0xA3), which runs alone.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=098985

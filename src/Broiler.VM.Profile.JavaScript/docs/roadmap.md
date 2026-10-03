@@ -837,7 +837,7 @@ never silently widened:
 | `broiler.javascript.slice` | Numbers, arithmetic, comparison, local variables, structured control flow. No objects, no strings, no functions, no property access. **Deliberately not JavaScript anyone would ship** — its purpose is to close the whole contract loop against about two thousand readable lines. | JS-1 |
 | `broiler.javascript.core` | The language surface: objects, prototypes, properties, closures, functions, classes, exceptions, iteration, destructuring, strict mode, and the core standard library. | JS-5 opens it; increments extend it |
 | `broiler.javascript.modules` | Module records, live bindings, import and export forms, and top-level await, which IS declared: the surface was allocated "where declared" against a profile that had neither `async` functions nor a job queue, and the one that opened it has both *(corrected: JSC-134)*. | Opened by JSW-8 |
-| `broiler.javascript.dynamic` | `eval`, the `Function` constructor, and dynamic `import()`. Separate because a composition that registers no artifact provider must be able to decline exactly this and say so. | JS-8 |
+| `broiler.javascript.dynamic` | `eval`, the `Function` constructor, and dynamic `import()`, and with `Function` the three constructors reached off a generator, an async function and an async generator, which build from source by the same door *(corrected: [JSC-240](roadmap.corrections.md#jsc-240))*. Separate because a composition that registers no artifact provider must be able to decline exactly this and say so. | JS-8 |
 | `broiler.javascript.regexp` | Regular expressions, over the from-scratch matcher. | JS-6, or excluded with a published failure |
 | `broiler.javascript.binary` | `ArrayBuffer`, `DataView` and the typed array constructors. Separate because shared mutable memory addressed by index is a question a composition has to be able to answer on its own; `SharedArrayBuffer` and `Atomics` are deliberately **not** in it, because they are the multi-agent surface and need the agent model of [section 13](#13-realms-agents-and-the-host-boundary) *(corrected: JSC-86)*. | Opened by JSW-2 |
 | `broiler.javascript.intl` | Internationalization. | Deferred; excluded by name until it has a run |
@@ -999,10 +999,17 @@ What the format carries from the first version, because retrofitting any of it i
 [JSC-233](roadmap.corrections.md#jsc-233))*. Three of this format's limits are met by what a
 program says, not by what an artifact is, and each is a declared property of the format. None is a
 statement about the language.
-- **A call or a construction passes at most 255 arguments written out**, the width of the
-  instruction's count operand. Past it the source is refused at compile time with `2104`, naming the
-  ceiling, at the call. A spread argument or `apply` carries its arguments in an array, and is not
-  limited this way.
+- **A function declares at most 255 parameters before its first default or rest parameter**, the
+  arity a function row carries and, for a simple list, the count the frame copies a call's arguments
+  into. Past it the source is refused at compile time with `2301`, naming the ceiling, at the
+  function. *(Corrected 2026-10-03, [JSC-240](roadmap.corrections.md#jsc-240). This bullet read "A
+  call or a construction passes at most 255 arguments written out, the width of the instruction's
+  count operand. Past it the source is refused at compile time with `2104`, naming the ceiling, at
+  the call." That ceiling is raised: past 255 the arguments travel in one Array, through the
+  instructions a spread call uses, and a tagged template's strings object is built from Arrays the
+  same way. `2104` named the manifest, which admits a call of any length. The parameter ceiling was
+  not on the list at all: a longer list was lowered, and the verifier refused the artifact this host
+  had produced.)*
 - **An artifact holds at most 65,535 distinct constants**, numbers, strings, BigInts and interned
   names together, the width of a constant index. A program needing more is refused once with
   `2302`, naming the ceiling, at the construct being compiled when it was met.
@@ -1554,6 +1561,27 @@ without is not optional.
 
 No CLR type crosses the boundary. Arguments and results are the core's transfer types, and
 diagnostics carry identity and position without carrying host secrets.
+
+### The host members a guest finds, and why each is present and refusing (2026-10-03)
+
+*(corrected: [JSC-240](roadmap.corrections.md#jsc-240))*
+
+**A member this realm cannot perform is present, and a call to it throws a `TypeError`.** That is
+the opposite of what feature detection by `typeof` assumes, and it is deliberate. `typeof read`
+answers `"function"` in a realm with no reader, so a program that asks `typeof` takes the wrong
+branch. Each member is listed here with the reason absence would be worse, and the refusal each one
+gives names what is true of the realm it is raised in:
+
+| Member | Why present | What a call answers |
+|---|---|---|
+| `read` | A shell-shaped environment probe reads the name without calling it. The emscripten runtime an asm.js workload carries assigns `read` into its own module object once it has decided it is on a shell, and absence would make that assignment a `ReferenceError` over a capability the program never uses. | That no reader is installed in this realm: the host-capability table cannot carry a file's contents back to a guest, and the composition installed none through the host-object surface, which is the door that can. |
+| `$262.createRealm`, `$262.evalScript`, `$262.detachArrayBuffer`, `$262.agent`'s five members | The conformance suite's `INTERPRETING.md` requires each defined on `$262`. The suite chooses which tests a host runs by their declared features, not by `typeof`, so a present member costs a test nothing. | That this profile creates no nested realm, that the host installed no script evaluation or detach operation, or that this profile runs no second agent. A composition that can perform the second and third replaces them through `JsHostRealm`, and the conformance harness does. |
+| `$262.gc` | The same file says this member "must throw an exception if no capability exists". | That this host exposes no collection hook. |
+| `Function`, and the three constructors reached off a generator, an async function and an async generator | The language defines each. A realm whose composition declined `broiler.javascript.dynamic` still has them. | That the composition did not admit `broiler.javascript.dynamic`, so no source is turned into code at run time. A composition that admitted it builds the function. |
+
+**`$262.IsHTMLDDA` is the one member that is absent until a host installs it**, because the same
+file says it is "present only in implementations that can provide it". The conformance harness
+installs it; this host does not.
 
 ---
 

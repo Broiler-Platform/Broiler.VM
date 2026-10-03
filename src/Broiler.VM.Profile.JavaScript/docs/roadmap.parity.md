@@ -478,8 +478,10 @@ documents or its own components, found while comparing:
   harness that feature-detects will take the wrong branch. One of them refuses with a reason that is
   not true of this realm: `detachArrayBuffer` says the profile has no `ArrayBuffer` to detach, in a
   realm where `ArrayBuffer` exists and its own `transfer` detaches successfully.
+  *(corrected: [JSC-240](roadmap.corrections.md#jsc-240))*
 - **The host runs several named files in sorted path order** while its usage text promises the order
   given — and that text is the one [JSC-75](roadmap.corrections.md#jsc-75) exists to state.
+  *(corrected: [JSC-240](roadmap.corrections.md#jsc-240))*
 - **`--slice` disagrees with the wide surface about the completion value** of a statement whose
   completion is empty, renders negative zero differently for identical arithmetic, and refuses the
   identifier `undefined` at compile time although the usage text says the slice manifest admits it.
@@ -491,6 +493,7 @@ documents or its own components, found while comparing:
   being explained *(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*.
 - **`GeneratorFunction`, `AsyncFunction` and `AsyncGeneratorFunction` refuse with a reason about
   turning source into code at run time**, which is the dynamic surface's reason rather than theirs.
+  *(corrected: [JSC-240](roadmap.corrections.md#jsc-240))*
 
 ### 4.8 The host, and what an embedder meets
 
@@ -515,7 +518,7 @@ anything unusual:
   constants is refused with a diagnostic reported at position zero and no source location; and
   top-level `await` is refused inside a template-literal substitution while admitted in every other
   top-level position, with a diagnostic that names the wrong reason.
-  *(corrected: [JSC-233](roadmap.corrections.md#jsc-233))*
+  *(corrected: [JSC-233](roadmap.corrections.md#jsc-233), [JSC-240](roadmap.corrections.md#jsc-240))*
 - **Source encoding differs**: a UTF-16LE file with a byte-order mark is unreadable to this host and
   runs on the comparison engine. *(corrected: [JSC-233](roadmap.corrections.md#jsc-233))*
 - **A throw in shared-realm multi-file mode abandons every remaining file**, and the diagnostic names
@@ -992,6 +995,23 @@ a milestone with a ledger row.
     [record JSP-10-HOST-001](../../../docs/evidence/jsp-10-host-001/README.md)).
 
   Still open: host capabilities present and throwing, and the truth of every refusal reason. The
+  allowance defaults stay a decision. Unreviewed, not accepted evidence, and no milestone or stage
+  moves.
+- **2026-10-03 implementation note, the remaining clauses:**
+  - A call, a construction, a super call and a tagged template pass more than 255 arguments
+    written out. Past 255 they travel in one Array, through the instructions a spread call uses.
+  - A function with more than 255 parameters before its first default or rest is refused at compile
+    time, naming the ceiling, at the function. The verifier had refused the host's own artifact,
+    which is exit 4. Section 7 of the roadmap lists the ceiling.
+  - `GeneratorFunction`, `AsyncFunction` and `AsyncGeneratorFunction` build from source wherever
+    `Function` does, and refuse with the declining composition's reason where it does not.
+  - `read`'s refusal and `Function`'s now say what is true of the realm.
+  - Section 13 of the roadmap states which host members are present and refusing, and why.
+  - The file-order clause already held: the usage text has stated ordinal path order since
+    2026-09-17 ([JSC-240](roadmap.corrections.md#jsc-240),
+    [record JSP-10-001](../../../docs/evidence/jsp-10-001/README.md)).
+
+  `typeof read` still answers `"function"`; the clause is met by its documented branch. The
   allowance defaults stay a decision. Unreviewed, not accepted evidence, and no milestone or stage
   moves.
 - **Objective.** The host's defaults, its capabilities and its format ceilings are things a reader

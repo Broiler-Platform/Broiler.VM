@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 236 |
 | Files carrying an annotation | 236 |
-| Code units | 10285 |
-| Relevant | 5815 |
-| Exempt by predicate | 4470 |
-| Annotated | 5815 of 5815 (100%) |
-| Human reviewed | 0 of 5815 (0%) |
-| Unverified | 5815 |
+| Code units | 10293 |
+| Relevant | 5822 |
+| Exempt by predicate | 4471 |
+| Annotated | 5822 of 5822 (100%) |
+| Human reviewed | 0 of 5822 (0%) |
+| Unverified | 5822 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5815 |
+| HUMAN_PENDING | 5822 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4470 |
+| EXEMPT | 4471 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1554 |
-| Low | 5413 |
+| None | 1555 |
+| Low | 5419 |
 | Medium | 83 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,8 +51,8 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 9 |
 | Low | 955 |
-| Medium | 4249 |
-| High | 1584 |
+| Medium | 4250 |
+| High | 1590 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 5815 |
+| Units scored | 5822 |
 
 ## High-security review areas
 
@@ -647,6 +647,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Decrement(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadSuperPropertyKeepKey(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ThrowReferenceError(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GetTemplateObjectWide(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeStep(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeEnd(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCall` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
@@ -798,6 +799,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsEngine.instanced` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.RunModuleGraph(JsProgram, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.TemplateObject(JsProgram, int, JsValue[], int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.TemplateObject(JsProgram, int, System.ReadOnlySpan<JsValue>, System.ReadOnlySpan<JsValue>)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.Evaluated(JsProgram, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.Instantiate(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.EvaluateModule(JsModuleInstance)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
@@ -1013,7 +1015,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsRealm.EvalIntrinsic` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.IsEvalIntrinsic(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.SetupDynamic()` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, human line PENDING
-- `Broiler.VM.Profile.JavaScript.JsRealm.FromSource(JsEngine, JsValue[])` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsRealm.FromSourceOrRefuse(JsEngine, JsValue[], string, string)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsRealm.FromSource(JsEngine, JsValue[], string)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.PromiseSchedule(JsEngine, JsPromiseReaction, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.NewHostPromise(JsEngine)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm.AwaitOn(JsEngine, JsValue, System.Action<JsEngine, JsValue, bool>)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` - Security=High, human line PENDING
@@ -1168,6 +1171,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.Decrement(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadSuperPropertyKeepKey(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ThrowReferenceError(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.GetTemplateObjectWide(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNop` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNop.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadUndefined` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
@@ -1452,6 +1456,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadSuperPropertyKeepKey.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmThrowReferenceError` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmThrowReferenceError.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetTemplateObjectWide` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetTemplateObjectWide.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueSlab` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueSlab.Headroom` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueSlab.TryPushFrame(int, out int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
@@ -1908,8 +1914,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1971 |
-| Units required to carry one | 1837 |
+| Units carrying a criterion | 1977 |
+| Units required to carry one | 1843 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1943,7 +1949,7 @@ that the rule is reviewable in one place rather than in several hundred.
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
 | FieldDeclaringStorage | 781 |
-| EnumMemberOfADeclaredVocabulary | 1900 |
+| EnumMemberOfADeclaredVocabulary | 1901 |
 | DeclaredInSource | 31 |
 
 ## Per-unit exemptions
@@ -1993,7 +1999,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10285 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10293 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

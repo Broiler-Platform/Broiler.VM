@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 116
+runs|0|# Completed: 119
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -897,3 +897,20 @@ runs/the-edition-members-the-realm-lacked.js|0|true,true,false,false / 1,1,symbo
 runs/uint8array-base64-and-hex.js|0|SGn7/w== / SGn7_w / 4869fbff / 72,105,33 /  / SyntaxError / 72,105 / 5:2:72,105,0,0 / 0:0:0,0 / SyntaxError:72,105,0
 runs/a-reviver-reads-the-source-text.js|0|a=1.50 0="\u0041" 1=-0 2=1e3 b=- c=- =-
 runs/an-error-has-no-stack.js|0|undefined / false / message
+
+# JSP-10, THE HOST SURFACE AN EMBEDDER MEETS FIRST, ITS REMAINING CLAUSES (2026-10-03).
+#
+# A call, a construction, a super call and a tagged template pass three hundred arguments written
+# out, where each was refused past 255 with a reason about the manifest. A function declaring more
+# than 255 parameters is refused at compile time naming the ceiling, where the verifier refused the
+# host's own artifact (exit 4). The suspending constructors build from source where `Function` does,
+# the host members this realm cannot perform refuse with reasons true of it, and several named files
+# run in the ordinal order the usage text states, whatever order they were named in *(JSC-240)*.
+runs/a-call-past-the-operand-width.js|0|call=300:0:299 ordered=true new=300 super=300 method=300:0:299 optional=300:0:299 max=299 tagged=301:301:300:true one-site=true
+refused/a-function-with-three-hundred-parameters.js|3|2301:TooManyLocals at 5:1: a function of this format declares at most 255 parameters
+runs/the-suspending-function-constructors.js|0|1+2 / async 41, async generator / [object Promise] / true / anonymous,anonymous,anonymous
+runs/the-host-members-that-refuse.js|0|typeof read=function typeof $262.gc=function
+runs/the-host-members-that-refuse.js|0|read: TypeError: read: no reader is installed in this realm
+runs/the-host-members-that-refuse.js|0|gc: TypeError: $262.gc: this host exposes no collection hook
+runs/the-host-members-that-refuse.js|0|createRealm: TypeError: $262.createRealm: this profile creates no nested realm
+one-realm/a-second-script-the-owed-job-outlives.js one-realm/a-first-script-that-leaves-a-job-owed.js|0|suspended-in-the-first-script,first-script-ended,second-script-ended,resumed-at-the-drain

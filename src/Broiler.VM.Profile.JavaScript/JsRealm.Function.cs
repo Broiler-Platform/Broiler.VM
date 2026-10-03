@@ -28,12 +28,11 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>What a call or a construction of <c>Function</c> is told, and why.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1F0493
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=ABA5F0
     // Broiler-Human:        PENDING
     private const string FunctionConstructorRefusal =
-        "Function: the broiler.javascript.wide manifest does not admit the Function constructor, " +
-        "because this profile declares no guest-initiated load and cannot turn source into code " +
-        "at run time";
+        "Function: this realm's composition did not admit broiler.javascript.dynamic, so no " +
+        "source is turned into code at run time";
 
     /// <summary>
     /// <c>Function.prototype[Symbol.hasInstance]</c>, which <c>instanceof</c> recognises so that the
