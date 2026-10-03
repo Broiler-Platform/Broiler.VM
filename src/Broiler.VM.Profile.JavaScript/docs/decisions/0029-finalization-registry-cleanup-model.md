@@ -359,3 +359,9 @@ weak symbol key existing and does not depend on D03-a.
 - **Take D03-a's architecture test (7) on its own now:** a rule failing if any type in the
   `Broiler.VM.Profile.JavaScript*` assemblies declares a finalizer. It costs nothing, needs no model,
   and puts the record's main safety claim under test today.
+
+**Taken on 2026-10-03, ahead of the rest:** rule N25 (`N25NoFinalizerRuleTests`) fails when any
+type in the profile's product assemblies declares a destructor or a `Finalize` method, with a
+witness for the rejecting direction. It was watched failing against a destructor injected into
+`JsCollections.cs` and passing after the revert. This is D03-a's test (7) on its own; the model is
+still unscheduled and this record still unsigned.
