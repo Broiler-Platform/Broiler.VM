@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   28
-// Annotated:        28/28
+// Relevant units:   29
+// Annotated:        29/29
 // Exempt:           6
-// Human-reviewed:   0/28
+// Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       28
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -139,7 +139,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Map</c> and <c>Map.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D7F112
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FDE822
     // Broiler-Human:        PENDING
     private void SetupMap()
     {
@@ -213,7 +213,7 @@ internal sealed partial class JsRealm
             var made = new JsMapObject(MapPrototype);
             var at = 0;
 
-            foreach (var element in CollectionElements(engine, source))
+            foreach (var element in IterableElements(engine, source))
             {
                 engine.Charge(1);
                 engine.Retain(CollectionEntryBytes);
@@ -1252,6 +1252,52 @@ internal sealed partial class JsRealm
         finally
         {
             if (!drained)
+            {
+                engine.CloseIteratorQuietly(record);
+            }
+        }
+    }
+
+    /// <summary>
+    /// The elements of an iterable, one at a time as the consumer asks for them, with the iterator
+    /// closed when the consumer stops abruptly.
+    /// </summary>
+    /// <remarks>
+    /// <b>This is the iteration <c>Object.fromEntries</c> and the two <c>groupBy</c>s owe</b>, where
+    /// <see cref="CollectionElements"/> reads the whole iterable first: each element is processed
+    /// before the next is asked for, so a throwing entry stops the walk where it stands, and the
+    /// iterator is closed for it (IfAbruptCloseIterator). A throw from the iterator's own
+    /// <c>next</c>, or from reading its result, is not closed for, because the iterator is the one
+    /// that failed. Until 2026-10-03 those members read everything first and closed nothing
+    /// (JSC-252).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7030BC
+    // Broiler-Human:        PENDING
+    internal static System.Collections.Generic.IEnumerable<JsValue> IterableElements(
+        JsEngine engine, JsValue source)
+    {
+        var record = engine.GetIterator(source);
+        var settled = false;
+
+        try
+        {
+            while (true)
+            {
+                settled = true;
+
+                if (!engine.TryIterateNext(record, out var element))
+                {
+                    yield break;
+                }
+
+                settled = false;
+                engine.Charge(1);
+                yield return element;
+            }
+        }
+        finally
+        {
+            if (!settled)
             {
                 engine.CloseIteratorQuietly(record);
             }

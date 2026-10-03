@@ -552,9 +552,9 @@ public sealed class JsRegExpMatch
 public sealed class JsRegExpMatcher
 {
     /// <summary>How deeply a pattern may nest groups before the parser refuses it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=ABF9A7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=C24228
     // Broiler-Human:        PENDING
-    private const int MaximumNestingDepth = 128;
+    private const int MaximumNestingDepth = 512;
 
     /// <summary>How many backtrack points one match may hold at once.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B6D684
@@ -2581,7 +2581,7 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>The <c>\c</c> control escape, with Annex B's two relaxations.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=FD6110
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=BB255C
         // Broiler-Human:        PENDING
         private int ReadControlEscape(bool inClass)
         {
@@ -2592,7 +2592,10 @@ public sealed class JsRegExpMatcher
                 return letter % 32;
             }
 
-            if (inClass && at < pattern.Length && (char.IsAsciiDigit(pattern[at]) || pattern[at] == '_'))
+            // Annex B's ClassControlLetter, a digit or `_`, is [~UnicodeMode] grammar: under `u` it
+            // is an invalid escape like any other (B.1.2). Until 2026-10-03 it was admitted under
+            // `u` too (JSC-252).
+            if (inClass && !unicode && at < pattern.Length && (char.IsAsciiDigit(pattern[at]) || pattern[at] == '_'))
             {
                 var extra = pattern[at];
                 at++;

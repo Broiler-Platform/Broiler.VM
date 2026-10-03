@@ -10791,3 +10791,121 @@ refused a `function`, a `class`, a `const` and a `let` declaration by a check of
 
 **Authority and date.** The direction of 2026-10-03 to reopen every declined surface and order the
 roadmap toward a full-featured profile. 2026-10-03.
+
+### JSC-252
+
+**Where:** phase F1 of [delivery section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile),
+the library half: `Number`, `String.prototype`, `Date`, `Error`, `Object`, `Promise.any`,
+`%AsyncFromSyncIteratorPrototype%`, the async generator's `return`, the RegExp matcher's grammar and
+nesting bound, `[[Construct]]` through a revoked proxy, and the host's rendering of a completion
+value.
+
+**What the plan said.** Nothing about any of these. Each was a defect against the edition, found by
+the whole-suite run section 26's F1 starts from.
+
+**What replaced it, observed on 2026-10-03.**
+- **`Number.parseInt` and `Number.parseFloat` are the global functions**, the same objects.
+- **`String.prototype.toString` and `valueOf` do not coerce their receiver.**
+- **`Date.prototype[Symbol.toPrimitive]` compares its hint without converting it.**
+- **`Date.parse` reads an expanded year**, `±YYYYYY`, refusing `-000000`.
+- **An Error's `cause` is asked through HasProperty**, so the prototype chain and a proxy's `has`
+  trap are consulted.
+- **`Object` reached by `super()` or `Reflect.construct` with another new target** makes a fresh
+  object and ignores its argument.
+- **A RegExp lists `lastIndex` before its other String keys.**
+- **`Object.fromEntries`, `Object.groupBy` and `Map.groupBy` iterate lazily** and close their
+  iterator when an entry or the callback throws, never when the iterator's own `next` does.
+- **`Promise.any` hands each element the capability's own `resolve`.**
+- **An async-from-sync iterator closes the sync iterator when PromiseResolve throws**, and an async
+  generator's `return` at a `yield` raises that throw inside the body, where `catch` sees it.
+- **Under `u`, `\c` followed by a digit or `_` in a class is an early error.** The regular
+  expression nesting bound rises from 128 to 512 groups, on the guest's 208 MB stack.
+- **A construction whose new target is a revoked proxy throws**, when that target's `prototype`
+  is not an object, as `GetFunctionRealm` requires.
+- **A script whose completion value cannot be converted completed normally.** The host renders it
+  by its class tag rather than reporting an uncaught error the script never threw.
+- **test262:** over the whole pinned suite, against the whole run JSC-246 records, 64 variants moved
+  from failing to passing through this entry and none moved back.
+
+**What must not be read as repaired.**
+- **`Function.prototype.caller` and `arguments` on a sloppy function**, the legacy reflection
+  other engines carry, still throw. A sloppy function still has neither as its own property.
+- **A WeakMap chain of about a hundred thousand entries still stalls the process in a garbage
+  collection** that no allowance can interrupt (`staging/sm/regress/regress-1507322-deep-weakmap.js`).
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-253
+
+**Where:** phase F1, the parser half: `JsParser`, `SliceTokenizer` and the module lowering in
+`JsCompiler`.
+
+**What the plan said.** Nothing; each was an early error missing or a program refused.
+
+**What replaced it, observed on 2026-10-03.**
+- **A contextual keyword written with an escape is not the keyword**: `as`, `from`,
+  `new.target` and `import.meta`.
+- **`yield`, `await` and `let` may be an arrow's one parameter where each is a name**, and remain
+  refused where each is reserved: strict code, and `await` in a static block or a module.
+- **`08` and `09` are refused in strict code**, as NonOctalDecimalIntegerLiterals.
+- **`let` before `await` or `yield` begins a declaration**, whose early error is the answer.
+- **`for (async of x)` is refused** by the head's lookahead.
+- **A parenthesised object or array literal is not an assignment target.**
+- **A class heritage is compiled before the class's private names are declared**, so it resolves
+  only outer ones.
+- **`#x in` is recognised only where a RelationalExpression begins**, so `#x in #x in o` is refused.
+- **`new C(1)?.a` is a chain** off the new object; only an argument-less `new a?.b` is refused.
+- **`?.` before a digit is a conditional**: `a ?.5 : b`.
+- **A numeric property key is spelled as `Number::toString` spells it**: `0.0000001` is `"1e-7"`,
+  where it was the platform's `"1E-07"`.
+- **Module early errors are refused:**
+  - a top-level `return`;
+  - a `var` and a function of one name;
+  - an import binding named `arguments` or `eval`;
+  - a string export name holding a lone surrogate;
+  - a string local name without `from`.
+- **The tokenizer tracks generator bodies**, so `yield / 2` divides outside one and `yield /re/` is
+  a literal inside one (JSC-245's open case).
+- **test262:** in the same run, 66 variants moved from failing to passing through this entry. Two
+  moved back, `arrow-function/static-init-await-binding`'s, through the `await` arrow parameter;
+  they were repaired before this entry was written, and a run of the arrow and class subtrees after
+  the repair moved nothing back.
+
+**What must not be read as repaired.**
+- **The source nesting bound of 64** is still the default, which refuses
+  `statements/function/S13.2.1_A1_T1`. It is a host policy (JSD-0022) a host may raise to 512.
+- **A parenthesised name as an assignment target still names an anonymous function**:
+  `(fn) = function () {}`.
+- **A strict assignment to an undeclared global still succeeds** when its right-hand side creates
+  the property.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-254
+
+**Where:** phase F1, the semantics half: synchronous `yield*`, `delete` of a `super` reference, the
+catch clause's scopes, and a `var` initialiser in a `with` body.
+
+**What the plan said.** Nothing; each was a defect against the edition.
+
+**What replaced it, observed on 2026-10-03.**
+- **A synchronous `yield*` yields the inner result object as it is** (GeneratorYield(innerResult)),
+  without reading its `value`, and the caller receives that very object.
+- **`delete super.x` and `delete super[k]` throw a `ReferenceError`** after the this binding and
+  the key expression are evaluated, and before the key is converted. The `ThrowReferenceError`
+  instruction's message is now neutral between this and Annex B's call target.
+- **A catch block's lexical names are hoisted before its first statement**, and a pattern
+  parameter's block is a scope of its own. A closure in a default sees the outer name, and a
+  closure created above a `let` sees that `let`.
+- **A `var` initialiser in a `with` body writes the reference resolved before it ran**, as an
+  assignment does since JSC-243.
+- **test262:** in the same run, 52 variants moved from failing to passing through this entry and
+  none moved back.
+
+**What must not be read as repaired.**
+- **The completion value of a `try` whose `finally` breaks** still differs from the edition's.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.

@@ -2479,7 +2479,7 @@ public sealed class JsCompiler
     /// exporting module's slot, so giving it one here would create the copy that makes a live
     /// binding stale - see <see cref="JsOpcode.LoadImport"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=317262
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=51B1A6
     // Broiler-Human:        PENDING
     private void DeclareImports(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
@@ -2495,6 +2495,18 @@ public sealed class JsCompiler
 
                     foreach (var specifier in import.Specifiers)
                     {
+                        // An import binds a name in strict code, where `arguments` and `eval` are
+                        // not binding names (13.1.1). Until 2026-10-03 both imported (JSC-253).
+                        if (specifier.Local is "arguments" or "eval")
+                        {
+                            Refuse(
+                                specifier.Span,
+                                SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                                "`" + specifier.Local + "` is not a binding name in a module");
+
+                            continue;
+                        }
+
                         if (build.Imports.ContainsKey(specifier.Local))
                         {
                             Refuse(
@@ -2627,7 +2639,7 @@ public sealed class JsCompiler
     /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
     /// an importer that reads too early has to meet.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=369962
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=50A13A
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<string> DeclareModuleBindings(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
@@ -2659,6 +2671,17 @@ public sealed class JsCompiler
                     function.Span,
                     SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
                     "`" + function.Name + "` is declared twice at this module's top level");
+            }
+
+            // AND IT COLLIDES WITH A `var` OF THE SAME NAME, for the same reason: a module's
+            // function is lexical (16.2.1.1). Until 2026-10-03 `var f; function f() {}` compiled in
+            // a module (JSC-253).
+            if (names.Contains(function.Name))
+            {
+                Refuse(
+                    function.Span,
+                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
+                    "`" + function.Name + "` is declared both as a `var` and as a function");
             }
 
             Declared(build, function.Name, constant: false);
@@ -4678,7 +4701,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=23B84D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=792901
     // Broiler-Human:        PENDING
     private void CompileVariable(JsVariableStatement variable)
     {
@@ -4780,6 +4803,20 @@ public sealed class JsCompiler
             {
                 if (declarator.Initialiser is null)
                 {
+                    continue;
+                }
+
+                // IN A `with` BODY THE NAME IS RESOLVED BEFORE ITS INITIALISER RUNS, as an
+                // assignment's is (14.3.2.1: ResolveBinding, then the initialiser, then PutValue),
+                // so an initialiser that deletes the object's property still writes the object.
+                // Until 2026-10-03 the name was resolved at the write (JSC-254).
+                var initialiser = declarator.Initialiser;
+                var initialised = declarator.Name;
+
+                if (TryEmitShadowedReference(
+                    declarator.Span, initialised, read: false, () => CompileNamedValue(initialiser, initialised)))
+                {
+                    Emit(JsOpcode.Pop);
                     continue;
                 }
 
@@ -6299,7 +6336,7 @@ public sealed class JsCompiler
         scope = outer;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7531CA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=623CEA
     // Broiler-Human:        PENDING
     private void CompileTry(JsTryStatement guarded, int completion)
     {
@@ -6359,9 +6396,43 @@ public sealed class JsCompiler
             // walk exempts only the first half (Annex B.3.4, JSeal V15).
             scope.LexicalFrom = scope.SlotCount;
 
+            // A PATTERN PARAMETER'S DEFAULTS CLOSE OVER THE PARAMETER SCOPE AND NOT THE BLOCK'S:
+            // the catch Block is a scope of its own inside the parameter's (14.15.3), so a default
+            // that closes over `x` sees the outer `x`, not a `let x` the block declares. Until
+            // 2026-10-03 both lived in one record (JSC-254). A plain parameter has no default to
+            // close over anything, so it keeps the one record.
+            var blockScoped = guarded.CatchPattern is not null;
+            var parameterScope = scope;
+
+            if (blockScoped)
+            {
+                scope = new Scope(ScopeKind.Block, parameterScope);
+                blockDepth++;
+                var bodySite = buffer.Code.Count + 1;
+                Emit(JsOpcode.PushScope, (ushort)0);
+                buffer.ScopeSites.Add((bodySite, scope));
+            }
+
+            // THE BLOCK'S LEXICAL NAMES ARE HOISTED BEFORE ITS FIRST STATEMENT, as any Block's
+            // are: a closure created above a `let` resolves to that `let`, in its dead zone, and
+            // not to a name outside. Until 2026-10-03 a catch body declared each name only when
+            // its declaration was reached (JSC-254).
+            var catchLexical = new System.Collections.Generic.List<(string Name, bool Constant)>();
+            CollectLexical(guarded.Handler.Body, catchLexical);
+            DeclareLexical(catchLexical);
+            HoistBlockFunctions(guarded.Handler.Body);
+
             // A catch body is a Block and disposes its own resources, inside the parameter's scope
             // and before control leaves the handler - not in whatever list encloses the `try`.
             CompileDisposing(guarded.Handler.Body, completion);
+
+            if (blockScoped)
+            {
+                Emit(JsOpcode.PopScope);
+                blockDepth--;
+                scope = parameterScope;
+            }
+
             Emit(JsOpcode.PopScope);
             blockDepth--;
             scope = outer;
@@ -6452,7 +6523,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EC7EAC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7E3B21
     // Broiler-Human:        PENDING
     private void CompileReturn(JsReturnStatement returned)
     {
@@ -6467,7 +6538,9 @@ public sealed class JsCompiler
         // the language says is that the source is not a program. `2101` is what a source wrong
         // about the LANGUAGE gets, exactly as `with` in strict code and a `super` property outside
         // a method do.
-        if (FunctionScope().Kind is ScopeKind.Program or ScopeKind.Eval)
+        // A module body is no more a function than a script is (16.2.1.1: ModuleItemList may not
+        // contain a ReturnStatement); until 2026-10-03 a module's `return` ran (JSC-253).
+        if (FunctionScope().Kind is ScopeKind.Program or ScopeKind.Eval or ScopeKind.Module)
         {
             Refuse(
                 returned.Span,
@@ -7269,7 +7342,7 @@ public sealed class JsCompiler
     /// was written would have collapsed the middle two and been wrong about both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DF7518
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8F7ACF
     // Broiler-Human:        PENDING
     private void CompileClass(JsClassNode node, string inferredName)
     {
@@ -7295,18 +7368,26 @@ public sealed class JsCompiler
             {
                 scope.Declare(node.Name, constant: true);
             }
+        }
 
+        if (node.HasHeritage)
+        {
+            CompileExpression(node.Heritage!);
+        }
+
+        // THE PRIVATE NAMES ARE DECLARED AFTER THE HERITAGE IS COMPILED, because the heritage is
+        // evaluated in the OUTER private environment (15.7.14 step 8): `class extends (o.#x) {
+        // #x }` names an outer `#x` or none, never the class's own. Declaring them first let the
+        // heritage resolve them (JSC-253). The class binding stays visible to the heritage, in
+        // its dead zone, as the specification has it.
+        if (scoped)
+        {
             foreach (var privateName in privates)
             {
                 var slot = scope.Declare(PrivateSlot(privateName), constant: true);
                 Emit(JsOpcode.NewPrivateName, StringConstant(privateName));
                 EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
             }
-        }
-
-        if (node.HasHeritage)
-        {
-            CompileExpression(node.Heritage!);
         }
 
         var name = named ? node.Name : inferredName;
@@ -8059,7 +8140,7 @@ public sealed class JsCompiler
         CompileExpression(value);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4740FD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CADE59
     // Broiler-Human:        PENDING
     private void CompileUnary(JsUnaryExpression unary)
     {
@@ -8212,6 +8293,31 @@ public sealed class JsCompiler
                 }
 
                 Emit(JsOpcode.DeleteGlobalBinding, InternedName(plain.Name));
+                return;
+
+            // `delete super.x` AND `delete super[k]` ARE A ReferenceError, after the this binding
+            // and the key expression are evaluated and before the key is converted (13.5.1.2 step
+            // 5, with the key's conversion deferred since ES2024). Until 2026-10-03 the property
+            // was read and `true` answered (JSC-254).
+            case SliceTokenKind.Delete when unary.Operand is JsSuperMemberExpression inherited:
+                if (!insideMethod)
+                {
+                    Refuse(
+                        inherited.Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "`super` is only admitted inside a method");
+                }
+
+                Emit(JsOpcode.LoadThis);
+                Emit(JsOpcode.Pop);
+
+                if (inherited.Computed is not null)
+                {
+                    CompileExpression(inherited.Computed);
+                    Emit(JsOpcode.Pop);
+                }
+
+                Emit(JsOpcode.ThrowReferenceError);
                 return;
 
             case SliceTokenKind.Delete:

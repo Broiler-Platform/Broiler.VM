@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   211
-// Annotated:        211/211
+// Relevant units:   212
+// Annotated:        212/212
 // Exempt:           33
-// Human-reviewed:   0/211
+// Human-reviewed:   0/212
 // IP risk:          Low
 // Security risk:    Critical
 // Criteria:         84/82
 // Resource impact:  7/10 max
-// Unverified:       211
+// Unverified:       212
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -4406,7 +4406,7 @@ internal sealed partial class JsEngine
     /// language promises rather than a half-built object.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=78D681
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=19A9C1
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
@@ -4452,6 +4452,10 @@ internal sealed partial class JsEngine
                 {
                     made.AsObject().Prototype = wanted.AsObject();
                 }
+                else
+                {
+                    RequireFunctionRealm(newTarget);
+                }
             }
 
             return made;
@@ -4477,6 +4481,11 @@ internal sealed partial class JsEngine
         if (!derived)
         {
             var prototype = GetProperty(newTarget, "prototype");
+
+            if (!prototype.IsObject)
+            {
+                RequireFunctionRealm(newTarget);
+            }
 
             instance = new JsObject(
                 prototype.IsObject ? prototype.AsObject() : Realm.ObjectPrototype);
@@ -6542,7 +6551,7 @@ internal sealed partial class JsEngine
     /// the difference between an answer and a terminated process.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=984439
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=17882E
     // Broiler-Falsified-If: a generator resumed while its own body is running re-enters that body, or a completed generator runs any instruction
     // Broiler-Human:        PENDING
     internal JsValue ResumeGenerator(JsValue receiver, JsResumeMode mode, JsValue sent, string method)
@@ -6626,6 +6635,14 @@ internal sealed partial class JsEngine
             {
                 generator.State = JsGeneratorState.SuspendedYield;
                 frame.Started = true;
+
+                if (!frame.DelegatedResult.IsEmpty)
+                {
+                    var delegated = frame.DelegatedResult;
+                    frame.DelegatedResult = JsValue.Empty;
+                    return delegated;
+                }
+
                 return JsValue.Object(Realm.IteratorResult(completed, done: false));
             }
 
@@ -6951,7 +6968,7 @@ internal sealed partial class JsEngine
     /// return into a throw at the same suspension point, which is why the callback below chooses
     /// between two modes rather than always raising a return.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A0B79D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A675D5
     // Broiler-Human:        PENDING
     private void ResumeAsyncGeneratorAtYield(
         JsAsyncGenerator generator, JsResumeMode mode, JsValue sent)
@@ -6964,11 +6981,29 @@ internal sealed partial class JsEngine
             return;
         }
 
-        Realm.AwaitOn(
-            this,
-            sent,
-            (engine, value, threw) => engine.ResumeAsyncGenerator(
-                generator, threw ? JsResumeMode.Throw : JsResumeMode.Return, value));
+        // The Await is the generator's own, at its `yield`: a value whose PromiseResolve throws -
+        // a promise with a throwing `constructor` getter - throws THERE, where the body's `catch`
+        // can see it (27.6.3.7 step 7). Until 2026-10-03 the throw escaped to the caller of
+        // `return` and the body never ran (JSC-252).
+        JsThrow? immediate = null;
+
+        try
+        {
+            Realm.AwaitOn(
+                this,
+                sent,
+                (engine, value, threw) => engine.ResumeAsyncGenerator(
+                    generator, threw ? JsResumeMode.Throw : JsResumeMode.Return, value));
+        }
+        catch (JsThrow thrown)
+        {
+            immediate = thrown;
+        }
+
+        if (immediate is not null)
+        {
+            ResumeAsyncGenerator(generator, JsResumeMode.Throw, immediate.Value);
+        }
     }
 
     /// <summary>
@@ -7347,7 +7382,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=B3BECB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=C2BFE3
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -8887,7 +8922,7 @@ internal sealed partial class JsEngine
                         // through, which Annex B makes a ReferenceError here rather than an early
                         // error.
                         case JsOpcode.ThrowReferenceError:
-                            ThrowReferenceError("Invalid left-hand side in assignment");
+                            ThrowReferenceError("this reference cannot be assigned to or deleted");
                             break;
 
                         // THE SEAM BETWEEN THE PARAMETER LIST AND THE BODY, WHICH ONLY ONE OF THE
@@ -9394,7 +9429,7 @@ internal sealed partial class JsEngine
     /// silently getting its own exception back.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=E53DC7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=7787AD
     // Broiler-Falsified-If: a `return` or a `throw` that arrives while a `yield*` is suspended is not offered to the inner iterator first
     // Broiler-Human:        PENDING
     private JsValue Delegate(JsFrame frame, JsValue[] stack, ref int sp, int pc)
@@ -9471,21 +9506,12 @@ internal sealed partial class JsEngine
 
             default:
             {
-                // THE ONE PATH THAT IS THE ORDINARY PROTOCOL, so it is the ordinary helper: the
-                // record's `next` is the function read once at acquisition, the sent value is
-                // forwarded as its argument, and the inner iterator's own COMPLETION VALUE is what
+                // THE ORDINARY PROTOCOL: the record's `next`, read once at acquisition, is called
+                // with the sent value, and the inner iterator's own COMPLETION VALUE is what
                 // `yield*` evaluates to - the half of delegation a loop written by hand forgets.
-                if (!TryIterateNext(record, [sent], out var element, out var completed, wantsCompleted: true))
-                {
-                    frame.Delegate = null;
-                    return completed;
-                }
-
-                frame.Delegating = true;
-                frame.Sp = sp;
-                frame.Pc = pc;
-                frame.Suspended = true;
-                return element;
+                Charge(1);
+                step = Call(record.Next, record.Iterator, [sent]);
+                break;
             }
         }
 
@@ -9501,12 +9527,17 @@ internal sealed partial class JsEngine
             return GetProperty(step, "value");
         }
 
+        // THE INNER RESULT OBJECT IS YIELDED AS IT IS (27.5.3.4: GeneratorYield(innerResult)), so
+        // its `value` is not read here and the caller receives the very object the inner iterator
+        // answered. Until 2026-10-03 the value was read and wrapped in a new result, which a getter
+        // on `value` could count (JSC-254).
+        frame.DelegatedResult = step;
         frame.Delegating = true;
         frame.Sp = sp;
         frame.Pc = pc;
         frame.Suspended = true;
         frame.Suspension = JsSuspension.Yield;
-        return GetProperty(step, "value");
+        return JsValue.Undefined;
     }
 
     /// <summary>
@@ -10812,6 +10843,47 @@ internal sealed partial class JsEngine
         }
 
         return collected;
+    }
+
+    /// <summary>
+    /// <c>GetFunctionRealm</c>, for the one answer this single-realm profile can give other than its
+    /// own realm: a <c>TypeError</c> for a revoked proxy, reached through any bound functions and
+    /// proxies around it.
+    /// </summary>
+    /// <remarks>
+    /// GetPrototypeFromConstructor asks for the realm only when <c>prototype</c> is not an object,
+    /// so a construction whose new target is a proxy revoked while its `prototype` was read throws
+    /// rather than using the intrinsic (10.1.14 step 4.a, 7.3.24 step 4). Until 2026-10-03 it built
+    /// the object (JSC-252).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=795F9C
+    // Broiler-Human:        PENDING
+    internal void RequireFunctionRealm(JsValue constructor)
+    {
+        var current = constructor.AsObjectOrNull();
+
+        while (current is not null)
+        {
+            Charge(1);
+
+            if (current is JsBoundFunction bound)
+            {
+                current = bound.Target;
+            }
+            else if (current is JsProxy proxy)
+            {
+                if (proxy.Handler is null)
+                {
+                    ThrowTypeError("the new target is a revoked Proxy, which has no realm");
+                }
+
+                current = proxy.Target;
+            }
+            else
+            {
+                return;
+            }
+        }
     }
 
     /// <summary>Renders a thrown value for a host that has to describe it in one line.</summary>

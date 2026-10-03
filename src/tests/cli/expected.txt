@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 130
+runs|0|# Completed: 134
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -974,3 +974,22 @@ runs/bound-length-and-the-immutable-root.js|0|2 / 0 / 0 / 0 / 0 / Infinity / 0 /
 refused/a-labelled-function-as-a-loop-body.js|3|2101:UnexpectedToken at 4:15: a labelled function declaration cannot be the body of a `while`
 refused/an-async-function-as-a-with-body.js|3|2101:UnexpectedToken at 3:11
 runs/a-let-before-a-line-break-in-a-with-body.js|0|1 undefined 5
+
+# BUILT-INS AS THE EDITION DEFINES THEM (2026-10-03): the shared parse functions, the non-generic
+# String members, the Date hint and expanded years, an Error's cause, `Object` under `super()`, the
+# RegExp key order, `fromEntries` closing its iterator, `Promise.any`'s resolve, the `\c` escape
+# under `u` and a deep pattern. The values are the comparison engine's *(JSC-252)*.
+runs/built-ins-as-the-edition-defines-them.js|0|true / true / TypeError / TypeError / x / TypeError / 0 / -62183116800000 / 8640000000000000 / NaN / -0012 / RangeError / 5 / undefined / true / 3 / lastIndex+a / TypeError / next0+next1+return / 2 / true / SyntaxError / 201
+runs/a-completion-value-with-no-prototype.js|0|[object Object]
+
+# NAMES AND PUNCTUATORS READ BY CONTEXT (2026-10-03), and the early errors the parser owed. The run's
+# values are the comparison engine's; it raises each refusal's SyntaxError *(JSC-253)*.
+runs/names-and-punctuators-read-by-context.js|0|2 / 4 / 2 / /re/g / 1e-7+1e+21+1.23e-18 / g / 0.3 / 99 / 9 / function
+refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: a parenthesised literal is not an assignment target
+refused/a-non-octal-decimal-literal-in-strict-code.js|3|2210:LegacyOctalInStrictCode at 4:1: a legacy octal literal is not admitted in strict code
+refused/let-before-await-in-an-async-function.js|3|2209:ReservedWordAsBinding at 5:5: `await` is not a binding name
+--module refused/a-module-function-and-a-var-of-one-name.mjs|3|2202:VarAndLexicalCollision at 4:1: `f` is declared both as a `var` and as a function
+
+# DELEGATION, DELETION AND CATCH SCOPES (2026-10-03). The values are the comparison engine's but for
+# the last row's, which are the specification's *(JSC-254)*.
+runs/delegation-deletion-and-catch-scopes.js|0|false / 1 / 5 / 1 / ReferenceError / ReferenceError / 1 / outside / inside / number / true / undefined

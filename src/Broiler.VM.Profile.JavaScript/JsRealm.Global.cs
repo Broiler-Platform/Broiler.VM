@@ -78,7 +78,7 @@ internal sealed partial class JsRealm
     private const string GlobalUriHexDigits = "0123456789ABCDEF";
 
     /// <summary>Builds the global object's non-constructor bindings.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CD15FE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=835ABF
     // Broiler-Human:        PENDING
     private void SetupGlobal()
     {
@@ -96,6 +96,20 @@ internal sealed partial class JsRealm
         host.DefineBuiltIn("globalThis", JsValue.Object(host));
 
         SetupGlobalNumericFunctions(host);
+
+        // `Number.parseInt` and `Number.parseFloat` ARE the global functions, the same objects, not
+        // copies (21.1.2.12 and 21.1.2.13). `Number` is set up first and holds a placeholder in
+        // each slot, so writing the global's value over it keeps the key where it was. Until
+        // 2026-10-03 they were two pairs of functions (JSC-252).
+        if (host.TryGetOwnProperty("Number", out var number) && number.Value.AsObjectOrNull() is { } numberObject)
+        {
+            foreach (var shared in (string[])["parseFloat", "parseInt"])
+            {
+                host.TryGetOwnProperty(shared, out var global);
+                numberObject.SetOwnProperty(shared, global);
+            }
+        }
+
         SetupGlobalUriFunctions(host);
         SetupGlobalHostFunctions(host);
     }

@@ -402,7 +402,7 @@ internal sealed partial class JsRealm
     /// <c>return</c>; a <c>return</c> whose value rejects is already closing it, and closing it a
     /// second time would call <c>return</c> twice on an iterator that has been told once.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=92389F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=45F61C
     // Broiler-Human:        PENDING
     private JsValue AsyncFromSyncContinuation(
         JsEngine owner, JsValue step, JsIteratorRecord record, bool closeOnRejection)
@@ -415,7 +415,21 @@ internal sealed partial class JsRealm
             record.Done = true;
         }
 
-        var wrapped = PromiseResolveValue(owner, value);
+        // PromiseResolve can throw before any promise exists - a value whose `constructor` getter
+        // throws - and that abandons the iteration as a rejection does, so the synchronous
+        // iterator is closed for it under the same condition (27.1.6.4 step 6). Until 2026-10-03
+        // the throw reached the caller with the iterator left open (JSC-252).
+        JsPromiseObject wrapped;
+
+        try
+        {
+            wrapped = PromiseResolveValue(owner, value);
+        }
+        catch (JsThrow) when (!done && closeOnRejection)
+        {
+            owner.CloseIteratorQuietly(record);
+            throw;
+        }
 
         var onFulfil = JsValue.Object(Native("", 1, (inner, thisValue, arguments) =>
         {

@@ -239,7 +239,7 @@ internal sealed partial class JsRealm
     /// Builds one error object on <paramref name="prototype"/>, the specification's
     /// <c>OrdinaryCreateFromConstructor</c> followed by the message and cause installation.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=86BA81
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B9101F
     // Broiler-Human:        PENDING
     private static JsObject ErrorIntrinsicCreate(
         JsEngine engine, JsObject prototype, JsValue message, JsValue options)
@@ -258,7 +258,9 @@ internal sealed partial class JsRealm
             error.DefineBuiltIn("message", JsValue.String(text));
         }
 
-        if (options.IsObject && options.AsObject().HasOwnProperty("cause"))
+        // InstallErrorCause asks HasProperty, which reads the prototype chain and asks a proxy
+        // through its `has` trap; an own-property test did neither until 2026-10-03 (JSC-252).
+        if (options.IsObject && engine.HasProperty(options.AsObject(), "cause"))
         {
             error.DefineBuiltIn("cause", engine.GetProperty(options, "cause"));
         }

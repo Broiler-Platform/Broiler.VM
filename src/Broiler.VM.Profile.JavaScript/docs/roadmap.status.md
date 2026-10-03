@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, and the roadmap reorganised by JSC-251; milestone rows unchanged)
+**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, and phase F1 batches JSC-252 to JSC-254; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -540,6 +540,15 @@ suite's `RegExp`, regular-expression-literal and Annex B `RegExp` subtrees, 140 
 failing to passing and none moved back ([JSC-244](roadmap.corrections.md#jsc-244)). This is
 unreviewed implementation and validation material, not accepted milestone evidence; no milestone row
 advances.
+
+**Phase F1 observation, 2026-10-03.** The first three batches of roadmap
+[section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F1 have a change each.
+They cover the library, the parser and four semantics, and over the whole pinned suite 182 variants
+moved from failing to passing ([JSC-252](roadmap.corrections.md#jsc-252) to
+[JSC-254](roadmap.corrections.md#jsc-254)). Two moved back and were repaired before the entries
+were written. What F1 still owes is named in those entries' last sections and in section 26. This
+is unreviewed implementation and validation material, not accepted milestone evidence; no milestone
+row advances.
 
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:

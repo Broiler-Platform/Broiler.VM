@@ -2507,12 +2507,22 @@ internal sealed partial class JsRealm
             base.DeleteOwnProperty(key);
 
         /// <inheritdoc/>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=6AC96B
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=A0A370
         // Broiler-Human:        PENDING
         internal override System.Collections.Generic.List<string> OwnPropertyNames()
         {
+            // `lastIndex` is the first property a RegExp is given (RegExpAlloc), so it is listed
+            // before every other String key and after the integer ones, which always come first.
+            // Until 2026-10-03 it was listed last (JSC-252).
             var names = base.OwnPropertyNames();
-            names.Add("lastIndex");
+            var at = 0;
+
+            while (at < names.Count && IsArrayIndex(names[at], out _))
+            {
+                at++;
+            }
+
+            names.Insert(at, "lastIndex");
             return names;
         }
     }

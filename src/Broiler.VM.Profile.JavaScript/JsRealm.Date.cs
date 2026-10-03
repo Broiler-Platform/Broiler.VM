@@ -927,15 +927,34 @@ internal sealed partial class JsRealm
     /// fixes local time to UTC, so the two agree and one computation serves both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F6DD7F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DB9CFA
     // Broiler-Human:        PENDING
     private static double DateParseText(JsEngine engine, string text)
     {
         engine.Charge((ulong)text.Length + 1);
 
         var at = 0;
+        double year;
 
-        if (!DateReadDigits(text, ref at, 4, out var year))
+        // THE EXPANDED YEAR: a sign and exactly six digits, which is how `toISOString` writes a
+        // year outside 0 to 9999, so `Date.parse` must read it back; `-000000` is not a year
+        // (21.4.1.32.1). Until 2026-10-03 every such string parsed as NaN (JSC-252).
+        if (text.Length > 0 && (text[0] == '+' || text[0] == '-'))
+        {
+            var negative = text[0] == '-';
+            at = 1;
+
+            if (!DateReadDigits(text, ref at, 6, out year) || (negative && year == 0))
+            {
+                return double.NaN;
+            }
+
+            if (negative)
+            {
+                year = -year;
+            }
+        }
+        else if (!DateReadDigits(text, ref at, 4, out year))
         {
             // NOT ISO 8601, SO TRY THE TWO FORMS THIS REALM ITSELF PRODUCES. The specification
             // requires `Date.parse` to accept whatever `toString` and `toUTCString` answered, and

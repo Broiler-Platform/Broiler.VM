@@ -90,7 +90,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Object</c>, <c>Object.prototype</c> and the statics on the constructor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2E571C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=88B07B
     // Broiler-Human:        PENDING
     private void SetupObject()
     {
@@ -305,7 +305,19 @@ internal sealed partial class JsRealm
                 : JsValue.Object(engine.ToObject(value));
         }
 
-        var constructor = Constructor("Object", 1, ObjectPrototype, FromValue, FromValue);
+        // A construction whose new target is not `Object` itself - `super()` in a class extending
+        // it, or `Reflect.construct(Object, [v], C)` - makes a fresh object and ignores the value
+        // (20.1.1.1 step 1). Until 2026-10-03 it wrapped the value, so a subclass instance was the
+        // argument object re-pointed at the subclass's prototype (JSC-252).
+        JsNativeFunction? objectConstructor = null;
+
+        JsValue Construct(JsEngine engine, JsValue newTarget, JsValue[] arguments) =>
+            newTarget.IsObject && !ReferenceEquals(newTarget.AsObject(), objectConstructor)
+                ? JsValue.Object(new JsObject(ObjectPrototype))
+                : FromValue(engine, newTarget, arguments);
+
+        var constructor = Constructor("Object", 1, ObjectPrototype, FromValue, Construct);
+        objectConstructor = constructor;
 
         Method(constructor, "keys", 1, (engine, thisValue, arguments) =>
         {
@@ -340,14 +352,13 @@ internal sealed partial class JsRealm
 
             var made = new JsObject(ObjectPrototype);
 
-            foreach (var entry in CollectionElements(engine, source))
+            foreach (var entry in IterableElements(engine, source))
             {
                 engine.Charge(1);
 
                 if (!entry.IsObject)
                 {
-                    return engine.ThrowTypeError("Iterator value " + engine.ToStringValue(entry) +
-                        " is not an entry object");
+                    return engine.ThrowTypeError("Object.fromEntries: an iterator value is not an entry object");
                 }
 
                 var key = engine.GetIndexed(entry, JsValue.Number(0));
@@ -391,7 +402,7 @@ internal sealed partial class JsRealm
             var groups = new JsObject(null);
             var at = 0;
 
-            foreach (var element in CollectionElements(engine, source))
+            foreach (var element in IterableElements(engine, source))
             {
                 engine.Charge(1);
                 var key = engine.ToPropertyKeyValue(

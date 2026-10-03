@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   48
-// Annotated:        48/48
-// Exempt:           115
-// Human-reviewed:   0/48
+// Relevant units:   49
+// Annotated:        49/49
+// Exempt:           118
+// Human-reviewed:   0/49
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         23/18
 // Resource impact:  2/10 max
-// Unverified:       48
+// Unverified:       49
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -989,7 +989,7 @@ public sealed class SliceTokenizer
     /// on strictness, strictness is the validator's, and a tokenizer that knew about strictness
     /// would be the ambient parse state this component removed.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=730FCD
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=7D4324
     // Broiler-Falsified-If: the value this produces differs from the language's MV for the same literal text
     // Broiler-Human:        PENDING
     private SliceToken ReadNumericLiteral(int startLine, int startColumn, bool sawNewline)
@@ -1084,6 +1084,15 @@ public sealed class SliceTokenizer
                     }
 
                     return FinishNumeric(start, value, legacyOctal, startLine, startColumn, sawNewline);
+                }
+
+                // A ZERO-LED LITERAL WITH AN 8 OR A 9 IS A NonOctalDecimalIntegerLiteral: decimal
+                // in value, and as forbidden in strict code as a legacy octal (12.9.3.1). It is
+                // flagged the same way so the parser refuses it there; until 2026-10-03 `08` was
+                // admitted in strict code (JSC-253).
+                if (!octal)
+                {
+                    legacyOctal = true;
                 }
             }
 
@@ -1471,11 +1480,12 @@ public sealed class SliceTokenizer
     /// <b>A contextual keyword before a slash is a name.</b> <c>get</c>, <c>set</c>, <c>async</c>,
     /// <c>static</c> and <c>let</c> followed by <c>/</c> begin nothing as keywords, so they are
     /// values, and <c>of</c> is the keyword only where a <c>for</c> head's binding precedes it.
-    /// <c>yield</c> and <c>await</c> stay operators, which is what they are where they are most
-    /// often written.
+    /// <c>yield</c> is an operator inside a generator's body and a name elsewhere, which the
+    /// tracked brackets also tell (JSC-253); <c>await</c> stays an operator, which is what it is
+    /// where it is most often written.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6F6D1D
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=EC67B9
     // Broiler-Falsified-If: a division after a value is read as a regular expression, or a literal after an operator is read as a division
     // Broiler-Human:        PENDING
     private bool RegularExpressionIsAllowedHere()
@@ -1497,6 +1507,7 @@ public sealed class SliceTokenizer
             SliceTokenKind.Let or SliceTokenKind.ReservedWord => false,
             SliceTokenKind.CloseParen or SliceTokenKind.CloseBrace or SliceTokenKind.Of =>
                 previousOpensLiteral,
+            SliceTokenKind.Yield => InGenerator(),
             _ => true,
         };
     }
@@ -1539,6 +1550,16 @@ public sealed class SliceTokenizer
         // Broiler-Human:        PENDING
         internal bool EndsStatement;
 
+        /// <summary>Whether it is a function's body, or its parameter list.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=8D7ADB
+        // Broiler-Human:        PENDING
+        internal bool FunctionBody;
+
+        /// <summary>Whether that function is a generator, where `yield` is an operator.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D5319E
+        // Broiler-Human:        PENDING
+        internal bool Generator;
+
         /// <summary>How many <c>?</c> inside it still wait for their <c>:</c>.</summary>
         // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4277BF
         // Broiler-Human:        PENDING
@@ -1560,9 +1581,9 @@ public sealed class SliceTokenizer
     /// Where a <c>function</c> keyword waits for its parameter list: the depth it was read at,
     /// or -1, and whether it began a statement.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=AE78EA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=FBA29E
     // Broiler-Human:        PENDING
-    private (int Depth, bool Declaration) pendingFunction = (-1, false);
+    private (int Depth, bool Declaration, bool Generator) pendingFunction = (-1, false, false);
 
     /// <summary>The same for a <c>class</c> keyword waiting for its body.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4A7ACD
@@ -1573,6 +1594,11 @@ public sealed class SliceTokenizer
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E89AB4
     // Broiler-Human:        PENDING
     private int closedParameters;
+
+    /// <summary>Whether the parameter list the previous token closed was a generator's.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DF798F
+    // Broiler-Human:        PENDING
+    private bool closedGenerator;
 
     /// <summary>Whether <c>async</c>, when it was read, stood where a statement begins.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=AFA3B8
@@ -1599,12 +1625,14 @@ public sealed class SliceTokenizer
     /// this tokenizer did before: a refusal, never a different program that runs.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=727C1D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CF28B3
     // Broiler-Falsified-If: a slash after an object literal or a function expression is read as a regular expression
     // Broiler-Human:        PENDING
     private void Follow(SliceToken token)
     {
         var parameters = closedParameters;
+        var generator = closedGenerator;
+        closedGenerator = false;
         var afterPrevious = previousOpensLiteral;
         var top = openings.Count - 1;
 
@@ -1616,8 +1644,14 @@ public sealed class SliceTokenizer
             case SliceTokenKind.OpenParen:
                 if (pendingFunction.Depth == openings.Count)
                 {
-                    openings.Add(new Opening { Parameters = true, EndsStatement = pendingFunction.Declaration });
-                    pendingFunction = (-1, false);
+                    openings.Add(new Opening
+                    {
+                        Parameters = true,
+                        EndsStatement = pendingFunction.Declaration,
+                        Generator = pendingFunction.Generator,
+                    });
+
+                    pendingFunction = (-1, false, false);
                 }
                 else
                 {
@@ -1634,7 +1668,7 @@ public sealed class SliceTokenizer
                 return;
 
             case SliceTokenKind.OpenBrace:
-                openings.Add(OpeningForBrace(parameters, afterPrevious));
+                openings.Add(OpeningForBrace(parameters, generator, afterPrevious));
                 return;
 
             case SliceTokenKind.CloseParen or SliceTokenKind.CloseBracket or SliceTokenKind.CloseBrace:
@@ -1648,7 +1682,7 @@ public sealed class SliceTokenizer
 
                 if (pendingFunction.Depth > openings.Count)
                 {
-                    pendingFunction = (-1, false);
+                    pendingFunction = (-1, false, false);
                 }
 
                 if (pendingClass.Depth > openings.Count)
@@ -1660,6 +1694,7 @@ public sealed class SliceTokenizer
                 {
                     previousOpensLiteral = closed.Head;
                     closedParameters = closed.Parameters ? (closed.EndsStatement ? 2 : 1) : 0;
+                    closedGenerator = closed.Parameters && closed.Generator;
                 }
                 else if (token.Kind == SliceTokenKind.CloseBrace)
                 {
@@ -1696,7 +1731,7 @@ public sealed class SliceTokenizer
                         ? asyncBeganStatement
                         : BeginsStatement(token, afterPrevious);
 
-                    pendingFunction = (openings.Count, declaration);
+                    pendingFunction = (openings.Count, declaration, false);
                 }
 
                 return;
@@ -1705,6 +1740,25 @@ public sealed class SliceTokenizer
                 if (previous.Kind is not (SliceTokenKind.Dot or SliceTokenKind.QuestionDot))
                 {
                     pendingClass = (openings.Count, BeginsStatement(token, afterPrevious));
+                }
+
+                return;
+
+            case SliceTokenKind.Star:
+                // `function*` marks the function waiting for its parameters as a generator, and a
+                // `*` at the head of an object or class member - after `{`, `,`, `;`, `}`, `static`
+                // or `async` in a brace that holds no statements - begins a generator method,
+                // whose parameter list is the next `(` at this depth.
+                if (previous.Kind == SliceTokenKind.Function && pendingFunction.Depth == openings.Count)
+                {
+                    pendingFunction = pendingFunction with { Generator = true };
+                }
+                else if (openings[top] is { Brace: true, Statements: false } &&
+                    previous.Kind is SliceTokenKind.OpenBrace or SliceTokenKind.Comma or
+                        SliceTokenKind.Semicolon or SliceTokenKind.CloseBrace or SliceTokenKind.Static or
+                        SliceTokenKind.Async)
+                {
+                    pendingFunction = (openings.Count, false, true);
                 }
 
                 return;
@@ -1720,13 +1774,20 @@ public sealed class SliceTokenizer
     }
 
     /// <summary>What the <c>{</c> about to be read opens, by what precedes it.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CEEFEA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7BFE00
     // Broiler-Human:        PENDING
-    private Opening OpeningForBrace(int parameters, bool afterPrevious)
+    private Opening OpeningForBrace(int parameters, bool generator, bool afterPrevious)
     {
         if (parameters != 0)
         {
-            return new Opening { Brace = true, Statements = true, EndsStatement = parameters == 2 };
+            return new Opening
+            {
+                Brace = true,
+                Statements = true,
+                EndsStatement = parameters == 2,
+                FunctionBody = true,
+                Generator = generator,
+            };
         }
 
         if (pendingClass.Depth == openings.Count)
@@ -1739,7 +1800,7 @@ public sealed class SliceTokenizer
 
         if (previous.Kind == SliceTokenKind.EqualsGreaterThan)
         {
-            return new Opening { Brace = true, Statements = true };
+            return new Opening { Brace = true, Statements = true, FunctionBody = true };
         }
 
         return OpensBlock(afterPrevious)
@@ -1793,6 +1854,26 @@ public sealed class SliceTokenizer
             SliceTokenKind.Colon => inside.Statements && inside.Conditionals == 0,
             _ => token.PrecededByLineTerminator && inside.Statements && EndsValue(previous.Kind),
         };
+    }
+
+    /// <summary>
+    /// Whether the innermost function body around the current token is a generator's, which is
+    /// where `yield` is an operator and a `/` after it opens a literal. Outside one, `yield` is a
+    /// name in sloppy code and `yield / 2` divides (JSC-253).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A4D1F5
+    // Broiler-Human:        PENDING
+    private bool InGenerator()
+    {
+        for (var at = openings.Count - 1; at >= 0; at--)
+        {
+            if (openings[at].FunctionBody)
+            {
+                return openings[at].Generator;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>Whether a token of <paramref name="kind"/> can end an expression.</summary>
@@ -2175,7 +2256,7 @@ public sealed class SliceTokenizer
     /// silently turn an unsigned right shift into two comparisons, which is a program that parses
     /// and means something else.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E57116
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=14CEA5
     // Broiler-Falsified-If: a shorter punctuator is matched where a longer one starting at the same character exists
     // Broiler-Human:        PENDING
     private SliceToken ReadPunctuator(int startLine, int startColumn, bool sawNewline)
@@ -2185,6 +2266,15 @@ public sealed class SliceTokenizer
             if (index + text.Length <= source.Length &&
                 string.CompareOrdinal(source, index, text, 0, text.Length) == 0)
             {
+                // `?.` IS NOT THE PUNCTUATOR BEFORE A DIGIT: `a ?.5 : b` is a conditional over the
+                // number `.5` (12.8, OptionalChainingPunctuator :: ?. [lookahead ∉ DecimalDigit]).
+                // Until 2026-10-03 it was read as a chain (JSC-253).
+                if (kind == SliceTokenKind.QuestionDot && index + 2 < source.Length &&
+                    char.IsAsciiDigit(source[index + 2]))
+                {
+                    continue;
+                }
+
                 index += text.Length;
 
                 return new SliceToken(

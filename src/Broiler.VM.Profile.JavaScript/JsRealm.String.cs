@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   24
-// Annotated:        24/24
+// Relevant units:   25
+// Annotated:        25/25
 // Exempt:           0
-// Human-reviewed:   0/24
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  4/10 max
-// Unverified:       24
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -56,7 +56,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=96148A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5BE062
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -186,7 +186,7 @@ internal sealed partial class JsRealm
         Method(prototype, "toString", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.String(StringThis(engine, thisValue));
+            return JsValue.String(StringThisValue(engine, thisValue, "toString"));
         });
 
         // `normalize` IS THE UNICODE NORMALIZATION OF THE STRING'S CODE POINTS, read from the
@@ -218,7 +218,7 @@ internal sealed partial class JsRealm
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return JsValue.String(StringThis(engine, thisValue));
+            return JsValue.String(StringThisValue(engine, thisValue, "valueOf"));
         });
 
         Method(prototype, "charAt", 1, static (engine, thisValue, arguments) =>
@@ -1462,5 +1462,32 @@ internal sealed partial class JsRealm
         }
 
         return builder.ToString();
+    }
+
+    /// <summary>
+    /// The specification's <c>thisStringValue</c>: a String, or the String a String wrapper holds,
+    /// and a <c>TypeError</c> for anything else.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>toString</c> and <c>valueOf</c> do not coerce</b>, unlike every other member of
+    /// <c>String.prototype</c>: an object with its own <c>toString</c> is not a String. Until
+    /// 2026-10-03 both coerced their receiver (JSC-252).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1BB13F
+    // Broiler-Human:        PENDING
+    private static string StringThisValue(JsEngine engine, JsValue value, string member)
+    {
+        if (value.IsString)
+        {
+            return value.AsString();
+        }
+
+        if (value.AsObjectOrNull() is JsPrimitiveWrapper wrapper && wrapper.Primitive.IsString)
+        {
+            return wrapper.Primitive.AsString();
+        }
+
+        throw engine.Error(
+            "TypeError", "String.prototype." + member + " requires that 'this' be a String");
     }
 }
