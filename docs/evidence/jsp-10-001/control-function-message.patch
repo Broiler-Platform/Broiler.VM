@@ -1,0 +1,16 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
+index 9726282..f25f3d8 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
+@@ -31,8 +31,9 @@ internal sealed partial class JsRealm
+     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=ABA5F0
+     // Broiler-Human:        PENDING
+     private const string FunctionConstructorRefusal =
+-        "Function: this realm's composition did not admit broiler.javascript.dynamic, so no " +
+-        "source is turned into code at run time";
++        "Function: the broiler.javascript.wide manifest does not admit the Function constructor, " +
++        "because this profile declares no guest-initiated load and cannot turn source into code " +
++        "at run time";
+ 
+     /// <summary>
+     /// <c>Function.prototype[Symbol.hasInstance]</c>, which <c>instanceof</c> recognises so that the

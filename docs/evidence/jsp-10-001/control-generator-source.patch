@@ -1,0 +1,15 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Generator.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Generator.cs
+index f5a4382..0dd0792 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Generator.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Generator.cs
+@@ -124,8 +124,8 @@ internal sealed partial class JsRealm
+             GlobalFunctionConstructor(),
+             "GeneratorFunction",
+             1,
+-            static (engine, thisValue, arguments) => FromSourceOrRefuse(engine, arguments, "function*", GeneratorFunctionRefusal),
+-            static (engine, thisValue, arguments) => FromSourceOrRefuse(engine, arguments, "function*", GeneratorFunctionRefusal));
++            static (engine, thisValue, arguments) => engine.ThrowTypeError(GeneratorFunctionRefusal),
++            static (engine, thisValue, arguments) => engine.ThrowTypeError(GeneratorFunctionRefusal));
+ 
+         constructor.SetOwnProperty(
+             "prototype",
