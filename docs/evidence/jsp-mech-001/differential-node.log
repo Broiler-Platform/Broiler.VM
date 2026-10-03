@@ -1,0 +1,6 @@
+# comparison engine v22.22.0
+# 214 findings on the base, 212 on the change
+# added by the change: 0
+# removed by the change: 2
+  the-general-surface.js: undeclared divergence node/295: host='""', comparison='"dyn"'
+  the-general-surface.js: undeclared divergence node/301: host='""', comparison='"[tag]"'

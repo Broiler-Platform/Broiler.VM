@@ -1,0 +1,32 @@
+# comparison engine v22.22.0
+runs/apply-reads-its-length-with-tolength.js  [same] agrees as declared
+  host   exit 0: -Infinity / 1 / 2 / RangeError
+  engine exit 0: -Infinity / 1 / 2 / RangeError
+runs/a-super-key-converted-once.js  [differs] agrees as declared
+  host   exit 0: compound 11:1 / update 2:1 / logical 2:1 / nullish 2:1 / plain 12:4 / base 2
+  engine exit 0: compound 11:2 / update 2:2 / logical 2:1 / nullish 2:1 / plain 12:6 / base -99
+runs/delete-through-a-primitive-base.js  [same] agrees as declared
+  host   exit 0: false / false / true / true / true / TypeError / TypeError / TypeError
+  engine exit 0: false / false / true / true / true / TypeError / TypeError / TypeError
+runs/a-for-in-that-observes-deletion.js  [differs] agrees as declared
+  host   exit 0: a,c / a / a,c / a
+  engine exit 0: a,c / a / a,b,c / a
+runs/a-string-object-keeps-its-own-keys.js  [same] agrees as declared
+  host   exit 0: 0,1,length / 0,1,5,7,length,x / 6 / TypeError
+  engine exit 0: 0,1,length / 0,1,5,7,length,x / 6 / TypeError
+runs/a-collection-subclass-uses-its-own-adder.js  [same] agrees as declared
+  host   exit 0: map 1 / map 2 / set 3 / weakmap 4 / weakset object / true
+  engine exit 0: map 1 / map 2 / set 3 / weakmap 4 / weakset object / true
+runs/a-symbol-held-weakly.js  [same] agrees as declared
+  host   exit 0: value / false / true / false / true / true / true / TypeError / TypeError / TypeError / TypeError
+  engine exit 0: value / false / true / false / true / true / true / TypeError / TypeError / TypeError / TypeError
+runs/function-prototype-has-instance.js  [same] agrees as declared
+  host   exit 0: function / false,false,false / [Symbol.hasInstance] / 1 / true / false / true
+  engine exit 0: function / false,false,false / [Symbol.hasInstance] / 1 / true / false / true
+runs/an-object-spread-copies-symbol-keys.js  [same] agrees as declared
+  host   exit 0: spread / false / spread / 2 / Symbol(tag)
+  engine exit 0: spread / false / spread / 2 / Symbol(tag)
+runs/a-function-named-by-a-computed-key-or-a-field.js  [same] agrees as declared
+  host   exit 0: computed / [sym] / arrow / key value / field / arrow / #hidden / shared / computed / [sym] / counted 1
+  engine exit 0: computed / [sym] / arrow / key value / field / arrow / #hidden / shared / computed / [sym] / counted 1
+# 0 of 10 fixtures do not agree as declared
