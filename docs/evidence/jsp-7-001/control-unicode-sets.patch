@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs
+index 3901e96..d50e388 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs
+@@ -343,7 +343,6 @@ internal sealed partial class JsRealm
+         // THE `v` FLAG'S ACCESSOR EXISTS THOUGH THE FLAG IS REFUSED (JSP-7, JSC-239): it is a member
+         // of the edition, and its absence was a surface missing without a word. It answers `false`
+         // for every RegExp, since none here can carry `v`, and `undefined` for the prototype.
+-        RegExpFlagGetter(prototype, "unicodeSets", 'v');
+         RegExpFlagGetter(prototype, "sticky", 'y');
+ 
+         // ANNEX B'S `compile` RE-INITIALISES THE RECEIVER IN PLACE (JSP-7, JSC-239): a RegExp

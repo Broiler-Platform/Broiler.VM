@@ -1,0 +1,23 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Base64.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Base64.cs
+index bf713d4..b6e7a93 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Base64.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Base64.cs
+@@ -285,14 +285,14 @@ internal sealed partial class JsRealm
+     // Broiler-Human:        PENDING
+     private JsValue Base64Settle(JsEngine engine, JsTypedArray into, Base64Result result)
+     {
+-        if (into.Buffer.Data is { } data)
++        if (result.Error is { } error)
+         {
+-            result.Bytes.CopyTo(data, into.ByteOffset);
++            throw engine.Error("SyntaxError", error);
+         }
+ 
+-        if (result.Error is { } error)
++        if (into.Buffer.Data is { } data)
+         {
+-            throw engine.Error("SyntaxError", error);
++            result.Bytes.CopyTo(data, into.ByteOffset);
+         }
+ 
+         var answer = new JsObject(ObjectPrototype);

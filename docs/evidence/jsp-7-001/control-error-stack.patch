@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs
+index caac194..86c2921 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs
+@@ -52,6 +52,7 @@ internal sealed partial class JsRealm
+ 
+         basePrototype.DefineBuiltIn("name", JsValue.String("Error"));
+         basePrototype.DefineBuiltIn("message", JsValue.String(string.Empty));
++        basePrototype.DefineBuiltIn("stack", JsValue.String(string.Empty));
+ 
+         Method(basePrototype, "toString", 0, static (engine, thisValue, _) =>
+         {

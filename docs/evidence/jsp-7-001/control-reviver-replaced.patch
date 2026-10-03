@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs
+index 84795ca..1a2b0c4 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs
+@@ -757,7 +757,7 @@ internal sealed partial class JsRealm
+         // replaced has no source, and neither have its members.
+         var context = new JsObject(engine.Realm.ObjectPrototype);
+ 
+-        if (record is not null && ObjectSameValue(record.Value, value))
++        if (record is not null)
+         {
+             if (!value.IsObject)
+             {

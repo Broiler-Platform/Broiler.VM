@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 581c036..51dfc6d 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -792,7 +792,7 @@ public sealed class JsCompiler
+             var first = diagnostics.Count;
+             var tokenizer = new SliceTokenizer(script.Text)
+             {
+-                HtmlLikeComments = script.Options.Goal != SliceGoal.Module,
++                HtmlLikeComments = false,
+             };
+ 
+             var tokens = tokenizer.Tokenize();

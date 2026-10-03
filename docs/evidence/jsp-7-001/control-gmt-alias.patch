@@ -1,0 +1,17 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs
+index 68b2448..22fc8f1 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs
+@@ -249,9 +249,9 @@ internal sealed partial class JsRealm
+         // ANNEX B'S `toGMTString` IS `toUTCString` ITSELF, the same function object (JSP-7, JSC-239).
+         _ = DatePrototype.TryGetOwnProperty("toUTCString", out var utcText);
+ 
+-        DatePrototype.SetOwnProperty(
+-            "toGMTString",
+-            JsProperty.Data(utcText.Value, JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
++        Method(DatePrototype, "toGMTString", 0, static (engine, thisValue, arguments) =>
++            JsValue.String(DateToUtcText(DateReceiver(engine, thisValue).TimeValue)));
++        _ = utcText;
+ 
+         // ANNEX B'S TWO-DIGIT YEAR PAIR (JSP-7, JSC-239). `getYear` is the local year less 1900;
+         // `setYear` reads 0 to 99 as 1900 to 1999 and any other year as itself, starting from +0

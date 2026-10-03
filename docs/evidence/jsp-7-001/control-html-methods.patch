@@ -1,0 +1,14 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs
+index 33ada53..6d732ec 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs
+@@ -516,8 +516,7 @@ internal sealed partial class JsRealm
+             ("strike", "strike", ""), ("sub", "sub", ""), ("sup", "sup", ""),
+         })
+         {
+-            Method(prototype, name, attribute.Length == 0 ? 0 : 1, (engine, thisValue, arguments) =>
+-                JsValue.String(StringCreateHtml(engine, thisValue, tag, attribute, ArgOfString(arguments, 0))));
++            _ = name;
+         }
+ 
+         Method(prototype, "split", 2, static (engine, thisValue, arguments) =>
