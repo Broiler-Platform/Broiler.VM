@@ -1,0 +1,37 @@
+$ git apply docs/evidence/jsp-2-001/control-json.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+VM.Profile.MachineCode.dll
+  Broiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.80
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-2.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 5 command lines from artifacts/jsp-2-001/jsp-2.expected.txt
+FAIL runs/a-bigint-is-not-a-number.js: output does not contain `bigint / object / TypeError / TypeError / TypeError / false / true / true / true / true / true / 18446744073709551617 / true / 9007199254740993 / 9007199254740992 / TypeError / 255 / 15 / 5 / 9007199254740993 / -9223372036854775808 / 2 / -2 / 1180591620717411303424 / -1 / 255`
+       bigint / object / TypeError / TypeError / TypeError / false / true / true / true / true / true / 18446744073709551617 / true / 9007199254740993 / 9007199254740992 / {"a":null} / 255 / 15 / 5 / 9007199254740993 / -9223372036854775808 / 2 / -2 / 1180591620717411303424 / -1 / 255
+ok   --slice --check refused/a-bigint-literal-under-a-narrow-manifest.js
+ok   --numeric --check refused/a-bigint-literal-under-a-narrow-manifest.js
+ok   --numeric refused/a-bigint-literal-under-a-narrow-manifest.js
+ok   refused/a-bigint-literal-under-a-narrow-manifest.js
+# 1 of 5 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-2-001/control-json.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+le.JavaScript.Compiler.dll
+  Broiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.89
+# exit 0

@@ -1,0 +1,36 @@
+$ git apply docs/evidence/jsp-2-001/control-slice-literal.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Runtime -> <root>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.82
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-2.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 5 command lines from artifacts/jsp-2-001/jsp-2.expected.txt
+ok   runs/a-bigint-is-not-a-number.js
+FAIL --slice --check refused/a-bigint-literal-under-a-narrow-manifest.js: exit 0, expected 3; output does not contain `2104:ConstructOutsideManifest at 4:1: the construct BigInt is not admitted`
+ok   --numeric --check refused/a-bigint-literal-under-a-narrow-manifest.js
+ok   --numeric refused/a-bigint-literal-under-a-narrow-manifest.js
+ok   refused/a-bigint-literal-under-a-narrow-manifest.js
+# 1 of 5 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-2-001/control-slice-literal.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Runtime -> <root>/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.76
+# exit 0
