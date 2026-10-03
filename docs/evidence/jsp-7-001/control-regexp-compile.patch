@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs
+index 3901e96..e9b69ae 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs
+@@ -388,7 +388,6 @@ internal sealed partial class JsRealm
+                 return engine.ThrowTypeError("Cannot assign to read only property 'lastIndex'");
+             }
+ 
+-            target.LastIndex = JsValue.Number(0);
+             return thisValue;
+         });
+ 

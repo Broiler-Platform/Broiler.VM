@@ -58,7 +58,7 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds <c>Reflect</c> and defines it on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5BFEE7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6CBA7D
     // Broiler-Human:        PENDING
     private void SetupReflect()
     {
@@ -73,7 +73,7 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var target = ReflectTarget(engine, arguments, "get");
-            var key = ArgOfReflect(arguments, 1);
+            var key = engine.ToPropertyKeyValue(ArgOfReflect(arguments, 1));
 
             // THE RECEIVER IS A THIRD ARGUMENT AND IT IS THE POINT OF THIS FUNCTION. A getter
             // inherited from a prototype runs with `this` bound to whatever the caller names, which
@@ -90,7 +90,7 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var target = ReflectTarget(engine, arguments, "set");
-            var key = ArgOfReflect(arguments, 1);
+            var key = engine.ToPropertyKeyValue(ArgOfReflect(arguments, 1));
             var value = ArgOfReflect(arguments, 2);
             var receiver = arguments.Length > 3 ? arguments[3] : JsValue.Object(target);
 
@@ -107,7 +107,7 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var target = ReflectTarget(engine, arguments, "has");
-            var key = ArgOfReflect(arguments, 1);
+            var key = engine.ToPropertyKeyValue(ArgOfReflect(arguments, 1));
 
             return JsValue.Boolean(
                 key.IsSymbol
@@ -119,7 +119,7 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var target = ReflectTarget(engine, arguments, "deleteProperty");
-            var key = ArgOfReflect(arguments, 1);
+            var key = engine.ToPropertyKeyValue(ArgOfReflect(arguments, 1));
 
             return JsValue.Boolean(
                 key.IsSymbol
@@ -212,7 +212,7 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var target = ReflectTarget(engine, arguments, "defineProperty");
-            var key = ArgOfReflect(arguments, 1);
+            var key = engine.ToPropertyKeyValue(ArgOfReflect(arguments, 1));
 
             // THE KEY AND THE DESCRIPTOR ARE READ FIRST. Both can run guest code - a `toString` on
             // the key, a getter on the descriptor - and an exception from THAT is the program's own,
@@ -233,7 +233,7 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var target = ReflectTarget(engine, arguments, "getOwnPropertyDescriptor");
-            var key = ArgOfReflect(arguments, 1);
+            var key = engine.ToPropertyKeyValue(ArgOfReflect(arguments, 1));
 
             if (key.IsSymbol)
             {

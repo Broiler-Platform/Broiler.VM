@@ -113,3 +113,32 @@ marks the descriptor row provisional and names JS-5.
   comparison, array copy and sort, property enumeration, regular-expression matching, numeric
   conversion of large values, structured cloning. **An operation family without a proportionality
   fixture does not ship in the increment.**
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: record the four measured numbers the descriptor already carries, and settle the
+default instruction allowance.**
+
+- **The four `MEASURED` rows have values in the descriptor** (`JavaScriptProfile.cs` at `caef66a`):
+  `CallDepth` 6,144 by default and 8,192 at most, `MaxUnchargedWork` 65,536, `ChargingGranularity` 1,
+  `CancellationPollBound` 65,536. Amend the table to carry them with the measurement each was
+  derived from, so this record and the descriptor agree.
+- **Default `Fuel`: raise the default from 50,000,000 to 200,000,000 instructions.** The parity
+  roadmap (JSP-10) records that an ordinary three-million-iteration loop spends the current default.
+  Measured at `caef66a` on the collection machine (Release, the interpreter): a plain accumulation
+  loop costs about 19 instructions per iteration, so three million iterations need between 55 and 60
+  million, and ten million iterations (about 190 million instructions) take 7.7 s. 200 million is
+  about 8 s there, so the two defaults bind at about the same point: a loop of ten million
+  iterations completes, and the 10,000 ms wall-clock default stays the backstop a runaway script
+  meets. A figure much higher (a billion, say) would simply hand the decision to the wall clock,
+  which varies by machine where fuel does not. The hard maximum is unchanged. This is the one
+  decision JSP-10 leaves to this record.
+- **Keep `NestedLoadDepth` at 4** for the neighbour reason the record gives, and keep every other
+  default.
+- **The cross-profile reconciliation** (a host adopting defaults gets the tightest in the catalog)
+  stays with the component that composes profiles, which does not exist yet; the ledger already
+  carries it as an open dependency.

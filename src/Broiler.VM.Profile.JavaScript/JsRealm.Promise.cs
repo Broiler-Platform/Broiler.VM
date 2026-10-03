@@ -837,7 +837,7 @@ internal sealed partial class JsRealm
     /// write <c>Promise.all(x).catch(h)</c> without also wrapping the call in a <c>try</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B41595
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7E5270
     // Broiler-Human:        PENDING
     private JsValue PromiseCombine(
         JsEngine engine, JsValue constructor, JsValue source, JsPromiseCombination shape)
@@ -998,7 +998,11 @@ internal sealed partial class JsRealm
                     ? capability.Reject
                     : JsValue.Object(onReject);
 
-                var fulfilSide = shape == JsPromiseCombination.Race
+                // `any` hands its fulfilment side the capability's `resolve` as well (27.2.4.3.1
+                // step 8.i): the first element to fulfil settles the promise, and a custom
+                // capability sees every call. Until 2026-10-03 it was a once-only wrapper
+                // (JSC-252).
+                var fulfilSide = shape is JsPromiseCombination.Race or JsPromiseCombination.Any
                     ? capability.Resolve
                     : JsValue.Object(onFulfil);
 

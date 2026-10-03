@@ -1,0 +1,21 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 4184154..5cd29b1 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -9556,14 +9556,8 @@ public sealed class JsCompiler
+     // Broiler-Human:        PENDING
+     private void EmitSuperReadKeepingKey(JsSuperMemberExpression member)
+     {
+-        if (member.Computed is null)
+-        {
+-            Emit(JsOpcode.Duplicate);
+-            Emit(JsOpcode.LoadSuperProperty);
+-            return;
+-        }
+-
+-        Emit(JsOpcode.LoadSuperPropertyKeepKey);
++        Emit(JsOpcode.Duplicate);
++        Emit(JsOpcode.LoadSuperProperty);
+     }
+ 
+     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2E5F93

@@ -3,6 +3,12 @@
 
 # The backend roadmap — what a second and third output form would take
 
+**Where this document stands, 2026-10-03.** JSB-4, JSB-5 and JSB-6 are implemented in this
+checkout; JSB-2, JSB-3 and JSB-7 to JSB-11 are partly implemented; JSB-1 and JSB-12 are not
+started; none is accepted. The plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile) runs the remainder as a performance track beside the
+feature phases, meeting them at the release
+([JSC-251](roadmap.corrections.md#jsc-251)).
+
 **What this document is.** A design analysis and a proposed programme for one objective: that a
 JavaScript program this profile's front end compiles can be compiled to an artifact whose payload is
 **machine code** and executed in this process. It is written against the front end, the format and

@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 2620b60..34574e4 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -2182,7 +2182,7 @@ public sealed class JsCompiler
+         // rest was lowered anyway, and the verifier refused the artifact this host produced, which
+         // is the exit the host reserves for its own defects. It is refused here instead, naming the
+         // ceiling, at the function *(corrected: JSC-240)*.
+-        if (ExpectedArgumentCount(function.Parameters) is > (int)JsFormat.CeilingCallArguments and var arity)
++        if (ExpectedArgumentCount(function.Parameters) is > (int)JsFormat.CeilingCallArguments and var arity && arity < 0)
+         {
+             Refuse(
+                 function.Span,

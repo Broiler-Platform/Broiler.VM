@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs
+index deedce7..3a392a7 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs
+@@ -159,7 +159,6 @@ internal sealed partial class JsRealm
+         SetupTypedArrayIteration();
+         SetupTypedArrayLaterAdditions();
+         SetupTypedArrayConstructors();
+-        SetupUint8ArrayCodecs();
+         SetupBinaryTags();
+     }
+ 

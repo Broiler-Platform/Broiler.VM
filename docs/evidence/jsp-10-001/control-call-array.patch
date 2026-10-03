@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 2620b60..b9c1941 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -9526,7 +9526,7 @@ public sealed class JsCompiler
+         // call made the evaluation a silent global one; `CallEvalSpread` gets the answer
+         // `CallEval` gets at the same site, which is a direct evaluation or the explicit refusal
+         // (JSD-0026 step 1).
+-        if (CarriesArgumentsInAnArray(call.Arguments))
++        if (HasSpread(call.Arguments))
+         {
+             CompileArgumentArray(call.Arguments);
+ 

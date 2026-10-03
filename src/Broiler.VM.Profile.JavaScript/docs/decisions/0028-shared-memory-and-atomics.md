@@ -290,3 +290,37 @@ deciding, and it should not be designed before D03 is decided.
 - **`WorkerRealms` is declared for the VM provider with a transport that aliases bytes** rather
   than copying or transferring them. That would be shared memory arriving without the gates in
   section 5.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the record as written.**
+
+- **Keep the exclusion as a pair.** Nothing in section 2 can be tested without a second agent, and
+  the reopening conditions in section 5 are the right gate: a second agent shipped (JSH-7, I17), a
+  recorded workload or embedder need, and a successor record answering sections 2.1 to 2.6.
+- **Do not take the `Atomics`-alone option**, even though it is the cheapest step section 3 names.
+  It would split an exclusion recorded as a pair in every inventory, for argument-validation test
+  rows and nothing a program can use.
+- **Signing changes nothing in the tree.** What it adds is a binding reopening rule, so a later
+  slice cannot add the globals as stubs without a record — which is exactly what this record's
+  falsifiers guard.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **The exclusion in section 4 is not taken.** Shared memory is scheduled as phase F6 of the plan's
+  [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), after the agent model: a second agent is built first, which is the first of section 5's
+  reopening conditions, and a successor record answers sections 2.1 to 2.6 before any global
+  appears.
+- **The slices are unchanged and become the phase's second half**: S1 to S5, under a new identity,
+  `broiler.javascript.shared`, which is never folded into `broiler.javascript.binary`.
+- **What a program meets today does not change** until S4; the two names stay in the ledger's
+  `absent-globals` block and in the CLI row that pins them until the change that publishes them.

@@ -999,6 +999,16 @@
       "witness": "witnesses/register/N24-a-document-says-a-present-global-is-absent.md.witness"
     },
     {
+      "id": "N25",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "No type in any of the JavaScript profile's product assemblies declares a finalizer: no destructor and no parameterless method named Finalize. A finalizer runs on the collector's thread at a moment no guest or host chose, outside the step that owns the realm and outside every budget the meter charges; decision JSD-0011's Row 2 keeps the profile's references rooted by the realm alone, and decision JSD-0029 rests its optional FinalizationRegistry cleanup model on guest-reachable work never running from one. JSD-0029's recommendation of 2026-10-03 asks for the rule ahead of the model, since it costs nothing and puts that claim under test while the model stays unscheduled.",
+      "evidence": "The JavaScript profile's product assemblies, read as Roslyn declarations; witnesses/register/N25-a-profile-type-that-declares-a-finalizer.cs.witness",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Each of the profile's product assemblies has to be represented and the file holding the FinalizationRegistry has to be among the sources by name before the empty result is read. The rejecting direction is a witness declaring a destructor and a Finalize method, and naming both again in a comment and a string literal, and exactly the two declarations are reported.",
+      "witness": "witnesses/register/N25-a-profile-type-that-declares-a-finalizer.cs.witness"
+    },
+    {
       "id": "W1",
       "owningAdr": "0011",
       "status": "Active",

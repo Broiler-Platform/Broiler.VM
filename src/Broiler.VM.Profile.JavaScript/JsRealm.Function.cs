@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   7
-// Annotated:        7/7
-// Exempt:           0
-// Human-reviewed:   0/7
+// Relevant units:   8
+// Annotated:        8/8
+// Exempt:           1
+// Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       7
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -28,15 +28,22 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>What a call or a construction of <c>Function</c> is told, and why.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1F0493
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=ABA5F0
     // Broiler-Human:        PENDING
     private const string FunctionConstructorRefusal =
-        "Function: the broiler.javascript.wide manifest does not admit the Function constructor, " +
-        "because this profile declares no guest-initiated load and cannot turn source into code " +
-        "at run time";
+        "Function: this realm's composition did not admit broiler.javascript.dynamic, so no " +
+        "source is turned into code at run time";
+
+    /// <summary>
+    /// <c>Function.prototype[Symbol.hasInstance]</c>, which <c>instanceof</c> recognises so that the
+    /// common case calls nothing.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2017DA
+    // Broiler-Human:        PENDING
+    internal JsObject HasInstanceFunction { get; private set; } = null!;
 
     /// <summary>Builds <c>Function.prototype</c>'s members and the refused <c>Function</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7F9B73
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C3BB29
     // Broiler-Human:        PENDING
     private void SetupFunction()
     {
@@ -101,16 +108,26 @@ internal sealed partial class JsRealm
             // THE BOUND FUNCTION'S ARITY IS THE TARGET'S MINUS WHAT WAS ALREADY SUPPLIED, floored
             // at zero. The target's `length` is read as a property rather than taken from the
             // function object, because a redefined `length` is what the specification reads and a
-            // bound-of-a-bound has to see the first binding's answer.
-            var declared = engine.GetProperty(thisValue, "length");
+            // bound-of-a-bound has to see the first binding's answer. Only an OWN `length` counts,
+            // and the answer is a Number, not an int: an infinite length stays infinite and one past
+            // 2^31 is kept, where both were clamped until 2026-10-03 (JSC-249).
+            var length = 0.0;
 
-            var remaining =
-                (declared.IsNumber ? JsValue.ToInteger(declared.AsNumber()) : 0) -
-                boundArguments.Length;
+            if (target.HasOwnProperty("length"))
+            {
+                var declared = engine.GetProperty(thisValue, "length");
 
-            var arity = remaining <= 0
-                ? 0
-                : remaining >= int.MaxValue ? int.MaxValue : (int)remaining;
+                if (declared.IsNumber)
+                {
+                    var number = declared.AsNumber();
+
+                    length = double.IsPositiveInfinity(number)
+                        ? double.PositiveInfinity
+                        : System.Math.Max(0, JsValue.ToInteger(number) - boundArguments.Length);
+                }
+            }
+
+            var arity = length >= int.MaxValue ? int.MaxValue : (int)length;
 
             var targetName = engine.GetProperty(thisValue, "name");
 
@@ -122,7 +139,7 @@ internal sealed partial class JsRealm
             };
 
             bound.SetOwnProperty(
-                "length", JsProperty.Data(JsValue.Number(arity), JsPropertyAttributes.Configurable));
+                "length", JsProperty.Data(JsValue.Number(length), JsPropertyAttributes.Configurable));
 
             bound.SetOwnProperty(
                 "name",
@@ -132,6 +149,19 @@ internal sealed partial class JsRealm
             return JsValue.Object(bound);
         });
 
+        // `Function.prototype[Symbol.hasInstance]` IS `OrdinaryHasInstance`, AND NOTHING MAY CHANGE
+        // IT (JSP-6, JSC-238). It is neither writable nor configurable, so a program cannot change
+        // what `instanceof` means for every function in the realm by assigning to it - which,
+        // absent, it could, since an assignment then created the property on the prototype every
+        // function inherits from. A constructor's own `Symbol.hasInstance` still shadows it.
+        var hasInstance = Native("[Symbol.hasInstance]", 1, static (engine, thisValue, arguments) =>
+            JsValue.Boolean(engine.OrdinaryHasInstance(thisValue, ArgOfFunction(arguments, 0))));
+
+        HasInstanceFunction = hasInstance;
+
+        functionPrototype.SetOwnSymbol(
+            HasInstanceSymbol, JsProperty.Data(JsValue.Object(hasInstance), JsPropertyAttributes.None));
+
         Method(functionPrototype, "toString", 0, static (engine, thisValue, arguments) =>
         {
             var receiver = FunctionCallableReceiver(engine, thisValue, "toString");
@@ -140,8 +170,14 @@ internal sealed partial class JsRealm
             // approximation: the specification returns the source a function was defined from, and
             // an engine that executes verified bytecode has thrown that text away long before a
             // guest can ask for it.
+            //
+            // The rendering must still be a NativeFunction, whose name is a PropertyName with an
+            // optional `get` or `set`. A private method's `#m` and a bound function's `bound f` are
+            // not, so they render with no name, as the edition allows; until 2026-10-03 they
+            // rendered with it (JSC-249).
             var name = receiver is JsFunction function ? function.FunctionName : string.Empty;
-            return JsValue.String("function " + name + "() { [native code] }");
+            return JsValue.String(
+                "function " + (FunctionIsNativeName(name) ? name : string.Empty) + "() { [native code] }");
         });
 
         // THE CONSTRUCTOR EXISTS AND REFUSES. Omitting the binding would make `typeof Function`
@@ -202,7 +238,7 @@ internal sealed partial class JsRealm
     /// and none is special-cased: the list is read through <c>length</c> and the index properties,
     /// which is the only reading that works for all three.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=22953A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BD7387
     // Broiler-Human:        PENDING
     private static JsValue[] FunctionSpreadArguments(JsEngine engine, JsValue source)
     {
@@ -218,20 +254,30 @@ internal sealed partial class JsRealm
                 "Function.prototype.apply expects an array-like second argument");
         }
 
-        var count = engine.ToUint32(engine.GetProperty(source, "length"));
+        // `LengthOfArrayLike`, WHICH IS `ToLength` AND NOT `ToUint32`. The two disagree on exactly
+        // the lengths a guest can write: `-1` is an empty list and not four billion reads, and
+        // 2**32 + 2 is a list too long to call with and not a list of two (JSC-236).
+        var count = ArrayToLength(engine, engine.GetProperty(source, "length"));
 
         if (count == 0)
         {
             return System.Array.Empty<JsValue>();
         }
 
-        // ONE FUEL UNIT PER ELEMENT, CHARGED AS THE LIST GROWS RATHER THAN ONCE UP FRONT. The
-        // `length` is guest-controlled and may be four billion; charging inside the loop instead of
-        // allocating the whole array first is what makes an absurd `length` a spent allowance
-        // rather than a spent heap.
+        // THE CEILING `Reflect.apply` HAS, for the reason it has it: the specification's own is
+        // 2**32 - 1, which no implementation can honour, and a list past this one gets the
+        // `RangeError` rather than a spent heap.
+        if (count > ReflectArgumentCeiling)
+        {
+            engine.ThrowRangeError("the argument list is longer than this profile admits");
+        }
+
+        // ONE FUEL UNIT PER ELEMENT, CHARGED AS THE LIST GROWS RATHER THAN ONCE UP FRONT, so a long
+        // list under the ceiling is a spent allowance rather than an allocation made before
+        // anything was paid for.
         var collected = new System.Collections.Generic.List<JsValue>(count < 1024 ? (int)count : 1024);
 
-        for (var at = 0u; at < count; at++)
+        for (var at = 0; at < count; at++)
         {
             engine.Charge(1);
             collected.Add(engine.GetIndexed(source, JsValue.Number(at)));
@@ -243,5 +289,47 @@ internal sealed partial class JsRealm
         // back - which the RayTrace benchmark did after printing its score. Transient allocation
         // is bounded by the fuel this call already charged.
         return collected.ToArray();
+    }
+
+    /// <summary>
+    /// Whether <paramref name="name"/> can stand in a NativeFunction's name position: an identifier
+    /// name or a bracketed one, after an optional <c>get</c> or <c>set</c>.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=972663
+    // Broiler-Human:        PENDING
+    private static bool FunctionIsNativeName(string name)
+    {
+        if (name.StartsWith("get ", System.StringComparison.Ordinal) ||
+            name.StartsWith("set ", System.StringComparison.Ordinal))
+        {
+            name = name[4..];
+        }
+
+        if (name.Length == 0)
+        {
+            return true;
+        }
+
+        if (name[0] == '[')
+        {
+            return name[^1] == ']';
+        }
+
+        for (var at = 0; at < name.Length; at++)
+        {
+            var c = name[at];
+            var starts = char.IsLetter(c) || char.IsSurrogate(c) || c is '$' or '_';
+            var continues = char.IsDigit(c) || c is '\u200C' or '\u200D' ||
+                char.GetUnicodeCategory(c) is System.Globalization.UnicodeCategory.NonSpacingMark or
+                    System.Globalization.UnicodeCategory.SpacingCombiningMark or
+                    System.Globalization.UnicodeCategory.ConnectorPunctuation;
+
+            if (!starts && !(at > 0 && continues))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

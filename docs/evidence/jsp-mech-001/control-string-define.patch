@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs
+index b39bf23..fc03b52 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs
+@@ -1107,7 +1107,7 @@ internal sealed partial class JsRealm
+         // non-writable and non-configurable, so a definition the validation admits describes them
+         // as they are and changes nothing; storing its merge added a second own key under the same
+         // name, which `Object.getOwnPropertyNames` then reported twice (JSP-5, JSC-237).
+-        if (target is JsPrimitiveWrapper wrapper && wrapper.IsStringOwnKey(name))
++        if (target is JsPrimitiveWrapper wrapper && wrapper.IsStringOwnKey(name) && name.Length < 0)
+         {
+             var heldOwn = wrapper.TryGetOwnProperty(name, out var own);
+             return ObjectValidateAndMerge(target, heldOwn, own, name, fields, out _, out _);

@@ -79,7 +79,7 @@ internal sealed partial class JsRealm
     private const string DateZoneText = " GMT+0000 (Coordinated Universal Time)";
 
     /// <summary>Builds <c>Date</c>, its statics and <c>Date.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9219B5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=260EEA
     // Broiler-Human:        PENDING
     private void SetupDate()
     {
@@ -244,6 +244,44 @@ internal sealed partial class JsRealm
             var time = DateReceiver(engine, thisValue).TimeValue;
 
             return JsValue.String(double.IsNaN(time) ? DateInvalidText : DateToUtcText(time));
+        });
+
+        // ANNEX B'S `toGMTString` IS `toUTCString` ITSELF, the same function object (JSP-7, JSC-239).
+        _ = DatePrototype.TryGetOwnProperty("toUTCString", out var utcText);
+
+        DatePrototype.SetOwnProperty(
+            "toGMTString",
+            JsProperty.Data(utcText.Value, JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+
+        // ANNEX B'S TWO-DIGIT YEAR PAIR (JSP-7, JSC-239). `getYear` is the local year less 1900;
+        // `setYear` reads 0 to 99 as 1900 to 1999 and any other year as itself, starting from +0
+        // when the date is invalid. The local time is the time value, because this profile's zone
+        // is UTC.
+        Method(DatePrototype, "getYear", 0, static (engine, thisValue, arguments) =>
+        {
+            var time = DateReceiver(engine, thisValue).TimeValue;
+            return JsValue.Number(double.IsNaN(time) ? double.NaN : DateYearFromTime(time) - 1900);
+        });
+
+        Method(DatePrototype, "setYear", 1, static (engine, thisValue, arguments) =>
+        {
+            var date = DateReceiver(engine, thisValue);
+            var time = double.IsNaN(date.TimeValue) ? 0 : date.TimeValue;
+            var year = engine.ToNumber(DateArg(arguments, 0));
+
+            if (double.IsNaN(year))
+            {
+                date.TimeValue = double.NaN;
+                return JsValue.Number(double.NaN);
+            }
+
+            var whole = JsValue.ToInteger(year);
+            var full = whole is >= 0 and <= 99 ? 1900 + whole : year;
+
+            var day = DateMakeDay(full, DateMonthFromTime(time), DateDateFromTime(time));
+            var clipped = DateTimeClip(DateMakeDate(day, DateTimeWithinDay(time)));
+            date.TimeValue = clipped;
+            return JsValue.Number(clipped);
         });
 
         Method(DatePrototype, "toISOString", 0, static (engine, thisValue, arguments) =>
@@ -889,15 +927,34 @@ internal sealed partial class JsRealm
     /// fixes local time to UTC, so the two agree and one computation serves both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F6DD7F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DB9CFA
     // Broiler-Human:        PENDING
     private static double DateParseText(JsEngine engine, string text)
     {
         engine.Charge((ulong)text.Length + 1);
 
         var at = 0;
+        double year;
 
-        if (!DateReadDigits(text, ref at, 4, out var year))
+        // THE EXPANDED YEAR: a sign and exactly six digits, which is how `toISOString` writes a
+        // year outside 0 to 9999, so `Date.parse` must read it back; `-000000` is not a year
+        // (21.4.1.32.1). Until 2026-10-03 every such string parsed as NaN (JSC-252).
+        if (text.Length > 0 && (text[0] == '+' || text[0] == '-'))
+        {
+            var negative = text[0] == '-';
+            at = 1;
+
+            if (!DateReadDigits(text, ref at, 6, out year) || (negative && year == 0))
+            {
+                return double.NaN;
+            }
+
+            if (negative)
+            {
+                year = -year;
+            }
+        }
+        else if (!DateReadDigits(text, ref at, 4, out year))
         {
             // NOT ISO 8601, SO TRY THE TWO FORMS THIS REALM ITSELF PRODUCES. The specification
             // requires `Date.parse` to accept whatever `toString` and `toUTCString` answered, and

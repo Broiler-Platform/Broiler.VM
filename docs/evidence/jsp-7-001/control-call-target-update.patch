@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 581c036..da9d5dc 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -8318,7 +8318,7 @@ public sealed class JsCompiler
+             return;
+         }
+ 
+-        if (update.Operand is JsCallExpression called && !strict)
++        if (update.Operand is JsCallExpression called && strict)
+         {
+             EmitCallTargetThrow(called);
+             return;

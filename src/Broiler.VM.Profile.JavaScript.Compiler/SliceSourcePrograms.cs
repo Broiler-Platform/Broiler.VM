@@ -194,7 +194,7 @@ public static class SliceSourcePrograms
     /// becomes bytes. They are judged by the composition that carries the front end, and the
     /// execution-only image - which has no front end - could not judge them and does not claim to.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=FEAC8D
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=ACE5A3
     // Broiler-Falsified-If: any source here compiles, or is refused with a code other than the one recorded beside it
     // Broiler-Human:        PENDING
     public static SliceRefusedSource[] Refused =>
@@ -250,6 +250,13 @@ public static class SliceSourcePrograms
         new("refuse-loose-equality", "1 == true", SliceSourceDiagnosticCode.ConstructOutsideManifest),
         new("refuse-bitwise-not", "~0", SliceSourceDiagnosticCode.ConstructOutsideManifest),
         new("refuse-typeof", "typeof 1", SliceSourceDiagnosticCode.ConstructOutsideManifest),
+
+        // A BIGINT LITERAL IS REFUSED BY NAME HERE, and it is the refusal the parity roadmap's JSP-2
+        // calls the one that was lost: until 2026-09-08 the wide front end read `1n` as the Number
+        // 1, a plausible wrong value no exit code reports. The wide manifest now admits the type,
+        // so this surface is where the refusal is still a property, and this entry retains it
+        // (JSC-241).
+        new("refuse-a-bigint-literal", "1n", SliceSourceDiagnosticCode.ConstructOutsideManifest),
 
         // ---- static semantics --------------------------------------------------------------------
         new(

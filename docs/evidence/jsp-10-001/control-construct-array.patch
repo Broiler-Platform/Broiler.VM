@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 2620b60..c7fffa7 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -7016,7 +7016,7 @@ public sealed class JsCompiler
+             {
+                 CompileExpression(construction.Callee);
+ 
+-                if (CarriesArgumentsInAnArray(construction.Arguments))
++                if (HasSpread(construction.Arguments))
+                 {
+                     CompileArgumentArray(construction.Arguments);
+                     Emit(JsOpcode.ConstructSpread);

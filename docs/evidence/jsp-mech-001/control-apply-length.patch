@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
+index df339f4..057e2cd 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
+@@ -242,7 +242,7 @@ internal sealed partial class JsRealm
+         // `LengthOfArrayLike`, WHICH IS `ToLength` AND NOT `ToUint32`. The two disagree on exactly
+         // the lengths a guest can write: `-1` is an empty list and not four billion reads, and
+         // 2**32 + 2 is a list too long to call with and not a list of two (JSC-236).
+-        var count = ArrayToLength(engine, engine.GetProperty(source, "length"));
++        var count = (double)engine.ToUint32(engine.GetProperty(source, "length"));
+ 
+         if (count == 0)
+         {

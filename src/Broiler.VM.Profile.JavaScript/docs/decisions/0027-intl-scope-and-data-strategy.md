@@ -25,6 +25,15 @@ excludes it by name. The retained focused cases are cases 30-39 of the different
 `src/tests/differential/the-reference-key-and-exponent-edges.js`. The consumer limitation in
 section 6 no longer lists the `Array.prototype.toLocaleString` defect.
 
+**Amendment, 2026-10-03 (slices N2 and N3; local validation, not accepted).** `SpecialCasing.txt`
+is archived beside the UCD files JSD-0031 pinned, and `toUpperCase`, `toLowerCase` and the two
+`toLocale…Case` methods are the Unicode Default Case Conversion over generated tables, with
+`Final_Sigma`: `'ß'.toUpperCase()` is `"SS"`, `'ΑΣ'.toLowerCase()` is `"ας"`, and no answer depends on
+the host's Unicode version. `localeCompare` is ordinal over the canonical decompositions, so
+`'\u00e4'.localeCompare('a\u0308')` is `0`. The consumer limitation in section 6 loses both entries of
+its known-defects sentence; the rest of it stands. Language-sensitive casing stays out, as section 6
+says. Corrections entry [JSC-242](../roadmap.corrections.md#jsc-242).
+
 **Owner:** MaiRat. **Co-signer:** none. **Both roles are held by one person**, and this record
 does not claim the co-signature is independent — there is no second signature to claim it of.
 
@@ -269,3 +278,48 @@ none implying the next:
   unminted.**
 - **A consumer with a real locale workload that this record's limitation text did not warn**,
   which would mean the limitation was not where a consumer reads.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the deferral, and schedule N2 and N3 now rather than with `Intl`.**
+
+- **(Deferral) Take section 6 as written.** No consumer needs ECMA-402 today, an empty or partial
+  `Intl` would mislead feature detection, and the fixed locale row is already true of the tree.
+- **(a) Data source: generate in-tree from pinned CLDR JSON**, when a consumer triggers I0. The
+  generator, rule N22 and the archive layout JSD-0031 built for the UCD are the template, and
+  `UnicodeCldr.LocaleData` still lacks collation data, date-time skeletons and a published CLDR
+  version.
+- **(b) Licence: accept Unicode License v3 for CLDR on the terms already taken for the UCD** in
+  JSD-0031 section 9.2, in the same `THIRD_PARTY_NOTICES.md` entry pattern. It is the same licence
+  and the same notice obligation.
+- **(c) Size budget: do not set a figure now.** Set it from I0's measured prototype, as section 5
+  says; until then, record that a composition declining `broiler.javascript.intl` carries zero bytes,
+  which is the property that matters.
+- **(d) IANA tzdb: out of scope until a consumer asks for a named time zone.** UTC and fixed offsets
+  cover I3.
+- **N2 and N3 are ECMA-262 defects and are owed now** (probe at `caef66a`: `'ß'.toUpperCase()` answers
+  `"ß"`, and `'\u00e4'.localeCompare('a\u0308')` answers `1` where the language requires `0`). N3 is
+  cheap since JSD-0031's U3 built normalization: compare NFD forms. N2 needs `SpecialCasing.txt`
+  archived beside the UCD files JSD-0031 pinned, which JSD-0031 section 12 records as the one input
+  still missing. Recommended order: archive `SpecialCasing.txt`, then N3, then N2.
+- The amendment's open N1 test (`detached-buffer.js`) should be re-run: VM-FIX-A gave the conformance
+  harness a real `$262.detachArrayBuffer`, so it may already pass.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **The deferral in section 6 is not taken.** `Intl` is scheduled as phase F7 of the plan's
+  [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), without waiting for the named consumer section 6 asked for.
+- **The slices are unchanged and become the phase**: I0, then I1 to I3, then I4 and later. The data
+  and licence choices in the recommendation above stand as the starting point.
+- **What a program meets today does not change** until I0 publishes `Intl`; the ledger's
+  `absent-globals` block keeps the name until then, and N24's assertion about it changes in the same
+  change.

@@ -561,11 +561,32 @@ internal static class JsExecution
     /// <c>ToString</c> of a Symbol is a <c>TypeError</c>: a script whose last statement was
     /// <c>Symbol("x")</c> completed normally and was reported as an uncaught exception it never
     /// threw (VM-FIX-D). Every other value keeps the <c>ToString</c> it had.
+    /// <para>
+    /// <b>A value whose <c>ToString</c> throws completed normally all the same.</b> An object with no
+    /// prototype has no <c>toString</c> to call, and a guest <c>toString</c> may throw; either way the
+    /// script did not, so the value is rendered by its class tag, as <c>Object.prototype.toString</c>
+    /// would render it, and the throw is discarded. Until 2026-10-03 a script ending in
+    /// <c>Object.create(null)</c> was reported as uncaught (JSC-252).
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=870ED5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FBB7F1
     // Broiler-Human:        PENDING
-    private static string CompletionText(JsInstance instance, JsValue value) =>
-        value.IsSymbol ? value.AsSymbol().Rendered : instance.Engine.ToStringValue(value);
+    private static string CompletionText(JsInstance instance, JsValue value)
+    {
+        if (value.IsSymbol)
+        {
+            return value.AsSymbol().Rendered;
+        }
+
+        try
+        {
+            return instance.Engine.ToStringValue(value);
+        }
+        catch (JsThrow) when (value.IsObject)
+        {
+            return "[object " + value.AsObject().ClassName + "]";
+        }
+    }
 
     /// <summary>Runs every due job on the guest stack and reports what happened.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2FD85C

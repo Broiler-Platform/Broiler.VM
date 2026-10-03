@@ -1,0 +1,43 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.cs
+index cf23d6e..3cc0559 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.cs
+@@ -54,6 +54,8 @@ internal sealed class JsEnumerator : JsObject
+     // Broiler-Human:        PENDING
+     private int at;
+ 
++    private readonly System.Collections.Generic.HashSet<string> enumerableAtStart = new();
++
+     /// <summary>Creates an enumerator that starts at <paramref name="start"/>, or visits nothing.</summary>
+     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F78D99
+     // Broiler-Human:        PENDING
+@@ -67,7 +69,19 @@ internal sealed class JsEnumerator : JsObject
+     {
+         while (current is not null)
+         {
+-            names ??= current.OwnPropertyNames();
++            if (names is null)
++            {
++                names = current.OwnPropertyNames();
++                enumerableAtStart.Clear();
++
++                foreach (var start in names)
++                {
++                    if (current.TryGetOwnProperty(start, out var atStart) && atStart.Enumerable)
++                    {
++                        enumerableAtStart.Add(start);
++                    }
++                }
++            }
+ 
+             while (at < names.Count)
+             {
+@@ -80,7 +94,7 @@ internal sealed class JsEnumerator : JsObject
+ 
+                 visited.Add(name);
+ 
+-                if (property.Enumerable)
++                if (enumerableAtStart.Contains(name))
+                 {
+                     key = name;
+                     return true;

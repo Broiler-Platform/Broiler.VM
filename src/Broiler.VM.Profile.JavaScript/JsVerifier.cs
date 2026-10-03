@@ -3939,7 +3939,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=73F7C0
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=31C1C6
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -3959,6 +3959,8 @@ internal sealed class JsVerifier
                 case JsOpcode.DeclareGlobal:
                 case JsOpcode.GetProperty:
                 case JsOpcode.SetProperty:
+                case JsOpcode.GetObjectBinding:
+                case JsOpcode.SetObjectBinding:
                 case JsOpcode.DefineField:
                 case JsOpcode.DeleteProperty:
                 case JsOpcode.DefineGetter:
@@ -4225,11 +4227,14 @@ internal sealed class JsVerifier
                     var method = (operand & JsOpcodes.ElementIsMethod) != 0;
                     var isPrivate = (operand & JsOpcodes.ElementIsPrivate) != 0;
 
+                    var named = (operand & JsOpcodes.ElementIsNamedValue) != 0;
+
                     var consistent = operand <= JsOpcodes.ElementBits &&
                         accessor != (JsOpcodes.ElementIsGetter | JsOpcodes.ElementIsSetter) &&
                         (!block || operand == (JsOpcodes.ElementIsBlock | JsOpcodes.ElementIsStatic)) &&
                         (accessor == 0 || (method && isPrivate)) &&
-                        (!method || isPrivate);
+                        (!method || isPrivate) &&
+                        (!named || (!method && !isPrivate && !block));
 
                     return consistent
                         ? Ok
@@ -4241,10 +4246,13 @@ internal sealed class JsVerifier
 
                 // A member is a getter, or a setter, or neither - never both. Resolving the pair
                 // by precedence would give one encoding two readings.
+                // A named value is a data member and never either half of an accessor.
                 case JsOpcode.DefineMethod:
                     return operand <= JsOpcodes.MemberBits &&
                         (operand & (JsOpcodes.MemberIsGetter | JsOpcodes.MemberIsSetter)) !=
-                            (JsOpcodes.MemberIsGetter | JsOpcodes.MemberIsSetter)
+                            (JsOpcodes.MemberIsGetter | JsOpcodes.MemberIsSetter) &&
+                        ((operand & JsOpcodes.MemberIsNamedValue) == 0 ||
+                            (operand & (JsOpcodes.MemberIsGetter | JsOpcodes.MemberIsSetter)) == 0)
                         ? Ok
                         : Invalid(
                             VmReason.UnknownFeature,

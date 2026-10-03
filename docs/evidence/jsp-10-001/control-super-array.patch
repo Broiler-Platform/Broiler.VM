@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 2620b60..5f7c907 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -9701,7 +9701,7 @@ public sealed class JsCompiler
+         // superclass and the `new.target` from the FRAME, and there is nothing beneath the
+         // argument Array for CallSpread to pop. The two families meeting is what
+         // `SuperCallSpread` is for.
+-        if (CarriesArgumentsInAnArray(call.Arguments))
++        if (HasSpread(call.Arguments))
+         {
+             CompileArgumentArray(call.Arguments);
+             Emit(JsOpcode.SuperCallSpread);

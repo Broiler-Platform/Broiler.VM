@@ -90,7 +90,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Object</c>, <c>Object.prototype</c> and the statics on the constructor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=56DB5F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=88B07B
     // Broiler-Human:        PENDING
     private void SetupObject()
     {
@@ -172,6 +172,13 @@ internal sealed partial class JsRealm
                 }),
                 Native("set __proto__", 1, static (engine, thisValue, arguments) =>
                 {
+                    // RequireObjectCoercible comes first: `undefined` and `null` are a TypeError,
+                    // which this setter answered with `undefined` until 2026-10-03 (JSC-249).
+                    if (thisValue.IsNullish)
+                    {
+                        return engine.ThrowTypeError("set __proto__ called on null or undefined");
+                    }
+
                     var value = ArgOfObject(arguments, 0);
 
                     if (!thisValue.IsObject || (!value.IsObject && value.Type != JsType.Null))
@@ -229,7 +236,10 @@ internal sealed partial class JsRealm
 
         Method(ObjectPrototype, "hasOwnProperty", 1, static (engine, thisValue, arguments) =>
         {
-            var requested = ArgOfObject(arguments, 0);
+            // THE KEY IS CONVERTED BEFORE THE RECEIVER, which is the specification's order: a key
+            // whose conversion throws throws even when `this` is undefined. An object key may
+            // convert to a Symbol, so the conversion keeps both kinds.
+            var requested = engine.ToPropertyKeyValue(ArgOfObject(arguments, 0));
             var host = engine.ToObject(thisValue);
 
             // A SYMBOL KEY IS A DIFFERENT TABLE AND SO A DIFFERENT QUESTION. Coercing it to a
@@ -270,7 +280,7 @@ internal sealed partial class JsRealm
 
         Method(ObjectPrototype, "propertyIsEnumerable", 1, static (engine, thisValue, arguments) =>
         {
-            var requested = ArgOfObject(arguments, 0);
+            var requested = engine.ToPropertyKeyValue(ArgOfObject(arguments, 0));
             var target = engine.ToObject(thisValue);
 
             if (requested.IsSymbol)
@@ -295,7 +305,19 @@ internal sealed partial class JsRealm
                 : JsValue.Object(engine.ToObject(value));
         }
 
-        var constructor = Constructor("Object", 1, ObjectPrototype, FromValue, FromValue);
+        // A construction whose new target is not `Object` itself - `super()` in a class extending
+        // it, or `Reflect.construct(Object, [v], C)` - makes a fresh object and ignores the value
+        // (20.1.1.1 step 1). Until 2026-10-03 it wrapped the value, so a subclass instance was the
+        // argument object re-pointed at the subclass's prototype (JSC-252).
+        JsNativeFunction? objectConstructor = null;
+
+        JsValue Construct(JsEngine engine, JsValue newTarget, JsValue[] arguments) =>
+            newTarget.IsObject && !ReferenceEquals(newTarget.AsObject(), objectConstructor)
+                ? JsValue.Object(new JsObject(ObjectPrototype))
+                : FromValue(engine, newTarget, arguments);
+
+        var constructor = Constructor("Object", 1, ObjectPrototype, FromValue, Construct);
+        objectConstructor = constructor;
 
         Method(constructor, "keys", 1, (engine, thisValue, arguments) =>
         {
@@ -330,18 +352,18 @@ internal sealed partial class JsRealm
 
             var made = new JsObject(ObjectPrototype);
 
-            foreach (var entry in CollectionElements(engine, source))
+            foreach (var entry in IterableElements(engine, source))
             {
                 engine.Charge(1);
 
                 if (!entry.IsObject)
                 {
-                    return engine.ThrowTypeError("Iterator value " + engine.ToStringValue(entry) +
-                        " is not an entry object");
+                    return engine.ThrowTypeError("Object.fromEntries: an iterator value is not an entry object");
                 }
 
                 var key = engine.GetIndexed(entry, JsValue.Number(0));
                 var value = engine.GetIndexed(entry, JsValue.Number(1));
+                key = engine.ToPropertyKeyValue(key);
 
                 // A DEFINITION AND NOT AN ASSIGNMENT, which is the same distinction a computed
                 // member of an object literal makes: a key of `__proto__` becomes an own property
@@ -380,17 +402,30 @@ internal sealed partial class JsRealm
             var groups = new JsObject(null);
             var at = 0;
 
-            foreach (var element in CollectionElements(engine, source))
+            foreach (var element in IterableElements(engine, source))
             {
                 engine.Charge(1);
-                var key = engine.ToPropertyKey(
+                var key = engine.ToPropertyKeyValue(
                     engine.Call(chooser, JsValue.Undefined, [element, JsValue.Number(at)]));
 
-                if (!groups.TryGetOwnProperty(key, out var held) || held.Value.AsObjectOrNull() is not JsArray bucket)
+                // A callback may answer a Symbol, and a Symbol is a group key like any other.
+                var found = key.IsSymbol
+                    ? groups.TryGetOwnSymbol(key.AsSymbol(), out var held)
+                    : groups.TryGetOwnProperty(key.AsString(), out held);
+
+                if (!found || held.Value.AsObjectOrNull() is not JsArray bucket)
                 {
                     bucket = NewArray();
-                    groups.SetOwnProperty(
-                        key, JsProperty.Data(JsValue.Object(bucket), JsPropertyAttributes.Default));
+                    var made = JsProperty.Data(JsValue.Object(bucket), JsPropertyAttributes.Default);
+
+                    if (key.IsSymbol)
+                    {
+                        groups.SetOwnSymbol(key.AsSymbol(), made);
+                    }
+                    else
+                    {
+                        groups.SetOwnProperty(key.AsString(), made);
+                    }
                 }
 
                 bucket.Push(element);
@@ -408,7 +443,7 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var host = engine.ToObject(ArgOfObject(arguments, 0));
-            var requested = ArgOfObject(arguments, 1);
+            var requested = engine.ToPropertyKeyValue(ArgOfObject(arguments, 1));
 
             return JsValue.Boolean(
                 requested.IsSymbol
@@ -512,7 +547,7 @@ internal sealed partial class JsRealm
                 return engine.ThrowTypeError("Object.defineProperty called on non-object");
             }
 
-            var requested = ArgOfObject(arguments, 1);
+            var requested = engine.ToPropertyKeyValue(ArgOfObject(arguments, 1));
             var fields = ObjectToDescriptorFields(engine, ArgOfObject(arguments, 2));
 
             // A SYMBOL KEY IS VALIDATED EXACTLY AS A STRING KEY IS. It used to be written straight
@@ -547,7 +582,7 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var target = engine.ToObject(ArgOfObject(arguments, 0));
-            var requested = ArgOfObject(arguments, 1);
+            var requested = engine.ToPropertyKeyValue(ArgOfObject(arguments, 1));
 
             if (requested.IsSymbol)
             {
@@ -739,7 +774,7 @@ internal sealed partial class JsRealm
     /// Going through the checked form is also what makes a non-extensible object refuse a new key
     /// and a non-configurable property refuse the conversion, under either kind of key.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B62C5C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=55AB0F
     // Broiler-Human:        PENDING
     private static void ObjectDefineAccessorHalf(
         JsEngine engine, JsObject host, JsValue key, JsValue accessor, bool getter)
@@ -766,16 +801,17 @@ internal sealed partial class JsRealm
         }
 
         ObjectApplyDescriptorAt(
-            engine, host, key.IsSymbol ? key : JsValue.String(engine.ToPropertyKey(key)), fields);
+            engine, host, engine.ToPropertyKeyValue(key), fields);
     }
 
     /// <summary>Finds one half of the accessor a read of <paramref name="key"/> would reach.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B0B2B3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BA0CBA
     // Broiler-Human:        PENDING
     private static JsValue ObjectLookupAccessorHalf(
         JsEngine engine, JsValue receiver, JsValue key, bool getter)
     {
         var current = engine.ToObject(receiver);
+        key = engine.ToPropertyKeyValue(key);
         var symbol = key.IsSymbol ? key.AsSymbol() : null;
         var name = symbol is null ? engine.ToPropertyKey(key) : string.Empty;
 
@@ -1060,7 +1096,7 @@ internal sealed partial class JsRealm
     /// reports, which is the ordinary object's <c>[[DefineOwnProperty]]</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=53C6D2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9D4DD3
     // Broiler-Human:        PENDING
     private static string? ObjectDefineRefusal(
         JsEngine engine, JsObject target, JsValue key, ObjectDescriptorFields fields)
@@ -1101,6 +1137,16 @@ internal sealed partial class JsRealm
         if (target is JsTypedArray view && ObjectIsCanonicalNumeric(name, out var numeric))
         {
             return ObjectDefineElement(engine, view, name, numeric, fields);
+        }
+
+        // A STRING WRAPPER'S `length` AND ITS INDICES ARE ITS OWN AND ARE NEVER STORED. They are
+        // non-writable and non-configurable, so a definition the validation admits describes them
+        // as they are and changes nothing; storing its merge added a second own key under the same
+        // name, which `Object.getOwnPropertyNames` then reported twice (JSP-5, JSC-237).
+        if (target is JsPrimitiveWrapper wrapper && wrapper.IsStringOwnKey(name))
+        {
+            var heldOwn = wrapper.TryGetOwnProperty(name, out var own);
+            return ObjectValidateAndMerge(target, heldOwn, own, name, fields, out _, out _);
         }
 
         if (target is JsArray sized)
@@ -1553,7 +1599,7 @@ internal sealed partial class JsRealm
     /// object is sealed, because <c>[[SetPrototypeOf]]</c> asks whether the answer would change and
     /// a non-extensible object refuses only a change.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=638EFE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=107633
     // Broiler-Human:        PENDING
     internal static bool ObjectSetPrototypeOrdinary(
         JsEngine engine, JsObject target, JsObject? prototype)
@@ -1561,6 +1607,15 @@ internal sealed partial class JsRealm
         if (ReferenceEquals(target.Prototype, prototype))
         {
             return true;
+        }
+
+        // %Object.prototype% IS AN IMMUTABLE PROTOTYPE EXOTIC OBJECT: it keeps the null it was
+        // made with, extensible or not, and refuses every other value. Until 2026-10-03 it was
+        // ordinary, so `Object.setPrototypeOf(Object.prototype, {})` moved the root of every
+        // chain (JSC-249).
+        if (ReferenceEquals(target, engine.Realm.ObjectPrototype))
+        {
+            return false;
         }
 
         if (!target.Extensible)
@@ -1621,7 +1676,7 @@ internal sealed partial class JsRealm
     /// The cycle check is not politeness. Every property lookup walks the chain with a plain loop,
     /// so a chain that closed on itself would be an unkillable spin rather than a wrong answer.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=91BA7B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FCF7CB
     // Broiler-Human:        PENDING
     private static void ObjectSetPrototype(JsEngine engine, JsObject target, JsObject? prototype)
     {
@@ -1649,7 +1704,9 @@ internal sealed partial class JsRealm
 
         throw engine.Error(
             "TypeError",
-            target.Extensible ? "Cyclic __proto__ value" : "#<Object> is not extensible");
+            ReferenceEquals(target, engine.Realm.ObjectPrototype)
+                ? "Object.prototype's prototype cannot be changed"
+                : target.Extensible ? "Cyclic __proto__ value" : "#<Object> is not extensible");
     }
 
     /// <summary>Applies <c>Object.freeze</c> or <c>Object.seal</c> to every own property.</summary>

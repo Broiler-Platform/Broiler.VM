@@ -44,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds the Error constructor, its prototype and the six native subtypes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7C4D41
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8CED0B
     // Broiler-Human:        PENDING
     private void SetupError()
     {
@@ -96,6 +96,17 @@ internal sealed partial class JsRealm
         var baseConstructor = Constructor("Error", 1, basePrototype, baseBody, baseBody);
 
         ErrorConstructors["Error"] = baseConstructor;
+
+        // `Error.isError` ASKS FOR THE SLOT AND NOT THE CHAIN (JSP-7, JSC-239): an object an Error
+        // constructor made answers `true` whatever its prototype became, and an object that only
+        // inherits from `Error.prototype` - `Error.prototype` itself, a Proxy over an error -
+        // answers `false`. It is a member of the edition the realm did not have.
+        Method(baseConstructor, "isError", 1, static (engine, _, arguments) =>
+            JsValue.Boolean(
+                arguments.Length > 0 &&
+                arguments[0].AsObjectOrNull() is { } candidate &&
+                candidate is not JsProxy &&
+                string.Equals(candidate.ClassName, "Error", System.StringComparison.Ordinal)));
 
         ErrorIntrinsicInstall("EvalError", baseConstructor);
         ErrorIntrinsicInstall("RangeError", baseConstructor);
@@ -228,7 +239,7 @@ internal sealed partial class JsRealm
     /// Builds one error object on <paramref name="prototype"/>, the specification's
     /// <c>OrdinaryCreateFromConstructor</c> followed by the message and cause installation.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=86BA81
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B9101F
     // Broiler-Human:        PENDING
     private static JsObject ErrorIntrinsicCreate(
         JsEngine engine, JsObject prototype, JsValue message, JsValue options)
@@ -247,7 +258,9 @@ internal sealed partial class JsRealm
             error.DefineBuiltIn("message", JsValue.String(text));
         }
 
-        if (options.IsObject && options.AsObject().HasOwnProperty("cause"))
+        // InstallErrorCause asks HasProperty, which reads the prototype chain and asks a proxy
+        // through its `has` trap; an own-property test did neither until 2026-10-03 (JSC-252).
+        if (options.IsObject && engine.HasProperty(options.AsObject(), "cause"))
         {
             error.DefineBuiltIn("cause", engine.GetProperty(options, "cause"));
         }

@@ -62,9 +62,10 @@ internal static class UnicodeTableGenerator
     internal const string PropertiesPath = "src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs";
     internal const string CaseFoldingPath = "src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs";
     internal const string NormalizationPath = "src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs";
+    internal const string CasingPath = "src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs";
 
     /// <summary>The generated files, in the order they are generated.</summary>
-    internal static readonly string[] OutputPaths = [PropertiesPath, CaseFoldingPath, NormalizationPath];
+    internal static readonly string[] OutputPaths = [PropertiesPath, CaseFoldingPath, NormalizationPath, CasingPath];
 
     /// <summary>The per-unit exemption reason every generated table member states.</summary>
     internal const string ExemptReason =
@@ -101,6 +102,7 @@ internal static class UnicodeTableGenerator
             Emit(PropertiesPath, "Broiler.VM.Profile.JavaScript.Format", Properties(database), tables, currentText),
             Emit(CaseFoldingPath, "Broiler.VM.Profile.JavaScript.Format", CaseFolding(database), tables, currentText),
             Emit(NormalizationPath, "Broiler.VM.Profile.JavaScript", Normalization(database), tables, currentText),
+            Emit(CasingPath, "Broiler.VM.Profile.JavaScript", Casing(database), tables, currentText),
         };
 
         // Slice U3's conformance probes: test files, not product source, so they carry no
@@ -232,8 +234,20 @@ internal static class UnicodeTableGenerator
     {
         var canonical = new SortedDictionary<int, int>();
 
-        foreach (var (source, upper) in database.SimpleUppercase)
+        // THE FULL MAPPING, NOT THE SIMPLE ONE: the specification's toUppercase is the Default Case
+        // Conversion, so a code unit whose full upper case is two code points canonicalizes to
+        // itself. The 27 Greek letters with a ypogegrammeni are the code units where the two
+        // readings part; until SpecialCasing.txt was archived (2026-10-03) the simple one was used
+        // and each matched its title-case partner.
+        foreach (var (source, mapping) in database.FullUppercase)
         {
+            if (mapping.Length != 1)
+            {
+                continue;
+            }
+
+            var upper = mapping[0];
+
             if (source <= 0xFFFF && source is < 0xD800 or > 0xDFFF && upper <= 0xFFFF && !(source >= 128 && upper < 128))
             {
                 canonical.Add(source, upper);
@@ -382,6 +396,63 @@ internal static class UnicodeTableGenerator
                 Table("CompositionData", compositions, "Every primary composite, Full_Composition_Exclusion and Hangul excluded: first, second and composite code point, three bytes each, ordered by first and then second."),
                 Table("QuickCheckData", quick, "The ranges of NFC_QC=No, NFC_QC=Maybe, NFKC_QC=No and NFKC_QC=Maybe, in RangeData's format."),
                 Table("QuickCheckIndex", quickIndex, "For each of those four sets: its first range and its range count, two bytes each."),
+            ]);
+    }
+
+    // =============================================================================================
+    // The profile assembly: case conversion
+    // =============================================================================================
+
+    private static GeneratedType Casing(UnicodeDatabase database)
+    {
+        var pool = new ByteWriter();
+        var poolLength = 0;
+
+        ByteWriter Index(SortedDictionary<int, int[]> mappings)
+        {
+            var index = new ByteWriter();
+
+            foreach (var (codePoint, mapping) in mappings)
+            {
+                index.Int24(codePoint).UInt16(poolLength).Byte(mapping.Length);
+
+                foreach (var part in mapping)
+                {
+                    pool.Int24(part);
+                }
+
+                poolLength += mapping.Length;
+            }
+
+            return index;
+        }
+
+        var upper = Index(database.FullUppercase);
+        var lower = Index(database.FullLowercase);
+
+        ByteWriter Ranges(string property)
+        {
+            var ranges = new ByteWriter();
+
+            foreach (var range in database.BinaryProperties.Single(value => value.ShortName == property).Ranges)
+            {
+                ranges.Int24(range.First).Int24(range.Last);
+            }
+
+            return ranges;
+        }
+        var longest = database.FullUppercase.Values.Concat(database.FullLowercase.Values).Max(static mapping => mapping.Length);
+
+        return new GeneratedType(
+            "JsUnicodeCasing",
+            "The Unicode 17.0.0 Default Case Conversion behind toUpperCase and toLowerCase: UnicodeData.txt's simple mappings with SpecialCasing.txt's unconditional ones over them.",
+            [
+                Constant("int", "MaxMappingLength", Number(longest), "The longest full case mapping, in code points."),
+                Table("UpperIndex", upper, "Every code point upper-casing changes: the code point in three bytes, its offset in MappingPool in two and its length in one, in code point order. A length of zero maps the code point to nothing."),
+                Table("LowerIndex", lower, "Every code point lower-casing changes, in UpperIndex's format. GREEK CAPITAL LETTER SIGMA maps to its ordinary small form here; Final_Sigma is applied by the caller."),
+                Table("MappingPool", pool, "The code points of every full case mapping, three bytes each."),
+                Table("CasedRanges", Ranges("Cased"), "The ranges of Cased, which the Final_Sigma condition reads: first and last code point, three bytes each."),
+                Table("CaseIgnorableRanges", Ranges("Case_Ignorable"), "The ranges of Case_Ignorable, which the Final_Sigma condition skips, in CasedRanges' format."),
             ]);
     }
 

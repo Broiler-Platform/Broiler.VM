@@ -1,0 +1,41 @@
+A PRODUCT TYPE OF THE JAVASCRIPT PROFILE THAT DECLARES A FINALIZER, so rule N25's rejecting
+direction is decided by an input rather than by a comment. It is written the way the regression
+would arrive: a `FinalizationRegistry` that wants its cleanup callbacks to "just run" reaches for
+the CLR's own hook, which runs on the collector's thread, at a moment no guest chose, outside every
+budget.
+
+It declares a finalizer both ways the language allows - the destructor syntax and an override of
+`Finalize` - and it also NAMES `~JsRegistry()` and `Finalize()` in a comment and in a string
+literal, which the rule must not report: it reads declarations, so prose that explains the
+prohibition is not a violation of it.
+
+```csharp
+namespace Broiler.VM.Profile.JavaScript;
+
+internal sealed class JsRegistryWithAFinalizer
+{
+    // Not ~JsRegistryWithAFinalizer() and not Finalize(): that is what the rule is about.
+    private const string Explanation = "~JsRegistry() and Finalize() are forbidden";
+
+    ~JsRegistryWithAFinalizer()
+    {
+    }
+}
+
+internal class JsRegistryBase
+{
+}
+
+internal sealed class JsRegistryWithAnOverride : JsRegistryBase
+{
+#pragma warning disable CS0465
+    protected void Finalize()
+#pragma warning restore CS0465
+    {
+    }
+}
+```
+
+This file is a witness and is never compiled. It lives here rather than in a product project for
+the reason every rejecting witness does: a file that would make the rule fail cannot live where the
+rule looks.

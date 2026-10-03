@@ -396,10 +396,13 @@ public sealed class RuleRegisterTests
         // profile calls a global absent that the realm publishes, in a block, a clause or a bullet
         // under an absent heading, with text kept as written marked and dated. Active when minted;
         // no other count moves.
-        Assert.Equal(107, byStatus["Active"]);
+        // Decision JSD-0029's recommendation adds N25 ahead of its cleanup model: no type of the
+        // JavaScript profile declares a finalizer, so no guest-reachable work can run on the
+        // collector's thread. Active when minted; no other count moves.
+        Assert.Equal(108, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(109, Loaded.Rules.Count);
+        Assert.Equal(110, Loaded.Rules.Count);
     }
 
     private static Register Load()

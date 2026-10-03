@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+index 1e15acd..071e1c6 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+@@ -9984,7 +9984,7 @@ internal sealed partial class JsEngine
+     {
+         if (!left.IsBigInt || !right.IsBigInt)
+         {
+-            return ThrowTypeError("Cannot mix BigInt and other types, use explicit conversions");
++            return JsValue.Number(double.NaN);
+         }
+ 
+         var a = left.AsBigInt();

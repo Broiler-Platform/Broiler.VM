@@ -160,7 +160,7 @@ internal sealed partial class JsRealm
         new(System.StringComparer.Ordinal);
 
     /// <summary>Builds the <c>Symbol</c> intrinsic and the iterators the realm's own types need.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B221B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=426211
     // Broiler-Human:        PENDING
     private void SetupSymbol()
     {
@@ -215,7 +215,7 @@ internal sealed partial class JsRealm
 
             if (!registry.TryGetValue(key, out var found))
             {
-                found = new JsSymbol(key, described: true);
+                found = new JsSymbol(key, described: true) { IsRegistered = true };
                 registry[key] = found;
             }
 
@@ -322,7 +322,7 @@ internal sealed partial class JsRealm
     /// Symbol to key this with</b>, which is the same join the collection iterators are in.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=13EB2A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5BED82
     // Broiler-Human:        PENDING
     private void SetupDatePrimitive() =>
         DatePrototype.SetOwnSymbol(
@@ -336,9 +336,11 @@ internal sealed partial class JsRealm
                             "Date.prototype[Symbol.toPrimitive] is not generic");
                     }
 
-                    var hint = arguments.Length == 0
-                        ? string.Empty
-                        : engine.ToStringValue(arguments[0]);
+                    // The hint is compared as it is, never converted: a String wrapper or an object
+                    // whose `toString` answers "number" is not a hint (JSC-252).
+                    var hint = arguments.Length > 0 && arguments[0].IsString
+                        ? arguments[0].AsString()
+                        : string.Empty;
 
                     return hint switch
                     {

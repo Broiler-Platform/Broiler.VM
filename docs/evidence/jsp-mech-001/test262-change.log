@@ -1,0 +1,24 @@
+$ python3 eng/run-test262.py --suite <scratch>/suite/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e --binary-directory <root>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0 --jobs 3 --out <scratch>/test262-change --dir test/language --dir test/annexB --dir test/built-ins/Function --dir test/built-ins/Map --dir test/built-ins/Set --dir test/built-ins/WeakMap --dir test/built-ins/WeakSet --dir test/built-ins/WeakRef --dir test/built-ins/FinalizationRegistry --dir test/built-ins/String --dir test/built-ins/Object --dir test/built-ins/Reflect --dir test/built-ins/Array --dir test/built-ins/Symbol --dir test/built-ins/Proxy
+.4_2-12gs.js [sloppy]
+#          22  Symbol.iterator  e.g. test/built-ins/Object/fromEntries/evaluation-order.js [sloppy]
+#          22  Symbol.species  e.g. test/built-ins/Array/prototype/concat/create-proto-from-ctor-realm-array.js [sloppy]
+#          21  class-methods-private  e.g. test/built-ins/Function/prototype/toString/private-method-class-expression.js [sloppy]
+#          19  dynamic-import  e.g. test/language/expressions/dynamic-import/catch/nested-arrow-import-catch-eval-script-code-target.js [module]
+#          18  class-fields-private  e.g. test/language/expressions/class/elements/syntax/early-errors/grammar-private-environment-on-class-heritage-chained-usage.js [sloppy]
+#          16  class-fields-public  e.g. test/language/expressions/class/elements/syntax/early-errors/grammar-private-environment-on-class-heritage-chained-usage.js [sloppy]
+#          16  generators  e.g. test/built-ins/Function/prototype/toString/GeneratorFunction.js [sloppy]
+#          16  string-trimming  e.g. test/annexB/built-ins/String/prototype/trimLeft/length.js [sloppy]
+#          15  symbols-as-weakmap-keys  e.g. test/built-ins/WeakMap/prototype/getOrInsert/adds-symbol-element.js [sloppy]
+#          12  Object.fromEntries  e.g. test/built-ins/Object/fromEntries/evaluation-order.js [sloppy]
+#          12  import-attributes  e.g. test/language/expressions/dynamic-import/import-attributes/2nd-param-with-enumeration-enumerable.js [sloppy]
+#          12  json-modules  e.g. test/language/expressions/dynamic-import/import-attributes/2nd-param-with-enumeration-enumerable.js [sloppy]
+#          10  let  e.g. test/language/statements/for-in/scope-body-lex-boundary.js [sloppy]
+#          10  regexp-v-flag  e.g. test/built-ins/String/prototype/match/regexp-prototype-match-v-u-flag.js [sloppy]
+#          39  further row(s) not printed here; every one of them is in the report
+# test262 34670 files, 64757 variants: pass 62920, fail 1043, unsupported 0, exhausted 16, skipped 778
+coverage partial a named selection rather than the whole test tree: test/language test/annexB test/built-ins/Function test/built-ins/Map test/built-ins/Set test/built-ins/WeakMap test/built-ins/WeakSet test/built-ins/WeakRef test/built-ins/FinalizationRegistry test/built-ins/String test/built-ins/Object test/built-ins/Reflect test/built-ins/Array test/built-ins/Symbol test/built-ins/Proxy
+# the whole-run report is <scratch>/test262-change/test262.report
+# the machine-readable report is <scratch>/test262-change/test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language test/annexB test/built-ins/Function test/built-ins/Map test/built-ins/Set test/built-ins/WeakMap test/built-ins/WeakSet test/built-ins/WeakRef test/built-ins/FinalizationRegistry test/built-ins/String test/built-ins/Object test/built-ins/Reflect test/built-ins/Array test/built-ins/Symbol test/built-ins/Proxy
+# exit 1

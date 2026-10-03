@@ -1,0 +1,15 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
+index df339f4..1bc0134 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
+@@ -252,10 +252,6 @@ internal sealed partial class JsRealm
+         // THE CEILING `Reflect.apply` HAS, for the reason it has it: the specification's own is
+         // 2**32 - 1, which no implementation can honour, and a list past this one gets the
+         // `RangeError` rather than a spent heap.
+-        if (count > ReflectArgumentCeiling)
+-        {
+-            engine.ThrowRangeError("the argument list is longer than this profile admits");
+-        }
+ 
+         // ONE FUEL UNIT PER ELEMENT, CHARGED AS THE LIST GROWS RATHER THAN ONCE UP FRONT, so a long
+         // list under the ceiling is a spent allowance rather than an allocation made before

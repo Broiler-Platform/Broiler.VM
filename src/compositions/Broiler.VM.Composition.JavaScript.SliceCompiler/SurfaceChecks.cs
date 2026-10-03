@@ -40,6 +40,8 @@ internal static class SurfaceChecks
         AnAdmittingCompositionWithNoProviderRefusesAtRunTime(),
         ATypeofDeclaresNothingAndIsAnsweredEitherWay(),
         ADeclaredSurfaceReachesTheRealm(),
+        TheSuspendingConstructorsGiveADecliningRealmsReason(),
+        TheSuspendingConstructorsGoWhereFunctionGoes(),
     ];
 
     /// <summary>
@@ -133,6 +135,83 @@ internal static class SurfaceChecks
             out var detail);
 
         return (Name, answer && string.Equals(detail, "44", System.StringComparison.Ordinal), detail);
+    }
+
+    /// <summary>
+    /// The program the two checks below share: <c>Function</c> and each of the three constructors
+    /// reached off a function of its kind, asked to build from source, and what each answered.
+    /// </summary>
+    private const string SuspendingConstructors =
+        "var r = [];" +
+        "[function () {}, function* () {}, async function () {}, async function* () {}].forEach(function (f) {" +
+        "  var C = Object.getPrototypeOf(f).constructor;" +
+        "  try { C('1'); r.push(C.name + ':built'); }" +
+        "  catch (e) { r.push(C.name + ':' + e.name + ':' + (e.message.indexOf('did not admit broiler.javascript.dynamic') >= 0)); }" +
+        "});" +
+        "r.join(',');";
+
+    /// <summary>
+    /// A composition that declined the dynamic surface refuses <c>Function</c>,
+    /// <c>GeneratorFunction</c>, <c>AsyncFunction</c> and <c>AsyncGeneratorFunction</c> with the
+    /// reason that is true of it.
+    /// </summary>
+    /// <remarks>
+    /// Until JSP-10 (JSC-240) the three suspending constructors refused in every realm, giving the
+    /// dynamic surface's reason in a realm that had admitted the surface, and <c>Function</c>'s
+    /// reason named the wide manifest, which decides nothing about it. The reason is now the
+    /// composition's answer, so it is asked of a composition that gave it.
+    /// </remarks>
+    private static (string, bool, string) TheSuspendingConstructorsGiveADecliningRealmsReason()
+    {
+        const string Name = "the suspending constructors give a declining realm's reason";
+        var artifact = Compile(SuspendingConstructors);
+
+        if (artifact is null)
+        {
+            return (Name, false, "the source did not compile, so the check judged nothing");
+        }
+
+        var answer = RunProgram(artifact, JavaScriptProfile.DescriptorAdmitting(), out var detail);
+
+        return (
+            Name,
+            answer && string.Equals(
+                detail,
+                "Function:TypeError:true,GeneratorFunction:TypeError:true," +
+                "AsyncFunction:TypeError:true,AsyncGeneratorFunction:TypeError:true",
+                System.StringComparison.Ordinal),
+            detail);
+    }
+
+    /// <summary>
+    /// A composition that admitted the dynamic surface sends the same four requests through the door
+    /// <c>eval</c> uses, so with no provider registered each is refused the way <c>eval</c> is: an
+    /// <c>EvalError</c> the guest catches.
+    /// </summary>
+    /// <remarks>
+    /// The non-vacuity clause for the row above. A build in which the constructors refused in every
+    /// realm would pass that row and fail this one.
+    /// </remarks>
+    private static (string, bool, string) TheSuspendingConstructorsGoWhereFunctionGoes()
+    {
+        const string Name = "the suspending constructors go where Function goes when the surface is admitted";
+        var artifact = Compile(SuspendingConstructors);
+
+        if (artifact is null)
+        {
+            return (Name, false, "the source did not compile, so the check judged nothing");
+        }
+
+        var answer = RunProgram(artifact, JavaScriptProfile.Descriptor, out var detail);
+
+        return (
+            Name,
+            answer && string.Equals(
+                detail,
+                "Function:EvalError:false,GeneratorFunction:EvalError:false," +
+                "AsyncFunction:EvalError:false,AsyncGeneratorFunction:EvalError:false",
+                System.StringComparison.Ordinal),
+            detail);
     }
 
     /// <summary>Compiles one script, or answers nothing.</summary>

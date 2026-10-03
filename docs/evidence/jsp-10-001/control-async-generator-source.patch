@@ -1,0 +1,16 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs
+index ac349d4..8fee6cb 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs
+@@ -155,9 +155,9 @@ internal sealed partial class JsRealm
+             "AsyncGeneratorFunction",
+             1,
+             static (engine, thisValue, arguments) =>
+-                FromSourceOrRefuse(engine, arguments, "async function*", AsyncGeneratorFunctionRefusal),
++                engine.ThrowTypeError(AsyncGeneratorFunctionRefusal),
+             static (engine, thisValue, arguments) =>
+-                FromSourceOrRefuse(engine, arguments, "async function*", AsyncGeneratorFunctionRefusal));
++                engine.ThrowTypeError(AsyncGeneratorFunctionRefusal));
+ 
+         constructor.SetOwnProperty(
+             "prototype",

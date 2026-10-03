@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   129
 // Annotated:        129/129
-// Exempt:           97
+// Exempt:           104
 // Human-reviewed:   0/129
 // IP risk:          Medium
 // Security risk:    Medium
@@ -552,9 +552,9 @@ public sealed class JsRegExpMatch
 public sealed class JsRegExpMatcher
 {
     /// <summary>How deeply a pattern may nest groups before the parser refuses it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=ABF9A7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=C24228
     // Broiler-Human:        PENDING
-    private const int MaximumNestingDepth = 128;
+    private const int MaximumNestingDepth = 512;
 
     /// <summary>How many backtrack points one match may hold at once.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B6D684
@@ -590,10 +590,18 @@ public sealed class JsRegExpMatcher
         0x2028, 0x2029, 0x202F, 0x202F, 0x205F, 0x205F, 0x3000, 0x3000, 0xFEFF, 0xFEFF,
     ];
 
-    /// <summary>The word characters this pattern's flags make, as a set, for <c>\b</c>.</summary>
+    /// <summary>The word characters for <c>\b</c> where case is not folded.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B617EE
     // Broiler-Human:        PENDING
     private readonly JsRegExpCharSet wordCharacters;
+
+    /// <summary>
+    /// The word characters for <c>\b</c> where case is folded, by the <c>i</c> flag or a modifier
+    /// group; they differ from <see cref="wordCharacters"/> only with the <c>u</c> flag.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=8A76E9
+    // Broiler-Human:        PENDING
+    private readonly JsRegExpCharSet foldedWordCharacters;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=12584A
     // Broiler-Human:        PENDING
@@ -619,8 +627,13 @@ public sealed class JsRegExpMatcher
     // Broiler-Human:        PENDING
     private readonly int prefilterValue;
 
+    /// <summary>Whether the prefilter's character or class is matched with case folded.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=ED6556
+    // Broiler-Human:        PENDING
+    private readonly bool prefilterFold;
+
     /// <summary>Creates a compiled matcher out of a finished lowering.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=5F9C95
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=9F3E33
     // Broiler-Human:        PENDING
     private JsRegExpMatcher(
         Instruction[] program,
@@ -636,7 +649,8 @@ public sealed class JsRegExpMatcher
         code = program;
         classes = sets;
         groupNames = names;
-        wordCharacters = BuildSet(WordRangesFor(ignoreCase, unicode));
+        wordCharacters = BuildSet(WordRangesFor(false, unicode));
+        foldedWordCharacters = BuildSet(WordRangesFor(true, unicode));
         CaptureCount = captures;
         cellCount = cells;
         IgnoreCase = ignoreCase;
@@ -650,6 +664,7 @@ public sealed class JsRegExpMatcher
         // Anything else - a split, an assertion, a loop head - leaves the scan as it was.
         var kind = 0;
         var value = 0;
+        var fold = false;
 
         for (var at = 0; at < program.Length; at++)
         {
@@ -664,6 +679,7 @@ public sealed class JsRegExpMatcher
             {
                 kind = instruction.Op == Op.Char ? 1 : 2;
                 value = instruction.A;
+                fold = instruction.Fold;
             }
 
             // A run that must take at least one character begins with its class just as a lone
@@ -672,6 +688,7 @@ public sealed class JsRegExpMatcher
             {
                 kind = 2;
                 value = instruction.A;
+                fold = instruction.Fold;
             }
 
             break;
@@ -679,6 +696,7 @@ public sealed class JsRegExpMatcher
 
         prefilterKind = kind;
         prefilterValue = value;
+        prefilterFold = fold;
 
         foreach (var name in names)
         {
@@ -742,14 +760,14 @@ public sealed class JsRegExpMatcher
     }
 
     /// <summary>Parses and lowers one pattern, or refuses it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=EA42CF
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=637558
     // Broiler-Human:        PENDING
     public static JsRegExpMatcher Compile(
         string source, bool ignoreCase, bool multiline, bool dotAll, bool unicode)
     {
         var parser = new Parser(source, unicode, dotAll, ignoreCase);
         var root = parser.Parse();
-        var emitter = new Emitter(ignoreCase, unicode);
+        var emitter = new Emitter(ignoreCase, multiline, unicode);
         emitter.Lower(root);
 
         return new JsRegExpMatcher(
@@ -774,7 +792,7 @@ public sealed class JsRegExpMatcher
     /// which is what the flag is for and what an emulation over a forward-searching engine cannot
     /// give.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=336BD9
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=4ADBF8
     // Broiler-Human:        PENDING
     public JsRegExpMatch? Match(string input, int start, bool anchored, JsRegExpCharge? charge)
     {
@@ -790,7 +808,7 @@ public sealed class JsRegExpMatcher
         // the scan hands the meter each skip as it goes, so a long scan polls cancellation too.
         var perSkip = prefilterKind == 2
             ? 1 + ((ulong)classes[prefilterValue].Weight *
-                (IgnoreCase ? (ulong)JsRegExpCase.MaxUnicodeVariants + 1 : 1))
+                (prefilterFold ? (ulong)JsRegExpCase.MaxUnicodeVariants + 1 : 1))
             : 1;
 
         while (true)
@@ -843,7 +861,7 @@ public sealed class JsRegExpMatcher
     }
 
     /// <summary>Whether a start position survives the first-character filter.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=839DD4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=D0EF9D
     // Broiler-Human:        PENDING
     private bool PrefilterAdmits(string input, int at)
     {
@@ -860,11 +878,11 @@ public sealed class JsRegExpMatcher
 
         if (prefilterKind == 1)
         {
-            var folded = IgnoreCase ? JsRegExpCase.Canonicalize(codePoint, Unicode) : codePoint;
+            var folded = prefilterFold ? JsRegExpCase.Canonicalize(codePoint, Unicode) : codePoint;
             return folded == prefilterValue;
         }
 
-        return classes[prefilterValue].Matches(codePoint, IgnoreCase, Unicode);
+        return classes[prefilterValue].Matches(codePoint, prefilterFold, Unicode);
     }
 
     /// <summary>
@@ -1017,10 +1035,23 @@ public sealed class JsRegExpMatcher
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=FD6659
         // Broiler-Human:        PENDING
         internal bool Backward;
+
+        /// <summary>
+        /// Whether <c>i</c> is in force where this instruction was written: the pattern's flag, or a
+        /// modifier group's that encloses it.
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=83BFF2
+        // Broiler-Human:        PENDING
+        internal bool Fold;
+
+        /// <summary>Whether <c>m</c> is in force where this instruction was written.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=9CD805
+        // Broiler-Human:        PENDING
+        internal bool Lines;
     }
 
     /// <summary>What one node of the parsed pattern is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B059D9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=D5468B
     // Broiler-Human:        PENDING
     private enum NodeKind : byte
     {
@@ -1059,6 +1090,12 @@ public sealed class JsRegExpMatcher
 
         /// <summary>The <c>\b</c> assertion, or <c>\B</c> when <c>A</c> is one.</summary>
         WordBoundary = 11,
+
+        /// <summary>
+        /// Its child, with the flags in <c>A</c> added and those in <c>B</c> removed: a modifier
+        /// group, <c>(?ims-ims:...)</c>. The bits are <c>i</c> 1, <c>m</c> 2 and <c>s</c> 4.
+        /// </summary>
+        Modifier = 12,
     }
 
     /// <summary>One node of the parsed pattern, written once and read afterwards.</summary>
@@ -1135,9 +1172,14 @@ public sealed class JsRegExpMatcher
         // Broiler-Human:        PENDING
         private readonly bool unicode;
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B2BC6A
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=49D642
         // Broiler-Human:        PENDING
-        private readonly bool dotAll;
+        private bool dotAll;
+
+        /// <summary>Whether <c>i</c> is in force at the point being parsed.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B04168
+        // Broiler-Human:        PENDING
+        private bool foldsCase;
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=19E77C
         // Broiler-Human:        PENDING
@@ -1160,20 +1202,21 @@ public sealed class JsRegExpMatcher
         private int opened;
 
         /// <summary>The code points <c>\w</c> stands for under this pattern's flags.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=0A44FB
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=50665A
         // Broiler-Human:        PENDING
-        private readonly int[] wordRanges;
+        private int[] wordRanges;
 
         /// <summary>Reads the pattern once to count its groups, then prepares to parse it.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=BBBFF3
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=C0B3F9
         // Broiler-Human:        PENDING
-        internal Parser(string source, bool inUnicodeMode, bool inDotAllMode, bool foldsCase)
+        internal Parser(string source, bool inUnicodeMode, bool inDotAllMode, bool inFoldingMode)
         {
             pattern = source;
             unicode = inUnicodeMode;
             dotAll = inDotAllMode;
+            foldsCase = inFoldingMode;
             ceiling = inUnicodeMode ? 0x10FFFF : 0xFFFF;
-            wordRanges = WordRangesFor(foldsCase, inUnicodeMode);
+            wordRanges = WordRangesFor(inFoldingMode, inUnicodeMode);
 
             var found = new System.Collections.Generic.List<string?> { null };
             var inClass = false;
@@ -1650,13 +1693,16 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>A group: capturing, named, non-capturing, or one of the four assertions.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=D1C8CC
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=AE38A3
         // Broiler-Human:        PENDING
         private Node ParseGroup()
         {
             at++;
             var kind = -1;
             var capture = false;
+            var modified = false;
+            var added = 0;
+            var removed = 0;
 
             if (at < pattern.Length && pattern[at] == '?')
             {
@@ -1670,6 +1716,67 @@ public sealed class JsRegExpMatcher
                     case ':':
                         at += 2;
                         break;
+
+                    // A MODIFIER GROUP, `(?ims-ims:...)`: the pinned edition's
+                    // RegularExpressionModifiers. A flag may appear once across both lists, only
+                    // `i`, `m` and `s` may appear, and `(?-:` with both lists empty is an error.
+                    case 'i':
+                    case 'm':
+                    case 's':
+                    case '-':
+                    {
+                        var scan = at + 1;
+                        var removing = false;
+
+                        while (scan < pattern.Length && pattern[scan] != ':')
+                        {
+                            var letter = pattern[scan];
+
+                            if (letter == '-')
+                            {
+                                if (removing)
+                                {
+                                    throw new JsRegExpSyntaxError("Invalid group");
+                                }
+
+                                removing = true;
+                                scan++;
+                                continue;
+                            }
+
+                            var bit = letter switch { 'i' => 1, 'm' => 2, 's' => 4, _ => 0 };
+
+                            if (bit == 0)
+                            {
+                                throw new JsRegExpSyntaxError("Invalid group");
+                            }
+
+                            if (((added | removed) & bit) != 0)
+                            {
+                                throw new JsRegExpSyntaxError("Repeated flag in modifiers");
+                            }
+
+                            if (removing)
+                            {
+                                removed |= bit;
+                            }
+                            else
+                            {
+                                added |= bit;
+                            }
+
+                            scan++;
+                        }
+
+                        if (scan >= pattern.Length || (removing && added == 0 && removed == 0))
+                        {
+                            throw new JsRegExpSyntaxError("Invalid group");
+                        }
+
+                        at = scan + 1;
+                        modified = true;
+                        break;
+                    }
 
                     case '=':
                         at += 2;
@@ -1722,7 +1829,26 @@ public sealed class JsRegExpMatcher
                 number = ++opened;
             }
 
+            // `s` and `i` are read while parsing - the full stop's set, and `\w`'s under `iu` - so
+            // a modifier group changes them for its body and puts them back after it.
+            var outerDotAll = dotAll;
+            var outerFolds = foldsCase;
+
+            if (modified)
+            {
+                dotAll = ((added & 4) != 0) || (dotAll && (removed & 4) == 0);
+                foldsCase = ((added & 1) != 0) || (foldsCase && (removed & 1) == 0);
+                wordRanges = WordRangesFor(foldsCase, unicode);
+            }
+
             var body = ParseDisjunction();
+
+            if (modified)
+            {
+                dotAll = outerDotAll;
+                foldsCase = outerFolds;
+                wordRanges = WordRangesFor(foldsCase, unicode);
+            }
 
             if (at >= pattern.Length || pattern[at] != ')')
             {
@@ -1739,6 +1865,11 @@ public sealed class JsRegExpMatcher
             if (capture)
             {
                 return new Node { Kind = NodeKind.Capture, A = number, Children = [body] };
+            }
+
+            if (modified)
+            {
+                return new Node { Kind = NodeKind.Modifier, A = added, B = removed, Children = [body] };
             }
 
             // A NON-CAPTURING GROUP IS WRAPPED RATHER THAN COLLAPSED INTO ITS BODY. Handing the
@@ -2450,7 +2581,7 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>The <c>\c</c> control escape, with Annex B's two relaxations.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=FD6110
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=BB255C
         // Broiler-Human:        PENDING
         private int ReadControlEscape(bool inClass)
         {
@@ -2461,7 +2592,10 @@ public sealed class JsRegExpMatcher
                 return letter % 32;
             }
 
-            if (inClass && at < pattern.Length && (char.IsAsciiDigit(pattern[at]) || pattern[at] == '_'))
+            // Annex B's ClassControlLetter, a digit or `_`, is [~UnicodeMode] grammar: under `u` it
+            // is an invalid escape like any other (B.1.2). Until 2026-10-03 it was admitted under
+            // `u` too (JSC-252).
+            if (inClass && !unicode && at < pattern.Length && (char.IsAsciiDigit(pattern[at]) || pattern[at] == '_'))
             {
                 var extra = pattern[at];
                 at++;
@@ -2528,20 +2662,26 @@ public sealed class JsRegExpMatcher
         // Broiler-Human:        PENDING
         private readonly System.Collections.Generic.List<JsRegExpCharSet> sets = [];
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=853984
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=F1FCC4
         // Broiler-Human:        PENDING
-        private readonly bool ignoreCase;
+        private bool ignoreCase;
+
+        /// <summary>Whether <c>m</c> is in force where the next instruction is written.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=063DBF
+        // Broiler-Human:        PENDING
+        private bool multiline;
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=BFB9BF
         // Broiler-Human:        PENDING
         private readonly bool unicode;
 
         /// <summary>Creates a lowering for one set of flags.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=F6AF87
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=4315C6
         // Broiler-Human:        PENDING
-        internal Emitter(bool foldsCase, bool inUnicodeMode)
+        internal Emitter(bool foldsCase, bool inMultilineMode, bool inUnicodeMode)
         {
             ignoreCase = foldsCase;
+            multiline = inMultilineMode;
             unicode = inUnicodeMode;
 
             // Cells zero and one are the whole match's own bounds, which is why a capture group's
@@ -2605,11 +2745,14 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Appends one instruction and answers where it landed.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=2769CA
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=401A54
         // Broiler-Human:        PENDING
         private int Add(Op op, int a, int b, int c, bool backward)
         {
-            code.Add(new Instruction { Op = op, A = a, B = b, C = c, Backward = backward });
+            code.Add(new Instruction
+            {
+                Op = op, A = a, B = b, C = c, Backward = backward, Fold = ignoreCase, Lines = multiline,
+            });
             return code.Count - 1;
         }
 
@@ -2644,7 +2787,7 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Lowers one node, in the direction its enclosing assertion set.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=B3E4D5
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=AF5471
         // Broiler-Human:        PENDING
         private void Emit(Node node, bool backward)
         {
@@ -2698,6 +2841,20 @@ public sealed class JsRegExpMatcher
                 case NodeKind.Look:
                     EmitLook(node, backward);
                     break;
+
+                // THE FLAGS ARE LEXICAL: the body is written under the changed ones, and every
+                // instruction carries the ones it was written under, which is what the runner reads.
+                case NodeKind.Modifier:
+                {
+                    var outerFolds = ignoreCase;
+                    var outerLines = multiline;
+                    ignoreCase = ((node.A & 1) != 0) || (ignoreCase && (node.B & 1) == 0);
+                    multiline = ((node.A & 2) != 0) || (multiline && (node.B & 2) == 0);
+                    Emit(node.Children![0], backward);
+                    ignoreCase = outerFolds;
+                    multiline = outerLines;
+                    break;
+                }
 
                 default:
                     EmitRepeat(node, backward);
@@ -3068,7 +3225,7 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Runs the program once, from exactly <paramref name="start"/>.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=05EBDF
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=6656DE
         // Broiler-Human:        PENDING
         internal bool Attempt(int start)
         {
@@ -3101,12 +3258,12 @@ public sealed class JsRegExpMatcher
                 switch (instruction.Op)
                 {
                     case Op.Char:
-                        failed = !TakeChar(ref position, instruction.A, instruction.Backward);
+                        failed = !TakeChar(ref position, instruction.A, instruction.Backward, instruction.Fold);
                         pc++;
                         break;
 
                     case Op.Set:
-                        failed = !TakeSet(ref position, instruction.A, instruction.Backward);
+                        failed = !TakeSet(ref position, instruction.A, instruction.Backward, instruction.Fold);
                         pc++;
                         break;
 
@@ -3140,23 +3297,23 @@ public sealed class JsRegExpMatcher
 
                     case Op.Bol:
                         failed = position != 0 &&
-                            !(owner.Multiline && IsLineTerminator(input[position - 1]));
+                            !(instruction.Lines && IsLineTerminator(input[position - 1]));
                         pc++;
                         break;
 
                     case Op.Eol:
                         failed = position != input.Length &&
-                            !(owner.Multiline && IsLineTerminator(input[position]));
+                            !(instruction.Lines && IsLineTerminator(input[position]));
                         pc++;
                         break;
 
                     case Op.Word:
-                        failed = AtWordBoundary(position) == (instruction.A == 1);
+                        failed = AtWordBoundary(position, instruction.Fold) == (instruction.A == 1);
                         pc++;
                         break;
 
                     case Op.BackRef:
-                        failed = !TakeBackReference(ref position, instruction.A, instruction.Backward);
+                        failed = !TakeBackReference(ref position, instruction.A, instruction.Backward, instruction.Fold);
                         pc++;
                         break;
 
@@ -3403,9 +3560,9 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Consumes one literal character.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=85595E
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=310BEB
         // Broiler-Human:        PENDING
-        private bool TakeChar(ref int position, int wanted, bool backward)
+        private bool TakeChar(ref int position, int wanted, bool backward, bool fold)
         {
             if (backward ? position <= 0 : position >= input.Length)
             {
@@ -3414,7 +3571,7 @@ public sealed class JsRegExpMatcher
 
             var found = Read(position, backward, out var width);
 
-            if (owner.IgnoreCase)
+            if (fold)
             {
                 found = JsRegExpCase.Canonicalize(found, owner.Unicode);
             }
@@ -3429,9 +3586,9 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Consumes one character a class admits.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=3BE282
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=53E63E
         // Broiler-Human:        PENDING
-        private bool TakeSet(ref int position, int set, bool backward)
+        private bool TakeSet(ref int position, int set, bool backward, bool fold)
         {
             if (backward ? position <= 0 : position >= input.Length)
             {
@@ -3447,10 +3604,10 @@ public sealed class JsRegExpMatcher
             if (chosen.Weight > 0)
             {
                 steps += (ulong)chosen.Weight *
-                    (owner.IgnoreCase ? (ulong)JsRegExpCase.MaxUnicodeVariants + 1 : 1);
+                    (fold ? (ulong)JsRegExpCase.MaxUnicodeVariants + 1 : 1);
             }
 
-            if (!chosen.Matches(found, owner.IgnoreCase, owner.Unicode))
+            if (!chosen.Matches(found, fold, owner.Unicode))
             {
                 return false;
             }
@@ -3471,7 +3628,7 @@ public sealed class JsRegExpMatcher
         /// frame, its two cell writes and its four bookkeeping instructions per character, which
         /// are not charged because they are not done.
         /// </remarks>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=FE8416
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=15B53E
         // Broiler-Human:        PENDING
         private bool TakeRun(ref int position, Instruction run, int resume)
         {
@@ -3481,7 +3638,7 @@ public sealed class JsRegExpMatcher
             {
                 Tick();
 
-                if (!TakeSet(ref position, run.A, run.Backward))
+                if (!TakeSet(ref position, run.A, run.Backward, run.Fold))
                 {
                     return false;
                 }
@@ -3495,7 +3652,7 @@ public sealed class JsRegExpMatcher
             {
                 Tick();
 
-                if (!TakeSet(ref position, run.A, run.Backward))
+                if (!TakeSet(ref position, run.A, run.Backward, run.Fold))
                 {
                     break;
                 }
@@ -3558,25 +3715,25 @@ public sealed class JsRegExpMatcher
         }
 
         /// <summary>Whether the two characters around a position differ in wordness.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=88E183
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=5636D5
         // Broiler-Human:        PENDING
-        private bool AtWordBoundary(int position)
+        private bool AtWordBoundary(int position, bool fold)
         {
-            var before = position > 0 && IsWordCharacter(input[position - 1]);
-            var after = position < input.Length && IsWordCharacter(input[position]);
+            var before = position > 0 && IsWordCharacter(input[position - 1], fold);
+            var after = position < input.Length && IsWordCharacter(input[position], fold);
             return before != after;
         }
 
         /// <summary>Whether one code unit is a word character, folding included.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=C60933
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=879F42
         // Broiler-Human:        PENDING
-        private bool IsWordCharacter(char unit) =>
-            owner.wordCharacters.Matches(unit, false, false);
+        private bool IsWordCharacter(char unit, bool fold) =>
+            (fold ? owner.foldedWordCharacters : owner.wordCharacters).Matches(unit, false, false);
 
         /// <summary>Consumes whatever a capture group matched.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=E44A8F
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=E6BD58
         // Broiler-Human:        PENDING
-        private bool TakeBackReference(ref int position, int group, bool backward)
+        private bool TakeBackReference(ref int position, int group, bool backward, bool fold)
         {
             var from = cells[group * 2];
             var to = cells[(group * 2) + 1];
@@ -3598,7 +3755,7 @@ public sealed class JsRegExpMatcher
 
             steps += (ulong)length;
 
-            if (!owner.IgnoreCase)
+            if (!fold)
             {
                 if (string.CompareOrdinal(input, from, input, start, length) != 0)
                 {

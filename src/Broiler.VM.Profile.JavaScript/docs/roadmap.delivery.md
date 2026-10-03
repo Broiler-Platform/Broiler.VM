@@ -1,9 +1,11 @@
 # Broiler.VM.Profile.JavaScript roadmap — delivery
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
-[names every file](roadmap.md#how-this-roadmap-is-split). It carries sections 19–20 and 25:
-the milestones, the order they are delivered in, and the map that ties every chapter of the plan
-to the milestone that delivers it and the gate that closes it. **Section numbers are global and do
+[names every file](roadmap.md#how-this-roadmap-is-split). It carries sections 19–20 and 25–26:
+the milestones, the order they are delivered in, the map that ties every chapter of the plan
+to the milestone that delivers it and the gate that closes it, and **the road to a full-featured
+profile**, which is where a reader who wants to know what is finished and what comes next starts
+([section 26](#26-the-road-to-a-full-featured-profile)). **Section numbers are global and do
 not change when a section moves**, so a reference written to any section below still resolves here.
 
 The [evidence ledger](roadmap.status.md) is the authority for what has been accepted, and
@@ -763,6 +765,10 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
 
 ## 20. Delivery order
 
+**From 2026-10-03, the order of the work that remains is [section 26](#26-the-road-to-a-full-featured-profile)'s.**
+The diagram below is the dependency order the milestones were planned in, and every gate in section
+19 still cites it; most of its nodes have code in this checkout, and none is accepted.
+
 ```text
      JS-0  boundary, placement, identity, assurance floor, evidence contract
         │        no copied line yet, no product code
@@ -903,6 +909,7 @@ gate with no owning milestone is a gate nobody can close.
 | — the assurance floor and the review debt, which are repository policy rather than this plan's argument | JS-0 adopts the host component's mechanism and records what adoption costs; JS-10 gates the release on it | Assurance and review | 11 | unreviewed units accumulating; owner and reviewer the same person |
 | — packaging and consumers | JS-10 | Packaging and consumers | 8 | — |
 | — operational ownership: diagnostics, cancellation, rollback, version rejection, corpus and suite drift, **vulnerability response**, recertification | JS-10 names every owner | Assurance and review | 13 | a role held by nobody |
+| — the surfaces reopened on 2026-10-03, which chapter 6 lists and no milestone delivered | [section 26](#26-the-road-to-a-full-featured-profile)'s phases F2 to F8, each closing at JS-10 through F9 | Conformance; Standard library | 1, 9 | the manifest set drifts upward |
 
 **What the map shows that no single file does.** The first four are deliberate; the last two are
 the gaps it was built to find:
@@ -975,3 +982,286 @@ the gaps it was built to find:
   argues for it, because it is an operational obligation rather than a design one — and this
   component ships a parser and an interpreter over untrusted input, so a release with no named
   holder for a report about either is not a release. JS-10 names them or the gate refuses.
+
+---
+
+## 26. The road to a full-featured profile
+
+*Added 2026-10-03 ([JSC-251](roadmap.corrections.md#jsc-251)). Sections 19, 20 and 25 stay the
+authority for each milestone's gate and for the dependency order the milestones were planned in.
+This section is the reading order for the work that remains. It summarises what is finished,
+reopens every surface the plan used to decline, and orders what is left into phases that end in a
+profile with no surface declined.*
+
+### 26.1 What "full-featured" means here
+
+**A full-featured profile is one whose realm declines nothing the language defines, and whose
+release gate is met.** Four things together:
+
+- **The whole pinned edition**, ES2026 as archived under [`specification/`](specification/README.md),
+  with Annex B in the script goal. That includes the RegExp `v` flag, `SharedArrayBuffer`,
+  `Atomics` and the agent model they need, and nested realms.
+- **ECMA-402**, as `Intl` under its own manifest identity.
+- **The two surfaces ahead of the edition this plan now schedules: Temporal and ShadowRealm.**
+  Neither is in the pinned edition, and roadmap
+  [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule holds for
+  both: nothing ahead of the edition is admitted except what a decision record names. Each phase
+  that delivers one opens with that record.
+- **The two host-facing behaviours a program reads, which the edition leaves to the host:**
+  `Function.prototype.toString` returning source text, and `Error.prototype.stack`.
+
+**A full-featured profile is not an accepted one.** Acceptance is the [ledger](roadmap.status.md)'s
+and needs evidence a person has read. Section 26.5 runs that track beside the phases, and phase F9
+is where the two meet.
+
+### 26.2 What is finished
+
+**Nothing below is accepted.** "Implemented" means the work exists in this checkout, with fixtures
+and suite runs recorded in the [corrections](roadmap.corrections.md) and in the retained records
+under `docs/evidence/`. No owner or reviewer has read any of it. The milestone rows themselves are
+the ledger's and are not restated here: [section 2 of the ledger](roadmap.status.md#2-current-milestone-status)
+holds them.
+
+**By area, what the profile has today:**
+
+| Area | Implemented | Where it is argued |
+|---|---|---|
+| Front end | Two source front ends sharing one tokenizer: the slice and the wide surface, with the static semantics the wide one owes | [section 9](roadmap.md#9-the-semantic-front-end-and-lowering) |
+| Format and verifier | Format versions 1 and 2, each verifier refusing at verification rather than at first execution | [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier) |
+| Values and objects | The value model, the object model with its integrity clauses, BigInt, the binary surface | [section 8](roadmap.md#8-the-value-frame-and-call-model) |
+| Execution | The interpreter, measured budgets, the value form, and two native forms (x86-64, arm64 emitting) | [section 10](roadmap.md#10-execution-mapping-javascript-onto-the-core-lifecycle), [backends](roadmap.backends.md) |
+| Library | The edition's built-ins except the reopened surfaces of 26.3, Annex B, Unicode default case conversion, and the from-scratch RegExp matcher with pattern modifiers | [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted) |
+| Suspension | Generators, async functions, async generators, the job queue, top-level await | [section 12](roadmap.md#12-suspension-generators-async-functions-and-top-level-await) |
+| Guest loads | `eval`, the function constructors, dynamic `import()`, the module goal, each behind its identity | [section 11](roadmap.md#11-guest-initiated-loads-eval-the-function-constructor-dynamic-import-modules) |
+| Host | The in-realm host surface (JSD-0024), the end-user host, the conformance host | [section 13](roadmap.md#13-realms-agents-and-the-host-boundary), [hosting](roadmap.hosting.md) |
+| Oracle | The pinned edition, the pinned and archived test262, a floor over the whole suite, the differential probes | [section 14](roadmap.md#14-the-conformance-oracle) |
+
+**The proposal documents' stages, as of this date:**
+
+| Document | Implemented | Partly implemented | Not started |
+|---|---|---|---|
+| [Parity](roadmap.parity.md) | JSP-1 to JSP-10, every stage | — | — |
+| [Workloads](roadmap.workloads.md) | JSW-1, JSW-3, JSW-5 (under `wide`), JSW-6, JSW-7 | JSW-2 (its exclusion now reopened), JSW-4 (`broiler.javascript.regexp` not minted), JSW-8 (the module identity's remainder), JSW-9 (Native AOT depth, and the five Octane workloads `MaximumTreeDepth` refuses), JSW-10 (no retained whole run on a claimed RID) | — |
+| [Backends](roadmap.backends.md) | JSB-4, JSB-5, JSB-6 | JSB-2, JSB-3, JSB-7 to JSB-11 | JSB-1, and JSB-12 beyond its predeclared bounds |
+| [Hosting](roadmap.hosting.md) | JSH-1, and JSH-2 and JSH-3 for the members their gates name | JSH-4 (the host-versus-guest provider route), JSH-7 (the clone carrier, without a second realm) | JSH-5, JSH-6, JSH-8 |
+
+**What that leaves of the parity roadmap is its record, not its work.** Its section 4 is the gap
+as it was measured on 2026-09-20; every stage that closed part of it says so in place. The phases
+below carry what the other three documents still owe.
+
+### 26.3 The surfaces reopened on 2026-10-03
+
+**Every surface the plan declined by name is reopened.** It was declined for a reason that still
+holds for the order of work but not for whether the work happens: each one needs a mechanism this
+profile did not have, and none of them is optional for a full-featured profile. What a program
+meets today is unchanged until the phase that delivers the surface lands, and roadmap
+[section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted) states it.
+
+| Surface | Governing record | What reopening changes in the record | Phase |
+|---|---|---|---|
+| The RegExp `v` flag | [JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) | "Keep the `v` flag refused until a matcher slice is scheduled": the slice is scheduled | F2 |
+| `Function.prototype.toString` source text | none yet; a record opens F3 | The artifact carries the source text a function was defined from | F3 |
+| `Error.prototype.stack` | none yet; a record opens F3 | The shape is chosen by that record, from the comparison engines' common form | F3 |
+| `FinalizationRegistry` cleanup | [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) | D03-a is scheduled, and is taken on by the CLI composition by default | F4 |
+| Nested realms, `$262.createRealm` | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | SR-1, SR-2 and SR-7 are scheduled | F5 |
+| ShadowRealm | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | The deferral is not taken; SR-3 to SR-5 follow F5's realm work under `broiler.javascript.shadowrealm` | F5 |
+| Agents, `$262.agent` | [roadmap section 13](roadmap.md#13-realms-agents-and-the-host-boundary), [JSD-0028](decisions/0028-shared-memory-and-atomics.md) | A second agent is built, which is the first of JSD-0028's reopening conditions | F6 |
+| `SharedArrayBuffer` and `Atomics` | [JSD-0028](decisions/0028-shared-memory-and-atomics.md) | The exclusion is not taken; slices S1 to S5 follow the agent work under their own identity | F6 |
+| `Intl` | [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md), [JSD-0002](decisions/0002-feature-manifest-allocation.md) | The deferral is not taken; I0 to I4 are scheduled without waiting for a named consumer | F7 |
+| Temporal | [JSD-0002](decisions/0002-feature-manifest-allocation.md) only; a record opens F8 | Admitted at a pinned revision of the proposal, with a time-zone data boundary | F8 |
+
+**Each governing record gained a dated note saying so, and each is still unsigned.** Reopening is a
+direction given on 2026-10-03; it takes no record, signs nothing, and moves no ledger row. The
+`absent-globals` block in the ledger keeps all four of its names until the change that publishes
+each one removes it, because the block states what the realm lacks, not what the plan intends.
+
+### 26.4 The phases
+
+```text
+  F1  conformance closure on the admitted surface
+   │
+   ├→ F2  text: the RegExp v flag
+   │
+   ├→ F3  source text and stacks ──────────────┐
+   │                                            │
+   ├→ F4  FinalizationRegistry cleanup          │
+   │                                            │
+   └→ F5  realms: createRealm, then ShadowRealm ←┘ (a child realm's functions render their source)
+        │
+        └→ F6  agents, then SharedArrayBuffer and Atomics
+             │
+  F7  Intl ──┼──────────────────────────────────── (needs nothing above F1; may run beside F2-F6)
+   │         │
+   └→ F8  Temporal
+             │
+             └→ F9  the release: JS-10, on every surface above
+```
+
+**Read the diagram the way section 20's is read.** A `└→` edge is a prerequisite. F2, F3, F4 and F7
+need only F1 and may be staffed at once. F5 needs F3, because a realm built after source text is
+kept does not have to be revisited for it. F6 needs F5, because an agent is a runtime with its own
+realm and the realm work makes "its own" mean something. F8 needs F7, because Temporal's
+`toLocaleString` and its calendar names go through `Intl`. F9 needs everything.
+
+**Every phase has the same five parts**: what it delivers, the stages and slices it is made of,
+what it needs, its manifest identity, and its exit gate. An exit gate here is observable in this
+checkout: a test262 selection whose failures are zero or each named, a fixture in
+[`src/tests/cli/expected.txt`](../../tests/cli/expected.txt), and the corpus, probe and build
+checks a correction entry already records. **It is not acceptance**, which remains section 19's
+gate and the ledger's row.
+
+#### F1 — Conformance closure on the admitted surface
+
+- **Delivers:** no test262 failure on the admitted surface that is not named, and the workload
+  remainders.
+- **Made of:**
+  - the known defects: `new` through a revoked proxy, `delete super[key]`'s key conversion, and
+    `yield` and `await` read as names before a `/`;
+  - the runner's one hang, `staging/sm/regress/regress-1507322-deep-weakmap.js`, which passes its
+    wall-clock allowance without ending;
+  - JSW-4's identity: mint `broiler.javascript.regexp`, which needs a person's decision
+    (JSC-167);
+  - JSW-8's remainder, JSW-9's depth refusals of five Octane workloads, and JSW-10's retained whole
+    runs.
+- **Needs:** nothing.
+- **Identity:** the existing ones.
+- **Exit gate:** a whole run of the pinned suite in which every failure belongs to a phase below or
+  is named in a correction, and a retained whole run per manifest.
+
+#### F2 — Text: the RegExp `v` flag
+
+- **Delivers:** `v`-mode patterns, `unicodeSets`, properties of strings, set operations and
+  `MaybeSimpleCaseFolding`.
+- **Made of:** JSD-0031's matcher slice for string properties: archive `emoji-sequences.txt` and
+  `emoji-zwj-sequences.txt` from the pinned Unicode 17.0.0 release under rule N22, generate the
+  string-property tables, and extend the matcher with class strings and set operations.
+- **Needs:** F1.
+- **Identity:** `broiler.javascript.regexp` (or `wide` until F1 mints it).
+- **Exit gate:**
+  - the `unicodeSets`, `CharacterClassEscapes` and `property-escapes/generated/strings` subtrees
+    pass;
+  - the compile-time refusal of `v` and its diagnostic are removed;
+  - the row asserting `unicodeSets` answers `false` is replaced.
+
+#### F3 — Source text and stacks
+
+- **Delivers:**
+  - `Function.prototype.toString` returning the source text a function was defined from;
+  - an `Error.prototype.stack` of the shape a decision record chooses.
+- **Made of:**
+  - a decision record for source text: an artifact section holding source spans, which manifests
+    carry it, and what a size-sensitive composition may drop;
+  - a decision record for stacks, choosing the accessor's shape from the comparison engines'
+    common form and the position table the artifact already carries;
+  - the two implementations.
+- **Needs:** F1.
+- **Identity:** a format-version increment if the record puts source in the artifact.
+- **Exit gate:**
+  - `test/built-ins/Function/prototype/toString` passes;
+  - the fixtures that pin the native rendering and `an-error-has-no-stack.js` are replaced;
+  - section 6's two rows leave the table.
+
+#### F4 — FinalizationRegistry cleanup
+
+- **Delivers:** cleanup callbacks that arrive.
+- **Made of:** JSD-0029's D03-a, the host-drained sweep, with rule N25 kept: no guest code ever runs
+  from a CLR finalizer.
+- **Needs:** F1.
+- **Identity:** a composition switch, on by default in the CLI and conformance compositions.
+- **Exit gate:**
+  - `test/built-ins/FinalizationRegistry` passes with the cleanup cases;
+  - a fixture shows a callback arriving at a drain point;
+  - N25 still passes.
+
+#### F5 — Realms: `createRealm`, then ShadowRealm
+
+- **Delivers:** a second realm on one engine, cross-realm identity, then ShadowRealm.
+- **Made of:**
+  - JSD-0030's SR-1 (agent-scoped Symbols), SR-2 (a running realm and every function's
+    `[[Realm]]`) and SR-7 (`$262.createRealm`), with a JSD-0018 record admitting the suite's
+    `cross-realm` feature;
+  - JSH-7's second realm;
+  - then SR-3 to SR-5 behind `broiler.javascript.shadowrealm`, with a record admitting the proposal
+    at a pinned revision.
+- **Needs:** F3.
+- **Identity:** `broiler.javascript.shadowrealm`, admitted only with `broiler.javascript.dynamic`,
+  as JSD-0030 recommends.
+- **Exit gate:**
+  - the suite's `cross-realm` cases pass;
+  - `createRealm` stops refusing in [section 13](roadmap.md#13-realms-agents-and-the-host-boundary)'s
+    table;
+  - `test/built-ins/ShadowRealm` passes.
+
+#### F6 — Agents, then `SharedArrayBuffer` and `Atomics`
+
+- **Delivers:** worker-style agents under one shared budget, `$262.agent`, then shared memory.
+- **Made of:**
+  - JSH-5 (one guest thread per instance) and JS-9's agents under one parent;
+  - `$262.agent`'s five members;
+  - a successor to JSD-0028 answering its sections 2.1 to 2.6;
+  - slices S1 to S5.
+- **Needs:** F5.
+- **Identity:** a new `broiler.javascript.shared`, never folded into `broiler.javascript.binary`,
+  which keeps JSD-0028's reason for the split.
+- **Exit gate:**
+  - `test/built-ins/Atomics`, `SharedArrayBuffer`, and the shared-buffer cases of `DataView` and
+    the typed arrays pass;
+  - the conformance adapter stops declining `CanBlockIsFalse` and `CanBlockIsTrue`;
+  - the two names leave the ledger's `absent-globals` block in the same change that publishes them.
+
+#### F7 — `Intl`
+
+- **Delivers:** ECMA-402.
+- **Made of:** JSD-0027's I0 (the pinned CLDR input, its generator and the data assembly), I1
+  (`Collator` and a locale-aware `localeCompare`), I2 (`NumberFormat`), I3 (`DateTimeFormat`, UTC and
+  fixed offsets), then I4 and later (the remaining constructors and time-zone data).
+- **Needs:** F1, and nothing else above.
+- **Identity:** `broiler.javascript.intl`.
+- **Exit gate:**
+  - `test/intl402` is admitted by a JSD-0018 record and passes per slice;
+  - `Intl` leaves the `absent-globals` block in the change that publishes it, with N24's
+    assertion about it amended in the same change.
+
+#### F8 — Temporal
+
+- **Delivers:** the temporal surface.
+- **Made of:** a record admitting the proposal at a pinned revision, a time-zone data boundary
+  modelled on JSD-0031's (tzdb archived, generated, pinned), and the implementation.
+- **Needs:** F7.
+- **Identity:** `broiler.javascript.temporal`.
+- **Exit gate:**
+  - `test/built-ins/Temporal` and `test/intl402/Temporal` pass;
+  - `Temporal` leaves the `absent-globals` block in the change that publishes it.
+
+#### F9 — The release
+
+- **Delivers:** JS-10 over every surface above.
+- **Made of:** JS-10's own gate: the measurement lane, baselines, packaging, the support table, the
+  composition register and claimed RIDs. Beside it, the backend stages left open in 26.2.
+- **Needs:** F1 to F8, and the acceptance track below.
+- **Identity:** every one above.
+- **Exit gate:** section 19's JS-10 gate.
+
+### 26.5 What runs beside the phases
+
+**The acceptance track.** None of the work above advances a ledger row on its own. Beside every
+phase:
+
+- a named reviewer reads what the phase changed, which is the review debt JS-10's gate refuses;
+- the ledger's open blocker for JS-2 is settled: either the core contract is accepted, or a record
+  says the seed copy will not be taken and JS-2's gate is re-scoped;
+- each milestone's remaining clauses, which [section 19](#19-milestones) names, are closed by
+  retained records rather than by working-tree runs.
+
+**The performance track.** The backend stages left partly done in 26.2 are not on the path to a
+full-featured profile, and are not dropped either. They run beside F2 to F8 and meet the release at
+F9.
+
+### 26.6 What this section does not change
+
+- **The ledger stays the authority for status**, and section 19 stays the authority for each
+  milestone's gate. A phase closing is a fact about this checkout, not a change of state.
+- **Section 20's diagram is not rewritten.** It is the dependency order the milestones were
+  planned in, and the gates still cite it.
+- **What a program meets today does not change until a phase lands.** Roadmap section 6 states it
+  for every surface above.

@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-09-29 (JSP-8, JSP-10 and JSP-1 observations; milestone rows unchanged)
+**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, and phase F1 batches JSC-252 to JSC-254; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -481,6 +481,97 @@ language, are corrected ([JSC-235](roadmap.corrections.md#jsc-235)).
 [Record JSP-9-001](../../../docs/evidence/jsp-9-001/README.md) retains the runs and their controls.
 A run against Broiler.JS still reports findings outside the catalogue, not adjudicated. This is
 unreviewed implementation and validation material, not accepted milestone evidence; JSP-9 has no
+owner and no milestone row advances.
+
+**JSP-4, JSP-5 and JSP-6 observation, 2026-10-03.** The clauses of the parity roadmap's JSP-4, JSP-5
+and JSP-6 gates that still did not hold have a change and a fixture each:
+- `apply` reads its list's length with `ToLength`; a `super[k]` read and then written converts `k`
+  once, through a new instruction; `delete` converts its base with `ToObject`
+  ([JSC-236](roadmap.corrections.md#jsc-236));
+- `for … in` asks for each name when it reaches it; a `String` object keeps its exotic keys in the
+  language's order; a keyed collection's constructor calls its own adder; a Symbol `Symbol.for` did
+  not make can be held weakly ([JSC-237](roadmap.corrections.md#jsc-237));
+- `Function.prototype[Symbol.hasInstance]` exists and cannot be changed; object spread and rest copy
+  Symbol keys; an anonymous function takes its name from a computed key and a class field
+  ([JSC-238](roadmap.corrections.md#jsc-238)).
+
+The rest of each gate already held. [Record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md)
+retains each change's control and the pinned test262 subtrees either side. This is unreviewed
+implementation and validation material, not accepted milestone evidence; the stages have no owner
+and no milestone row advances.
+
+**JSP-7 observation, 2026-10-03.** Every item of the parity roadmap's JSP-7 gate has a change and a
+fixture. The `Uint8Array` base64 and hex members and the reviver's source text are admitted; `Annex B`
+is admitted whole in the script goal, its members and its three syntax features with it; `cleanupSome`
+is removed; and `Error.prototype.stack` is declined by name in a new subsection of the roadmap's
+section 6, which states the `Annex B` rule and names every other surface of the edition the realm
+declines. A scan of the pinned edition found `Error.isError`, `WeakMap`'s `getOrInsert` pair and
+`RegExp.prototype.unicodeSets` missing too, and they are present
+([JSC-239](roadmap.corrections.md#jsc-239)). [Record JSP-7-001](../../../docs/evidence/jsp-7-001/README.md)
+retains each change's control and the pinned test262 subtrees either side. This is unreviewed
+implementation and validation material, not accepted milestone evidence; JSP-7 has no owner and no
+milestone row advances.
+
+**JSP-10 observation, 2026-10-03.** The parity roadmap's JSP-10 clauses that were still open have a
+change and a fixture each. A call, a construction, a super call and a tagged template pass more than
+255 arguments written out. A function with more than 255 parameters, which the verifier refused as
+the host's own artifact, is refused at compile time naming the ceiling. The suspending constructors
+build from source wherever `Function` does. `read`'s and `Function`'s refusals say what is true of the
+realm, and the roadmap's section 13 states which host members are present and refusing, and why. The
+file-order clause already held ([JSC-240](roadmap.corrections.md#jsc-240)).
+[Record JSP-10-001](../../../docs/evidence/jsp-10-001/README.md) retains each change's control. The
+allowance defaults stay a decision. This is unreviewed implementation and validation material, not
+accepted milestone evidence; JSP-10 has no owner and no milestone row advances.
+
+**JSD-0027 N2 and N3 observation, 2026-10-03.** The two ECMA-262 fallback defects JSD-0027 said
+were owed without `Intl` have a change each. `SpecialCasing.txt` is archived beside the pinned UCD
+files, `toUpperCase` and `toLowerCase` are the Unicode Default Case Conversion over generated tables
+with `Final_Sigma`, the non-`u` RegExp Canonicalize reads the full upper-case mapping, and
+`localeCompare` answers 0 for canonically equivalent strings. Over the pinned suite's `String`,
+`RegExp`, regular-expression-literal, Annex B `RegExp` and `intl402/String` subtrees, 18 variants
+moved from failing to passing and none moved back; every case-mapping and `localeCompare` case that
+still fails there is an `intl402` one ([JSC-242](roadmap.corrections.md#jsc-242)). This is unreviewed
+implementation and validation material, not accepted milestone evidence; no milestone row advances.
+
+**RegExp modifiers observation, 2026-10-03.** The pinned edition's modifier groups,
+`(?ims-ims:...)`, which the matcher refused as an invalid group without the profile declining them,
+set the `i`, `m` and `s` flags for their body, with the edition's early errors. Over the pinned
+suite's `RegExp`, regular-expression-literal and Annex B `RegExp` subtrees, 140 variants moved from
+failing to passing and none moved back ([JSC-244](roadmap.corrections.md#jsc-244)). This is
+unreviewed implementation and validation material, not accepted milestone evidence; no milestone row
+advances.
+
+**Phase F1 observation, 2026-10-03.** The first three batches of roadmap
+[section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F1 have a change each.
+They cover the library, the parser and four semantics, and over the whole pinned suite 182 variants
+moved from failing to passing ([JSC-252](roadmap.corrections.md#jsc-252) to
+[JSC-254](roadmap.corrections.md#jsc-254)). Two moved back and were repaired before the entries
+were written. What F1 still owes is named in those entries' last sections and in section 26. This
+is unreviewed implementation and validation material, not accepted milestone evidence; no milestone
+row advances.
+
+**Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
+change each:
+- the tokenizer reads a `/` by what its bracket closed;
+- a `for … in` lexical binding is fresh each turn, with its head in the dead zone;
+- a key deleted and defined again goes last;
+- a property key may convert to a Symbol;
+- `bind`'s `length`, the immutable `Object.prototype`, the `__proto__` setter and the native
+  rendering follow the edition;
+- a labelled function or an async function is refused as a nested statement.
+
+Over the whole pinned suite, against the whole run that held the floor, 353 variants moved from
+failing to passing and none moved back; 208 of them are the `with` and RegExp modifier changes that
+run predates ([JSC-245](roadmap.corrections.md#jsc-245) to
+[JSC-250](roadmap.corrections.md#jsc-250)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
+**JSP-2 observation, 2026-10-03.** The parity roadmap's JSP-2 clauses that were still open have a
+change each. The source corpus retains the slice surface's refusal of a BigInt literal, an acceptance
+row asks the type half's whole list, and `--check` under both narrow manifests refuses the literal by
+name ([JSC-241](roadmap.corrections.md#jsc-241)).
+[Record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md) retains a control for each half. This
+is unreviewed implementation and validation material, not accepted milestone evidence; JSP-2 has no
 owner and no milestone row advances.
 
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
@@ -1051,11 +1142,15 @@ SharedArrayBuffer
 Temporal
 ```
 
-**Two of the four are absent DELIBERATELY rather than for want of work.** `SharedArrayBuffer` and
-`Atomics` are the multi-agent surface; they need the agent model of roadmap
-[section 13](roadmap.md#13-realms-agents-and-the-host-boundary), and folding them into the binary
-identity would let a composition that wanted an ordinary byte buffer admit cross-agent shared memory
-by accident. `BigInt64Array` and `BigUint64Array` left the block on 2026-09-22 (JSeal B07-B08,
+**All four are absent for want of work, and each is scheduled.** Until 2026-10-03 this paragraph
+said two of them, `SharedArrayBuffer` and `Atomics`, were absent deliberately. The plan reopened
+every declined surface that day ([JSC-251](roadmap.corrections.md#jsc-251)): the shared-memory pair
+is roadmap [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F6,
+after the agent model of roadmap [section 13](roadmap.md#13-realms-agents-and-the-host-boundary),
+and under an identity of its own, because folding them into the binary identity would let a
+composition that wanted an ordinary byte buffer admit cross-agent shared memory by accident. `Intl`
+is phase F7 and `Temporal` phase F8. **A name leaves this block in the change that publishes it,
+and not before**: the block states what the realm lacks, not what the plan intends. `BigInt64Array` and `BigUint64Array` left the block on 2026-09-22 (JSeal B07-B08,
 JSD-0033 section 8, proposed), a day after `BigInt` itself was admitted (JSeal B05, JSD-0033
 section 7, proposed); they are built wherever the BigInt and binary identities are both admitted.
 

@@ -1,0 +1,14 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsFunction.cs b/src/Broiler.VM.Profile.JavaScript/JsFunction.cs
+index dee12d0..450b6dc 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsFunction.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsFunction.cs
+@@ -693,8 +693,8 @@ internal sealed class JsPrimitiveWrapper : JsObject
+         var rest = new System.Collections.Generic.List<string>();
+         CollectOwnNames(indices, rest);
+         SortIndexKeys(indices);
+-        names.AddRange(indices);
+         names.Add("length");
++        names.AddRange(indices);
+         names.AddRange(rest);
+         return names;
+     }

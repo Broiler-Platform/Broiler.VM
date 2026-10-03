@@ -1,0 +1,16 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs
+index 4dc76b3..a29eb21 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs
+@@ -212,9 +212,8 @@ internal sealed partial class JsRealm
+             host,
+             "read",
+             1,
+-            "read: no reader is installed in this realm - the host-capability table cannot carry " +
+-            "a file's contents back to a guest, and this composition installed none through the " +
+-            "host-object surface");
++            "read: this profile's host-capability surface cannot carry a file's contents back to a " +
++            "guest, so no composition can register a reader");
+ 
+         var agent = new JsObject(ObjectPrototype);
+ 

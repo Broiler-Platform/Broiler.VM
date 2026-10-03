@@ -7,13 +7,14 @@ document transcribes none of it.** Which milestones have moved, what each retain
 demonstrates, and what every open gate clause is, are read there and nowhere else: a plan that
 restates them is a second copy of the status, and the second copy is the one that goes stale
 *(corrected: JSC-20)*. What this document states about the present is only what no milestone can
-change without changing the ledger in the same breath — **this profile has two feature manifests
-and a source front end for each, two format versions, a value and object model, a standard library
-and two host modes; it has no suspension, no guest-initiated load and no snapshot; nothing in it
-has been read by a human; and nothing in it is accepted** *(corrected: JSC-70)*. The tokenizer,
-the parser, the one static-semantic stage and the source lowering landed at JS-3b, for
-`broiler.javascript.slice` alone, and the ledger is the authority for what they demonstrate
-*(corrected: JSC-43)*. No milestone is complete because its design appears in this document.
+change without changing the ledger in the same breath — **this profile runs the pinned edition
+except the surfaces [section 6](#6-feature-manifests-how-the-language-surface-is-admitted) lists
+as not yet implemented; it has suspension, guest-initiated loads and the module goal, and no
+snapshot; nothing in it has been read by a human; and nothing in it is accepted**
+*(corrected: [JSC-251](roadmap.corrections.md#jsc-251))*.
+[Section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile) summarises what is
+finished, area by area, and orders what remains into the phases that end in a full-featured
+profile. No milestone is complete because its design appears in this document.
 
 `Broiler.VM.Profile.JavaScript` is a **language profile**: one bytecode format, one verifier, one
 value and frame model, one executor, one set of host imports, and one conformance suite, compiled
@@ -63,7 +64,7 @@ own, because they are read one entry at a time rather than start to finish.
 | File | Sections | What it carries |
 |---|---|---|
 | `roadmap.md` — this file | 1–16, 18 | The argument: what this profile is, what the core gives it and refuses it, how each piece works, and what it will ask of the core. |
-| [`roadmap.delivery.md`](roadmap.delivery.md) | 19–20, 25 | The milestones, the order they are delivered in, and the map that ties every chapter to the milestone that delivers it and the gate that closes it. |
+| [`roadmap.delivery.md`](roadmap.delivery.md) | 19–20, 25–26 | The milestones, the order they are delivered in, the map that ties every chapter to the milestone that delivers it and the gate that closes it, and **the road to a full-featured profile: what is finished, and the phases that remain**. Start there to know where the profile stands. |
 | [`roadmap.gates.md`](roadmap.gates.md) | 17, 21–24 | The measurement rules, the test and evidence matrix, the release gates, the stop conditions, and the references. |
 | [`roadmap.status.md`](roadmap.status.md) | — | The evidence ledger. It, and not any file above, is the authority for what has been accepted. |
 | [`roadmap.corrections.md`](roadmap.corrections.md) | — | The corrections and rejections, `JSC-nn`. What an earlier reading of this plan said, what replaced it, when, and on whose authority — and every option this programme considered and refused. |
@@ -76,7 +77,9 @@ would take, [`roadmap.parity.md`](roadmap.parity.md) asks what standing level wi
 JavaScript component would take, [`roadmap.backends.md`](roadmap.backends.md) asks what a second
 and third output form — an artifact whose payload is machine code — would take, and
 [`roadmap.hosting.md`](roadmap.hosting.md) asks what an embedder with a document-shaped object model
-would take *(corrected: JSC-213)*. None is a plan file: none mints an identifier in the `JS-`
+would take *(corrected: JSC-213)*. Which of their stages are finished is summarised in
+[section 26.2](roadmap.delivery.md#262-what-is-finished), and what they still owe is ordered by
+section 26's phases. None is a plan file: none mints an identifier in the `JS-`
 namespace, none moves a ledger row, and none is a status. They carry their own stage namespaces —
 `JSW-n`, `JSP-n`, `JSB-n` and `JSH-n` — which are proposals for where the milestones below would
 have to grow, and each names, for every gap or obligation it records, either the milestone or stage
@@ -126,6 +129,7 @@ reading.
 23. [Risks and stop conditions](roadmap.gates.md#23-risks-and-stop-conditions) · `roadmap.gates.md`
 24. [Specification and platform references](roadmap.gates.md#24-specification-and-platform-references) · `roadmap.gates.md`
 25. [The chapter, milestone, and gate map](roadmap.delivery.md#25-the-chapter-milestone-and-gate-map) · `roadmap.delivery.md`
+26. [The road to a full-featured profile](roadmap.delivery.md#26-the-road-to-a-full-featured-profile) · `roadmap.delivery.md`
 
 ---
 
@@ -837,11 +841,13 @@ never silently widened:
 | `broiler.javascript.slice` | Numbers, arithmetic, comparison, local variables, structured control flow. No objects, no strings, no functions, no property access. **Deliberately not JavaScript anyone would ship** — its purpose is to close the whole contract loop against about two thousand readable lines. | JS-1 |
 | `broiler.javascript.core` | The language surface: objects, prototypes, properties, closures, functions, classes, exceptions, iteration, destructuring, strict mode, and the core standard library. | JS-5 opens it; increments extend it |
 | `broiler.javascript.modules` | Module records, live bindings, import and export forms, and top-level await, which IS declared: the surface was allocated "where declared" against a profile that had neither `async` functions nor a job queue, and the one that opened it has both *(corrected: JSC-134)*. | Opened by JSW-8 |
-| `broiler.javascript.dynamic` | `eval`, the `Function` constructor, and dynamic `import()`. Separate because a composition that registers no artifact provider must be able to decline exactly this and say so. | JS-8 |
+| `broiler.javascript.dynamic` | `eval`, the `Function` constructor, and dynamic `import()`, and with `Function` the three constructors reached off a generator, an async function and an async generator, which build from source by the same door *(corrected: [JSC-240](roadmap.corrections.md#jsc-240))*. Separate because a composition that registers no artifact provider must be able to decline exactly this and say so. | JS-8 |
 | `broiler.javascript.regexp` | Regular expressions, over the from-scratch matcher. | JS-6, or excluded with a published failure |
-| `broiler.javascript.binary` | `ArrayBuffer`, `DataView` and the typed array constructors. Separate because shared mutable memory addressed by index is a question a composition has to be able to answer on its own; `SharedArrayBuffer` and `Atomics` are deliberately **not** in it, because they are the multi-agent surface and need the agent model of [section 13](#13-realms-agents-and-the-host-boundary) *(corrected: JSC-86)*. | Opened by JSW-2 |
-| `broiler.javascript.intl` | Internationalization. | Deferred; excluded by name until it has a run |
-| `broiler.javascript.temporal` | The temporal surface. | Deferred; excluded by name until it has a run |
+| `broiler.javascript.binary` | `ArrayBuffer`, `DataView` and the typed array constructors. Separate because shared mutable memory addressed by index is a question a composition has to be able to answer on its own; `SharedArrayBuffer` and `Atomics` are **not** in it, because they are the multi-agent surface and need the agent model of [section 13](#13-realms-agents-and-the-host-boundary); they have an identity of their own below *(corrected: JSC-86, [JSC-251](roadmap.corrections.md#jsc-251))*. | Opened by JSW-2 |
+| `broiler.javascript.intl` | Internationalization, ECMA-402. | Reopened 2026-10-03: [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F7 *(corrected: [JSC-251](roadmap.corrections.md#jsc-251))* |
+| `broiler.javascript.temporal` | The temporal surface, ahead of the edition at a pinned revision of the proposal. | Reopened 2026-10-03: phase F8 |
+| `broiler.javascript.shared` | `SharedArrayBuffer`, `Atomics` and the agents they are shared between. Never folded into `broiler.javascript.binary`, for that row's reason. | Proposed 2026-10-03: phase F6, minted by JSD-0028's successor |
+| `broiler.javascript.shadowrealm` | ShadowRealm, ahead of the edition, admitted only with `broiler.javascript.dynamic`. | Proposed 2026-10-03: phase F5, minted by the record admitting the proposal ([JSD-0030](decisions/0030-shadowrealm-support-boundary.md)) |
 
 **A further identity exists beside that table**: `broiler.javascript.wide`, a surface wider than
 the slice and narrower than `broiler.javascript.core`. The three rules above bind it like any
@@ -890,6 +896,53 @@ verification, before anything runs. Two questions, two refusals, and a retained 
 
 **And a composition declines by building a descriptor**, not by setting a flag: it names the
 optional surfaces it admits when it registers, and there is no other door.
+
+### The edition, Annex B, and what the wide surface does not yet implement
+
+**The wide surface is written against the pinned edition**, ES2026 as archived under
+[`specification/`](specification/README.md), and from 2026-10-03 every member that edition defines
+is either published by the realm or named below as not yet implemented, with the answer a program
+meets and the phase that delivers it
+*(corrected: [JSC-239](roadmap.corrections.md#jsc-239), [JSC-251](roadmap.corrections.md#jsc-251))*. Before that date `Error.isError`,
+`WeakMap.prototype.getOrInsert` and `getOrInsertComputed`, `RegExp.prototype.unicodeSets` and the six
+`Uint8Array` base64 and hex members were missing without a word, and `JSON.parse` called a reviver
+with two arguments where the edition passes three.
+
+**Annex B is admitted whole, in the script goal, and that is the rule.** A member or construct of
+Annex B missing from this list is a defect against the rule rather than a choice:
+- **B.1, the syntax**: legacy octal literals and escapes, and the HTML-like comments `<!--` and
+  `-->`. The module goal declines the comments, as the language does, and reads them as operators.
+- **B.2, the built-in properties**: `escape`, `unescape`, `substr`, the thirteen HTML methods of
+  `String.prototype`, `trimLeft` and `trimRight` (the same function objects as `trimStart` and
+  `trimEnd`), `Date.prototype.getYear`, `setYear` and `toGMTString` (the same function object as
+  `toUTCString`), `RegExp.prototype.compile`, `__proto__`, and the four `__define…__` and
+  `__lookup…__` methods.
+- **B.3, the other features**: labelled function declarations, function declarations in blocks and
+  in `if` clauses, a `var` redeclaring a catch parameter, the `for (var x = 1 in o)` initialiser,
+  and a call as an assignment target in non-strict code, which runs the call and then throws a
+  `ReferenceError`. `[[IsHTMLDDA]]` is host-defined, and only the conformance root supplies an
+  object that has it.
+
+**Not yet implemented, and reopened.** Until 2026-10-03 this table declined each surface below
+by name. Each is now scheduled: the last column names the phase of
+[section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile) that delivers it
+*(corrected: [JSC-251](roadmap.corrections.md#jsc-251))*. Until that phase lands, the middle
+column is what a program meets, and it is as true as it was when the surface was declined:
+
+| Surface | What a program meets today | Phase |
+|---|---|---|
+| The RegExp `v` flag | A literal carrying it is refused at compile time, and the constructor throws a `SyntaxError` for it. `unicodeSets` answers `false` for every RegExp. | F2 |
+| A function's source text | `Function.prototype.toString` answers `function name() { [native code] }`, because the artifact carries no source. A name that is not a property name - a private method's `#m`, a bound function's `bound f` - is left out, so the answer is always a NativeFunction *(corrected: [JSC-249](roadmap.corrections.md#jsc-249))*. | F3 |
+| `Error.prototype.stack` | It is not a member of the edition. `error.stack` reads `undefined`: no error has an own `stack` and nothing it inherits from carries one, so `"stack" in error` is `false`. | F3 |
+| `FinalizationRegistry` cleanup | A cleanup callback is never called, as [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) records. | F4 |
+| Nested realms and ShadowRealm | `$262.createRealm` throws a `TypeError` saying this profile creates no nested realm; ShadowRealm is a proposal the suite's runner does not select. | F5 |
+| Agents, `SharedArrayBuffer` and `Atomics` | `$262.agent`'s members throw; the ledger's absent-globals block names the two globals, and `typeof` answers `"undefined"` for each. | F6 |
+| `Intl` | The same block names it, and `typeof Intl` answers `"undefined"`; the locale-named methods answer as [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) records. | F7 |
+| `Temporal` | The same block names it, and `typeof Temporal` answers `"undefined"`. | F8 |
+
+**Nothing ahead of the edition is admitted except what a decision record names**: the `using`
+declaration and its disposal surface, under proposed JSD-0034. `FinalizationRegistry.prototype.cleanupSome`,
+a proposal's member that the realm carried inert, was removed on 2026-10-03.
 
 ### Where the language is deliberately underspecified, and why a manifest has to say so
 
@@ -959,10 +1012,17 @@ What the format carries from the first version, because retrofitting any of it i
 [JSC-233](roadmap.corrections.md#jsc-233))*. Three of this format's limits are met by what a
 program says, not by what an artifact is, and each is a declared property of the format. None is a
 statement about the language.
-- **A call or a construction passes at most 255 arguments written out**, the width of the
-  instruction's count operand. Past it the source is refused at compile time with `2104`, naming the
-  ceiling, at the call. A spread argument or `apply` carries its arguments in an array, and is not
-  limited this way.
+- **A function declares at most 255 parameters before its first default or rest parameter**, the
+  arity a function row carries and, for a simple list, the count the frame copies a call's arguments
+  into. Past it the source is refused at compile time with `2301`, naming the ceiling, at the
+  function. *(Corrected 2026-10-03, [JSC-240](roadmap.corrections.md#jsc-240). This bullet read "A
+  call or a construction passes at most 255 arguments written out, the width of the instruction's
+  count operand. Past it the source is refused at compile time with `2104`, naming the ceiling, at
+  the call." That ceiling is raised: past 255 the arguments travel in one Array, through the
+  instructions a spread call uses, and a tagged template's strings object is built from Arrays the
+  same way. `2104` named the manifest, which admits a call of any length. The parameter ceiling was
+  not on the list at all: a longer list was lowered, and the verifier refused the artifact this host
+  had produced.)*
 - **An artifact holds at most 65,535 distinct constants**, numbers, strings, BigInts and interned
   names together, the width of a constant index. A program needing more is refused once with
   `2302`, naming the ceiling, at the construct being compiled when it was met.
@@ -1493,6 +1553,13 @@ suspended-operation limit the thing that governs a page.
 core sees one instance state. Cross-realm identity, the well-known intrinsics per realm, and the
 membrane between them are this profile's semantics.
 
+**Today one realm is built per engine, and no second agent runs; both are scheduled.** A second
+realm on one engine, and with it `$262.createRealm` and ShadowRealm, is
+[section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F5. Agents, and
+`SharedArrayBuffer` and `Atomics` over them, are phase F6, which builds the model the next
+paragraph states. Until then the refusals in the table at the end of this section are what a
+program meets *(corrected: [JSC-251](roadmap.corrections.md#jsc-251))*.
+
 **An agent is a runtime.** Worker-style agents are separate core runtimes under one shared
 aggregate budget, which is what makes a host ceiling shared rather than multiplied. Two facts
 about that must be published and not softened:
@@ -1514,6 +1581,27 @@ without is not optional.
 
 No CLR type crosses the boundary. Arguments and results are the core's transfer types, and
 diagnostics carry identity and position without carrying host secrets.
+
+### The host members a guest finds, and why each is present and refusing (2026-10-03)
+
+*(corrected: [JSC-240](roadmap.corrections.md#jsc-240))*
+
+**A member this realm cannot perform is present, and a call to it throws a `TypeError`.** That is
+the opposite of what feature detection by `typeof` assumes, and it is deliberate. `typeof read`
+answers `"function"` in a realm with no reader, so a program that asks `typeof` takes the wrong
+branch. Each member is listed here with the reason absence would be worse, and the refusal each one
+gives names what is true of the realm it is raised in:
+
+| Member | Why present | What a call answers |
+|---|---|---|
+| `read` | A shell-shaped environment probe reads the name without calling it. The emscripten runtime an asm.js workload carries assigns `read` into its own module object once it has decided it is on a shell, and absence would make that assignment a `ReferenceError` over a capability the program never uses. | That no reader is installed in this realm: the host-capability table cannot carry a file's contents back to a guest, and the composition installed none through the host-object surface, which is the door that can. |
+| `$262.createRealm`, `$262.evalScript`, `$262.detachArrayBuffer`, `$262.agent`'s five members | The conformance suite's `INTERPRETING.md` requires each defined on `$262`. The suite chooses which tests a host runs by their declared features, not by `typeof`, so a present member costs a test nothing. | That this profile creates no nested realm, that the host installed no script evaluation or detach operation, or that this profile runs no second agent. A composition that can perform the second and third replaces them through `JsHostRealm`, and the conformance harness does. `createRealm` stops refusing at phase F5 and `agent` at phase F6. |
+| `$262.gc` | The same file says this member "must throw an exception if no capability exists". | That this host exposes no collection hook. |
+| `Function`, and the three constructors reached off a generator, an async function and an async generator | The language defines each. A realm whose composition declined `broiler.javascript.dynamic` still has them. | That the composition did not admit `broiler.javascript.dynamic`, so no source is turned into code at run time. A composition that admitted it builds the function. |
+
+**`$262.IsHTMLDDA` is the one member that is absent until a host installs it**, because the same
+file says it is "present only in implementations that can provide it". The conformance harness
+installs it; this host does not.
 
 ---
 

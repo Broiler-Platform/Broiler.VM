@@ -155,9 +155,9 @@ eval-scopes-an-eval-name-outside-eval-code|adce7a84ee10e2649a70278bb6f416e7ee1e2
 eval-scopes-eval-code-with-no-declaration|d5496d5321dc1dba2302a5e6dcfda6406dd80e11aeb234b9882aab8b79b96ba9|wide|InvalidArtifact|InconsistentStructure|1627|-|-|-|-
 eval-scopes-eval-code-that-is-a-program-body|abb75c5902bd2be2478d03a335ec1e6ff3a2b84cff4e1a02ae27e580fc0baf46|wide|InvalidArtifact|InconsistentStructure|1601|-|-|-|-
 eval-scopes-a-sound-map-that-verifies|790e3ecd37620752bbc181e75b22f6a8f841d137bf062df2b7af31e61683c07b|wide|Normal|NormalCompleted|0|NaN|-|-|-
-eval-scopes-a-function-site-the-lowering-wrote|885b5d3d00ced61a692a301c481939946cba1427d8d5173576b339870ceb5b5a|wide|Normal|NormalCompleted|0|42|-|-|-
-eval-scopes-a-site-no-provider-answers|77697ef077bc1787e006d851bff660a9ea5391487e26386cea058d1ee8a3563b|wide|Normal|NormalCompleted|0|uncaught:EvalError|-|-|-
-eval-scopes-a-function-body-site-the-lowering-wrote|a6af022baf008b7b5219e3467adc1c60e99ffb95faea15b79b454fe37b18a6a6|wide|Normal|NormalCompleted|0|3|-|-|-
+eval-scopes-a-function-site-the-lowering-wrote|4ca9f32270f26a922b8510852cd7704060fee8e0a5d2938ed5f26eaaf5b1ba06|wide|Normal|NormalCompleted|0|42|-|-|-
+eval-scopes-a-site-no-provider-answers|a7bfa33b47f8f64367d575ac6486752405e1f5ae1cbf2ae1d9db4f2dc00cc91c|wide|Normal|NormalCompleted|0|uncaught:EvalError|-|-|-
+eval-scopes-a-function-body-site-the-lowering-wrote|4410f6ff6006de7786bcd44ec0c0f0cd272ee6e85c8e619907bb77be16903e3a|wide|Normal|NormalCompleted|0|3|-|-|-
 script-declarations-a-row-naming-no-unit|9bc19830cd5b73b11f28d7e61958040fac3c546fc0251c0947aaf7a105078fb0|wide|InvalidArtifact|InconsistentStructure|1631|-|-|-|-
 script-declarations-a-name-spelled-with-a-number|833823ba50b1fbb7714d4b5dd30a1c6dff42bc0bec03f191d953677986c0aa55|wide|InvalidArtifact|InconsistentStructure|1631|-|-|-|-
 script-declarations-a-row-for-a-function|7f850f7693a4e358bf95ae838c96ae76945021937751c1b31a5612ce3672f2a1|wide|InvalidArtifact|InconsistentStructure|1631|-|-|-|-

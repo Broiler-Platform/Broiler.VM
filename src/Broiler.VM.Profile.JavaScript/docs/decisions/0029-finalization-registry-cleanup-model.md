@@ -335,3 +335,44 @@ weak symbol key existing and does not depend on D03-a.
 - **Human re-review of the `Security=High` falsifier line** for `JsFinalizationRegistryObject`
   (`JsCollections.cs`, `HUMAN_REVIEW.md` fingerprint `66E399`). D03-a rewrites that line (see its
   *Owes*), and D03-a does not count as done until the owner has reviewed the new line.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the record, keep the inert default, and leave D03-a unscheduled.**
+
+- **The model in section 4 is sound and worth fixing in writing now**, because it answers the
+  question the type's own remarks left open (when a target counts as collected) and forbids the two
+  dangerous shapes outright: guest code from a CLR finalizer, and a sweep at a moment the guest
+  chose.
+- **Do not schedule D03-a until an embedding needs cleanup to arrive.** No workload in `src/tests`
+  depends on it, and the inert registry is a declared, safe divergence.
+- **Two of the record's slices are already done:** D03-b (`cleanupSome` removed by JSP-7, JSC-239)
+  and D03-c (non-registered Symbols as weak targets and tokens, JSP-5, JSC-237). Mark both done when
+  signing.
+- **Switch location (4.1): a descriptor door beside `DescriptorHostingRealms`**, so the choice is the
+  composition's, fixed before the realm exists, and visible in the descriptor rather than in engine
+  options a host can change per run.
+- **Take D03-a's architecture test (7) on its own now:** a rule failing if any type in the
+  `Broiler.VM.Profile.JavaScript*` assemblies declares a finalizer. It costs nothing, needs no model,
+  and puts the record's main safety claim under test today.
+
+**Taken on 2026-10-03, ahead of the rest:** rule N25 (`N25NoFinalizerRuleTests`) fails when any
+type in the profile's product assemblies declares a destructor or a `Finalize` method, with a
+witness for the rejecting direction. It was watched failing against a destructor injected into
+`JsCollections.cs` and passing after the revert. This is D03-a's test (7) on its own; the model is
+still unscheduled and this record still unsigned.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **D03-a is scheduled**, as phase F4 of the plan's [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), and the plan proposes that the CLI and
+  conformance compositions turn the sweep on. The model in section 4 is unchanged, and rule N25
+  stays: no guest code from a CLR finalizer.

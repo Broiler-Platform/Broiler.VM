@@ -824,3 +824,61 @@ now passes every `start-unicode-*` and `part-unicode-*` file from 5.2.0 to 17.0.
 
 **Still open:** the release owner's co-signature; how a composition image carries the notice; full
 and special case mapping (and with it the 27 letters above); `v` mode and properties of strings.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: sign the record with section 9.2 as the decisions taken, and close the two
+items still open.**
+
+- **The licence and size decisions were given on 2026-09-22 and are implemented**: the notices
+  entry ships with the full licence text (rule N22), and the measured 236,721 bytes is under the
+  300 KB cap. A signature turns "as given in conversation" into a decision.
+- **How a published composition image carries the notice: put `THIRD_PARTY_NOTICES.md` beside the
+  host executable in every published image**, Android included, by the same packaging property that
+  already packs it into every NuGet package. A constant the host prints is weaker (nobody reads a
+  binary for licence terms) and a notices file in the package alone does not reach an image.
+- **Archive `SpecialCasing.txt` from the same pinned Unicode 17.0.0 release**, under the same
+  generator and rule N22. It closes this record's two remaining stated differences (full case
+  mapping in `toUpperCase`/`toLowerCase`, and the 27 ypogegrammeni letters in the non-`u`
+  Canonicalize) and is the prerequisite of JSD-0027's N2.
+- **Keep the `v` flag refused** until a matcher slice for string properties is scheduled; the early
+  error naming the flag is the right answer meanwhile.
+
+## 13. 2026-10-03: SpecialCasing.txt, and the two stated differences closed
+
+*Added 2026-10-03 with JSD-0027 slices N2 and N3. Local implementation validation, not accepted;
+corrections entry [JSC-242](../roadmap.corrections.md#jsc-242). Nothing in this record is signed or
+co-signed.*
+
+- **`SpecialCasing.txt` 17.0.0 is archived and pinned** (17,049 bytes, SHA-256 `efc25faf…c9588`),
+  retrieved twice and found byte-identical. No permission specific to this retrieval was given; the
+  owner asked that day for the roadmap to be continued, and `unicode.pin` records exactly that.
+- **A fourth generated file, `JsUnicodeCasing.g.cs`**, in the profile assembly: the full upper and
+  lower mappings (SpecialCasing.txt's unconditional lines over UnicodeData.txt's simple fields) and
+  the `Cased` and `Case_Ignorable` ranges `Final_Sigma` reads. The generator holds each mapping's
+  changed set to `Changes_When_Uppercased` and `Changes_When_Lowercased` exactly, and refuses any
+  condition that names no language other than `Final_Sigma`.
+- **Section 12's two remaining differences are closed.** Full and special case mapping for
+  `toUpperCase`/`toLowerCase` is done, and the non-`u` Canonicalize reads the full mapping, so the 27
+  Greek letters with a ypogegrammeni canonicalize to themselves (`/\u1F80/i.test("\u1F88")` is
+  `false`). `v`-mode string properties stay refused.
+- **Size: 275,436 bytes of table data**, up from 236,721 and under the 307,200-byte cap rule N22
+  checks.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **The `v` flag is scheduled**: the matcher slice for string properties the recommendation above
+  waits for is phase F2 of the plan's [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile). It archives `emoji-sequences.txt` and
+  `emoji-zwj-sequences.txt` from the pinned Unicode 17.0.0 release under rule N22, and adds set
+  operations and `MaybeSimpleCaseFolding`.
+- **What a program meets today does not change** until F2 lands: the early error naming the flag
+  stays.

@@ -137,7 +137,7 @@ internal sealed partial class JsRealm
     private bool binaryHoldsBigInts;
 
     /// <summary>Builds the whole binary surface, in dependency order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FB7AEB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=937DBF
     // Broiler-Human:        PENDING
     private void SetupBinary()
     {
@@ -159,6 +159,7 @@ internal sealed partial class JsRealm
         SetupTypedArrayIteration();
         SetupTypedArrayLaterAdditions();
         SetupTypedArrayConstructors();
+        SetupUint8ArrayCodecs();
         SetupBinaryTags();
     }
 

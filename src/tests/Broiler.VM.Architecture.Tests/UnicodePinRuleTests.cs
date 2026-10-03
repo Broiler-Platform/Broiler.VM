@@ -38,10 +38,11 @@ public sealed class UnicodePinRuleTests
     {
         var generation = UnicodeTableGenerator.Current;
 
-        // Non-vacuous: three files, every one of them non-trivial, from a pin naming every input the
-        // decision lists - thirteen UCD files, the licence and three specification tables.
+        // Non-vacuous: four files, every one of them non-trivial, from a pin naming every input the
+        // decision lists - thirteen UCD files, the licence and three specification tables - and
+        // SpecialCasing.txt, added on 2026-10-03 for the full case mappings (JSD-0027 N2).
         Assert.Equal(UnicodeTableGenerator.OutputPaths, generation.Artefacts.Select(static artefact => artefact.RelativePath));
-        Assert.Equal(17, UnicodePin.Load().Entries.Count);
+        Assert.Equal(18, UnicodePin.Load().Entries.Count);
         Assert.All(generation.Artefacts, static artefact => Assert.True(artefact.Desired.Length > 10_000));
 
         // And the probes slice U3 runs through the end-user host: every part of
@@ -226,9 +227,10 @@ public sealed class UnicodePinRuleTests
 
         // Non-vacuous: the data is real, and every table the decision names is present.
         Assert.True(generation.TotalBytes > 100_000);
-        // 17 from slice U2, and the non-u Canonicalize mapping and its reverse from JSeal slice
-        // JSD-0031-later.
-        Assert.Equal(19, generation.Tables.Count);
+        // 17 from slice U2, the non-u Canonicalize mapping and its reverse from JSeal slice
+        // JSD-0031-later, and the five of the case conversion from JSD-0027 slice N2 (2026-10-03):
+        // the two full mappings, their pool, and the Cased and Case_Ignorable ranges.
+        Assert.Equal(24, generation.Tables.Count);
     }
 
     /// <summary>

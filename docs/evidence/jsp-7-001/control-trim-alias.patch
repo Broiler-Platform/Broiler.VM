@@ -1,0 +1,14 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs
+index 33ada53..bbdbebb 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs
+@@ -502,7 +502,8 @@ internal sealed partial class JsRealm
+ 
+         // ANNEX B'S TWO OLD NAMES ARE THE SAME FUNCTION OBJECTS AS THE NEW ONES, as the language
+         // says: `trimLeft === trimStart` and `trimLeft.name` is "trimStart" (JSP-7, JSC-239).
+-        StringAlias(prototype, "trimLeft", "trimStart");
++        Method(prototype, "trimLeft", 0, static (engine, thisValue, arguments) =>
++            JsValue.String(StringTrimEnds(engine, StringThis(engine, thisValue), true, false)));
+         StringAlias(prototype, "trimRight", "trimEnd");
+ 
+         // ANNEX B'S HTML METHODS, every one of them (JSP-7, JSC-239). The realm admits the whole of

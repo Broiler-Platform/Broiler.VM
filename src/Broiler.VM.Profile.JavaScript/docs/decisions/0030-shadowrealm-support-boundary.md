@@ -279,3 +279,39 @@ observable single-realm behaviour; they may be taken earlier only if another fea
 - **The proposal changing its compilation hook.** If a later revision stops asking
   `HostEnsureCanCompileStrings` for `evaluate`, D5 still holds here, but the pin in section 2 would
   no longer be the text it rests on.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the deferral, with the trigger and identity below.**
+
+- **Trigger: the proposal returning to stage 3 at a revision a successor record pins, or a named
+  consumer.** A named consumer should be enough on its own, because the boundary in section 4 is
+  already specified and SR-3's acceptance is concrete; waiting for TC39 would leave a real consumer
+  with nothing.
+- **Surface identity: a separate `broiler.javascript.shadowrealm`, admitted only together with
+  `broiler.javascript.dynamic`.** A composition that wants `eval` but not nested realms is a
+  reasonable policy (a host admitting `eval` for one trusted script need not admit a second global
+  environment), and folding it into the dynamic surface would make that policy inexpressible.
+- **SR-1 and SR-2 may be taken early** if another feature needs them; JSH-7 (a second realm) and
+  SR-7 (`$262.createRealm`, which would score the suite's `cross-realm` cases) are the likely
+  callers. SR-7 is worth taking before ShadowRealm itself: every `proto-from-ctor-realm` case of the
+  function constructors still fails for want of a second realm (record JSP-10-001's run), and so do
+  the cross-realm cases of many other built-ins.
+- **SR-6 goes to Broiler.JS's owner** as a finding, with the probe in section 1.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **The deferral is not taken.** SR-1, SR-2 and SR-7 are phase F5 of the plan's [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), with
+  JSH-7's second realm; SR-3 to SR-5 follow under `broiler.javascript.shadowrealm`, admitted only
+  with `broiler.javascript.dynamic`, as the recommendation above proposes.
+- **ShadowRealm is ahead of the pinned edition**, so a record admitting the proposal at a pinned
+  revision opens SR-3; the trigger in the recommendation is met by this direction.

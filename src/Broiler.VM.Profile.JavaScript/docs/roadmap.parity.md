@@ -3,6 +3,13 @@
 
 # The parity roadmap — what standing level with the comparison engine would take
 
+**Where this document stands, 2026-10-03.** Every stage it proposes, JSP-1 to JSP-10, has been
+implemented in this checkout, each with its retained record; none is accepted. What it still holds
+is the record of the gap as it was measured, and the catalogue in section 4.9 of what must not be
+taken from the comparison engine. The surfaces it found declined are reopened, and the work that
+remains is ordered by the plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)
+([JSC-251](roadmap.corrections.md#jsc-251)).
+
 **What this document is.** A gap analysis and a proposed programme for one objective: that a
 program which runs on the legacy component `Broiler.JS` runs the same way on this profile, or meets
 a refusal that names what it asked for. It is written from a run of both engines over the same
@@ -332,6 +339,14 @@ JSeal slices added about half of it from 2026-09-21 on, under proposed, unsigned
 Rule N24 reads this section, and the survey above is inside a span marked as written, because it
 states in the present tense names the realm now publishes.
 
+**What changed on 2026-10-03** *(corrected: [JSC-239](roadmap.corrections.md#jsc-239))*. Of the
+2026-09-29 list's second group, the `Uint8Array` codecs, the reviver's source text, the `Annex B`
+members and `Error.isError` are present; `Error.prototype.stack` is declined by name in section 6 of
+the roadmap, with the answer a program meets. A scan of the pinned edition found three more members
+missing without a word, now present: `WeakMap`'s `getOrInsert` and `getOrInsertComputed`, and
+`RegExp.prototype.unicodeSets`. What section 6 declines, beside the ledger's block, is the whole of
+what the realm does not have of the edition.
+
 ### 4.4 The mechanisms the realm publishes and does not honour
 
 **This is the largest kind, and none of it is visible as an absence.** Each of these is a protocol
@@ -470,8 +485,10 @@ documents or its own components, found while comparing:
   harness that feature-detects will take the wrong branch. One of them refuses with a reason that is
   not true of this realm: `detachArrayBuffer` says the profile has no `ArrayBuffer` to detach, in a
   realm where `ArrayBuffer` exists and its own `transfer` detaches successfully.
+  *(corrected: [JSC-240](roadmap.corrections.md#jsc-240))*
 - **The host runs several named files in sorted path order** while its usage text promises the order
   given — and that text is the one [JSC-75](roadmap.corrections.md#jsc-75) exists to state.
+  *(corrected: [JSC-240](roadmap.corrections.md#jsc-240))*
 - **`--slice` disagrees with the wide surface about the completion value** of a statement whose
   completion is empty, renders negative zero differently for identical arithmetic, and refuses the
   identifier `undefined` at compile time although the usage text says the slice manifest admits it.
@@ -483,6 +500,7 @@ documents or its own components, found while comparing:
   being explained *(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*.
 - **`GeneratorFunction`, `AsyncFunction` and `AsyncGeneratorFunction` refuse with a reason about
   turning source into code at run time**, which is the dynamic surface's reason rather than theirs.
+  *(corrected: [JSC-240](roadmap.corrections.md#jsc-240))*
 
 ### 4.8 The host, and what an embedder meets
 
@@ -507,7 +525,7 @@ anything unusual:
   constants is refused with a diagnostic reported at position zero and no source location; and
   top-level `await` is refused inside a template-literal substitution while admitted in every other
   top-level position, with a diagnostic that names the wrong reason.
-  *(corrected: [JSC-233](roadmap.corrections.md#jsc-233))*
+  *(corrected: [JSC-233](roadmap.corrections.md#jsc-233), [JSC-240](roadmap.corrections.md#jsc-240))*
 - **Source encoding differs**: a UTF-16LE file with a byte-order mark is unreadable to this host and
   runs on the comparison engine. *(corrected: [JSC-233](roadmap.corrections.md#jsc-233))*
 - **A throw in shared-realm multi-file mode abandons every remaining file**, and the diagnostic names
@@ -671,6 +689,17 @@ a milestone with a ledger row.
   JSeal adoption of the crossing. Local implementation in the working
   tree, validated as recorded in the named `docs/evidence/jseal-*` records; unreviewed, not accepted
   evidence, and no milestone or stage moves.
+- **2026-10-03 implementation note, the clauses still open:**
+  - The source corpus retains `refuse-a-bigint-literal`: the slice surface refuses `1n` with `2104`.
+  - An acceptance row asks the type half's whole list and gets the comparison engine's values.
+  - `--slice --check` and `--numeric --check` refuse the literal by name, and the default manifest
+    reads the same literal exactly.
+  - Each half has negative controls, watched failing and then passing after the revert
+    ([JSC-241](roadmap.corrections.md#jsc-241),
+    [record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md)).
+
+  The usage text was corrected when the type was admitted. Unreviewed, not accepted evidence, and no
+  milestone or stage moves.
 - **Objective.** No program silently gets a wrong number. A BigInt literal is either refused by name
   at compile time or evaluated as a BigInt; it is never a Number.
 - **Waits on.** Nothing for the refusal. The type itself waits on the value representation of
@@ -744,6 +773,21 @@ a milestone with a ledger row.
   Local implementation in the working tree, validated as recorded in the named
   `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
   moves.
+- **2026-10-03 implementation note:** every clause of the gate has a fixture in `src/tests/cli`. The
+  repaired ones:
+  - `apply` reads its list's length with `ToLength`, and a list past `Reflect.apply`'s ceiling is a
+    `RangeError`;
+  - `super[k]` read and then written converts `k` once, through a new instruction that keeps the
+    converted key, and still takes the base first;
+  - `delete` converts its base with `ToObject`, so a nullish base throws and a primitive answers as
+    its wrapper does.
+
+  Operand order, `ToPropertyKey` on an ordinary member and the Object-versus-Symbol equality already
+  held. The comparison engine converts the key twice, which test262 refuses, and the fixture holds the
+  specification's count *(corrected: [JSC-236](roadmap.corrections.md#jsc-236))*. Local
+  implementation in the working tree, validated as recorded in
+  [record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md); unreviewed, not accepted
+  evidence, and no milestone or stage moves.
 - **Objective.** The operations the library is written on top of are the language's, so a defect in
   one stops being a defect in every method that calls it.
 - **Waits on.** `JS-6`.
@@ -764,6 +808,20 @@ a milestone with a ledger row.
   for resizable views. Local implementation in the working tree, validated as recorded in the named
   `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
   moves.
+- **2026-10-03 implementation note:** the clauses section 4.5 names that still did not hold have a
+  change and a fixture each:
+  - `for … in` asks for each name when it reaches it, so a name deleted or made non-enumerable
+    first is not visited;
+  - a `String` object's `length` and indices are never stored, and its own keys come in the
+    language's order;
+  - a keyed collection's constructor calls the adder of the object it builds from `new.target`;
+  - a Symbol `Symbol.for` did not make can be held weakly.
+
+  The comparison engine still visits a demoted name, and the fixture holds the specification's
+  algorithm *(corrected: [JSC-237](roadmap.corrections.md#jsc-237))*. Local implementation in the
+  working tree, validated as recorded in
+  [record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md); unreviewed, not accepted
+  evidence, and no milestone or stage moves.
 - **Objective.** `freeze`, `seal` and `preventExtensions` mean what they say, for every key kind and
   every exotic object this profile has.
 - **Waits on.** `JS-4`. The typed-array half is [JSW-2](roadmap.workloads.md#jsw-2--the-binary-surface-and-a-manifest-identity-for-it)'s
@@ -788,6 +846,20 @@ a milestone with a ledger row.
   the same for the match/replace/search/split Symbol methods. Local implementation in the working
   tree, validated as recorded in the named `docs/evidence/jseal-*` records; unreviewed, not accepted
   evidence, and no milestone or stage moves.
+- **2026-10-03 implementation note:** the three clauses that still did not hold have a change and a
+  fixture each:
+  - `Function.prototype[Symbol.hasInstance]` exists, is `OrdinaryHasInstance`, and is neither
+    writable nor configurable;
+  - an object spread and an object rest copy enumerable Symbol-keyed properties;
+  - an anonymous function takes its name from a computed key and from a class field, so the object
+    literal and the class body agree on a Symbol key.
+
+  The other clauses already held, and each answers as the comparison engine does. Two `node`
+  declarations on `the-general-surface.js` went stale and are removed. An anonymous class with a
+  static element at a computed key keeps the empty name
+  *(corrected: [JSC-238](roadmap.corrections.md#jsc-238))*. Local implementation in the working tree,
+  validated as recorded in [record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md);
+  unreviewed, not accepted evidence, and no milestone or stage moves.
 - **Objective.** A well-known symbol installed by a guest changes what the realm does, everywhere the
   language says it does.
 - **Waits on.** `JS-6`, and `JS-4` for the intrinsic graph.
@@ -821,6 +893,22 @@ a milestone with a ledger row.
   proposed decisions. Local implementation in the working tree, validated as recorded in the named
   `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
   moves.
+- **2026-10-03 implementation note:** every item of the gate has a change and a fixture in
+  `src/tests/cli`:
+  - admitted: the `Uint8Array` base64 and hex members, the reviver's context and its `source`, and
+    every `Annex B` member and syntax feature — the `String` and `Date` members, `RegExp.prototype.compile`,
+    HTML-like comments, the `for … in` initialiser and a call as an assignment target in non-strict
+    code;
+  - declined by name, with the answer a program meets: `Error.prototype.stack`, in a new subsection of
+    section 6 of the roadmap that also states the `Annex B` rule — admitted whole, in the script goal;
+  - removed: `FinalizationRegistry.prototype.cleanupSome`.
+
+  A scan of the pinned edition found `Error.isError`, `WeakMap`'s `getOrInsert` pair and
+  `RegExp.prototype.unicodeSets` missing as well, and each is present now. The `Array.prototype.toLocaleString`
+  and options-bag items were already repaired *(corrected: [JSC-239](roadmap.corrections.md#jsc-239))*.
+  Local implementation in the working tree, validated as recorded in
+  [record JSP-7-001](../../../docs/evidence/jsp-7-001/README.md); unreviewed, not accepted evidence,
+  and no milestone or stage moves.
 - **Objective.** Every surface this profile does not have is named somewhere a reader and a rule can
   find, with its deterministic failure.
 - **Waits on.** [JSW-6](roadmap.workloads.md#jsw-6--the-core-library-still-absent-from-the-realm) for
@@ -927,6 +1015,23 @@ a milestone with a ledger row.
   Still open: host capabilities present and throwing, and the truth of every refusal reason. The
   allowance defaults stay a decision. Unreviewed, not accepted evidence, and no milestone or stage
   moves.
+- **2026-10-03 implementation note, the remaining clauses:**
+  - A call, a construction, a super call and a tagged template pass more than 255 arguments
+    written out. Past 255 they travel in one Array, through the instructions a spread call uses.
+  - A function with more than 255 parameters before its first default or rest is refused at compile
+    time, naming the ceiling, at the function. The verifier had refused the host's own artifact,
+    which is exit 4. Section 7 of the roadmap lists the ceiling.
+  - `GeneratorFunction`, `AsyncFunction` and `AsyncGeneratorFunction` build from source wherever
+    `Function` does, and refuse with the declining composition's reason where it does not.
+  - `read`'s refusal and `Function`'s now say what is true of the realm.
+  - Section 13 of the roadmap states which host members are present and refusing, and why.
+  - The file-order clause already held: the usage text has stated ordinal path order since
+    2026-09-17 ([JSC-240](roadmap.corrections.md#jsc-240),
+    [record JSP-10-001](../../../docs/evidence/jsp-10-001/README.md)).
+
+  `typeof read` still answers `"function"`; the clause is met by its documented branch. The
+  allowance defaults stay a decision. Unreviewed, not accepted evidence, and no milestone or stage
+  moves.
 - **Objective.** The host's defaults, its capabilities and its format ceilings are things a reader
   can find out before meeting them, and none of them is a surprise reachable by ordinary code.
 - **Waits on.** Nothing for the reporting half. The allowance defaults are a decision rather than a
@@ -957,7 +1062,8 @@ disagreements internal to this checkout; **the first half of
 needs no type, no manifest and no decision**, which is the point of splitting its gate in two —
 **and it was taken on 2026-09-08**, so that clause of this paragraph reads in the past tense now
 while the rest of JSP-2's gate stays open, which is the whole reason the split was worth drawing
-*(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*; and
+*(corrected: [JSC-207](roadmap.corrections.md#jsc-207); the rest of the gate has a change and a
+control for each clause since 2026-10-03, [JSC-241](roadmap.corrections.md#jsc-241))*; and
 **the `Math.random` clause of [JSP-10](#jsp-10--the-host-surface-an-embedder-meets-first) is one
 change to one function**, which is why that gate says so rather than leaving it inside a stage that
 waits on a budget decision.

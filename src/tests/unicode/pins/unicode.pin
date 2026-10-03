@@ -15,6 +15,13 @@
 # are archived beside that edition in src/Broiler.VM.Profile.JavaScript/docs/specification/, not
 # here; they are pinned below by repository-relative path because the generator reads them too.
 #
+# SpecialCasing.txt WAS ADDED ON 2026-10-03, from the same source, version and site, retrieved twice
+# by Claude into two directories and found byte-identical, and archived unmodified. The repository
+# owner asked that day for the JavaScript profile's roadmap to be continued, and the recommendation
+# written into JSD-0031 the same day names this file as the next input; no permission specific to
+# this retrieval was given, and that is recorded here rather than implied. It feeds the full case
+# mappings of toUpperCase and toLowerCase and the non-u Canonicalize (JSD-0027 slice N2).
+#
 # WHAT A LINE MEANS. `file <path relative to this directory> <bytes> <sha256>` for a UCD file or
 # the licence text; `spec-table <path relative to the repository root> <bytes> <sha256>` for an
 # ECMAScript property table. UnicodeData.txt carries no header line and is held by its hash alone;
@@ -37,6 +44,7 @@ file ucd-17.0.0/PropList.txt 145465 130dcddcaadaf071008bdfce1e7743e04fdfbc910886
 file ucd-17.0.0/PropertyAliases.txt 9619 4441f573caf952ffece1d7c892e7715bd7136dfc26f96eb6f268bf1e474715fb
 file ucd-17.0.0/PropertyValueAliases.txt 81858 64e9a5f76f7a1e8b5a47d6a1f9a26522a251208f5276bdfa1559dac7cf2e827a
 file ucd-17.0.0/ScriptExtensions.txt 20707 ec2107e58825a1586acee8e0911ce18260394ac8b87e535ca325f1ccbeb06bc6
+file ucd-17.0.0/SpecialCasing.txt 17049 efc25faf19de21b92c1194c111c932e03d2a5eaf18194e33f1156e96de4c9588
 file ucd-17.0.0/Scripts.txt 192460 9f5e50d3abaee7d6ce09480f325c706f485ae3240912527e651954d2d6b035bf
 file ucd-17.0.0/UnicodeData.txt 2198209 2e1efc1dcb59c575eedf5ccae60f95229f706ee6d031835247d843c11d96470c
 file ucd-17.0.0/emoji/emoji-data.txt 107324 2cb2bb9455cda83e8481541ecf5b6dfda66a3bb89efa3fa7c5297eccf607b72b

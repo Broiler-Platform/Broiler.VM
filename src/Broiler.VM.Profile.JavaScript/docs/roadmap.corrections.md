@@ -10092,3 +10092,820 @@ the catalogue of what must not be taken from the comparison engine, and
 
 **Authority and date.** The implementation of 2026-09-30 in this checkout and
 [record JSP-9-001](../../../docs/evidence/jsp-9-001/README.md). 2026-09-30.
+
+### JSC-236
+
+**Where:** the parity roadmap's [section 4.5](roadmap.parity.md#45-the-operations-underneath-and-the-integrity-clauses-on-top),
+its first two bullets and the `delete` bullet, and
+[JSP-4](roadmap.parity.md#jsp-4--the-abstract-operations-underneath-the-library)'s gate. The
+2026-09-21 note under JSP-4 said what JSeal V01, VM-FIX-B and VM-FIX-C repaired, and that
+`super[k] op= v` was not among them.
+
+**What the plan said.**
+- `ToLength` is `ToUint32` throughout the array-like surface, and `Function.prototype.apply` over an
+  object with a negative `length` spends the whole allowance.
+- `ToPropertyKey` runs twice on a computed key in a compound assignment, an increment or a
+  decrement, and in a logical assignment that writes.
+- `delete` through a primitive base answers `true` without performing `ToObject`, and
+  `delete undefined.x` answers `true` where the language requires a `TypeError`.
+
+**What replaced it, observed on 2026-10-03.**
+- **`apply`'s list.** `CreateListFromArrayLike` reads its length with `ToLength`, as the Array methods
+  have since VM-FIX-C. A length of `-1` is an empty list, where `ToUint32` made it four billion reads
+  and the program met its wall clock. A length past the ceiling `Reflect.apply` already had is the
+  `RangeError` that one gives, where `2**32 + 2` was read as a list of two.
+- **`super[k]` read and then written.** A compound, update or logical assignment converts the key
+  once, and the write uses the key the read produced. The base is still taken before the key is
+  converted, so a `toString` that re-points the home object's prototype does not change where the
+  read looks. That took a new instruction, `LoadSuperPropertyKeepKey` (`0xB3`): a `super` reference
+  has no base on the stack, so `ToPropertyKey` cannot convert its key, and converting it first would
+  read the base after the conversion. A `super.x` with a literal name keeps its two instructions,
+  and a program with no computed `super` write lowers to the bytes it did.
+- **`delete`.** The base goes through `ToObject` before the key is converted. A nullish base is a
+  `TypeError`, and its key's `toString` does not run. A primitive is asked through its wrapper, so
+  `delete "abc".length` and `delete "abc"[0]` answer `false`, and throw in strict code.
+- **The rest of the gate held before this date**: operand order for every binary and relational
+  operator, `ToPropertyKey` once for an ordinary computed member, and loose equality between an
+  Object and a Symbol. The ordinary member's count has a fixture now beside the `super` one.
+- **The comparison engine is not the oracle for the key count.** Node 22 converts the key twice for
+  `o[k] += 1` and for `super[k] += 1`, and reads a `super` base after converting the key. The
+  pinned test262 requires one conversion and the earlier base, and the fixture's row holds those.
+
+**What must not be read as repaired.**
+- A `super` write still takes its base again when it writes. The specification takes it once, when
+  the reference is made, so a right-hand side that re-points the home object's prototype is seen by
+  the write here and not by the language.
+- JSP-4 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md). 2026-10-03.
+
+### JSC-237
+
+**Where:** the parity roadmap's [section 4.5](roadmap.parity.md#45-the-operations-underneath-and-the-integrity-clauses-on-top),
+its `for … in`, `String` object and keyed-collection bullets, and
+[JSP-5](roadmap.parity.md#jsp-5--the-integrity-clauses-on-the-object-model)'s gate.
+
+**What the plan said.**
+- `for … in` enumerates a stale snapshot: a property deleted before the loop reaches it is still
+  visited, and a property made non-enumerable mid-loop is still visited.
+- Redefining a `String` object's index with an identical descriptor adds a duplicate own key, and an
+  added array-index property sorts after `length`.
+- The `Map`, `Set`, `WeakMap` and `WeakSet` constructors resolve the adder on the intrinsic
+  prototype, so a subclass's `set` or `add` is not called; and Symbols are refused as weak keys and
+  `WeakRef` targets.
+
+**What replaced it, observed on 2026-10-03.**
+- **`for … in`.** The enumerator reads one object at a time and asks for each name when the loop
+  reaches it, which is the specification's `%ForInIteratorPrototype%.next`. A name deleted first,
+  own or inherited, is not visited; a name made non-enumerable first is not visited; a name already
+  visited or shadowed is not visited again. The prototype is read when the object above it runs out.
+  `ForInNext` now reaches guest code through a Proxy's traps, and the slice compiler's baseline
+  partition names it `T R` where it said `T P`.
+- **The comparison engine differs on one of these.** Node 22 still visits a name made
+  non-enumerable before the loop reaches it. The gate asks for demotion to be observed, and the
+  fixture's row holds the specification's algorithm.
+- **The `String` object.** Its `length` and its indices are never stored: a definition the
+  validation admits describes them as they are and changes nothing. Its own keys are its indices,
+  every other index ascending, `length`, then the other names in the order they were made.
+- **The collections.** Each constructor makes its object from `new.target` before reading the adder,
+  so a subclass's own adder runs. Each now builds from `new.target` itself, as the binary
+  constructors do.
+- **Weak references.** `CanBeHeldWeakly` admits a Symbol that `Symbol.for` did not make: as a
+  `WeakMap` key, a `WeakSet` member, a `WeakRef` target, and a registry's target and token. A
+  registered Symbol is refused, because `Symbol.for` answers it again whenever it is asked for.
+
+**What must not be read as repaired.**
+- The symbol registry is still one per realm. The specification's is one per agent.
+- The rest of section 4.5's integrity clauses were repaired before this date, by the JSeal slices the
+  2026-09-21 note names, and this entry did not re-examine them beyond the probes run beside it.
+- JSP-5 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md). 2026-10-03.
+
+### JSC-238
+
+**Where:** the parity roadmap's [section 4.4](roadmap.parity.md#44-the-mechanisms-the-realm-publishes-and-does-not-honour),
+its `Function.prototype[Symbol.hasInstance]`, name inference and object spread bullets, and
+[JSP-6](roadmap.parity.md#jsp-6--the-protocols-the-realm-publishes-and-does-not-consult)'s gate. With
+them the `node` declarations on cases 295 and 301 of `the-general-surface.js`.
+
+**What the plan said.**
+- `Function.prototype[Symbol.hasInstance]` does not exist, so assigning it changes `instanceof` for
+  every function in the realm.
+- An anonymous function gets no name through a computed key, through a class field initialiser, or
+  through a logical assignment; and a Symbol-keyed method in an object literal gets none while the
+  same key in a class body does.
+- Object spread does not copy Symbol-keyed own enumerable properties.
+- The two declarations said a computed member of an object literal does not name an anonymous
+  function, because the key is not known until it is evaluated.
+
+**What replaced it, observed on 2026-10-03.**
+- **`Function.prototype[Symbol.hasInstance]`** is `OrdinaryHasInstance`, named `[Symbol.hasInstance]`,
+  of length one, neither writable, enumerable nor configurable. `instanceof` is the specification's
+  `InstanceofOperator`: a primitive right-hand side is a `TypeError`, a method found on the object
+  decides, and the realm's own method is answered without a call.
+- **Name inference.**
+  - A data member with a computed key names an anonymous function, arrow or class with the key's
+    value, in brackets for a Symbol. A new `DefineMethod` operand bit, `MemberIsNamedValue` (`8`),
+    marks it, and the value gets no home object.
+  - A class field names one after its key. A literal or private key names it when it is lowered.
+    A computed key names it when the field is defined, under a new `DefineClassElement` bit,
+    `ElementIsNamedValue` (`64`).
+  - A computed field's key is now converted once, when the class is defined. It was converted for
+    every instance.
+  - An object literal's computed key is converted before its value is evaluated. It was converted
+    after.
+  - The logical assignment and the method cases already held, and the object-literal and class-body
+    Symbol cases agree.
+- **Object spread and object rest** copy enumerable Symbol-keyed own properties, from one
+  `[[OwnPropertyKeys]]`.
+- **The two declarations went stale** and are removed. The probe's retained answers now hold the
+  names.
+
+**What must not be read as repaired.**
+- An anonymous class with a static element, at a computed key, keeps the empty name. A static
+  element runs while the class is defined, so naming it afterwards could be observed, and a static
+  `name` member must not be overwritten. Node 22 names such a class and overwrites a static `name`
+  method; the specification does the first and not the second.
+- Found on the way and not repaired: an object rest pattern reads an excluded property again.
+  `var { a, ...rest } = o` runs `a`'s getter twice, where the specification excludes the key before
+  any read.
+- JSP-6 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md). 2026-10-03.
+
+### JSC-239
+
+**Where:** the parity roadmap's [section 4.3](roadmap.parity.md#43-the-types-and-surfaces-that-are-absent)
+and its 2026-09-29 list of what was still absent, the `cleanupSome` bullet of
+[section 4.7](roadmap.parity.md#47-where-the-profile-contradicts-itself), and
+[JSP-7](roadmap.parity.md#jsp-7--the-surfaces-that-are-absent-without-being-declared)'s gate. With them
+[section 6 of the roadmap](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted), which
+gains the subsection the gate's Annex B clause asks for.
+
+**What the plan said.**
+- The `Uint8Array` base64 and hex methods, the reviver's source-text argument, `Error.prototype.stack`,
+  and the `Annex B` `String` HTML-tag family, `trimLeft`, `trimRight`, `getYear`, `setYear` and
+  `toGMTString` were absent, while `escape` was present, "so the surface is admitted in part without a
+  rule saying which part".
+- `FinalizationRegistry.prototype.cleanupSome` is shipped and is not in the language.
+- `Error.isError` was absent, and the 2026-09-29 list added that the comparison engine lacks it too.
+
+**What replaced it, observed on 2026-10-03.**
+- **A scan of the pinned edition.** Every built-in property the archived ES2026 text defines was asked
+  of the realm. Beyond the gate's list it found four members of the edition missing without a word:
+  `Error.isError`, `WeakMap.prototype.getOrInsert` and `getOrInsertComputed`, and
+  `RegExp.prototype.unicodeSets`. `Atomics` and `SharedArrayBuffer` were the only other gaps, and the
+  ledger's block declares both.
+- **Admitted.**
+  - The six `Uint8Array` codecs: `fromBase64`, `fromHex`, `toBase64`, `toHex`, `setFromBase64` and
+    `setFromHex`, each the specification's algorithm. A decode that fails part way writes what it
+    decoded and then throws.
+  - `JSON.parse`'s reviver receives a context object. For a primitive the parse produced, its `source`
+    is the text as written; an object, an Array and a value a reviver already replaced have none.
+  - `Error.isError`, which asks for the error slot and not the prototype chain.
+  - `WeakMap.prototype.getOrInsert` and `getOrInsertComputed`.
+  - `RegExp.prototype.unicodeSets`, which answers `false` for every RegExp, since none here can carry
+    `v`.
+- **Annex B is admitted whole, in the script goal, and the rule is written down** in section 6 of the
+  roadmap. Its members:
+  - the thirteen HTML methods;
+  - `trimLeft` and `trimRight` as the very function objects `trimStart` and `trimEnd` are;
+  - `getYear`, `setYear`, and `toGMTString` as `toUTCString` itself;
+  - `RegExp.prototype.compile`.
+
+  The scan of Annex B found three syntax features as well, and each is repaired:
+  - **HTML-like comments.** `<!--` and a line-leading `-->` are comments in a script. `1 <!-- 2` was
+    read as `1 < !(--2)`, a program the file does not contain. A module still reads them as
+    operators, as the language does.
+  - **The `for (var x = 1 in o)` initialiser.** The parser admitted it and the lowering dropped the
+    value, so `x` was `undefined` after a loop that ran no iteration — a wrong value rather than a
+    refusal.
+  - **A call as an assignment target in non-strict code.** It now runs the call and throws a
+    `ReferenceError`, without converting the result or evaluating the right-hand side. That took a new
+    instruction, `ThrowReferenceError` (`0xB4`). The program was refused at compile time, which is
+    strict code's answer.
+- **Removed.** `FinalizationRegistry.prototype.cleanupSome`, as decision record 0029's D03-b
+  recommended. `typeof registry.cleanupSome` answers `"undefined"`, as the language does.
+- **Declined by name.** `Error.prototype.stack` is not a member of the edition. Section 6 names it
+  with the answer a program meets: no error has an own `stack` and nothing it inherits carries one.
+  The same table names the `v` flag, `Intl`, `Temporal`, the shared-memory pair, the registry's
+  cleanup and a function's source text.
+- **The comparison engine is not the oracle for every row.** Node 22 has neither `Error.isError`,
+  `WeakMap`'s pair nor the `Uint8Array` codecs, so those rows' values come from the specification's
+  algorithms. Node 22 gives every error an own `stack`, which this host declines.
+
+**What must not be read as repaired.**
+- Rule N24 reads claims that a global is absent. Nothing reads section 6's table against the realm,
+  so a member declined there that later appears would be stale without a rule saying so.
+- Four Annex B RegExp variants of the pinned suite spend their allowance before they decide.
+- JSP-7 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-7-001](../../../docs/evidence/jsp-7-001/README.md). 2026-10-03.
+
+### JSC-240
+
+**Where:** the parity roadmap's [section 4.7](roadmap.parity.md#47-where-the-profile-contradicts-itself)
+bullets on host capabilities, on the order of several named files and on the three suspending
+constructors; the argument-count clause of
+[section 4.8](roadmap.parity.md#48-the-host-and-what-an-embedder-meets); and
+[JSP-10](roadmap.parity.md#jsp-10--the-host-surface-an-embedder-meets-first)'s gate. With them the
+roadmap's [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier) list of the ceilings a source
+program can meet, its [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)
+row for `broiler.javascript.dynamic`, and [section 13](roadmap.md#13-realms-agents-and-the-host-boundary),
+which gains the statement the gate's capability clause asks for.
+
+**What the plan said.**
+- Every host capability is a function that throws, so `typeof` cannot tell a capability this host
+  has from one it lacks. The gate: absent rather than present-and-throwing, or the profile states in
+  its own documentation that it does the opposite and why.
+- No refusal reason names a cause that is untrue of the realm it is raised in. `GeneratorFunction`,
+  `AsyncFunction` and `AsyncGeneratorFunction` gave the dynamic surface's reason.
+- The argument-count ceiling is raised, or refused with a diagnostic naming it at a source location.
+  Section 7 recorded the second since 2026-09-29 ([JSC-233](#jsc-233)): past 255 arguments written
+  out, a call was refused with `2104`.
+- Several named files run in the order given, or the usage text stops promising it.
+
+**What replaced it, observed on 2026-10-03.**
+- **The argument ceiling is raised.** Past 255, a call's, a construction's and a super call's
+  arguments travel in one Array, through the instructions a spread call uses. A direct `eval` keeps
+  its directness. Each argument is evaluated once and in order. A tagged template with more than 254
+  substitutions does the same, and its strings object is built from a cooked Array and a raw Array by
+  a new instruction, `GetTemplateObjectWide` (`0xB5`). It makes the same frozen object
+  `GetTemplateObject` makes, cached by the same site. The `2104` both refusals carried named the
+  manifest, which admits a call of any length.
+- **A fourth source ceiling was found, and it was a host defect.** A function with more than 255
+  parameters before its first default or rest was lowered, and the verifier refused the artifact
+  this host had produced: exit 4, which the host reserves for its own defects. The verifier bounds a
+  function row's arity by the call ceiling, because for a simple list the frame copies that many
+  arguments. The source is now refused at compile time with `2301`, naming the ceiling, at the
+  function, and section 7 lists it. Raising it would move a bound the verifier holds every artifact
+  to, which this change does not do.
+- **The suspending constructors build from source where `Function` does.** A realm whose composition
+  admitted `broiler.javascript.dynamic` builds a generator, an async function or an async generator
+  through the same door, so with no provider registered each is refused as `eval` is, with an
+  `EvalError` the guest catches. A realm that declined the surface refuses all four with a
+  `TypeError` saying so. `Function`'s own message read "the broiler.javascript.wide manifest does not
+  admit the Function constructor, because this profile declares no guest-initiated load". The wide
+  manifest decides nothing about it, and section 11 describes the guest-initiated load the profile
+  declares.
+- **`read`'s message said "no composition can register a reader"**, which the comment above it had
+  retracted with [JSC-212](#jsc-212): a composition can install a reader through the host-object
+  surface. It now says that no reader is installed in this realm and why the capability table could
+  not carry one. The other members were read again. `$262.detachArrayBuffer` and `evalScript` were
+  corrected on 2026-09-21, and `createRealm`, `gc` and `agent`'s members say what is true of every
+  realm this profile builds.
+- **Present and refusing is kept, and stated.** Section 13 lists each member with the reason absence
+  would be worse. `read` is read without being called by a shell probe. The conformance suite's
+  `INTERPRETING.md` requires `$262`'s members defined and `gc` to throw, and chooses tests by
+  declared features rather than by `typeof`. The constructors are the language's. `$262.IsHTMLDDA`
+  is the one member absent until a host installs it, as the same file says.
+- **The file-order clause already held.** The usage text has said that several named files run "in
+  ordinal order by path and not in the order you named them" since 2026-09-17, after the parity
+  roadmap's finding of 2026-09-06. [JSC-75](#jsc-75)'s "in order" is that order. A new acceptance
+  row names the two shared-realm files in reverse and gets the same transcript.
+
+**What must not be read as repaired.**
+- `typeof read` still answers `"function"`. The capability clause is met by its documented branch,
+  not by absence.
+- The parameter ceiling is refused, not raised.
+- A throw in shared-realm multi-file mode still abandons the remaining files, as section 4.8 says.
+  That is outside the gate.
+- JSP-10 has no owner. The allowance defaults stay a decision for whoever owns
+  [ADR 0004](decisions/0004-limit-defaults-hard-maxima-and-the-budget-matrix.md)'s budget matrix. No
+  gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-10-001](../../../docs/evidence/jsp-10-001/README.md). 2026-10-03.
+
+### JSC-241
+
+**Where:** [JSP-2](roadmap.parity.md#jsp-2--the-refusal-that-was-lost-a-bigint-literal-is-not-a-number)'s
+gate and its paragraph "Where this stands on 2026-09-08", and the sentence of the parity roadmap's
+[section 7](roadmap.parity.md#7-order-and-what-is-schedulable-today) that says "the rest of JSP-2's
+gate stays open".
+
+**What the plan said.** The gate has two halves. The cheap half: `1n` is refused at compile time with
+a diagnostic naming the construct, `--check` decides it, and a retained corpus entry carries it. The
+type half, if the type is admitted: `typeof` answers `bigint`, mixing with a Number throws, strict
+equality across the types is `false` and loose equality `true`, a value past the Number range
+round-trips, `JSON.stringify` throws, and every literal form is exercised. A negative control for each
+half, watched failing and then passing after the revert, and the host's usage text describing the
+manifest it runs. On 2026-09-08 only the first clause of the cheap half was met
+([JSC-207](#jsc-207)).
+
+**What replaced it, observed on 2026-10-03.**
+- **The type was admitted** by JSeal B01 to B08 (2026-09-21 and 2026-09-22), through the surface
+  `broiler.javascript.bigint`, and the usage text was corrected with it. The wide manifest admits the
+  literal as an exact integer. The slice and numeric manifests still refuse it by name.
+- **The cheap half's last clause is met.** The source corpus retains `refuse-a-bigint-literal`, the
+  slice surface refusing `1n` with `2104`. No retained entry carried the refusal until now.
+- **The type half has a fixture.** One acceptance row asks every item of the gate's list and gets
+  the comparison engine's values: `typeof`, `Object(1n)`, mixing in three forms, the four
+  comparisons, `2n ** 64n + 1n` round-tripped through a String, `9007199254740993n` and its Number,
+  `JSON.stringify`, the hexadecimal, octal and binary forms, division, remainder, a shift past 64
+  bits and the two `asIntN` forms.
+- **Both halves have rows at the host.** `--slice --check` and `--numeric --check` refuse the literal
+  by name, and the default manifest reads the same file's `9007199254740993n` exactly.
+- **Each half has controls**, in [record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md): the
+  literal read as a Number under each narrow manifest and under the wide one, a BigInt mixed with a
+  Number, and `JSON.stringify` of a BigInt.
+
+**What must not be read as repaired.**
+- The refusal under the slice surface names "the construct BigInt" and under the numeric manifest
+  "a BigInt literal". Both name the construct, in two wordings.
+- JSP-2 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md). 2026-10-03.
+
+### JSC-242
+
+**Where:** [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) sections 2, 6 and 7 (slices N2
+and N3, and the consumer limitation's list of known defects), and
+[JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) sections 9.2 and 12 (the archive's
+file list, the measured table size, and the two stated differences that waited on
+`SpecialCasing.txt`).
+
+**What the plan said.**
+- Case mapping is simple and one-to-one: `'ß'.toUpperCase()` stays `"ß"`, no final sigma is written,
+  and `İ` and `ı` get no special case. Slice N2 owes the full default case mapping, and its
+  prerequisite is `SpecialCasing.txt` beside the archived UCD files.
+- `localeCompare` does not treat canonically equivalent strings as equal. Slice N3 owes it, over the
+  normalization JSD-0031's U3 built.
+- The non-`u` Canonicalize uses the simple upper case, so 27 Greek letters with a ypogegrammeni match
+  their title-case partners where the specification's full mapping makes each canonicalize to itself.
+- The tables measure 236,721 bytes, under the 300 KB cap.
+
+**What replaced it, observed on 2026-10-03.**
+- **`SpecialCasing.txt` is archived** with the other UCD 17.0.0 files and pinned in `unicode.pin`,
+  retrieved twice and found byte-identical. The pin records that no permission specific to this
+  retrieval was given: the owner asked that day for the roadmap to be continued, and JSD-0031's
+  recommendation of the same day names the file.
+- **Case conversion is the Unicode Default Case Conversion over the pinned tables.** A fourth
+  generated file, `JsUnicodeCasing.g.cs`, holds the full upper and lower mappings and the `Cased` and
+  `Case_Ignorable` ranges. The generator checks that the code points each mapping changes are
+  exactly `Changes_When_Uppercased` and `Changes_When_Lowercased`, and that `Final_Sigma` is the only
+  condition naming no language. `toUpperCase`, `toLowerCase` and the two `toLocale…Case` methods read
+  them, and apply `Final_Sigma` to GREEK CAPITAL LETTER SIGMA. The platform's `TextInfo` is no longer
+  called, so the answer no longer depends on the host's Unicode version.
+- **`localeCompare` is ordinal over the canonical decompositions**, so canonically equivalent strings
+  compare as 0 and the order stays a consistent total one.
+- **The non-`u` Canonicalize reads the full upper-case mapping**, and the 27 letters canonicalize to
+  themselves: `/ᾀ/i.test("ᾈ")` is `false`, as in the comparison engine.
+- **The tables measure 275,436 bytes**, still under the 300 KB (307,200-byte) cap.
+
+**What must not be read as repaired.**
+- Language-sensitive casing (`tr`, `az`, `lt`) is not implemented: the `toLocale…Case` methods ignore
+  their argument, as ECMA-262 permits without ECMA-402.
+- `localeCompare` is not a collation: `'a'.localeCompare('B')` is positive, as code-unit order says.
+- No milestone or stage moves; JSD-0027 and JSD-0031 stay unsigned.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-243
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s lowering of a name
+inside a `with` body, as `JsCompiler.StoreName` and `EmitDynamicName` describe it: "a write asks the
+same objects a read asks", once for the read and again for the write.
+
+**What the plan said.** A read of a name in a `with` body searches the objects and falls back to the
+static address; a write is the read's shape with `SetProperty` where `GetProperty` was. Each
+occurrence searches again, after the value it writes has been computed.
+
+**What replaced it, observed on 2026-10-03.**
+- **An assignment resolves its reference once, before anything else.** A plain assignment searches
+  before its right-hand side; a compound assignment and an update search once, read through the
+  object found, and write back to that object. Re-resolving at the write wrote the enclosing variable
+  when a getter on the `with` object had deleted the property, or when the right-hand side had added
+  the name to a nearer object. The comparison engine has the same defect, so these rows declare the
+  specification's answer rather than its.
+- **Two instructions read and write an object environment record's binding:**
+  `GetObjectBinding` (`0xB6`) and `SetObjectBinding` (`0xB7`). Each asks for the property again and,
+  in strict code, throws a `ReferenceError` when a getter or a `Symbol.unscopables` lookup has removed
+  it since the search (`GetBindingValue`, `SetMutableBinding`). Every read in a `with` body now uses
+  the first.
+- **test262:** over `test/language/expressions`, `statements`, `eval-code`, `identifier-resolution`,
+  `global-code` and `test/annexB`, 68 variants moved from failing to passing and none moved back. They
+  are `S11.13.1_A5`/`A6`, `S11.13.2_A5`/`A6`, the four update expressions' `A5`, and six `with`
+  statement cases (the proxy-environment reads, the strict-mode deleted bindings, and
+  `unscopables-inc-dec`).
+
+- **Three retained corpus entries were re-derived**, `eval-scopes-a-function-site-the-lowering-wrote`,
+  `eval-scopes-a-function-body-site-the-lowering-wrote` and `eval-scopes-a-site-no-provider-answers`:
+  a function's eval-introduced variables are searched as a `with` object is, so their reads now lower
+  to `GetObjectBinding`. Their recorded answers are unchanged, and every other entry re-derives byte
+  for byte.
+
+**What must not be read as repaired.**
+- A logical assignment, a `for … in`/`for … of` head and a destructuring target in a `with` body
+  still resolve at the write.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-244
+
+**Where:** the from-scratch matcher's grammar, `JsRegExpMatcher`'s parser, emitter and runner, against
+the pinned edition's `Atom :: ( ? RegularExpressionModifiers : Disjunction )` and
+`( ? RegularExpressionModifiers - RegularExpressionModifiers : Disjunction )`.
+
+**What the plan said.** Roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s
+`broiler.javascript.regexp` admits regular expressions "over the from-scratch matcher" and declines
+only the `v` flag. The matcher read every group opened with `(?` as a lookaround, a named group or
+`(?:`, and threw a `SyntaxError` for anything else, so a modifier group was refused without being
+declined anywhere. The `i`, `m` and `s` flags were the pattern's, read once.
+
+**What replaced it, observed on 2026-10-03.**
+- **A group `(?ims-ims:...)` sets the three flags for its body.** The parser reads `s` for the full
+  stop's set and `i` for `\w` under `iu` while it parses the body, and puts them back after it. The
+  emitter stamps every instruction with the case folding and the multiline mode in force where it was
+  written. The runner reads those instead of the pattern's flags, for a character, a class, a run, a
+  backreference, `^`, `$` and `\b`. The prefilter reads its first instruction's folding.
+- **The early errors are `SyntaxError`s:** a flag repeated in either list, a flag both added and
+  removed, a letter other than `i`, `m` and `s`, and `(?-:`.
+- **The regular expression's own flags do not change.** `flags` and `ignoreCase` answer for the
+  pattern as written.
+- **test262:** over `test/built-ins/RegExp`, `test/language/literals/regexp` and
+  `test/annexB/built-ins/RegExp`, 140 variants moved from failing to passing and none moved back: the
+  whole of `test/built-ins/RegExp/regexp-modifiers`, its `syntax/valid` cases among them. The
+  early-error cases under `test/language/literals/regexp` passed before, refused as invalid groups,
+  and pass now refused for the edition's reasons. Two `property-escapes/generated` variants spent their wall-clock
+  allowance in a run with twice as many jobs as the machine has cores, and pass at one job per core,
+  as on the base.
+- **The comparison engine** reads modifier groups only under `--js-regexp-modifiers`. With it, it
+  gives every answer of `runs/regexp-pattern-modifiers.js`.
+
+**What must not be read as repaired.**
+- The `v` flag stays declined, and a modifier group cannot name it or any flag other than `i`, `m`
+  and `s`, which is the edition's grammar.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-245
+
+**Where:** the tokenizer's choice between a regular-expression literal and a division,
+`SliceTokenizer.RegularExpressionIsAllowedHere`, whose remarks named "the known-wrong cases".
+
+**What the plan said.** The previous significant token decides: after a value a `/` divides, and
+after an operator, a keyword or the start of input it opens a literal. A `)` and a `}` were always
+values, because "getting those right needs the parser's state". Every keyword kind opened a literal,
+the contextual ones among them.
+
+**What replaced it, observed on 2026-10-03.**
+- **A `)` and a `}` are told apart by what they closed**, which the tokenizer records as the tokens
+  go by, without asking the parser. A `)` closing the head of `if`, `while`, `for` or `with` is
+  followed by a literal. A `}` closing a block, or the body of a function or class declaration, ends
+  a statement and is followed by a literal. One closing an object literal, a function or class
+  expression or an arrow function's body ends a value and is followed by a division. Whether a `{`
+  opens a block or an object literal is read from the token before it; whether `function` or
+  `class` declares is read the same way.
+- **`get`, `set`, `async`, `static` and `let` before a `/` are values.** None of them begins
+  anything as a keyword there, so `get / 2` divides where it was refused. `of` is the keyword only
+  after a `for` head's binding, so `for (x of /a/g)` still reads a literal and `of / 2` divides.
+- **`yield` and `await` still open a literal**, which is what they do where they are keywords. As
+  names in sloppy code, `yield / 2` is still misread.
+- **test262:** over `test/language` and `test/annexB`, and again in the whole run JSC-246 records,
+  36 variants moved from failing to passing through this change and none moved back: `test/language/statementList`'s 32 regular-expression
+  cases after a block, a class, a function and through `eval`, and the 4 `no-magic-asi` division
+  cases.
+
+**What must not be read as repaired.**
+- A `:` that ends a conditional at the start of a statement is read as a label's, so an object
+  literal after it is taken for a block. What that misreads is refused, as before.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-246
+
+**Where:** `JsCompiler.CompileForIn`, the lowering of `for (let …  in …)` and `for (const … in …)`.
+
+**What the plan said.** Roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s
+lowering gives a `for … of` loop's lexical head a scope for the right-hand side and a per-turn copy
+of the body's scope. The `for … in` lowering pushed one scope after the object was evaluated and
+bound the key in it every turn.
+
+**What replaced it, observed on 2026-10-03.**
+- **Each turn binds a fresh copy**, as `for … of` does, so a closure in the body sees the key of its
+  own turn. Every closure made by `for (let k in o)` saw the last key before.
+- **The head's names are in their dead zone while the object is evaluated**, so
+  `for (let x in { x })` is a `ReferenceError` rather than a read of the outer `x`.
+- **test262:** over the whole pinned suite, 95,007 variants, against the whole run of 2026-10-03 that held
+  the floor, 353 variants moved from failing to passing and none moved back. Of those, 208 are JSC-243's
+  and JSC-244's, which that run predates, and the rest are this entry's and JSC-245 and JSC-247 to
+  JSC-250's, each named in its entry. One file, `staging/sm/regress/regress-1507322-deep-weakmap.js`,
+  was left out: run alone, it ran past two minutes without ending on this change and on the base
+  commit `304bd31` alike, where the base's whole run had recorded it as spending its wall-clock
+  allowance. Its two variants are not in the figure, and the rest of its shard was run by name. 16 variants moved from failing to passing through this change and none moved
+  back. They are the `for … in` head's dead-zone and scope cases, the per-iteration binding, and
+  `block-scope/syntax/for-in`'s mixed values.
+
+**What must not be read as repaired.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-247
+
+**Where:** `JsObject.SetOwnProperty` and `DeleteOwnProperty`, the ordinary object's String-keyed
+storage, whose remarks say own-property order is "the order it was created".
+
+**What the plan said.** A deleted entry is tombstoned and keeps its index entry, so that order
+survives a delete.
+
+**What replaced it, observed on 2026-10-03.**
+- **A key deleted and defined again is a new property and comes last.** The tombstone kept the key in
+  the index, so defining it again revived it in its old place, and `Object.keys`, `for … in`,
+  `JSON.stringify` and `Object.assign` listed it there. A delete now drops the key from the index.
+- **The tombstones are compacted** once they outnumber the live entries, so deleting and defining one
+  key repeatedly holds memory in proportion to the object.
+- **test262:** in the same run, 16 variants moved from failing to passing through this change and none
+  moved back. They are the order cases of `Object.keys`, `values`, `entries`, `JSON.stringify` and
+  `for … in`, and three staging `object` files.
+
+**What must not be read as repaired.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-248
+
+**Where:** the realm's `Object` and `Reflect` members that take a property key:
+`hasOwnProperty`, `propertyIsEnumerable`, `Object.hasOwn`, `getOwnPropertyDescriptor`,
+`defineProperty`, `fromEntries`, `groupBy`, the Annex B `__defineGetter__` family, and `Reflect`'s
+`get`, `set`, `has`, `deleteProperty`, `defineProperty` and `getOwnPropertyDescriptor`.
+
+**What the plan said.** Each member took the Symbol path for a Symbol argument and converted anything
+else with a String-only `ToPropertyKey`.
+
+**What replaced it, observed on 2026-10-03.**
+- **The key is converted by `ToPropertyKey` over both kinds**, so an object whose `toString` or
+  `Symbol.toPrimitive` answers a Symbol names that Symbol. It was a `TypeError`.
+- **`hasOwnProperty` and `propertyIsEnumerable` convert the key before the receiver**, and
+  `Object.defineProperty` before the descriptor, which is the edition's order.
+- **`Object.groupBy` keeps a Symbol key** a callback answers, where it was a `TypeError`.
+- **test262:** in the same run, 26 variants moved from failing to passing through this change and none
+  moved back. They are the `symbol_property_*` cases of `hasOwnProperty`, `propertyIsEnumerable` and
+  `Object.hasOwn`, `topropertykey_before_toobject`, and staging `Reflect/propertyKeys`,
+  `Symbol/symbol-object-not-unboxed-for-value-to-id` and `object/propertyIsEnumerable`.
+
+**What must not be read as repaired.**
+- `delete super[key]` still converts its key differently from the edition.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-249
+
+**Where:** four of the realm's built-ins: `Function.prototype.bind`'s `length`,
+`%Object.prototype%`'s `[[SetPrototypeOf]]`, the `Object.prototype.__proto__` setter, and
+`Function.prototype.toString`'s native rendering, whose row in roadmap
+[section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s declined table is
+corrected by this entry.
+
+**What the plan said.**
+- `bind` read the target's `length` through the prototype chain and clamped the result to an `int`.
+- `%Object.prototype%` was an ordinary object.
+- The `__proto__` setter answered `undefined` for every receiver that is not an object.
+- `toString` rendered `function <name>() { [native code] }` with any name.
+
+**What replaced it, observed on 2026-10-03.**
+- **`bind` reads only an own `length`**, as `HasOwnProperty` then `Get`. A target without one gives
+  0, and an inherited `length` is no longer read. The answer is a Number: `+∞` stays `+∞`, and
+  a length past 2^31 is kept rather than clamped.
+- **`%Object.prototype%` is an immutable prototype exotic object.** `Object.setPrototypeOf` throws
+  and `Reflect.setPrototypeOf` answers `false` for any value but its own `null`. Before, a program
+  could move the root of every chain.
+- **The `__proto__` setter applies `RequireObjectCoercible` first**, so an `undefined` or `null`
+  receiver is a `TypeError`.
+- **The native rendering leaves out a name that is not a property name.** A private method's `#m`
+  and a bound function's `bound f` are omitted, so every answer is a `NativeFunction`, as the edition
+  requires of a function whose source text is not kept.
+- **test262:** in the same run, 27 variants moved from failing to passing through this change and none
+  moved back. They are `bind`'s three `instance-length` files, the four private-method `toString`
+  files, `__proto__`'s `set-non-obj-coercible`, the two `setPrototypeOf-with-non-circular-values`
+  files, and four staging `Function` files.
+
+**What must not be read as repaired.**
+- Source text is still not kept. A method with a computed key still renders natively, so a key built
+  from another method's text differs from the comparison engine's.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-250
+
+**Where:** the parser's nested statement, `JsParser.ParseNestedStatement`, and `ParseWith`, which
+checked its body itself.
+
+**What the plan said.** A loop's, an `if`'s or a label's body refuses a declaration. A `with` body
+refused a `function`, a `class`, a `const` and a `let` declaration by a check of its own.
+
+**What replaced it, observed on 2026-10-03.**
+- **A `with` body is parsed as a nested statement** like a loop's. An async function declaration
+  there is a `SyntaxError`, and `let` before a line break is the identifier. The old check admitted
+  the first and refused the second.
+- **IsLabelledFunction is an early error.** A function declaration under one label or more may be a
+  label's item and nothing else's. As the body of `while`, `do`, `for`, `for … in`, `for … of`, `if`
+  or `with` it is refused, in sloppy code too.
+- **test262:** in the same run, 24 variants moved from failing to passing through this change and none
+  moved back. They are the `labelled-fn-stmt` cases of `do-while`, `for`, `for … in`, `for … of`,
+  `if`, `while` and `with`; `with`'s `decl-async-fun`, `decl-async-gen` and its two `let` cases; and
+  staging's Annex B `if` and label files.
+
+**What must not be read as repaired.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-251
+
+**Where:**
+- the preamble, the file-split table and the contents of [the roadmap](roadmap.md);
+- roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s
+  allocation table and its table of declined surfaces;
+- roadmap [section 13](roadmap.md#13-realms-agents-and-the-host-boundary);
+- the delivery file's header and sections 20 and 25, and a new
+  [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile);
+- the head of each of the four proposal documents;
+- the ledger's paragraph after its `absent-globals` block;
+- dated notes in JSD-0002, JSD-0027, JSD-0028, JSD-0029, JSD-0030, JSD-0031 and the decisions
+  README.
+
+**What the plan said.**
+- **The preamble's present tense:** "this profile has two feature manifests and a source front end
+  for each, two format versions, a value and object model, a standard library and two host modes;
+  it has no suspension, no guest-initiated load and no snapshot". That had been untrue since
+  JS-7's and JS-8's work landed in September.
+- **Eight surfaces were declined:** section 6 declined six by name, and section 13 and JSD-0030 a
+  further two:
+  - `Error.prototype.stack`;
+  - `Intl` and `Temporal`, "deferred to their own manifests";
+  - `SharedArrayBuffer` and `Atomics`, "excluded deliberately";
+  - the RegExp `v` flag;
+  - `FinalizationRegistry` cleanup;
+  - a function's source text;
+  - nested realms and ShadowRealm (section 13 and JSD-0030).
+- **The ledger said two of its four absent globals were absent "DELIBERATELY".**
+- **No document said, in one place, which work was finished and in what order the rest would
+  come.** The milestones were ordered by section 20's diagram of 2026-08, and the four proposal
+  documents each ordered their own stages.
+
+**What replaced it, on 2026-10-03, at the request of the person directing this work.**
+- **Every declined surface is reopened and scheduled.** Section 6's table now reads "not yet
+  implemented", keeps what a program meets today, and names the phase that delivers each surface.
+  The allocation table reopens `broiler.javascript.intl` and `broiler.javascript.temporal` and
+  proposes `broiler.javascript.shared` and `broiler.javascript.shadowrealm`. Section 13 says that a
+  second realm and agents are scheduled.
+- **Section 26 is the reading order for what remains.** It:
+  - defines "full-featured": the whole pinned edition, ECMA-402, Temporal and ShadowRealm ahead of
+    the edition by record, and source text and stacks;
+  - summarises what is finished, by area and by proposal stage;
+  - lists the reopened surfaces against their governing records;
+  - orders the remainder into phases F1 to F9, each with an exit gate observable in this checkout,
+    beside an acceptance track and a performance track.
+- **The preamble states the present truthfully** and points at section 26 for the summary.
+- **Each proposal document opens with where it stands.** The hosting roadmap's "JSH-2 through
+  JSH-8 are written down and nothing more" is kept as written on its day, under a note saying what
+  has since landed.
+- **The ledger's paragraph says all four names are absent for want of work, each scheduled.** The
+  block itself is unchanged: a name leaves it in the change that publishes it.
+
+**What must not be read as repaired.**
+- **Nothing is implemented by this entry.** Every surface in section 6's table answers a program
+  exactly as it did the day before.
+- **No decision record is taken or signed, and no ledger row moves.** The reopening notes in the
+  records are unsigned directions.
+- **No milestone's gate changed**, and section 20's diagram is not rewritten.
+- **Ledger cells found stale and not edited here**, because the ledger's rows are its owner's to
+  correct with evidence:
+  - JS-3b's row says it has no retained bundle, while records JS-3B-001 and JS-3B-002 name it;
+  - JS-10's row says the suite revision is unpinned, while section 3 records it pinned on
+    2026-09-03;
+  - JS-2's row counts two blockers where section 3 holds one;
+  - JS-7's and JS-8's rows describe as missing behaviour that JSD-0024 and JSP-3's notes record as
+    landed.
+
+**Authority and date.** The direction of 2026-10-03 to reopen every declined surface and order the
+roadmap toward a full-featured profile. 2026-10-03.
+
+### JSC-252
+
+**Where:** phase F1 of [delivery section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile),
+the library half: `Number`, `String.prototype`, `Date`, `Error`, `Object`, `Promise.any`,
+`%AsyncFromSyncIteratorPrototype%`, the async generator's `return`, the RegExp matcher's grammar and
+nesting bound, `[[Construct]]` through a revoked proxy, and the host's rendering of a completion
+value.
+
+**What the plan said.** Nothing about any of these. Each was a defect against the edition, found by
+the whole-suite run section 26's F1 starts from.
+
+**What replaced it, observed on 2026-10-03.**
+- **`Number.parseInt` and `Number.parseFloat` are the global functions**, the same objects.
+- **`String.prototype.toString` and `valueOf` do not coerce their receiver.**
+- **`Date.prototype[Symbol.toPrimitive]` compares its hint without converting it.**
+- **`Date.parse` reads an expanded year**, `±YYYYYY`, refusing `-000000`.
+- **An Error's `cause` is asked through HasProperty**, so the prototype chain and a proxy's `has`
+  trap are consulted.
+- **`Object` reached by `super()` or `Reflect.construct` with another new target** makes a fresh
+  object and ignores its argument.
+- **A RegExp lists `lastIndex` before its other String keys.**
+- **`Object.fromEntries`, `Object.groupBy` and `Map.groupBy` iterate lazily** and close their
+  iterator when an entry or the callback throws, never when the iterator's own `next` does.
+- **`Promise.any` hands each element the capability's own `resolve`.**
+- **An async-from-sync iterator closes the sync iterator when PromiseResolve throws**, and an async
+  generator's `return` at a `yield` raises that throw inside the body, where `catch` sees it.
+- **Under `u`, `\c` followed by a digit or `_` in a class is an early error.** The regular
+  expression nesting bound rises from 128 to 512 groups, on the guest's 208 MB stack.
+- **A construction whose new target is a revoked proxy throws**, when that target's `prototype`
+  is not an object, as `GetFunctionRealm` requires.
+- **A script whose completion value cannot be converted completed normally.** The host renders it
+  by its class tag rather than reporting an uncaught error the script never threw.
+- **test262:** over the whole pinned suite, against the whole run JSC-246 records, 64 variants moved
+  from failing to passing through this entry and none moved back.
+
+**What must not be read as repaired.**
+- **`Function.prototype.caller` and `arguments` on a sloppy function**, the legacy reflection
+  other engines carry, still throw. A sloppy function still has neither as its own property.
+- **A WeakMap chain of about a hundred thousand entries still stalls the process in a garbage
+  collection** that no allowance can interrupt (`staging/sm/regress/regress-1507322-deep-weakmap.js`).
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-253
+
+**Where:** phase F1, the parser half: `JsParser`, `SliceTokenizer` and the module lowering in
+`JsCompiler`.
+
+**What the plan said.** Nothing; each was an early error missing or a program refused.
+
+**What replaced it, observed on 2026-10-03.**
+- **A contextual keyword written with an escape is not the keyword**: `as`, `from`,
+  `new.target` and `import.meta`.
+- **`yield`, `await` and `let` may be an arrow's one parameter where each is a name**, and remain
+  refused where each is reserved: strict code, and `await` in a static block or a module.
+- **`08` and `09` are refused in strict code**, as NonOctalDecimalIntegerLiterals.
+- **`let` before `await` or `yield` begins a declaration**, whose early error is the answer.
+- **`for (async of x)` is refused** by the head's lookahead.
+- **A parenthesised object or array literal is not an assignment target.**
+- **A class heritage is compiled before the class's private names are declared**, so it resolves
+  only outer ones.
+- **`#x in` is recognised only where a RelationalExpression begins**, so `#x in #x in o` is refused.
+- **`new C(1)?.a` is a chain** off the new object; only an argument-less `new a?.b` is refused.
+- **`?.` before a digit is a conditional**: `a ?.5 : b`.
+- **A numeric property key is spelled as `Number::toString` spells it**: `0.0000001` is `"1e-7"`,
+  where it was the platform's `"1E-07"`.
+- **Module early errors are refused:**
+  - a top-level `return`;
+  - a `var` and a function of one name;
+  - an import binding named `arguments` or `eval`;
+  - a string export name holding a lone surrogate;
+  - a string local name without `from`.
+- **The tokenizer tracks generator bodies**, so `yield / 2` divides outside one and `yield /re/` is
+  a literal inside one (JSC-245's open case).
+- **test262:** in the same run, 66 variants moved from failing to passing through this entry. Two
+  moved back, `arrow-function/static-init-await-binding`'s, through the `await` arrow parameter;
+  they were repaired before this entry was written, and a run of the arrow and class subtrees after
+  the repair moved nothing back.
+
+**What must not be read as repaired.**
+- **The source nesting bound of 64** is still the default, which refuses
+  `statements/function/S13.2.1_A1_T1`. It is a host policy (JSD-0022) a host may raise to 512.
+- **A parenthesised name as an assignment target still names an anonymous function**:
+  `(fn) = function () {}`.
+- **A strict assignment to an undeclared global still succeeds** when its right-hand side creates
+  the property.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-254
+
+**Where:** phase F1, the semantics half: synchronous `yield*`, `delete` of a `super` reference, the
+catch clause's scopes, and a `var` initialiser in a `with` body.
+
+**What the plan said.** Nothing; each was a defect against the edition.
+
+**What replaced it, observed on 2026-10-03.**
+- **A synchronous `yield*` yields the inner result object as it is** (GeneratorYield(innerResult)),
+  without reading its `value`, and the caller receives that very object.
+- **`delete super.x` and `delete super[k]` throw a `ReferenceError`** after the this binding and
+  the key expression are evaluated, and before the key is converted. The `ThrowReferenceError`
+  instruction's message is now neutral between this and Annex B's call target.
+- **A catch block's lexical names are hoisted before its first statement**, and a pattern
+  parameter's block is a scope of its own. A closure in a default sees the outer name, and a
+  closure created above a `let` sees that `let`.
+- **A `var` initialiser in a `with` body writes the reference resolved before it ran**, as an
+  assignment does since JSC-243.
+- **test262:** in the same run, 52 variants moved from failing to passing through this entry and
+  none moved back.
+
+**What must not be read as repaired.**
+- **The completion value of a `try` whose `finally` breaks** still differs from the edition's.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.

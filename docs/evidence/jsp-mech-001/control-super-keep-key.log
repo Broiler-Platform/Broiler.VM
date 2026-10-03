@@ -1,0 +1,41 @@
+$ git apply docs/evidence/jsp-mech-001/control-super-keep-key.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+.Profile.JavaScript.dll
+  Broiler.VM.Profile.MachineCode -> <root>/src/Broiler.VM.Profile.MachineCode/bin/Release/net10.0/Broiler.VM.Profile.MachineCode.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.77
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-mech.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 10 command lines from artifacts/jsp-mech-001/jsp-mech.expected.txt
+ok   runs/apply-reads-its-length-with-tolength.js
+FAIL runs/a-super-key-converted-once.js: output does not contain `compound 11:1 / update 2:1 / logical 2:1 / nullish 2:1 / plain 12:4 / base 2`
+       compound 11:2 / update 2:2 / logical 2:1 / nullish 2:1 / plain 12:4 / base 2
+ok   runs/delete-through-a-primitive-base.js
+ok   runs/a-for-in-that-observes-deletion.js
+ok   runs/a-string-object-keeps-its-own-keys.js
+ok   runs/a-collection-subclass-uses-its-own-adder.js
+ok   runs/a-symbol-held-weakly.js
+ok   runs/function-prototype-has-instance.js
+ok   runs/an-object-spread-copies-symbol-keys.js
+ok   runs/a-function-named-by-a-computed-key-or-a-field.js
+# 1 of 10 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-mech-001/control-super-keep-key.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+  Broiler.VM.Profile.JavaScript.Compiler -> <root>/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.32
+# exit 0

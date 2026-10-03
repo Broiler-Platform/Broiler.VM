@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   228
-// Annotated:        228/228
-// Exempt:           122
-// Human-reviewed:   0/228
+// Relevant units:   234
+// Annotated:        234/234
+// Exempt:           123
+// Human-reviewed:   0/234
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         19/18
 // Resource impact:  3/10 max
-// Unverified:       228
+// Unverified:       234
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -487,6 +487,21 @@ public sealed class JsCompiler
     private bool insideFieldInitialiser;
 
     /// <summary>
+    /// The name a field initialiser's anonymous function takes, while that initialiser's own body is
+    /// lowered, and <see langword="null"/> everywhere else.
+    /// </summary>
+    /// <remarks>
+    /// <b>The initialiser's body is one <c>return</c> of the value the field was written with</b>, and
+    /// the language names an anonymous function there after the field: <c>class C { f = function ()
+    /// {} }</c> gives it <c>f</c>, and a private field <c>#f</c>. Every other function, an arrow
+    /// included, resets it, so a <c>return</c> nested inside the value names nothing. A computed key
+    /// leaves the name empty here, and the executor names the value instead (JSP-6, JSC-238).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=36E506
+    // Broiler-Human:        PENDING
+    private string? fieldValueName;
+
+    /// <summary>
     /// The boundary scope of the evaluated program being lowered, or <see langword="null"/> when the
     /// source is not direct <c>eval</c> code.
     /// </summary>
@@ -766,7 +781,7 @@ public sealed class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AE40F7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=48370A
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -775,7 +790,11 @@ public sealed class JsCompiler
         foreach (var script in scripts)
         {
             var first = diagnostics.Count;
-            var tokenizer = new SliceTokenizer(script.Text);
+            var tokenizer = new SliceTokenizer(script.Text)
+            {
+                HtmlLikeComments = script.Options.Goal != SliceGoal.Module,
+            };
+
             var tokens = tokenizer.Tokenize();
 
             if (tokenizer.Diagnostics.Count != 0)
@@ -931,14 +950,14 @@ public sealed class JsCompiler
         return new JsCompilation(false, null, diagnostics);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F21B9D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=63730F
     // Broiler-Human:        PENDING
     private bool TryParse(
         string text, SliceParseOptions options, bool forceStrict, out JsProgramNode program)
     {
         program = null!;
         awaited = false;
-        var tokenizer = new SliceTokenizer(text);
+        var tokenizer = new SliceTokenizer(text) { HtmlLikeComments = options.Goal != SliceGoal.Module };
         var tokens = tokenizer.Tokenize();
 
         if (tokenizer.Diagnostics.Count != 0)
@@ -2073,7 +2092,7 @@ public sealed class JsCompiler
     /// TypeError in the language, and the flag is what makes it one here.
     /// </param>
     /// <param name="isDerived">Whether this is the constructor of a class with a heritage.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CC38F2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=00EB21
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
@@ -2091,6 +2110,8 @@ public sealed class JsCompiler
         var outerDerived = insideDerivedConstructor;
         var outerFunction = insideFunction;
         var outerField = insideFieldInitialiser;
+        var outerFieldValueName = fieldValueName;
+        fieldValueName = isFieldInitialiser ? function.Name : null;
         var outerExits = exits;
         exits = [];
 
@@ -2153,6 +2174,22 @@ public sealed class JsCompiler
         if (!simple)
         {
             flags |= JsFormat.FunctionFlags.BindsParameters;
+        }
+
+        // THE ARITY A FUNCTION ROW CARRIES IS BOUNDED BY THE CALL CEILING, and the verifier holds
+        // every row to it, because for a simple list it is also the count the frame copies a
+        // call's arguments into. A list with more than 255 parameters before its first default or
+        // rest was lowered anyway, and the verifier refused the artifact this host produced, which
+        // is the exit the host reserves for its own defects. It is refused here instead, naming the
+        // ceiling, at the function *(corrected: JSC-240)*.
+        if (ExpectedArgumentCount(function.Parameters) is > (int)JsFormat.CeilingCallArguments and var arity)
+        {
+            Refuse(
+                function.Span,
+                SliceSourceDiagnosticCode.TooManyLocals,
+                "a function of this format declares at most 255 parameters before its first default " +
+                "or rest parameter - the count the frame copies a call's arguments into - and this " +
+                "one declares " + arity.ToString(System.Globalization.CultureInfo.InvariantCulture));
         }
 
         // A GENERATOR IS NOT A CONSTRUCTOR, and dropping the bit is what makes `new g()` a type
@@ -2348,6 +2385,7 @@ public sealed class JsCompiler
         insideFunction = outerFunction;
         insideStaticBlock = outerStaticBlock;
         insideFieldInitialiser = outerField;
+        fieldValueName = outerFieldValueName;
         exits = outerExits;
         return index;
     }
@@ -2441,7 +2479,7 @@ public sealed class JsCompiler
     /// exporting module's slot, so giving it one here would create the copy that makes a live
     /// binding stale - see <see cref="JsOpcode.LoadImport"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=317262
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=51B1A6
     // Broiler-Human:        PENDING
     private void DeclareImports(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
@@ -2457,6 +2495,18 @@ public sealed class JsCompiler
 
                     foreach (var specifier in import.Specifiers)
                     {
+                        // An import binds a name in strict code, where `arguments` and `eval` are
+                        // not binding names (13.1.1). Until 2026-10-03 both imported (JSC-253).
+                        if (specifier.Local is "arguments" or "eval")
+                        {
+                            Refuse(
+                                specifier.Span,
+                                SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                                "`" + specifier.Local + "` is not a binding name in a module");
+
+                            continue;
+                        }
+
                         if (build.Imports.ContainsKey(specifier.Local))
                         {
                             Refuse(
@@ -2589,7 +2639,7 @@ public sealed class JsCompiler
     /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
     /// an importer that reads too early has to meet.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=369962
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=50A13A
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<string> DeclareModuleBindings(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
@@ -2621,6 +2671,17 @@ public sealed class JsCompiler
                     function.Span,
                     SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
                     "`" + function.Name + "` is declared twice at this module's top level");
+            }
+
+            // AND IT COLLIDES WITH A `var` OF THE SAME NAME, for the same reason: a module's
+            // function is lexical (16.2.1.1). Until 2026-10-03 `var f; function f() {}` compiled in
+            // a module (JSC-253).
+            if (names.Contains(function.Name))
+            {
+                Refuse(
+                    function.Span,
+                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
+                    "`" + function.Name + "` is declared both as a `var` and as a function");
             }
 
             Declared(build, function.Name, constant: false);
@@ -4640,7 +4701,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=23B84D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=792901
     // Broiler-Human:        PENDING
     private void CompileVariable(JsVariableStatement variable)
     {
@@ -4742,6 +4803,20 @@ public sealed class JsCompiler
             {
                 if (declarator.Initialiser is null)
                 {
+                    continue;
+                }
+
+                // IN A `with` BODY THE NAME IS RESOLVED BEFORE ITS INITIALISER RUNS, as an
+                // assignment's is (14.3.2.1: ResolveBinding, then the initialiser, then PutValue),
+                // so an initialiser that deletes the object's property still writes the object.
+                // Until 2026-10-03 the name was resolved at the write (JSC-254).
+                var initialiser = declarator.Initialiser;
+                var initialised = declarator.Name;
+
+                if (TryEmitShadowedReference(
+                    declarator.Span, initialised, read: false, () => CompileNamedValue(initialiser, initialised)))
+                {
+                    Emit(JsOpcode.Pop);
                     continue;
                 }
 
@@ -5672,7 +5747,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2D503A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4DBD70
     // Broiler-Human:        PENDING
     private void CompileForIn(JsForInStatement loop, int completion, string label)
     {
@@ -5684,13 +5759,24 @@ public sealed class JsCompiler
         // costs an environment entry and removes the whole class of defect.
         var function = FunctionScope();
         var enumerator = function.Declare("#forin" + function.SlotCount, constant: false);
-        CompileExpression(loop.Right);
-        Emit(JsOpcode.ForInStart);
-        EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, enumerator);
+
+        // ANNEX B'S INITIALISER IS EVALUATED AND STORED ONCE, BEFORE THE OBJECT IS (JSP-7, JSC-239):
+        // `for (var a = 0 in stored = a, o)` reads `a` as 0, and an anonymous function takes the
+        // name. The parser admitted the form and this lowering dropped the value.
+        if (loop.Initialiser is { } initialiser)
+        {
+            CompileNamedValue(initialiser, loop.Name);
+            StoreName(loop.Span, loop.Name);
+            Emit(JsOpcode.Pop);
+        }
 
         var outer = scope;
         var pushed = loop.Declaration is SliceDeclarationKind.Let or SliceDeclarationKind.Const;
+        var constant = loop.Declaration == SliceDeclarationKind.Const;
 
+        // THE HEAD'S NAMES ARE IN THEIR DEAD ZONE WHILE THE OBJECT IS EVALUATED, as `for … of`'s
+        // are: `for (let x in { x })` is a ReferenceError, not a read of the outer `x`. Until
+        // 2026-10-03 the object was evaluated in the enclosing scope (JSC-246).
         if (pushed)
         {
             scope = new Scope(ScopeKind.Block, outer);
@@ -5698,15 +5784,32 @@ public sealed class JsCompiler
             var headSite = buffer.Code.Count + 1;
             Emit(JsOpcode.PushScope, (ushort)0);
             buffer.ScopeSites.Add((headSite, scope));
+            DeclareHead(loop.Name, loop.Pattern, constant);
+        }
 
-            if (loop.Pattern is null)
-            {
-                scope.Declare(loop.Name, loop.Declaration == SliceDeclarationKind.Const);
-            }
-            else
-            {
-                DeclarePatternNames(loop.Pattern, loop.Declaration == SliceDeclarationKind.Const);
-            }
+        CompileExpression(loop.Right);
+        Emit(JsOpcode.ForInStart);
+
+        if (pushed)
+        {
+            Emit(JsOpcode.PopScope);
+            blockDepth--;
+            scope = outer;
+        }
+
+        EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, enumerator);
+
+        var loopScope = scope;
+
+        if (pushed)
+        {
+            scope = new Scope(ScopeKind.Block, outer);
+            blockDepth++;
+            var bodySite = buffer.Code.Count + 1;
+            Emit(JsOpcode.PushScope, (ushort)0);
+            buffer.ScopeSites.Add((bodySite, scope));
+            DeclareHead(loop.Name, loop.Pattern, constant);
+            loopScope = scope;
         }
 
         var top = NewLabel();
@@ -5719,6 +5822,16 @@ public sealed class JsCompiler
         Mark(top);
         EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, enumerator);
         Branch(JsOpcode.ForInNext, exit.Break!);
+
+        // EACH TURN BINDS A FRESH COPY, which is what a closure in the body captures: without it
+        // every closure the loop made saw the last key. `for … of` has copied since it was
+        // written; `for … in` did not until 2026-10-03 (JSC-246).
+        if (pushed)
+        {
+            var copySite = buffer.Code.Count + 1;
+            Emit(JsOpcode.CopyScope, (ushort)0);
+            buffer.ScopeSites.Add((copySite, loopScope));
+        }
 
         // A `for … in` HEAD MAY DESTRUCTURE THE KEY, which reads oddly and is ordinary grammar:
         // the value bound each turn is a String, so `for (const [a, b] in o)` takes its first two
@@ -6223,7 +6336,7 @@ public sealed class JsCompiler
         scope = outer;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7531CA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=623CEA
     // Broiler-Human:        PENDING
     private void CompileTry(JsTryStatement guarded, int completion)
     {
@@ -6283,9 +6396,43 @@ public sealed class JsCompiler
             // walk exempts only the first half (Annex B.3.4, JSeal V15).
             scope.LexicalFrom = scope.SlotCount;
 
+            // A PATTERN PARAMETER'S DEFAULTS CLOSE OVER THE PARAMETER SCOPE AND NOT THE BLOCK'S:
+            // the catch Block is a scope of its own inside the parameter's (14.15.3), so a default
+            // that closes over `x` sees the outer `x`, not a `let x` the block declares. Until
+            // 2026-10-03 both lived in one record (JSC-254). A plain parameter has no default to
+            // close over anything, so it keeps the one record.
+            var blockScoped = guarded.CatchPattern is not null;
+            var parameterScope = scope;
+
+            if (blockScoped)
+            {
+                scope = new Scope(ScopeKind.Block, parameterScope);
+                blockDepth++;
+                var bodySite = buffer.Code.Count + 1;
+                Emit(JsOpcode.PushScope, (ushort)0);
+                buffer.ScopeSites.Add((bodySite, scope));
+            }
+
+            // THE BLOCK'S LEXICAL NAMES ARE HOISTED BEFORE ITS FIRST STATEMENT, as any Block's
+            // are: a closure created above a `let` resolves to that `let`, in its dead zone, and
+            // not to a name outside. Until 2026-10-03 a catch body declared each name only when
+            // its declaration was reached (JSC-254).
+            var catchLexical = new System.Collections.Generic.List<(string Name, bool Constant)>();
+            CollectLexical(guarded.Handler.Body, catchLexical);
+            DeclareLexical(catchLexical);
+            HoistBlockFunctions(guarded.Handler.Body);
+
             // A catch body is a Block and disposes its own resources, inside the parameter's scope
             // and before control leaves the handler - not in whatever list encloses the `try`.
             CompileDisposing(guarded.Handler.Body, completion);
+
+            if (blockScoped)
+            {
+                Emit(JsOpcode.PopScope);
+                blockDepth--;
+                scope = parameterScope;
+            }
+
             Emit(JsOpcode.PopScope);
             blockDepth--;
             scope = outer;
@@ -6376,7 +6523,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3AEC6C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7E3B21
     // Broiler-Human:        PENDING
     private void CompileReturn(JsReturnStatement returned)
     {
@@ -6391,7 +6538,9 @@ public sealed class JsCompiler
         // the language says is that the source is not a program. `2101` is what a source wrong
         // about the LANGUAGE gets, exactly as `with` in strict code and a `super` property outside
         // a method do.
-        if (FunctionScope().Kind is ScopeKind.Program or ScopeKind.Eval)
+        // A module body is no more a function than a script is (16.2.1.1: ModuleItemList may not
+        // contain a ReturnStatement); until 2026-10-03 a module's `return` ran (JSC-253).
+        if (FunctionScope().Kind is ScopeKind.Program or ScopeKind.Eval or ScopeKind.Module)
         {
             Refuse(
                 returned.Span,
@@ -6432,7 +6581,15 @@ public sealed class JsCompiler
                 return;
             }
 
-            CompileExpression(returned.Value);
+            if (fieldValueName is { } named)
+            {
+                CompileNamedValue(returned.Value, named);
+            }
+            else
+            {
+                CompileExpression(returned.Value);
+            }
+
             AwaitTheReturnedValue();
             Emit(JsOpcode.Return);
             return;
@@ -6771,7 +6928,7 @@ public sealed class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=91A880
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8752FE
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -6959,7 +7116,7 @@ public sealed class JsCompiler
             {
                 CompileExpression(construction.Callee);
 
-                if (HasSpread(construction.Arguments))
+                if (CarriesArgumentsInAnArray(construction.Arguments))
                 {
                     CompileArgumentArray(construction.Arguments);
                     Emit(JsOpcode.ConstructSpread);
@@ -6969,14 +7126,6 @@ public sealed class JsCompiler
                 foreach (var argument in construction.Arguments)
                 {
                     CompileExpression(argument);
-                }
-
-                if (construction.Arguments.Count > 255)
-                {
-                    Refuse(
-                        construction.Span,
-                        SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                        "a construction with more than 255 arguments is not admitted");
                 }
 
                 Emit(
@@ -7193,7 +7342,7 @@ public sealed class JsCompiler
     /// was written would have collapsed the middle two and been wrong about both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DF7518
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8F7ACF
     // Broiler-Human:        PENDING
     private void CompileClass(JsClassNode node, string inferredName)
     {
@@ -7219,18 +7368,26 @@ public sealed class JsCompiler
             {
                 scope.Declare(node.Name, constant: true);
             }
+        }
 
+        if (node.HasHeritage)
+        {
+            CompileExpression(node.Heritage!);
+        }
+
+        // THE PRIVATE NAMES ARE DECLARED AFTER THE HERITAGE IS COMPILED, because the heritage is
+        // evaluated in the OUTER private environment (15.7.14 step 8): `class extends (o.#x) {
+        // #x }` names an outer `#x` or none, never the class's own. Declaring them first let the
+        // heritage resolve them (JSC-253). The class binding stays visible to the heritage, in
+        // its dead zone, as the specification has it.
+        if (scoped)
+        {
             foreach (var privateName in privates)
             {
                 var slot = scope.Declare(PrivateSlot(privateName), constant: true);
                 Emit(JsOpcode.NewPrivateName, StringConstant(privateName));
                 EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
             }
-        }
-
-        if (node.HasHeritage)
-        {
-            CompileExpression(node.Heritage!);
         }
 
         var name = named ? node.Name : inferredName;
@@ -7336,7 +7493,7 @@ public sealed class JsCompiler
     /// the initialiser are pushed and consumed by the one instruction, and the pair beneath them is
     /// read rather than popped.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AB8704
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E036F1
     // Broiler-Human:        PENDING
     private void CompileClassElement(JsClassMember member)
     {
@@ -7394,6 +7551,13 @@ public sealed class JsCompiler
         else
         {
             RefuseArguments(member.Function);
+
+            if (member.Computed is not null && !member.IsPrivate &&
+                member.Function.Body is [JsReturnStatement { Value: { } value }] &&
+                NamedAtRunTime(value))
+            {
+                flags |= JsOpcodes.ElementIsNamedValue;
+            }
 
             Emit(
                 JsOpcode.Closure,
@@ -7653,6 +7817,42 @@ public sealed class JsCompiler
         CompileExpression(value);
     }
 
+    /// <summary>
+    /// Whether <paramref name="value"/> is an anonymous function definition the executor can name
+    /// after it is made, from a key known only at run time.
+    /// </summary>
+    /// <remarks>
+    /// <b>A function or an arrow always can</b>: nothing runs between its creation and its naming.
+    /// <b>A class can only when it has no static element</b>, because a static element runs while the
+    /// class is defined and could read the name before it is given, and a static <c>name</c> member
+    /// is the class's name and must not be overwritten. Such a class keeps the empty name, which the
+    /// record of this change states (JSP-6, JSC-238).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=53D99F
+    // Broiler-Human:        PENDING
+    private static bool NamedAtRunTime(JsExpression value)
+    {
+        if (value is JsFunctionExpression function)
+        {
+            return function.Function.Name.Length == 0;
+        }
+
+        if (value is not JsClassExpression { Class.Name.Length: 0 } anonymous)
+        {
+            return false;
+        }
+
+        foreach (var member in anonymous.Class.Members)
+        {
+            if (member.IsStatic)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /// <summary>The name a pattern's leaf infers for an anonymous default, or the empty string.</summary>
     /// <remarks>
     /// <b>Only a leaf that is one NAME infers anything.</b> <c>[a = function () {}]</c> names the
@@ -7770,6 +7970,24 @@ public sealed class JsCompiler
         return false;
     }
 
+    /// <summary>
+    /// Whether an argument list travels as one Array rather than written out on the operand
+    /// stack: when it carries a spread, so the count is not a constant, or when it is longer
+    /// than the call instruction's one-byte count can say.
+    /// </summary>
+    /// <remarks>
+    /// The count of 255 is the operand's width, not a limit the language states, and refusing a
+    /// longer list as a construct outside the manifest named a reason that was not true
+    /// *(corrected: JSC-240)*. The spread instructions take an Array they did not build by
+    /// iterating, so a long list written out reaches the callee through the same path a spread
+    /// does, with every argument evaluated once and in order.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=601796
+    // Broiler-Human:        PENDING
+    private static bool CarriesArgumentsInAnArray(
+        System.Collections.Generic.IReadOnlyList<JsExpression> arguments) =>
+        arguments.Count > 255 || HasSpread(arguments);
+
     /// <summary>Builds the one Array a spread call or a spread construction passes its arguments in.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5BBE2C
     // Broiler-Human:        PENDING
@@ -7792,7 +8010,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2D1356
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C1C2C5
     // Broiler-Human:        PENDING
     private void CompileObject(JsObjectLiteral literal)
     {
@@ -7857,8 +8075,25 @@ public sealed class JsCompiler
 
             if (entry.Computed is not null)
             {
+                // THE KEY IS CONVERTED BEFORE THE VALUE IS EVALUATED, which is where
+                // `ComputedPropertyName` converts it: a key whose `toString` runs is observed before
+                // anything the value does, where the definition converted it after (JSP-6, JSC-238).
                 CompileExpression(entry.Computed);
+                Emit(JsOpcode.ToPropertyKey);
                 CompileExpression(entry.Value);
+
+                // AN ANONYMOUS FUNCTION TAKES THE KEY AS ITS NAME, which is known only now, so the
+                // definition names it as it names a method - without making it one (JSP-6,
+                // JSC-238). Every other value is defined as it was.
+                if (NamedAtRunTime(entry.Value))
+                {
+                    Emit(
+                        JsOpcode.DefineMethod,
+                        (byte)(JsOpcodes.MemberIsEnumerable | JsOpcodes.MemberIsNamedValue));
+
+                    continue;
+                }
+
                 Emit(JsOpcode.DefineIndexed);
                 continue;
             }
@@ -7905,7 +8140,7 @@ public sealed class JsCompiler
         CompileExpression(value);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4740FD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CADE59
     // Broiler-Human:        PENDING
     private void CompileUnary(JsUnaryExpression unary)
     {
@@ -8060,6 +8295,31 @@ public sealed class JsCompiler
                 Emit(JsOpcode.DeleteGlobalBinding, InternedName(plain.Name));
                 return;
 
+            // `delete super.x` AND `delete super[k]` ARE A ReferenceError, after the this binding
+            // and the key expression are evaluated and before the key is converted (13.5.1.2 step
+            // 5, with the key's conversion deferred since ES2024). Until 2026-10-03 the property
+            // was read and `true` answered (JSC-254).
+            case SliceTokenKind.Delete when unary.Operand is JsSuperMemberExpression inherited:
+                if (!insideMethod)
+                {
+                    Refuse(
+                        inherited.Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "`super` is only admitted inside a method");
+                }
+
+                Emit(JsOpcode.LoadThis);
+                Emit(JsOpcode.Pop);
+
+                if (inherited.Computed is not null)
+                {
+                    CompileExpression(inherited.Computed);
+                    Emit(JsOpcode.Pop);
+                }
+
+                Emit(JsOpcode.ThrowReferenceError);
+                return;
+
             case SliceTokenKind.Delete:
                 CompileExpression(unary.Operand);
                 Emit(JsOpcode.Pop);
@@ -8131,7 +8391,7 @@ public sealed class JsCompiler
         Emit(add);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=713840
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=34BD50
     // Broiler-Human:        PENDING
     private void CompileUpdate(JsUpdateExpression update)
     {
@@ -8139,6 +8399,36 @@ public sealed class JsCompiler
         // their constant pools byte for byte; the wide lowering needs no constant at all.
         var one = request.AdmitsBigIntLiterals ? (ushort)0 : NumberConstant(1);
         var add = update.Operator == SliceTokenKind.PlusPlus ? JsOpcode.Add : JsOpcode.Subtract;
+
+        if (update.Operand is JsIdentifier postfixed && !update.Prefix && Shadowable(postfixed.Name, out _))
+        {
+            // THE OLD VALUE IS THE ANSWER AND THE WRITE GOES THROUGH THE REFERENCE, so the numeric
+            // old value is kept in a slot of its own while the reference's two branches write.
+            var owner = FunctionScope();
+            var kept = owner.Declare("#update" + owner.SlotCount, constant: false);
+
+            TryEmitShadowedReference(update.Span, postfixed.Name, read: true, () =>
+            {
+                EmitUpdateOperand();
+                Emit(JsOpcode.Duplicate);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
+                EmitUpdateStep(add, one);
+            });
+
+            Emit(JsOpcode.Pop);
+            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, kept);
+            return;
+        }
+
+        if (update.Operand is JsIdentifier prefixed && update.Prefix &&
+            TryEmitShadowedReference(update.Span, prefixed.Name, read: true, () =>
+            {
+                EmitUpdateOperand();
+                EmitUpdateStep(add, one);
+            }))
+        {
+            return;
+        }
 
         if (update.Operand is JsIdentifier name)
         {
@@ -8164,8 +8454,7 @@ public sealed class JsCompiler
             var owner = FunctionScope();
             var kept = owner.Declare("#update" + owner.SlotCount, constant: false);
             CompileSuperKey(inherited);
-            Emit(JsOpcode.Duplicate);
-            Emit(JsOpcode.LoadSuperProperty);
+            EmitSuperReadKeepingKey(inherited);
             EmitUpdateOperand();
 
             if (!update.Prefix)
@@ -8215,6 +8504,12 @@ public sealed class JsCompiler
             Emit(JsOpcode.StorePrivate);
             Emit(JsOpcode.Pop);
             EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, kept);
+            return;
+        }
+
+        if (update.Operand is JsCallExpression called && !strict)
+        {
+            EmitCallTargetThrow(called);
             return;
         }
 
@@ -8377,7 +8672,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=450318
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F8F101
     // Broiler-Human:        PENDING
     private void CompileAssignment(JsAssignmentExpression assignment)
     {
@@ -8385,6 +8680,12 @@ public sealed class JsCompiler
         {
             if (assignment.Target is JsIdentifier name)
             {
+                if (TryEmitShadowedReference(
+                    assignment.Span, name.Name, read: false, () => CompileNamedValue(assignment.Value, name.Name)))
+                {
+                    return;
+                }
+
                 CompileNamedValue(assignment.Value, name.Name);
                 StoreName(assignment.Span, name.Name);
                 return;
@@ -8424,6 +8725,12 @@ public sealed class JsCompiler
                 return;
             }
 
+            if (assignment.Target is JsCallExpression called && !strict)
+            {
+                EmitCallTargetThrow(called);
+                return;
+            }
+
             Refuse(
                 assignment.Span,
                 SliceSourceDiagnosticCode.InvalidAssignmentTarget,
@@ -8444,6 +8751,15 @@ public sealed class JsCompiler
 
         if (assignment.Target is JsIdentifier target)
         {
+            if (TryEmitShadowedReference(assignment.Span, target.Name, read: true, () =>
+            {
+                CompileExpression(assignment.Value);
+                Emit(opcode);
+            }))
+            {
+                return;
+            }
+
             LoadName(assignment.Span, target.Name);
             CompileExpression(assignment.Value);
             Emit(opcode);
@@ -8453,11 +8769,10 @@ public sealed class JsCompiler
 
         if (assignment.Target is JsSuperMemberExpression host)
         {
-            // The key is computed once and duplicated, so the read and the write agree about it
-            // even when it is an expression with a side effect.
+            // The key is computed once and kept, so the read and the write agree about it even
+            // when it is an expression with a side effect, and it is converted once.
             CompileSuperKey(host);
-            Emit(JsOpcode.Duplicate);
-            Emit(JsOpcode.LoadSuperProperty);
+            EmitSuperReadKeepingKey(host);
             CompileExpression(assignment.Value);
             Emit(opcode);
             Emit(JsOpcode.StoreSuperProperty);
@@ -8505,12 +8820,37 @@ public sealed class JsCompiler
             return;
         }
 
+        if (assignment.Target is JsCallExpression compounded && !strict)
+        {
+            EmitCallTargetThrow(compounded);
+            return;
+        }
+
         Refuse(
             assignment.Span,
             SliceSourceDiagnosticCode.InvalidAssignmentTarget,
             "the left-hand side of an assignment is not a reference");
 
         Emit(JsOpcode.LoadUndefined);
+    }
+
+    /// <summary>
+    /// Lowers a call written as an assignment target in non-strict code: the call, then Annex B's
+    /// <c>ReferenceError</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>The call runs and nothing after it does</b> (JSP-7, JSC-239): its result is not converted,
+    /// and the right-hand side of the assignment is never evaluated, which is what test262 asks of
+    /// <c>f() = g()</c>. The instruction that throws stands where the assignment's value would be
+    /// pushed, so every lowering around this one keeps the stack it expects.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=77A6A7
+    // Broiler-Human:        PENDING
+    private void EmitCallTargetThrow(JsCallExpression call)
+    {
+        CompileExpression(call);
+        Emit(JsOpcode.Pop);
+        Emit(JsOpcode.ThrowReferenceError);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=910918
@@ -8667,7 +9007,7 @@ public sealed class JsCompiler
     /// no base on the stack — the home object and the receiver are the frame's — so this is the
     /// narrowest of the four shapes and the only one whose short circuit drops a single value.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A4BEAC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EDB3C6
     // Broiler-Human:        PENDING
     private void CompileLogicalSuperAssignment(
         JsAssignmentExpression assignment, JsSuperMemberExpression member)
@@ -8676,8 +9016,7 @@ public sealed class JsCompiler
         var kept = NewLabel();
 
         CompileSuperKey(member);
-        Emit(JsOpcode.Duplicate);
-        Emit(JsOpcode.LoadSuperProperty);
+        EmitSuperReadKeepingKey(member);
         Emit(JsOpcode.Duplicate);
 
         switch (assignment.Operator)
@@ -9072,15 +9411,42 @@ public sealed class JsCompiler
 
     /// <summary>Lowers a tagged template to the call it is.</summary>
     /// <remarks>
+    /// <para>
     /// The tag is called with the strings object first and every substitution after it, in source
     /// order, and the template is never concatenated at all. The strings object is built by
     /// <see cref="EmitTemplateStrings"/>, which is where the identity rule lives.
+    /// </para>
+    /// <para>
+    /// <b>Past 255 arguments the call takes them in one Array</b>, as a long call written out does,
+    /// and the strings object is built from Arrays as well. Until 2026-10-03 a site with more than
+    /// 254 substitutions was refused as a construct outside the manifest, which it is not
+    /// *(corrected: JSC-240)*.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=04E30A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5BC1D6
     // Broiler-Human:        PENDING
     private void CompileTaggedTemplate(JsTaggedTemplate tagged)
     {
         EmitCallee(tagged.Tag);
+
+        var count = tagged.Quasi.Substitutions.Count + 1;
+
+        if (count > 255)
+        {
+            Emit(JsOpcode.NewArray, (ushort)0);
+            EmitTemplateStrings(tagged.Quasi);
+            Emit(JsOpcode.ArrayAppend);
+
+            foreach (var substitution in tagged.Quasi.Substitutions)
+            {
+                CompileExpression(substitution);
+                Emit(JsOpcode.ArrayAppend);
+            }
+
+            Emit(JsOpcode.CallSpread);
+            return;
+        }
+
         EmitTemplateStrings(tagged.Quasi);
 
         foreach (var substitution in tagged.Quasi.Substitutions)
@@ -9088,17 +9454,7 @@ public sealed class JsCompiler
             CompileExpression(substitution);
         }
 
-        var count = tagged.Quasi.Substitutions.Count + 1;
-
-        if (count > 255)
-        {
-            Refuse(
-                tagged.Span,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "a tagged template with more than 254 substitutions is not admitted");
-        }
-
-        Emit(JsOpcode.Call, (byte)System.Math.Min(count, 255));
+        Emit(JsOpcode.Call, (byte)count);
     }
 
     /// <summary>
@@ -9122,16 +9478,47 @@ public sealed class JsCompiler
     /// </para>
     /// <para>
     /// The chunks go on the stack as constants, cooked first, and the instruction discards them
-    /// after the first evaluation. The count fits the operand because a site with more than 254
-    /// substitutions is refused by <see cref="CompileTaggedTemplate"/>.
+    /// after the first evaluation. A site with more chunks than the one-byte count can say puts
+    /// them in a cooked Array and a raw Array instead, for <see cref="JsOpcode.GetTemplateObjectWide"/>,
+    /// which builds the same object from them.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E86907
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=5927B1
     // Broiler-Falsified-If: two evaluations of one call site produce two strings objects, or the cache is reachable from guest code
     // Broiler-Human:        PENDING
     private void EmitTemplateStrings(JsTemplateLiteral quasi)
     {
-        var count = System.Math.Min(quasi.Cooked.Count, 255);
+        var count = quasi.Cooked.Count;
+
+        if (count > 255)
+        {
+            Emit(JsOpcode.NewArray, (ushort)0);
+
+            for (var index = 0; index < count; index++)
+            {
+                if (quasi.Cooked[index] is { } chunk)
+                {
+                    Emit(JsOpcode.LoadConstant, StringConstant(chunk));
+                }
+                else
+                {
+                    Emit(JsOpcode.LoadUndefined);
+                }
+
+                Emit(JsOpcode.ArrayAppend);
+            }
+
+            Emit(JsOpcode.NewArray, (ushort)0);
+
+            for (var index = 0; index < count; index++)
+            {
+                Emit(JsOpcode.LoadConstant, StringConstant(quasi.Raw[index]));
+                Emit(JsOpcode.ArrayAppend);
+            }
+
+            Emit(JsOpcode.GetTemplateObjectWide);
+            return;
+        }
 
         for (var index = 0; index < count; index++)
         {
@@ -9305,7 +9692,7 @@ public sealed class JsCompiler
     /// spread test, the 255 ceiling and the choice of instruction live in one place. They did not,
     /// and a spread argument reached a lowering that had never heard of one.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CBE82E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8D0F12
     // Broiler-Human:        PENDING
     private void CompileArguments(JsCallExpression call, bool direct = false)
     {
@@ -9317,7 +9704,7 @@ public sealed class JsCompiler
         // call made the evaluation a silent global one; `CallEvalSpread` gets the answer
         // `CallEval` gets at the same site, which is a direct evaluation or the explicit refusal
         // (JSD-0026 step 1).
-        if (HasSpread(call.Arguments))
+        if (CarriesArgumentsInAnArray(call.Arguments))
         {
             CompileArgumentArray(call.Arguments);
 
@@ -9333,14 +9720,6 @@ public sealed class JsCompiler
         foreach (var argument in call.Arguments)
         {
             CompileExpression(argument);
-        }
-
-        if (call.Arguments.Count > 255)
-        {
-            Refuse(
-                call.Span,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "a call with more than 255 arguments is not admitted");
         }
 
         if (direct)
@@ -9459,7 +9838,31 @@ public sealed class JsCompiler
         CompileExpression(member.Computed);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2E5F93
+    /// <summary>
+    /// Reads the <c>super</c> property whose key <see cref="CompileSuperKey"/> pushed, leaving the
+    /// key under the value for the write that follows.
+    /// </summary>
+    /// <remarks>
+    /// <b>A computed key is converted by the read and kept converted</b>, so a compound, update or
+    /// logical assignment observes its <c>toString</c> once (JSC-236). A named key is a String
+    /// constant whose conversion nothing can observe, and keeps the two instructions it always had,
+    /// so a program with no computed <c>super</c> write lowers to the bytes it lowered to before.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A2F360
+    // Broiler-Human:        PENDING
+    private void EmitSuperReadKeepingKey(JsSuperMemberExpression member)
+    {
+        if (member.Computed is null)
+        {
+            Emit(JsOpcode.Duplicate);
+            Emit(JsOpcode.LoadSuperProperty);
+            return;
+        }
+
+        Emit(JsOpcode.LoadSuperPropertyKeepKey);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=93E764
     // Broiler-Human:        PENDING
     private void CompileSuperCall(JsSuperCallExpression call)
     {
@@ -9476,7 +9879,7 @@ public sealed class JsCompiler
         // superclass and the `new.target` from the FRAME, and there is nothing beneath the
         // argument Array for CallSpread to pop. The two families meeting is what
         // `SuperCallSpread` is for.
-        if (HasSpread(call.Arguments))
+        if (CarriesArgumentsInAnArray(call.Arguments))
         {
             CompileArgumentArray(call.Arguments);
             Emit(JsOpcode.SuperCallSpread);
@@ -9488,18 +9891,10 @@ public sealed class JsCompiler
             CompileExpression(argument);
         }
 
-        if (call.Arguments.Count > 255)
-        {
-            Refuse(
-                call.Span,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "a call with more than 255 arguments is not admitted");
-        }
-
-        Emit(JsOpcode.SuperCall, (byte)System.Math.Min(call.Arguments.Count, 255));
+        Emit(JsOpcode.SuperCall, (byte)call.Arguments.Count);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8A09AF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9BDB0D
     // Broiler-Human:        PENDING
     private void CompileStoreTo(JsExpression target)
     {
@@ -9543,6 +9938,14 @@ public sealed class JsCompiler
                 Emit(JsOpcode.SetIndex);
                 break;
             }
+
+            // A CALL AS A `for … in` OR `for … of` HEAD IN NON-STRICT CODE RUNS THE CALL FOR EACH
+            // VALUE AND THROWS BEFORE THE BODY (JSP-7, JSC-239); the value it would have written is
+            // dropped first, and the instruction that throws stands in for it.
+            case JsCallExpression called when !strict:
+                Emit(JsOpcode.Pop);
+                EmitCallTargetThrow(called);
+                break;
 
             default:
                 Refuse(
@@ -9609,9 +10012,97 @@ public sealed class JsCompiler
             InternedName(name));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A65D36
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EDF5A4
     // Broiler-Human:        PENDING
     private void StoreName(SliceSourceSpan span, string name)
+    {
+        StoreNameAfterTheValue(span, name);
+    }
+
+    /// <summary>
+    /// Lowers an assignment, or a read and then an assignment, through a name a <c>with</c> body
+    /// can shadow, resolving the name ONCE, before anything else is evaluated.
+    /// </summary>
+    /// <param name="span">Where the assignment is, for the static store's diagnostics.</param>
+    /// <param name="name">The name assigned.</param>
+    /// <param name="read">Whether the reference's value is read first, as a compound assignment
+    /// or an update reads it.</param>
+    /// <param name="produce">Emits the new value, with the old one on top when
+    /// <paramref name="read"/>; it is emitted once, between the read and the write.</param>
+    /// <returns>False when no <c>with</c> can shadow the name, and nothing was emitted.</returns>
+    /// <remarks>
+    /// <b>The language resolves the reference first and writes through it last</b>: the binding
+    /// the write reaches is the one the name meant when the assignment began, even when a getter
+    /// on the <c>with</c> object deleted it, or the right-hand side added one to a nearer object.
+    /// Resolving again at the write - as this lowering did until 2026-10-03 - wrote the enclosing
+    /// variable instead (test262's S11.13.1_A5/A6 and S11.13.2_A5/A6). The object the search
+    /// answered stays on the stack under the value, and <see cref="JsOpcode.SetObjectBinding"/>
+    /// writes it as an object environment record does, which is a ReferenceError in strict code
+    /// when the property is gone.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6ACC9D
+    // Broiler-Human:        PENDING
+    private bool TryEmitShadowedReference(SliceSourceSpan span, string name, bool read, System.Action produce)
+    {
+        if (!Shadowable(name, out var limit))
+        {
+            return false;
+        }
+
+        var live = buffer.Height;
+        var key = InternedName(name);
+        var staticWrite = NewLabel();
+        var done = NewLabel();
+
+        EmitResolve(limit, key);
+
+        if (read)
+        {
+            var staticRead = NewLabel();
+            var readDone = NewLabel();
+
+            Emit(JsOpcode.Duplicate);
+            Branch(JsOpcode.JumpIfFalse, staticRead);
+            Emit(JsOpcode.Duplicate);
+            Emit(JsOpcode.GetObjectBinding, key);
+            Branch(JsOpcode.Jump, readDone);
+
+            Mark(staticRead);
+            buffer.Rejoin(live + 1);
+            EmitStaticLoad(name, orUndefined: false);
+
+            Mark(readDone);
+            buffer.Rejoin(live + 2);
+        }
+
+        produce();
+
+        // [reference, value]: the value goes under the reference so the test can consume a copy.
+        Emit(JsOpcode.Swap);
+        Emit(JsOpcode.Duplicate);
+        Branch(JsOpcode.JumpIfFalse, staticWrite);
+        Emit(JsOpcode.Swap);
+        Emit(JsOpcode.SetObjectBinding, key);
+        Branch(JsOpcode.Jump, done);
+
+        Mark(staticWrite);
+        buffer.Rejoin(live + 2);
+        Emit(JsOpcode.Pop);
+        EmitStaticStore(span, name);
+
+        Mark(done);
+        buffer.Rejoin(live + 1);
+        return true;
+    }
+
+    /// <summary>Writes the value on the stack to a name, resolving it now.</summary>
+    /// <remarks>
+    /// For the writes that have no right-hand side to order against - a declaration's initialiser
+    /// and a loop variable - where resolving at the write is resolving first.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8E88CB
+    // Broiler-Human:        PENDING
+    private void StoreNameAfterTheValue(SliceSourceSpan span, string name)
     {
         // A WRITE ASKS THE SAME OBJECTS A READ ASKS, AND THE TWO ANSWERS DIFFER. `with (o) { x = 1 }`
         // sets `o.x` when the object has the name and reaches the enclosing binding when it does
@@ -9831,7 +10322,7 @@ public sealed class JsCompiler
     /// language says the second read sees that. That is the price of the construct rather than a
     /// shortcoming of this lowering, and it is why nothing outside a <c>with</c> body pays any of it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DC2FDD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=97592B
     // Broiler-Human:        PENDING
     private void EmitDynamicName(string name, int limit, bool wantsBase, bool orUndefined)
     {
@@ -9849,7 +10340,9 @@ public sealed class JsCompiler
             Emit(JsOpcode.Duplicate);
         }
 
-        Emit(JsOpcode.GetProperty, key);
+        // GetBindingValue OF AN OBJECT ENVIRONMENT RECORD, which asks for the property again: one
+        // a `Symbol.unscopables` getter removed since the search is a ReferenceError in strict code.
+        Emit(JsOpcode.GetObjectBinding, key);
 
         if (wantsBase)
         {
@@ -11096,7 +11589,7 @@ public sealed class JsCompiler
             return false;
         }
 
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4ADB4C
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7BE90C
         // Broiler-Human:        PENDING
         private static System.Collections.Generic.IEnumerable<JsNode?> Children(JsNode node)
         {
@@ -11154,6 +11647,7 @@ public sealed class JsCompiler
                 case JsForInStatement statement:
                     yield return statement.Target;
                     yield return statement.Pattern;
+                    yield return statement.Initialiser;
                     yield return statement.Right;
                     yield return statement.Body;
                     break;

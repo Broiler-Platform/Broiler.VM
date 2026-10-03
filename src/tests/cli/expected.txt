@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 98
+runs|0|# Completed: 134
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -840,3 +840,156 @@ refused/eval-as-a-parameter-under-a-body-directive.js|3|2209:ReservedWordAsBindi
 refused/a-unary-operand-of-exponentiation.js|3|2101:UnexpectedToken at 4:18
 refused/a-unary-operand-of-exponentiation.js|3|a unary operator cannot be applied directly to the base of `**`
 dead-zone/a-read-before-the-initialiser-in-a-function-body.js|1|uncaught ReferenceError
+
+# JSP-4, THE ABSTRACT OPERATIONS UNDER THE LIBRARY, WHERE THEY WERE NEAR NEIGHBOURS OF THEMSELVES
+# (2026-10-03).
+#
+# `apply` reads its list's length with `ToLength`, and a list past the ceiling `Reflect.apply` has is
+# a RangeError, where `ToUint32` made `-1` four billion reads. A `super[k]` read and then written
+# converts `k` once, and still takes its base before the conversion. `delete` converts its base with
+# `ToObject`. The values of the first and last rows were taken from the comparison engine's
+# `node -p`; on the second it converts the key twice and reads the base after converting it, which
+# test262 refuses in both cases, and the row holds the specification's answer *(JSC-236)*.
+runs/apply-reads-its-length-with-tolength.js|0|-Infinity / 1 / 2 / RangeError
+runs/a-super-key-converted-once.js|0|compound 11:1 / update 2:1 / logical 2:1 / nullish 2:1 / plain 12:4 / base 2
+runs/delete-through-a-primitive-base.js|0|false / false / true / true / true / TypeError / TypeError / TypeError
+
+# JSP-5, THE INTEGRITY CLAUSES ON THE OBJECT MODEL THAT STILL DID NOT HOLD (2026-10-03).
+#
+# `for … in` asks for each name when it reaches it, so a name deleted or made non-enumerable first
+# is not visited. A String object's own keys are its exotic ones in the language's order and a
+# redefinition that changes nothing adds nothing. A collection's constructor calls the adder of the
+# object it builds. A Symbol `Symbol.for` did not make can be held weakly. Each value was taken from
+# the comparison engine's `node -p` except the demoted name in the first row, which it still visits
+# where the specification's `%ForInIteratorPrototype%.next` does not *(JSC-237)*.
+runs/a-for-in-that-observes-deletion.js|0|a,c / a / a,c / a
+runs/a-string-object-keeps-its-own-keys.js|0|0,1,length / 0,1,5,7,length,x / 6 / TypeError
+runs/a-collection-subclass-uses-its-own-adder.js|0|map 1 / map 2 / set 3 / weakmap 4 / weakset object / true
+runs/a-symbol-held-weakly.js|0|value / false / true / false / true / true / true / TypeError / TypeError / TypeError / TypeError
+
+# JSP-6, THE PROTOCOLS THE REALM PUBLISHED AND DID NOT CONSULT, WHERE THEY STILL DID NOT HOLD
+# (2026-10-03).
+#
+# `Function.prototype[Symbol.hasInstance]` exists and cannot be changed. An object spread and an
+# object rest copy enumerable Symbol-keyed properties. An anonymous function takes its name from a
+# computed key and from a class field, and an object literal's computed key is converted before its
+# value. Each value was taken from the comparison engine's `node -p` *(JSC-238)*.
+runs/function-prototype-has-instance.js|0|function / false,false,false / [Symbol.hasInstance] / 1 / true / false / true
+runs/an-object-spread-copies-symbol-keys.js|0|spread / false / spread / 2 / Symbol(tag)
+runs/a-function-named-by-a-computed-key-or-a-field.js|0|computed / [sym] / arrow / key value / field / arrow / #hidden / shared / computed / [sym] / counted 1
+
+# JSP-7, THE SURFACES THAT WERE ABSENT WITHOUT BEING DECLARED (2026-10-03).
+#
+# Annex B is admitted whole in the script goal, which is the rule section 6 of the roadmap now
+# states: its String, Date and RegExp members, its HTML-like comments, the `for … in` initialiser and
+# a call as an assignment target in non-strict code. The edition's members the realm lacked are
+# present, `cleanupSome` is gone, a reviver gets its context, and `Error.prototype.stack` is declined
+# by name with the answer row below. The values were taken from the comparison engine's `node -p`
+# except where Node 22 has no such member: `Error.isError`, `WeakMap`'s pair and the `Uint8Array`
+# codecs, whose values were taken from the specification's algorithms *(JSC-239)*.
+runs/annex-b-string-date-and-regexp-members.js|0|<a name="a&quot;b">x</a><big>x</big><blink>x</blink><b>x</b><tt>x</tt><font color="red">x</font><font size="7">x</font><i>x</i><a href="u">x</a><small>x</small><strike>x</strike><sub>x</sub><sup>x</sup> / true / trimEnd / 120 1999 / true / true b+ i 0
+runs/html-like-comments-in-a-script.js|0|1 / 5 / 7
+--module refused/an-html-like-comment-in-a-module.mjs|3|2205:InvalidAssignmentTarget at 3:20
+runs/a-for-in-initialiser.js|0|1 / -1 / q / 0 / c
+runs/a-call-as-an-assignment-target.js|0|ReferenceError:f / ReferenceError:f / ReferenceError:f / ReferenceError:f / ReferenceError:f
+refused/a-call-as-an-assignment-target-in-strict-code.js|3|2205:InvalidAssignmentTarget at 9:1
+runs/the-edition-members-the-realm-lacked.js|0|true,true,false,false / 1,1,symbol / function false / undefined
+runs/uint8array-base64-and-hex.js|0|SGn7/w== / SGn7_w / 4869fbff / 72,105,33 /  / SyntaxError / 72,105 / 5:2:72,105,0,0 / 0:0:0,0 / SyntaxError:72,105,0
+runs/a-reviver-reads-the-source-text.js|0|a=1.50 0="\u0041" 1=-0 2=1e3 b=- c=- =-
+runs/an-error-has-no-stack.js|0|undefined / false / message
+
+# JSP-10, THE HOST SURFACE AN EMBEDDER MEETS FIRST, ITS REMAINING CLAUSES (2026-10-03).
+#
+# A call, a construction, a super call and a tagged template pass three hundred arguments written
+# out, where each was refused past 255 with a reason about the manifest. A function declaring more
+# than 255 parameters is refused at compile time naming the ceiling, where the verifier refused the
+# host's own artifact (exit 4). The suspending constructors build from source where `Function` does,
+# the host members this realm cannot perform refuse with reasons true of it, and several named files
+# run in the ordinal order the usage text states, whatever order they were named in *(JSC-240)*.
+runs/a-call-past-the-operand-width.js|0|call=300:0:299 ordered=true new=300 super=300 method=300:0:299 optional=300:0:299 max=299 tagged=301:301:300:true one-site=true
+refused/a-function-with-three-hundred-parameters.js|3|2301:TooManyLocals at 5:1: a function of this format declares at most 255 parameters
+runs/the-suspending-function-constructors.js|0|1+2 / async 41, async generator / [object Promise] / true / anonymous,anonymous,anonymous
+runs/the-host-members-that-refuse.js|0|typeof read=function typeof $262.gc=function
+runs/the-host-members-that-refuse.js|0|read: TypeError: read: no reader is installed in this realm
+runs/the-host-members-that-refuse.js|0|gc: TypeError: $262.gc: this host exposes no collection hook
+runs/the-host-members-that-refuse.js|0|createRealm: TypeError: $262.createRealm: this profile creates no nested realm
+one-realm/a-second-script-the-owed-job-outlives.js one-realm/a-first-script-that-leaves-a-job-owed.js|0|suspended-in-the-first-script,first-script-ended,second-script-ended,resumed-at-the-drain
+
+# JSP-2, THE REFUSAL THAT WAS LOST: A BIGINT LITERAL IS NOT A NUMBER (2026-10-03).
+#
+# The type half: the wide manifest's BigInt is the language's, every value the comparison engine's
+# `node -p` gives. The cheap half: under the two narrow manifests the literal is refused by name at
+# compile time and `--check` decides it, and the same literal under the default manifest is the exact
+# integer, never the Number it was once read as *(JSC-241)*.
+runs/a-bigint-is-not-a-number.js|0|bigint / object / TypeError / TypeError / TypeError / false / true / true / true / true / true / 18446744073709551617 / true / 9007199254740993 / 9007199254740992 / TypeError / 255 / 15 / 5 / 9007199254740993 / -9223372036854775808 / 2 / -2 / 1180591620717411303424 / -1 / 255
+--slice --check refused/a-bigint-literal-under-a-narrow-manifest.js|3|2104:ConstructOutsideManifest at 4:1: the construct BigInt is not admitted
+--numeric --check refused/a-bigint-literal-under-a-narrow-manifest.js|3|2104:ConstructOutsideManifest at 4:1: a BigInt literal is not admitted
+--numeric refused/a-bigint-literal-under-a-narrow-manifest.js|3|a BigInt literal is not admitted by the declared feature manifest
+refused/a-bigint-literal-under-a-narrow-manifest.js|0|9007199254740993
+
+# JSD-0027 N2 AND N3, THE ECMA-262 FALLBACKS OWED WITHOUT INTL (2026-10-03).
+#
+# toUpperCase and toLowerCase are the Unicode Default Case Conversion over the pinned tables, with
+# SpecialCasing.txt archived beside the other UCD files, and localeCompare answers 0 for canonically
+# equivalent strings. Every value is the comparison engine's `node -p` *(JSC-242)*.
+runs/unicode-default-case-conversion.js|0|SS / FF / ʼN / ἈΙ / ας / σς / σ / ας. / ασ́β / ας́ / 2 / I / Ǆǆ / true / 2 / SS / ας / false / true / false
+runs/locale-compare-canonical-equivalence.js|0|0 / 0 / 0 / 0 / -1 / 1 / 0 / 0
+
+# A NAME IN A `with` BODY IS RESOLVED ONCE (2026-10-03). The reference is resolved before the
+# right-hand side and written back through, as an object environment record writes its binding. The
+# values are the specification's; the comparison engine resolves again at the write *(JSC-243)*.
+runs/a-with-reference-resolved-once.js|0|6:0 / 6:0 / 1 / 2:10 / 5:7 / 9:0 / 4
+
+# A REGEXP GROUP CAN SET ITS OWN FLAGS (2026-10-03). `(?ims-ims:...)` changes the i, m and s flags for
+# its body alone, and its early errors are SyntaxErrors. The values are the specification's; the
+# comparison engine reads them only under --js-regexp-modifiers *(JSC-244)*.
+runs/regexp-pattern-modifiers.js|0|true:false / true:false / true:false:false / true:false / true:false / AbC / true:false / true:false / true / true / SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError
+
+# A SLASH IS READ BY WHAT ITS BRACKET CLOSED (2026-10-03). After a block, a declaration's body or a
+# statement head a `/` opens a regular expression; after a value it divides, and a contextual
+# keyword before it is a name. The values are the comparison engine's *(JSC-245)*.
+runs/a-slash-after-a-block-or-a-name.js|0|1 3 3 3 NaN NaN NaN if while /1/ /2/ /3/g 4 5 b b NaN 3 NaN
+
+# A `for … in` LEXICAL BINDING IS FRESH EACH TURN (2026-10-03), and the head's names are in their
+# dead zone while the object is evaluated. The values are the comparison engine's *(JSC-246)*.
+runs/a-for-in-binding-per-iteration.js|0|p,q / p,q / p,q / p,q / ReferenceError / ReferenceError / ReferenceError / outside
+
+# A KEY DELETED AND DEFINED AGAIN GOES LAST (2026-10-03). The values are the comparison engine's
+# *(JSC-247)*.
+runs/a-key-defined-again-goes-last.js|0|0,2,p2,p4,p1 / k30,k31,k32,k33,k34,k35,k36,k37,k38,k39,k5 / 99 / false / b,a / 999 / {"x":0,"y":3} / b,a
+
+# A PROPERTY KEY MAY CONVERT TO A SYMBOL (2026-10-03), and `hasOwnProperty` and
+# `propertyIsEnumerable` convert it before the receiver. The values are the comparison engine's
+# *(JSC-248)*.
+runs/property-keys-that-convert-to-symbols.js|0|true true true RangeError RangeError 1 1 true true 5 true 7 7 true false 3 1+3 2 key>descriptor got got 13
+
+# A BOUND FUNCTION'S LENGTH, THE IMMUTABLE ROOT AND THE NATIVE RENDERING (2026-10-03). The values
+# are the comparison engine's but for the private method's rendering, which keeps no source text
+# here *(JSC-249)*.
+runs/bound-length-and-the-immutable-root.js|0|2 / 0 / 0 / 0 / 0 / Infinity / 0 / 2147483648 / 2 / 0 / TypeError / true / false / TypeError / TypeError / TypeError / undefined / function () { [native code] } / function () { [native code] } / function max() { [native code] }
+
+# A LABELLED FUNCTION OR AN ASYNC FUNCTION CANNOT BE A NESTED STATEMENT (2026-10-03), and in a `with`
+# body `let` before a line break is the identifier. The engine raises the two SyntaxErrors and
+# prints the run's value *(JSC-250)*.
+refused/a-labelled-function-as-a-loop-body.js|3|2101:UnexpectedToken at 4:15: a labelled function declaration cannot be the body of a `while`
+refused/an-async-function-as-a-with-body.js|3|2101:UnexpectedToken at 3:11
+runs/a-let-before-a-line-break-in-a-with-body.js|0|1 undefined 5
+
+# BUILT-INS AS THE EDITION DEFINES THEM (2026-10-03): the shared parse functions, the non-generic
+# String members, the Date hint and expanded years, an Error's cause, `Object` under `super()`, the
+# RegExp key order, `fromEntries` closing its iterator, `Promise.any`'s resolve, the `\c` escape
+# under `u` and a deep pattern. The values are the comparison engine's *(JSC-252)*.
+runs/built-ins-as-the-edition-defines-them.js|0|true / true / TypeError / TypeError / x / TypeError / 0 / -62183116800000 / 8640000000000000 / NaN / -0012 / RangeError / 5 / undefined / true / 3 / lastIndex+a / TypeError / next0+next1+return / 2 / true / SyntaxError / 201
+runs/a-completion-value-with-no-prototype.js|0|[object Object]
+
+# NAMES AND PUNCTUATORS READ BY CONTEXT (2026-10-03), and the early errors the parser owed. The run's
+# values are the comparison engine's; it raises each refusal's SyntaxError *(JSC-253)*.
+runs/names-and-punctuators-read-by-context.js|0|2 / 4 / 2 / /re/g / 1e-7+1e+21+1.23e-18 / g / 0.3 / 99 / 9 / function
+refused/a-parenthesised-literal-as-an-assignment-target.js|3|2205:InvalidAssignmentTarget at 3:1: a parenthesised literal is not an assignment target
+refused/a-non-octal-decimal-literal-in-strict-code.js|3|2210:LegacyOctalInStrictCode at 4:1: a legacy octal literal is not admitted in strict code
+refused/let-before-await-in-an-async-function.js|3|2209:ReservedWordAsBinding at 5:5: `await` is not a binding name
+--module refused/a-module-function-and-a-var-of-one-name.mjs|3|2202:VarAndLexicalCollision at 4:1: `f` is declared both as a `var` and as a function
+
+# DELEGATION, DELETION AND CATCH SCOPES (2026-10-03). The values are the comparison engine's but for
+# the last row's, which are the specification's *(JSC-254)*.
+runs/delegation-deletion-and-catch-scopes.js|0|false / 1 / 5 / 1 / ReferenceError / ReferenceError / 1 / outside / inside / number / true / undefined

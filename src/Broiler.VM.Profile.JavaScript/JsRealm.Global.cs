@@ -78,7 +78,7 @@ internal sealed partial class JsRealm
     private const string GlobalUriHexDigits = "0123456789ABCDEF";
 
     /// <summary>Builds the global object's non-constructor bindings.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CD15FE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=835ABF
     // Broiler-Human:        PENDING
     private void SetupGlobal()
     {
@@ -96,6 +96,20 @@ internal sealed partial class JsRealm
         host.DefineBuiltIn("globalThis", JsValue.Object(host));
 
         SetupGlobalNumericFunctions(host);
+
+        // `Number.parseInt` and `Number.parseFloat` ARE the global functions, the same objects, not
+        // copies (21.1.2.12 and 21.1.2.13). `Number` is set up first and holds a placeholder in
+        // each slot, so writing the global's value over it keeps the key where it was. Until
+        // 2026-10-03 they were two pairs of functions (JSC-252).
+        if (host.TryGetOwnProperty("Number", out var number) && number.Value.AsObjectOrNull() is { } numberObject)
+        {
+            foreach (var shared in (string[])["parseFloat", "parseInt"])
+            {
+                host.TryGetOwnProperty(shared, out var global);
+                numberObject.SetOwnProperty(shared, global);
+            }
+        }
+
         SetupGlobalUriFunctions(host);
         SetupGlobalHostFunctions(host);
     }
@@ -166,7 +180,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Defines <c>print</c>, <c>$262</c> and <c>console</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=723164
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5D7856
     // Broiler-Human:        PENDING
     private void SetupGlobalHostFunctions(JsObject host)
     {
@@ -204,13 +218,17 @@ internal sealed partial class JsRealm
         // realm has no reader unless somebody installed one *(corrected: JSC-212)*.
         //
         // The shape is `$262.agent`'s, one line below, and for the same stated reason: answering
-        // `undefined` would let a program proceed on a false premise.
+        // `undefined` would let a program proceed on a false premise. Its message said "no
+        // composition can register a reader", which the paragraph above had already retracted;
+        // it says what is true of the realm now (JSP-10, JSC-240), and section 13 of the roadmap
+        // states the choice of present-and-refusing over absent for every member here.
         GlobalRefuse(
             host,
             "read",
             1,
-            "read: this profile's host-capability surface cannot carry a file's contents back to a " +
-            "guest, so no composition can register a reader");
+            "read: no reader is installed in this realm - the host-capability table cannot carry " +
+            "a file's contents back to a guest, and this composition installed none through the " +
+            "host-object surface");
 
         var agent = new JsObject(ObjectPrototype);
 

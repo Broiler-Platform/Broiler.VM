@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+index 0995e2a..689fc30 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+@@ -5502,7 +5502,7 @@ internal sealed class JsParser
+                     // integer, or a refusal at the literal when it is wider than the format can
+                     // carry - never a double.
+                     return AdmitsBigInt
+-                        ? BigIntLiteral(span, token)
++                        ? new JsNumberLiteral(span, token.NumericValue, token.IsLegacyOctal)
+                         : OutsideExpression(span, "a BigInt literal");
+                 }
+ 

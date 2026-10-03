@@ -1,0 +1,12 @@
+diff --git a/src/compositions/Broiler.VM.Composition.JavaScript.Cli/SourceFiles.cs b/src/compositions/Broiler.VM.Composition.JavaScript.Cli/SourceFiles.cs
+index eb2403b..4a486c2 100644
+--- a/src/compositions/Broiler.VM.Composition.JavaScript.Cli/SourceFiles.cs
++++ b/src/compositions/Broiler.VM.Composition.JavaScript.Cli/SourceFiles.cs
+@@ -102,7 +102,6 @@ internal static class SourceFiles
+         }
+ 
+         missing = absent;
+-        found.Sort(StringComparer.Ordinal);
+         return found;
+     }
+ 

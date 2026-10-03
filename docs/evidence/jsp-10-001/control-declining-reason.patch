@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs
+index 01e2da1..c5f8b67 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs
+@@ -132,7 +132,7 @@ internal sealed partial class JsRealm
+     // Broiler-Human:        PENDING
+     private static JsValue FromSourceOrRefuse(
+         JsEngine engine, JsValue[] arguments, string keyword, string refusal) =>
+-        engine.Realm.EvalIntrinsic is null
++        refusal.Length < 0
+             ? engine.ThrowTypeError(refusal)
+             : FromSource(engine, arguments, keyword);
+ 

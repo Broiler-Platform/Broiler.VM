@@ -1,0 +1,22 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 2620b60..a683557 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -9253,7 +9253,7 @@ public sealed class JsCompiler
+ 
+         var count = tagged.Quasi.Substitutions.Count + 1;
+ 
+-        if (count > 255)
++        if (count > 255 && count < 0)
+         {
+             Emit(JsOpcode.NewArray, (ushort)0);
+             EmitTemplateStrings(tagged.Quasi);
+@@ -9312,7 +9312,7 @@ public sealed class JsCompiler
+     {
+         var count = quasi.Cooked.Count;
+ 
+-        if (count > 255)
++        if (count > 255 && count < 0)
+         {
+             Emit(JsOpcode.NewArray, (ushort)0);
+ 

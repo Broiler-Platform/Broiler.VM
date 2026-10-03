@@ -1,0 +1,14 @@
+# comparison engine v22.22.0
+runs/a-call-past-the-operand-width.js  [same] agrees as declared
+  host   exit 0: call=300:0:299 ordered=true new=300 super=300 method=300:0:299 optional=300:0:299 max=299 tagged=301:301:300:true one-site=true
+  engine exit 0: call=300:0:299 ordered=true new=300 super=300 method=300:0:299 optional=300:0:299 max=299 tagged=301:301:300:true one-site=true
+refused/a-function-with-three-hundred-parameters.js  [ceiling] agrees as declared
+  host   exit 3: broiler-js: refused/a-function-with-three-hundred-parameters.js: 2301:TooManyLocals at 5:1: a function of this format declares at most 255 parameters before its first default or rest parameter - the count the frame copies a call's arguments into - and this one declares 300
+  engine exit 0: (printed nothing)
+runs/the-suspending-function-constructors.js  [same] agrees as declared
+  host   exit 0: 1+2 / async 41, async generator / [object Promise] / true / anonymous,anonymous,anonymous
+  engine exit 0: 1+2 / async 41, async generator / [object Promise] / true / anonymous,anonymous,anonymous
+runs/the-host-members-that-refuse.js  [host] agrees as declared
+  host   exit 0: typeof read=function typeof $262.gc=function
+  engine exit 1: ReferenceError: $262 is not defined
+# 0 of 4 fixtures do not agree as declared

@@ -1,0 +1,36 @@
+$ git apply docs/evidence/jsp-2-001/control-numeric-literal.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+0.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> <root>/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.84
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-2.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 5 command lines from artifacts/jsp-2-001/jsp-2.expected.txt
+ok   runs/a-bigint-is-not-a-number.js
+ok   --slice --check refused/a-bigint-literal-under-a-narrow-manifest.js
+FAIL --numeric --check refused/a-bigint-literal-under-a-narrow-manifest.js: exit 0, expected 3; output does not contain `2104:ConstructOutsideManifest at 4:1: a BigInt literal is not admitted`
+FAIL --numeric refused/a-bigint-literal-under-a-narrow-manifest.js: exit 0, expected 3; output does not contain `a BigInt literal is not admitted by the declared feature manifest`
+       9007199254740992
+ok   refused/a-bigint-literal-under-a-narrow-manifest.js
+# 2 of 5 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-2-001/control-numeric-literal.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+  Broiler.VM.Profile.JavaScript.Compiler -> <root>/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Composition.JavaScript.Cli -> <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.63
+# exit 0
