@@ -1,0 +1,5 @@
+$ dotnet <root>/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.SliceCompiler.dll --checks --verbose
+ok   the suspending constructors give a declining realm's reason: Function:TypeError:true,GeneratorFunction:TypeError:true,AsyncFunction:TypeError:true,AsyncGeneratorFunction:TypeError:true
+ok   the suspending constructors go where Function goes when the surface is admitted: Function:EvalError:false,GeneratorFunction:EvalError:false,AsyncFunction:EvalError:false,AsyncGeneratorFunction:EvalError:false
+broiler-js-slice-compiler: 591 checks passed, 3 not run on this machine and claimed by nothing
+# exit 0

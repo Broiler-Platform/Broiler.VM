@@ -1,0 +1,26 @@
+$ python3 eng/run-test262.py --suite <scratch>/suite/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e --binary-directory <scratch>/base/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0 --jobs 3 --out <scratch>/test262-base --dir test/language/expressions/call --dir test/language/expressions/new --dir test/language/expressions/super --dir test/language/expressions/tagged-template --dir test/language/expressions/template-literal --dir test/language/arguments-object --dir test/built-ins/Function --dir test/built-ins/GeneratorFunction --dir test/built-ins/AsyncFunction --dir test/built-ins/AsyncGeneratorFunction
+test/language/expressions/tagged-template/cache-realm.js [sloppy]
+#           2  test/language/arguments-object  e.g. test/language/arguments-object/10.6-13-a-2.js [sloppy]
+#           2  test/language/expressions/new  e.g. test/language/expressions/new/non-ctor-err-realm.js [sloppy]
+#           2  test/language/expressions/super  e.g. test/language/expressions/super/realm.js [sloppy]
+#   by declared feature (142 of 152 failing variants declare one; a variant with two is in two rows): 13 distinct, 186 taggings over 142 variants
+#          43  cross-realm  e.g. test/built-ins/AsyncFunction/proto-from-ctor-realm.js [sloppy]
+#          28  async-iteration  e.g. test/built-ins/AsyncGeneratorFunction/has-instance.js [sloppy]
+#          28  generators  e.g. test/built-ins/Function/prototype/toString/GeneratorFunction.js [sloppy]
+#          23  caller  e.g. test/built-ins/Function/15.3.5.4_2-12gs.js [sloppy]
+#          22  Reflect  e.g. test/built-ins/AsyncFunction/proto-from-ctor-realm.js [sloppy]
+#           8  tail-call-optimization  e.g. test/language/expressions/call/tco-call-args.js [strict]
+#           6  Reflect.construct  e.g. test/built-ins/AsyncFunction/is-a-constructor.js [sloppy]
+#           6  Symbol  e.g. test/built-ins/AsyncFunction/proto-from-ctor-realm.js [sloppy]
+#           6  class  e.g. test/built-ins/Function/internals/Call/class-ctor-realm.js [sloppy]
+#           4  Proxy  e.g. test/built-ins/Function/internals/Construct/base-ctor-revoked-proxy-realm.js [sloppy]
+#           4  async-functions  e.g. test/built-ins/AsyncFunction/proto-from-ctor-realm.js [sloppy]
+#           4  class-methods-private  e.g. test/built-ins/Function/prototype/toString/private-method-class-expression.js [sloppy]
+#           4  class-static-methods-private  e.g. test/built-ins/Function/prototype/toString/private-static-method-class-expression.js [sloppy]
+# test262 1165 files, 2116 variants: pass 1964, fail 152, unsupported 0, exhausted 0, skipped 0
+coverage partial a named selection rather than the whole test tree: test/language/expressions/call test/language/expressions/new test/language/expressions/super test/language/expressions/tagged-template test/language/expressions/template-literal test/language/arguments-object test/built-ins/Function test/built-ins/GeneratorFunction test/built-ins/AsyncFunction test/built-ins/AsyncGeneratorFunction
+# the whole-run report is <scratch>/test262-base/test262.report
+# the machine-readable report is <scratch>/test262-base/test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language/expressions/call test/language/expressions/new test/language/expressions/super test/language/expressions/tagged-template test/language/expressions/template-literal test/language/arguments-object test/built-ins/Function test/built-ins/GeneratorFunction test/built-ins/AsyncFunction test/built-ins/AsyncGeneratorFunction
+# exit 1
