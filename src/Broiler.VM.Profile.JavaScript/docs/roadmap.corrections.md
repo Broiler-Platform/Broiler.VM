@@ -10381,3 +10381,44 @@ which gains the statement the gate's capability clause asks for.
 
 **Authority and date.** The implementation of 2026-10-03 in this checkout and
 [record JSP-10-001](../../../docs/evidence/jsp-10-001/README.md). 2026-10-03.
+
+### JSC-241
+
+**Where:** [JSP-2](roadmap.parity.md#jsp-2--the-refusal-that-was-lost-a-bigint-literal-is-not-a-number)'s
+gate and its paragraph "Where this stands on 2026-09-08", and the sentence of the parity roadmap's
+[section 7](roadmap.parity.md#7-order-and-what-is-schedulable-today) that says "the rest of JSP-2's
+gate stays open".
+
+**What the plan said.** The gate has two halves. The cheap half: `1n` is refused at compile time with
+a diagnostic naming the construct, `--check` decides it, and a retained corpus entry carries it. The
+type half, if the type is admitted: `typeof` answers `bigint`, mixing with a Number throws, strict
+equality across the types is `false` and loose equality `true`, a value past the Number range
+round-trips, `JSON.stringify` throws, and every literal form is exercised. A negative control for each
+half, watched failing and then passing after the revert, and the host's usage text describing the
+manifest it runs. On 2026-09-08 only the first clause of the cheap half was met
+([JSC-207](#jsc-207)).
+
+**What replaced it, observed on 2026-10-03.**
+- **The type was admitted** by JSeal B01 to B08 (2026-09-21 and 2026-09-22), through the surface
+  `broiler.javascript.bigint`, and the usage text was corrected with it. The wide manifest admits the
+  literal as an exact integer. The slice and numeric manifests still refuse it by name.
+- **The cheap half's last clause is met.** The source corpus retains `refuse-a-bigint-literal`, the
+  slice surface refusing `1n` with `2104`. No retained entry carried the refusal until now.
+- **The type half has a fixture.** One acceptance row asks every item of the gate's list and gets
+  the comparison engine's values: `typeof`, `Object(1n)`, mixing in three forms, the four
+  comparisons, `2n ** 64n + 1n` round-tripped through a String, `9007199254740993n` and its Number,
+  `JSON.stringify`, the hexadecimal, octal and binary forms, division, remainder, a shift past 64
+  bits and the two `asIntN` forms.
+- **Both halves have rows at the host.** `--slice --check` and `--numeric --check` refuse the literal
+  by name, and the default manifest reads the same file's `9007199254740993n` exactly.
+- **Each half has controls**, in [record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md): the
+  literal read as a Number under each narrow manifest and under the wide one, a BigInt mixed with a
+  Number, and `JSON.stringify` of a BigInt.
+
+**What must not be read as repaired.**
+- The refusal under the slice surface names "the construct BigInt" and under the numeric manifest
+  "a BigInt literal". Both name the construct, in two wordings.
+- JSP-2 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md). 2026-10-03.

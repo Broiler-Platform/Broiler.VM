@@ -682,6 +682,17 @@ a milestone with a ledger row.
   JSeal adoption of the crossing. Local implementation in the working
   tree, validated as recorded in the named `docs/evidence/jseal-*` records; unreviewed, not accepted
   evidence, and no milestone or stage moves.
+- **2026-10-03 implementation note, the clauses still open:**
+  - The source corpus retains `refuse-a-bigint-literal`: the slice surface refuses `1n` with `2104`.
+  - An acceptance row asks the type half's whole list and gets the comparison engine's values.
+  - `--slice --check` and `--numeric --check` refuse the literal by name, and the default manifest
+    reads the same literal exactly.
+  - Each half has negative controls, watched failing and then passing after the revert
+    ([JSC-241](roadmap.corrections.md#jsc-241),
+    [record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md)).
+
+  The usage text was corrected when the type was admitted. Unreviewed, not accepted evidence, and no
+  milestone or stage moves.
 - **Objective.** No program silently gets a wrong number. A BigInt literal is either refused by name
   at compile time or evaluated as a BigInt; it is never a Number.
 - **Waits on.** Nothing for the refusal. The type itself waits on the value representation of
@@ -1044,7 +1055,8 @@ disagreements internal to this checkout; **the first half of
 needs no type, no manifest and no decision**, which is the point of splitting its gate in two —
 **and it was taken on 2026-09-08**, so that clause of this paragraph reads in the past tense now
 while the rest of JSP-2's gate stays open, which is the whole reason the split was worth drawing
-*(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*; and
+*(corrected: [JSC-207](roadmap.corrections.md#jsc-207); the rest of the gate has a change and a
+control for each clause since 2026-10-03, [JSC-241](roadmap.corrections.md#jsc-241))*; and
 **the `Math.random` clause of [JSP-10](#jsp-10--the-host-surface-an-embedder-meets-first) is one
 change to one function**, which is why that gate says so rather than leaving it inside a stage that
 waits on a budget decision.

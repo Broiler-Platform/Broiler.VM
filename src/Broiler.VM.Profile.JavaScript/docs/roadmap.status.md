@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-03 (JSP-4 to JSP-7 and JSP-10 observations; milestone rows unchanged)
+**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -522,6 +522,14 @@ file-order clause already held ([JSC-240](roadmap.corrections.md#jsc-240)).
 [Record JSP-10-001](../../../docs/evidence/jsp-10-001/README.md) retains each change's control. The
 allowance defaults stay a decision. This is unreviewed implementation and validation material, not
 accepted milestone evidence; JSP-10 has no owner and no milestone row advances.
+
+**JSP-2 observation, 2026-10-03.** The parity roadmap's JSP-2 clauses that were still open have a
+change each. The source corpus retains the slice surface's refusal of a BigInt literal, an acceptance
+row asks the type half's whole list, and `--check` under both narrow manifests refuses the literal by
+name ([JSC-241](roadmap.corrections.md#jsc-241)).
+[Record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md) retains a control for each half. This
+is unreviewed implementation and validation material, not accepted milestone evidence; JSP-2 has no
+owner and no milestone row advances.
 
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:

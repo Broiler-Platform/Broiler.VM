@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 119
+runs|0|# Completed: 120
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -914,3 +914,15 @@ runs/the-host-members-that-refuse.js|0|read: TypeError: read: no reader is insta
 runs/the-host-members-that-refuse.js|0|gc: TypeError: $262.gc: this host exposes no collection hook
 runs/the-host-members-that-refuse.js|0|createRealm: TypeError: $262.createRealm: this profile creates no nested realm
 one-realm/a-second-script-the-owed-job-outlives.js one-realm/a-first-script-that-leaves-a-job-owed.js|0|suspended-in-the-first-script,first-script-ended,second-script-ended,resumed-at-the-drain
+
+# JSP-2, THE REFUSAL THAT WAS LOST: A BIGINT LITERAL IS NOT A NUMBER (2026-10-03).
+#
+# The type half: the wide manifest's BigInt is the language's, every value the comparison engine's
+# `node -p` gives. The cheap half: under the two narrow manifests the literal is refused by name at
+# compile time and `--check` decides it, and the same literal under the default manifest is the exact
+# integer, never the Number it was once read as *(JSC-241)*.
+runs/a-bigint-is-not-a-number.js|0|bigint / object / TypeError / TypeError / TypeError / false / true / true / true / true / true / 18446744073709551617 / true / 9007199254740993 / 9007199254740992 / TypeError / 255 / 15 / 5 / 9007199254740993 / -9223372036854775808 / 2 / -2 / 1180591620717411303424 / -1 / 255
+--slice --check refused/a-bigint-literal-under-a-narrow-manifest.js|3|2104:ConstructOutsideManifest at 4:1: the construct BigInt is not admitted
+--numeric --check refused/a-bigint-literal-under-a-narrow-manifest.js|3|2104:ConstructOutsideManifest at 4:1: a BigInt literal is not admitted
+--numeric refused/a-bigint-literal-under-a-narrow-manifest.js|3|a BigInt literal is not admitted by the declared feature manifest
+refused/a-bigint-literal-under-a-narrow-manifest.js|0|9007199254740993
