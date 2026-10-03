@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
+// Relevant units:   24
+// Annotated:        24/24
 // Exempt:           0
-// Human-reviewed:   0/23
+// Human-reviewed:   0/24
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  4/10 max
-// Unverified:       23
+// Unverified:       24
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -56,7 +56,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CA8F68
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=96148A
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -663,10 +663,21 @@ internal sealed partial class JsRealm
             var other = engine.ToStringValue(ArgOfString(arguments, 0));
             StringCharge(engine, text.Length + other.Length);
 
-            // THE COMPARISON IS ORDINAL, which is a declared deviation: the specification allows any
-            // locale-sensitive order and requires only that the result be a consistent total order.
-            // An ordinal one is consistent, reproducible across hosts, and the same order `<` uses.
-            return JsValue.Number(System.Math.Sign(string.CompareOrdinal(text, other)));
+            // THE ORDER IS ORDINAL OVER THE CANONICAL DECOMPOSITIONS. The specification allows any
+            // order that is consistent and total, and requires one more thing ECMA-262 states
+            // without ECMA-402: canonically equivalent strings compare as 0. Comparing NFD forms
+            // gives exactly that, since two strings are canonically equivalent when their NFD
+            // forms are equal; until 2026-10-03 the raw code units were compared, and `'\u00e4'` and
+            // `'a\u0308'` were unequal (JSD-0027 N3). Two strings already equal skip the work, and
+            // the comparison stays reproducible across hosts: NFD is the pinned tables' own.
+            if (string.Equals(text, other, System.StringComparison.Ordinal))
+            {
+                return JsValue.Number(0);
+            }
+
+            var left = NormalizeText(engine, text, compose: false, compatibility: false);
+            var right = NormalizeText(engine, other, compose: false, compatibility: false);
+            return JsValue.Number(System.Math.Sign(string.CompareOrdinal(left, right)));
         });
     }
 
@@ -1148,14 +1159,72 @@ internal sealed partial class JsRealm
             : JsValue.String(text[from..to]);
     }
 
-    /// <summary>Maps case under the invariant culture, which is the only one this profile has.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9A8E1A
+    /// <summary>
+    /// The Unicode Default Case Conversion over the pinned tables: full mappings, and Final_Sigma
+    /// for GREEK CAPITAL LETTER SIGMA when lowering. No language is applied.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F34134
     // Broiler-Human:        PENDING
     private static string StringChangeCase(JsEngine engine, string text, bool upper)
     {
         StringCharge(engine, text.Length);
-        var info = System.Globalization.CultureInfo.InvariantCulture.TextInfo;
-        return upper ? info.ToUpper(text) : info.ToLower(text);
+
+        // THE PINNED TABLES AND NOT THE PLATFORM'S TextInfo, which maps one code unit to one code
+        // unit and reads whatever Unicode version the host carries (JSD-0027 N2). The text is
+        // copied only from the first code point casing changes, so an unchanged string costs one
+        // pass and no allocation.
+        System.Text.StringBuilder? built = null;
+
+        for (var at = 0; at < text.Length;)
+        {
+            var codePoint = JsUnicodeCasing.NextCodePoint(text, at, out var width);
+            var start = at;
+            at += width;
+
+            if (!upper && codePoint == JsUnicodeCasing.CapitalSigma)
+            {
+                var final = JsUnicodeCasing.IsFinalSigma(text, start, width, out var scanned);
+                StringCharge(engine, scanned);
+                built ??= new System.Text.StringBuilder(text, 0, start, text.Length + 8);
+                built.Append((char)(final ? JsUnicodeCasing.FinalSigma : 0x03C3));
+                continue;
+            }
+
+            if (!JsUnicodeCasing.TryGetMapping(codePoint, upper, out var mapping))
+            {
+                built?.Append(text, start, width);
+                continue;
+            }
+
+            StringCharge(engine, mapping.Length);
+            built ??= new System.Text.StringBuilder(text, 0, start, text.Length + 8);
+
+            for (var index = 0; index < mapping.Length; index++)
+            {
+                AppendCodePoint(built, mapping[index]);
+            }
+
+            if (built.Length > StringLengthCeiling)
+            {
+                throw engine.Error("RangeError", "Invalid string length");
+            }
+        }
+
+        return built?.ToString() ?? text;
+    }
+
+    /// <summary>Appends one code point as one or two code units.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=2EBD3E
+    // Broiler-Human:        PENDING
+    private static void AppendCodePoint(System.Text.StringBuilder built, int codePoint)
+    {
+        if (codePoint <= 0xFFFF)
+        {
+            built.Append((char)codePoint);
+            return;
+        }
+
+        built.Append(char.ConvertFromUtf32(codePoint));
     }
 
     /// <summary>Trims the ECMAScript whitespace set from one or both ends.</summary>

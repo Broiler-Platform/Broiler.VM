@@ -268,19 +268,22 @@ terms for Unicode-provided data.** The pattern is the one `Broiler.Unicode`'s ow
 `UnicodeData.txt`, `DerivedNormalizationProps.txt`, `NormalizationTest.txt` (test input only),
 `PropertyAliases.txt`, `PropertyValueAliases.txt`, `extracted/DerivedGeneralCategory.txt`,
 `extracted/DerivedBinaryProperties.txt`, `Scripts.txt`, `ScriptExtensions.txt`, `PropList.txt`,
-`DerivedCoreProperties.txt`, `emoji/emoji-data.txt` and `CaseFolding.txt`; and the licence text from
-`https://www.unicode.org/license.txt`. They are archived unmodified at
+`DerivedCoreProperties.txt`, `emoji/emoji-data.txt` and `CaseFolding.txt`, and since 2026-10-03
+`SpecialCasing.txt`; and the licence text from `https://www.unicode.org/license.txt`. They are archived unmodified at
 [`src/tests/unicode/pins/`](src/tests/unicode/pins/README.md), where `unicode.pin` records each
 file's length and SHA-256 and rule **N22** hashes them on every run of the architecture suite.
 Retrieved twice on 2026-09-22 by Claude with the owner's permission given in conversation; the two
-retrievals were byte-identical.
+retrievals were byte-identical. `SpecialCasing.txt` was retrieved the same way on 2026-10-03, while
+continuing the roadmap at the owner's request, with no permission specific to it (`unicode.pin` says
+so).
 
 **What is derived, and where it ships.** `UnicodeTableGenerator` (architecture test project, not
-shipped) writes three source files of tables from those files:
+shipped) writes four source files of tables from those files:
 `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeProperties.g.cs` and
 `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs`, compiled into
 **`Broiler.VM.Profile.JavaScript.Format.dll`**, and
-`src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs`, compiled into
+`src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` and, since 2026-10-03,
+`src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.g.cs`, compiled into
 **`Broiler.VM.Profile.JavaScript.dll`**. The derived tables therefore ship in:
 
 - **the packages** `Broiler.VM.Profile.JavaScript.Format` and `Broiler.VM.Profile.JavaScript`

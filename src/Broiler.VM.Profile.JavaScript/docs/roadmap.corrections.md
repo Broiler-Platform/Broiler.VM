@@ -10422,3 +10422,47 @@ manifest it runs. On 2026-09-08 only the first clause of the cheap half was met
 
 **Authority and date.** The implementation of 2026-10-03 in this checkout and
 [record JSP-2-001](../../../docs/evidence/jsp-2-001/README.md). 2026-10-03.
+
+### JSC-242
+
+**Where:** [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) sections 2, 6 and 7 (slices N2
+and N3, and the consumer limitation's list of known defects), and
+[JSD-0031](decisions/0031-unicode-data-source-and-build-boundary.md) sections 9.2 and 12 (the archive's
+file list, the measured table size, and the two stated differences that waited on
+`SpecialCasing.txt`).
+
+**What the plan said.**
+- Case mapping is simple and one-to-one: `'ß'.toUpperCase()` stays `"ß"`, no final sigma is written,
+  and `İ` and `ı` get no special case. Slice N2 owes the full default case mapping, and its
+  prerequisite is `SpecialCasing.txt` beside the archived UCD files.
+- `localeCompare` does not treat canonically equivalent strings as equal. Slice N3 owes it, over the
+  normalization JSD-0031's U3 built.
+- The non-`u` Canonicalize uses the simple upper case, so 27 Greek letters with a ypogegrammeni match
+  their title-case partners where the specification's full mapping makes each canonicalize to itself.
+- The tables measure 236,721 bytes, under the 300 KB cap.
+
+**What replaced it, observed on 2026-10-03.**
+- **`SpecialCasing.txt` is archived** with the other UCD 17.0.0 files and pinned in `unicode.pin`,
+  retrieved twice and found byte-identical. The pin records that no permission specific to this
+  retrieval was given: the owner asked that day for the roadmap to be continued, and JSD-0031's
+  recommendation of the same day names the file.
+- **Case conversion is the Unicode Default Case Conversion over the pinned tables.** A fourth
+  generated file, `JsUnicodeCasing.g.cs`, holds the full upper and lower mappings and the `Cased` and
+  `Case_Ignorable` ranges. The generator checks that the code points each mapping changes are
+  exactly `Changes_When_Uppercased` and `Changes_When_Lowercased`, and that `Final_Sigma` is the only
+  condition naming no language. `toUpperCase`, `toLowerCase` and the two `toLocale…Case` methods read
+  them, and apply `Final_Sigma` to GREEK CAPITAL LETTER SIGMA. The platform's `TextInfo` is no longer
+  called, so the answer no longer depends on the host's Unicode version.
+- **`localeCompare` is ordinal over the canonical decompositions**, so canonically equivalent strings
+  compare as 0 and the order stays a consistent total one.
+- **The non-`u` Canonicalize reads the full upper-case mapping**, and the 27 letters canonicalize to
+  themselves: `/ᾀ/i.test("ᾈ")` is `false`, as in the comparison engine.
+- **The tables measure 275,436 bytes**, still under the 300 KB (307,200-byte) cap.
+
+**What must not be read as repaired.**
+- Language-sensitive casing (`tr`, `az`, `lt`) is not implemented: the `toLocale…Case` methods ignore
+  their argument, as ECMA-262 permits without ECMA-402.
+- `localeCompare` is not a collation: `'a'.localeCompare('B')` is positive, as code-unit order says.
+- No milestone or stage moves; JSD-0027 and JSD-0031 stay unsigned.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.

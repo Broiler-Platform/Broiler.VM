@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations; milestone rows unchanged)
+**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -522,6 +522,16 @@ file-order clause already held ([JSC-240](roadmap.corrections.md#jsc-240)).
 [Record JSP-10-001](../../../docs/evidence/jsp-10-001/README.md) retains each change's control. The
 allowance defaults stay a decision. This is unreviewed implementation and validation material, not
 accepted milestone evidence; JSP-10 has no owner and no milestone row advances.
+
+**JSD-0027 N2 and N3 observation, 2026-10-03.** The two ECMA-262 fallback defects JSD-0027 said
+were owed without `Intl` have a change each. `SpecialCasing.txt` is archived beside the pinned UCD
+files, `toUpperCase` and `toLowerCase` are the Unicode Default Case Conversion over generated tables
+with `Final_Sigma`, the non-`u` RegExp Canonicalize reads the full upper-case mapping, and
+`localeCompare` answers 0 for canonically equivalent strings. Over the pinned suite's `String`,
+`RegExp`, regular-expression-literal, Annex B `RegExp` and `intl402/String` subtrees, 18 variants
+moved from failing to passing and none moved back; every case-mapping and `localeCompare` case that
+still fails there is an `intl402` one ([JSC-242](roadmap.corrections.md#jsc-242)). This is unreviewed
+implementation and validation material, not accepted milestone evidence; no milestone row advances.
 
 **JSP-2 observation, 2026-10-03.** The parity roadmap's JSP-2 clauses that were still open have a
 change each. The source corpus retains the slice surface's refusal of a BigInt literal, an acceptance

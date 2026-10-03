@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 120
+runs|0|# Completed: 122
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -926,3 +926,11 @@ runs/a-bigint-is-not-a-number.js|0|bigint / object / TypeError / TypeError / Typ
 --numeric --check refused/a-bigint-literal-under-a-narrow-manifest.js|3|2104:ConstructOutsideManifest at 4:1: a BigInt literal is not admitted
 --numeric refused/a-bigint-literal-under-a-narrow-manifest.js|3|a BigInt literal is not admitted by the declared feature manifest
 refused/a-bigint-literal-under-a-narrow-manifest.js|0|9007199254740993
+
+# JSD-0027 N2 AND N3, THE ECMA-262 FALLBACKS OWED WITHOUT INTL (2026-10-03).
+#
+# toUpperCase and toLowerCase are the Unicode Default Case Conversion over the pinned tables, with
+# SpecialCasing.txt archived beside the other UCD files, and localeCompare answers 0 for canonically
+# equivalent strings. Every value is the comparison engine's `node -p` *(JSC-242)*.
+runs/unicode-default-case-conversion.js|0|SS / FF / ʼN / ἈΙ / ας / σς / σ / ας. / ασ́β / ας́ / 2 / I / Ǆǆ / true / 2 / SS / ας / false / true / false
+runs/locale-compare-canonical-equivalence.js|0|0 / 0 / 0 / 0 / -1 / 1 / 0 / 0

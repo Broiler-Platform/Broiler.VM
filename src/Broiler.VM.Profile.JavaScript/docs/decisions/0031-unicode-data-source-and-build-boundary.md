@@ -847,3 +847,24 @@ items still open.**
   Canonicalize) and is the prerequisite of JSD-0027's N2.
 - **Keep the `v` flag refused** until a matcher slice for string properties is scheduled; the early
   error naming the flag is the right answer meanwhile.
+
+## 13. 2026-10-03: SpecialCasing.txt, and the two stated differences closed
+
+*Added 2026-10-03 with JSD-0027 slices N2 and N3. Local implementation validation, not accepted;
+corrections entry [JSC-242](../roadmap.corrections.md#jsc-242). Nothing in this record is signed or
+co-signed.*
+
+- **`SpecialCasing.txt` 17.0.0 is archived and pinned** (17,049 bytes, SHA-256 `efc25faf…c9588`),
+  retrieved twice and found byte-identical. No permission specific to this retrieval was given; the
+  owner asked that day for the roadmap to be continued, and `unicode.pin` records exactly that.
+- **A fourth generated file, `JsUnicodeCasing.g.cs`**, in the profile assembly: the full upper and
+  lower mappings (SpecialCasing.txt's unconditional lines over UnicodeData.txt's simple fields) and
+  the `Cased` and `Case_Ignorable` ranges `Final_Sigma` reads. The generator holds each mapping's
+  changed set to `Changes_When_Uppercased` and `Changes_When_Lowercased` exactly, and refuses any
+  condition that names no language other than `Final_Sigma`.
+- **Section 12's two remaining differences are closed.** Full and special case mapping for
+  `toUpperCase`/`toLowerCase` is done, and the non-`u` Canonicalize reads the full mapping, so the 27
+  Greek letters with a ypogegrammeni canonicalize to themselves (`/\u1F80/i.test("\u1F88")` is
+  `false`). `v`-mode string properties stay refused.
+- **Size: 275,436 bytes of table data**, up from 236,721 and under the 307,200-byte cap rule N22
+  checks.

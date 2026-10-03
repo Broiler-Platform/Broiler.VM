@@ -204,6 +204,23 @@ internal sealed class UnicodeDatabase
     /// <summary>UnicodeData.txt's Simple_Uppercase_Mapping (field 12), where a code point has one.</summary>
     internal SortedDictionary<int, int> SimpleUppercase { get; } = [];
 
+    /// <summary>UnicodeData.txt's Simple_Lowercase_Mapping (field 13), where a code point has one.</summary>
+    internal SortedDictionary<int, int> SimpleLowercase { get; } = [];
+
+    /// <summary>
+    /// The full upper-case mapping of every code point upper-casing changes: SpecialCasing.txt's
+    /// unconditional mapping where it gives one, and the simple mapping otherwise. This is the
+    /// Unicode Default Case Conversion's toUppercase, which ECMA-262 uses with no language.
+    /// </summary>
+    internal SortedDictionary<int, int[]> FullUppercase { get; } = [];
+
+    /// <summary>
+    /// The full lower-case mapping of every code point lower-casing changes, as
+    /// <see cref="FullUppercase"/>. GREEK CAPITAL LETTER SIGMA maps here to its ordinary small form;
+    /// the one language-independent condition, Final_Sigma, is applied at run time.
+    /// </summary>
+    internal SortedDictionary<int, int[]> FullLowercase { get; } = [];
+
     /// <summary>Parses and cross-checks the verified archive.</summary>
     internal static UnicodeDatabase Read(IReadOnlyDictionary<string, byte[]> archive)
     {
@@ -231,6 +248,7 @@ internal sealed class UnicodeDatabase
         database.ReadNormalization(unicodeData, Text(Ucd + "DerivedNormalizationProps.txt"));
         database.ReadCaseFolding(Text(Ucd + "CaseFolding.txt"));
         database.ReadSimpleUppercase(unicodeData);
+        database.ReadFullCaseMappings(unicodeData, Text(Ucd + "SpecialCasing.txt"));
 
         return database;
     }
@@ -491,6 +509,110 @@ internal sealed class UnicodeDatabase
         foreach (var source in SimpleUppercase.Keys.Where(source => !changes.Any(range => range.First <= source && source <= range.Last)))
         {
             throw new InvalidDataException($"U+{source:X4} has a simple upper case in UnicodeData.txt and is not Changes_When_Uppercased");
+        }
+    }
+
+    /// <summary>
+    /// Reads UnicodeData.txt's simple lower-case field and SpecialCasing.txt's unconditional
+    /// mappings into the two full mappings, and holds them to the derived properties: a code point
+    /// a mapping changes is exactly one <c>Changes_When_Uppercased</c> or
+    /// <c>Changes_When_Lowercased</c> names.
+    /// </summary>
+    /// <remarks>
+    /// A SpecialCasing.txt line with a condition is language-sensitive - every one but
+    /// <c>Final_Sigma</c> names a language, and ECMA-262's toUppercase and toLowercase use none - so
+    /// only <c>Final_Sigma</c> is read among them, and only to check that it is the one line the
+    /// run-time rule for GREEK CAPITAL LETTER SIGMA stands for.
+    /// </remarks>
+    private void ReadFullCaseMappings(string unicodeData, string specialCasing)
+    {
+        foreach (var (first, last, fields) in UnicodeDataEntries(unicodeData))
+        {
+            if (fields[13].Length == 0)
+            {
+                continue;
+            }
+
+            if (first != last)
+            {
+                throw new InvalidDataException($"UnicodeData.txt gives the range {fields[0]} a simple lower case");
+            }
+
+            var lower = UnicodeDataFile.Hex(fields[13]);
+
+            if (lower == first || !SimpleLowercase.TryAdd(first, lower))
+            {
+                throw new InvalidDataException($"UnicodeData.txt gives {fields[0]} a simple lower case that is itself, or two of them");
+            }
+        }
+
+        foreach (var (source, upper) in SimpleUppercase)
+        {
+            FullUppercase.Add(source, [upper]);
+        }
+
+        foreach (var (source, lower) in SimpleLowercase)
+        {
+            FullLowercase.Add(source, [lower]);
+        }
+
+        static int[] Mapping(string field) =>
+            field.Length == 0 ? [] : field.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(UnicodeDataFile.Hex).ToArray();
+
+        var finalSigma = 0;
+
+        foreach (var fields in UnicodeDataFile.Records(specialCasing))
+        {
+            // code; lower; title; upper; (condition_list;)
+            var source = UnicodeDataFile.Hex(fields[0]);
+            var condition = fields.Length > 4 ? fields[4] : string.Empty;
+
+            if (condition.Length > 0)
+            {
+                if (condition == "Final_Sigma")
+                {
+                    if (source != 0x03A3 || !Mapping(fields[1]).SequenceEqual([0x03C2]))
+                    {
+                        throw new InvalidDataException($"Final_Sigma is given to U+{source:X4}, and the run-time rule is written for U+03A3 to U+03C2 alone");
+                    }
+
+                    finalSigma++;
+                }
+                else if (!condition.Split(' ')[0].All(char.IsLower))
+                {
+                    throw new InvalidDataException($"U+{source:X4} carries the condition `{condition}`, which names no language and is not Final_Sigma");
+                }
+
+                continue;
+            }
+
+            foreach (var (mapping, full) in new[] { (Mapping(fields[1]), FullLowercase), (Mapping(fields[3]), FullUppercase) })
+            {
+                if (mapping.Length == 1 && mapping[0] == source)
+                {
+                    full.Remove(source);
+                }
+                else
+                {
+                    full[source] = mapping;
+                }
+            }
+        }
+
+        if (finalSigma != 1)
+        {
+            throw new InvalidDataException($"SpecialCasing.txt gives Final_Sigma {finalSigma} times, and the run-time rule expects it once");
+        }
+
+        foreach (var (name, full) in new[] { ("Changes_When_Uppercased", FullUppercase), ("Changes_When_Lowercased", FullLowercase) })
+        {
+            var changes = BinaryProperties.Single(value => value.ShortName == name).Ranges;
+            var listed = UnicodeDataFile.Normalize(full.Keys.Select(static codePoint => new UnicodeRange(codePoint, codePoint)));
+
+            if (!listed.SequenceEqual(changes))
+            {
+                throw new InvalidDataException($"the code points the full mapping changes are not exactly {name}");
+            }
         }
     }
 

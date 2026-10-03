@@ -25,6 +25,15 @@ excludes it by name. The retained focused cases are cases 30-39 of the different
 `src/tests/differential/the-reference-key-and-exponent-edges.js`. The consumer limitation in
 section 6 no longer lists the `Array.prototype.toLocaleString` defect.
 
+**Amendment, 2026-10-03 (slices N2 and N3; local validation, not accepted).** `SpecialCasing.txt`
+is archived beside the UCD files JSD-0031 pinned, and `toUpperCase`, `toLowerCase` and the two
+`toLocale…Case` methods are the Unicode Default Case Conversion over generated tables, with
+`Final_Sigma`: `'ß'.toUpperCase()` is `"SS"`, `'ΑΣ'.toLowerCase()` is `"ας"`, and no answer depends on
+the host's Unicode version. `localeCompare` is ordinal over the canonical decompositions, so
+`'\u00e4'.localeCompare('a\u0308')` is `0`. The consumer limitation in section 6 loses both entries of
+its known-defects sentence; the rest of it stands. Language-sensitive casing stays out, as section 6
+says. Corrections entry [JSC-242](../roadmap.corrections.md#jsc-242).
+
 **Owner:** MaiRat. **Co-signer:** none. **Both roles are held by one person**, and this record
 does not claim the co-signature is independent — there is no second signature to claim it of.
 
