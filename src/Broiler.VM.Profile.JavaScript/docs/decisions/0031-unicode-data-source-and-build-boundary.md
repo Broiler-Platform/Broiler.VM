@@ -824,3 +824,26 @@ now passes every `start-unicode-*` and `part-unicode-*` file from 5.2.0 to 17.0.
 
 **Still open:** the release owner's co-signature; how a composition image carries the notice; full
 and special case mapping (and with it the 27 letters above); `v` mode and properties of strings.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: sign the record with section 9.2 as the decisions taken, and close the two
+items still open.**
+
+- **The licence and size decisions were given on 2026-09-22 and are implemented**: the notices
+  entry ships with the full licence text (rule N22), and the measured 236,721 bytes is under the
+  300 KB cap. A signature turns "as given in conversation" into a decision.
+- **How a published composition image carries the notice: put `THIRD_PARTY_NOTICES.md` beside the
+  host executable in every published image**, Android included, by the same packaging property that
+  already packs it into every NuGet package. A constant the host prints is weaker (nobody reads a
+  binary for licence terms) and a notices file in the package alone does not reach an image.
+- **Archive `SpecialCasing.txt` from the same pinned Unicode 17.0.0 release**, under the same
+  generator and rule N22. It closes this record's two remaining stated differences (full case
+  mapping in `toUpperCase`/`toLowerCase`, and the 27 ypogegrammeni letters in the non-`u`
+  Canonicalize) and is the prerequisite of JSD-0027's N2.
+- **Keep the `v` flag refused** until a matcher slice for string properties is scheduled; the early
+  error naming the flag is the right answer meanwhile.

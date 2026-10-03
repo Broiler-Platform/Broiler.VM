@@ -110,3 +110,23 @@ by a separate script. F21-F22 add the syntax. Three questions followed:
   own.
 - The slice manifest's front end still has no production for either declaration and refuses them
   as it always did. The numeric manifest refuses `using` by name.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the record, and archive the proposal text it is pinned to.**
+
+- **The feature is implemented, scored and used**: the `explicit-resource-management` test262 flag
+  is scored, the disposal instructions are in format version 2, and the budget rule (no disposer runs
+  once an allowance is spent) is the conservative choice. Refusing the record would mean removing
+  `using`, `await using`, both stacks and `SuppressedError` from a shipped manifest.
+- **Archive the proposal text at `38c13295`** the way JSD-0019 archived the edition: the record
+  pins a revision whose text the repository does not hold, so a future reader cannot check the
+  implementation against what it claims to follow.
+- **Write the successor record when the feature enters a pinned edition**: re-pin to the edition,
+  drop the proposal pin, and remove the flag from the scored-ahead list.
+- Keep the rejection of a separate `broiler.javascript.resources` surface: nobody has asked to
+  decline it.

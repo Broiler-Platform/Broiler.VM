@@ -269,3 +269,33 @@ none implying the next:
   unminted.**
 - **A consumer with a real locale workload that this record's limitation text did not warn**,
   which would mean the limitation was not where a consumer reads.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the deferral, and schedule N2 and N3 now rather than with `Intl`.**
+
+- **(Deferral) Take section 6 as written.** No consumer needs ECMA-402 today, an empty or partial
+  `Intl` would mislead feature detection, and the fixed locale row is already true of the tree.
+- **(a) Data source: generate in-tree from pinned CLDR JSON**, when a consumer triggers I0. The
+  generator, rule N22 and the archive layout JSD-0031 built for the UCD are the template, and
+  `UnicodeCldr.LocaleData` still lacks collation data, date-time skeletons and a published CLDR
+  version.
+- **(b) Licence: accept Unicode License v3 for CLDR on the terms already taken for the UCD** in
+  JSD-0031 section 9.2, in the same `THIRD_PARTY_NOTICES.md` entry pattern. It is the same licence
+  and the same notice obligation.
+- **(c) Size budget: do not set a figure now.** Set it from I0's measured prototype, as section 5
+  says; until then, record that a composition declining `broiler.javascript.intl` carries zero bytes,
+  which is the property that matters.
+- **(d) IANA tzdb: out of scope until a consumer asks for a named time zone.** UTC and fixed offsets
+  cover I3.
+- **N2 and N3 are ECMA-262 defects and are owed now** (probe at `caef66a`: `'ß'.toUpperCase()` answers
+  `"ß"`, and `'\u00e4'.localeCompare('a\u0308')` answers `1` where the language requires `0`). N3 is
+  cheap since JSD-0031's U3 built normalization: compare NFD forms. N2 needs `SpecialCasing.txt`
+  archived beside the UCD files JSD-0031 pinned, which JSD-0031 section 12 records as the one input
+  still missing. Recommended order: archive `SpecialCasing.txt`, then N3, then N2.
+- The amendment's open N1 test (`detached-buffer.js`) should be re-run: VM-FIX-A gave the conformance
+  harness a real `$262.detachArrayBuffer`, so it may already pass.

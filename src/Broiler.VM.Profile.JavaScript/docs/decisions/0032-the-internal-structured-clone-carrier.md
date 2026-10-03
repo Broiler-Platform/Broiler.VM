@@ -341,3 +341,26 @@ the claim and the record guard fails the single-use check.
   an object that is not this build's carrier or outside the receiving realm's step and thread, two
   racing adoptions of a single-use carrier that both succeed, or a sending instance whose
   `LiveBytes` does not grow by `ChargedBytes` when a carrier is made.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the record, as amended through I17 and B06.**
+
+- **The code is in the tree and reached through a public door** (`DetachClone`/`AdoptClone`, I17),
+  so the carrier format, cost model and type matrix are already a contract an embedder can depend
+  on. An unsigned record behind a public door is the worst position: the behaviour ships and nobody
+  approved it.
+- **Close the one budget gap it names before anyone advertises `WorkerRealms`:** a carrier held
+  after its sender is disposed is outside every budget. Recommended: charge the carrier's bytes to
+  the adopting side's `LiveBytes` on adoption and release the sender's charge on the sender's
+  disposal, so a carrier is always inside exactly one budget.
+- **Keep refusing resizable buffers** in the transfer path until a slice decides how a resizable
+  buffer's maximum length crosses. F04 to F06 have added them since this record was written, and the
+  tree already refuses them (`JsRealm.Clone.cs`, watched by the check
+  `clone/i16/resizable-buffers-are-refused-until-f04-f06-integrate`); amend section 8 to say so.
+- **Leave the `[[ErrorData]]` representation and I18 (`WorkerRealms`) to their own slices**; neither
+  is needed to take this record.

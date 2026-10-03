@@ -290,3 +290,21 @@ deciding, and it should not be designed before D03 is decided.
 - **`WorkerRealms` is declared for the VM provider with a transport that aliases bytes** rather
   than copying or transferring them. That would be shared memory arriving without the gates in
   section 5.
+
+---
+
+## Recommendation, 2026-10-03 (unsigned)
+
+*Written by an AI agent at the owner's request to put a recommendation beside every open decision. It signs nothing, takes nothing and moves no ledger row; the owner takes, amends or refuses it.*
+
+**Recommendation: take the record as written.**
+
+- **Keep the exclusion as a pair.** Nothing in section 2 can be tested without a second agent, and
+  the reopening conditions in section 5 are the right gate: a second agent shipped (JSH-7, I17), a
+  recorded workload or embedder need, and a successor record answering sections 2.1 to 2.6.
+- **Do not take the `Atomics`-alone option**, even though it is the cheapest step section 3 names.
+  It would split an exclusion recorded as a pair in every inventory, for argument-validation test
+  rows and nothing a program can use.
+- **Signing changes nothing in the tree.** What it adds is a binding reopening rule, so a later
+  slice cannot add the globals as stubs without a record — which is exactly what this record's
+  falsifiers guard.

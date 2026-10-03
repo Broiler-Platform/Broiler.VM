@@ -49,6 +49,14 @@ does not contain says so in its own text.
 | [JSD-0035](0035-the-value-form-emitted-semantics-over-nan-boxed-values.md) | **Refused 2026-09-25 on bundle `jsv-4-001`'s predeclared measurement, and kept in the tree by the owner's ruling of the same day as an unadopted, opt-in form (the rule's revert is not taken). As proposed: stages JSV-0 (the word, codec, handle table, scan and handle-stress), JSV-1 (the form on an execution path, every instruction a helper, control emitted), JSV-2 (the residency analysis, the pure inline set and fuel debt), JSV-3 (direct calls, the inline return and the stack limit at the call) and JSV-4 (the frame codec and the status-chain landing) in the tree, JSV-4's gate met.** A third output form over the wide manifest whose emitted code executes the pure instructions itself over 64-bit NaN-boxed words in a pinned per-instance slab, with references held as generation-checked indices into a per-instance handle table rooted by a precise tag scan and exercised by a handle-stress mode; every other instruction runs the interpreter's own per-opcode arm over a decoded mirror window; direct calls between value-form units; generators and async functions suspended through their environments' records; fuel settled as a debt after pure instructions, so verdicts agree at every ceiling without a meter amendment. It would amend JSD-0011 Rows 1 and 2 for that one region and take MVP-8's alternative branch, on a predeclared measurement | none yet (JSV, if adopted) |
 | [JSD-0036](0036-the-universal-bytecode-is-the-back-end-neutral-form.md) | **Taken 2026-09-25, following ADR 0013's extraction verdict.** The back-end-neutral intermediate form section 9 promises is the universal bytecode: the front end returns a validated tree, the lowering emits universal bytecode, and every output form is produced from it by an emitter profile; the form is named and not yet in the tree (the programme's UBC-3 gives the lowering that exit), section 9 is not rewritten and carries the bare pointer JSC-227, JSB-3's clause is read as discharged by the naming (and stated as still open on the other reading), and JSB-3's other open clause is untouched | none; programme work package UBC-0.4, discharging JSB-3's intermediate-form clause |
 
+## Recommendations of 2026-10-03
+
+Every record with an open decision - JSD-0026 to JSD-0034, which are proposed, and the open parts of
+JSD-0001, JSD-0004, JSD-0006 and JSD-0021 - ends with a section headed **Recommendation, 2026-10-03
+(unsigned)**. Each was written by an AI agent at the owner's request. It says what to take, amend or
+refuse and why, against the tree at that date. **None of them is a decision**: no status line
+changed, nothing is signed, and the owner takes, amends or refuses each.
+
 ## What a record must carry
 
 Each record states its **status**, its **date**, its **owner** and any **co-signer**, the
