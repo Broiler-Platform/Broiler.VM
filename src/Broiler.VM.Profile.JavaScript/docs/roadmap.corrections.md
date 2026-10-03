@@ -10546,3 +10546,177 @@ declined anywhere. The `i`, `m` and `s` flags were the pattern's, read once.
 - No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-245
+
+**Where:** the tokenizer's choice between a regular-expression literal and a division,
+`SliceTokenizer.RegularExpressionIsAllowedHere`, whose remarks named "the known-wrong cases".
+
+**What the plan said.** The previous significant token decides: after a value a `/` divides, and
+after an operator, a keyword or the start of input it opens a literal. A `)` and a `}` were always
+values, because "getting those right needs the parser's state". Every keyword kind opened a literal,
+the contextual ones among them.
+
+**What replaced it, observed on 2026-10-03.**
+- **A `)` and a `}` are told apart by what they closed**, which the tokenizer records as the tokens
+  go by, without asking the parser. A `)` closing the head of `if`, `while`, `for` or `with` is
+  followed by a literal. A `}` closing a block, or the body of a function or class declaration, ends
+  a statement and is followed by a literal. One closing an object literal, a function or class
+  expression or an arrow function's body ends a value and is followed by a division. Whether a `{`
+  opens a block or an object literal is read from the token before it; whether `function` or
+  `class` declares is read the same way.
+- **`get`, `set`, `async`, `static` and `let` before a `/` are values.** None of them begins
+  anything as a keyword there, so `get / 2` divides where it was refused. `of` is the keyword only
+  after a `for` head's binding, so `for (x of /a/g)` still reads a literal and `of / 2` divides.
+- **`yield` and `await` still open a literal**, which is what they do where they are keywords. As
+  names in sloppy code, `yield / 2` is still misread.
+- **test262:** over `test/language` and `test/annexB`, and again in the whole run JSC-246 records,
+  36 variants moved from failing to passing through this change and none moved back: `test/language/statementList`'s 32 regular-expression
+  cases after a block, a class, a function and through `eval`, and the 4 `no-magic-asi` division
+  cases.
+
+**What must not be read as repaired.**
+- A `:` that ends a conditional at the start of a statement is read as a label's, so an object
+  literal after it is taken for a block. What that misreads is refused, as before.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-246
+
+**Where:** `JsCompiler.CompileForIn`, the lowering of `for (let …  in …)` and `for (const … in …)`.
+
+**What the plan said.** Roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s
+lowering gives a `for … of` loop's lexical head a scope for the right-hand side and a per-turn copy
+of the body's scope. The `for … in` lowering pushed one scope after the object was evaluated and
+bound the key in it every turn.
+
+**What replaced it, observed on 2026-10-03.**
+- **Each turn binds a fresh copy**, as `for … of` does, so a closure in the body sees the key of its
+  own turn. Every closure made by `for (let k in o)` saw the last key before.
+- **The head's names are in their dead zone while the object is evaluated**, so
+  `for (let x in { x })` is a `ReferenceError` rather than a read of the outer `x`.
+- **test262:** over the whole pinned suite, 95,007 variants, against the whole run of 2026-10-03 that held
+  the floor, 353 variants moved from failing to passing and none moved back. Of those, 208 are JSC-243's
+  and JSC-244's, which that run predates, and the rest are this entry's and JSC-245 and JSC-247 to
+  JSC-250's, each named in its entry. One file, `staging/sm/regress/regress-1507322-deep-weakmap.js`,
+  was left out: run alone, it ran past two minutes without ending on this change and on the base
+  commit `304bd31` alike, where the base's whole run had recorded it as spending its wall-clock
+  allowance. Its two variants are not in the figure, and the rest of its shard was run by name. 16 variants moved from failing to passing through this change and none moved
+  back. They are the `for … in` head's dead-zone and scope cases, the per-iteration binding, and
+  `block-scope/syntax/for-in`'s mixed values.
+
+**What must not be read as repaired.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-247
+
+**Where:** `JsObject.SetOwnProperty` and `DeleteOwnProperty`, the ordinary object's String-keyed
+storage, whose remarks say own-property order is "the order it was created".
+
+**What the plan said.** A deleted entry is tombstoned and keeps its index entry, so that order
+survives a delete.
+
+**What replaced it, observed on 2026-10-03.**
+- **A key deleted and defined again is a new property and comes last.** The tombstone kept the key in
+  the index, so defining it again revived it in its old place, and `Object.keys`, `for … in`,
+  `JSON.stringify` and `Object.assign` listed it there. A delete now drops the key from the index.
+- **The tombstones are compacted** once they outnumber the live entries, so deleting and defining one
+  key repeatedly holds memory in proportion to the object.
+- **test262:** in the same run, 16 variants moved from failing to passing through this change and none
+  moved back. They are the order cases of `Object.keys`, `values`, `entries`, `JSON.stringify` and
+  `for … in`, and three staging `object` files.
+
+**What must not be read as repaired.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-248
+
+**Where:** the realm's `Object` and `Reflect` members that take a property key:
+`hasOwnProperty`, `propertyIsEnumerable`, `Object.hasOwn`, `getOwnPropertyDescriptor`,
+`defineProperty`, `fromEntries`, `groupBy`, the Annex B `__defineGetter__` family, and `Reflect`'s
+`get`, `set`, `has`, `deleteProperty`, `defineProperty` and `getOwnPropertyDescriptor`.
+
+**What the plan said.** Each member took the Symbol path for a Symbol argument and converted anything
+else with a String-only `ToPropertyKey`.
+
+**What replaced it, observed on 2026-10-03.**
+- **The key is converted by `ToPropertyKey` over both kinds**, so an object whose `toString` or
+  `Symbol.toPrimitive` answers a Symbol names that Symbol. It was a `TypeError`.
+- **`hasOwnProperty` and `propertyIsEnumerable` convert the key before the receiver**, and
+  `Object.defineProperty` before the descriptor, which is the edition's order.
+- **`Object.groupBy` keeps a Symbol key** a callback answers, where it was a `TypeError`.
+- **test262:** in the same run, 26 variants moved from failing to passing through this change and none
+  moved back. They are the `symbol_property_*` cases of `hasOwnProperty`, `propertyIsEnumerable` and
+  `Object.hasOwn`, `topropertykey_before_toobject`, and staging `Reflect/propertyKeys`,
+  `Symbol/symbol-object-not-unboxed-for-value-to-id` and `object/propertyIsEnumerable`.
+
+**What must not be read as repaired.**
+- `delete super[key]` still converts its key differently from the edition.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-249
+
+**Where:** four of the realm's built-ins: `Function.prototype.bind`'s `length`,
+`%Object.prototype%`'s `[[SetPrototypeOf]]`, the `Object.prototype.__proto__` setter, and
+`Function.prototype.toString`'s native rendering, whose row in roadmap
+[section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s declined table is
+corrected by this entry.
+
+**What the plan said.**
+- `bind` read the target's `length` through the prototype chain and clamped the result to an `int`.
+- `%Object.prototype%` was an ordinary object.
+- The `__proto__` setter answered `undefined` for every receiver that is not an object.
+- `toString` rendered `function <name>() { [native code] }` with any name.
+
+**What replaced it, observed on 2026-10-03.**
+- **`bind` reads only an own `length`**, as `HasOwnProperty` then `Get`. A target without one gives
+  0, and an inherited `length` is no longer read. The answer is a Number: `+∞` stays `+∞`, and
+  a length past 2^31 is kept rather than clamped.
+- **`%Object.prototype%` is an immutable prototype exotic object.** `Object.setPrototypeOf` throws
+  and `Reflect.setPrototypeOf` answers `false` for any value but its own `null`. Before, a program
+  could move the root of every chain.
+- **The `__proto__` setter applies `RequireObjectCoercible` first**, so an `undefined` or `null`
+  receiver is a `TypeError`.
+- **The native rendering leaves out a name that is not a property name.** A private method's `#m`
+  and a bound function's `bound f` are omitted, so every answer is a `NativeFunction`, as the edition
+  requires of a function whose source text is not kept.
+- **test262:** in the same run, 27 variants moved from failing to passing through this change and none
+  moved back. They are `bind`'s three `instance-length` files, the four private-method `toString`
+  files, `__proto__`'s `set-non-obj-coercible`, the two `setPrototypeOf-with-non-circular-values`
+  files, and four staging `Function` files.
+
+**What must not be read as repaired.**
+- Source text is still not kept. A method with a computed key still renders natively, so a key built
+  from another method's text differs from the comparison engine's.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-250
+
+**Where:** the parser's nested statement, `JsParser.ParseNestedStatement`, and `ParseWith`, which
+checked its body itself.
+
+**What the plan said.** A loop's, an `if`'s or a label's body refuses a declaration. A `with` body
+refused a `function`, a `class`, a `const` and a `let` declaration by a check of its own.
+
+**What replaced it, observed on 2026-10-03.**
+- **A `with` body is parsed as a nested statement** like a loop's. An async function declaration
+  there is a `SyntaxError`, and `let` before a line break is the identifier. The old check admitted
+  the first and refused the second.
+- **IsLabelledFunction is an early error.** A function declaration under one label or more may be a
+  label's item and nothing else's. As the body of `while`, `do`, `for`, `for … in`, `for … of`, `if`
+  or `with` it is refused, in sloppy code too.
+- **test262:** in the same run, 24 variants moved from failing to passing through this change and none
+  moved back. They are the `labelled-fn-stmt` cases of `do-while`, `for`, `for … in`, `for … of`,
+  `if`, `while` and `with`; `with`'s `decl-async-fun`, `decl-async-gen` and its two `let` cases; and
+  staging's Annex B `if` and label files.
+
+**What must not be read as repaired.** No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.

@@ -925,7 +925,7 @@ Annex B missing from this list is a defect against the rule rather than a choice
 | `SharedArrayBuffer` and `Atomics` | Excluded deliberately, for the agent model of [section 13](#13-realms-agents-and-the-host-boundary); the same block names both. |
 | The RegExp `v` flag | A literal carrying it is refused at compile time, and the constructor throws a `SyntaxError` for it. `unicodeSets` answers `false` for every RegExp. |
 | `FinalizationRegistry` cleanup | A cleanup callback is never called, as [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) records. |
-| A function's source text | `Function.prototype.toString` answers `function name() { [native code] }`, because the artifact carries no source. |
+| A function's source text | `Function.prototype.toString` answers `function name() { [native code] }`, because the artifact carries no source. A name that is not a property name - a private method's `#m`, a bound function's `bound f` - is left out, so the answer is always a NativeFunction *(corrected: [JSC-249](roadmap.corrections.md#jsc-249))*. |
 
 **Nothing ahead of the edition is admitted except what a decision record names**: the `using`
 declaration and its disposal surface, under proposed JSD-0034. `FinalizationRegistry.prototype.cleanupSome`,

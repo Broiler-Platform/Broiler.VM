@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 124
+runs|0|# Completed: 130
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -944,3 +944,33 @@ runs/a-with-reference-resolved-once.js|0|6:0 / 6:0 / 1 / 2:10 / 5:7 / 9:0 / 4
 # its body alone, and its early errors are SyntaxErrors. The values are the specification's; the
 # comparison engine reads them only under --js-regexp-modifiers *(JSC-244)*.
 runs/regexp-pattern-modifiers.js|0|true:false / true:false / true:false:false / true:false / true:false / AbC / true:false / true:false / true / true / SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError
+
+# A SLASH IS READ BY WHAT ITS BRACKET CLOSED (2026-10-03). After a block, a declaration's body or a
+# statement head a `/` opens a regular expression; after a value it divides, and a contextual
+# keyword before it is a name. The values are the comparison engine's *(JSC-245)*.
+runs/a-slash-after-a-block-or-a-name.js|0|1 3 3 3 NaN NaN NaN if while /1/ /2/ /3/g 4 5 b b NaN 3 NaN
+
+# A `for … in` LEXICAL BINDING IS FRESH EACH TURN (2026-10-03), and the head's names are in their
+# dead zone while the object is evaluated. The values are the comparison engine's *(JSC-246)*.
+runs/a-for-in-binding-per-iteration.js|0|p,q / p,q / p,q / p,q / ReferenceError / ReferenceError / ReferenceError / outside
+
+# A KEY DELETED AND DEFINED AGAIN GOES LAST (2026-10-03). The values are the comparison engine's
+# *(JSC-247)*.
+runs/a-key-defined-again-goes-last.js|0|0,2,p2,p4,p1 / k30,k31,k32,k33,k34,k35,k36,k37,k38,k39,k5 / 99 / false / b,a / 999 / {"x":0,"y":3} / b,a
+
+# A PROPERTY KEY MAY CONVERT TO A SYMBOL (2026-10-03), and `hasOwnProperty` and
+# `propertyIsEnumerable` convert it before the receiver. The values are the comparison engine's
+# *(JSC-248)*.
+runs/property-keys-that-convert-to-symbols.js|0|true true true RangeError RangeError 1 1 true true 5 true 7 7 true false 3 1+3 2 key>descriptor got got 13
+
+# A BOUND FUNCTION'S LENGTH, THE IMMUTABLE ROOT AND THE NATIVE RENDERING (2026-10-03). The values
+# are the comparison engine's but for the private method's rendering, which keeps no source text
+# here *(JSC-249)*.
+runs/bound-length-and-the-immutable-root.js|0|2 / 0 / 0 / 0 / 0 / Infinity / 0 / 2147483648 / 2 / 0 / TypeError / true / false / TypeError / TypeError / TypeError / undefined / function () { [native code] } / function () { [native code] } / function max() { [native code] }
+
+# A LABELLED FUNCTION OR AN ASYNC FUNCTION CANNOT BE A NESTED STATEMENT (2026-10-03), and in a `with`
+# body `let` before a line break is the identifier. The engine raises the two SyntaxErrors and
+# prints the run's value *(JSC-250)*.
+refused/a-labelled-function-as-a-loop-body.js|3|2101:UnexpectedToken at 4:15: a labelled function declaration cannot be the body of a `while`
+refused/an-async-function-as-a-with-body.js|3|2101:UnexpectedToken at 3:11
+runs/a-let-before-a-line-break-in-a-with-body.js|0|1 undefined 5

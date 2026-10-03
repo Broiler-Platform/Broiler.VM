@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, and RegExp modifiers; milestone rows unchanged)
+**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, and JSC-245 to JSC-250; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -540,6 +540,22 @@ suite's `RegExp`, regular-expression-literal and Annex B `RegExp` subtrees, 140 
 failing to passing and none moved back ([JSC-244](roadmap.corrections.md#jsc-244)). This is
 unreviewed implementation and validation material, not accepted milestone evidence; no milestone row
 advances.
+
+**Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
+change each:
+- the tokenizer reads a `/` by what its bracket closed;
+- a `for … in` lexical binding is fresh each turn, with its head in the dead zone;
+- a key deleted and defined again goes last;
+- a property key may convert to a Symbol;
+- `bind`'s `length`, the immutable `Object.prototype`, the `__proto__` setter and the native
+  rendering follow the edition;
+- a labelled function or an async function is refused as a nested statement.
+
+Over the whole pinned suite, against the whole run that held the floor, 353 variants moved from
+failing to passing and none moved back; 208 of them are the `with` and RegExp modifier changes that
+run predates ([JSC-245](roadmap.corrections.md#jsc-245) to
+[JSC-250](roadmap.corrections.md#jsc-250)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
 
 **JSP-2 observation, 2026-10-03.** The parity roadmap's JSP-2 clauses that were still open have a
 change each. The source corpus retains the slice surface's refusal of a BigInt literal, an acceptance

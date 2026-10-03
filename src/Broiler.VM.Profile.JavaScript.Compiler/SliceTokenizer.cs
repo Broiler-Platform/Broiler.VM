@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   42
-// Annotated:        42/42
-// Exempt:           102
-// Human-reviewed:   0/42
+// Relevant units:   48
+// Annotated:        48/48
+// Exempt:           115
+// Human-reviewed:   0/48
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         22/18
+// Criteria:         23/18
 // Resource impact:  2/10 max
-// Unverified:       42
+// Unverified:       48
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -452,7 +452,7 @@ public sealed class SliceTokenizer
     public System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics => diagnostics;
 
     /// <summary>Reads every token, ending with one <see cref="SliceTokenKind.EndOfSource"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=F54E96
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=DCF21B
     // Broiler-Falsified-If: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
     // Broiler-Human:        PENDING
     public SliceToken[] Tokenize()
@@ -494,6 +494,7 @@ public sealed class SliceTokenizer
 
             // The regular-expression heuristic reads this, and it is set HERE rather than inside
             // each reader so that exactly one assignment can be wrong.
+            Follow(token);
             previous = token;
         }
 
@@ -1459,15 +1460,22 @@ public sealed class SliceTokenizer
     /// slash divides, and after an operator, a keyword or the start of input it opens a literal.
     /// </para>
     /// <para>
-    /// <b>The known-wrong cases are named rather than hidden.</b> A <c>)</c> ends a value in
-    /// <c>(a) / b</c> and ends a head in <c>if (a) /re/.test(b)</c>, and this answers division for
-    /// both; a <c>}</c> is the same problem for a block against an object literal. Getting those
-    /// right needs the parser's state, and a tokenizer that asked the parser would be the ambient
-    /// coupling this front end removed. What it costs is a misread of a rare shape, which the
-    /// census reports as a parse failure rather than silently mis-parsing.
+    /// <b>A <c>)</c> and a <c>}</c> are told apart by what they close</b>, which
+    /// <see cref="Follow"/> records as the tokens go by, without asking the parser. A <c>)</c> ends
+    /// a value in <c>(a) / b</c> and ends a head in <c>if (a) /re/.test(b)</c>; a <c>}</c> ends a
+    /// value when it closes an object literal or a function or class expression, and ends a
+    /// statement when it closes a block or a declaration's body, as in <c>{}/1/</c> and
+    /// <c>function f() {}/1/</c>. Until 2026-10-03 both answered division always (JSC-245).
+    /// </para>
+    /// <para>
+    /// <b>A contextual keyword before a slash is a name.</b> <c>get</c>, <c>set</c>, <c>async</c>,
+    /// <c>static</c> and <c>let</c> followed by <c>/</c> begin nothing as keywords, so they are
+    /// values, and <c>of</c> is the keyword only where a <c>for</c> head's binding precedes it.
+    /// <c>yield</c> and <c>await</c> stay operators, which is what they are where they are most
+    /// often written.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6559F9
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=6F6D1D
     // Broiler-Falsified-If: a division after a value is read as a regular expression, or a literal after an operator is read as a division
     // Broiler-Human:        PENDING
     private bool RegularExpressionIsAllowedHere()
@@ -1483,12 +1491,320 @@ public sealed class SliceTokenizer
             SliceTokenKind.StringLiteral or SliceTokenKind.TemplateLiteral or
             SliceTokenKind.RegularExpressionLiteral or SliceTokenKind.True or
             SliceTokenKind.False or SliceTokenKind.Null or SliceTokenKind.This or
-            SliceTokenKind.Super or SliceTokenKind.CloseParen or SliceTokenKind.CloseBracket or
-            SliceTokenKind.CloseBrace or SliceTokenKind.PlusPlus or SliceTokenKind.MinusMinus =>
-                false,
+            SliceTokenKind.Super or SliceTokenKind.CloseBracket or
+            SliceTokenKind.PlusPlus or SliceTokenKind.MinusMinus or SliceTokenKind.Get or
+            SliceTokenKind.Set or SliceTokenKind.Async or SliceTokenKind.Static or
+            SliceTokenKind.Let or SliceTokenKind.ReservedWord => false,
+            SliceTokenKind.CloseParen or SliceTokenKind.CloseBrace or SliceTokenKind.Of =>
+                previousOpensLiteral,
             _ => true,
         };
     }
+
+    /// <summary>What an open bracket of the token stream is, for what its closing one ends.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A89699
+    // Broiler-Human:        PENDING
+    private struct Opening
+    {
+        /// <summary>Whether this is a <c>{</c>; otherwise a <c>(</c> or a <c>[</c>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A17401
+        // Broiler-Human:        PENDING
+        internal bool Brace;
+
+        /// <summary>Whether it is the head of <c>if</c>, <c>while</c>, <c>for</c> or <c>with</c>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4D6362
+        // Broiler-Human:        PENDING
+        internal bool Head;
+
+        /// <summary>Whether it is a <c>for</c> head, where <c>of</c> can be the keyword.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4A93B4
+        // Broiler-Human:        PENDING
+        internal bool ForHead;
+
+        /// <summary>Whether it is a function's parameter list.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=8A5953
+        // Broiler-Human:        PENDING
+        internal bool Parameters;
+
+        /// <summary>Whether its contents are statements: a block, a function body, the source.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=B733DF
+        // Broiler-Human:        PENDING
+        internal bool Statements;
+
+        /// <summary>
+        /// Whether closing it ends a statement - a block, or a declaration's body - rather than a
+        /// value; for a parameter list, whether its function is a declaration.
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=EC1302
+        // Broiler-Human:        PENDING
+        internal bool EndsStatement;
+
+        /// <summary>How many <c>?</c> inside it still wait for their <c>:</c>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4277BF
+        // Broiler-Human:        PENDING
+        internal int Conditionals;
+    }
+
+    /// <summary>The brackets open at the current token, the source itself at the bottom.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C3165E
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<Opening> openings =
+        [new Opening { Brace = true, Statements = true, EndsStatement = true }];
+
+    /// <summary>Whether a <c>/</c> after the previous <c>)</c>, <c>}</c> or <c>of</c> opens a literal.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=A07875
+    // Broiler-Human:        PENDING
+    private bool previousOpensLiteral;
+
+    /// <summary>
+    /// Where a <c>function</c> keyword waits for its parameter list: the depth it was read at,
+    /// or -1, and whether it began a statement.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=AE78EA
+    // Broiler-Human:        PENDING
+    private (int Depth, bool Declaration) pendingFunction = (-1, false);
+
+    /// <summary>The same for a <c>class</c> keyword waiting for its body.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4A7ACD
+    // Broiler-Human:        PENDING
+    private (int Depth, bool Declaration) pendingClass = (-1, false);
+
+    /// <summary>Whether the previous token closed a parameter list, and whose: 0 none, 1 an expression's, 2 a declaration's.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E89AB4
+    // Broiler-Human:        PENDING
+    private int closedParameters;
+
+    /// <summary>Whether <c>async</c>, when it was read, stood where a statement begins.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=AFA3B8
+    // Broiler-Human:        PENDING
+    private bool asyncBeganStatement;
+
+    /// <summary>
+    /// Records what <paramref name="token"/> opens or closes, before it becomes the previous
+    /// token, so that <see cref="RegularExpressionIsAllowedHere"/> can tell what a <c>)</c> or a
+    /// <c>}</c> ended.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A <c>{</c> is a block or a value by what precedes it</b>, the rule a reader that does not
+    /// parse can apply: after an operator, a <c>(</c>, a <c>,</c>, <c>return</c> or a keyword
+    /// that takes an expression it opens an object literal; at the start of a statement - after
+    /// <c>;</c>, a block's <c>{</c> or <c>}</c>, a head's <c>)</c>, <c>else</c>, <c>do</c>, a
+    /// label's or a case's <c>:</c> - it opens a block. A function's or a class's body ends a
+    /// statement when its keyword began one, and an arrow function's body never does.
+    /// </para>
+    /// <para>
+    /// <b>What it can still misread</b> is a shape that needs the grammar itself, such as a
+    /// <c>:</c> that ends a conditional at the start of a statement. A misread there answers as
+    /// this tokenizer did before: a refusal, never a different program that runs.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=727C1D
+    // Broiler-Falsified-If: a slash after an object literal or a function expression is read as a regular expression
+    // Broiler-Human:        PENDING
+    private void Follow(SliceToken token)
+    {
+        var parameters = closedParameters;
+        var afterPrevious = previousOpensLiteral;
+        var top = openings.Count - 1;
+
+        closedParameters = 0;
+        previousOpensLiteral = false;
+
+        switch (token.Kind)
+        {
+            case SliceTokenKind.OpenParen:
+                if (pendingFunction.Depth == openings.Count)
+                {
+                    openings.Add(new Opening { Parameters = true, EndsStatement = pendingFunction.Declaration });
+                    pendingFunction = (-1, false);
+                }
+                else
+                {
+                    var head = previous.Kind is SliceTokenKind.If or SliceTokenKind.While or
+                        SliceTokenKind.For or SliceTokenKind.With;
+
+                    openings.Add(new Opening { Head = head, ForHead = previous.Kind == SliceTokenKind.For });
+                }
+
+                return;
+
+            case SliceTokenKind.OpenBracket:
+                openings.Add(default);
+                return;
+
+            case SliceTokenKind.OpenBrace:
+                openings.Add(OpeningForBrace(parameters, afterPrevious));
+                return;
+
+            case SliceTokenKind.CloseParen or SliceTokenKind.CloseBracket or SliceTokenKind.CloseBrace:
+                if (top == 0)
+                {
+                    return;
+                }
+
+                var closed = openings[top];
+                openings.RemoveAt(top);
+
+                if (pendingFunction.Depth > openings.Count)
+                {
+                    pendingFunction = (-1, false);
+                }
+
+                if (pendingClass.Depth > openings.Count)
+                {
+                    pendingClass = (-1, false);
+                }
+
+                if (token.Kind == SliceTokenKind.CloseParen)
+                {
+                    previousOpensLiteral = closed.Head;
+                    closedParameters = closed.Parameters ? (closed.EndsStatement ? 2 : 1) : 0;
+                }
+                else if (token.Kind == SliceTokenKind.CloseBrace)
+                {
+                    previousOpensLiteral = closed.EndsStatement;
+                }
+
+                return;
+
+            case SliceTokenKind.Question:
+                var withQuestion = openings[top];
+                withQuestion.Conditionals++;
+                openings[top] = withQuestion;
+                return;
+
+            case SliceTokenKind.Colon:
+                var withColon = openings[top];
+
+                if (withColon.Conditionals > 0)
+                {
+                    withColon.Conditionals--;
+                    openings[top] = withColon;
+                }
+
+                return;
+
+            case SliceTokenKind.Async:
+                asyncBeganStatement = BeginsStatement(token, afterPrevious);
+                return;
+
+            case SliceTokenKind.Function:
+                if (previous.Kind is not (SliceTokenKind.Dot or SliceTokenKind.QuestionDot))
+                {
+                    var declaration = previous.Kind == SliceTokenKind.Async && !token.PrecededByLineTerminator
+                        ? asyncBeganStatement
+                        : BeginsStatement(token, afterPrevious);
+
+                    pendingFunction = (openings.Count, declaration);
+                }
+
+                return;
+
+            case SliceTokenKind.Class:
+                if (previous.Kind is not (SliceTokenKind.Dot or SliceTokenKind.QuestionDot))
+                {
+                    pendingClass = (openings.Count, BeginsStatement(token, afterPrevious));
+                }
+
+                return;
+
+            case SliceTokenKind.Of:
+                // `of` is the keyword where a for head's binding precedes it, and a name elsewhere.
+                previousOpensLiteral = openings[top].ForHead && previous.Kind is SliceTokenKind.Identifier or
+                    SliceTokenKind.CloseBracket or SliceTokenKind.CloseBrace or SliceTokenKind.Yield or
+                    SliceTokenKind.Await or SliceTokenKind.Get or SliceTokenKind.Set or SliceTokenKind.Static or
+                    SliceTokenKind.Let or SliceTokenKind.Of;
+                return;
+        }
+    }
+
+    /// <summary>What the <c>{</c> about to be read opens, by what precedes it.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CEEFEA
+    // Broiler-Human:        PENDING
+    private Opening OpeningForBrace(int parameters, bool afterPrevious)
+    {
+        if (parameters != 0)
+        {
+            return new Opening { Brace = true, Statements = true, EndsStatement = parameters == 2 };
+        }
+
+        if (pendingClass.Depth == openings.Count)
+        {
+            var declaration = pendingClass.Declaration;
+            pendingClass = (-1, false);
+
+            return new Opening { Brace = true, EndsStatement = declaration };
+        }
+
+        if (previous.Kind == SliceTokenKind.EqualsGreaterThan)
+        {
+            return new Opening { Brace = true, Statements = true };
+        }
+
+        return OpensBlock(afterPrevious)
+            ? new Opening { Brace = true, Statements = true, EndsStatement = true }
+            : new Opening { Brace = true };
+    }
+
+    /// <summary>
+    /// Whether a <c>{</c> read now opens a block rather than an object literal, by the previous
+    /// token and the bracket it stands in.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DCE881
+    // Broiler-Human:        PENDING
+    private bool OpensBlock(bool afterPrevious)
+    {
+        var inside = openings[^1];
+
+        return previous.Kind switch
+        {
+            SliceTokenKind.EndOfSource or SliceTokenKind.Else or SliceTokenKind.Do or
+            SliceTokenKind.Try or SliceTokenKind.Finally or SliceTokenKind.Static or
+            SliceTokenKind.CloseParen => true,
+            SliceTokenKind.Semicolon or SliceTokenKind.OpenBrace or SliceTokenKind.CloseBrace =>
+                inside.Statements,
+            SliceTokenKind.Colon => inside.Statements && inside.Conditionals == 0,
+            SliceTokenKind.Return or SliceTokenKind.Yield or SliceTokenKind.Var or
+            SliceTokenKind.Let or SliceTokenKind.Const => false,
+            SliceTokenKind.Of => !afterPrevious,
+            _ => EndsValue(previous.Kind),
+        };
+    }
+
+    /// <summary>
+    /// Whether <paramref name="token"/>, a <c>function</c>, <c>class</c> or <c>async</c>, stands
+    /// where a statement begins, so that it declares rather than evaluates.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=5A9E08
+    // Broiler-Human:        PENDING
+    private bool BeginsStatement(SliceToken token, bool afterPrevious)
+    {
+        var inside = openings[^1];
+
+        return previous.Kind switch
+        {
+            SliceTokenKind.EndOfSource => true,
+            SliceTokenKind.Else or SliceTokenKind.Do or SliceTokenKind.Export or SliceTokenKind.Default =>
+                true,
+            SliceTokenKind.CloseParen => afterPrevious,
+            SliceTokenKind.Semicolon or SliceTokenKind.OpenBrace => inside.Statements,
+            SliceTokenKind.CloseBrace => inside.Statements && (afterPrevious || token.PrecededByLineTerminator),
+            SliceTokenKind.Colon => inside.Statements && inside.Conditionals == 0,
+            _ => token.PrecededByLineTerminator && inside.Statements && EndsValue(previous.Kind),
+        };
+    }
+
+    /// <summary>Whether a token of <paramref name="kind"/> can end an expression.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=189AAC
+    // Broiler-Human:        PENDING
+    private static bool EndsValue(SliceTokenKind kind) => kind is
+        SliceTokenKind.Identifier or SliceTokenKind.NumericLiteral or SliceTokenKind.StringLiteral or
+        SliceTokenKind.TemplateLiteral or SliceTokenKind.RegularExpressionLiteral or
+        SliceTokenKind.True or SliceTokenKind.False or SliceTokenKind.Null or SliceTokenKind.This or
+        SliceTokenKind.Super or SliceTokenKind.CloseBracket or SliceTokenKind.PlusPlus or
+        SliceTokenKind.MinusMinus or SliceTokenKind.Get or SliceTokenKind.Set or
+        SliceTokenKind.Async or SliceTokenKind.Static or SliceTokenKind.Let or SliceTokenKind.Of;
 
     /// <summary>Reads a regular-expression literal, body and flags, without interpreting it.</summary>
     /// <remarks>

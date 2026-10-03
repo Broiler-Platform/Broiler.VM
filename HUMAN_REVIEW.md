@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5844 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5853 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 238 |
-| Code units | 10330 |
-| Relevant | 5844 |
-| Exempt | 4486 |
-| Assessed | 5844 of 5844 (100%) |
-| Human reviewed | 0 of 5844 (0%) |
-| Unverified | 5844 |
+| Code units | 10352 |
+| Relevant | 5853 |
+| Exempt | 4499 |
+| Assessed | 5853 of 5853 (100%) |
+| Human reviewed | 0 of 5853 (0%) |
+| Unverified | 5853 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5844 |
+| HUMAN_PENDING | 5853 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4486 |
+| EXEMPT | 4499 |
 
 ## 5. Aliases In The Tree
 
@@ -152,7 +152,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeBackend.cs` | 23 | 12 | 11 | 12 | None | Medium | 4/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeCompiler.cs` | 9 | 7 | 2 | 7 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` | 14 | 12 | 2 | 12 | None | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 191 | 166 | 25 | 166 | Low | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 192 | 167 | 25 | 167 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 99 | 83 | 16 | 83 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Abi.cs` | 11 | 9 | 2 | 9 | Low | High | 8/8 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsX64Assembler.cs` | 97 | 65 | 32 | 65 | Low | Critical | 20/20 |
@@ -172,7 +172,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` | 11 | 10 | 1 | 10 | None | High | 6/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs` | 40 | 24 | 16 | 24 | None | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSyntax.cs` | 29 | 26 | 3 | 26 | None | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 144 | 42 | 102 | 42 | Low | High | 22/18 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 163 | 48 | 115 | 48 | Low | High | 23/18 |
 | `src/Broiler.VM.Profile.JavaScript.Format/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptArtifactWriter.cs` | 20 | 17 | 3 | 17 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptFormat.cs` | 26 | 14 | 12 | 14 | None | Medium | 0/0 |
@@ -227,7 +227,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsNativeExecution.cs` | 23 | 14 | 9 | 14 | Low | Critical | 18/18 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativePage.cs` | 12 | 4 | 8 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 69 | 38 | 31 | 38 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 70 | 39 | 31 | 39 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 64 | 18 | 46 | 18 | Low | Critical | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsProxy.cs` | 44 | 37 | 7 | 37 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 39 | 38 | 1 | 38 | Low | Medium | 0/0 |
@@ -244,7 +244,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Disposal.cs` | 57 | 36 | 21 | 36 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` | 6 | 5 | 1 | 5 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs` | 9 | 8 | 1 | 8 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs` | 8 | 7 | 1 | 7 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs` | 9 | 8 | 1 | 8 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Generator.cs` | 12 | 9 | 3 | 9 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs` | 25 | 25 | 0 | 25 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Iterator.cs` | 29 | 16 | 13 | 16 | Low | Medium | 0/0 |
@@ -862,7 +862,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a name with no binding is accepted, or a name shadowed in an inner scope resolves to the outer one
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `5006C2`, PENDING
   - Falsified if: a second call site for this type appears, or a consumer re-reads the source text
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Tokenize()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `F54E96`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Tokenize()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `DCF21B`, PENDING
   - Falsified if: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadToken(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `415EF1`, PENDING
   - Falsified if: a character that starts an identifier is read as a punctuator, or a numeric literal is read as an identifier
@@ -876,7 +876,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the value this produces differs from the language's MV for the same literal text
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadStringLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `07DC3C`, PENDING
   - Falsified if: a directive is recognised from the string's value rather than from its raw text
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.RegularExpressionIsAllowedHere()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `6559F9`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.RegularExpressionIsAllowedHere()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `6F6D1D`, PENDING
   - Falsified if: a division after a value is read as a regular expression, or a literal after an operator is read as a division
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadRegularExpressionLiteral(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `C7126B`, PENDING
   - Falsified if: a `/` inside a character class ends the literal
@@ -4092,7 +4092,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5710 of the 5844 assessed units declare
+That is not a figure of speech. 5719 of the 5853 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

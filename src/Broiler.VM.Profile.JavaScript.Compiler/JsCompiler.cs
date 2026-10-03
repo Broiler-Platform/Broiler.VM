@@ -5710,7 +5710,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5347AC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4DBD70
     // Broiler-Human:        PENDING
     private void CompileForIn(JsForInStatement loop, int completion, string label)
     {
@@ -5733,13 +5733,13 @@ public sealed class JsCompiler
             Emit(JsOpcode.Pop);
         }
 
-        CompileExpression(loop.Right);
-        Emit(JsOpcode.ForInStart);
-        EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, enumerator);
-
         var outer = scope;
         var pushed = loop.Declaration is SliceDeclarationKind.Let or SliceDeclarationKind.Const;
+        var constant = loop.Declaration == SliceDeclarationKind.Const;
 
+        // THE HEAD'S NAMES ARE IN THEIR DEAD ZONE WHILE THE OBJECT IS EVALUATED, as `for … of`'s
+        // are: `for (let x in { x })` is a ReferenceError, not a read of the outer `x`. Until
+        // 2026-10-03 the object was evaluated in the enclosing scope (JSC-246).
         if (pushed)
         {
             scope = new Scope(ScopeKind.Block, outer);
@@ -5747,15 +5747,32 @@ public sealed class JsCompiler
             var headSite = buffer.Code.Count + 1;
             Emit(JsOpcode.PushScope, (ushort)0);
             buffer.ScopeSites.Add((headSite, scope));
+            DeclareHead(loop.Name, loop.Pattern, constant);
+        }
 
-            if (loop.Pattern is null)
-            {
-                scope.Declare(loop.Name, loop.Declaration == SliceDeclarationKind.Const);
-            }
-            else
-            {
-                DeclarePatternNames(loop.Pattern, loop.Declaration == SliceDeclarationKind.Const);
-            }
+        CompileExpression(loop.Right);
+        Emit(JsOpcode.ForInStart);
+
+        if (pushed)
+        {
+            Emit(JsOpcode.PopScope);
+            blockDepth--;
+            scope = outer;
+        }
+
+        EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, enumerator);
+
+        var loopScope = scope;
+
+        if (pushed)
+        {
+            scope = new Scope(ScopeKind.Block, outer);
+            blockDepth++;
+            var bodySite = buffer.Code.Count + 1;
+            Emit(JsOpcode.PushScope, (ushort)0);
+            buffer.ScopeSites.Add((bodySite, scope));
+            DeclareHead(loop.Name, loop.Pattern, constant);
+            loopScope = scope;
         }
 
         var top = NewLabel();
@@ -5768,6 +5785,16 @@ public sealed class JsCompiler
         Mark(top);
         EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, enumerator);
         Branch(JsOpcode.ForInNext, exit.Break!);
+
+        // EACH TURN BINDS A FRESH COPY, which is what a closure in the body captures: without it
+        // every closure the loop made saw the last key. `for … of` has copied since it was
+        // written; `for … in` did not until 2026-10-03 (JSC-246).
+        if (pushed)
+        {
+            var copySite = buffer.Code.Count + 1;
+            Emit(JsOpcode.CopyScope, (ushort)0);
+            buffer.ScopeSites.Add((copySite, loopScope));
+        }
 
         // A `for … in` HEAD MAY DESTRUCTURE THE KEY, which reads oddly and is ordinary grammar:
         // the value bound each turn is a String, so `for (const [a, b] in o)` takes its first two

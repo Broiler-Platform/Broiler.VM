@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   166
-// Annotated:        166/166
+// Relevant units:   167
+// Annotated:        167/167
 // Exempt:           25
-// Human-reviewed:   0/166
+// Human-reviewed:   0/167
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       166
+// Unverified:       167
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1688,7 +1688,7 @@ internal sealed class JsParser
     /// enclosing scope is the object environment record would have nowhere to put its slot.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=061AA1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BB48A5
     // Broiler-Human:        PENDING
     private JsStatement ParseWith()
     {
@@ -1709,19 +1709,10 @@ internal sealed class JsParser
         var target = ParseExpression();
         Expect(SliceTokenKind.CloseParen, ")");
 
-        if (Current.Kind is SliceTokenKind.Function or SliceTokenKind.Class or
-                SliceTokenKind.Const ||
-            (Current.Kind == SliceTokenKind.Let && BeginsLetDeclaration()))
-        {
-            Refuse(
-                Span(),
-                SliceSourceDiagnosticCode.UnexpectedToken,
-                "a declaration is not a statement, so it cannot be the body of a `with`");
-
-            return new JsEmptyStatement(span);
-        }
-
-        return new JsWithStatement(span, target, ParseStatement());
+        // The body is a nested statement like a loop's, so an async function and a labelled
+        // function are refused there too, and a `let` before a line break is the identifier. Until
+        // 2026-10-03 the `with` body had a check of its own that knew neither (JSC-250).
+        return new JsWithStatement(span, target, ParseNestedStatement("a `with`"));
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5E3C87
@@ -4099,7 +4090,7 @@ internal sealed class JsParser
     /// Whether a plain function declaration is admitted here, which is true for an <c>if</c> clause
     /// and a labelled item in sloppy code and false everywhere else.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D2B436
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=04B9C6
     // Broiler-Human:        PENDING
     private JsStatement ParseNestedStatement(string position, bool functionAllowed = false)
     {
@@ -4119,7 +4110,23 @@ internal sealed class JsParser
         if (!BeginsRefusedDeclaration(functionAllowed) &&
             !BeginsUsingDeclaration() && !BeginsAwaitUsingDeclaration())
         {
-            return ParseStatement();
+            var start = Span();
+            var parsed = ParseStatement();
+
+            // IsLabelledFunction: a function declaration under any number of labels may be a
+            // label's item and nothing else's, so `while (x) a: function f() {}` is a syntax error
+            // in sloppy code too. Until 2026-10-03 it was admitted (JSC-250).
+            if (position != "a label" && IsLabelledFunction(parsed))
+            {
+                Refuse(
+                    start,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "a labelled function declaration cannot be the body of " + position);
+
+                return new JsEmptyStatement(start);
+            }
+
+            return parsed;
         }
 
         var span = Span();
@@ -4130,6 +4137,24 @@ internal sealed class JsParser
             "a declaration is not a statement, so it cannot be the body of " + position);
 
         return new JsEmptyStatement(span);
+    }
+
+    /// <summary>Whether <paramref name="statement"/> is a function declaration under one label or more.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=4668E2
+    // Broiler-Human:        PENDING
+    private static bool IsLabelledFunction(JsStatement statement)
+    {
+        if (statement is not JsLabelledStatement)
+        {
+            return false;
+        }
+
+        while (statement is JsLabelledStatement labelled)
+        {
+            statement = labelled.Body;
+        }
+
+        return statement is JsFunctionDeclaration;
     }
 
     /// <summary>Whether the token at the cursor begins a declaration this position refuses.</summary>

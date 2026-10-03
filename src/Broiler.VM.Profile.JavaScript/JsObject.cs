@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   38
-// Annotated:        38/38
+// Relevant units:   39
+// Annotated:        39/39
 // Exempt:           31
-// Human-reviewed:   0/38
+// Human-reviewed:   0/39
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  2/10 max
-// Unverified:       38
+// Unverified:       39
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -502,7 +502,7 @@ internal class JsObject
     /// exposes is <c>Object.defineProperty</c>, which validates against the current descriptor
     /// first and then calls this.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5F9A87
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=408E19
     // Broiler-Human:        PENDING
     internal virtual void SetOwnProperty(string key, JsProperty property)
     {
@@ -511,22 +511,20 @@ internal class JsObject
 
         if (index.TryGetValue(key, out var at))
         {
-            if (!entries[at].Live)
-            {
-                liveCount++;
-            }
-
             entries[at] = new Entry(key, property, true);
             return;
         }
 
+        // A KEY DELETED AND DEFINED AGAIN IS A NEW PROPERTY, created last: the delete took it out
+        // of the index, so it is appended rather than revived where it was. Until 2026-10-03 it
+        // took its old place back, and `Object.keys` and `for … in` listed it there (JSC-247).
         index[key] = entries.Count;
         entries.Add(new Entry(key, property, true));
         liveCount++;
     }
 
     /// <summary>Removes one own property.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=CC78C4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6B957D
     // Broiler-Human:        PENDING
     internal virtual bool DeleteOwnProperty(string key)
     {
@@ -541,8 +539,38 @@ internal class JsObject
         }
 
         entries[at] = new Entry(key, default, false);
+        index.Remove(key);
         liveCount--;
+
+        // The tombstones are dropped once they outnumber the live entries, so that deleting and
+        // defining one key again and again holds memory in proportion to the object, not to the
+        // number of times it was done.
+        if (entries.Count > 16 && entries.Count > 2 * liveCount)
+        {
+            Compact();
+        }
+
         return true;
+    }
+
+    /// <summary>Drops the deleted entries and renumbers the index, keeping the order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7B8FEF
+    // Broiler-Human:        PENDING
+    private void Compact()
+    {
+        var kept = new System.Collections.Generic.List<Entry>(liveCount);
+        index!.Clear();
+
+        foreach (var entry in entries!)
+        {
+            if (entry.Live)
+            {
+                index[entry.Key] = kept.Count;
+                kept.Add(entry);
+            }
+        }
+
+        entries = kept;
     }
 
     /// <summary>
