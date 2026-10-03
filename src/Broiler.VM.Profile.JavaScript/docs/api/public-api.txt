@@ -2109,6 +2109,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ForInNext : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 101
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ForInStart : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 100
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GetIndex : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 36
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GetObjectBinding : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 182
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GetProperty : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 34
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GetTemplateObject : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 94
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GetTemplateObjectWide : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 181
@@ -2178,6 +2179,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ReturnUndefined : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 52
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.RunStaticElements : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 121
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetIndex : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 37
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetObjectBinding : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 183
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetProperty : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 35
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetPrototypeLiteral : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 63
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ShiftLeft : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 85

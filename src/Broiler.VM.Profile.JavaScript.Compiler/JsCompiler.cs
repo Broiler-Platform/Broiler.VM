@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   232
-// Annotated:        232/232
+// Relevant units:   234
+// Annotated:        234/234
 // Exempt:           123
-// Human-reviewed:   0/232
+// Human-reviewed:   0/234
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         19/18
 // Resource impact:  3/10 max
-// Unverified:       232
+// Unverified:       234
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -8258,7 +8258,7 @@ public sealed class JsCompiler
         Emit(add);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=902182
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=34BD50
     // Broiler-Human:        PENDING
     private void CompileUpdate(JsUpdateExpression update)
     {
@@ -8266,6 +8266,36 @@ public sealed class JsCompiler
         // their constant pools byte for byte; the wide lowering needs no constant at all.
         var one = request.AdmitsBigIntLiterals ? (ushort)0 : NumberConstant(1);
         var add = update.Operator == SliceTokenKind.PlusPlus ? JsOpcode.Add : JsOpcode.Subtract;
+
+        if (update.Operand is JsIdentifier postfixed && !update.Prefix && Shadowable(postfixed.Name, out _))
+        {
+            // THE OLD VALUE IS THE ANSWER AND THE WRITE GOES THROUGH THE REFERENCE, so the numeric
+            // old value is kept in a slot of its own while the reference's two branches write.
+            var owner = FunctionScope();
+            var kept = owner.Declare("#update" + owner.SlotCount, constant: false);
+
+            TryEmitShadowedReference(update.Span, postfixed.Name, read: true, () =>
+            {
+                EmitUpdateOperand();
+                Emit(JsOpcode.Duplicate);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
+                EmitUpdateStep(add, one);
+            });
+
+            Emit(JsOpcode.Pop);
+            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, kept);
+            return;
+        }
+
+        if (update.Operand is JsIdentifier prefixed && update.Prefix &&
+            TryEmitShadowedReference(update.Span, prefixed.Name, read: true, () =>
+            {
+                EmitUpdateOperand();
+                EmitUpdateStep(add, one);
+            }))
+        {
+            return;
+        }
 
         if (update.Operand is JsIdentifier name)
         {
@@ -8509,7 +8539,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EB75D7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F8F101
     // Broiler-Human:        PENDING
     private void CompileAssignment(JsAssignmentExpression assignment)
     {
@@ -8517,6 +8547,12 @@ public sealed class JsCompiler
         {
             if (assignment.Target is JsIdentifier name)
             {
+                if (TryEmitShadowedReference(
+                    assignment.Span, name.Name, read: false, () => CompileNamedValue(assignment.Value, name.Name)))
+                {
+                    return;
+                }
+
                 CompileNamedValue(assignment.Value, name.Name);
                 StoreName(assignment.Span, name.Name);
                 return;
@@ -8582,6 +8618,15 @@ public sealed class JsCompiler
 
         if (assignment.Target is JsIdentifier target)
         {
+            if (TryEmitShadowedReference(assignment.Span, target.Name, read: true, () =>
+            {
+                CompileExpression(assignment.Value);
+                Emit(opcode);
+            }))
+            {
+                return;
+            }
+
             LoadName(assignment.Span, target.Name);
             CompileExpression(assignment.Value);
             Emit(opcode);
@@ -9834,9 +9879,97 @@ public sealed class JsCompiler
             InternedName(name));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A65D36
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EDF5A4
     // Broiler-Human:        PENDING
     private void StoreName(SliceSourceSpan span, string name)
+    {
+        StoreNameAfterTheValue(span, name);
+    }
+
+    /// <summary>
+    /// Lowers an assignment, or a read and then an assignment, through a name a <c>with</c> body
+    /// can shadow, resolving the name ONCE, before anything else is evaluated.
+    /// </summary>
+    /// <param name="span">Where the assignment is, for the static store's diagnostics.</param>
+    /// <param name="name">The name assigned.</param>
+    /// <param name="read">Whether the reference's value is read first, as a compound assignment
+    /// or an update reads it.</param>
+    /// <param name="produce">Emits the new value, with the old one on top when
+    /// <paramref name="read"/>; it is emitted once, between the read and the write.</param>
+    /// <returns>False when no <c>with</c> can shadow the name, and nothing was emitted.</returns>
+    /// <remarks>
+    /// <b>The language resolves the reference first and writes through it last</b>: the binding
+    /// the write reaches is the one the name meant when the assignment began, even when a getter
+    /// on the <c>with</c> object deleted it, or the right-hand side added one to a nearer object.
+    /// Resolving again at the write - as this lowering did until 2026-10-03 - wrote the enclosing
+    /// variable instead (test262's S11.13.1_A5/A6 and S11.13.2_A5/A6). The object the search
+    /// answered stays on the stack under the value, and <see cref="JsOpcode.SetObjectBinding"/>
+    /// writes it as an object environment record does, which is a ReferenceError in strict code
+    /// when the property is gone.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6ACC9D
+    // Broiler-Human:        PENDING
+    private bool TryEmitShadowedReference(SliceSourceSpan span, string name, bool read, System.Action produce)
+    {
+        if (!Shadowable(name, out var limit))
+        {
+            return false;
+        }
+
+        var live = buffer.Height;
+        var key = InternedName(name);
+        var staticWrite = NewLabel();
+        var done = NewLabel();
+
+        EmitResolve(limit, key);
+
+        if (read)
+        {
+            var staticRead = NewLabel();
+            var readDone = NewLabel();
+
+            Emit(JsOpcode.Duplicate);
+            Branch(JsOpcode.JumpIfFalse, staticRead);
+            Emit(JsOpcode.Duplicate);
+            Emit(JsOpcode.GetObjectBinding, key);
+            Branch(JsOpcode.Jump, readDone);
+
+            Mark(staticRead);
+            buffer.Rejoin(live + 1);
+            EmitStaticLoad(name, orUndefined: false);
+
+            Mark(readDone);
+            buffer.Rejoin(live + 2);
+        }
+
+        produce();
+
+        // [reference, value]: the value goes under the reference so the test can consume a copy.
+        Emit(JsOpcode.Swap);
+        Emit(JsOpcode.Duplicate);
+        Branch(JsOpcode.JumpIfFalse, staticWrite);
+        Emit(JsOpcode.Swap);
+        Emit(JsOpcode.SetObjectBinding, key);
+        Branch(JsOpcode.Jump, done);
+
+        Mark(staticWrite);
+        buffer.Rejoin(live + 2);
+        Emit(JsOpcode.Pop);
+        EmitStaticStore(span, name);
+
+        Mark(done);
+        buffer.Rejoin(live + 1);
+        return true;
+    }
+
+    /// <summary>Writes the value on the stack to a name, resolving it now.</summary>
+    /// <remarks>
+    /// For the writes that have no right-hand side to order against - a declaration's initialiser
+    /// and a loop variable - where resolving at the write is resolving first.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8E88CB
+    // Broiler-Human:        PENDING
+    private void StoreNameAfterTheValue(SliceSourceSpan span, string name)
     {
         // A WRITE ASKS THE SAME OBJECTS A READ ASKS, AND THE TWO ANSWERS DIFFER. `with (o) { x = 1 }`
         // sets `o.x` when the object has the name and reaches the enclosing binding when it does
@@ -10056,7 +10189,7 @@ public sealed class JsCompiler
     /// language says the second read sees that. That is the price of the construct rather than a
     /// shortcoming of this lowering, and it is why nothing outside a <c>with</c> body pays any of it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DC2FDD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=97592B
     // Broiler-Human:        PENDING
     private void EmitDynamicName(string name, int limit, bool wantsBase, bool orUndefined)
     {
@@ -10074,7 +10207,9 @@ public sealed class JsCompiler
             Emit(JsOpcode.Duplicate);
         }
 
-        Emit(JsOpcode.GetProperty, key);
+        // GetBindingValue OF AN OBJECT ENVIRONMENT RECORD, which asks for the property again: one
+        // a `Symbol.unscopables` getter removed since the search is a ReferenceError in strict code.
+        Emit(JsOpcode.GetObjectBinding, key);
 
         if (wantsBase)
         {

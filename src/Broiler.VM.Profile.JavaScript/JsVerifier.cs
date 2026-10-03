@@ -3939,7 +3939,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D1ADDA
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=31C1C6
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -3959,6 +3959,8 @@ internal sealed class JsVerifier
                 case JsOpcode.DeclareGlobal:
                 case JsOpcode.GetProperty:
                 case JsOpcode.SetProperty:
+                case JsOpcode.GetObjectBinding:
+                case JsOpcode.SetObjectBinding:
                 case JsOpcode.DefineField:
                 case JsOpcode.DeleteProperty:
                 case JsOpcode.DefineGetter:

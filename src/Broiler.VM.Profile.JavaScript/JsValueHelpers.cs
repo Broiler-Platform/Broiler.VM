@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   436
-// Annotated:        436/436
+// Relevant units:   442
+// Annotated:        442/442
 // Exempt:           1
-// Human-reviewed:   0/436
+// Human-reviewed:   0/442
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         437/437
+// Criteria:         443/443
 // Resource impact:  4/10 max
-// Unverified:       436
+// Unverified:       442
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,7 +58,7 @@ internal static unsafe class JsValueHelpers
     /// <b>A static constructor and not a module initializer</b>, so the table is built the first time a
     /// value-form instance asks for it and never in a process that runs no value form.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=E285CF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=366577
     // Broiler-Falsified-If: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
     // Broiler-Human:        PENDING
     static JsValueHelpers()
@@ -209,6 +209,8 @@ internal static unsafe class JsValueHelpers
         slots[(int)JsOpcode.LoadSuperPropertyKeepKey] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&LoadSuperPropertyKeepKey;
         slots[(int)JsOpcode.ThrowReferenceError] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&ThrowReferenceError;
         slots[(int)JsOpcode.GetTemplateObjectWide] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&GetTemplateObjectWide;
+        slots[(int)JsOpcode.GetObjectBinding] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&GetObjectBinding;
+        slots[(int)JsOpcode.SetObjectBinding] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&SetObjectBinding;
 
         slots[JsValueAbi.SettleSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Settle;
         slots[JsValueAbi.PrepareSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, JsValueFrame*, int>)&Prepare;
@@ -1466,6 +1468,22 @@ internal static unsafe class JsValueHelpers
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
     private static int GetTemplateObjectWide(JsValueFrame* frame, int pc) =>
         JsNativeActivation.StepValue<ArmGetTemplateObjectWide>(frame, pc, JsOpcode.GetTemplateObjectWide);
+
+    /// <summary>The entry point for <see cref="JsOpcode.GetObjectBinding"/> (0xB6): one value step of it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=E5A5C6
+    // Broiler-Falsified-If: this runs anything other than one GetObjectBinding at the offset the managed side expects, through its own step
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int GetObjectBinding(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.StepValue<ArmGetObjectBinding>(frame, pc, JsOpcode.GetObjectBinding);
+
+    /// <summary>The entry point for <see cref="JsOpcode.SetObjectBinding"/> (0xB7): one value step of it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=CA4D4D
+    // Broiler-Falsified-If: this runs anything other than one SetObjectBinding at the offset the managed side expects, through its own step
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int SetObjectBinding(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.StepValue<ArmSetObjectBinding>(frame, pc, JsOpcode.SetObjectBinding);
 
     /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.Nop"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=EE2A74
@@ -4038,6 +4056,42 @@ internal static unsafe class JsValueHelpers
             [System.Runtime.CompilerServices.MethodImpl(
                 System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get => JsOpcode.GetTemplateObjectWide;
+        }
+    }
+
+    /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.GetObjectBinding"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=CDD95E
+    // Broiler-Falsified-If: this mode names an opcode other than GetObjectBinding
+    // Broiler-Human:        PENDING
+    internal readonly struct ArmGetObjectBinding : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.GetObjectBinding"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=9D13AD
+        // Broiler-Falsified-If: this answers any opcode other than GetObjectBinding
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.GetObjectBinding;
+        }
+    }
+
+    /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.SetObjectBinding"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D0865B
+    // Broiler-Falsified-If: this mode names an opcode other than SetObjectBinding
+    // Broiler-Human:        PENDING
+    internal readonly struct ArmSetObjectBinding : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.SetObjectBinding"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A4190C
+        // Broiler-Falsified-If: this answers any opcode other than SetObjectBinding
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.SetObjectBinding;
         }
     }
 }

@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5834 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 5844 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 238 |
-| Code units | 10311 |
-| Relevant | 5834 |
-| Exempt | 4477 |
-| Assessed | 5834 of 5834 (100%) |
-| Human reviewed | 0 of 5834 (0%) |
-| Unverified | 5834 |
+| Code units | 10323 |
+| Relevant | 5844 |
+| Exempt | 4479 |
+| Assessed | 5844 of 5844 (100%) |
+| Human reviewed | 0 of 5844 (0%) |
+| Unverified | 5844 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5834 |
+| HUMAN_PENDING | 5844 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4477 |
+| EXEMPT | 4479 |
 
 ## 5. Aliases In The Tree
 
@@ -148,7 +148,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Assembler.cs` | 54 | 45 | 9 | 45 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Backend.cs` | 42 | 37 | 5 | 37 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsArm64Walk.cs` | 31 | 18 | 13 | 18 | Low | High | 4/4 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 355 | 232 | 123 | 232 | Low | High | 19/18 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 357 | 234 | 123 | 234 | Low | High | 19/18 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeBackend.cs` | 23 | 12 | 11 | 12 | None | Medium | 4/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNativeCompiler.cs` | 9 | 7 | 2 | 7 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsNumericAdmission.cs` | 14 | 12 | 2 | 12 | None | High | 5/5 |
@@ -186,7 +186,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs` | 54 | 25 | 29 | 25 | Low | Critical | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` | 70 | 45 | 25 | 45 | Low | Critical | 11/11 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNumericManifest.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 173 | 25 | 148 | 25 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 175 | 25 | 150 | 25 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 226 | 129 | 97 | 129 | Medium | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 12 | 12 | 0 | 12 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.cs` | 12 | 12 | 0 | 12 | Low | Medium | 0/0 |
@@ -206,7 +206,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs` | 28 | 20 | 8 | 20 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` | 62 | 33 | 29 | 33 | Low | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript/JsArray.cs` | 19 | 14 | 5 | 14 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` | 205 | 204 | 1 | 204 | Low | Critical | 205/205 |
+| `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` | 207 | 206 | 1 | 206 | Low | Critical | 207/207 |
 | `src/Broiler.VM.Profile.JavaScript/JsBigInt.cs` | 55 | 51 | 4 | 51 | Low | High | 24/24 |
 | `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 80 | 53 | 27 | 53 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/JsClone.cs` | 92 | 30 | 62 | 30 | Low | High | 6/6 |
@@ -268,7 +268,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.cs` | 27 | 18 | 9 | 18 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsUnicodeNormalization.g.cs` | 9 | 1 | 8 | 1 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsValue.cs` | 53 | 32 | 21 | 32 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` | 437 | 436 | 1 | 436 | Low | Critical | 437/437 |
+| `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` | 443 | 442 | 1 | 442 | Low | Critical | 443/443 |
 | `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` | 14 | 11 | 3 | 11 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.JavaScript/JsValueStack.cs` | 12 | 9 | 3 | 9 | Low | Critical | 7/7 |
 | `src/Broiler.VM.Profile.JavaScript/JsValueWindows.cs` | 14 | 14 | 0 | 14 | Low | Critical | 14/14 |
@@ -1244,7 +1244,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the two settings produce a different JavaScript answer for any program
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Table` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=Critical, Spec=none cited, `FD6363`, PENDING
   - Falsified if: this is non-zero while a defined opcode's slot holds anything but that opcode's own entry point, or an undefined byte's slot holds anything but the refusing one
-- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.JsBaselineHandlers()` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=Critical, Spec=none cited, `7C1BF6`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.JsBaselineHandlers()` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=Critical, Spec=none cited, `F477FF`, PENDING
   - Falsified if: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Sound(nint[], nint)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=Critical, Spec=none cited, `131DD4`, PENDING
   - Falsified if: this answers true for a table in which two defined opcodes share an entry point, a defined opcode has the refusing one, or an undefined byte has any other
@@ -1532,6 +1532,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this runs anything other than a block step starting at one ThrowReferenceError at the offset the managed side expects
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GetTemplateObjectWide(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `96DF75`, PENDING
   - Falsified if: this runs anything other than a block step starting at one GetTemplateObjectWide at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.GetObjectBinding(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `F40841`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one GetObjectBinding at the offset the managed side expects
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.SetObjectBinding(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `7A5DE9`, PENDING
+  - Falsified if: this runs anything other than a block step starting at one SetObjectBinding at the offset the managed side expects
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeStep(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `098985`, PENDING
   - Falsified if: this runs any instruction other than one DisposeStep at the offset the managed side expects
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeEnd(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, Spec=none cited, `2C6414`, PENDING
@@ -1876,7 +1880,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an async generator whose body is on the interpreter's stack is resumed again, or an `await` inside an async generator body settles a request the way a `yield` does
 - `Broiler.VM.Profile.JavaScript.JsEngine.Execute(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?, string?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `AAA100`, PENDING
   - Falsified if: a program whose form differs from the engine's reaches ExecuteCore or emitted code
-- `Broiler.VM.Profile.JavaScript.JsEngine.ExecuteCore<TMode>(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?, JsNativeActivation?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `3767CE`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.ExecuteCore<TMode>(JsProgram, int, JsEnvironment?, JsValue, JsValue[], JsScriptFunction?, JsValue, JsCell?, JsFrame?, JsNativeActivation?)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `B3BECB`, PENDING
   - Falsified if: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
 - `Broiler.VM.Profile.JavaScript.JsEngine.Land(System.Collections.Generic.List<JsEnvironment>, JsValue[], ref int, ref int, JsRegion, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `47E854`, PENDING
   - Falsified if: a landing keeps a scope deeper than its region's, leaves the stack at any height but the region's plus the value, or resumes anywhere but the region's handler
@@ -2282,7 +2286,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an emitted call through this table reaches code other than one value step of the instruction its slot is named for or the refusing entry point
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.Table` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, Spec=none cited, `FD6363`, PENDING
   - Falsified if: this is non-zero while a defined opcode's slot holds anything but that opcode's own entry point, or an undefined byte's slot holds anything but the refusing one
-- `Broiler.VM.Profile.JavaScript.JsValueHelpers.JsValueHelpers()` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, Spec=none cited, `E285CF`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.JsValueHelpers()` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, Spec=none cited, `366577`, PENDING
   - Falsified if: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.Sound(nint[], nint)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=Critical, Spec=none cited, `16E5DF`, PENDING
   - Falsified if: this answers true for a table in which two defined opcodes or two fixed slots share an entry point, a defined opcode has the refusing one or a fixed slot's, a fixed slot is a defined opcode's or holds the refusing entry or nothing, or another undefined byte has anything but the refusing one
@@ -2580,6 +2584,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this runs anything other than one ThrowReferenceError at the offset the managed side expects, through its own step
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.GetTemplateObjectWide(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, Spec=none cited, `E0FAB1`, PENDING
   - Falsified if: this runs anything other than one GetTemplateObjectWide at the offset the managed side expects, through its own step
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.GetObjectBinding(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, Spec=none cited, `E5A5C6`, PENDING
+  - Falsified if: this runs anything other than one GetObjectBinding at the offset the managed side expects, through its own step
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.SetObjectBinding(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, Spec=none cited, `CA4D4D`, PENDING
+  - Falsified if: this runs anything other than one SetObjectBinding at the offset the managed side expects, through its own step
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNop` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, Spec=none cited, `EE2A74`, PENDING
   - Falsified if: this mode names an opcode other than Nop
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNop.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, Spec=none cited, `D7D8F6`, PENDING
@@ -3152,6 +3160,14 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this mode names an opcode other than GetTemplateObjectWide
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetTemplateObjectWide.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, Spec=none cited, `4A1EA7`, PENDING
   - Falsified if: this answers any opcode other than GetTemplateObjectWide
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetObjectBinding` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, Spec=none cited, `CDD95E`, PENDING
+  - Falsified if: this mode names an opcode other than GetObjectBinding
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmGetObjectBinding.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, Spec=none cited, `9D13AD`, PENDING
+  - Falsified if: this answers any opcode other than GetObjectBinding
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSetObjectBinding` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, Spec=none cited, `D0865B`, PENDING
+  - Falsified if: this mode names an opcode other than SetObjectBinding
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmSetObjectBinding.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, Spec=none cited, `A4190C`, PENDING
+  - Falsified if: this answers any opcode other than SetObjectBinding
 - `Broiler.VM.Profile.JavaScript.JsValueSlab` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, Spec=none cited, `778523`, PENDING
   - Falsified if: a live word of some frame is not visited by Scan, or a word past a frame's published live length or past the top is visited
 - `Broiler.VM.Profile.JavaScript.JsValueSlab.Headroom` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, Spec=none cited, `02A8CF`, PENDING
@@ -4076,7 +4092,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5700 of the 5834 assessed units declare
+That is not a figure of speech. 5710 of the 5844 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

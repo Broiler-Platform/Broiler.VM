@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 122
+runs|0|# Completed: 123
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -934,3 +934,8 @@ refused/a-bigint-literal-under-a-narrow-manifest.js|0|9007199254740993
 # equivalent strings. Every value is the comparison engine's `node -p` *(JSC-242)*.
 runs/unicode-default-case-conversion.js|0|SS / FF / ʼN / ἈΙ / ας / σς / σ / ας. / ασ́β / ας́ / 2 / I / Ǆǆ / true / 2 / SS / ας / false / true / false
 runs/locale-compare-canonical-equivalence.js|0|0 / 0 / 0 / 0 / -1 / 1 / 0 / 0
+
+# A NAME IN A `with` BODY IS RESOLVED ONCE (2026-10-03). The reference is resolved before the
+# right-hand side and written back through, as an object environment record writes its binding. The
+# values are the specification's; the comparison engine resolves again at the write *(JSC-243)*.
+runs/a-with-reference-resolved-once.js|0|6:0 / 6:0 / 1 / 2:10 / 5:7 / 9:0 / 4

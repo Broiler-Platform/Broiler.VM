@@ -7347,7 +7347,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=3767CE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=B3BECB
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -7950,6 +7950,42 @@ internal sealed partial class JsEngine
                             var value = stack[--sp];
                             var target = stack[--sp];
                             SetProperty(target, names[U16(code, pc)], value, strict);
+                            stack[sp++] = value;
+                            pc += 3;
+                            break;
+                        }
+
+                        // AN OBJECT ENVIRONMENT RECORD'S BINDING, read and written as the record
+                        // does it rather than as a property access: the property is asked for again,
+                        // and one a getter or `Symbol.unscopables` removed since the search is a
+                        // ReferenceError in strict code (GetBindingValue, SetMutableBinding).
+                        case JsOpcode.GetObjectBinding:
+                        {
+                            var name = names[U16(code, pc)];
+                            var holder = stack[sp - 1].AsObject();
+
+                            stack[sp - 1] = HasProperty(holder, name)
+                                ? GetProperty(stack[sp - 1], name)
+                                : strict
+                                    ? ThrowReferenceError(name + " is not defined")
+                                    : JsValue.Undefined;
+
+                            pc += 3;
+                            break;
+                        }
+
+                        case JsOpcode.SetObjectBinding:
+                        {
+                            var name = names[U16(code, pc)];
+                            var value = stack[--sp];
+                            var target = stack[--sp];
+
+                            if (strict && !HasProperty(target.AsObject(), name))
+                            {
+                                ThrowReferenceError(name + " is not defined");
+                            }
+
+                            SetProperty(target, name, value, strict);
                             stack[sp++] = value;
                             pc += 3;
                             break;

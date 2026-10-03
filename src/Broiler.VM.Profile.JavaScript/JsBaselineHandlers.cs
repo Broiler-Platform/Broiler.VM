@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   204
-// Annotated:        204/204
+// Relevant units:   206
+// Annotated:        206/206
 // Exempt:           1
-// Human-reviewed:   0/204
+// Human-reviewed:   0/206
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         205/205
+// Criteria:         207/207
 // Resource impact:  4/10 max
-// Unverified:       204
+// Unverified:       206
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -82,7 +82,7 @@ internal static unsafe class JsBaselineHandlers
     /// <b>A static constructor and not a module initializer</b>, so the table is built the first time
     /// a baseline instance asks for it and never in a process that runs only bytecode.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=7C1BF6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=F477FF
     // Broiler-Falsified-If: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
     // Broiler-Human:        PENDING
     static JsBaselineHandlers()
@@ -237,6 +237,8 @@ internal static unsafe class JsBaselineHandlers
         slots[(int)JsOpcode.LoadSuperPropertyKeepKey] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&LoadSuperPropertyKeepKey;
         slots[(int)JsOpcode.ThrowReferenceError] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&ThrowReferenceError;
         slots[(int)JsOpcode.GetTemplateObjectWide] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&GetTemplateObjectWide;
+        slots[(int)JsOpcode.GetObjectBinding] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&GetObjectBinding;
+        slots[(int)JsOpcode.SetObjectBinding] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&SetObjectBinding;
         if (!Sound(slots, undefined))
         {
             Table = 0;
@@ -1473,6 +1475,22 @@ internal static unsafe class JsBaselineHandlers
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
     private static int GetTemplateObjectWide(JsBaselineFrame* frame, int pc) =>
         JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.GetTemplateObjectWide);
+
+    /// <summary>The entry point for <see cref="JsOpcode.GetObjectBinding"/> (0xB6): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F40841
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one GetObjectBinding at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int GetObjectBinding(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.GetObjectBinding);
+
+    /// <summary>The entry point for <see cref="JsOpcode.SetObjectBinding"/> (0xB7): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7A5DE9
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one SetObjectBinding at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int SetObjectBinding(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.SetObjectBinding);
 
     /// <summary>The entry point for <see cref="JsOpcode.DisposeStep"/> (0xA3), which runs alone.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=098985

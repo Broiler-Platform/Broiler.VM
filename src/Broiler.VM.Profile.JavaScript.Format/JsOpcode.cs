@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   25
 // Annotated:        25/25
-// Exempt:           148
+// Exempt:           150
 // Human-reviewed:   0/25
 // IP risk:          None
 // Security risk:    Medium
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8BA226
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=391387
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -1415,6 +1415,30 @@ public enum JsOpcode : byte
     /// evaluation.
     /// </remarks>
     GetTemplateObjectWide = 0xB5,
+
+    /// <summary>
+    /// Pop the object a <see cref="ResolveName"/> answered; push the value of the property named by
+    /// constant <c>u16</c> as an object environment record reads its binding.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>GetBindingValue</c> of an object environment record</b>: the property is asked for
+    /// again, and when a getter or a <c>Symbol.unscopables</c> lookup removed it since the search,
+    /// strict code meets a <c>ReferenceError</c> and sloppy code reads <c>undefined</c> - where
+    /// <see cref="GetProperty"/> would read through the prototype chain without asking.
+    /// </remarks>
+    GetObjectBinding = 0xB6,
+
+    /// <summary>
+    /// Pop a value and the object a <see cref="ResolveName"/> answered; write the property named by
+    /// constant <c>u16</c> as an object environment record writes its binding, and push the value.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>SetMutableBinding</c> of an object environment record</b>: when the property is gone
+    /// since the search, strict code meets a <c>ReferenceError</c>, and otherwise the write is
+    /// <c>Set</c> on that same object - so <c>with (o) { x *= 3 }</c> writes <c>o.x</c> even when
+    /// reading <c>x</c> deleted it, which re-resolving the name would not.
+    /// </remarks>
+    SetObjectBinding = 0xB7,
 }
 
 /// <summary>The operand shape that follows an opcode byte.</summary>
@@ -1596,7 +1620,7 @@ public static class JsOpcodes
         ElementIsMethod | ElementIsGetter | ElementIsSetter | ElementIsNamedValue;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=5AE422
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=126109
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1653,7 +1677,7 @@ public static class JsOpcodes
         JsOpcode.DisposeEnd,
         JsOpcode.ToNumeric, JsOpcode.Increment, JsOpcode.Decrement,
         JsOpcode.LoadSuperPropertyKeepKey, JsOpcode.ThrowReferenceError,
-        JsOpcode.GetTemplateObjectWide,
+        JsOpcode.GetTemplateObjectWide, JsOpcode.GetObjectBinding, JsOpcode.SetObjectBinding,
     ];
 
     /// <summary>Whether <paramref name="value"/> is an opcode format version 2 defines.</summary>
@@ -1702,7 +1726,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EE5D73
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=603319
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1752,6 +1776,7 @@ public static class JsOpcodes
         JsOpcode.PushScope or JsOpcode.CopyScope or JsOpcode.DeclareGlobal or
         JsOpcode.NewArray or JsOpcode.ArrayHoles or
         JsOpcode.GetProperty or JsOpcode.SetProperty or JsOpcode.DefineField or
+        JsOpcode.GetObjectBinding or JsOpcode.SetObjectBinding or
         JsOpcode.DeleteProperty or JsOpcode.DefineGetter or JsOpcode.DefineSetter or
         JsOpcode.Closure or
         JsOpcode.LoadArgument or JsOpcode.RestArguments or JsOpcode.RequireCoercible or
@@ -1788,7 +1813,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B5DE74
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=C76FDE
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1894,6 +1919,7 @@ public static class JsOpcodes
 
             case JsOpcode.GetProperty:
             case JsOpcode.DeleteProperty:
+            case JsOpcode.GetObjectBinding:
             case JsOpcode.Negate:
             case JsOpcode.ToNumber:
             case JsOpcode.ToNumeric:
@@ -1923,6 +1949,7 @@ public static class JsOpcodes
             case JsOpcode.GetIndex:
             case JsOpcode.DeleteIndex:
             case JsOpcode.SetProperty:
+            case JsOpcode.SetObjectBinding:
             case JsOpcode.Add:
             case JsOpcode.Subtract:
             case JsOpcode.Multiply:

@@ -10466,3 +10466,44 @@ file list, the measured table size, and the two stated differences that waited o
 - No milestone or stage moves; JSD-0027 and JSD-0031 stay unsigned.
 
 **Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-243
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s lowering of a name
+inside a `with` body, as `JsCompiler.StoreName` and `EmitDynamicName` describe it: "a write asks the
+same objects a read asks", once for the read and again for the write.
+
+**What the plan said.** A read of a name in a `with` body searches the objects and falls back to the
+static address; a write is the read's shape with `SetProperty` where `GetProperty` was. Each
+occurrence searches again, after the value it writes has been computed.
+
+**What replaced it, observed on 2026-10-03.**
+- **An assignment resolves its reference once, before anything else.** A plain assignment searches
+  before its right-hand side; a compound assignment and an update search once, read through the
+  object found, and write back to that object. Re-resolving at the write wrote the enclosing variable
+  when a getter on the `with` object had deleted the property, or when the right-hand side had added
+  the name to a nearer object. The comparison engine has the same defect, so these rows declare the
+  specification's answer rather than its.
+- **Two instructions read and write an object environment record's binding:**
+  `GetObjectBinding` (`0xB6`) and `SetObjectBinding` (`0xB7`). Each asks for the property again and,
+  in strict code, throws a `ReferenceError` when a getter or a `Symbol.unscopables` lookup has removed
+  it since the search (`GetBindingValue`, `SetMutableBinding`). Every read in a `with` body now uses
+  the first.
+- **test262:** over `test/language/expressions`, `statements`, `eval-code`, `identifier-resolution`,
+  `global-code` and `test/annexB`, 68 variants moved from failing to passing and none moved back. They
+  are `S11.13.1_A5`/`A6`, `S11.13.2_A5`/`A6`, the four update expressions' `A5`, and six `with`
+  statement cases (the proxy-environment reads, the strict-mode deleted bindings, and
+  `unscopables-inc-dec`).
+
+- **Three retained corpus entries were re-derived**, `eval-scopes-a-function-site-the-lowering-wrote`,
+  `eval-scopes-a-function-body-site-the-lowering-wrote` and `eval-scopes-a-site-no-provider-answers`:
+  a function's eval-introduced variables are searched as a `with` object is, so their reads now lower
+  to `GetObjectBinding`. Their recorded answers are unchanged, and every other entry re-derives byte
+  for byte.
+
+**What must not be read as repaired.**
+- A logical assignment, a `for … in`/`for … of` head and a destructuring target in a `with` body
+  still resolve at the write.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
