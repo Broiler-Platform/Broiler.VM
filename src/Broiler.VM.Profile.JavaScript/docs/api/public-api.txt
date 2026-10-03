@@ -1422,6 +1422,7 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.value__ : System.Int32
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer..ctor(System.String source) : void
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Diagnostics : System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic> { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.HtmlLikeComments : System.Boolean { get; set; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Tokenize() : Broiler.VM.Profile.JavaScript.Compiler.SliceToken[]
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Operator, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Operand) : void
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression
@@ -2198,6 +2199,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Swap : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 115
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Throw : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 99
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ThrowImmutable : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 110
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ThrowReferenceError : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 180
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ToNumber : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 71
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ToNumeric : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 176
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ToPropertyKey : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 93

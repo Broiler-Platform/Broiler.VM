@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   42
 // Annotated:        42/42
-// Exempt:           100
+// Exempt:           102
 // Human-reviewed:   0/42
 // IP risk:          Low
 // Security risk:    High
@@ -424,13 +424,35 @@ public sealed class SliceTokenizer
     public SliceTokenizer(string source) =>
         this.source = source ?? throw new System.ArgumentNullException(nameof(source));
 
+    /// <summary>
+    /// Whether Annex B's HTML-like comments are comments: <c>&lt;!--</c> anywhere, and <c>--&gt;</c>
+    /// where only whitespace and comments precede it on its line, each running to the line's end.
+    /// </summary>
+    /// <remarks>
+    /// <b>The script goal of the wide surface admits them and a module never does</b>, which is the
+    /// language's own split (JSP-7, JSC-239): a module's source is not web script text. Without them
+    /// <c>x &lt;!-- y</c> was read as <c>x &lt; !(--y)</c> - a program the file does not contain -
+    /// and a line opening with <c>--&gt;</c> was a decrement and a comparison.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=582642
+    // Broiler-Human:        PENDING
+    public bool HtmlLikeComments { get; init; }
+
+    /// <summary>
+    /// Whether nothing but whitespace and comments has been read since the last line terminator or
+    /// the start of the source, which is where <c>--&gt;</c> may open a comment.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=995FC5
+    // Broiler-Human:        PENDING
+    private bool lineHasOnlyTrivia = true;
+
     /// <summary>Every refusal this pass produced, in source order.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=162F14
     // Broiler-Human:        PENDING
     public System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics => diagnostics;
 
     /// <summary>Reads every token, ending with one <see cref="SliceTokenKind.EndOfSource"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=7C304A
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=F54E96
     // Broiler-Falsified-If: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
     // Broiler-Human:        PENDING
     public SliceToken[] Tokenize()
@@ -468,6 +490,7 @@ public sealed class SliceTokenizer
             }
 
             tokens.Add(token);
+            lineHasOnlyTrivia = false;
 
             // The regular-expression heuristic reads this, and it is set HERE rather than inside
             // each reader so that exactly one assignment can be wrong.
@@ -526,7 +549,7 @@ public sealed class SliceTokenizer
     }
 
     /// <summary>Skips whitespace and comments; answers whether a line terminator was among them.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CED953
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=370D8B
     // Broiler-Human:        PENDING
     private bool SkipTrivia()
     {
@@ -539,6 +562,7 @@ public sealed class SliceTokenizer
             if (IsLineTerminator(c))
             {
                 sawNewline = true;
+                lineHasOnlyTrivia = true;
                 AdvanceLine(c);
                 continue;
             }
@@ -546,6 +570,24 @@ public sealed class SliceTokenizer
             if (IsWhiteSpace(c))
             {
                 index++;
+                continue;
+            }
+
+            // ANNEX B'S TWO HTML-LIKE COMMENTS, each to the end of its line like `//`: `<!--`
+            // wherever a token could start, and `-->` only where its line has held nothing but
+            // whitespace and comments - the start of the source counts, and so does the end of a
+            // block comment that crossed a line.
+            if (HtmlLikeComments &&
+                ((c == '<' && string.CompareOrdinal(source, index, "<!--", 0, 4) == 0) ||
+                    (lineHasOnlyTrivia && c == '-' && string.CompareOrdinal(source, index, "-->", 0, 3) == 0)))
+            {
+                index += c == '<' ? 4 : 3;
+
+                while (index < source.Length && !IsLineTerminator(source[index]))
+                {
+                    index++;
+                }
+
                 continue;
             }
 
@@ -582,6 +624,7 @@ public sealed class SliceTokenizer
                         // A multi-line comment counts as a line terminator for semicolon
                         // insertion, which is a rule a reader forgets and a parser must not.
                         sawNewline = true;
+                        lineHasOnlyTrivia = true;
                         AdvanceLine(source[index]);
                         continue;
                     }

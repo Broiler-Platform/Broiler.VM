@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   430
-// Annotated:        430/430
+// Relevant units:   433
+// Annotated:        433/433
 // Exempt:           1
-// Human-reviewed:   0/430
+// Human-reviewed:   0/433
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         431/431
+// Criteria:         434/434
 // Resource impact:  4/10 max
-// Unverified:       430
+// Unverified:       433
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,7 +58,7 @@ internal static unsafe class JsValueHelpers
     /// <b>A static constructor and not a module initializer</b>, so the table is built the first time a
     /// value-form instance asks for it and never in a process that runs no value form.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=5614B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=4; Fingerprint=33E1B4
     // Broiler-Falsified-If: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
     // Broiler-Human:        PENDING
     static JsValueHelpers()
@@ -207,6 +207,7 @@ internal static unsafe class JsValueHelpers
         slots[(int)JsOpcode.Increment] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Increment;
         slots[(int)JsOpcode.Decrement] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Decrement;
         slots[(int)JsOpcode.LoadSuperPropertyKeepKey] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&LoadSuperPropertyKeepKey;
+        slots[(int)JsOpcode.ThrowReferenceError] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&ThrowReferenceError;
 
         slots[JsValueAbi.SettleSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, int>)&Settle;
         slots[JsValueAbi.PrepareSlot] = (nint)(delegate* unmanaged<JsValueFrame*, int, JsValueFrame*, int>)&Prepare;
@@ -1448,6 +1449,14 @@ internal static unsafe class JsValueHelpers
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
     private static int LoadSuperPropertyKeepKey(JsValueFrame* frame, int pc) =>
         JsNativeActivation.StepValue<ArmLoadSuperPropertyKeepKey>(frame, pc, JsOpcode.LoadSuperPropertyKeepKey);
+
+    /// <summary>The entry point for <see cref="JsOpcode.ThrowReferenceError"/> (0xB4): one value step of it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=4C9A58
+    // Broiler-Falsified-If: this runs anything other than one ThrowReferenceError at the offset the managed side expects, through its own step
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int ThrowReferenceError(JsValueFrame* frame, int pc) =>
+        JsNativeActivation.StepValue<ArmThrowReferenceError>(frame, pc, JsOpcode.ThrowReferenceError);
 
     /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.Nop"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=EE2A74
@@ -3984,6 +3993,24 @@ internal static unsafe class JsValueHelpers
             [System.Runtime.CompilerServices.MethodImpl(
                 System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
             get => JsOpcode.LoadSuperPropertyKeepKey;
+        }
+    }
+
+    /// <summary>The one-instruction mode that runs the arm of <see cref="JsOpcode.ThrowReferenceError"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=BAC3E4
+    // Broiler-Falsified-If: this mode names an opcode other than ThrowReferenceError
+    // Broiler-Human:        PENDING
+    internal readonly struct ArmThrowReferenceError : IJsExecutionMode
+    {
+        /// <summary>Always <see cref="JsOpcode.ThrowReferenceError"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=72968C
+        // Broiler-Falsified-If: this answers any opcode other than ThrowReferenceError
+        // Broiler-Human:        PENDING
+        public static JsOpcode Opcode
+        {
+            [System.Runtime.CompilerServices.MethodImpl(
+                System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+            get => JsOpcode.ThrowReferenceError;
         }
     }
 }

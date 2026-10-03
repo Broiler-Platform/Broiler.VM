@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-03 (JSP-4, JSP-5 and JSP-6 observation; milestone rows unchanged)
+**Last updated:** 2026-10-03 (JSP-4 to JSP-7 observations; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -499,6 +499,18 @@ The rest of each gate already held. [Record JSP-MECH-001](../../../docs/evidence
 retains each change's control and the pinned test262 subtrees either side. This is unreviewed
 implementation and validation material, not accepted milestone evidence; the stages have no owner
 and no milestone row advances.
+
+**JSP-7 observation, 2026-10-03.** Every item of the parity roadmap's JSP-7 gate has a change and a
+fixture. The `Uint8Array` base64 and hex members and the reviver's source text are admitted; `Annex B`
+is admitted whole in the script goal, its members and its three syntax features with it; `cleanupSome`
+is removed; and `Error.prototype.stack` is declined by name in a new subsection of the roadmap's
+section 6, which states the `Annex B` rule and names every other surface of the edition the realm
+declines. A scan of the pinned edition found `Error.isError`, `WeakMap`'s `getOrInsert` pair and
+`RegExp.prototype.unicodeSets` missing too, and they are present
+([JSC-239](roadmap.corrections.md#jsc-239)). [Record JSP-7-001](../../../docs/evidence/jsp-7-001/README.md)
+retains each change's control and the pinned test262 subtrees either side. This is unreviewed
+implementation and validation material, not accepted milestone evidence; JSP-7 has no owner and no
+milestone row advances.
 
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:

@@ -10236,3 +10236,73 @@ them the `node` declarations on cases 295 and 301 of `the-general-surface.js`.
 
 **Authority and date.** The implementation of 2026-10-03 in this checkout and
 [record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md). 2026-10-03.
+
+### JSC-239
+
+**Where:** the parity roadmap's [section 4.3](roadmap.parity.md#43-the-types-and-surfaces-that-are-absent)
+and its 2026-09-29 list of what was still absent, the `cleanupSome` bullet of
+[section 4.7](roadmap.parity.md#47-where-the-profile-contradicts-itself), and
+[JSP-7](roadmap.parity.md#jsp-7--the-surfaces-that-are-absent-without-being-declared)'s gate. With them
+[section 6 of the roadmap](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted), which
+gains the subsection the gate's Annex B clause asks for.
+
+**What the plan said.**
+- The `Uint8Array` base64 and hex methods, the reviver's source-text argument, `Error.prototype.stack`,
+  and the `Annex B` `String` HTML-tag family, `trimLeft`, `trimRight`, `getYear`, `setYear` and
+  `toGMTString` were absent, while `escape` was present, "so the surface is admitted in part without a
+  rule saying which part".
+- `FinalizationRegistry.prototype.cleanupSome` is shipped and is not in the language.
+- `Error.isError` was absent, and the 2026-09-29 list added that the comparison engine lacks it too.
+
+**What replaced it, observed on 2026-10-03.**
+- **A scan of the pinned edition.** Every built-in property the archived ES2026 text defines was asked
+  of the realm. Beyond the gate's list it found four members of the edition missing without a word:
+  `Error.isError`, `WeakMap.prototype.getOrInsert` and `getOrInsertComputed`, and
+  `RegExp.prototype.unicodeSets`. `Atomics` and `SharedArrayBuffer` were the only other gaps, and the
+  ledger's block declares both.
+- **Admitted.**
+  - The six `Uint8Array` codecs: `fromBase64`, `fromHex`, `toBase64`, `toHex`, `setFromBase64` and
+    `setFromHex`, each the specification's algorithm. A decode that fails part way writes what it
+    decoded and then throws.
+  - `JSON.parse`'s reviver receives a context object. For a primitive the parse produced, its `source`
+    is the text as written; an object, an Array and a value a reviver already replaced have none.
+  - `Error.isError`, which asks for the error slot and not the prototype chain.
+  - `WeakMap.prototype.getOrInsert` and `getOrInsertComputed`.
+  - `RegExp.prototype.unicodeSets`, which answers `false` for every RegExp, since none here can carry
+    `v`.
+- **Annex B is admitted whole, in the script goal, and the rule is written down** in section 6 of the
+  roadmap. Its members:
+  - the thirteen HTML methods;
+  - `trimLeft` and `trimRight` as the very function objects `trimStart` and `trimEnd` are;
+  - `getYear`, `setYear`, and `toGMTString` as `toUTCString` itself;
+  - `RegExp.prototype.compile`.
+
+  The scan of Annex B found three syntax features as well, and each is repaired:
+  - **HTML-like comments.** `<!--` and a line-leading `-->` are comments in a script. `1 <!-- 2` was
+    read as `1 < !(--2)`, a program the file does not contain. A module still reads them as
+    operators, as the language does.
+  - **The `for (var x = 1 in o)` initialiser.** The parser admitted it and the lowering dropped the
+    value, so `x` was `undefined` after a loop that ran no iteration — a wrong value rather than a
+    refusal.
+  - **A call as an assignment target in non-strict code.** It now runs the call and throws a
+    `ReferenceError`, without converting the result or evaluating the right-hand side. That took a new
+    instruction, `ThrowReferenceError` (`0xB4`). The program was refused at compile time, which is
+    strict code's answer.
+- **Removed.** `FinalizationRegistry.prototype.cleanupSome`, as decision record 0029's D03-b
+  recommended. `typeof registry.cleanupSome` answers `"undefined"`, as the language does.
+- **Declined by name.** `Error.prototype.stack` is not a member of the edition. Section 6 names it
+  with the answer a program meets: no error has an own `stack` and nothing it inherits carries one.
+  The same table names the `v` flag, `Intl`, `Temporal`, the shared-memory pair, the registry's
+  cleanup and a function's source text.
+- **The comparison engine is not the oracle for every row.** Node 22 has neither `Error.isError`,
+  `WeakMap`'s pair nor the `Uint8Array` codecs, so those rows' values come from the specification's
+  algorithms. Node 22 gives every error an own `stack`, which this host declines.
+
+**What must not be read as repaired.**
+- Rule N24 reads claims that a global is absent. Nothing reads section 6's table against the realm,
+  so a member declined there that later appears would be stale without a rule saying so.
+- Four Annex B RegExp variants of the pinned suite spend their allowance before they decide.
+- JSP-7 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-7-001](../../../docs/evidence/jsp-7-001/README.md). 2026-10-03.

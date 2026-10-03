@@ -1187,7 +1187,12 @@ public sealed class ReviewRecordRuleTests
         // WasmReferenceNumerics.cs. Nothing executes through it, and it reads and writes a caller's
         // bytes at a guest-shaped address, which is a reason to read it. It is covered on the same terms
         // as every other product file, and nothing in it has been read by a human.
-        Assert.Equal(235, AssuranceSources.Files.Count);
+        //
+        // AND THE JAVASCRIPT PROFILE'S Uint8Array CODECS, JsRealm.Base64.cs, from the parity roadmap's
+        // JSP-7: the edition's base64 and hex members, which decode a guest's String into a guest's
+        // buffer and are therefore a parser over untrusted text. It is covered on the same terms as
+        // every other product file, and nothing in it has been read by a human.
+        Assert.Equal(236, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

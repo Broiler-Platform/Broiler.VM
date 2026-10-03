@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 235 |
-| Files carrying an annotation | 235 |
-| Code units | 10244 |
-| Relevant | 5785 |
-| Exempt by predicate | 4459 |
-| Annotated | 5785 of 5785 (100%) |
-| Human reviewed | 0 of 5785 (0%) |
-| Unverified | 5785 |
+| Files scanned | 236 |
+| Files carrying an annotation | 236 |
+| Code units | 10285 |
+| Relevant | 5815 |
+| Exempt by predicate | 4470 |
+| Annotated | 5815 of 5815 (100%) |
+| Human reviewed | 0 of 5815 (0%) |
+| Unverified | 5815 |
 
 ## Review states
 
@@ -28,19 +28,19 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5785 |
+| HUMAN_PENDING | 5815 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4459 |
+| EXEMPT | 4470 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1551 |
-| Low | 5377 |
-| Medium | 82 |
+| None | 1554 |
+| Low | 5413 |
+| Medium | 83 |
 | High | 0 |
 | Unknown | 0 |
 | *not annotated* | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 9 |
-| Low | 954 |
-| Medium | 4214 |
-| High | 1580 |
+| Low | 955 |
+| Medium | 4249 |
+| High | 1584 |
 | Critical | 253 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.7 / 10 |
-| Units scored | 5785 |
+| Units scored | 5815 |
 
 ## High-security review areas
 
@@ -646,6 +646,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Increment(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.Decrement(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.LoadSuperPropertyKeepKey(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.ThrowReferenceError(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeStep(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.DisposeEnd(JsBaselineFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsBaselineHandlers.StepCall` in `src/Broiler.VM.Profile.JavaScript/JsBaselineHandlers.cs` - Security=High, human line PENDING
@@ -1166,6 +1167,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.Increment(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.Decrement(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.LoadSuperPropertyKeepKey(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ThrowReferenceError(JsValueFrame*, int)` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNop` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmNop.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadUndefined` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
@@ -1448,6 +1450,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmDecrement.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadSuperPropertyKeepKey` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmLoadSuperPropertyKeepKey.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmThrowReferenceError` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsValueHelpers.ArmThrowReferenceError.Opcode` in `src/Broiler.VM.Profile.JavaScript/JsValueHelpers.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueSlab` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueSlab.Headroom` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsValueSlab.TryPushFrame(int, out int)` in `src/Broiler.VM.Profile.JavaScript/JsValueSlab.cs` - Security=High, human line PENDING
@@ -1904,8 +1908,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 1967 |
-| Units required to carry one | 1833 |
+| Units carrying a criterion | 1971 |
+| Units required to carry one | 1837 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -1932,14 +1936,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 1387 |
+| TrivialPropertyOrAccessor | 1395 |
 | ParameterAssigningConstructor | 162 |
-| TrivialExpressionBodiedMember | 64 |
+| TrivialExpressionBodiedMember | 65 |
 | CompilerSuppliedRecordOrEnumMember | 15 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 780 |
-| EnumMemberOfADeclaredVocabulary | 1899 |
+| FieldDeclaringStorage | 781 |
+| EnumMemberOfADeclaredVocabulary | 1900 |
 | DeclaredInSource | 31 |
 
 ## Per-unit exemptions
@@ -1989,7 +1993,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10244 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10285 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -1997,7 +2001,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 235 of them - with a
+Beside the units it lists **every covered file** - 236 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

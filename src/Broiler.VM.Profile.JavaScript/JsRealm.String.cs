@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
+// Relevant units:   23
+// Annotated:        23/23
 // Exempt:           0
-// Human-reviewed:   0/21
+// Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  4/10 max
-// Unverified:       21
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -56,7 +56,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FB076A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CA8F68
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -499,6 +499,26 @@ internal sealed partial class JsRealm
             _ = arguments;
             return JsValue.String(StringTrimEnds(engine, StringThis(engine, thisValue), false, true));
         });
+
+        // ANNEX B'S TWO OLD NAMES ARE THE SAME FUNCTION OBJECTS AS THE NEW ONES, as the language
+        // says: `trimLeft === trimStart` and `trimLeft.name` is "trimStart" (JSP-7, JSC-239).
+        StringAlias(prototype, "trimLeft", "trimStart");
+        StringAlias(prototype, "trimRight", "trimEnd");
+
+        // ANNEX B'S HTML METHODS, every one of them (JSP-7, JSC-239). The realm admits the whole of
+        // Annex B.2 rather than the part of it someone happened to write, which is the rule
+        // section 6 of the roadmap now states; each is `CreateHTML` with its tag and attribute.
+        foreach (var (name, tag, attribute) in new (string, string, string)[]
+        {
+            ("anchor", "a", "name"), ("big", "big", ""), ("blink", "blink", ""), ("bold", "b", ""),
+            ("fixed", "tt", ""), ("fontcolor", "font", "color"), ("fontsize", "font", "size"),
+            ("italics", "i", ""), ("link", "a", "href"), ("small", "small", ""),
+            ("strike", "strike", ""), ("sub", "sub", ""), ("sup", "sup", ""),
+        })
+        {
+            Method(prototype, name, attribute.Length == 0 ? 0 : 1, (engine, thisValue, arguments) =>
+                JsValue.String(StringCreateHtml(engine, thisValue, tag, attribute, ArgOfString(arguments, 0))));
+        }
 
         Method(prototype, "split", 2, static (engine, thisValue, arguments) =>
         {
@@ -1005,6 +1025,55 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private static void StringCharge(JsEngine engine, int units) =>
         engine.Charge(units <= 0 ? 1UL : (ulong)units);
+
+    /// <summary>
+    /// Defines <paramref name="alias"/> on <paramref name="host"/> as the very function object
+    /// <paramref name="name"/> already holds.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=91ADF7
+    // Broiler-Human:        PENDING
+    private static void StringAlias(JsObject host, string alias, string name)
+    {
+        _ = host.TryGetOwnProperty(name, out var existing);
+
+        host.SetOwnProperty(
+            alias,
+            JsProperty.Data(existing.Value, JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+    }
+
+    /// <summary>
+    /// Annex B's <c>CreateHTML</c>: the receiver's text wrapped in <paramref name="tag"/>, with
+    /// <paramref name="attribute"/> set to <paramref name="value"/> when there is one.
+    /// </summary>
+    /// <remarks>
+    /// The receiver is converted before the value, and a <c>"</c> in the value is written as
+    /// <c>&amp;quot;</c>, which is the whole of the escaping the language does: nothing else in either
+    /// text is touched.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0AD7F3
+    // Broiler-Human:        PENDING
+    private static string StringCreateHtml(
+        JsEngine engine, JsValue thisValue, string tag, string attribute, JsValue value)
+    {
+        var text = StringThis(engine, thisValue);
+        var opened = new System.Text.StringBuilder().Append('<').Append(tag);
+
+        if (attribute.Length != 0)
+        {
+            var written = engine.ToStringValue(value);
+            StringCharge(engine, written.Length);
+
+            opened
+                .Append(' ')
+                .Append(attribute)
+                .Append("=\"")
+                .Append(written.Replace("\"", "&quot;", System.StringComparison.Ordinal))
+                .Append('"');
+        }
+
+        StringCharge(engine, text.Length);
+        return opened.Append('>').Append(text).Append("</").Append(tag).Append('>').ToString();
+    }
 
     /// <summary>
     /// The receiver of a <c>String.prototype</c> method, as a String.

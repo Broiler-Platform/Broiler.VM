@@ -332,6 +332,14 @@ JSeal slices added about half of it from 2026-09-21 on, under proposed, unsigned
 Rule N24 reads this section, and the survey above is inside a span marked as written, because it
 states in the present tense names the realm now publishes.
 
+**What changed on 2026-10-03** *(corrected: [JSC-239](roadmap.corrections.md#jsc-239))*. Of the
+2026-09-29 list's second group, the `Uint8Array` codecs, the reviver's source text, the `Annex B`
+members and `Error.isError` are present; `Error.prototype.stack` is declined by name in section 6 of
+the roadmap, with the answer a program meets. A scan of the pinned edition found three more members
+missing without a word, now present: `WeakMap`'s `getOrInsert` and `getOrInsertComputed`, and
+`RegExp.prototype.unicodeSets`. What section 6 declines, beside the ledger's block, is the whole of
+what the realm does not have of the edition.
+
 ### 4.4 The mechanisms the realm publishes and does not honour
 
 **This is the largest kind, and none of it is visible as an absence.** Each of these is a protocol
@@ -864,6 +872,22 @@ a milestone with a ledger row.
   proposed decisions. Local implementation in the working tree, validated as recorded in the named
   `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
   moves.
+- **2026-10-03 implementation note:** every item of the gate has a change and a fixture in
+  `src/tests/cli`:
+  - admitted: the `Uint8Array` base64 and hex members, the reviver's context and its `source`, and
+    every `Annex B` member and syntax feature — the `String` and `Date` members, `RegExp.prototype.compile`,
+    HTML-like comments, the `for … in` initialiser and a call as an assignment target in non-strict
+    code;
+  - declined by name, with the answer a program meets: `Error.prototype.stack`, in a new subsection of
+    section 6 of the roadmap that also states the `Annex B` rule — admitted whole, in the script goal;
+  - removed: `FinalizationRegistry.prototype.cleanupSome`.
+
+  A scan of the pinned edition found `Error.isError`, `WeakMap`'s `getOrInsert` pair and
+  `RegExp.prototype.unicodeSets` missing as well, and each is present now. The `Array.prototype.toLocaleString`
+  and options-bag items were already repaired *(corrected: [JSC-239](roadmap.corrections.md#jsc-239))*.
+  Local implementation in the working tree, validated as recorded in
+  [record JSP-7-001](../../../docs/evidence/jsp-7-001/README.md); unreviewed, not accepted evidence,
+  and no milestone or stage moves.
 - **Objective.** Every surface this profile does not have is named somewhere a reader and a rule can
   find, with its deterministic failure.
 - **Waits on.** [JSW-6](roadmap.workloads.md#jsw-6--the-core-library-still-absent-from-the-realm) for

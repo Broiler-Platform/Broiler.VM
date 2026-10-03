@@ -7324,7 +7324,7 @@ internal sealed partial class JsEngine
     /// instruction pointer are integers and are handed back when the step stops.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=A040BA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=590C02
     // Broiler-Falsified-If: an instantiation over a per-opcode step mode runs more or fewer than one charged instruction per call, the block instantiation stops anywhere but at the first boundary after its first instruction at which JsBaselineBlocks.StopsAfter holds, or the interpreted instantiation behaves differently from the loop before it was made generic
     // Broiler-Human:        PENDING
     internal JsValue ExecuteCore<TMode>(
@@ -8821,6 +8821,14 @@ internal sealed partial class JsEngine
                             ThrowTypeError(
                                 "Assignment to constant variable '" + names[U16(code, pc)] + "'");
 
+                            break;
+
+                        // A CALL WRITTEN AS AN ASSIGNMENT TARGET IN NON-STRICT CODE (JSP-7, JSC-239):
+                        // the call has run, and the write it asks for has no reference to go
+                        // through, which Annex B makes a ReferenceError here rather than an early
+                        // error.
+                        case JsOpcode.ThrowReferenceError:
+                            ThrowReferenceError("Invalid left-hand side in assignment");
                             break;
 
                         // THE SEAM BETWEEN THE PARAMETER LIST AND THE BODY, WHICH ONLY ONE OF THE

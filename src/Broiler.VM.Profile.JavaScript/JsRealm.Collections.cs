@@ -440,7 +440,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>WeakMap</c> and <c>WeakMap.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D69E03
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=64F0C7
     // Broiler-Human:        PENDING
     private void SetupWeakMap()
     {
@@ -521,6 +521,62 @@ internal sealed partial class JsRealm
             engine.Retain(CollectionEntryBytes);
             map.Set(held, ArgOfCollection(arguments, 1));
             return thisValue;
+        });
+
+        // THE WEAK PAIR TO `Map`'S `getOrInsert` AND `getOrInsertComputed` (JSP-7, JSC-239): members
+        // of the edition the realm did not have. A key that cannot be held weakly is a TypeError
+        // before anything else is asked, and the callback's answer overwrites whatever the callback
+        // put under the key itself.
+        Method(WeakMapPrototype, "getOrInsert", 2, static (engine, thisValue, arguments) =>
+        {
+            var map = CollectionThisWeakMap(engine, thisValue, "getOrInsert");
+
+            if (CollectionHeldWeakly(ArgOfCollection(arguments, 0)) is not { } held)
+            {
+                throw engine.Error("TypeError", "Invalid value used as weak map key");
+            }
+
+            engine.Charge(1);
+
+            if (map.Has(held))
+            {
+                return map.Get(held);
+            }
+
+            var value = ArgOfCollection(arguments, 1);
+            engine.Retain(CollectionEntryBytes);
+            map.Set(held, value);
+            return value;
+        });
+
+        Method(WeakMapPrototype, "getOrInsertComputed", 2, static (engine, thisValue, arguments) =>
+        {
+            var map = CollectionThisWeakMap(engine, thisValue, "getOrInsertComputed");
+            var key = ArgOfCollection(arguments, 0);
+            var callback = ArgOfCollection(arguments, 1);
+
+            if (CollectionHeldWeakly(key) is not { } held)
+            {
+                throw engine.Error("TypeError", "Invalid value used as weak map key");
+            }
+
+            if (!callback.IsObject || !callback.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError(
+                    "WeakMap.prototype.getOrInsertComputed: the callback is not a function");
+            }
+
+            engine.Charge(1);
+
+            if (map.Has(held))
+            {
+                return map.Get(held);
+            }
+
+            var value = engine.Call(callback, JsValue.Undefined, [key]);
+            engine.Retain(CollectionEntryBytes);
+            map.Set(held, value);
+            return value;
         });
 
         Method(WeakMapPrototype, "delete", 1, static (engine, thisValue, arguments) =>
@@ -613,7 +669,7 @@ internal sealed partial class JsRealm
     /// inert, and note that a registry that never tells is exactly as useful as polling a
     /// <c>WeakRef</c>, which is what a program should do on this profile.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=EE3271
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A148B2
     // Broiler-Human:        PENDING
     private void SetupWeakReferences()
     {
@@ -726,27 +782,11 @@ internal sealed partial class JsRealm
             return JsValue.Boolean(registry.Unregister(heldToken));
         });
 
-        // `cleanupSome` IS PRESENT AND DOES NOTHING, and both halves are deliberate. It is present
-        // because a program written for a host that has it should not fail to load here; it does
-        // nothing because there is no sweep behind it and never calls the callback it accepts. It
-        // is also a DIVERGENCE IN THE OTHER DIRECTION from everything else in this file: the
-        // method is a stage-2 proposal that shipping engines do not expose by default, so
-        // `typeof registry.cleanupSome` answers "function" here and "undefined" in Node.
-        Method(FinalizationRegistryPrototype, "cleanupSome", 0, static (engine, thisValue, arguments) =>
-        {
-            var callback = ArgOfCollection(arguments, 0);
-
-            if (callback.Type != JsType.Undefined &&
-                (!callback.IsObject || !callback.AsObject().IsCallable))
-            {
-                throw engine.Error(
-                    "TypeError",
-                    "FinalizationRegistry.prototype.cleanupSome: invalid callback");
-            }
-
-            _ = CollectionThisRegistry(engine, thisValue, "cleanupSome");
-            return JsValue.Undefined;
-        });
+        // THERE IS NO `cleanupSome` (JSP-7, JSC-239). It is a member of a proposal and not of the
+        // language, and a realm that has it answers `typeof registry.cleanupSome` with "function" where
+        // the language answers "undefined" - so a program that detects it takes a branch no engine
+        // following the edition would take. It was present and inert until 2026-10-03, and decision
+        // record 0029's D03-b recommended this removal.
     }
 
     /// <summary>

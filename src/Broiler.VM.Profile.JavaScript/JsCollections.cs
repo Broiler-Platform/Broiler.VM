@@ -656,8 +656,9 @@ internal sealed class JsFinalizationRecord
 /// <para>
 /// <b>So the type exists, answers, and is inert.</b> <c>register</c> validates its arguments
 /// exactly as the specification says and records the registration; <c>unregister</c> removes what
-/// a token names and answers truthfully whether it removed anything; <c>cleanupSome</c> accepts
-/// its optional callback and does nothing. A program that uses a registry as a bookkeeping device -
+/// a token names and answers truthfully whether it removed anything; there is no
+/// <c>cleanupSome</c>, which is a proposal's and not the language's. A program that uses a registry
+/// as a bookkeeping device -
 /// which is most of them - behaves identically. A program that WAITS for a cleanup waits for ever,
 /// and that is the observable difference, stated here rather than discovered.
 /// </para>

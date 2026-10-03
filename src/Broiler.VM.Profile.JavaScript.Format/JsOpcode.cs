@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   25
 // Annotated:        25/25
-// Exempt:           146
+// Exempt:           147
 // Human-reviewed:   0/25
 // IP risk:          None
 // Security risk:    Medium
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=669FB1
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=AC62DD
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -1389,6 +1389,18 @@ public enum JsOpcode : byte
     /// it, and converting first would read the base after a <c>toString</c> that re-points it.
     /// </remarks>
     LoadSuperPropertyKeepKey = 0xB3,
+
+    /// <summary>
+    /// Throw a <c>ReferenceError</c>: the write to a function call's result that non-strict code
+    /// may write and that has no reference to write through.
+    /// </summary>
+    /// <remarks>
+    /// <b>Annex B's runtime error for a call as an assignment target</b>: <c>f() = v</c>,
+    /// <c>f() += v</c>, <c>f()++</c> and <c>for (f() in o)</c> evaluate the call and then throw,
+    /// where strict code refuses each before it runs. Its stack effect is the value the assignment
+    /// would have left, so the lowering around it is an assignment's; it never completes.
+    /// </remarks>
+    ThrowReferenceError = 0xB4,
 }
 
 /// <summary>The operand shape that follows an opcode byte.</summary>
@@ -1570,7 +1582,7 @@ public static class JsOpcodes
         ElementIsMethod | ElementIsGetter | ElementIsSetter | ElementIsNamedValue;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4290B1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3B6A1D
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1626,7 +1638,7 @@ public static class JsOpcodes
         JsOpcode.DisposeScope, JsOpcode.DisposeAdd, JsOpcode.DisposeFold, JsOpcode.DisposeStep,
         JsOpcode.DisposeEnd,
         JsOpcode.ToNumeric, JsOpcode.Increment, JsOpcode.Decrement,
-        JsOpcode.LoadSuperPropertyKeepKey,
+        JsOpcode.LoadSuperPropertyKeepKey, JsOpcode.ThrowReferenceError,
     ];
 
     /// <summary>Whether <paramref name="value"/> is an opcode format version 2 defines.</summary>
@@ -1675,7 +1687,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=373DAC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B164B2
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1710,7 +1722,7 @@ public static class JsOpcodes
         JsOpcode.EnterBody or JsOpcode.CallEvalSpread or JsOpcode.WithBaseObject or
         JsOpcode.DisposeScope or JsOpcode.DisposeFold or
         JsOpcode.ToNumeric or JsOpcode.Increment or JsOpcode.Decrement or
-        JsOpcode.LoadSuperPropertyKeepKey
+        JsOpcode.LoadSuperPropertyKeepKey or JsOpcode.ThrowReferenceError
             => JsOperandShape.None,
 
         JsOpcode.Call or JsOpcode.CallEval or JsOpcode.Construct or JsOpcode.Pick or
@@ -1760,7 +1772,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3A772C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=BCADF1
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1810,6 +1822,7 @@ public static class JsOpcodes
             case JsOpcode.LoadEvalName:
             case JsOpcode.LoadEvalNameOrUndefined:
             case JsOpcode.DeleteEvalName:
+            case JsOpcode.ThrowReferenceError:
                 pushes = 1;
                 return true;
 

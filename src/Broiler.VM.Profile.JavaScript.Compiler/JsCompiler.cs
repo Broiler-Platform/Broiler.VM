@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   230
-// Annotated:        230/230
+// Relevant units:   231
+// Annotated:        231/231
 // Exempt:           123
-// Human-reviewed:   0/230
+// Human-reviewed:   0/231
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         19/18
 // Resource impact:  3/10 max
-// Unverified:       230
+// Unverified:       231
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -781,7 +781,7 @@ public sealed class JsCompiler
         });
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AE40F7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=48370A
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -790,7 +790,11 @@ public sealed class JsCompiler
         foreach (var script in scripts)
         {
             var first = diagnostics.Count;
-            var tokenizer = new SliceTokenizer(script.Text);
+            var tokenizer = new SliceTokenizer(script.Text)
+            {
+                HtmlLikeComments = script.Options.Goal != SliceGoal.Module,
+            };
+
             var tokens = tokenizer.Tokenize();
 
             if (tokenizer.Diagnostics.Count != 0)
@@ -946,14 +950,14 @@ public sealed class JsCompiler
         return new JsCompilation(false, null, diagnostics);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F21B9D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=63730F
     // Broiler-Human:        PENDING
     private bool TryParse(
         string text, SliceParseOptions options, bool forceStrict, out JsProgramNode program)
     {
         program = null!;
         awaited = false;
-        var tokenizer = new SliceTokenizer(text);
+        var tokenizer = new SliceTokenizer(text) { HtmlLikeComments = options.Goal != SliceGoal.Module };
         var tokens = tokenizer.Tokenize();
 
         if (tokenizer.Diagnostics.Count != 0)
@@ -5690,7 +5694,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2D503A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5347AC
     // Broiler-Human:        PENDING
     private void CompileForIn(JsForInStatement loop, int completion, string label)
     {
@@ -5702,6 +5706,17 @@ public sealed class JsCompiler
         // costs an environment entry and removes the whole class of defect.
         var function = FunctionScope();
         var enumerator = function.Declare("#forin" + function.SlotCount, constant: false);
+
+        // ANNEX B'S INITIALISER IS EVALUATED AND STORED ONCE, BEFORE THE OBJECT IS (JSP-7, JSC-239):
+        // `for (var a = 0 in stored = a, o)` reads `a` as 0, and an anonymous function takes the
+        // name. The parser admitted the form and this lowering dropped the value.
+        if (loop.Initialiser is { } initialiser)
+        {
+            CompileNamedValue(initialiser, loop.Name);
+            StoreName(loop.Span, loop.Name);
+            Emit(JsOpcode.Pop);
+        }
+
         CompileExpression(loop.Right);
         Emit(JsOpcode.ForInStart);
         EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, enumerator);
@@ -8217,7 +8232,7 @@ public sealed class JsCompiler
         Emit(add);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A9A994
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=902182
     // Broiler-Human:        PENDING
     private void CompileUpdate(JsUpdateExpression update)
     {
@@ -8300,6 +8315,12 @@ public sealed class JsCompiler
             Emit(JsOpcode.StorePrivate);
             Emit(JsOpcode.Pop);
             EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, kept);
+            return;
+        }
+
+        if (update.Operand is JsCallExpression called && !strict)
+        {
+            EmitCallTargetThrow(called);
             return;
         }
 
@@ -8462,7 +8483,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CD53EE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EB75D7
     // Broiler-Human:        PENDING
     private void CompileAssignment(JsAssignmentExpression assignment)
     {
@@ -8506,6 +8527,12 @@ public sealed class JsCompiler
                 CompileExpression(member.Computed);
                 CompileExpression(assignment.Value);
                 Emit(JsOpcode.SetIndex);
+                return;
+            }
+
+            if (assignment.Target is JsCallExpression called && !strict)
+            {
+                EmitCallTargetThrow(called);
                 return;
             }
 
@@ -8589,12 +8616,37 @@ public sealed class JsCompiler
             return;
         }
 
+        if (assignment.Target is JsCallExpression compounded && !strict)
+        {
+            EmitCallTargetThrow(compounded);
+            return;
+        }
+
         Refuse(
             assignment.Span,
             SliceSourceDiagnosticCode.InvalidAssignmentTarget,
             "the left-hand side of an assignment is not a reference");
 
         Emit(JsOpcode.LoadUndefined);
+    }
+
+    /// <summary>
+    /// Lowers a call written as an assignment target in non-strict code: the call, then Annex B's
+    /// <c>ReferenceError</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>The call runs and nothing after it does</b> (JSP-7, JSC-239): its result is not converted,
+    /// and the right-hand side of the assignment is never evaluated, which is what test262 asks of
+    /// <c>f() = g()</c>. The instruction that throws stands where the assignment's value would be
+    /// pushed, so every lowering around this one keeps the stack it expects.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=77A6A7
+    // Broiler-Human:        PENDING
+    private void EmitCallTargetThrow(JsCallExpression call)
+    {
+        CompileExpression(call);
+        Emit(JsOpcode.Pop);
+        Emit(JsOpcode.ThrowReferenceError);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=910918
@@ -9606,7 +9658,7 @@ public sealed class JsCompiler
         Emit(JsOpcode.SuperCall, (byte)System.Math.Min(call.Arguments.Count, 255));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8A09AF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9BDB0D
     // Broiler-Human:        PENDING
     private void CompileStoreTo(JsExpression target)
     {
@@ -9650,6 +9702,14 @@ public sealed class JsCompiler
                 Emit(JsOpcode.SetIndex);
                 break;
             }
+
+            // A CALL AS A `for … in` OR `for … of` HEAD IN NON-STRICT CODE RUNS THE CALL FOR EACH
+            // VALUE AND THROWS BEFORE THE BODY (JSP-7, JSC-239); the value it would have written is
+            // dropped first, and the instruction that throws stands in for it.
+            case JsCallExpression called when !strict:
+                Emit(JsOpcode.Pop);
+                EmitCallTargetThrow(called);
+                break;
 
             default:
                 Refuse(
@@ -11203,7 +11263,7 @@ public sealed class JsCompiler
             return false;
         }
 
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4ADB4C
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7BE90C
         // Broiler-Human:        PENDING
         private static System.Collections.Generic.IEnumerable<JsNode?> Children(JsNode node)
         {
@@ -11261,6 +11321,7 @@ public sealed class JsCompiler
                 case JsForInStatement statement:
                     yield return statement.Target;
                     yield return statement.Pattern;
+                    yield return statement.Initialiser;
                     yield return statement.Right;
                     yield return statement.Body;
                     break;

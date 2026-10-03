@@ -891,6 +891,46 @@ verification, before anything runs. Two questions, two refusals, and a retained 
 **And a composition declines by building a descriptor**, not by setting a flag: it names the
 optional surfaces it admits when it registers, and there is no other door.
 
+### The edition, Annex B, and what the wide surface declines by name
+
+**The wide surface is written against the pinned edition**, ES2026 as archived under
+[`specification/`](specification/README.md), and from 2026-10-03 every member that edition defines
+is either published by the realm or declined below by name, with the answer a program meets
+*(corrected: [JSC-239](roadmap.corrections.md#jsc-239))*. Before that date `Error.isError`,
+`WeakMap.prototype.getOrInsert` and `getOrInsertComputed`, `RegExp.prototype.unicodeSets` and the six
+`Uint8Array` base64 and hex members were missing without a word, and `JSON.parse` called a reviver
+with two arguments where the edition passes three.
+
+**Annex B is admitted whole, in the script goal, and that is the rule.** A member or construct of
+Annex B missing from this list is a defect against the rule rather than a choice:
+- **B.1, the syntax**: legacy octal literals and escapes, and the HTML-like comments `<!--` and
+  `-->`. The module goal declines the comments, as the language does, and reads them as operators.
+- **B.2, the built-in properties**: `escape`, `unescape`, `substr`, the thirteen HTML methods of
+  `String.prototype`, `trimLeft` and `trimRight` (the same function objects as `trimStart` and
+  `trimEnd`), `Date.prototype.getYear`, `setYear` and `toGMTString` (the same function object as
+  `toUTCString`), `RegExp.prototype.compile`, `__proto__`, and the four `__define…__` and
+  `__lookup…__` methods.
+- **B.3, the other features**: labelled function declarations, function declarations in blocks and
+  in `if` clauses, a `var` redeclaring a catch parameter, the `for (var x = 1 in o)` initialiser,
+  and a call as an assignment target in non-strict code, which runs the call and then throws a
+  `ReferenceError`. `[[IsHTMLDDA]]` is host-defined, and only the conformance root supplies an
+  object that has it.
+
+**Declined by name**, each with the answer a program meets:
+
+| Surface | What a program meets |
+|---|---|
+| `Error.prototype.stack` | It is not a member of the edition. `error.stack` reads `undefined`: no error has an own `stack` and nothing it inherits from carries one, so `"stack" in error` is `false`. |
+| `Intl` and `Temporal` | Deferred to their own manifests; the ledger's absent-globals block names both and `typeof` answers `"undefined"`. |
+| `SharedArrayBuffer` and `Atomics` | Excluded deliberately, for the agent model of [section 13](#13-realms-agents-and-the-host-boundary); the same block names both. |
+| The RegExp `v` flag | A literal carrying it is refused at compile time, and the constructor throws a `SyntaxError` for it. `unicodeSets` answers `false` for every RegExp. |
+| `FinalizationRegistry` cleanup | A cleanup callback is never called, as [JSD-0029](decisions/0029-finalization-registry-cleanup-model.md) records. |
+| A function's source text | `Function.prototype.toString` answers `function name() { [native code] }`, because the artifact carries no source. |
+
+**Nothing ahead of the edition is admitted except what a decision record names**: the `using`
+declaration and its disposal surface, under proposed JSD-0034. `FinalizationRegistry.prototype.cleanupSome`,
+a proposal's member that the realm carried inert, was removed on 2026-10-03.
+
 ### Where the language is deliberately underspecified, and why a manifest has to say so
 
 A retained corpus compares an observed answer against a recorded one, byte for byte, across three

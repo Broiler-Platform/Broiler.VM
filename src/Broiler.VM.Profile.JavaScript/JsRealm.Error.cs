@@ -44,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds the Error constructor, its prototype and the six native subtypes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7C4D41
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8CED0B
     // Broiler-Human:        PENDING
     private void SetupError()
     {
@@ -96,6 +96,17 @@ internal sealed partial class JsRealm
         var baseConstructor = Constructor("Error", 1, basePrototype, baseBody, baseBody);
 
         ErrorConstructors["Error"] = baseConstructor;
+
+        // `Error.isError` ASKS FOR THE SLOT AND NOT THE CHAIN (JSP-7, JSC-239): an object an Error
+        // constructor made answers `true` whatever its prototype became, and an object that only
+        // inherits from `Error.prototype` - `Error.prototype` itself, a Proxy over an error -
+        // answers `false`. It is a member of the edition the realm did not have.
+        Method(baseConstructor, "isError", 1, static (engine, _, arguments) =>
+            JsValue.Boolean(
+                arguments.Length > 0 &&
+                arguments[0].AsObjectOrNull() is { } candidate &&
+                candidate is not JsProxy &&
+                string.Equals(candidate.ClassName, "Error", System.StringComparison.Ordinal)));
 
         ErrorIntrinsicInstall("EvalError", baseConstructor);
         ErrorIntrinsicInstall("RangeError", baseConstructor);

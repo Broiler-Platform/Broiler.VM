@@ -1756,7 +1756,7 @@ internal sealed class JsParser
         return new JsDoWhileStatement(span, body, test);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7742F9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=773CD7
     // Broiler-Human:        PENDING
     private JsStatement ParseFor()
     {
@@ -1899,7 +1899,7 @@ internal sealed class JsParser
                         iterated, isAwait, resource)
                     : new JsForInStatement(
                         span, kind, declarators[0].Name, declarators[0].Pattern, null, source,
-                        iterated);
+                        iterated, declarators[0].Initialiser);
             }
 
             if (resource != JsUsing.None && !ValidateResources(declarators, requireInitialiser: true))
@@ -4186,7 +4186,7 @@ internal sealed class JsParser
         return new JsSequenceExpression(span, all);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5D9CD7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DC1ED9
     // Broiler-Human:        PENDING
     private JsExpression ParseAssignment(bool noIn = false)
     {
@@ -4244,8 +4244,15 @@ internal sealed class JsParser
                 // ordinary assignment whose target happens to be stored somewhere other than the
                 // property table, and leaving it off this list refused the write at the parse -
                 // before any of the three passes that know what a private name is could see it.
+                // ANNEX B ADMITS A CALL AS THE TARGET OF `=` OR A COMPOUND OPERATOR IN NON-STRICT
+                // CODE (JSP-7, JSC-239): it is evaluated and the write throws a ReferenceError at
+                // run time. A logical assignment and strict code keep the early error.
+                var callTarget = target is JsCallExpression && !strict &&
+                    op is not (SliceTokenKind.AmpersandAmpersand or SliceTokenKind.BarBar or
+                        SliceTokenKind.QuestionQuestion);
+
                 if (target is not JsIdentifier and not JsMemberExpression and
-                    not JsSuperMemberExpression and not JsPrivateMemberExpression)
+                    not JsSuperMemberExpression and not JsPrivateMemberExpression && !callTarget)
                 {
                     Refuse(
                         span,
@@ -6667,11 +6674,11 @@ internal sealed class JsParser
     /// encloses it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=57D77F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DFCAF3
     // Broiler-Human:        PENDING
     private JsExpression ParseInterpolation(string text, int line, int column)
     {
-        var tokenizer = new SliceTokenizer(text);
+        var tokenizer = new SliceTokenizer(text) { HtmlLikeComments = options.Goal != SliceGoal.Module };
         var stream = tokenizer.Tokenize();
 
         if (tokenizer.Diagnostics.Count != 0)

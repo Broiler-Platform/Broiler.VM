@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   54
 // Annotated:        54/54
-// Exempt:           12
+// Exempt:           13
 // Human-reviewed:   0/54
 // IP risk:          Medium
 // Security risk:    Medium
@@ -181,7 +181,7 @@ internal sealed partial class JsRealm
     ];
 
     /// <summary>Builds <c>RegExp</c>, <c>RegExp.prototype</c>, and the String methods that take one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=98E366
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=75951F
     // Broiler-Human:        PENDING
     private void SetupRegExp()
     {
@@ -308,8 +308,8 @@ internal sealed partial class JsRealm
         // no slot: any Object is a receiver, an own `global` of `false` drops the "g", and
         // `RegExp.prototype.flags` is "" because every flag getter answers `undefined` there (it
         // answered the internal flags of a real RegExp until 2026-09-21; JSeal follow-up
-        // VM-FIX-G). `unicodeSets` is read like the others; no getter answers it here, because no
-        // RegExp this matcher builds can carry `v`.
+        // VM-FIX-G). `unicodeSets` is read like the others, and its accessor answers `false` for
+        // every RegExp this matcher builds, because none can carry `v`.
         RegExpGetter(prototype, "flags", (engine, thisValue, arguments) =>
         {
             if (!thisValue.IsObject)
@@ -339,7 +339,58 @@ internal sealed partial class JsRealm
         RegExpFlagGetter(prototype, "multiline", 'm');
         RegExpFlagGetter(prototype, "dotAll", 's');
         RegExpFlagGetter(prototype, "unicode", 'u');
+
+        // THE `v` FLAG'S ACCESSOR EXISTS THOUGH THE FLAG IS REFUSED (JSP-7, JSC-239): it is a member
+        // of the edition, and its absence was a surface missing without a word. It answers `false`
+        // for every RegExp, since none here can carry `v`, and `undefined` for the prototype.
+        RegExpFlagGetter(prototype, "unicodeSets", 'v');
         RegExpFlagGetter(prototype, "sticky", 'y');
+
+        // ANNEX B'S `compile` RE-INITIALISES THE RECEIVER IN PLACE (JSP-7, JSC-239): a RegExp
+        // pattern lends its source and flags and may not be given flags of its own, anything else is
+        // converted - the pattern, then the flags - and `lastIndex` is set to 0 last, through a
+        // throwing `Set`.
+        Method(prototype, "compile", 2, (engine, thisValue, arguments) =>
+        {
+            if (thisValue.AsObjectOrNull() is not RegExpObject target)
+            {
+                return engine.ThrowTypeError("RegExp.prototype.compile requires a RegExp receiver");
+            }
+
+            var pattern = ArgOfRegExp(arguments, 0);
+            var flags = ArgOfRegExp(arguments, 1);
+            string source;
+            string chosen;
+
+            if (pattern.AsObjectOrNull() is RegExpObject template)
+            {
+                if (flags.Type != JsType.Undefined)
+                {
+                    return engine.ThrowTypeError(
+                        "RegExp.prototype.compile: a RegExp pattern takes no flags of its own");
+                }
+
+                source = template.Source;
+                chosen = template.Flags;
+            }
+            else
+            {
+                source = pattern.Type == JsType.Undefined ? string.Empty : engine.ToStringValue(pattern);
+                chosen = flags.Type == JsType.Undefined ? string.Empty : engine.ToStringValue(flags);
+            }
+
+            var normalized = RegExpNormalizeFlags(engine, chosen);
+            engine.Charge((ulong)source.Length + 32);
+            target.Reinitialise(source, normalized, RegExpCompile(engine, source, normalized));
+
+            if (!target.LastIndexWritable)
+            {
+                return engine.ThrowTypeError("Cannot assign to read only property 'lastIndex'");
+            }
+
+            target.LastIndex = JsValue.Number(0);
+            return thisValue;
+        });
 
         // ---- the pattern protocol, which is what makes these five methods dispatchable --------
         //
@@ -2310,18 +2361,28 @@ internal sealed partial class JsRealm
     private sealed class RegExpObject : JsObject
     {
         /// <summary>Creates a compiled regular expression.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=464FC0
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=6D39FD
         // Broiler-Human:        PENDING
         internal RegExpObject(
             JsObject? prototype,
             string source,
             string flags,
             JsRegExpMatcher matcher)
-            : base(prototype, "RegExp")
+            : base(prototype, "RegExp") => Reinitialise(source, flags, matcher);
+
+        /// <summary>
+        /// Gives this object a pattern, its flags and its matcher, which construction does once and
+        /// Annex B's <c>compile</c> does again.
+        /// </summary>
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=2D7702
+        // Broiler-Human:        PENDING
+        internal void Reinitialise(string source, string flags, JsRegExpMatcher matcher)
         {
             Source = source;
             Flags = flags;
             Matcher = matcher;
+            Global = false;
+            Sticky = false;
 
             foreach (var flag in flags)
             {
@@ -2342,29 +2403,29 @@ internal sealed partial class JsRealm
         }
 
         /// <summary>The pattern text, exactly as it was given.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=C6098C
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=BD7C71
         // Broiler-Human:        PENDING
-        internal string Source { get; }
+        internal string Source { get; private set; }
 
         /// <summary>The flags, in the specification's order and with no duplicates.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=5E11BA
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=C70A8B
         // Broiler-Human:        PENDING
-        internal string Flags { get; }
+        internal string Flags { get; private set; }
 
         /// <summary>The compiled matcher.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=C47205
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=2503E4
         // Broiler-Human:        PENDING
-        internal JsRegExpMatcher Matcher { get; }
+        internal JsRegExpMatcher Matcher { get; private set; }
 
         /// <summary>Whether the <c>g</c> flag is set.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=5988AA
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=D03B5A
         // Broiler-Human:        PENDING
-        internal bool Global { get; }
+        internal bool Global { get; private set; }
 
         /// <summary>Whether the <c>y</c> flag is set.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=F09C77
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=783B2F
         // Broiler-Human:        PENDING
-        internal bool Sticky { get; }
+        internal bool Sticky { get; private set; }
 
         /// <summary>Whether the <c>u</c> flag is set, which decides how an index advances.</summary>
         // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=B271D1

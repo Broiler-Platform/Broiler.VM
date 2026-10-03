@@ -369,6 +369,7 @@ internal static class NativeTemplateScanChecks
         (JsOpcode.Increment, "R"),
         (JsOpcode.Decrement, "R"),
         (JsOpcode.LoadSuperPropertyKeepKey, "R"),
+        (JsOpcode.ThrowReferenceError, "P"),
     ];
 
     /// <summary>

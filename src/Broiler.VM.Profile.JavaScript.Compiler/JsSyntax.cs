@@ -590,7 +590,11 @@ internal sealed record JsForStatement(
 /// <param name="Name">The bound name, when the head names one directly.</param>
 /// <param name="Pattern">The pattern, when the head destructures each key.</param>
 /// <param name="Target">The assignment target, when the head is an expression.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=307B0D
+/// <param name="Initialiser">
+/// Annex B's initialiser, <c>for (var x = 1 in o)</c>: sloppy code, a <c>var</c> and a plain name
+/// only, evaluated and stored once before the object is.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=A87240
 // Broiler-Human:        PENDING
 internal sealed record JsForInStatement(
     SliceSourceSpan Span,
@@ -599,7 +603,8 @@ internal sealed record JsForInStatement(
     JsPattern? Pattern,
     JsExpression? Target,
     JsExpression Right,
-    JsStatement Body) : JsStatement(Span);
+    JsStatement Body,
+    JsExpression? Initialiser = null) : JsStatement(Span);
 
 /// <summary><c>for (left of right) body</c>, over the iteration protocol.</summary>
 /// <remarks>
