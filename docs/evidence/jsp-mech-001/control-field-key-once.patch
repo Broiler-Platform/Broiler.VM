@@ -1,0 +1,24 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+index aae816a..544b2cf 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+@@ -3636,10 +3636,6 @@ internal sealed partial class JsEngine
+         // however many instances the class makes, and the name a computed field's function takes is
+         // the key it produced (JSP-6, JSC-238). A private name is already a key, and a static
+         // block has none.
+-        if ((flags & JsOpcodes.ElementIsBlock) == 0 && !key.IsSymbol)
+-        {
+-            key = ToPropertyKeyValue(key);
+-        }
+ 
+         if (body.IsObject && body.AsObject() is JsScriptFunction bodied)
+         {
+@@ -3772,7 +3768,7 @@ internal sealed partial class JsEngine
+             {
+                 var label = element.Key.IsSymbol
+                     ? SymbolFunctionName(element.Key.AsSymbol())
+-                    : element.Key.AsString();
++                    : ToPropertyKey(element.Key);
+ 
+                 anonymous.FunctionName = label;
+ 

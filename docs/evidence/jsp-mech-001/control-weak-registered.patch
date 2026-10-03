@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
+index 3620cb3..e5fac3b 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
+@@ -764,7 +764,7 @@ internal sealed partial class JsRealm
+     private static object? CollectionHeldWeakly(JsValue value) =>
+         value.IsObject
+             ? value.AsObject()
+-            : value.IsSymbol && !value.AsSymbol().IsRegistered && !value.AsSymbol().IsPrivateName
++            : value.IsSymbol && !value.AsSymbol().IsPrivateName
+                 ? value.AsSymbol()
+                 : null;
+ 

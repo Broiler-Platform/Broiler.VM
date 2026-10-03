@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 4184154..3da9b8e 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -7936,7 +7936,7 @@ public sealed class JsCompiler
+                 // AN ANONYMOUS FUNCTION TAKES THE KEY AS ITS NAME, which is known only now, so the
+                 // definition names it as it names a method - without making it one (JSP-6,
+                 // JSC-238). Every other value is defined as it was.
+-                if (NamedAtRunTime(entry.Value))
++                if (NamedAtRunTime(entry.Value) && false)
+                 {
+                     Emit(
+                         JsOpcode.DefineMethod,

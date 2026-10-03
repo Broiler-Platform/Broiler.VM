@@ -1,0 +1,13 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 4184154..ac3a024 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -2107,7 +2107,7 @@ public sealed class JsCompiler
+         var outerFunction = insideFunction;
+         var outerField = insideFieldInitialiser;
+         var outerFieldValueName = fieldValueName;
+-        fieldValueName = isFieldInitialiser ? function.Name : null;
++        fieldValueName = null;
+         var outerExits = exits;
+         exits = [];
+ 

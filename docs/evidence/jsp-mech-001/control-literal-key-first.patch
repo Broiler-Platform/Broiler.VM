@@ -1,0 +1,12 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+index 4184154..956c722 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+@@ -7930,7 +7930,6 @@ public sealed class JsCompiler
+                 // `ComputedPropertyName` converts it: a key whose `toString` runs is observed before
+                 // anything the value does, where the definition converted it after (JSP-6, JSC-238).
+                 CompileExpression(entry.Computed);
+-                Emit(JsOpcode.ToPropertyKey);
+                 CompileExpression(entry.Value);
+ 
+                 // AN ANONYMOUS FUNCTION TAKES THE KEY AS ITS NAME, which is known only now, so the

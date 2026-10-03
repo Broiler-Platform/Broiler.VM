@@ -1,0 +1,72 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs b/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
+index 3620cb3..62bff7a 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs
+@@ -155,7 +155,7 @@ internal sealed partial class JsRealm
+                 // order `OrdinaryCreateFromConstructor` and then `Get(map, "set")` give: a
+                 // subclass's own adder is the one the constructor calls (JSP-5, JSC-237). Built
+                 // from the intrinsic and re-pointed afterwards, it was never found.
+-                var made = new JsMapObject(BinaryPrototypeFrom(engine, thisValue, MapPrototype));
++                var made = new JsMapObject(MapPrototype);
+                 var source = ArgOfCollection(arguments, 0);
+ 
+                 // AN ABSENT ARGUMENT AND `null` BOTH MEAN "EMPTY", and only those two. `new Map(0)`
+@@ -237,7 +237,6 @@ internal sealed partial class JsRealm
+         // hashes the key twice and reads it twice, and a key whose hashing is expensive - a long
+         // string, an object in a large table - pays for both. The pair also spells the intent, which
+         // is why the language added them rather than leaving the idiom to the caller.
+-        mapConstructor.BuildsFromNewTarget = true;
+         SpeciesGetter(mapConstructor);
+ 
+         Method(MapPrototype, "getOrInsert", 2, static (engine, thisValue, arguments) =>
+@@ -360,7 +359,7 @@ internal sealed partial class JsRealm
+                 // order `OrdinaryCreateFromConstructor` and then `Get(map, "set")` give: a
+                 // subclass's own adder is the one the constructor calls (JSP-5, JSC-237). Built
+                 // from the intrinsic and re-pointed afterwards, it was never found.
+-                var made = new JsSetObject(BinaryPrototypeFrom(engine, thisValue, SetPrototype));
++                var made = new JsSetObject(SetPrototype);
+                 var source = ArgOfCollection(arguments, 0);
+ 
+                 if (!source.IsNullish)
+@@ -385,7 +384,6 @@ internal sealed partial class JsRealm
+ 
+         SetupSetOperations();
+ 
+-        setConstructor.BuildsFromNewTarget = true;
+         SpeciesGetter(setConstructor);
+ 
+         Method(SetPrototype, "has", 1, static (engine, thisValue, arguments) =>
+@@ -456,7 +454,7 @@ internal sealed partial class JsRealm
+                 // order `OrdinaryCreateFromConstructor` and then `Get(map, "set")` give: a
+                 // subclass's own adder is the one the constructor calls (JSP-5, JSC-237). Built
+                 // from the intrinsic and re-pointed afterwards, it was never found.
+-                var made = new JsWeakMapObject(BinaryPrototypeFrom(engine, thisValue, WeakMapPrototype));
++                var made = new JsWeakMapObject(WeakMapPrototype);
+                 var source = ArgOfCollection(arguments, 0);
+ 
+                 if (!source.IsNullish)
+@@ -488,7 +486,6 @@ internal sealed partial class JsRealm
+                 return JsValue.Object(made);
+             });
+ 
+-        weakMapConstructor.BuildsFromNewTarget = true;
+ 
+         // A PRIMITIVE KEY IS A MISS ON THE WAY OUT AND A THROW ON THE WAY IN, which is asymmetric
+         // on purpose: a lookup that threw would force every caller to type-test before asking, and
+@@ -549,7 +546,7 @@ internal sealed partial class JsRealm
+                 // order `OrdinaryCreateFromConstructor` and then `Get(map, "set")` give: a
+                 // subclass's own adder is the one the constructor calls (JSP-5, JSC-237). Built
+                 // from the intrinsic and re-pointed afterwards, it was never found.
+-                var made = new JsWeakSetObject(BinaryPrototypeFrom(engine, thisValue, WeakSetPrototype));
++                var made = new JsWeakSetObject(WeakSetPrototype);
+                 var source = ArgOfCollection(arguments, 0);
+ 
+                 if (!source.IsNullish)
+@@ -571,7 +568,6 @@ internal sealed partial class JsRealm
+                 return JsValue.Object(made);
+             });
+ 
+-        weakSetConstructor.BuildsFromNewTarget = true;
+ 
+         Method(WeakSetPrototype, "has", 1, static (engine, thisValue, arguments) =>
+         {

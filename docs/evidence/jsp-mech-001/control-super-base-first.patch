@@ -1,0 +1,15 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+index aae816a..f7fe050 100644
+--- a/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
++++ b/src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+@@ -8216,9 +8216,9 @@ internal sealed partial class JsEngine
+                                 ? thisValue
+                                 : ThisBinding(thisBinding);
+ 
+-                            var start = SuperBase(active);
+                             var key = ToPropertyKeyValue(stack[sp - 1]);
+                             stack[sp - 1] = key;
++                            var start = SuperBase(active);
+ 
+                             stack[sp++] = key.IsSymbol
+                                 ? GetSymbolWithReceiver(start, key.AsSymbol(), receiver)
