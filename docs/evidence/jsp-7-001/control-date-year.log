@@ -1,0 +1,36 @@
+$ git apply docs/evidence/jsp-7-001/control-date-year.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+t.csproj]
+<root>/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs(2366,18): warning CS8618: Non-nullable property 'Matcher' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [<root>/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj]
+    3 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.42
+# exit 0
+$ python3 eng/run-cli-acceptance.py --verbose --expected <scratch>/jsp-7.expected.txt
+# judging <root>/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# over 10 command lines from artifacts/jsp-7-001/jsp-7.expected.txt
+FAIL runs/annex-b-string-date-and-regexp-members.js: output does not contain `<a name="a&quot;b">x</a><big>x</big><blink>x</blink><b>x</b><tt>x</tt><font color="red">x</font><font size="7">x</font><i>x</i><a href="u">x</a><small>x</small><strike>x</strike><sub>x</sub><sup>x</sup> / true / trimEnd / 120 1999 / true / true b+ i 0`
+       <a name="a&quot;b">x</a><big>x</big><blink>x</blink><b>x</b><tt>x</tt><font color="red">x</font><font size="7">x</font><i>x</i><a href="u">x</a><small>x</small><strike>x</strike><sub>x</sub><sup>x</sup> / true / trimEnd / 120 99 / true / true b+ i 0
+ok   runs/html-like-comments-in-a-script.js
+ok   --module refused/an-html-like-comment-in-a-module.mjs
+ok   runs/a-for-in-initialiser.js
+ok   runs/a-call-as-an-assignment-target.js
+ok   refused/a-call-as-an-assignment-target-in-strict-code.js
+ok   runs/the-edition-members-the-realm-lacked.js
+ok   runs/uint8array-base64-and-hex.js
+ok   runs/a-reviver-reads-the-source-text.js
+ok   runs/an-error-has-no-stack.js
+# 1 of 10 command lines FAILED
+# exit 1
+$ git apply -R docs/evidence/jsp-7-001/control-date-year.patch
+# exit 0
+$ dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Cli -c Release
+t.csproj]
+<root>/src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs(2366,18): warning CS8618: Non-nullable property 'Matcher' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable. [<root>/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj]
+    3 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.01
+# exit 0

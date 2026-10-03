@@ -1,0 +1,25 @@
+$ python3 eng/run-test262.py --suite <scratch>/suite/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e --binary-directory <root>/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0 --jobs 3 --out <scratch>/test262-change --dir test/language --dir test/annexB --dir test/built-ins/Uint8Array --dir test/built-ins/JSON --dir test/built-ins/Error --dir test/built-ins/WeakMap --dir test/built-ins/RegExp --dir test/built-ins/String --dir test/built-ins/Date --dir test/built-ins/FinalizationRegistry --dir test/built-ins/Function
+/Function/prototype/toString/private-method-class-expression.js [sloppy]
+#          19  dynamic-import  e.g. test/language/expressions/dynamic-import/catch/nested-arrow-import-catch-eval-script-code-target.js [module]
+#          18  Proxy  e.g. test/built-ins/Function/internals/Construct/base-ctor-revoked-proxy-realm.js [sloppy]
+#          18  class-fields-private  e.g. test/language/expressions/class/elements/syntax/early-errors/grammar-private-environment-on-class-heritage-chained-usage.js [sloppy]
+#          16  class-fields-public  e.g. test/language/expressions/class/elements/syntax/early-errors/grammar-private-environment-on-class-heritage-chained-usage.js [sloppy]
+#          16  generators  e.g. test/built-ins/Function/prototype/toString/GeneratorFunction.js [sloppy]
+#          14  Symbol  e.g. test/built-ins/FinalizationRegistry/proto-from-ctor-realm.js [sloppy]
+#          12  import-attributes  e.g. test/language/expressions/dynamic-import/import-attributes/2nd-param-with-enumeration-enumerable.js [sloppy]
+#          12  json-modules  e.g. test/language/expressions/dynamic-import/import-attributes/2nd-param-with-enumeration-enumerable.js [sloppy]
+#          10  let  e.g. test/language/statements/for-in/scope-body-lex-boundary.js [sloppy]
+#           9  async-iteration  e.g. test/built-ins/Function/prototype/toString/AsyncGenerator.js [sloppy]
+#           8  Symbol.iterator  e.g. test/language/expressions/yield/star-iterable.js [sloppy]
+#           8  import.meta  e.g. test/language/expressions/import.meta/syntax/escape-sequence-meta.js [module]
+#           8  optional-chaining  e.g. test/language/expressions/optional-chaining/member-expression.js [sloppy]
+#           7  class-static-methods-private  e.g. test/built-ins/Function/prototype/toString/private-static-method-class-expression.js [sloppy]
+#           5  arbitrary-module-namespace-names  e.g. test/language/module-code/export-expname-from-as-unpaired-surrogate.js [module]
+#          28  further row(s) not printed here; every one of them is in the report
+# test262 29681 files, 54845 variants: pass 53074, fail 954, unsupported 0, exhausted 16, skipped 801
+coverage partial a named selection rather than the whole test tree: test/language test/annexB test/built-ins/Uint8Array test/built-ins/JSON test/built-ins/Error test/built-ins/WeakMap test/built-ins/RegExp test/built-ins/String test/built-ins/Date test/built-ins/FinalizationRegistry test/built-ins/Function
+# the whole-run report is <scratch>/test262-change/test262.report
+# the machine-readable report is <scratch>/test262-change/test262.json
+# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:
+#   the run covers less than its selection: partial|a named selection rather than the whole test tree: test/language test/annexB test/built-ins/Uint8Array test/built-ins/JSON test/built-ins/Error test/built-ins/WeakMap test/built-ins/RegExp test/built-ins/String test/built-ins/Date test/built-ins/FinalizationRegistry test/built-ins/Function
+# exit 1

@@ -1,0 +1,6 @@
+$ python3 eng/run-differential.py
+--- the-using-declarations-in-a-module.mjs
+--- the-using-declarations.js
+--- the-with-statement.js
+Report: <root>/artifacts/differential/report.json
+# exit 0
