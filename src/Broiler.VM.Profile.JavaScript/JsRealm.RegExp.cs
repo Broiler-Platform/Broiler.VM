@@ -2374,8 +2374,9 @@ internal sealed partial class JsRealm
         /// Gives this object a pattern, its flags and its matcher, which construction does once and
         /// Annex B's <c>compile</c> does again.
         /// </summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=2D7702
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=8FAB1A
         // Broiler-Human:        PENDING
+        [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(Source), nameof(Flags), nameof(Matcher))]
         internal void Reinitialise(string source, string flags, JsRegExpMatcher matcher)
         {
             Source = source;
