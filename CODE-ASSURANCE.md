@@ -15,9 +15,9 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 238 |
 | Files carrying an annotation | 238 |
-| Code units | 10323 |
+| Code units | 10330 |
 | Relevant | 5844 |
-| Exempt by predicate | 4479 |
+| Exempt by predicate | 4486 |
 | Annotated | 5844 of 5844 (100%) |
 | Human reviewed | 0 of 5844 (0%) |
 | Unverified | 5844 |
@@ -32,14 +32,14 @@ figures below are the measurement of how far from that claim the component is.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4479 |
+| EXEMPT | 4486 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 1557 |
-| Low | 5439 |
+| Low | 5445 |
 | Medium | 83 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,7 +51,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 9 |
 | Low | 957 |
-| Medium | 4262 |
+| Medium | 4268 |
 | High | 1598 |
 | Critical | 253 |
 | *not annotated* | 0 |
@@ -1956,8 +1956,8 @@ that the rule is reviewable in one place rather than in several hundred.
 | CompilerSuppliedRecordOrEnumMember | 15 |
 | DelegatingOverrideOrOperator | 121 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 781 |
-| EnumMemberOfADeclaredVocabulary | 1903 |
+| FieldDeclaringStorage | 787 |
+| EnumMemberOfADeclaredVocabulary | 1904 |
 | DeclaredInSource | 37 |
 
 ## Per-unit exemptions
@@ -2013,7 +2013,7 @@ input, and a unit there is assessed or it is not shipped. Rule J1 asserts both h
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-10323 of them, exempt and relevant alike - with the fingerprint of its declaration.
+10330 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

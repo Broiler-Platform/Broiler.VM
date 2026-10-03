@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3; milestone rows unchanged)
+**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, and RegExp modifiers; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -532,6 +532,14 @@ with `Final_Sigma`, the non-`u` RegExp Canonicalize reads the full upper-case ma
 moved from failing to passing and none moved back; every case-mapping and `localeCompare` case that
 still fails there is an `intl402` one ([JSC-242](roadmap.corrections.md#jsc-242)). This is unreviewed
 implementation and validation material, not accepted milestone evidence; no milestone row advances.
+
+**RegExp modifiers observation, 2026-10-03.** The pinned edition's modifier groups,
+`(?ims-ims:...)`, which the matcher refused as an invalid group without the profile declining them,
+set the `i`, `m` and `s` flags for their body, with the edition's early errors. Over the pinned
+suite's `RegExp`, regular-expression-literal and Annex B `RegExp` subtrees, 140 variants moved from
+failing to passing and none moved back ([JSC-244](roadmap.corrections.md#jsc-244)). This is
+unreviewed implementation and validation material, not accepted milestone evidence; no milestone row
+advances.
 
 **JSP-2 observation, 2026-10-03.** The parity roadmap's JSP-2 clauses that were still open have a
 change each. The source corpus retains the slice surface's refusal of a BigInt literal, an acceptance

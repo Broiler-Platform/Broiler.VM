@@ -79,9 +79,9 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 238 |
-| Code units | 10323 |
+| Code units | 10330 |
 | Relevant | 5844 |
-| Exempt | 4479 |
+| Exempt | 4486 |
 | Assessed | 5844 of 5844 (100%) |
 | Human reviewed | 0 of 5844 (0%) |
 | Unverified | 5844 |
@@ -100,7 +100,7 @@ annotations and the current fingerprints; nothing stores them.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4479 |
+| EXEMPT | 4486 |
 
 ## 5. Aliases In The Tree
 
@@ -187,7 +187,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` | 70 | 45 | 25 | 45 | Low | Critical | 11/11 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsNumericManifest.cs` | 5 | 5 | 0 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 175 | 25 | 150 | 25 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 226 | 129 | 97 | 129 | Medium | Medium | 1/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 233 | 129 | 104 | 129 | Medium | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 12 | 12 | 0 | 12 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.cs` | 12 | 12 | 0 | 12 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsUnicodeCaseFolding.g.cs` | 7 | 1 | 6 | 1 | Low | Low | 0/0 |

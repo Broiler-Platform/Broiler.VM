@@ -10507,3 +10507,42 @@ occurrence searches again, after the value it writes has been computed.
 - No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-244
+
+**Where:** the from-scratch matcher's grammar, `JsRegExpMatcher`'s parser, emitter and runner, against
+the pinned edition's `Atom :: ( ? RegularExpressionModifiers : Disjunction )` and
+`( ? RegularExpressionModifiers - RegularExpressionModifiers : Disjunction )`.
+
+**What the plan said.** Roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s
+`broiler.javascript.regexp` admits regular expressions "over the from-scratch matcher" and declines
+only the `v` flag. The matcher read every group opened with `(?` as a lookaround, a named group or
+`(?:`, and threw a `SyntaxError` for anything else, so a modifier group was refused without being
+declined anywhere. The `i`, `m` and `s` flags were the pattern's, read once.
+
+**What replaced it, observed on 2026-10-03.**
+- **A group `(?ims-ims:...)` sets the three flags for its body.** The parser reads `s` for the full
+  stop's set and `i` for `\w` under `iu` while it parses the body, and puts them back after it. The
+  emitter stamps every instruction with the case folding and the multiline mode in force where it was
+  written. The runner reads those instead of the pattern's flags, for a character, a class, a run, a
+  backreference, `^`, `$` and `\b`. The prefilter reads its first instruction's folding.
+- **The early errors are `SyntaxError`s:** a flag repeated in either list, a flag both added and
+  removed, a letter other than `i`, `m` and `s`, and `(?-:`.
+- **The regular expression's own flags do not change.** `flags` and `ignoreCase` answer for the
+  pattern as written.
+- **test262:** over `test/built-ins/RegExp`, `test/language/literals/regexp` and
+  `test/annexB/built-ins/RegExp`, 140 variants moved from failing to passing and none moved back: the
+  whole of `test/built-ins/RegExp/regexp-modifiers`, its `syntax/valid` cases among them. The
+  early-error cases under `test/language/literals/regexp` passed before, refused as invalid groups,
+  and pass now refused for the edition's reasons. Two `property-escapes/generated` variants spent their wall-clock
+  allowance in a run with twice as many jobs as the machine has cores, and pass at one job per core,
+  as on the base.
+- **The comparison engine** reads modifier groups only under `--js-regexp-modifiers`. With it, it
+  gives every answer of `runs/regexp-pattern-modifiers.js`.
+
+**What must not be read as repaired.**
+- The `v` flag stays declined, and a modifier group cannot name it or any flag other than `i`, `m`
+  and `s`, which is the edition's grammar.
+- No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.

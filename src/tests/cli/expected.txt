@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 123
+runs|0|# Completed: 124
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -939,3 +939,8 @@ runs/locale-compare-canonical-equivalence.js|0|0 / 0 / 0 / 0 / -1 / 1 / 0 / 0
 # right-hand side and written back through, as an object environment record writes its binding. The
 # values are the specification's; the comparison engine resolves again at the write *(JSC-243)*.
 runs/a-with-reference-resolved-once.js|0|6:0 / 6:0 / 1 / 2:10 / 5:7 / 9:0 / 4
+
+# A REGEXP GROUP CAN SET ITS OWN FLAGS (2026-10-03). `(?ims-ims:...)` changes the i, m and s flags for
+# its body alone, and its early errors are SyntaxErrors. The values are the specification's; the
+# comparison engine reads them only under --js-regexp-modifiers *(JSC-244)*.
+runs/regexp-pattern-modifiers.js|0|true:false / true:false / true:false:false / true:false / true:false / AbC / true:false / true:false / true / true / SyntaxError,SyntaxError,SyntaxError,SyntaxError,SyntaxError
