@@ -1,0 +1,15 @@
+diff --git a/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs b/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs
+index 06dcc17..fe14c00 100644
+--- a/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs
++++ b/src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs
+@@ -1419,9 +1419,7 @@ public sealed class SliceParser
+                 Advance();
+ 
+                 // A BigInt is a distinct value kind and not a number that happens to end in `n`.
+-                return token.RawText.EndsWith('n')
+-                    ? new SliceConstructExpression(span, SliceConstructKind.BigInt, [])
+-                    : new SliceNumericLiteral(span, token.NumericValue, token.IsLegacyOctal);
++                return new SliceNumericLiteral(span, token.NumericValue, token.IsLegacyOctal);
+ 
+             case SliceTokenKind.True:
+                 Advance();
