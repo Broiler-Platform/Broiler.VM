@@ -50,6 +50,16 @@
 # accessors (JSD-0033 section 8). The whole run of that day held this floor
 # (passed 80044, failed 7052, unsupported 0, skipped 7869) with no variant
 # that passed before failing; the rows stay as set.
+#
+# NOTED 2026-10-03, NO ROW CHANGED. The whole run of that day, at commit
+# b99986b on one Linux x86-64 machine with four jobs, held this floor: files
+# 53469, variants 95009, passed 82219, failed 4877, unsupported 0, exhausted
+# 44, skipped 7869 - 2,175 more passes than on 2026-09-22. Between the two runs
+# the parity roadmap's JSP-2 to JSP-10 clauses landed (JSC-236 to JSC-241) and
+# the Unicode default case conversion (JSC-242). Of the 4,921 variants failing
+# or exhausted, 3,715 are in surfaces this profile declines by name (Intl,
+# Temporal, SharedArrayBuffer and Atomics, ShadowRealm, the v flag) or need a
+# second realm. The rows stay as set; re-basing is a decision, not a lane's.
 suite test262
 revision 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
 manifest broiler.javascript.wide
