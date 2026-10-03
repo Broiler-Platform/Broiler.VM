@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 98
+runs|0|# Completed: 108
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -840,3 +840,40 @@ refused/eval-as-a-parameter-under-a-body-directive.js|3|2209:ReservedWordAsBindi
 refused/a-unary-operand-of-exponentiation.js|3|2101:UnexpectedToken at 4:18
 refused/a-unary-operand-of-exponentiation.js|3|a unary operator cannot be applied directly to the base of `**`
 dead-zone/a-read-before-the-initialiser-in-a-function-body.js|1|uncaught ReferenceError
+
+# JSP-4, THE ABSTRACT OPERATIONS UNDER THE LIBRARY, WHERE THEY WERE NEAR NEIGHBOURS OF THEMSELVES
+# (2026-10-03).
+#
+# `apply` reads its list's length with `ToLength`, and a list past the ceiling `Reflect.apply` has is
+# a RangeError, where `ToUint32` made `-1` four billion reads. A `super[k]` read and then written
+# converts `k` once, and still takes its base before the conversion. `delete` converts its base with
+# `ToObject`. The values of the first and last rows were taken from the comparison engine's
+# `node -p`; on the second it converts the key twice and reads the base after converting it, which
+# test262 refuses in both cases, and the row holds the specification's answer *(JSC-236)*.
+runs/apply-reads-its-length-with-tolength.js|0|-Infinity / 1 / 2 / RangeError
+runs/a-super-key-converted-once.js|0|compound 11:1 / update 2:1 / logical 2:1 / nullish 2:1 / plain 12:4 / base 2
+runs/delete-through-a-primitive-base.js|0|false / false / true / true / true / TypeError / TypeError / TypeError
+
+# JSP-5, THE INTEGRITY CLAUSES ON THE OBJECT MODEL THAT STILL DID NOT HOLD (2026-10-03).
+#
+# `for … in` asks for each name when it reaches it, so a name deleted or made non-enumerable first
+# is not visited. A String object's own keys are its exotic ones in the language's order and a
+# redefinition that changes nothing adds nothing. A collection's constructor calls the adder of the
+# object it builds. A Symbol `Symbol.for` did not make can be held weakly. Each value was taken from
+# the comparison engine's `node -p` except the demoted name in the first row, which it still visits
+# where the specification's `%ForInIteratorPrototype%.next` does not *(JSC-237)*.
+runs/a-for-in-that-observes-deletion.js|0|a,c / a / a,c / a
+runs/a-string-object-keeps-its-own-keys.js|0|0,1,length / 0,1,5,7,length,x / 6 / TypeError
+runs/a-collection-subclass-uses-its-own-adder.js|0|map 1 / map 2 / set 3 / weakmap 4 / weakset object / true
+runs/a-symbol-held-weakly.js|0|value / false / true / false / true / true / true / TypeError / TypeError / TypeError / TypeError
+
+# JSP-6, THE PROTOCOLS THE REALM PUBLISHED AND DID NOT CONSULT, WHERE THEY STILL DID NOT HOLD
+# (2026-10-03).
+#
+# `Function.prototype[Symbol.hasInstance]` exists and cannot be changed. An object spread and an
+# object rest copy enumerable Symbol-keyed properties. An anonymous function takes its name from a
+# computed key and from a class field, and an object literal's computed key is converted before its
+# value. Each value was taken from the comparison engine's `node -p` *(JSC-238)*.
+runs/function-prototype-has-instance.js|0|function / false,false,false / [Symbol.hasInstance] / 1 / true / false / true
+runs/an-object-spread-copies-symbol-keys.js|0|spread / false / spread / 2 / Symbol(tag)
+runs/a-function-named-by-a-computed-key-or-a-field.js|0|computed / [sym] / arrow / key value / field / arrow / #hidden / shared / computed / [sym] / counted 1

@@ -447,17 +447,18 @@ internal sealed class JsValueBox
 /// <c>set</c> refuses one because there is nothing to hold weakly; <c>get</c>, <c>has</c> and
 /// <c>delete</c> answer <c>undefined</c>, <c>false</c> and <c>false</c> without throwing, which is
 /// what the specification says and what lets a caller probe a table without guarding every call.
-/// Symbols as keys - ES2023's registered-symbol carve-out - are not implemented here because this
-/// realm's collection surface predates its Symbols.
+/// <b>A key is an object or a Symbol that <c>Symbol.for</c> did not make</b>, which is the
+/// language's <c>CanBeHeldWeakly</c> since ES2023, and the table is keyed on the reference either
+/// one is. Symbols were refused here until 2026-10-03 (JSP-5, JSC-237).
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=826AB6
 // Broiler-Human:        PENDING
 internal sealed class JsWeakMapObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C76F51
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2A190B
     // Broiler-Human:        PENDING
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<JsObject, JsValueBox> table =
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<object, JsValueBox> table =
         new();
 
     /// <summary>Creates an empty WeakMap.</summary>
@@ -469,25 +470,25 @@ internal sealed class JsWeakMapObject : JsObject
     }
 
     /// <summary>Reads the value under <paramref name="key"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=EA59C8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=15D91B
     // Broiler-Human:        PENDING
-    internal JsValue Get(JsObject key) =>
+    internal JsValue Get(object key) =>
         table.TryGetValue(key, out var box) ? box.Value : JsValue.Undefined;
 
     /// <summary>Whether <paramref name="key"/> is present.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DD952F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7B390B
     // Broiler-Human:        PENDING
-    internal bool Has(JsObject key) => table.TryGetValue(key, out _);
+    internal bool Has(object key) => table.TryGetValue(key, out _);
 
     /// <summary>Stores <paramref name="value"/> under <paramref name="key"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B1F28C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=46F956
     // Broiler-Human:        PENDING
-    internal void Set(JsObject key, JsValue value) => table.AddOrUpdate(key, new JsValueBox(value));
+    internal void Set(object key, JsValue value) => table.AddOrUpdate(key, new JsValueBox(value));
 
     /// <summary>Removes <paramref name="key"/>, answering whether it was there.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=63DB2E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=82FA2D
     // Broiler-Human:        PENDING
-    internal bool Delete(JsObject key) => table.Remove(key);
+    internal bool Delete(object key) => table.Remove(key);
 }
 
 /// <summary>
@@ -507,9 +508,9 @@ internal sealed class JsWeakSetObject : JsObject
     // Broiler-Human:        PENDING
     private static readonly JsValueBox Present = new(JsValue.Undefined);
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C76F51
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2A190B
     // Broiler-Human:        PENDING
-    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<JsObject, JsValueBox> table =
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<object, JsValueBox> table =
         new();
 
     /// <summary>Creates an empty WeakSet.</summary>
@@ -521,19 +522,19 @@ internal sealed class JsWeakSetObject : JsObject
     }
 
     /// <summary>Whether <paramref name="member"/> is present.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C337B8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=867E9D
     // Broiler-Human:        PENDING
-    internal bool Has(JsObject member) => table.TryGetValue(member, out _);
+    internal bool Has(object member) => table.TryGetValue(member, out _);
 
     /// <summary>Adds <paramref name="member"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=3B9E8A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DBF984
     // Broiler-Human:        PENDING
-    internal void Add(JsObject member) => table.AddOrUpdate(member, Present);
+    internal void Add(object member) => table.AddOrUpdate(member, Present);
 
     /// <summary>Removes <paramref name="member"/>, answering whether it was there.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F95280
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=88A5F0
     // Broiler-Human:        PENDING
-    internal bool Delete(JsObject member) => table.Remove(member);
+    internal bool Delete(object member) => table.Remove(member);
 }
 
 /// <summary>
@@ -572,24 +573,24 @@ internal sealed class JsWeakSetObject : JsObject
 // Broiler-Human:        PENDING
 internal sealed class JsWeakRefObject : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=ACDBC0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C3408D
     // Broiler-Human:        PENDING
-    private readonly System.WeakReference<JsObject> target;
+    private readonly System.WeakReference<object> target;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=A87102
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8C17A5
     // Broiler-Human:        PENDING
-    private JsObject? kept;
+    private object? kept;
 
-    /// <summary>Creates a reference to <paramref name="value"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1E26D5
+    /// <summary>Creates a reference to <paramref name="value"/>: an object, or an unregistered Symbol.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B40433
     // Broiler-Human:        PENDING
-    internal JsWeakRefObject(JsObject? prototype, JsObject value)
-        : base(prototype, "WeakRef") => target = new System.WeakReference<JsObject>(value);
+    internal JsWeakRefObject(JsObject? prototype, object value)
+        : base(prototype, "WeakRef") => target = new System.WeakReference<object>(value);
 
     /// <summary>The target while it lives, or nothing once it is gone.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D9A589
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D4ECBE
     // Broiler-Human:        PENDING
-    internal JsObject? Deref()
+    internal object? Deref()
     {
         if (kept is not null)
         {
@@ -612,19 +613,19 @@ internal sealed class JsWeakRefObject : JsObject
 internal sealed class JsFinalizationRecord
 {
     /// <summary>Records one <c>register</c> call.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C1B7E3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E56860
     // Broiler-Human:        PENDING
-    internal JsFinalizationRecord(JsObject target, JsValue held, JsObject? token)
+    internal JsFinalizationRecord(object target, JsValue held, object? token)
     {
-        Target = new System.WeakReference<JsObject>(target);
+        Target = new System.WeakReference<object>(target);
         Held = held;
-        Token = token is null ? null : new System.WeakReference<JsObject>(token);
+        Token = token is null ? null : new System.WeakReference<object>(token);
     }
 
     /// <summary>The object whose collection would, in a realm that ran cleanups, be reported.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2751C0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4DDED5
     // Broiler-Human:        PENDING
-    internal System.WeakReference<JsObject> Target { get; }
+    internal System.WeakReference<object> Target { get; }
 
     /// <summary>The value the cleanup callback would have been handed.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C1BB99
@@ -632,9 +633,9 @@ internal sealed class JsFinalizationRecord
     internal JsValue Held { get; }
 
     /// <summary>The token <c>unregister</c> matches on, when one was supplied.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7CF922
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1CD0BF
     // Broiler-Human:        PENDING
-    internal System.WeakReference<JsObject>? Token { get; }
+    internal System.WeakReference<object>? Token { get; }
 }
 
 /// <summary>
@@ -697,9 +698,9 @@ internal sealed class JsFinalizationRegistryObject : JsObject
     internal int Count => records.Count;
 
     /// <summary>Records one registration.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=655C95
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7930E7
     // Broiler-Human:        PENDING
-    internal void Register(JsObject target, JsValue held, JsObject? token) =>
+    internal void Register(object target, JsValue held, object? token) =>
         records.Add(new JsFinalizationRecord(target, held, token));
 
     /// <summary>
@@ -711,9 +712,9 @@ internal sealed class JsFinalizationRegistryObject : JsObject
     /// collected can never be named again and is dropped on the way past, which is the only
     /// pruning this list gets.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0EC68B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0A2ED3
     // Broiler-Human:        PENDING
-    internal bool Unregister(JsObject token)
+    internal bool Unregister(object token)
     {
         var removed = false;
 

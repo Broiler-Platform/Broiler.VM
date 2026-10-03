@@ -10092,3 +10092,147 @@ the catalogue of what must not be taken from the comparison engine, and
 
 **Authority and date.** The implementation of 2026-09-30 in this checkout and
 [record JSP-9-001](../../../docs/evidence/jsp-9-001/README.md). 2026-09-30.
+
+### JSC-236
+
+**Where:** the parity roadmap's [section 4.5](roadmap.parity.md#45-the-operations-underneath-and-the-integrity-clauses-on-top),
+its first two bullets and the `delete` bullet, and
+[JSP-4](roadmap.parity.md#jsp-4--the-abstract-operations-underneath-the-library)'s gate. The
+2026-09-21 note under JSP-4 said what JSeal V01, VM-FIX-B and VM-FIX-C repaired, and that
+`super[k] op= v` was not among them.
+
+**What the plan said.**
+- `ToLength` is `ToUint32` throughout the array-like surface, and `Function.prototype.apply` over an
+  object with a negative `length` spends the whole allowance.
+- `ToPropertyKey` runs twice on a computed key in a compound assignment, an increment or a
+  decrement, and in a logical assignment that writes.
+- `delete` through a primitive base answers `true` without performing `ToObject`, and
+  `delete undefined.x` answers `true` where the language requires a `TypeError`.
+
+**What replaced it, observed on 2026-10-03.**
+- **`apply`'s list.** `CreateListFromArrayLike` reads its length with `ToLength`, as the Array methods
+  have since VM-FIX-C. A length of `-1` is an empty list, where `ToUint32` made it four billion reads
+  and the program met its wall clock. A length past the ceiling `Reflect.apply` already had is the
+  `RangeError` that one gives, where `2**32 + 2` was read as a list of two.
+- **`super[k]` read and then written.** A compound, update or logical assignment converts the key
+  once, and the write uses the key the read produced. The base is still taken before the key is
+  converted, so a `toString` that re-points the home object's prototype does not change where the
+  read looks. That took a new instruction, `LoadSuperPropertyKeepKey` (`0xB3`): a `super` reference
+  has no base on the stack, so `ToPropertyKey` cannot convert its key, and converting it first would
+  read the base after the conversion. A `super.x` with a literal name keeps its two instructions,
+  and a program with no computed `super` write lowers to the bytes it did.
+- **`delete`.** The base goes through `ToObject` before the key is converted. A nullish base is a
+  `TypeError`, and its key's `toString` does not run. A primitive is asked through its wrapper, so
+  `delete "abc".length` and `delete "abc"[0]` answer `false`, and throw in strict code.
+- **The rest of the gate held before this date**: operand order for every binary and relational
+  operator, `ToPropertyKey` once for an ordinary computed member, and loose equality between an
+  Object and a Symbol. The ordinary member's count has a fixture now beside the `super` one.
+- **The comparison engine is not the oracle for the key count.** Node 22 converts the key twice for
+  `o[k] += 1` and for `super[k] += 1`, and reads a `super` base after converting the key. The
+  pinned test262 requires one conversion and the earlier base, and the fixture's row holds those.
+
+**What must not be read as repaired.**
+- A `super` write still takes its base again when it writes. The specification takes it once, when
+  the reference is made, so a right-hand side that re-points the home object's prototype is seen by
+  the write here and not by the language.
+- JSP-4 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md). 2026-10-03.
+
+### JSC-237
+
+**Where:** the parity roadmap's [section 4.5](roadmap.parity.md#45-the-operations-underneath-and-the-integrity-clauses-on-top),
+its `for … in`, `String` object and keyed-collection bullets, and
+[JSP-5](roadmap.parity.md#jsp-5--the-integrity-clauses-on-the-object-model)'s gate.
+
+**What the plan said.**
+- `for … in` enumerates a stale snapshot: a property deleted before the loop reaches it is still
+  visited, and a property made non-enumerable mid-loop is still visited.
+- Redefining a `String` object's index with an identical descriptor adds a duplicate own key, and an
+  added array-index property sorts after `length`.
+- The `Map`, `Set`, `WeakMap` and `WeakSet` constructors resolve the adder on the intrinsic
+  prototype, so a subclass's `set` or `add` is not called; and Symbols are refused as weak keys and
+  `WeakRef` targets.
+
+**What replaced it, observed on 2026-10-03.**
+- **`for … in`.** The enumerator reads one object at a time and asks for each name when the loop
+  reaches it, which is the specification's `%ForInIteratorPrototype%.next`. A name deleted first,
+  own or inherited, is not visited; a name made non-enumerable first is not visited; a name already
+  visited or shadowed is not visited again. The prototype is read when the object above it runs out.
+  `ForInNext` now reaches guest code through a Proxy's traps, and the slice compiler's baseline
+  partition names it `T R` where it said `T P`.
+- **The comparison engine differs on one of these.** Node 22 still visits a name made
+  non-enumerable before the loop reaches it. The gate asks for demotion to be observed, and the
+  fixture's row holds the specification's algorithm.
+- **The `String` object.** Its `length` and its indices are never stored: a definition the
+  validation admits describes them as they are and changes nothing. Its own keys are its indices,
+  every other index ascending, `length`, then the other names in the order they were made.
+- **The collections.** Each constructor makes its object from `new.target` before reading the adder,
+  so a subclass's own adder runs. Each now builds from `new.target` itself, as the binary
+  constructors do.
+- **Weak references.** `CanBeHeldWeakly` admits a Symbol that `Symbol.for` did not make: as a
+  `WeakMap` key, a `WeakSet` member, a `WeakRef` target, and a registry's target and token. A
+  registered Symbol is refused, because `Symbol.for` answers it again whenever it is asked for.
+
+**What must not be read as repaired.**
+- The symbol registry is still one per realm. The specification's is one per agent.
+- The rest of section 4.5's integrity clauses were repaired before this date, by the JSeal slices the
+  2026-09-21 note names, and this entry did not re-examine them beyond the probes run beside it.
+- JSP-5 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md). 2026-10-03.
+
+### JSC-238
+
+**Where:** the parity roadmap's [section 4.4](roadmap.parity.md#44-the-mechanisms-the-realm-publishes-and-does-not-honour),
+its `Function.prototype[Symbol.hasInstance]`, name inference and object spread bullets, and
+[JSP-6](roadmap.parity.md#jsp-6--the-protocols-the-realm-publishes-and-does-not-consult)'s gate. With
+them the `node` declarations on cases 295 and 301 of `the-general-surface.js`.
+
+**What the plan said.**
+- `Function.prototype[Symbol.hasInstance]` does not exist, so assigning it changes `instanceof` for
+  every function in the realm.
+- An anonymous function gets no name through a computed key, through a class field initialiser, or
+  through a logical assignment; and a Symbol-keyed method in an object literal gets none while the
+  same key in a class body does.
+- Object spread does not copy Symbol-keyed own enumerable properties.
+- The two declarations said a computed member of an object literal does not name an anonymous
+  function, because the key is not known until it is evaluated.
+
+**What replaced it, observed on 2026-10-03.**
+- **`Function.prototype[Symbol.hasInstance]`** is `OrdinaryHasInstance`, named `[Symbol.hasInstance]`,
+  of length one, neither writable, enumerable nor configurable. `instanceof` is the specification's
+  `InstanceofOperator`: a primitive right-hand side is a `TypeError`, a method found on the object
+  decides, and the realm's own method is answered without a call.
+- **Name inference.**
+  - A data member with a computed key names an anonymous function, arrow or class with the key's
+    value, in brackets for a Symbol. A new `DefineMethod` operand bit, `MemberIsNamedValue` (`8`),
+    marks it, and the value gets no home object.
+  - A class field names one after its key. A literal or private key names it when it is lowered.
+    A computed key names it when the field is defined, under a new `DefineClassElement` bit,
+    `ElementIsNamedValue` (`64`).
+  - A computed field's key is now converted once, when the class is defined. It was converted for
+    every instance.
+  - An object literal's computed key is converted before its value is evaluated. It was converted
+    after.
+  - The logical assignment and the method cases already held, and the object-literal and class-body
+    Symbol cases agree.
+- **Object spread and object rest** copy enumerable Symbol-keyed own properties, from one
+  `[[OwnPropertyKeys]]`.
+- **The two declarations went stale** and are removed. The probe's retained answers now hold the
+  names.
+
+**What must not be read as repaired.**
+- An anonymous class with a static element, at a computed key, keeps the empty name. A static
+  element runs while the class is defined, so naming it afterwards could be observed, and a static
+  `name` member must not be overwritten. Node 22 names such a class and overwrites a static `name`
+  method; the specification does the first and not the second.
+- Found on the way and not repaired: an object rest pattern reads an excluded property again.
+  `var { a, ...rest } = o` runs `a`'s getter twice, where the specification excludes the key before
+  any read.
+- JSP-6 has no owner. No gate is accepted, and no stage or milestone moves.
+
+**Authority and date.** The implementation of 2026-10-03 in this checkout and
+[record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md). 2026-10-03.

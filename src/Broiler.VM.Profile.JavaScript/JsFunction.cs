@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   29
-// Annotated:        29/29
+// Relevant units:   30
+// Annotated:        30/30
 // Exempt:           35
-// Human-reviewed:   0/29
+// Human-reviewed:   0/30
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         3/3
 // Resource impact:  2/10 max
-// Unverified:       29
+// Unverified:       30
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -654,26 +654,48 @@ internal sealed class JsPrimitiveWrapper : JsObject
         return base.DeleteOwnProperty(key);
     }
 
+    /// <summary>
+    /// Whether <paramref name="key"/> is one of the own properties a String wrapper synthesises:
+    /// <c>length</c>, or an index below it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=ED2D8B
+    // Broiler-Human:        PENDING
+    internal bool IsStringOwnKey(string key) =>
+        Primitive.IsString &&
+        (string.Equals(key, "length", System.StringComparison.Ordinal) ||
+            (IsArrayIndex(key, out var at) && at < Primitive.AsString().Length));
+
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=64CA9C
+    /// <remarks>
+    /// <b>The String exotic object's <c>[[OwnPropertyKeys]]</c></b>: the string's own indices, then
+    /// every other array index the object holds in ascending order, then <c>length</c>, then the
+    /// other String keys in the order they were made. An index added past the string's end sorted
+    /// after <c>length</c>, as though it were an ordinary name (JSP-5, JSC-237).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FB6B46
     // Broiler-Human:        PENDING
     internal override System.Collections.Generic.List<string> OwnPropertyNames()
     {
-        var names = new System.Collections.Generic.List<string>();
-
-        if (Primitive.IsString)
+        if (!Primitive.IsString)
         {
-            var text = Primitive.AsString();
-
-            for (var at = 0; at < text.Length; at++)
-            {
-                names.Add(JsNumberFormat.ToUintString((uint)at));
-            }
-
-            names.Add("length");
+            return base.OwnPropertyNames();
         }
 
-        names.AddRange(base.OwnPropertyNames());
+        var names = new System.Collections.Generic.List<string>();
+        var text = Primitive.AsString();
+
+        for (var at = 0; at < text.Length; at++)
+        {
+            names.Add(JsNumberFormat.ToUintString((uint)at));
+        }
+
+        var indices = new System.Collections.Generic.List<string>();
+        var rest = new System.Collections.Generic.List<string>();
+        CollectOwnNames(indices, rest);
+        SortIndexKeys(indices);
+        names.AddRange(indices);
+        names.Add("length");
+        names.AddRange(rest);
         return names;
     }
 }

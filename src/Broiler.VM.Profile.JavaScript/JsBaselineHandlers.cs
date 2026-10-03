@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   201
-// Annotated:        201/201
+// Relevant units:   202
+// Annotated:        202/202
 // Exempt:           1
-// Human-reviewed:   0/201
+// Human-reviewed:   0/202
 // IP risk:          Low
 // Security risk:    Critical
-// Criteria:         202/202
+// Criteria:         203/203
 // Resource impact:  4/10 max
-// Unverified:       201
+// Unverified:       202
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -82,7 +82,7 @@ internal static unsafe class JsBaselineHandlers
     /// <b>A static constructor and not a module initializer</b>, so the table is built the first time
     /// a baseline instance asks for it and never in a process that runs only bytecode.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=63B4DD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Critical; Resources=4; Fingerprint=F47BAF
     // Broiler-Falsified-If: the published table maps a defined opcode byte to an entry point built for another opcode, or an undefined byte to anything but the refusing entry point
     // Broiler-Human:        PENDING
     static JsBaselineHandlers()
@@ -234,6 +234,7 @@ internal static unsafe class JsBaselineHandlers
         slots[(int)JsOpcode.ToNumeric] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&ToNumeric;
         slots[(int)JsOpcode.Increment] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&Increment;
         slots[(int)JsOpcode.Decrement] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&Decrement;
+        slots[(int)JsOpcode.LoadSuperPropertyKeepKey] = (nint)(delegate* unmanaged<JsBaselineFrame*, int, int>)&LoadSuperPropertyKeepKey;
         if (!Sound(slots, undefined))
         {
             Table = 0;
@@ -1446,6 +1447,14 @@ internal static unsafe class JsBaselineHandlers
     [System.Runtime.InteropServices.UnmanagedCallersOnly]
     private static int Decrement(JsBaselineFrame* frame, int pc) =>
         JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.Decrement);
+
+    /// <summary>The entry point for <see cref="JsOpcode.LoadSuperPropertyKeepKey"/> (0xB3): a block step starting at one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=581A72
+    // Broiler-Falsified-If: this runs anything other than a block step starting at one LoadSuperPropertyKeepKey at the offset the managed side expects
+    // Broiler-Human:        PENDING
+    [System.Runtime.InteropServices.UnmanagedCallersOnly]
+    private static int LoadSuperPropertyKeepKey(JsBaselineFrame* frame, int pc) =>
+        JsNativeActivation.Step<JsStepBlock>(frame, pc, JsOpcode.LoadSuperPropertyKeepKey);
 
     /// <summary>The entry point for <see cref="JsOpcode.DisposeStep"/> (0xA3), which runs alone.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=098985

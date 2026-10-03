@@ -744,6 +744,21 @@ a milestone with a ledger row.
   Local implementation in the working tree, validated as recorded in the named
   `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
   moves.
+- **2026-10-03 implementation note:** every clause of the gate has a fixture in `src/tests/cli`. The
+  repaired ones:
+  - `apply` reads its list's length with `ToLength`, and a list past `Reflect.apply`'s ceiling is a
+    `RangeError`;
+  - `super[k]` read and then written converts `k` once, through a new instruction that keeps the
+    converted key, and still takes the base first;
+  - `delete` converts its base with `ToObject`, so a nullish base throws and a primitive answers as
+    its wrapper does.
+
+  Operand order, `ToPropertyKey` on an ordinary member and the Object-versus-Symbol equality already
+  held. The comparison engine converts the key twice, which test262 refuses, and the fixture holds the
+  specification's count *(corrected: [JSC-236](roadmap.corrections.md#jsc-236))*. Local
+  implementation in the working tree, validated as recorded in
+  [record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md); unreviewed, not accepted
+  evidence, and no milestone or stage moves.
 - **Objective.** The operations the library is written on top of are the language's, so a defect in
   one stops being a defect in every method that calls it.
 - **Waits on.** `JS-6`.
@@ -764,6 +779,20 @@ a milestone with a ledger row.
   for resizable views. Local implementation in the working tree, validated as recorded in the named
   `docs/evidence/jseal-*` records; unreviewed, not accepted evidence, and no milestone or stage
   moves.
+- **2026-10-03 implementation note:** the clauses section 4.5 names that still did not hold have a
+  change and a fixture each:
+  - `for … in` asks for each name when it reaches it, so a name deleted or made non-enumerable
+    first is not visited;
+  - a `String` object's `length` and indices are never stored, and its own keys come in the
+    language's order;
+  - a keyed collection's constructor calls the adder of the object it builds from `new.target`;
+  - a Symbol `Symbol.for` did not make can be held weakly.
+
+  The comparison engine still visits a demoted name, and the fixture holds the specification's
+  algorithm *(corrected: [JSC-237](roadmap.corrections.md#jsc-237))*. Local implementation in the
+  working tree, validated as recorded in
+  [record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md); unreviewed, not accepted
+  evidence, and no milestone or stage moves.
 - **Objective.** `freeze`, `seal` and `preventExtensions` mean what they say, for every key kind and
   every exotic object this profile has.
 - **Waits on.** `JS-4`. The typed-array half is [JSW-2](roadmap.workloads.md#jsw-2--the-binary-surface-and-a-manifest-identity-for-it)'s
@@ -788,6 +817,20 @@ a milestone with a ledger row.
   the same for the match/replace/search/split Symbol methods. Local implementation in the working
   tree, validated as recorded in the named `docs/evidence/jseal-*` records; unreviewed, not accepted
   evidence, and no milestone or stage moves.
+- **2026-10-03 implementation note:** the three clauses that still did not hold have a change and a
+  fixture each:
+  - `Function.prototype[Symbol.hasInstance]` exists, is `OrdinaryHasInstance`, and is neither
+    writable nor configurable;
+  - an object spread and an object rest copy enumerable Symbol-keyed properties;
+  - an anonymous function takes its name from a computed key and from a class field, so the object
+    literal and the class body agree on a Symbol key.
+
+  The other clauses already held, and each answers as the comparison engine does. Two `node`
+  declarations on `the-general-surface.js` went stale and are removed. An anonymous class with a
+  static element at a computed key keeps the empty name
+  *(corrected: [JSC-238](roadmap.corrections.md#jsc-238))*. Local implementation in the working tree,
+  validated as recorded in [record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md);
+  unreviewed, not accepted evidence, and no milestone or stage moves.
 - **Objective.** A well-known symbol installed by a guest changes what the realm does, everywhere the
   language says it does.
 - **Waits on.** `JS-6`, and `JS-4` for the intrinsic graph.

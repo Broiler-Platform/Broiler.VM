@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   19
 // Annotated:        19/19
-// Exempt:           20
+// Exempt:           22
 // Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
@@ -19,41 +19,81 @@ namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>An enumerator over the property names <c>for…in</c> visits.</summary>
 /// <remarks>
+/// <para>
 /// It is an object because the operand stack holds values and a value that is not a primitive is
 /// an object. Guest code can never reach it: nothing puts it in a property and the two opcodes
 /// that touch it are the only ones that accept it.
+/// </para>
+/// <para>
+/// <b>It reads one object at a time, and asks for each name when it reaches it</b>, which is the
+/// enumeration the specification's own <c>%ForInIteratorPrototype%.next</c> performs. A name deleted
+/// before the loop reaches it is not visited, and one made non-enumerable is not visited either,
+/// where a list collected whole at the start visited both (JSP-5, JSC-237). A name already visited,
+/// or present lower in the chain, is not visited again; the prototype is read when the object above
+/// it runs out, so a prototype swapped mid-loop is the one the loop goes on to.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5A6690
 // Broiler-Human:        PENDING
 internal sealed class JsEnumerator : JsObject
 {
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A6428A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D90CE
     // Broiler-Human:        PENDING
-    private readonly System.Collections.Generic.List<string> keys;
+    private readonly System.Collections.Generic.HashSet<string> visited =
+        new(System.StringComparer.Ordinal);
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1FDE8E
+    // Broiler-Human:        PENDING
+    private JsObject? current;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6FFF1F
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.List<string>? names;
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=98C321
     // Broiler-Human:        PENDING
     private int at;
 
-    /// <summary>Creates an enumerator over an already-collected key list.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BE0557
+    /// <summary>Creates an enumerator that starts at <paramref name="start"/>, or visits nothing.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F78D99
     // Broiler-Human:        PENDING
-    internal JsEnumerator(System.Collections.Generic.List<string> names)
-        : base(null, "Enumerator") => keys = names;
+    internal JsEnumerator(JsObject? start)
+        : base(null, "Enumerator") => current = start;
 
     /// <summary>Yields the next name, or answers that there is none.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=083E20
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5D5530
     // Broiler-Human:        PENDING
     internal bool TryNext(out string key)
     {
-        if (at >= keys.Count)
+        while (current is not null)
         {
-            key = string.Empty;
-            return false;
+            names ??= current.OwnPropertyNames();
+
+            while (at < names.Count)
+            {
+                var name = names[at++];
+
+                if (visited.Contains(name) || !current.TryGetOwnProperty(name, out var property))
+                {
+                    continue;
+                }
+
+                visited.Add(name);
+
+                if (property.Enumerable)
+                {
+                    key = name;
+                    return true;
+                }
+            }
+
+            current = current.Prototype;
+            names = null;
+            at = 0;
         }
 
-        key = keys[at++];
-        return true;
+        key = string.Empty;
+        return false;
     }
 }
 
@@ -672,43 +712,13 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>
-    /// Collects the names <c>for…in</c> visits: own and inherited enumerable string keys, each
-    /// once, shadowed names excluded.
+    /// Starts the names <c>for…in</c> visits: own and inherited enumerable string keys, each once,
+    /// shadowed names excluded, each asked for when the loop reaches it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=53AD7C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=03A836
     // Broiler-Human:        PENDING
-    internal JsEnumerator CreateEnumerator(JsEngine owner, JsValue target)
-    {
-        var names = new System.Collections.Generic.List<string>();
-
-        if (target.IsNullish)
-        {
-            return new JsEnumerator(names);
-        }
-
-        var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
-        var current = target.IsObject ? target.AsObject() : owner.ToObject(target);
-
-        while (current is not null)
-        {
-            foreach (var key in current.OwnPropertyNames())
-            {
-                if (!seen.Add(key))
-                {
-                    continue;
-                }
-
-                if (current.TryGetOwnProperty(key, out var property) && property.Enumerable)
-                {
-                    names.Add(key);
-                }
-            }
-
-            current = current.Prototype;
-        }
-
-        return new JsEnumerator(names);
-    }
+    internal JsEnumerator CreateEnumerator(JsEngine owner, JsValue target) =>
+        new(target.IsNullish ? null : target.IsObject ? target.AsObject() : owner.ToObject(target));
 
     /// <summary>The engine this realm belongs to.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=96CC19

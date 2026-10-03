@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-09-29 (JSP-8, JSP-10 and JSP-1 observations; milestone rows unchanged)
+**Last updated:** 2026-10-03 (JSP-4, JSP-5 and JSP-6 observation; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -482,6 +482,23 @@ language, are corrected ([JSC-235](roadmap.corrections.md#jsc-235)).
 A run against Broiler.JS still reports findings outside the catalogue, not adjudicated. This is
 unreviewed implementation and validation material, not accepted milestone evidence; JSP-9 has no
 owner and no milestone row advances.
+
+**JSP-4, JSP-5 and JSP-6 observation, 2026-10-03.** The clauses of the parity roadmap's JSP-4, JSP-5
+and JSP-6 gates that still did not hold have a change and a fixture each:
+- `apply` reads its list's length with `ToLength`; a `super[k]` read and then written converts `k`
+  once, through a new instruction; `delete` converts its base with `ToObject`
+  ([JSC-236](roadmap.corrections.md#jsc-236));
+- `for … in` asks for each name when it reaches it; a `String` object keeps its exotic keys in the
+  language's order; a keyed collection's constructor calls its own adder; a Symbol `Symbol.for` did
+  not make can be held weakly ([JSC-237](roadmap.corrections.md#jsc-237));
+- `Function.prototype[Symbol.hasInstance]` exists and cannot be changed; object spread and rest copy
+  Symbol keys; an anonymous function takes its name from a computed key and a class field
+  ([JSC-238](roadmap.corrections.md#jsc-238)).
+
+The rest of each gate already held. [Record JSP-MECH-001](../../../docs/evidence/jsp-mech-001/README.md)
+retains each change's control and the pinned test262 subtrees either side. This is unreviewed
+implementation and validation material, not accepted milestone evidence; the stages have no owner
+and no milestone row advances.
 
 Four categories must remain distinct, and conflating any two of them is how an unfounded claim
 gets recorded:

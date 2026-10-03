@@ -319,7 +319,7 @@ internal static class NativeTemplateScanChecks
         (JsOpcode.JumpIfTrue, "T P"),
         (JsOpcode.Throw, "T R"),
         (JsOpcode.ForInStart, "R"),
-        (JsOpcode.ForInNext, "T P"),
+        (JsOpcode.ForInNext, "T R"),
         (JsOpcode.IterateStart, "E"),
         (JsOpcode.IterateNext, "T E"),
         (JsOpcode.IterateRest, "E"),
@@ -368,6 +368,7 @@ internal static class NativeTemplateScanChecks
         (JsOpcode.ToNumeric, "R"),
         (JsOpcode.Increment, "R"),
         (JsOpcode.Decrement, "R"),
+        (JsOpcode.LoadSuperPropertyKeepKey, "R"),
     ];
 
     /// <summary>

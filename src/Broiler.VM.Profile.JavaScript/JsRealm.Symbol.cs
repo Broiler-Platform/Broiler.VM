@@ -160,7 +160,7 @@ internal sealed partial class JsRealm
         new(System.StringComparer.Ordinal);
 
     /// <summary>Builds the <c>Symbol</c> intrinsic and the iterators the realm's own types need.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B221B4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=426211
     // Broiler-Human:        PENDING
     private void SetupSymbol()
     {
@@ -215,7 +215,7 @@ internal sealed partial class JsRealm
 
             if (!registry.TryGetValue(key, out var found))
             {
-                found = new JsSymbol(key, described: true);
+                found = new JsSymbol(key, described: true) { IsRegistered = true };
                 registry[key] = found;
             }
 

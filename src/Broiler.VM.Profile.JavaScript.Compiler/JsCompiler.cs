@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   228
-// Annotated:        228/228
-// Exempt:           122
-// Human-reviewed:   0/228
+// Relevant units:   230
+// Annotated:        230/230
+// Exempt:           123
+// Human-reviewed:   0/230
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         19/18
 // Resource impact:  3/10 max
-// Unverified:       228
+// Unverified:       230
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -485,6 +485,21 @@ public sealed class JsCompiler
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4E6FAE
     // Broiler-Human:        PENDING
     private bool insideFieldInitialiser;
+
+    /// <summary>
+    /// The name a field initialiser's anonymous function takes, while that initialiser's own body is
+    /// lowered, and <see langword="null"/> everywhere else.
+    /// </summary>
+    /// <remarks>
+    /// <b>The initialiser's body is one <c>return</c> of the value the field was written with</b>, and
+    /// the language names an anonymous function there after the field: <c>class C { f = function ()
+    /// {} }</c> gives it <c>f</c>, and a private field <c>#f</c>. Every other function, an arrow
+    /// included, resets it, so a <c>return</c> nested inside the value names nothing. A computed key
+    /// leaves the name empty here, and the executor names the value instead (JSP-6, JSC-238).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=36E506
+    // Broiler-Human:        PENDING
+    private string? fieldValueName;
 
     /// <summary>
     /// The boundary scope of the evaluated program being lowered, or <see langword="null"/> when the
@@ -2073,7 +2088,7 @@ public sealed class JsCompiler
     /// TypeError in the language, and the flag is what makes it one here.
     /// </param>
     /// <param name="isDerived">Whether this is the constructor of a class with a heritage.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CC38F2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E7294F
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
@@ -2091,6 +2106,8 @@ public sealed class JsCompiler
         var outerDerived = insideDerivedConstructor;
         var outerFunction = insideFunction;
         var outerField = insideFieldInitialiser;
+        var outerFieldValueName = fieldValueName;
+        fieldValueName = isFieldInitialiser ? function.Name : null;
         var outerExits = exits;
         exits = [];
 
@@ -2348,6 +2365,7 @@ public sealed class JsCompiler
         insideFunction = outerFunction;
         insideStaticBlock = outerStaticBlock;
         insideFieldInitialiser = outerField;
+        fieldValueName = outerFieldValueName;
         exits = outerExits;
         return index;
     }
@@ -6376,7 +6394,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3AEC6C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EC7EAC
     // Broiler-Human:        PENDING
     private void CompileReturn(JsReturnStatement returned)
     {
@@ -6432,7 +6450,15 @@ public sealed class JsCompiler
                 return;
             }
 
-            CompileExpression(returned.Value);
+            if (fieldValueName is { } named)
+            {
+                CompileNamedValue(returned.Value, named);
+            }
+            else
+            {
+                CompileExpression(returned.Value);
+            }
+
             AwaitTheReturnedValue();
             Emit(JsOpcode.Return);
             return;
@@ -7336,7 +7362,7 @@ public sealed class JsCompiler
     /// the initialiser are pushed and consumed by the one instruction, and the pair beneath them is
     /// read rather than popped.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AB8704
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E036F1
     // Broiler-Human:        PENDING
     private void CompileClassElement(JsClassMember member)
     {
@@ -7394,6 +7420,13 @@ public sealed class JsCompiler
         else
         {
             RefuseArguments(member.Function);
+
+            if (member.Computed is not null && !member.IsPrivate &&
+                member.Function.Body is [JsReturnStatement { Value: { } value }] &&
+                NamedAtRunTime(value))
+            {
+                flags |= JsOpcodes.ElementIsNamedValue;
+            }
 
             Emit(
                 JsOpcode.Closure,
@@ -7653,6 +7686,42 @@ public sealed class JsCompiler
         CompileExpression(value);
     }
 
+    /// <summary>
+    /// Whether <paramref name="value"/> is an anonymous function definition the executor can name
+    /// after it is made, from a key known only at run time.
+    /// </summary>
+    /// <remarks>
+    /// <b>A function or an arrow always can</b>: nothing runs between its creation and its naming.
+    /// <b>A class can only when it has no static element</b>, because a static element runs while the
+    /// class is defined and could read the name before it is given, and a static <c>name</c> member
+    /// is the class's name and must not be overwritten. Such a class keeps the empty name, which the
+    /// record of this change states (JSP-6, JSC-238).
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=53D99F
+    // Broiler-Human:        PENDING
+    private static bool NamedAtRunTime(JsExpression value)
+    {
+        if (value is JsFunctionExpression function)
+        {
+            return function.Function.Name.Length == 0;
+        }
+
+        if (value is not JsClassExpression { Class.Name.Length: 0 } anonymous)
+        {
+            return false;
+        }
+
+        foreach (var member in anonymous.Class.Members)
+        {
+            if (member.IsStatic)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /// <summary>The name a pattern's leaf infers for an anonymous default, or the empty string.</summary>
     /// <remarks>
     /// <b>Only a leaf that is one NAME infers anything.</b> <c>[a = function () {}]</c> names the
@@ -7792,7 +7861,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2D1356
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C1C2C5
     // Broiler-Human:        PENDING
     private void CompileObject(JsObjectLiteral literal)
     {
@@ -7857,8 +7926,25 @@ public sealed class JsCompiler
 
             if (entry.Computed is not null)
             {
+                // THE KEY IS CONVERTED BEFORE THE VALUE IS EVALUATED, which is where
+                // `ComputedPropertyName` converts it: a key whose `toString` runs is observed before
+                // anything the value does, where the definition converted it after (JSP-6, JSC-238).
                 CompileExpression(entry.Computed);
+                Emit(JsOpcode.ToPropertyKey);
                 CompileExpression(entry.Value);
+
+                // AN ANONYMOUS FUNCTION TAKES THE KEY AS ITS NAME, which is known only now, so the
+                // definition names it as it names a method - without making it one (JSP-6,
+                // JSC-238). Every other value is defined as it was.
+                if (NamedAtRunTime(entry.Value))
+                {
+                    Emit(
+                        JsOpcode.DefineMethod,
+                        (byte)(JsOpcodes.MemberIsEnumerable | JsOpcodes.MemberIsNamedValue));
+
+                    continue;
+                }
+
                 Emit(JsOpcode.DefineIndexed);
                 continue;
             }
@@ -8131,7 +8217,7 @@ public sealed class JsCompiler
         Emit(add);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=713840
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A9A994
     // Broiler-Human:        PENDING
     private void CompileUpdate(JsUpdateExpression update)
     {
@@ -8164,8 +8250,7 @@ public sealed class JsCompiler
             var owner = FunctionScope();
             var kept = owner.Declare("#update" + owner.SlotCount, constant: false);
             CompileSuperKey(inherited);
-            Emit(JsOpcode.Duplicate);
-            Emit(JsOpcode.LoadSuperProperty);
+            EmitSuperReadKeepingKey(inherited);
             EmitUpdateOperand();
 
             if (!update.Prefix)
@@ -8377,7 +8462,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=450318
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CD53EE
     // Broiler-Human:        PENDING
     private void CompileAssignment(JsAssignmentExpression assignment)
     {
@@ -8453,11 +8538,10 @@ public sealed class JsCompiler
 
         if (assignment.Target is JsSuperMemberExpression host)
         {
-            // The key is computed once and duplicated, so the read and the write agree about it
-            // even when it is an expression with a side effect.
+            // The key is computed once and kept, so the read and the write agree about it even
+            // when it is an expression with a side effect, and it is converted once.
             CompileSuperKey(host);
-            Emit(JsOpcode.Duplicate);
-            Emit(JsOpcode.LoadSuperProperty);
+            EmitSuperReadKeepingKey(host);
             CompileExpression(assignment.Value);
             Emit(opcode);
             Emit(JsOpcode.StoreSuperProperty);
@@ -8667,7 +8751,7 @@ public sealed class JsCompiler
     /// no base on the stack — the home object and the receiver are the frame's — so this is the
     /// narrowest of the four shapes and the only one whose short circuit drops a single value.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A4BEAC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EDB3C6
     // Broiler-Human:        PENDING
     private void CompileLogicalSuperAssignment(
         JsAssignmentExpression assignment, JsSuperMemberExpression member)
@@ -8676,8 +8760,7 @@ public sealed class JsCompiler
         var kept = NewLabel();
 
         CompileSuperKey(member);
-        Emit(JsOpcode.Duplicate);
-        Emit(JsOpcode.LoadSuperProperty);
+        EmitSuperReadKeepingKey(member);
         Emit(JsOpcode.Duplicate);
 
         switch (assignment.Operator)
@@ -9457,6 +9540,30 @@ public sealed class JsCompiler
         Emit(JsOpcode.LoadThis);
         Emit(JsOpcode.Pop);
         CompileExpression(member.Computed);
+    }
+
+    /// <summary>
+    /// Reads the <c>super</c> property whose key <see cref="CompileSuperKey"/> pushed, leaving the
+    /// key under the value for the write that follows.
+    /// </summary>
+    /// <remarks>
+    /// <b>A computed key is converted by the read and kept converted</b>, so a compound, update or
+    /// logical assignment observes its <c>toString</c> once (JSC-236). A named key is a String
+    /// constant whose conversion nothing can observe, and keeps the two instructions it always had,
+    /// so a program with no computed <c>super</c> write lowers to the bytes it lowered to before.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A2F360
+    // Broiler-Human:        PENDING
+    private void EmitSuperReadKeepingKey(JsSuperMemberExpression member)
+    {
+        if (member.Computed is null)
+        {
+            Emit(JsOpcode.Duplicate);
+            Emit(JsOpcode.LoadSuperProperty);
+            return;
+        }
+
+        Emit(JsOpcode.LoadSuperPropertyKeepKey);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2E5F93

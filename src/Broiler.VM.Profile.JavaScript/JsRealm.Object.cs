@@ -1060,7 +1060,7 @@ internal sealed partial class JsRealm
     /// reports, which is the ordinary object's <c>[[DefineOwnProperty]]</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=53C6D2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9D4DD3
     // Broiler-Human:        PENDING
     private static string? ObjectDefineRefusal(
         JsEngine engine, JsObject target, JsValue key, ObjectDescriptorFields fields)
@@ -1101,6 +1101,16 @@ internal sealed partial class JsRealm
         if (target is JsTypedArray view && ObjectIsCanonicalNumeric(name, out var numeric))
         {
             return ObjectDefineElement(engine, view, name, numeric, fields);
+        }
+
+        // A STRING WRAPPER'S `length` AND ITS INDICES ARE ITS OWN AND ARE NEVER STORED. They are
+        // non-writable and non-configurable, so a definition the validation admits describes them
+        // as they are and changes nothing; storing its merge added a second own key under the same
+        // name, which `Object.getOwnPropertyNames` then reported twice (JSP-5, JSC-237).
+        if (target is JsPrimitiveWrapper wrapper && wrapper.IsStringOwnKey(name))
+        {
+            var heldOwn = wrapper.TryGetOwnProperty(name, out var own);
+            return ObjectValidateAndMerge(target, heldOwn, own, name, fields, out _, out _);
         }
 
         if (target is JsArray sized)
