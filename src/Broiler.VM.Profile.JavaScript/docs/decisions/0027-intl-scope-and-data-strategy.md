@@ -308,3 +308,18 @@ none implying the next:
   still missing. Recommended order: archive `SpecialCasing.txt`, then N3, then N2.
 - The amendment's open N1 test (`detached-buffer.js`) should be re-run: VM-FIX-A gave the conformance
   harness a real `$262.detachArrayBuffer`, so it may already pass.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **The deferral in section 6 is not taken.** `Intl` is scheduled as phase F7 of the plan's
+  [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), without waiting for the named consumer section 6 asked for.
+- **The slices are unchanged and become the phase**: I0, then I1 to I3, then I4 and later. The data
+  and licence choices in the recommendation above stand as the starting point.
+- **What a program meets today does not change** until I0 publishes `Intl`; the ledger's
+  `absent-globals` block keeps the name until then, and N24's assertion about it changes in the same
+  change.

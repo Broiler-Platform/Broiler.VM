@@ -302,3 +302,16 @@ observable single-realm behaviour; they may be taken earlier only if another fea
   function constructors still fails for want of a second realm (record JSP-10-001's run), and so do
   the cross-realm cases of many other built-ins.
 - **SR-6 goes to Broiler.JS's owner** as a finding, with the probe in section 1.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **The deferral is not taken.** SR-1, SR-2 and SR-7 are phase F5 of the plan's [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), with
+  JSH-7's second realm; SR-3 to SR-5 follow under `broiler.javascript.shadowrealm`, admitted only
+  with `broiler.javascript.dynamic`, as the recommendation above proposes.
+- **ShadowRealm is ahead of the pinned edition**, so a record admitting the proposal at a pinned
+  revision opens SR-3; the trigger in the recommendation is met by this direction.

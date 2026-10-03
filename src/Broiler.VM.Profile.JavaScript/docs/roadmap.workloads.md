@@ -3,6 +3,12 @@
 
 # The workload roadmap — what running the two third-party corpora whole would take
 
+**Where this document stands, 2026-10-03.** JSW-1, JSW-3, JSW-5 (under `wide` rather than `core`),
+JSW-6 and JSW-7 are implemented in this checkout; JSW-2, JSW-4, JSW-8, JSW-9 and JSW-10 are partly
+implemented; none is accepted. Their remainders are phase F1 of the plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile), and the
+absences this document records as declared are reopened there
+([JSC-251](roadmap.corrections.md#jsc-251)).
+
 **What this document is.** A gap analysis and a proposed programme for one objective: that the two
 third-party workloads this profile already points at — the Octane benchmark and the pinned test262
 suite — run **whole**, rather than in the part of each that the admitted surface happens to reach.

@@ -365,3 +365,14 @@ type in the profile's product assemblies declares a destructor or a `Finalize` m
 witness for the rejecting direction. It was watched failing against a destructor injected into
 `JsCollections.cs` and passing after the revert. This is D03-a's test (7) on its own; the model is
 still unscheduled and this record still unsigned.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **D03-a is scheduled**, as phase F4 of the plan's [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile), and the plan proposes that the CLI and
+  conformance compositions turn the sweep on. The model in section 4 is unchanged, and rule N25
+  stays: no guest code from a CLR finalizer.

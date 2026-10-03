@@ -3,6 +3,13 @@
 
 # The parity roadmap — what standing level with the comparison engine would take
 
+**Where this document stands, 2026-10-03.** Every stage it proposes, JSP-1 to JSP-10, has been
+implemented in this checkout, each with its retained record; none is accepted. What it still holds
+is the record of the gap as it was measured, and the catalogue in section 4.9 of what must not be
+taken from the comparison engine. The surfaces it found declined are reopened, and the work that
+remains is ordered by the plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)
+([JSC-251](roadmap.corrections.md#jsc-251)).
+
 **What this document is.** A gap analysis and a proposed programme for one objective: that a
 program which runs on the legacy component `Broiler.JS` runs the same way on this profile, or meets
 a refusal that names what it asked for. It is written from a run of both engines over the same

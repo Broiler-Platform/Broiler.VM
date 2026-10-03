@@ -10720,3 +10720,74 @@ refused a `function`, a `class`, a `const` and a `let` declaration by a check of
 **What must not be read as repaired.** No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-03 in this checkout. 2026-10-03.
+
+### JSC-251
+
+**Where:**
+- the preamble, the file-split table and the contents of [the roadmap](roadmap.md);
+- roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s
+  allocation table and its table of declined surfaces;
+- roadmap [section 13](roadmap.md#13-realms-agents-and-the-host-boundary);
+- the delivery file's header and sections 20 and 25, and a new
+  [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile);
+- the head of each of the four proposal documents;
+- the ledger's paragraph after its `absent-globals` block;
+- dated notes in JSD-0002, JSD-0027, JSD-0028, JSD-0029, JSD-0030, JSD-0031 and the decisions
+  README.
+
+**What the plan said.**
+- **The preamble's present tense:** "this profile has two feature manifests and a source front end
+  for each, two format versions, a value and object model, a standard library and two host modes;
+  it has no suspension, no guest-initiated load and no snapshot". That had been untrue since
+  JS-7's and JS-8's work landed in September.
+- **Eight surfaces were declined:** section 6 declined six by name, and section 13 and JSD-0030 a
+  further two:
+  - `Error.prototype.stack`;
+  - `Intl` and `Temporal`, "deferred to their own manifests";
+  - `SharedArrayBuffer` and `Atomics`, "excluded deliberately";
+  - the RegExp `v` flag;
+  - `FinalizationRegistry` cleanup;
+  - a function's source text;
+  - nested realms and ShadowRealm (section 13 and JSD-0030).
+- **The ledger said two of its four absent globals were absent "DELIBERATELY".**
+- **No document said, in one place, which work was finished and in what order the rest would
+  come.** The milestones were ordered by section 20's diagram of 2026-08, and the four proposal
+  documents each ordered their own stages.
+
+**What replaced it, on 2026-10-03, at the request of the person directing this work.**
+- **Every declined surface is reopened and scheduled.** Section 6's table now reads "not yet
+  implemented", keeps what a program meets today, and names the phase that delivers each surface.
+  The allocation table reopens `broiler.javascript.intl` and `broiler.javascript.temporal` and
+  proposes `broiler.javascript.shared` and `broiler.javascript.shadowrealm`. Section 13 says that a
+  second realm and agents are scheduled.
+- **Section 26 is the reading order for what remains.** It:
+  - defines "full-featured": the whole pinned edition, ECMA-402, Temporal and ShadowRealm ahead of
+    the edition by record, and source text and stacks;
+  - summarises what is finished, by area and by proposal stage;
+  - lists the reopened surfaces against their governing records;
+  - orders the remainder into phases F1 to F9, each with an exit gate observable in this checkout,
+    beside an acceptance track and a performance track.
+- **The preamble states the present truthfully** and points at section 26 for the summary.
+- **Each proposal document opens with where it stands.** The hosting roadmap's "JSH-2 through
+  JSH-8 are written down and nothing more" is kept as written on its day, under a note saying what
+  has since landed.
+- **The ledger's paragraph says all four names are absent for want of work, each scheduled.** The
+  block itself is unchanged: a name leaves it in the change that publishes it.
+
+**What must not be read as repaired.**
+- **Nothing is implemented by this entry.** Every surface in section 6's table answers a program
+  exactly as it did the day before.
+- **No decision record is taken or signed, and no ledger row moves.** The reopening notes in the
+  records are unsigned directions.
+- **No milestone's gate changed**, and section 20's diagram is not rewritten.
+- **Ledger cells found stale and not edited here**, because the ledger's rows are its owner's to
+  correct with evidence:
+  - JS-3b's row says it has no retained bundle, while records JS-3B-001 and JS-3B-002 name it;
+  - JS-10's row says the suite revision is unpinned, while section 3 records it pinned on
+    2026-09-03;
+  - JS-2's row counts two blockers where section 3 holds one;
+  - JS-7's and JS-8's rows describe as missing behaviour that JSD-0024 and JSP-3's notes record as
+    landed.
+
+**Authority and date.** The direction of 2026-10-03 to reopen every declined surface and order the
+roadmap toward a full-featured profile. 2026-10-03.

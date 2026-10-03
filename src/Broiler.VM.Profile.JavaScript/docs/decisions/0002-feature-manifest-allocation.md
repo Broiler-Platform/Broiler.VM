@@ -82,3 +82,17 @@ No manifest is minted. No scope is reviewed. No corpus exists. No oracle exists,
 revision is pinned, and the language-specification edition is unpinned - which the status ledger
 carries as a named open dependency, because no manifest may be accepted against a moving
 document.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **Two allocation rows are reopened and two are proposed.** `broiler.javascript.intl` and
+  `broiler.javascript.temporal` are no longer deferred: they are phases F7 and F8 of the plan's
+  [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile). `broiler.javascript.shared` and `broiler.javascript.shadowrealm` are proposed in roadmap
+  section 6's table, each to be minted by the record that admits its surface (JSD-0028's successor,
+  and the record admitting ShadowRealm). This record's allocation is unchanged until those records
+  exist.

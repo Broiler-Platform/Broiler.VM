@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, and JSC-245 to JSC-250; milestone rows unchanged)
+**Last updated:** 2026-10-03 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, and the roadmap reorganised by JSC-251; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -1133,11 +1133,15 @@ SharedArrayBuffer
 Temporal
 ```
 
-**Two of the four are absent DELIBERATELY rather than for want of work.** `SharedArrayBuffer` and
-`Atomics` are the multi-agent surface; they need the agent model of roadmap
-[section 13](roadmap.md#13-realms-agents-and-the-host-boundary), and folding them into the binary
-identity would let a composition that wanted an ordinary byte buffer admit cross-agent shared memory
-by accident. `BigInt64Array` and `BigUint64Array` left the block on 2026-09-22 (JSeal B07-B08,
+**All four are absent for want of work, and each is scheduled.** Until 2026-10-03 this paragraph
+said two of them, `SharedArrayBuffer` and `Atomics`, were absent deliberately. The plan reopened
+every declined surface that day ([JSC-251](roadmap.corrections.md#jsc-251)): the shared-memory pair
+is roadmap [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F6,
+after the agent model of roadmap [section 13](roadmap.md#13-realms-agents-and-the-host-boundary),
+and under an identity of its own, because folding them into the binary identity would let a
+composition that wanted an ordinary byte buffer admit cross-agent shared memory by accident. `Intl`
+is phase F7 and `Temporal` phase F8. **A name leaves this block in the change that publishes it,
+and not before**: the block states what the realm lacks, not what the plan intends. `BigInt64Array` and `BigUint64Array` left the block on 2026-09-22 (JSeal B07-B08,
 JSD-0033 section 8, proposed), a day after `BigInt` itself was admitted (JSeal B05, JSD-0033
 section 7, proposed); they are built wherever the BigInt and binary identities are both admitted.
 

@@ -3,6 +3,12 @@
 
 # The hosting roadmap - what the host surface would take for a real embedder
 
+**Where this document stands, 2026-10-03.** JSH-1 is implemented, and JSH-2 and JSH-3 are for the
+members their gates name; JSH-4 and JSH-7 are partly implemented (the provider route, and the clone
+carrier without a second realm); JSH-5, JSH-6 and JSH-8 are not started; none is accepted. JSH-7's
+second realm is phase F5 of the plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile), and JSH-5's thread model is phase F6
+([JSC-251](roadmap.corrections.md#jsc-251)).
+
 **What this document is.** A design analysis and a proposed programme for one objective: that an
 embedder with a document-shaped object model - a DOM, a style declaration, a storage area, an event
 target - can put its objects in this profile's realms and be answered honestly about what it may and
@@ -10,7 +16,8 @@ may not do there. It is written against the seam, the engine and the core as the
 checkout, and it names, for every obligation it records, either the stage that owns it or the fact
 that nothing does.
 
-**One of its stages is built and the rest are proposals nobody has scheduled.**
+**One of its stages was built when this was written, and the rest were proposals nobody had
+scheduled.** The paragraph is kept as written on that day; the note above says what has changed.
 [JSH-1](#jsh-1---the-seam-values-identity-a-step-bracket-and-an-abort-that-cannot-be-swallowed) is
 code in this checkout: the values, the identity table, the step bracket, the abort latch, the mint
 and define and read members, the exotic object, the call back into the guest, and a lane of checks

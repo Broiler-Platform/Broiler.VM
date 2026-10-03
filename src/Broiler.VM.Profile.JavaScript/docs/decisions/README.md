@@ -57,6 +57,14 @@ JSD-0001, JSD-0004, JSD-0006 and JSD-0021 - ends with a section headed **Recomme
 refuse and why, against the tree at that date. **None of them is a decision**: no status line
 changed, nothing is signed, and the owner takes, amends or refuses each.
 
+**On the same day every declined surface was reopened.** JSD-0002, JSD-0027, JSD-0028, JSD-0029,
+JSD-0030 and JSD-0031 each end with a section headed **Reopened, 2026-10-03 (unsigned)**, saying
+which deferral or exclusion is no longer proposed and which phase of the roadmap's
+[section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile) delivers the surface.
+No status line changed and nothing is signed. Three of the reopened surfaces have no record yet -
+Temporal, `Function.prototype.toString` source text and `Error.prototype.stack` - and the phase
+that delivers each opens with one ([JSC-251](../roadmap.corrections.md#jsc-251)).
+
 ## What a record must carry
 
 Each record states its **status**, its **date**, its **owner** and any **co-signer**, the

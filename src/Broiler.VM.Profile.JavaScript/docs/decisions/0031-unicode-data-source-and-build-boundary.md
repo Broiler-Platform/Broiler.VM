@@ -868,3 +868,17 @@ co-signed.*
   `false`). `v`-mode string properties stay refused.
 - **Size: 275,436 bytes of table data**, up from 236,721 and under the 307,200-byte cap rule N22
   checks.
+
+## Reopened, 2026-10-03 (unsigned)
+
+*Recorded at the request of the person directing this work, who asked on 2026-10-03 that every
+surface the plan declined be reopened and the roadmap ordered toward a full-featured profile. It
+signs nothing and takes nothing: this record keeps its status line, and the owner's signature is
+still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corrections.md#jsc-251).*
+
+- **The `v` flag is scheduled**: the matcher slice for string properties the recommendation above
+  waits for is phase F2 of the plan's [section 26](../roadmap.delivery.md#26-the-road-to-a-full-featured-profile). It archives `emoji-sequences.txt` and
+  `emoji-zwj-sequences.txt` from the pinned Unicode 17.0.0 release under rule N22, and adds set
+  operations and `MaybeSimpleCaseFolding`.
+- **What a program meets today does not change** until F2 lands: the early error naming the flag
+  stays.
