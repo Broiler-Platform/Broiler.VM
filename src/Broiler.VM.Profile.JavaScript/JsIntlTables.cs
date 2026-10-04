@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
-// Exempt:           9
-// Human-reviewed:   0/18
+// Relevant units:   20
+// Annotated:        20/20
+// Exempt:           10
+// Human-reviewed:   0/20
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       18
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -69,7 +69,11 @@ internal sealed class JsIntlTables
     // Broiler-Human:        PENDING
     private readonly System.Lazy<JsNumberData> numbers;
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50B0C8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=10659A
+    // Broiler-Human:        PENDING
+    private readonly System.Lazy<JsDateData> dates;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=100E0C
     // Broiler-Human:        PENDING
     internal JsIntlTables(Format.IJsIntlData data)
     {
@@ -82,6 +86,7 @@ internal sealed class JsIntlTables
             data.Table(Format.JsIntlTable.CollationRoot), data.Table(Format.JsIntlTable.CollationTailorings)));
         softDotted = new(ReadRanges);
         numbers = new(ReadNumbers);
+        dates = new(ReadDates);
     }
 
     /// <summary>The CLDR release the tables come from.</summary>
@@ -172,6 +177,11 @@ internal sealed class JsIntlTables
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C30BD0
     // Broiler-Human:        PENDING
     internal JsNumberData Numbers => numbers.Value;
+
+    /// <summary>The calendar, hour cycle and day period data, decoded the first time a date is formatted.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=813274
+    // Broiler-Human:        PENDING
+    internal JsDateData Dates => dates.Value;
 
     /// <summary>A table value with its <c>\uXXXX</c> escapes resolved.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=771818
@@ -273,6 +283,53 @@ internal sealed class JsIntlTables
         {
             var fields = line.Split('|');
             data.Units[fields[0] + "|" + fields[1] + "|" + fields[2] + "|" + fields[3]] = Unescape(fields[4]);
+        }
+
+        return data;
+    }
+
+    /// <summary>Decodes the date tables.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=3020F2
+    // Broiler-Human:        PENDING
+    private JsDateData ReadDates()
+    {
+        var data = new JsDateData();
+
+        foreach (var line in Lines(Format.JsIntlTable.DateLocales))
+        {
+            var fields = line.Split('|');
+
+            if (!data.Locales.TryGetValue(fields[0], out var locale))
+            {
+                locale = new(System.StringComparer.Ordinal);
+                data.Locales[fields[0]] = locale;
+            }
+
+            locale[fields[1]] = Unescape(fields[2]);
+        }
+
+        foreach (var line in Lines(Format.JsIntlTable.TimeData))
+        {
+            var fields = line.Split('|');
+            data.TimeData[fields[0]] = (fields[1], fields[2]);
+        }
+
+        static int Minutes(string time) =>
+            time.Length == 0 ? -1 : (int.Parse(time[..2], System.Globalization.CultureInfo.InvariantCulture) * 60) + int.Parse(time[3..], System.Globalization.CultureInfo.InvariantCulture);
+
+        foreach (var line in Lines(Format.JsIntlTable.DayPeriods))
+        {
+            var fields = line.Split('|');
+
+            if (!data.DayPeriods.TryGetValue(fields[0], out var rules))
+            {
+                rules = [];
+                data.DayPeriods[fields[0]] = rules;
+            }
+
+            rules.Add(fields[3].Length == 0
+                ? new JsDayPeriodRule(fields[1], Minutes(fields[2]), -1, At: true)
+                : new JsDayPeriodRule(fields[1], Minutes(fields[2]), Minutes(fields[3]), At: false));
         }
 
         return data;

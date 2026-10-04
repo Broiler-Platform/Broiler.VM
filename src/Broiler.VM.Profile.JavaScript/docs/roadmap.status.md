@@ -637,6 +637,17 @@ of a later slice and which passed only while `Intl` was absent
 [JSD-0043](decisions/0043-intl-data-boundary-and-collation.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F7 observation, slice I3, 2026-10-04.** `Intl.DateTimeFormat` is built for the Gregorian
+calendar with every component, both styles, the four hour cycles and ranges, its patterns chosen by
+a port of ICU's pattern generator and interval formats over CLDR calendar data the archive gained
+under rule N27. The `Date.prototype.toLocale*` methods go through it, and `Intl.supportedValuesOf`
+answers its six keys. The time zones are UTC, offset strings and IANA's `Etc/GMT` offsets; no other
+name is admitted. The retained German and English dates agree with ICU 77.1 on every line but 352,
+each named with its reason. `test/intl402/DateTimeFormat` passes 326 of 350 scored variants, and
+the failing ones need another calendar, the `ja` locale or the `arab` decimal separator ([JSC-271](roadmap.corrections.md#jsc-271), proposed
+[JSD-0045](decisions/0045-intl-datetimeformat.md)). This is unreviewed implementation and validation
+material, not accepted milestone evidence; no milestone row advances.
+
 **Phase F7 observation, slice I2, 2026-10-04.** `Intl.NumberFormat` is built with every style,
 notation and option of the current ECMA-402 draft, over CLDR number, currency, unit and plural data
 the archive gained under rule N27. `Number`, `BigInt`, `Array` and `TypedArray` `toLocaleString` go

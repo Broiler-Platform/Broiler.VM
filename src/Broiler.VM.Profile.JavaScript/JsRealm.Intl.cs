@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
+// Relevant units:   22
+// Annotated:        22/22
 // Exempt:           11
-// Human-reviewed:   0/21
+// Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         3/0
 // Resource impact:  3/10 max
-// Unverified:       21
+// Unverified:       22
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -50,7 +50,7 @@ internal sealed partial class JsRealm
     internal JsNativeFunction? CollatorConstructor { get; private set; }
 
     /// <summary>Builds <c>Intl</c> and <c>Intl.Collator</c>.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8, s10; IP=Low; Security=Medium; Resources=3; Fingerprint=870A1C
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s8, s10; IP=Low; Security=Medium; Resources=3; Fingerprint=42A943
     // Broiler-Human:        PENDING
     private void SetupIntl()
     {
@@ -70,8 +70,12 @@ internal sealed partial class JsRealm
             "Intl",
             JsProperty.Data(JsValue.Object(intl), JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
+        Method(intl, "supportedValuesOf", 1, static (engine, thisValue, arguments) =>
+            SupportedValuesOf(engine, Argument(arguments, 0)));
+
         SetupCollator(intl);
         SetupNumberFormat(intl);
+        SetupDateTimeFormat(intl);
     }
 
     // ---- Intl.Collator ---------------------------------------------------------------------------
@@ -398,11 +402,19 @@ internal sealed partial class JsRealm
     internal sealed record JsResolvedLocale(string Locale, string DataLocale, System.Collections.Generic.Dictionary<string, string?> Keys);
 
     /// <summary>
+    /// An option ResolveLocale reads as <c>null</c> rather than as absent: the value a keyword had is
+    /// dropped and the key resolves to the data's <c>null</c>.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C70C6E
+    // Broiler-Human:        PENDING
+    internal const string NullOption = "\u0000null";
+
+    /// <summary>
     /// ECMA-402's <c>ResolveLocale</c> with the lookup matcher, which also serves <c>best fit</c>: the
     /// first requested locale a prefix of which is available, its supported <c>-u-</c> keywords kept,
     /// and an option overriding a keyword it names.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.7; IP=Low; Security=Medium; Resources=3; Fingerprint=98F968
+    // Broiler-AI:           Origin=AI; Spec=ECMA-402 s9.2.7; IP=Low; Security=Medium; Resources=3; Fingerprint=D5E229
     // Broiler-Falsified-If: a resolved locale names a keyword the locale data does not support, or an option the data supports is not honoured
     // Broiler-Human:        PENDING
     internal static JsResolvedLocale ResolveLocale(
@@ -452,7 +464,15 @@ internal sealed partial class JsRealm
                 }
             }
 
-            if (options.TryGetValue(key, out var optionValue) && optionValue is not null)
+            if (options.TryGetValue(key, out var optionValue) && optionValue == NullOption)
+            {
+                if (value is not null && System.Array.IndexOf(values, null) >= 0)
+                {
+                    value = null;
+                    keyword = null;
+                }
+            }
+            else if (optionValue is not null)
             {
                 var canonical = optionValue.ToLowerInvariant();
 
@@ -586,22 +606,40 @@ internal sealed class JsCollatorObject : JsObject
     internal JsCollatorObject(JsObject prototype, JsCollator collator)
         : base(prototype) => Collator = collator;
 
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=24AFF4
+    // Broiler-Human:        PENDING
     internal JsCollator Collator { get; }
 
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EDBB2D
+    // Broiler-Human:        PENDING
     internal string Locale { get; init; } = string.Empty;
 
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=598A3E
+    // Broiler-Human:        PENDING
     internal string Usage { get; init; } = "sort";
 
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BF5CE4
+    // Broiler-Human:        PENDING
     internal string Sensitivity { get; init; } = "variant";
 
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4F0780
+    // Broiler-Human:        PENDING
     internal bool IgnorePunctuation { get; init; }
 
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4661DE
+    // Broiler-Human:        PENDING
     internal string Collation { get; init; } = "default";
 
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BDA850
+    // Broiler-Human:        PENDING
     internal bool Numeric { get; init; }
 
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=322AE9
+    // Broiler-Human:        PENDING
     internal string CaseFirst { get; init; } = "false";
 
     /// <summary>The <c>compare</c> getter's function, made the first time it is read.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AC946A
+    // Broiler-Human:        PENDING
     internal JsNativeFunction? BoundCompare { get; set; }
 }

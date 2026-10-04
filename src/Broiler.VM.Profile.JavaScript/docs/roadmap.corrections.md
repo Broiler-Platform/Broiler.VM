@@ -11817,3 +11817,72 @@ the format's `JsIntlTable`.
 - JSD-0044 is proposed and unsigned. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-271
+
+**Where:** phase F7's slice I3. `Intl.DateTimeFormat` and `Intl.supportedValuesOf`
+(`JsRealm.DateTimeFormat.cs`, `JsDateTimeFormatter.cs`, `JsDatePatternGenerator.cs`,
+`JsDateIntervalFormat.cs`, `JsDateData.cs`), and `Date.prototype.toLocaleString`,
+`toLocaleDateString` and `toLocaleTimeString`. The CLDR archive and its pin, the generator's three new
+tables, and the format's `JsIntlTable`.
+
+**What the plan said.**
+- [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) section 7: I3 is "`Intl.DateTimeFormat`,
+  UTC and fixed offsets", with "Gregorian only, `dateStyle`/`timeStyle` and the component options the
+  section 5 locales need, `formatToParts`; the three `Date.prototype.toLocale*` methods route through
+  it; IANA names refused by name". Its acceptance is "test262 `intl402/DateTimeFormat` subset for the
+  admitted options, time-zone-name tests excluded by name; a retained dataset over the full
+  time-value range including year 0, negative years and ±8.64e15". Section 5 item 5 admits "`"UTC"`
+  and `±hh:mm` offset identifiers".
+- [JSD-0044](decisions/0044-intl-numberformat.md) section 7: "`Intl.supportedValuesOf` waits for I3".
+- The three `Date.prototype.toLocale*` methods answered the plain `toString` forms and ignored their
+  arguments, as JSD-0027 section 1 records.
+
+**What replaced it, observed on 2026-10-04.**
+- **`Intl.DateTimeFormat` is built whole for the Gregorian calendar**, under proposed
+  [JSD-0045](decisions/0045-intl-datetimeformat.md): every component in every width, both styles, the
+  four hour cycles, ranges and their parts, and the legacy constructor path. **Every component is
+  built**, against JSD-0027's "the component options the section 5 locales need", because ECMA-402
+  admits each on every format. **The best-fit matcher is ICU's DateTimePatternGenerator and the
+  ranges are ICU's DateIntervalFormat**, ported in the profile and reading CLDR's data.
+- **The `toLocale*` methods route through it** where `Intl` is built, and `Intl.supportedValuesOf`
+  answers all six keys.
+- **The archive grows under N27**: calendar, date field and zone name data from `cldr-dates-full`,
+  and the hour cycle and day period data from `cldr-core`, at 48.2.0, retrieved twice and compared.
+  **N28's file grows by three tables**, to 465,869 bytes of data, still under the provisional
+  512 KiB bound.
+- **Time zones are UTC and its IANA links, offset strings, and IANA's `Etc/GMT±N` zones.** The last
+  are wider than item 5's `±hh:mm`. They are fixed offsets by definition and need no database, so
+  JSD-0045 section 5 reads item 5's "fixed offsets" as admitting them. Every other name is a
+  `RangeError` that names the limitation.
+- **The retained dates dataset**
+  ([`src/tests/cldr/dates/`](../../tests/cldr/dates/README.md)) has 1,430 lines against Node
+  22.22.0's ICU 77.1. It runs from the first time value to the last, with the year 0 and 2 BC. The
+  profile answers all of them as ICU did but for 352 lines in three groups, each named in
+  `divergences.txt`:
+  - Node's `format` writes a space where its `formatToParts` writes ICU's U+202F;
+  - CLDR 48 changed German's `Bh` pattern;
+  - Node's `resolvedOptions` reads a quoted word as fields.
+
+  The first runs differed in two more groups, both corrected: a second added beside a fractional
+  second without a minute, and the GMT zone's name outside ICU's 1970 to 9999 metazone mapping.
+- **Checks**: one new slice-compiler check, 627 in all. It holds the dates dataset; the numbers check
+  now shares its comparison.
+- **test262**, against the run JSC-270 records: `test/intl402/DateTimeFormat` passes 326 of 350 scored
+  variants, from 6. The 24 failing are 12 files, which need another calendar (10), the `ja` locale or
+  the `arab` decimal separator. `test/intl402/Intl` passes 116 of 130, from 80, and the failing ones
+  need `Locale`, `DisplayNames` or `RelativeTimeFormat`. `test/intl402/Date` passes all 24. All of
+  `test/intl402` passes 1,016 variants, from 608, with none moving back. `test/built-ins/Date` is
+  unchanged, and `test/staging/sm/String/internalUsage.js`, one of the three files JSC-269 names, now
+  passes.
+
+**What must not be read as repaired.**
+- **Calendars other than the Gregorian, IANA time zones and the locales outside section 5** are not
+  in the data, and the tests that need them fail.
+- **A fractional second in a numbering system other than `latn`** is separated by the language's
+  `latn` decimal symbol.
+- **`PluralRules`, `Locale`** and the other constructors are absent, and the phase's exit gate is not
+  met.
+- JSD-0045 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.

@@ -79,7 +79,7 @@ internal sealed partial class JsRealm
     private const string DateZoneText = " GMT+0000 (Coordinated Universal Time)";
 
     /// <summary>Builds <c>Date</c>, its statics and <c>Date.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=260EEA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D23740
     // Broiler-Human:        PENDING
     private void SetupDate()
     {
@@ -315,26 +315,50 @@ internal sealed partial class JsRealm
                 engine.GetProperty(target, "toISOString"), target, System.Array.Empty<JsValue>());
         });
 
-        // THE LOCALE FORMS ARE THE PLAIN FORMS. This profile carries no locale data, and the
-        // specification allows an implementation-defined result; answering the same text is
-        // honest about that, where inventing a format would only look like locale support.
+        // WITHOUT INTL THE LOCALE FORMS ARE THE PLAIN FORMS: the specification allows an
+        // implementation-defined result, and answering the same text is honest about carrying no
+        // locale data. With Intl they are ECMA-402's (s20.4): an invalid date is "Invalid Date"
+        // before the arguments are read, and any other is formatted by a DateTimeFormat made for
+        // the call (JSD-0045).
         Method(DatePrototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
-            JsValue.String(DateToFullText(DateReceiver(engine, thisValue).TimeValue)));
+        {
+            var time = DateReceiver(engine, thisValue).TimeValue;
+
+            if (engine.Realm.DateTimeFormatPrototype is null)
+            {
+                return JsValue.String(DateToFullText(time));
+            }
+
+            return JsValue.String(
+                double.IsNaN(time) ? DateInvalidText : ToLocaleDateString(engine, time, arguments, "any", "all"));
+        });
 
         Method(DatePrototype, "toLocaleDateString", 0, static (engine, thisValue, arguments) =>
         {
             var time = DateReceiver(engine, thisValue).TimeValue;
 
-            return JsValue.String(
-                double.IsNaN(time) ? DateInvalidText : DateToCalendarText(time));
+            if (double.IsNaN(time))
+            {
+                return JsValue.String(DateInvalidText);
+            }
+
+            return JsValue.String(engine.Realm.DateTimeFormatPrototype is null
+                ? DateToCalendarText(time)
+                : ToLocaleDateString(engine, time, arguments, "date", "date"));
         });
 
         Method(DatePrototype, "toLocaleTimeString", 0, static (engine, thisValue, arguments) =>
         {
             var time = DateReceiver(engine, thisValue).TimeValue;
 
-            return JsValue.String(
-                double.IsNaN(time) ? DateInvalidText : DateToClockText(time) + DateZoneText);
+            if (double.IsNaN(time))
+            {
+                return JsValue.String(DateInvalidText);
+            }
+
+            return JsValue.String(engine.Realm.DateTimeFormatPrototype is null
+                ? DateToClockText(time) + DateZoneText
+                : ToLocaleDateString(engine, time, arguments, "time", "time"));
         });
 
         void DatePair(string localName, string utcName, JsNativeBody body)

@@ -38,6 +38,7 @@ internal static class IntlChecks
         GermanPhonebookAndSearchOrder(),
         GermanAndEnglishOrderingsMatchIcu(),
         GermanAndEnglishNumbersMatchIcu(),
+        GermanAndEnglishDatesMatchIcu(),
         CanonicalizationReplacesAliases(),
         ConformanceFile("non-ignorable", "CollationTest_CLDR_NON_IGNORABLE_SHORT.txt", "{ sensitivity: 'variant' }"),
         ConformanceFile("shifted", "CollationTest_CLDR_SHIFTED_SHORT.txt", "{ sensitivity: 'variant', ignorePunctuation: true }"),
@@ -134,15 +135,29 @@ internal static class IntlChecks
     /// under <c>src/tests/cldr/numbers</c>, run here, answers every line ICU 77.1 answered, but for the
     /// lines <c>divergences.txt</c> names, which it answers as written there.
     /// </summary>
-    private static (string, bool, string) GermanAndEnglishNumbersMatchIcu()
-    {
-        const string Name = "intl/i2/german-and-english-numbers-match-icu";
+    private static (string, bool, string) GermanAndEnglishNumbersMatchIcu() =>
+        RetainedMatchesIcu("intl/i2/german-and-english-numbers-match-icu", "numbers", 2000);
 
-        if (Archived("src/tests/cldr/numbers/numbers.js") is not { } program ||
-            Archived("src/tests/cldr/numbers/numbers.icu-77.1.txt") is not { } retained ||
-            Archived("src/tests/cldr/numbers/divergences.txt") is not { } divergences)
+    /// <summary>
+    /// The retained German and English date formatting (JSD-0027 section 7, slice I3): the program
+    /// under <c>src/tests/cldr/dates</c>, run here, answers every line ICU 77.1 answered, but for the
+    /// lines <c>divergences.txt</c> names, which it answers as written there.
+    /// </summary>
+    private static (string, bool, string) GermanAndEnglishDatesMatchIcu() =>
+        RetainedMatchesIcu("intl/i3/german-and-english-dates-match-icu", "dates", 1000);
+
+    /// <summary>
+    /// A retained dataset under <c>src/tests/cldr/<paramref name="dataset"/></c>: its program, run
+    /// here, answers every line of its ICU 77.1 answers, but for the lines its <c>divergences.txt</c>
+    /// names, each of which must be used.
+    /// </summary>
+    private static (string, bool, string) RetainedMatchesIcu(string name, string dataset, int least)
+    {
+        if (Archived($"src/tests/cldr/{dataset}/{dataset}.js") is not { } program ||
+            Archived($"src/tests/cldr/{dataset}/{dataset}.icu-77.1.txt") is not { } retained ||
+            Archived($"src/tests/cldr/{dataset}/divergences.txt") is not { } divergences)
         {
-            return ("not-run/" + Name, false, "the retained numbers are not under this working directory");
+            return ("not-run/" + name, false, $"the retained {dataset} are not under this working directory");
         }
 
         static string Key(string line)
@@ -186,8 +201,8 @@ internal static class IntlChecks
         }
 
         return (
-            Name,
-            differing.Count == 0 && used == replaced.Count && expected.Length > 2000,
+            name,
+            differing.Count == 0 && used == replaced.Count && expected.Length > least,
             differing.Count == 0
                 ? $"all {expected.Length} lines answer as ICU 77.1 did, {used} of them as the divergences name"
                 : $"{differing.Count} of {expected.Length} lines differ, first {differing[0]}");

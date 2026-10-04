@@ -99,6 +99,9 @@ internal static class CldrTableGenerator
         TextTable(text, "Plurals", "The cardinal plural rules of each supported language: language, category, rule.", Plurals(cldr));
         TextTable(text, "PluralRanges", "The plural range rules of each supported language: language, start, end, result.", PluralRanges(cldr));
         TextTable(text, "Units", "The sanctioned units' patterns of each supported language: language, width, unit, field, value.", Units(cldr));
+        TextTable(text, "DateLocales", "The Gregorian calendar, date field and zone name data of each supported language, flattened: language, key, value.", DateLocales(cldr));
+        TextTable(text, "TimeData", "The hour cycles allowed and preferred in the supported locales' likely regions and the world: region, allowed, preferred.", TimeData(cldr));
+        TextTable(text, "DayPeriods", "The day period rules of each supported language: language, period, at or from, before.", DayPeriods(cldr));
         ByteTable(text, "CollationRoot", "The root collation: allkeys_CLDR.txt in runs and entries, the implicit-weight ranges and the unified ideographs.", root.Encode(database));
         ByteTable(
             text,
@@ -551,6 +554,147 @@ internal static class CldrTableGenerator
                         }
                     }
                 }
+            }
+        }
+
+        return lines.Order(StringComparer.Ordinal);
+    }
+
+    /// <summary>
+    /// Each language's Gregorian calendar data and the zone names a UTC or fixed-offset zone uses,
+    /// flattened to dotted keys: the month, day, day period and era names; the date, time and
+    /// date-time patterns; the available formats, append items and interval formats; the date
+    /// fields' display names; and the GMT formats and the names of UTC and of the GMT zone. Alternate
+    /// forms (<c>-alt-</c>) and plural-dependent formats (<c>-count-</c>) are not carried.
+    /// </summary>
+    internal static IEnumerable<string> DateLocales(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var lines = new List<string>();
+
+        foreach (var language in NumberLanguages)
+        {
+            var gregorian = Json(cldr, $"json/cldr-dates-full/main/{language}/ca-gregorian.json")
+                .GetProperty("main").GetProperty(language).GetProperty("dates").GetProperty("calendars").GetProperty("gregorian");
+
+            foreach (var name in new[] { "months", "days", "dayPeriods", "eras", "dateFormats", "timeFormats" })
+            {
+                FlattenDates(language, name, gregorian.GetProperty(name), lines);
+            }
+
+            var dateTime = gregorian.GetProperty("dateTimeFormats");
+
+            foreach (var style in new[] { "full", "long", "medium", "short" })
+            {
+                lines.Add($"{language}|dateTime.{style}|{Escape(dateTime.GetProperty(style).GetString()!)}");
+                lines.Add($"{language}|atTime.{style}|{Escape(gregorian.GetProperty("dateTimeFormats-atTime").GetProperty("standard").GetProperty(style).GetString()!)}");
+            }
+
+            FlattenDates(language, "available", dateTime.GetProperty("availableFormats"), lines);
+            FlattenDates(language, "append", dateTime.GetProperty("appendItems"), lines);
+
+            foreach (var entry in dateTime.GetProperty("intervalFormats").EnumerateObject())
+            {
+                if (entry.Name == "intervalFormatFallback")
+                {
+                    lines.Add($"{language}|interval.fallback|{Escape(entry.Value.GetString()!)}");
+                }
+                else if (!entry.Name.Contains("-alt-", StringComparison.Ordinal))
+                {
+                    FlattenDates(language, "interval." + entry.Name, entry.Value, lines);
+                }
+            }
+
+            var fields = Json(cldr, $"json/cldr-dates-full/main/{language}/dateFields.json")
+                .GetProperty("main").GetProperty(language).GetProperty("dates").GetProperty("fields");
+
+            foreach (var field in new[] { "era", "year", "quarter", "month", "week", "weekOfMonth", "weekday", "dayOfYear", "weekdayOfMonth", "day", "dayperiod", "hour", "minute", "second", "zone" })
+            {
+                lines.Add($"{language}|field.{field}|{Escape(fields.GetProperty(field).GetProperty("displayName").GetString()!)}");
+            }
+
+            var zones = Json(cldr, $"json/cldr-dates-full/main/{language}/timeZoneNames.json")
+                .GetProperty("main").GetProperty(language).GetProperty("dates").GetProperty("timeZoneNames");
+
+            foreach (var name in new[] { "hourFormat", "gmtFormat", "gmtZeroFormat" })
+            {
+                lines.Add($"{language}|zone.{name}|{Escape(zones.GetProperty(name).GetString()!)}");
+            }
+
+            foreach (var (key, names) in new[]
+            {
+                ("utc", zones.GetProperty("zone").GetProperty("Etc").GetProperty("UTC")),
+                ("gmt", zones.GetProperty("metazone").GetProperty("GMT")),
+            })
+            {
+                foreach (var width in new[] { "long", "short" })
+                {
+                    if (names.TryGetProperty(width, out var named))
+                    {
+                        lines.Add($"{language}|zone.{key}.{width}|{Escape(named.GetProperty("standard").GetString()!)}");
+                    }
+                }
+            }
+        }
+
+        return lines.Order(StringComparer.Ordinal);
+    }
+
+    private static void FlattenDates(string language, string key, JsonElement value, List<string> lines)
+    {
+        if (value.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in value.EnumerateObject())
+            {
+                if (!property.Name.Contains("-alt-", StringComparison.Ordinal) && !property.Name.Contains("-count-", StringComparison.Ordinal))
+                {
+                    FlattenDates(language, key + "." + property.Name, property.Value, lines);
+                }
+            }
+
+            return;
+        }
+
+        lines.Add($"{language}|{key}|{Escape(value.GetString()!)}");
+    }
+
+    /// <summary>
+    /// The hour cycles CLDR allows and prefers in the regions the supported locales are likely to
+    /// name, and in the world (<c>001</c>): region, allowed, preferred.
+    /// </summary>
+    internal static IEnumerable<string> TimeData(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var likely = LikelySubtags(cldr).Select(static line => line.Split('|')).ToDictionary(static pair => pair[0], static pair => pair[1], StringComparer.Ordinal);
+        var regions = new SortedSet<string>(StringComparer.Ordinal) { "001" };
+
+        foreach (var language in NumberLanguages)
+        {
+            regions.Add(likely[language].Split('-')[^1]);
+        }
+
+        var data = Json(cldr, "json/cldr-core/supplemental/timeData.json").GetProperty("supplemental").GetProperty("timeData");
+        return regions.Select(region =>
+        {
+            var entry = data.GetProperty(region);
+            return $"{region}|{entry.GetProperty("_allowed").GetString()}|{entry.GetProperty("_preferred").GetString()}";
+        }).ToList();
+    }
+
+    /// <summary>
+    /// Each supported language's day period rules: language, period, and the time it is at or the
+    /// time it is from and the time it is before.
+    /// </summary>
+    internal static IEnumerable<string> DayPeriods(IReadOnlyDictionary<string, byte[]> cldr)
+    {
+        var rules = Json(cldr, "json/cldr-core/supplemental/dayPeriods.json").GetProperty("supplemental").GetProperty("dayPeriodRuleSet");
+        var lines = new List<string>();
+
+        foreach (var language in NumberLanguages)
+        {
+            foreach (var period in rules.GetProperty(language).EnumerateObject())
+            {
+                lines.Add(period.Value.TryGetProperty("_at", out var at)
+                    ? $"{language}|{period.Name}|{at.GetString()}|"
+                    : $"{language}|{period.Name}|{period.Value.GetProperty("_from").GetString()}|{period.Value.GetProperty("_before").GetString()}");
             }
         }
 

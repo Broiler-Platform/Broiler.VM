@@ -1249,7 +1249,13 @@ public sealed class ReviewRecordRuleTests
         // JsPluralRule.cs, the plural rule evaluator; JsNumberFormatter.cs, the formatting itself; and
         // JsRealm.NumberFormat.cs, Intl.NumberFormat. All five are covered on the same terms as every
         // other product file, and nothing in them has been read by a human.
-        Assert.Equal(263, AssuranceSources.Files.Count);
+        //
+        // AND DATE FORMATTING (phase F7, 2026-10-04, JSD-0045): JsDateData.cs, the decoded calendar
+        // data; JsDatePatternGenerator.cs, ICU's skeleton matching; JsDateIntervalFormat.cs, ICU's
+        // range patterns; JsDateTimeFormatter.cs, the formatting itself; and JsRealm.DateTimeFormat.cs,
+        // Intl.DateTimeFormat and Intl.supportedValuesOf. All five are covered on the same terms as
+        // every other product file, and nothing in them has been read by a human.
+        Assert.Equal(268, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

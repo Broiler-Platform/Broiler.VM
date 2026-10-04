@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   1
 // Annotated:        1/1
-// Exempt:           15
+// Exempt:           18
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
@@ -12349,6 +12349,770 @@ internal static class JsCldrTables
         en|short|year|perUnitPattern|{0}/y
         en|short|year|unitPattern-count-one|{0} yr
         en|short|year|unitPattern-count-other|{0} yrs
+        """u8;
+
+    /// <summary>The Gregorian calendar, date field and zone name data of each supported language, flattened: language, key, value.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> DateLocales =>
+        """
+        de|append.Day-Of-Week|{0} {1}
+        de|append.Day|{0} ({2}: {1})
+        de|append.Era|{1} {0}
+        de|append.Hour|{0} ({2}: {1})
+        de|append.Minute|{0} ({2}: {1})
+        de|append.Month|{0} ({2}: {1})
+        de|append.Quarter|{0} ({2}: {1})
+        de|append.Second|{0} ({2}: {1})
+        de|append.Timezone|{0} {1}
+        de|append.Week|{0} ({2}: {1})
+        de|append.Year|{1} {0}
+        de|atTime.full|{1} 'um' {0}
+        de|atTime.long|{1} 'um' {0}
+        de|atTime.medium|{1}, {0}
+        de|atTime.short|{1}, {0}
+        de|available.Bhms|h:mm:ss B
+        de|available.Bhm|h:mm B
+        de|available.Bh|h 'Uhr' B
+        de|available.EBhms|E, h:mm:ss 'Uhr' B
+        de|available.EBhm|E, h:mm 'Uhr' B
+        de|available.EBh|E, h 'Uhr' B
+        de|available.EHms|E, HH:mm:ss
+        de|available.EHm|E, HH:mm
+        de|available.Ed|E, d.
+        de|available.Ehms|E, h:mm:ss\u202Fa
+        de|available.Ehm|E h:mm\u202Fa
+        de|available.Eh|E, h\u202Fa
+        de|available.E|ccc
+        de|available.GyMEd|E, dd.MM.y G
+        de|available.GyMMMEd|E, d. MMM y G
+        de|available.GyMMMd|d. MMM y G
+        de|available.GyMMM|MMM y G
+        de|available.GyMd|dd.MM.y G
+        de|available.GyM|MM/y G
+        de|available.Gy|y G
+        de|available.Hmsv|HH:mm:ss v
+        de|available.Hms|HH:mm:ss
+        de|available.Hmv|HH:mm v
+        de|available.Hm|HH:mm
+        de|available.Hv|HH 'Uhr' v
+        de|available.H|HH 'Uhr'
+        de|available.MEd|E, d.M.
+        de|available.MMMEd|E, d. MMM
+        de|available.MMMMEd|E, d. MMMM
+        de|available.MMMMd|d. MMMM
+        de|available.MMMd|d. MMM
+        de|available.MMM|LLL
+        de|available.MMdd|dd.MM.
+        de|available.MMd|dd.MM.
+        de|available.Md|d.M.
+        de|available.M|L
+        de|available.d|d
+        de|available.hmsv|h:mm:ss\u202Fa v
+        de|available.hms|h:mm:ss\u202Fa
+        de|available.hmv|h:mm\u202Fa v
+        de|available.hm|h:mm\u202Fa
+        de|available.hv|h\u202Fa v
+        de|available.h|h\u202Fa
+        de|available.ms|mm:ss
+        de|available.yMEd|E, d.M.y
+        de|available.yMMMEd|E, d. MMM y
+        de|available.yMMMM|MMMM y
+        de|available.yMMMd|d. MMM y
+        de|available.yMMM|MMM y
+        de|available.yMMdd|dd.MM.y
+        de|available.yMM|MM/y
+        de|available.yMd|d.M.y
+        de|available.yM|M/y
+        de|available.yQQQQ|QQQQ y
+        de|available.yQQQ|QQQ y
+        de|available.y|y
+        de|dateFormats.full|EEEE, d. MMMM y
+        de|dateFormats.long|d. MMMM y
+        de|dateFormats.medium|dd.MM.y
+        de|dateFormats.short|dd.MM.yy
+        de|dateTime.full|{1}, {0}
+        de|dateTime.long|{1}, {0}
+        de|dateTime.medium|{1}, {0}
+        de|dateTime.short|{1}, {0}
+        de|dayPeriods.format.abbreviated.afternoon1|mittags
+        de|dayPeriods.format.abbreviated.afternoon2|nachm.
+        de|dayPeriods.format.abbreviated.am|AM
+        de|dayPeriods.format.abbreviated.evening1|abends
+        de|dayPeriods.format.abbreviated.midnight|Mitternacht
+        de|dayPeriods.format.abbreviated.morning1|morgens
+        de|dayPeriods.format.abbreviated.morning2|vorm.
+        de|dayPeriods.format.abbreviated.night1|nachts
+        de|dayPeriods.format.abbreviated.pm|PM
+        de|dayPeriods.format.narrow.afternoon1|mittags
+        de|dayPeriods.format.narrow.afternoon2|nachm.
+        de|dayPeriods.format.narrow.am|AM
+        de|dayPeriods.format.narrow.evening1|abends
+        de|dayPeriods.format.narrow.midnight|Mitternacht
+        de|dayPeriods.format.narrow.morning1|morgens
+        de|dayPeriods.format.narrow.morning2|vorm.
+        de|dayPeriods.format.narrow.night1|nachts
+        de|dayPeriods.format.narrow.pm|PM
+        de|dayPeriods.format.wide.afternoon1|mittags
+        de|dayPeriods.format.wide.afternoon2|nachmittags
+        de|dayPeriods.format.wide.am|AM
+        de|dayPeriods.format.wide.evening1|abends
+        de|dayPeriods.format.wide.midnight|Mitternacht
+        de|dayPeriods.format.wide.morning1|morgens
+        de|dayPeriods.format.wide.morning2|vormittags
+        de|dayPeriods.format.wide.night1|nachts
+        de|dayPeriods.format.wide.pm|PM
+        de|dayPeriods.stand-alone.abbreviated.afternoon1|Mittag
+        de|dayPeriods.stand-alone.abbreviated.afternoon2|Nachm.
+        de|dayPeriods.stand-alone.abbreviated.am|AM
+        de|dayPeriods.stand-alone.abbreviated.evening1|Abend
+        de|dayPeriods.stand-alone.abbreviated.midnight|Mitternacht
+        de|dayPeriods.stand-alone.abbreviated.morning1|Morgen
+        de|dayPeriods.stand-alone.abbreviated.morning2|Vorm.
+        de|dayPeriods.stand-alone.abbreviated.night1|Nacht
+        de|dayPeriods.stand-alone.abbreviated.pm|PM
+        de|dayPeriods.stand-alone.narrow.afternoon1|Mittag
+        de|dayPeriods.stand-alone.narrow.afternoon2|Nachm.
+        de|dayPeriods.stand-alone.narrow.am|AM
+        de|dayPeriods.stand-alone.narrow.evening1|Abend
+        de|dayPeriods.stand-alone.narrow.midnight|Mitternacht
+        de|dayPeriods.stand-alone.narrow.morning1|Morgen
+        de|dayPeriods.stand-alone.narrow.morning2|Vorm.
+        de|dayPeriods.stand-alone.narrow.night1|Nacht
+        de|dayPeriods.stand-alone.narrow.pm|PM
+        de|dayPeriods.stand-alone.wide.afternoon1|Mittag
+        de|dayPeriods.stand-alone.wide.afternoon2|Nachmittag
+        de|dayPeriods.stand-alone.wide.am|AM
+        de|dayPeriods.stand-alone.wide.evening1|Abend
+        de|dayPeriods.stand-alone.wide.midnight|Mitternacht
+        de|dayPeriods.stand-alone.wide.morning1|Morgen
+        de|dayPeriods.stand-alone.wide.morning2|Vormittag
+        de|dayPeriods.stand-alone.wide.night1|Nacht
+        de|dayPeriods.stand-alone.wide.pm|PM
+        de|days.format.abbreviated.fri|Fr.
+        de|days.format.abbreviated.mon|Mo.
+        de|days.format.abbreviated.sat|Sa.
+        de|days.format.abbreviated.sun|So.
+        de|days.format.abbreviated.thu|Do.
+        de|days.format.abbreviated.tue|Di.
+        de|days.format.abbreviated.wed|Mi.
+        de|days.format.narrow.fri|F
+        de|days.format.narrow.mon|M
+        de|days.format.narrow.sat|S
+        de|days.format.narrow.sun|S
+        de|days.format.narrow.thu|D
+        de|days.format.narrow.tue|D
+        de|days.format.narrow.wed|M
+        de|days.format.short.fri|Fr.
+        de|days.format.short.mon|Mo.
+        de|days.format.short.sat|Sa.
+        de|days.format.short.sun|So.
+        de|days.format.short.thu|Do.
+        de|days.format.short.tue|Di.
+        de|days.format.short.wed|Mi.
+        de|days.format.wide.fri|Freitag
+        de|days.format.wide.mon|Montag
+        de|days.format.wide.sat|Samstag
+        de|days.format.wide.sun|Sonntag
+        de|days.format.wide.thu|Donnerstag
+        de|days.format.wide.tue|Dienstag
+        de|days.format.wide.wed|Mittwoch
+        de|days.stand-alone.abbreviated.fri|Fr
+        de|days.stand-alone.abbreviated.mon|Mo
+        de|days.stand-alone.abbreviated.sat|Sa
+        de|days.stand-alone.abbreviated.sun|So
+        de|days.stand-alone.abbreviated.thu|Do
+        de|days.stand-alone.abbreviated.tue|Di
+        de|days.stand-alone.abbreviated.wed|Mi
+        de|days.stand-alone.narrow.fri|F
+        de|days.stand-alone.narrow.mon|M
+        de|days.stand-alone.narrow.sat|S
+        de|days.stand-alone.narrow.sun|S
+        de|days.stand-alone.narrow.thu|D
+        de|days.stand-alone.narrow.tue|D
+        de|days.stand-alone.narrow.wed|M
+        de|days.stand-alone.short.fri|Fr.
+        de|days.stand-alone.short.mon|Mo.
+        de|days.stand-alone.short.sat|Sa.
+        de|days.stand-alone.short.sun|So.
+        de|days.stand-alone.short.thu|Do.
+        de|days.stand-alone.short.tue|Di.
+        de|days.stand-alone.short.wed|Mi.
+        de|days.stand-alone.wide.fri|Freitag
+        de|days.stand-alone.wide.mon|Montag
+        de|days.stand-alone.wide.sat|Samstag
+        de|days.stand-alone.wide.sun|Sonntag
+        de|days.stand-alone.wide.thu|Donnerstag
+        de|days.stand-alone.wide.tue|Dienstag
+        de|days.stand-alone.wide.wed|Mittwoch
+        de|eras.eraAbbr.0|v. Chr.
+        de|eras.eraAbbr.1|n. Chr.
+        de|eras.eraNames.0|v. Chr.
+        de|eras.eraNames.1|n. Chr.
+        de|eras.eraNarrow.0|v. Chr.
+        de|eras.eraNarrow.1|n. Chr.
+        de|field.dayOfYear|Tag des Jahres
+        de|field.dayperiod|Tagesh\u00E4lfte
+        de|field.day|Tag
+        de|field.era|Epoche
+        de|field.hour|Stunde
+        de|field.minute|Minute
+        de|field.month|Monat
+        de|field.quarter|Quartal
+        de|field.second|Sekunde
+        de|field.weekOfMonth|Woche des Monats
+        de|field.weekdayOfMonth|Wochentag
+        de|field.weekday|Wochentag
+        de|field.week|Woche
+        de|field.year|Jahr
+        de|field.zone|Zeitzone
+        de|interval.Bh.B|h 'Uhr' B\u2009\u2013\u2009h 'Uhr' B
+        de|interval.Bh.h|h\u2013h 'Uhr' B
+        de|interval.Bhm.B|h:mm 'Uhr' B\u2009\u2013\u2009h:mm 'Uhr' B
+        de|interval.Bhm.h|h:mm\u2009\u2013\u2009h:mm 'Uhr' B
+        de|interval.Bhm.m|h:mm\u2009\u2013\u2009h:mm 'Uhr' B
+        de|interval.Gy.G|y G\u2009\u2013\u2009y G
+        de|interval.Gy.y|y\u2013y G
+        de|interval.GyM.G|MM/y G\u2009\u2013\u2009MM/y G
+        de|interval.GyM.M|MM/y\u2009\u2013\u2009MM/y G
+        de|interval.GyM.y|MM/y\u2009\u2013\u2009MM/y G
+        de|interval.GyMEd.G|E, dd.MM.y G\u2009\u2013\u2009E, dd.MM.y G
+        de|interval.GyMEd.M|E, dd.MM.\u2009\u2013\u2009E, dd.MM.y G
+        de|interval.GyMEd.d|E, dd.MM.y\u2009\u2013\u2009E, dd.MM.y G
+        de|interval.GyMEd.y|E, dd.MM.y\u2009\u2013\u2009E, dd.MM.y G
+        de|interval.GyMMM.G|MMM y G\u2009\u2013\u2009MMM y G
+        de|interval.GyMMM.M|MMM\u2013MMM y G
+        de|interval.GyMMM.y|MMM y\u2009\u2013\u2009MMM y G
+        de|interval.GyMMMEd.G|E, d. MMM y G\u2009\u2013\u2009E, d. MMM y G
+        de|interval.GyMMMEd.M|E, d. MMM\u2009\u2013\u2009E, d. MMM y G
+        de|interval.GyMMMEd.d|E, d.\u2009\u2013\u2009E, d. MMM y G
+        de|interval.GyMMMEd.y|E, d. MMM y\u2009\u2013\u2009E, d. MMM y G
+        de|interval.GyMMMd.G|d. MMM y G\u2009\u2013\u2009d. MMM y G
+        de|interval.GyMMMd.M|d. MMM\u2009\u2013\u2009d. MMM y G
+        de|interval.GyMMMd.d|d.\u2013d. MMM y G
+        de|interval.GyMMMd.y|d. MMM y\u2009\u2013\u2009d. MMM y G
+        de|interval.GyMd.G|dd.MM.y G\u2009\u2013\u2009dd.MM.y G
+        de|interval.GyMd.M|dd.MM.\u2009\u2013\u2009dd.MM.y G
+        de|interval.GyMd.d|dd.\u2013dd.MM.y G
+        de|interval.GyMd.y|dd.MM.y\u2009\u2013\u2009dd.MM.y G
+        de|interval.H.H|HH\u2013HH 'Uhr'
+        de|interval.Hm.H|HH:mm\u2013HH:mm 'Uhr'
+        de|interval.Hm.m|HH:mm\u2013HH:mm 'Uhr'
+        de|interval.Hmv.H|HH:mm\u2013HH:mm 'Uhr' v
+        de|interval.Hmv.m|HH:mm\u2013HH:mm 'Uhr' v
+        de|interval.Hv.H|HH\u2013HH 'Uhr' v
+        de|interval.M.M|MM\u2013MM
+        de|interval.MEd.M|E, dd.MM.\u2009\u2013\u2009E, dd.MM.
+        de|interval.MEd.d|E, dd.\u2009\u2013\u2009E, dd.MM.
+        de|interval.MMM.M|MMM\u2013MMM
+        de|interval.MMMEd.M|E, d. MMM\u2009\u2013\u2009E, d. MMM
+        de|interval.MMMEd.d|E, d.\u2009\u2013\u2009E, d. MMM
+        de|interval.MMMM.M|LLLL\u2013LLLL
+        de|interval.MMMd.M|d. MMM\u2009\u2013\u2009d. MMM
+        de|interval.MMMd.d|d.\u2013d. MMM
+        de|interval.Md.M|dd.MM.\u2009\u2013\u2009dd.MM.
+        de|interval.Md.d|dd.\u2013dd.MM.
+        de|interval.d.d|d.\u2013d.
+        de|interval.fallback|{0}\u2009\u2013\u2009{1}
+        de|interval.h.a|h\u202Fa\u2009\u2013\u2009h\u202Fa
+        de|interval.h.h|h\u2009\u2013\u2009h\u202Fa
+        de|interval.hm.a|h:mm\u202Fa\u2009\u2013\u2009h:mm\u202Fa
+        de|interval.hm.h|h:mm\u2013h:mm\u202Fa
+        de|interval.hm.m|h:mm\u2013h:mm\u202Fa
+        de|interval.hmv.a|h:mm\u202Fa\u2009\u2013\u2009h:mm\u202Fa v
+        de|interval.hmv.h|h:mm\u2013h:mm\u202Fa v
+        de|interval.hmv.m|h:mm\u2013h:mm\u202Fa v
+        de|interval.hv.a|h\u202Fa\u2009\u2013\u2009h\u202Fa v
+        de|interval.hv.h|h\u2013h\u202Fa v
+        de|interval.y.y|y\u2013y
+        de|interval.yM.M|M/y\u2009\u2013\u2009M/y
+        de|interval.yM.y|M/y\u2009\u2013\u2009M/y
+        de|interval.yMEd.M|E, dd.MM.\u2009\u2013\u2009E, dd.MM.y
+        de|interval.yMEd.d|E, dd.\u2009\u2013\u2009E, dd.MM.y
+        de|interval.yMEd.y|E, dd.MM.y\u2009\u2013\u2009E, dd.MM.y
+        de|interval.yMMM.M|MMM\u2013MMM y
+        de|interval.yMMM.y|MMM y\u2009\u2013\u2009MMM y
+        de|interval.yMMMEd.M|E, d. MMM\u2009\u2013\u2009E, d. MMM y
+        de|interval.yMMMEd.d|E, d.\u2009\u2013\u2009E, d. MMM y
+        de|interval.yMMMEd.y|E, d. MMM y\u2009\u2013\u2009E, d. MMM y
+        de|interval.yMMMM.M|MMMM\u2013MMMM y
+        de|interval.yMMMM.y|MMMM y\u2009\u2013\u2009MMMM y
+        de|interval.yMMMd.M|d. MMM\u2009\u2013\u2009d. MMM y
+        de|interval.yMMMd.d|d.\u2013d. MMM y
+        de|interval.yMMMd.y|d. MMM y\u2009\u2013\u2009d. MMM y
+        de|interval.yMd.M|dd.MM.\u2009\u2013\u2009dd.MM.y
+        de|interval.yMd.d|dd.\u2013dd.MM.y
+        de|interval.yMd.y|dd.MM.y\u2009\u2013\u2009dd.MM.y
+        de|months.format.abbreviated.10|Okt.
+        de|months.format.abbreviated.11|Nov.
+        de|months.format.abbreviated.12|Dez.
+        de|months.format.abbreviated.1|Jan.
+        de|months.format.abbreviated.2|Feb.
+        de|months.format.abbreviated.3|M\u00E4rz
+        de|months.format.abbreviated.4|Apr.
+        de|months.format.abbreviated.5|Mai
+        de|months.format.abbreviated.6|Juni
+        de|months.format.abbreviated.7|Juli
+        de|months.format.abbreviated.8|Aug.
+        de|months.format.abbreviated.9|Sept.
+        de|months.format.narrow.10|O
+        de|months.format.narrow.11|N
+        de|months.format.narrow.12|D
+        de|months.format.narrow.1|J
+        de|months.format.narrow.2|F
+        de|months.format.narrow.3|M
+        de|months.format.narrow.4|A
+        de|months.format.narrow.5|M
+        de|months.format.narrow.6|J
+        de|months.format.narrow.7|J
+        de|months.format.narrow.8|A
+        de|months.format.narrow.9|S
+        de|months.format.wide.10|Oktober
+        de|months.format.wide.11|November
+        de|months.format.wide.12|Dezember
+        de|months.format.wide.1|Januar
+        de|months.format.wide.2|Februar
+        de|months.format.wide.3|M\u00E4rz
+        de|months.format.wide.4|April
+        de|months.format.wide.5|Mai
+        de|months.format.wide.6|Juni
+        de|months.format.wide.7|Juli
+        de|months.format.wide.8|August
+        de|months.format.wide.9|September
+        de|months.stand-alone.abbreviated.10|Okt
+        de|months.stand-alone.abbreviated.11|Nov
+        de|months.stand-alone.abbreviated.12|Dez
+        de|months.stand-alone.abbreviated.1|Jan
+        de|months.stand-alone.abbreviated.2|Feb
+        de|months.stand-alone.abbreviated.3|M\u00E4r
+        de|months.stand-alone.abbreviated.4|Apr
+        de|months.stand-alone.abbreviated.5|Mai
+        de|months.stand-alone.abbreviated.6|Jun
+        de|months.stand-alone.abbreviated.7|Jul
+        de|months.stand-alone.abbreviated.8|Aug
+        de|months.stand-alone.abbreviated.9|Sep
+        de|months.stand-alone.narrow.10|O
+        de|months.stand-alone.narrow.11|N
+        de|months.stand-alone.narrow.12|D
+        de|months.stand-alone.narrow.1|J
+        de|months.stand-alone.narrow.2|F
+        de|months.stand-alone.narrow.3|M
+        de|months.stand-alone.narrow.4|A
+        de|months.stand-alone.narrow.5|M
+        de|months.stand-alone.narrow.6|J
+        de|months.stand-alone.narrow.7|J
+        de|months.stand-alone.narrow.8|A
+        de|months.stand-alone.narrow.9|S
+        de|months.stand-alone.wide.10|Oktober
+        de|months.stand-alone.wide.11|November
+        de|months.stand-alone.wide.12|Dezember
+        de|months.stand-alone.wide.1|Januar
+        de|months.stand-alone.wide.2|Februar
+        de|months.stand-alone.wide.3|M\u00E4rz
+        de|months.stand-alone.wide.4|April
+        de|months.stand-alone.wide.5|Mai
+        de|months.stand-alone.wide.6|Juni
+        de|months.stand-alone.wide.7|Juli
+        de|months.stand-alone.wide.8|August
+        de|months.stand-alone.wide.9|September
+        de|timeFormats.full|HH:mm:ss zzzz
+        de|timeFormats.long|HH:mm:ss z
+        de|timeFormats.medium|HH:mm:ss
+        de|timeFormats.short|HH:mm
+        de|zone.gmt.long|Mittlere Greenwich-Zeit
+        de|zone.gmtFormat|GMT{0}
+        de|zone.gmtZeroFormat|GMT
+        de|zone.hourFormat|+HH:mm;-HH:mm
+        de|zone.utc.long|Koordinierte Weltzeit
+        de|zone.utc.short|UTC
+        en|append.Day-Of-Week|{0} {1}
+        en|append.Day|{0} ({2}: {1})
+        en|append.Era|{0} {1}
+        en|append.Hour|{0} ({2}: {1})
+        en|append.Minute|{0} ({2}: {1})
+        en|append.Month|{0} ({2}: {1})
+        en|append.Quarter|{0} ({2}: {1})
+        en|append.Second|{0} ({2}: {1})
+        en|append.Timezone|{0} {1}
+        en|append.Week|{0} ({2}: {1})
+        en|append.Year|{0} {1}
+        en|atTime.full|{1} 'at' {0}
+        en|atTime.long|{1} 'at' {0}
+        en|atTime.medium|{1}, {0}
+        en|atTime.short|{1}, {0}
+        en|available.Bhms|h:mm:ss B
+        en|available.Bhm|h:mm B
+        en|available.Bh|h B
+        en|available.EBhms|E h:mm:ss B
+        en|available.EBhm|E h:mm B
+        en|available.EBh|E h B
+        en|available.EHms|E HH:mm:ss
+        en|available.EHm|E HH:mm
+        en|available.Ed|d E
+        en|available.Ehms|E h:mm:ss\u202Fa
+        en|available.Ehm|E h:mm\u202Fa
+        en|available.Eh|E h\u202Fa
+        en|available.E|ccc
+        en|available.GyMEd|E, M/d/y G
+        en|available.GyMMMEd|E, MMM d, y G
+        en|available.GyMMMd|MMM d, y G
+        en|available.GyMMM|MMM y G
+        en|available.GyMd|M/d/y G
+        en|available.GyM|M/y G
+        en|available.Gy|y G
+        en|available.Hmsv|HH:mm:ss v
+        en|available.Hms|HH:mm:ss
+        en|available.Hmv|HH:mm v
+        en|available.Hm|HH:mm
+        en|available.Hv|HH v
+        en|available.H|HH
+        en|available.MEd|E, M/d
+        en|available.MMMEd|E, MMM d
+        en|available.MMMMd|MMMM d
+        en|available.MMMd|MMM d
+        en|available.MMM|LLL
+        en|available.Md|M/d
+        en|available.M|L
+        en|available.d|d
+        en|available.hmsv|h:mm:ss\u202Fa v
+        en|available.hms|h:mm:ss\u202Fa
+        en|available.hmv|h:mm\u202Fa v
+        en|available.hm|h:mm\u202Fa
+        en|available.hv|h\u202Fa v
+        en|available.h|h\u202Fa
+        en|available.ms|mm:ss
+        en|available.yMEd|E, M/d/y
+        en|available.yMMMEd|E, MMM d, y
+        en|available.yMMMM|MMMM y
+        en|available.yMMMd|MMM d, y
+        en|available.yMMM|MMM y
+        en|available.yMd|M/d/y
+        en|available.yM|M/y
+        en|available.yQQQQ|QQQQ y
+        en|available.yQQQ|QQQ y
+        en|available.y|y
+        en|dateFormats.full|EEEE, MMMM d, y
+        en|dateFormats.long|MMMM d, y
+        en|dateFormats.medium|MMM d, y
+        en|dateFormats.short|M/d/yy
+        en|dateTime.full|{1}, {0}
+        en|dateTime.long|{1}, {0}
+        en|dateTime.medium|{1}, {0}
+        en|dateTime.short|{1}, {0}
+        en|dayPeriods.format.abbreviated.afternoon1|in the afternoon
+        en|dayPeriods.format.abbreviated.am|AM
+        en|dayPeriods.format.abbreviated.evening1|in the evening
+        en|dayPeriods.format.abbreviated.midnight|midnight
+        en|dayPeriods.format.abbreviated.morning1|in the morning
+        en|dayPeriods.format.abbreviated.night1|at night
+        en|dayPeriods.format.abbreviated.noon|noon
+        en|dayPeriods.format.abbreviated.pm|PM
+        en|dayPeriods.format.narrow.afternoon1|in the afternoon
+        en|dayPeriods.format.narrow.am|a
+        en|dayPeriods.format.narrow.evening1|in the evening
+        en|dayPeriods.format.narrow.midnight|mi
+        en|dayPeriods.format.narrow.morning1|in the morning
+        en|dayPeriods.format.narrow.night1|at night
+        en|dayPeriods.format.narrow.noon|n
+        en|dayPeriods.format.narrow.pm|p
+        en|dayPeriods.format.wide.afternoon1|in the afternoon
+        en|dayPeriods.format.wide.am|AM
+        en|dayPeriods.format.wide.evening1|in the evening
+        en|dayPeriods.format.wide.midnight|midnight
+        en|dayPeriods.format.wide.morning1|in the morning
+        en|dayPeriods.format.wide.night1|at night
+        en|dayPeriods.format.wide.noon|noon
+        en|dayPeriods.format.wide.pm|PM
+        en|dayPeriods.stand-alone.abbreviated.afternoon1|afternoon
+        en|dayPeriods.stand-alone.abbreviated.am|AM
+        en|dayPeriods.stand-alone.abbreviated.evening1|evening
+        en|dayPeriods.stand-alone.abbreviated.midnight|midnight
+        en|dayPeriods.stand-alone.abbreviated.morning1|morning
+        en|dayPeriods.stand-alone.abbreviated.night1|night
+        en|dayPeriods.stand-alone.abbreviated.noon|noon
+        en|dayPeriods.stand-alone.abbreviated.pm|PM
+        en|dayPeriods.stand-alone.narrow.afternoon1|afternoon
+        en|dayPeriods.stand-alone.narrow.am|AM
+        en|dayPeriods.stand-alone.narrow.evening1|evening
+        en|dayPeriods.stand-alone.narrow.midnight|midnight
+        en|dayPeriods.stand-alone.narrow.morning1|morning
+        en|dayPeriods.stand-alone.narrow.night1|night
+        en|dayPeriods.stand-alone.narrow.noon|noon
+        en|dayPeriods.stand-alone.narrow.pm|PM
+        en|dayPeriods.stand-alone.wide.afternoon1|afternoon
+        en|dayPeriods.stand-alone.wide.am|AM
+        en|dayPeriods.stand-alone.wide.evening1|evening
+        en|dayPeriods.stand-alone.wide.midnight|midnight
+        en|dayPeriods.stand-alone.wide.morning1|morning
+        en|dayPeriods.stand-alone.wide.night1|night
+        en|dayPeriods.stand-alone.wide.noon|noon
+        en|dayPeriods.stand-alone.wide.pm|PM
+        en|days.format.abbreviated.fri|Fri
+        en|days.format.abbreviated.mon|Mon
+        en|days.format.abbreviated.sat|Sat
+        en|days.format.abbreviated.sun|Sun
+        en|days.format.abbreviated.thu|Thu
+        en|days.format.abbreviated.tue|Tue
+        en|days.format.abbreviated.wed|Wed
+        en|days.format.narrow.fri|F
+        en|days.format.narrow.mon|M
+        en|days.format.narrow.sat|S
+        en|days.format.narrow.sun|S
+        en|days.format.narrow.thu|T
+        en|days.format.narrow.tue|T
+        en|days.format.narrow.wed|W
+        en|days.format.short.fri|Fr
+        en|days.format.short.mon|Mo
+        en|days.format.short.sat|Sa
+        en|days.format.short.sun|Su
+        en|days.format.short.thu|Th
+        en|days.format.short.tue|Tu
+        en|days.format.short.wed|We
+        en|days.format.wide.fri|Friday
+        en|days.format.wide.mon|Monday
+        en|days.format.wide.sat|Saturday
+        en|days.format.wide.sun|Sunday
+        en|days.format.wide.thu|Thursday
+        en|days.format.wide.tue|Tuesday
+        en|days.format.wide.wed|Wednesday
+        en|days.stand-alone.abbreviated.fri|Fri
+        en|days.stand-alone.abbreviated.mon|Mon
+        en|days.stand-alone.abbreviated.sat|Sat
+        en|days.stand-alone.abbreviated.sun|Sun
+        en|days.stand-alone.abbreviated.thu|Thu
+        en|days.stand-alone.abbreviated.tue|Tue
+        en|days.stand-alone.abbreviated.wed|Wed
+        en|days.stand-alone.narrow.fri|F
+        en|days.stand-alone.narrow.mon|M
+        en|days.stand-alone.narrow.sat|S
+        en|days.stand-alone.narrow.sun|S
+        en|days.stand-alone.narrow.thu|T
+        en|days.stand-alone.narrow.tue|T
+        en|days.stand-alone.narrow.wed|W
+        en|days.stand-alone.short.fri|Fr
+        en|days.stand-alone.short.mon|Mo
+        en|days.stand-alone.short.sat|Sa
+        en|days.stand-alone.short.sun|Su
+        en|days.stand-alone.short.thu|Th
+        en|days.stand-alone.short.tue|Tu
+        en|days.stand-alone.short.wed|We
+        en|days.stand-alone.wide.fri|Friday
+        en|days.stand-alone.wide.mon|Monday
+        en|days.stand-alone.wide.sat|Saturday
+        en|days.stand-alone.wide.sun|Sunday
+        en|days.stand-alone.wide.thu|Thursday
+        en|days.stand-alone.wide.tue|Tuesday
+        en|days.stand-alone.wide.wed|Wednesday
+        en|eras.eraAbbr.0|BC
+        en|eras.eraAbbr.1|AD
+        en|eras.eraNames.0|Before Christ
+        en|eras.eraNames.1|Anno Domini
+        en|eras.eraNarrow.0|B
+        en|eras.eraNarrow.1|A
+        en|field.dayOfYear|day of year
+        en|field.dayperiod|AM/PM
+        en|field.day|day
+        en|field.era|era
+        en|field.hour|hour
+        en|field.minute|minute
+        en|field.month|month
+        en|field.quarter|quarter
+        en|field.second|second
+        en|field.weekOfMonth|week of month
+        en|field.weekdayOfMonth|weekday of the month
+        en|field.weekday|day of the week
+        en|field.week|week
+        en|field.year|year
+        en|field.zone|time zone
+        en|interval.Bh.B|h B\u2009\u2013\u2009h B
+        en|interval.Bh.h|h\u2009\u2013\u2009h B
+        en|interval.Bhm.B|h:mm B\u2009\u2013\u2009h:mm B
+        en|interval.Bhm.h|h:mm\u2009\u2013\u2009h:mm B
+        en|interval.Bhm.m|h:mm\u2009\u2013\u2009h:mm B
+        en|interval.Gy.G|y G\u2009\u2013\u2009y G
+        en|interval.Gy.y|y\u2009\u2013\u2009y G
+        en|interval.GyM.G|M/y G\u2009\u2013\u2009M/y G
+        en|interval.GyM.M|M/y\u2009\u2013\u2009M/y G
+        en|interval.GyM.y|M/y\u2009\u2013\u2009M/y G
+        en|interval.GyMEd.G|E, M/d/y G\u2009\u2013\u2009E, M/d/y G
+        en|interval.GyMEd.M|E, M/d/y\u2009\u2013\u2009E, M/d/y G
+        en|interval.GyMEd.d|E, M/d/y\u2009\u2013\u2009E, M/d/y G
+        en|interval.GyMEd.y|E, M/d/y\u2009\u2013\u2009E, M/d/y G
+        en|interval.GyMMM.G|MMM y G\u2009\u2013\u2009MMM y G
+        en|interval.GyMMM.M|MMM\u2009\u2013\u2009MMM y G
+        en|interval.GyMMM.y|MMM y\u2009\u2013\u2009MMM y G
+        en|interval.GyMMMEd.G|E, MMM d, y G\u2009\u2013\u2009E, MMM d, y G
+        en|interval.GyMMMEd.M|E, MMM d\u2009\u2013\u2009E, MMM d, y G
+        en|interval.GyMMMEd.d|E, MMM d\u2009\u2013\u2009E, MMM d, y G
+        en|interval.GyMMMEd.y|E, MMM d, y\u2009\u2013\u2009E, MMM d, y G
+        en|interval.GyMMMd.G|MMM d, y G\u2009\u2013\u2009MMM d, y G
+        en|interval.GyMMMd.M|MMM d\u2009\u2013\u2009MMM d, y G
+        en|interval.GyMMMd.d|MMM d\u2009\u2013\u2009d, y G
+        en|interval.GyMMMd.y|MMM d, y\u2009\u2013\u2009MMM d, y G
+        en|interval.GyMd.G|M/d/y G\u2009\u2013\u2009M/d/y G
+        en|interval.GyMd.M|M/d/y\u2009\u2013\u2009M/d/y G
+        en|interval.GyMd.d|M/d/y\u2009\u2013\u2009M/d/y G
+        en|interval.GyMd.y|M/d/y\u2009\u2013\u2009M/d/y G
+        en|interval.H.H|HH\u2009\u2013\u2009HH
+        en|interval.Hm.H|HH:mm\u2009\u2013\u2009HH:mm
+        en|interval.Hm.m|HH:mm\u2009\u2013\u2009HH:mm
+        en|interval.Hmv.H|HH:mm\u2009\u2013\u2009HH:mm v
+        en|interval.Hmv.m|HH:mm\u2009\u2013\u2009HH:mm v
+        en|interval.Hv.H|HH\u2009\u2013\u2009HH v
+        en|interval.M.M|M\u2009\u2013\u2009M
+        en|interval.MEd.M|E, M/d\u2009\u2013\u2009E, M/d
+        en|interval.MEd.d|E, M/d\u2009\u2013\u2009E, M/d
+        en|interval.MMM.M|MMM\u2009\u2013\u2009MMM
+        en|interval.MMMEd.M|E, MMM d\u2009\u2013\u2009E, MMM d
+        en|interval.MMMEd.d|E, MMM d\u2009\u2013\u2009E, MMM d
+        en|interval.MMMd.M|MMM d\u2009\u2013\u2009MMM d
+        en|interval.MMMd.d|MMM d\u2009\u2013\u2009d
+        en|interval.Md.M|M/d\u2009\u2013\u2009M/d
+        en|interval.Md.d|M/d\u2009\u2013\u2009M/d
+        en|interval.d.d|d\u2009\u2013\u2009d
+        en|interval.fallback|{0}\u2009\u2013\u2009{1}
+        en|interval.h.a|h\u202Fa\u2009\u2013\u2009h\u202Fa
+        en|interval.h.h|h\u2009\u2013\u2009h\u202Fa
+        en|interval.hm.a|h:mm\u202Fa\u2009\u2013\u2009h:mm\u202Fa
+        en|interval.hm.h|h:mm\u2009\u2013\u2009h:mm\u202Fa
+        en|interval.hm.m|h:mm\u2009\u2013\u2009h:mm\u202Fa
+        en|interval.hmv.a|h:mm\u202Fa\u2009\u2013\u2009h:mm\u202Fa v
+        en|interval.hmv.h|h:mm\u2009\u2013\u2009h:mm\u202Fa v
+        en|interval.hmv.m|h:mm\u2009\u2013\u2009h:mm\u202Fa v
+        en|interval.hv.a|h\u202Fa\u2009\u2013\u2009h\u202Fa v
+        en|interval.hv.h|h\u2009\u2013\u2009h\u202Fa v
+        en|interval.y.y|y\u2009\u2013\u2009y
+        en|interval.yM.M|M/y\u2009\u2013\u2009M/y
+        en|interval.yM.y|M/y\u2009\u2013\u2009M/y
+        en|interval.yMEd.M|E, M/d/y\u2009\u2013\u2009E, M/d/y
+        en|interval.yMEd.d|E, M/d/y\u2009\u2013\u2009E, M/d/y
+        en|interval.yMEd.y|E, M/d/y\u2009\u2013\u2009E, M/d/y
+        en|interval.yMMM.M|MMM\u2009\u2013\u2009MMM y
+        en|interval.yMMM.y|MMM y\u2009\u2013\u2009MMM y
+        en|interval.yMMMEd.M|E, MMM d\u2009\u2013\u2009E, MMM d, y
+        en|interval.yMMMEd.d|E, MMM d\u2009\u2013\u2009E, MMM d, y
+        en|interval.yMMMEd.y|E, MMM d, y\u2009\u2013\u2009E, MMM d, y
+        en|interval.yMMMM.M|MMMM\u2009\u2013\u2009MMMM y
+        en|interval.yMMMM.y|MMMM y\u2009\u2013\u2009MMMM y
+        en|interval.yMMMd.M|MMM d\u2009\u2013\u2009MMM d, y
+        en|interval.yMMMd.d|MMM d\u2009\u2013\u2009d, y
+        en|interval.yMMMd.y|MMM d, y\u2009\u2013\u2009MMM d, y
+        en|interval.yMd.M|M/d/y\u2009\u2013\u2009M/d/y
+        en|interval.yMd.d|M/d/y\u2009\u2013\u2009M/d/y
+        en|interval.yMd.y|M/d/y\u2009\u2013\u2009M/d/y
+        en|months.format.abbreviated.10|Oct
+        en|months.format.abbreviated.11|Nov
+        en|months.format.abbreviated.12|Dec
+        en|months.format.abbreviated.1|Jan
+        en|months.format.abbreviated.2|Feb
+        en|months.format.abbreviated.3|Mar
+        en|months.format.abbreviated.4|Apr
+        en|months.format.abbreviated.5|May
+        en|months.format.abbreviated.6|Jun
+        en|months.format.abbreviated.7|Jul
+        en|months.format.abbreviated.8|Aug
+        en|months.format.abbreviated.9|Sep
+        en|months.format.narrow.10|O
+        en|months.format.narrow.11|N
+        en|months.format.narrow.12|D
+        en|months.format.narrow.1|J
+        en|months.format.narrow.2|F
+        en|months.format.narrow.3|M
+        en|months.format.narrow.4|A
+        en|months.format.narrow.5|M
+        en|months.format.narrow.6|J
+        en|months.format.narrow.7|J
+        en|months.format.narrow.8|A
+        en|months.format.narrow.9|S
+        en|months.format.wide.10|October
+        en|months.format.wide.11|November
+        en|months.format.wide.12|December
+        en|months.format.wide.1|January
+        en|months.format.wide.2|February
+        en|months.format.wide.3|March
+        en|months.format.wide.4|April
+        en|months.format.wide.5|May
+        en|months.format.wide.6|June
+        en|months.format.wide.7|July
+        en|months.format.wide.8|August
+        en|months.format.wide.9|September
+        en|months.stand-alone.abbreviated.10|Oct
+        en|months.stand-alone.abbreviated.11|Nov
+        en|months.stand-alone.abbreviated.12|Dec
+        en|months.stand-alone.abbreviated.1|Jan
+        en|months.stand-alone.abbreviated.2|Feb
+        en|months.stand-alone.abbreviated.3|Mar
+        en|months.stand-alone.abbreviated.4|Apr
+        en|months.stand-alone.abbreviated.5|May
+        en|months.stand-alone.abbreviated.6|Jun
+        en|months.stand-alone.abbreviated.7|Jul
+        en|months.stand-alone.abbreviated.8|Aug
+        en|months.stand-alone.abbreviated.9|Sep
+        en|months.stand-alone.narrow.10|O
+        en|months.stand-alone.narrow.11|N
+        en|months.stand-alone.narrow.12|D
+        en|months.stand-alone.narrow.1|J
+        en|months.stand-alone.narrow.2|F
+        en|months.stand-alone.narrow.3|M
+        en|months.stand-alone.narrow.4|A
+        en|months.stand-alone.narrow.5|M
+        en|months.stand-alone.narrow.6|J
+        en|months.stand-alone.narrow.7|J
+        en|months.stand-alone.narrow.8|A
+        en|months.stand-alone.narrow.9|S
+        en|months.stand-alone.wide.10|October
+        en|months.stand-alone.wide.11|November
+        en|months.stand-alone.wide.12|December
+        en|months.stand-alone.wide.1|January
+        en|months.stand-alone.wide.2|February
+        en|months.stand-alone.wide.3|March
+        en|months.stand-alone.wide.4|April
+        en|months.stand-alone.wide.5|May
+        en|months.stand-alone.wide.6|June
+        en|months.stand-alone.wide.7|July
+        en|months.stand-alone.wide.8|August
+        en|months.stand-alone.wide.9|September
+        en|timeFormats.full|h:mm:ss\u202Fa zzzz
+        en|timeFormats.long|h:mm:ss\u202Fa z
+        en|timeFormats.medium|h:mm:ss\u202Fa
+        en|timeFormats.short|h:mm\u202Fa
+        en|zone.gmt.long|Greenwich Mean Time
+        en|zone.gmt.short|GMT
+        en|zone.gmtFormat|GMT{0}
+        en|zone.gmtZeroFormat|GMT
+        en|zone.hourFormat|+HH:mm;-HH:mm
+        en|zone.utc.long|Coordinated Universal Time
+        en|zone.utc.short|UTC
+        """u8;
+
+    /// <summary>The hour cycles allowed and preferred in the supported locales' likely regions and the world: region, allowed, preferred.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> TimeData =>
+        """
+        001|H h|H
+        DE|H hB|H
+        US|h hb H hB|h
+        """u8;
+
+    /// <summary>The day period rules of each supported language: language, period, at or from, before.</summary>
+    // Broiler-AI:           EXEMPT=CLDR 48.2.0 table data written by CldrTableGenerator from the files cldr.pin names, compared byte for byte by rule N28
+    // Broiler-Human:        PENDING
+    internal static ReadOnlySpan<byte> DayPeriods =>
+        """
+        de|afternoon1|12:00|13:00
+        de|afternoon2|13:00|18:00
+        de|evening1|18:00|24:00
+        de|midnight|00:00|
+        de|morning1|05:00|10:00
+        de|morning2|10:00|12:00
+        de|night1|00:00|05:00
+        en|afternoon1|12:00|18:00
+        en|evening1|18:00|21:00
+        en|midnight|00:00|
+        en|morning1|00:00|12:00
+        en|night1|21:00|24:00
+        en|noon|12:00|
         """u8;
 
     /// <summary>The root collation: allkeys_CLDR.txt in runs and entries, the implicit-weight ranges and the unified ideographs.</summary>

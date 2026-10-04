@@ -386,3 +386,21 @@ its status line. Corrections entry [JSC-270](../roadmap.corrections.md#jsc-270).
   mode, and grouping at 3 to 9 digits. Every line agrees with ICU 77.1 but 24 named divergences.
 - **The archive grew** by the number, currency, unit and plural files, under N27. The measured data is
   now 438,831 bytes, still under the provisional bound, and no budget is set.
+
+## I3: Intl.DateTimeFormat, 2026-10-04 (unsigned)
+
+*Recorded with the change that publishes `Intl.DateTimeFormat`; it signs nothing and this record keeps
+its status line. Corrections entry [JSC-271](../roadmap.corrections.md#jsc-271).*
+
+- **I3 is built under proposed [JSD-0045](0045-intl-datetimeformat.md), wider than section 7 drew
+  it**: every component option, not only those the section 5 locales need, and ranges. ECMA-402
+  admits both on every format.
+- **Section 5 item 5 is read, not widened**: besides `"UTC"` and offset strings, IANA's `Etc/GMT+N`
+  and `Etc/GMT-N` zones are admitted, because they are fixed offsets by definition and need no
+  database. Every other IANA name is still refused by name, and decision (d) is untouched.
+- **The acceptance section 7 names is met** as JSD-0045 section 6 records. The retained dataset runs
+  over the full time-value range, from -8.64e15 to 8.64e15 with the year 0 and 2 BC, and agrees with
+  ICU 77.1 but for 352 named lines.
+- **The archive grew** by the Gregorian calendar, date field, zone name, hour cycle and day period
+  files, under N27. The measured data is now 465,869 bytes, still under the provisional bound, and no
+  budget is set.

@@ -1287,6 +1287,14 @@ scientific notation included, and `toLocaleString` of Number, BigInt, Array and 
 it. The retained numbers agree with ICU 77.1 but for 24 named divergences. `NumberFormat` passes 280
 of 324 `intl402` variants, and every failing one expects a locale the data lacks or `DateTimeFormat`.
 I3 (`DateTimeFormat`) is next ([JSC-270](roadmap.corrections.md#jsc-270)).*
+*Progress, 2026-10-04: I3 is built under proposed
+[JSD-0045](decisions/0045-intl-datetimeformat.md): `Intl.DateTimeFormat` for the Gregorian calendar
+with every component, both styles and ranges, the `Date.prototype.toLocale*` methods through it, and
+`Intl.supportedValuesOf`. The time zones are UTC, offset strings and IANA's `Etc/GMT` offsets. The
+retained dates agree with ICU 77.1 but for 352 named divergences. `DateTimeFormat` passes 326 of 350
+`intl402` variants, and the failing ones need another calendar, `ja` or the `arab` decimal
+separator. I4 (`PluralRules`,
+`Locale` and the rest) is next ([JSC-271](roadmap.corrections.md#jsc-271)).*
 
 #### F8 — Temporal
 

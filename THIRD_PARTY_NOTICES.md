@@ -396,7 +396,11 @@ same day, for `Intl.NumberFormat` (decision
 [JSD-0044](src/Broiler.VM.Profile.JavaScript/docs/decisions/0044-intl-numberformat.md)), the archive
 also holds from `cldr-numbers-full` `numbers.json` for `de`, `en` and `und` and `currencies.json` for
 `de` and `en`, from `cldr-units-full` `units.json` for `de` and `en`, and from `cldr-core`
-`currencyData.json`, `numberingSystems.json`, `plurals.json` and `pluralRanges.json`.
+`currencyData.json`, `numberingSystems.json`, `plurals.json` and `pluralRanges.json`. Since the same
+day, for `Intl.DateTimeFormat` (decision
+[JSD-0045](src/Broiler.VM.Profile.JavaScript/docs/decisions/0045-intl-datetimeformat.md)), it also
+holds from `cldr-dates-full` `ca-gregorian.json`, `dateFields.json` and `timeZoneNames.json` for `de`
+and `en`, and from `cldr-core` `timeData.json` and `dayPeriods.json`.
 
 **What is derived, and where it ships.** `CldrTableGenerator` (architecture test project, not
 shipped) writes one source file of tables from those files and the pinned UCD:
@@ -405,7 +409,10 @@ shipped) writes one source file of tables from those files and the pinned UCD:
 byte. It carries likely subtags, the language, script, region, variant and subdivision aliases, the
 BCP 47 keys and types, the supported locales, the root collation and three tailorings, the UCD's
 Soft_Dotted ranges, and since slice I2 each language's number patterns and symbols, currency names,
-unit patterns and plural rules, the currency fraction digits and the numbering systems' digits. The derived tables therefore ship in:
+unit patterns and plural rules, the currency fraction digits and the numbering systems' digits, and
+since slice I3 each language's Gregorian calendar names and patterns, date field names and UTC and GMT
+zone names, the hour cycles of the supported regions and the day period rules. The derived tables
+therefore ship in:
 
 - **the package** `Broiler.VM.Profile.JavaScript.Intl` (packable from 2026-10-04, rule N4);
 - **the composition images that admit `Intl`**: the published outputs of
