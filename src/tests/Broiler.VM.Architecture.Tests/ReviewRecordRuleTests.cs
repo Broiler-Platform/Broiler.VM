@@ -1217,7 +1217,12 @@ public sealed class ReviewRecordRuleTests
         // AND THE FINALIZATION SWEEP (phase F4, 2026-10-04, JSD-0029 D03-a): JsEngine.Finalization.cs, the
         // host-drained sweep, its eligibility seam and the registries it tracks. It is covered on the
         // same terms as every other product file, and nothing in it has been read by a human.
-        Assert.Equal(243, AssuranceSources.Files.Count);
+        //
+        // AND THE REALMS (phase F5, 2026-10-04, JSD-0030 SR-1, SR-2 and SR-7): JsEngine.Realms.cs, the
+        // running realm, GetFunctionRealm, the switch at a built-in of another realm and the realms a
+        // guest creates. It is covered on the same terms as every other product file, and nothing in
+        // it has been read by a human.
+        Assert.Equal(244, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

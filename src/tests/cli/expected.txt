@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 143
+runs|0|# Completed: 144
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -916,7 +916,6 @@ runs/the-suspending-function-constructors.js|0|1+2 / async 41, async generator /
 runs/the-host-members-that-refuse.js|0|typeof read=function typeof $262.gc=function
 runs/the-host-members-that-refuse.js|0|read: TypeError: read: no reader is installed in this realm
 runs/the-host-members-that-refuse.js|0|gc: TypeError: $262.gc: this host exposes no collection hook
-runs/the-host-members-that-refuse.js|0|createRealm: TypeError: $262.createRealm: this profile creates no nested realm
 one-realm/a-second-script-the-owed-job-outlives.js one-realm/a-first-script-that-leaves-a-job-owed.js|0|suspended-in-the-first-script,first-script-ended,second-script-ended,resumed-at-the-drain
 
 # JSP-2, THE REFUSAL THAT WAS LOST: A BIGINT LITERAL IS NOT A NUMBER (2026-10-03).
@@ -1047,3 +1046,10 @@ runs/the-v-flag.js|0|true false true false true false ab true false false true t
 # registration order and the kept and unregistered ones never do. The comparison engine collects when
 # it chooses, so its transcript is not the reference; this host's is *(JSC-263)*.
 runs/a-cleanup-callback-arrives.js|0|arrived h0,h1,h2
+runs/a-created-realm-is-a-realm-of-its-own.js|0|own global true, own Array true
+runs/a-created-realm-is-a-realm-of-its-own.js|0|shared Symbol.iterator true, shared registry true
+runs/a-created-realm-is-a-realm-of-its-own.js|0|its TypeError true, not ours true
+runs/a-created-realm-is-a-realm-of-its-own.js|0|an intrinsic of the new target's realm true
+runs/a-created-realm-is-a-realm-of-its-own.js|0|its global for a sloppy this true
+runs/a-created-realm-is-a-realm-of-its-own.js|0|another realm's Array is no species true
+runs/a-created-realm-is-a-realm-of-its-own.js|0|a realm from a realm true

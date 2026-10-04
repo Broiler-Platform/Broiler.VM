@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   25
 // Annotated:        25/25
-// Exempt:           0
+// Exempt:           1
 // Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    Medium
@@ -180,7 +180,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Defines <c>print</c>, <c>$262</c> and <c>console</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5D7856
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6B957D
     // Broiler-Human:        PENDING
     private void SetupGlobalHostFunctions(JsObject host)
     {
@@ -246,7 +246,12 @@ internal sealed partial class JsRealm
         harness.DefineBuiltIn("global", JsValue.Object(host));
         harness.DefineBuiltIn("agent", JsValue.Object(agent));
 
-        GlobalRefuse(harness, "createRealm", 0, "$262.createRealm: this profile creates no nested realm");
+        // `createRealm` BUILDS AN ORDINARY NEW REALM ON THIS ENGINE AND ANSWERS ITS `$262`, as
+        // INTERPRETING.md defines it (JSD-0030 SR-7): a global object and intrinsics of its own, the
+        // same surface set, the agent's Symbols and job queue, and the cost charged to this
+        // allowance. Until 2026-10-04 it refused, because an engine held one realm (JSC-264).
+        Method(harness, "createRealm", 0, static (engine, thisValue, arguments) =>
+            JsValue.Object(engine.CreateRealm().Harness));
         // THE LANGUAGE MAKES DETACHMENT A HOST'S ACT, and a realm whose host installed none has no
         // way to perform it for a guest; `ArrayBuffer.prototype.transfer` is the language's own
         // door and needs no help from here. A composition that means to offer it replaces this
@@ -274,6 +279,7 @@ internal sealed partial class JsRealm
         GlobalRefuse(harness, "gc", 0, "$262.gc: this host exposes no collection hook");
 
         host.DefineBuiltIn("$262", JsValue.Object(harness));
+        Harness = harness;
 
         // NEITHER TARGET WORKLOAD NEEDS `console`. The conformance suite calls `print` and the
         // Octane harness calls neither, so this is here for one reason only: a person pointing the
@@ -289,6 +295,11 @@ internal sealed partial class JsRealm
 
         host.DefineBuiltIn("console", JsValue.Object(console));
     }
+
+    /// <summary>The realm's <c>$262</c>, which <c>createRealm</c> answers for a realm it built.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D4647
+    // Broiler-Human:        PENDING
+    internal JsObject Harness { get; private set; } = null!;
 
     /// <summary>Reads one argument, answering <c>undefined</c> past the end.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7DAE04

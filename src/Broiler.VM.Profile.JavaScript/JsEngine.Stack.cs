@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   13
 // Annotated:        13/13
-// Exempt:           11
+// Exempt:           12
 // Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Medium
@@ -70,7 +70,7 @@ internal sealed partial class JsEngine
     private int siteCount;
 
     /// <summary>Takes the site of a frame that is about to run.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C787C8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6096FB
     // Broiler-Falsified-If: a site is taken without being given back when its frame ends, or a taken site names another frame's program, unit or function
     // Broiler-Human:        PENDING
     internal JsStackSite PushSite(
@@ -86,6 +86,16 @@ internal sealed partial class JsEngine
         }
 
         var site = sites[siteCount] ??= new JsStackSite();
+
+        // THE FRAME'S REALM RUNS WHILE IT DOES (JSD-0030 SR-2): a function's own, and for a script,
+        // module or eval body the realm already running, which whoever started it chose.
+        site.OuterRealm = Realm;
+
+        if (function is not null)
+        {
+            Realm = function.Realm!;
+        }
+
         site.Program = program;
         site.Unit = unit;
         site.Function = function;
@@ -97,11 +107,13 @@ internal sealed partial class JsEngine
     }
 
     /// <summary>Gives back the innermost site, keeping no reference to the frame that held it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F0DB3E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=152CEB
     // Broiler-Human:        PENDING
     internal void PopSite()
     {
         var site = sites[--siteCount];
+        Realm = site.OuterRealm!;
+        site.OuterRealm = null;
         site.Program = null;
         site.Function = null;
         site.Referrer = string.Empty;
@@ -310,6 +322,11 @@ internal sealed class JsStackSite
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4E6E02
     // Broiler-Human:        PENDING
     internal int Pc;
+
+    /// <summary>The realm that was running when the frame began, which runs again when it ends.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=97FC6A
+    // Broiler-Human:        PENDING
+    internal JsRealm? OuterRealm;
 
 }
 

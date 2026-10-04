@@ -315,3 +315,24 @@ still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corre
   with `broiler.javascript.dynamic`, as the recommendation above proposes.
 - **ShadowRealm is ahead of the pinned edition**, so a record admitting the proposal at a pinned
   revision opens SR-3; the trigger in the recommendation is met by this direction.
+
+## Slices SR-1, SR-2 and SR-7 built, 2026-10-04 (unsigned)
+
+*Recorded with the implementation. It signs nothing and takes nothing: this record keeps its status
+line. Corrections entry [JSC-264](../roadmap.corrections.md#jsc-264).*
+
+- **SR-1, SR-2 and SR-7 are in the tree**, under proposed
+  [JSD-0039](0039-a-second-realm-on-one-engine.md), which also makes the JSD-0018 record SR-7 asks
+  for. The well-known Symbols and the `Symbol.for` registry are the engine's; every function has a
+  `[[Realm]]` and runs in it; `$262.createRealm` builds an ordinary new realm on the same engine under
+  D3 and D6 and answers its `$262`. Rule N26 is the architecture rule SR-2's acceptance names.
+- **Section 1's table is no longer what the tree says** for its rows on realm count, a function's
+  realm, the Symbols and `createRealm`; it is kept as written, as the state it verified.
+- **D1 holds for ShadowRealm only.** `typeof ShadowRealm` still answers `"undefined"`; SR-3 to SR-5
+  are not started, and the three ShadowRealm cases that claim `cross-realm` stay skipped with the rest
+  of the proposal's.
+- **SR-1's "baselines unchanged" holds in part.** No contract, API or conformance baseline file
+  moved, and the slice compiler's checks build two realms on one engine and show one
+  `Symbol.iterator` and one registry. Every scored `cross-realm` case did move, which is SR-7's and
+  is what it was for.
+

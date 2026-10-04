@@ -931,7 +931,7 @@ column is what a program meets, and it is as true as it was when the surface was
 
 | Surface | What a program meets today | Phase |
 |---|---|---|
-| Nested realms and ShadowRealm | `$262.createRealm` throws a `TypeError` saying this profile creates no nested realm; ShadowRealm is a proposal the suite's runner does not select. | F5 |
+| ShadowRealm | `typeof ShadowRealm` answers `"undefined"`; it is a proposal the suite's runner does not select. *(Amended 2026-10-04: nested realms left this row. `$262.createRealm` builds a second realm on the engine under proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md), [JSC-264](roadmap.corrections.md#jsc-264).)* | F5 |
 | Agents, `SharedArrayBuffer` and `Atomics` | `$262.agent`'s members throw; the ledger's absent-globals block names the two globals, and `typeof` answers `"undefined"` for each. | F6 |
 | `Intl` | The same block names it, and `typeof Intl` answers `"undefined"`; the locale-named methods answer as [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) records. | F7 |
 | `Temporal` | The same block names it, and `typeof Temporal` answers `"undefined"`. | F8 |
@@ -1574,6 +1574,12 @@ realm on one engine, and with it `$262.createRealm` and ShadowRealm, is
 `SharedArrayBuffer` and `Atomics` over them, are phase F6, which builds the model the next
 paragraph states. Until then the refusals in the table at the end of this section are what a
 program meets *(corrected: [JSC-251](roadmap.corrections.md#jsc-251))*.
+*(Amended 2026-10-04: an engine now holds as many realms as its guests create. `$262.createRealm`
+builds one on the same engine, from the same surface set, charged to the same allowance and sharing
+the agent's Symbols and job queue; every function carries its realm and runs in it. Proposed
+[JSD-0039](decisions/0039-a-second-realm-on-one-engine.md) records the model, and
+[JSC-264](roadmap.corrections.md#jsc-264) what it replaced. ShadowRealm and a second agent are still
+to come.)*
 
 **An agent is a runtime.** Worker-style agents are separate core runtimes under one shared
 aggregate budget, which is what makes a host ceiling shared rather than multiplied. Two facts
@@ -1610,7 +1616,7 @@ gives names what is true of the realm it is raised in:
 | Member | Why present | What a call answers |
 |---|---|---|
 | `read` | A shell-shaped environment probe reads the name without calling it. The emscripten runtime an asm.js workload carries assigns `read` into its own module object once it has decided it is on a shell, and absence would make that assignment a `ReferenceError` over a capability the program never uses. | That no reader is installed in this realm: the host-capability table cannot carry a file's contents back to a guest, and the composition installed none through the host-object surface, which is the door that can. |
-| `$262.createRealm`, `$262.evalScript`, `$262.detachArrayBuffer`, `$262.agent`'s five members | The conformance suite's `INTERPRETING.md` requires each defined on `$262`. The suite chooses which tests a host runs by their declared features, not by `typeof`, so a present member costs a test nothing. | That this profile creates no nested realm, that the host installed no script evaluation or detach operation, or that this profile runs no second agent. A composition that can perform the second and third replaces them through `JsHostRealm`, and the conformance harness does. `createRealm` stops refusing at phase F5 and `agent` at phase F6. |
+| `$262.evalScript`, `$262.detachArrayBuffer`, `$262.agent`'s five members | The conformance suite's `INTERPRETING.md` requires each defined on `$262`. The suite chooses which tests a host runs by their declared features, not by `typeof`, so a present member costs a test nothing. | That the host installed no script evaluation or detach operation, or that this profile runs no second agent. A composition that can perform the first two replaces them through `JsHostRealm`, and the conformance harness does. `agent` stops refusing at phase F6. *(Amended 2026-10-04: `$262.createRealm` left this row. It builds a second realm and answers its `$262` ([JSD-0039](decisions/0039-a-second-realm-on-one-engine.md), [JSC-264](roadmap.corrections.md#jsc-264)).)* |
 | `$262.gc` | The same file says this member "must throw an exception if no capability exists". | That this host exposes no collection hook. |
 | `Function`, and the three constructors reached off a generator, an async function and an async generator | The language defines each. A realm whose composition declined `broiler.javascript.dynamic` still has them. | That the composition did not admit `broiler.javascript.dynamic`, so no source is turned into code at run time. A composition that admitted it builds the function. |
 

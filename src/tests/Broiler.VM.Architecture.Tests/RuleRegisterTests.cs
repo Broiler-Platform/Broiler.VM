@@ -399,10 +399,13 @@ public sealed class RuleRegisterTests
         // Decision JSD-0029's recommendation adds N25 ahead of its cleanup model: no type of the
         // JavaScript profile declares a finalizer, so no guest-reachable work can run on the
         // collector's thread. Active when minted; no other count moves.
-        Assert.Equal(108, byStatus["Active"]);
+        // Decision JSD-0030's slice SR-2 adds N26 when an engine starts holding several realms: no
+        // profile code stores a realm outside the realm model's own members, and none reads the
+        // engine's first realm where a frame may be running. Active when minted; no other count moves.
+        Assert.Equal(109, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(110, Loaded.Rules.Count);
+        Assert.Equal(111, Loaded.Rules.Count);
     }
 
     private static Register Load()

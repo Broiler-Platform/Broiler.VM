@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
-// Exempt:           22
-// Human-reviewed:   0/19
+// Relevant units:   22
+// Annotated:        22/22
+// Exempt:           25
+// Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       19
+// Unverified:       22
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -190,14 +190,16 @@ internal sealed partial class JsRealm
     private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=261AFE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5D7E93
     // Broiler-Human:        PENDING
     internal JsRealm(JsEngine owner)
     {
         engine = owner;
+        agent = owner.Symbols;
 
         ObjectPrototype = new JsObject(null);
         FunctionPrototype = new JsNativeFunction(
+            this,
             ObjectPrototype, string.Empty, 0, static (_, _, _) => JsValue.Undefined);
 
         ThrowTypeErrorFunction = CreateThrowTypeError();
@@ -266,6 +268,90 @@ internal sealed partial class JsRealm
         // AFTER THE PROMISE AND THE ASYNC-ITERATOR INTRINSICS, because the asynchronous stack
         // settles through the first and `%AsyncIteratorPrototype%` is where one disposer goes.
         SetupDisposal();
+
+        // EVERY CONSTRUCTOR BUILT FROM HERE ON IS NOT AN INTRINSIC: an embedder's, or one a guest
+        // made, has no counterpart in another realm.
+        built = true;
+    }
+
+    /// <summary>The constructors this realm built while it was being built, in the order it built them.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0080AE
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<JsNativeFunction> intrinsicConstructors = [];
+
+    /// <summary>Whether the realm's constructor has finished.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E7F825
+    // Broiler-Human:        PENDING
+    private bool built;
+
+    /// <summary>Records a constructor the realm is building, answering its ordinal, or -1 once built.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=005A08
+    // Broiler-Human:        PENDING
+    internal int NoteIntrinsicConstructor(JsNativeFunction constructor)
+    {
+        if (built)
+        {
+            return -1;
+        }
+
+        intrinsicConstructors.Add(constructor);
+        return intrinsicConstructors.Count - 1;
+    }
+
+    /// <summary>
+    /// This realm's counterpart of <paramref name="intrinsic"/>, a built-in constructor's
+    /// <c>prototype</c> in <paramref name="source"/>: the specification's
+    /// <c>realm.[[Intrinsics]].[[%X.prototype%]]</c> that <c>GetPrototypeFromConstructor</c> falls
+    /// back on when <c>new.target</c> is another realm's and its <c>prototype</c> is not an object.
+    /// </summary>
+    /// <remarks>
+    /// <b>Every realm on one engine builds the same constructors in the same order</b>, because they
+    /// are built from the same surface set, so the ordinal of the constructor whose prototype
+    /// <paramref name="intrinsic"/> is names its counterpart here; the name is checked as well, and
+    /// an object that is no constructor's prototype answers itself.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=268ADB
+    // Broiler-Human:        PENDING
+    internal JsObject CounterpartOf(JsObject intrinsic, JsRealm source)
+    {
+        if (ReferenceEquals(source, this))
+        {
+            return intrinsic;
+        }
+
+        foreach (var constructor in source.intrinsicConstructors)
+        {
+            if (!PrototypeOf(constructor, out var prototype) || !ReferenceEquals(prototype, intrinsic))
+            {
+                continue;
+            }
+
+            var ordinal = constructor.IntrinsicOrdinal;
+
+            return ordinal < intrinsicConstructors.Count &&
+                intrinsicConstructors[ordinal].FunctionName == constructor.FunctionName &&
+                PrototypeOf(intrinsicConstructors[ordinal], out var mine)
+                    ? mine
+                    : intrinsic;
+        }
+
+        return intrinsic;
+    }
+
+    /// <summary>A built-in constructor's own <c>prototype</c>, which no program can change.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5416D3
+    // Broiler-Human:        PENDING
+    private static bool PrototypeOf(JsNativeFunction constructor, out JsObject prototype)
+    {
+        if (constructor.TryGetOwnProperty("prototype", out var property) &&
+            !property.IsAccessor && property.Value.IsObject)
+        {
+            prototype = property.Value.AsObject();
+            return true;
+        }
+
+        prototype = null!;
+        return false;
     }
 
     /// <summary>The realm's global object.</summary>
@@ -296,6 +382,11 @@ internal sealed partial class JsRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A1061D
     // Broiler-Human:        PENDING
     internal JsNativeFunction ThrowTypeErrorFunction { get; }
+
+    /// <summary><c>%Array%</c>, which <c>ArraySpeciesCreate</c> recognises when another realm's code hands it over.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=662A0E
+    // Broiler-Human:        PENDING
+    internal JsNativeFunction? ArrayConstructor { get; private set; }
 
     /// <summary><c>Array.prototype</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=09FBFD
@@ -371,10 +462,10 @@ internal sealed partial class JsRealm
                 JsPropertyAttributes.Configurable));
 
     /// <summary>Builds a built-in function object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=87A99A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4FBE33
     // Broiler-Human:        PENDING
     internal JsNativeFunction Native(string name, int arity, JsNativeBody body) =>
-        new(FunctionPrototype, name, arity, body);
+        new(this, FunctionPrototype, name, arity, body);
 
     /// <summary>Defines a built-in method on <paramref name="host"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FF73D9
@@ -387,12 +478,12 @@ internal sealed partial class JsRealm
                 JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
     /// <summary>Defines a built-in constructor on the global object and links its prototype.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0B795C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1C829F
     // Broiler-Human:        PENDING
     internal JsNativeFunction Constructor(
         string name, int arity, JsObject prototype, JsNativeBody call, JsNativeBody construct)
     {
-        var function = new JsNativeFunction(FunctionPrototype, name, arity, call, construct);
+        var function = new JsNativeFunction(this, FunctionPrototype, name, arity, call, construct);
 
         function.SetOwnProperty(
             "prototype", JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
@@ -579,7 +670,7 @@ internal sealed partial class JsRealm
     /// them on every closure would cost nothing and mean nothing, and it would make a reader think
     /// an ordinary function consults them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E24BBB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=18FB82
     // Broiler-Human:        PENDING
     internal JsObject CreateClosure(
         JsProgram program,
@@ -612,6 +703,7 @@ internal sealed partial class JsRealm
         var isAsyncGenerator = isGenerator && isAsync;
 
         var function = new JsScriptFunction(
+            this,
             isAsyncGenerator ? AsyncGeneratorFunctionPrototype
                 : isGenerator ? GeneratorFunctionPrototype
                 : isAsync ? AsyncFunctionPrototype

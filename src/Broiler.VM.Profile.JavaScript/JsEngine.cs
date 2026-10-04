@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   217
-// Annotated:        217/217
-// Exempt:           35
-// Human-reviewed:   0/217
+// Relevant units:   216
+// Annotated:        216/216
+// Exempt:           34
+// Human-reviewed:   0/216
 // IP risk:          Low
 // Security risk:    Critical
 // Criteria:         90/88
 // Resource impact:  7/10 max
-// Unverified:       217
+// Unverified:       216
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -21,7 +21,7 @@ using Broiler.VM.Profile.JavaScript.Format;
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
-/// The wide-surface engine: one realm, the abstract operations over it, and the dispatch loop.
+/// The wide-surface engine: its realms, the abstract operations over them, and the dispatch loop.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -100,7 +100,7 @@ internal sealed partial class JsEngine
     /// and one handle table rooted by it, the table under handle-stress when the composition asked for it
     /// (JSD-0035 sections 3 and 4). Every other engine allocates neither.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=8C733C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1AE255
     // Broiler-Human:        PENDING
     internal JsEngine(
         IVmMeter contractMeter,
@@ -133,7 +133,7 @@ internal sealed partial class JsEngine
             ? System.Collections.Immutable.ImmutableArray<string>.Empty
             : admittedSurfaces;
 
-        Realm = new JsRealm(this);
+        FirstRealm = Realm = new JsRealm(this);
     }
 
     /// <summary>
@@ -1965,9 +1965,9 @@ internal sealed partial class JsEngine
     /// it - so the absence of an embedder is the absence of an object rather than an object with
     /// nothing in it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=53FBA5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=AEEA62
     // Broiler-Human:        PENDING
-    internal JsHostRealm HostRealm => hostRealm ??= new JsHostRealm(this);
+    internal JsHostRealm HostRealm => hostRealm ??= new JsHostRealm(this, FirstRealm, null);
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FF6FDD
     // Broiler-Human:        PENDING
@@ -1988,10 +1988,6 @@ internal sealed partial class JsEngine
     // Broiler-Human:        PENDING
     internal JsAbort? EndHostStep() => hostRealm?.EndStep();
 
-    /// <summary>The realm this engine runs in.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B48D28
-    // Broiler-Human:        PENDING
-    internal JsRealm Realm { get; }
 
     /// <summary>Whatever the host wired to <c>print</c>, or nothing.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=EED672
@@ -4093,95 +4089,28 @@ internal sealed partial class JsEngine
 
     /// <summary>Writes a property through the active method's home object.</summary>
     /// <remarks>
+    /// <para>
     /// The chain the write consults starts above the home object and the write itself lands on
     /// <c>this</c>: an inherited setter runs with <c>this</c> as its receiver, an inherited
     /// non-writable data property refuses the write, and anything else creates or replaces an own
     /// property of the instance rather than touching the prototype it was found on.
+    /// </para>
+    /// <para>
+    /// <b>It is the receiver-aware <c>[[Set]]</c> every other write uses</b>, so a proxy on the
+    /// chain is asked through its <c>set</c> trap, a typed array's element rule holds, and the
+    /// refusal is a strict write's <c>TypeError</c>. Until 2026-10-04 it walked the chain itself and
+    /// stepped past a proxy as an ordinary object, so the trap never ran (JSC-264).
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A8CBB6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=F791D3
     // Broiler-Human:        PENDING
     private void SetSuper(
         JsObject start, JsValue receiver, string key, JsValue value, bool strict)
     {
-        var current = start;
-
-        while (current is not null)
+        if (!SetWithReceiver(start, key, value, receiver) && strict)
         {
-            if (current.TryGetOwnProperty(key, out var found))
-            {
-                if (found.IsAccessor)
-                {
-                    if (found.Setter is null)
-                    {
-                        if (strict)
-                        {
-                            ThrowTypeError(
-                                "Cannot set property " + key + " which has only a getter");
-                        }
-
-                        return;
-                    }
-
-                    Call(JsValue.Object(found.Setter), receiver, [value]);
-                    return;
-                }
-
-                if (!found.Writable)
-                {
-                    if (strict)
-                    {
-                        ThrowTypeError("Cannot assign to read only property '" + key + "'");
-                    }
-
-                    return;
-                }
-
-                break;
-            }
-
-            current = current.Prototype;
+            ThrowTypeError("Cannot assign to read only property '" + key + "'");
         }
-
-        var instance = receiver.AsObjectOrNull();
-
-        if (instance is null)
-        {
-            if (strict)
-            {
-                ThrowTypeError("Cannot create property '" + key + "' on a primitive");
-            }
-
-            return;
-        }
-
-        if (instance.TryGetOwnProperty(key, out var own) && !own.IsAccessor)
-        {
-            if (!own.Writable)
-            {
-                if (strict)
-                {
-                    ThrowTypeError("Cannot assign to read only property '" + key + "'");
-                }
-
-                return;
-            }
-
-            own.Value = value;
-            instance.SetOwnProperty(key, own);
-            return;
-        }
-
-        if (!instance.Extensible)
-        {
-            if (strict)
-            {
-                ThrowTypeError("Cannot add property " + key + ", object is not extensible");
-            }
-
-            return;
-        }
-
-        instance.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
     }
 
     /// <summary>The <c>in</c> operator's lookup: does any object in the chain have the key.</summary>
@@ -4241,7 +4170,7 @@ internal sealed partial class JsEngine
     // ---- calling -------------------------------------------------------------------------------
 
     /// <summary>Calls <paramref name="callee"/>, whatever kind of callable it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B42A80
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=86C600
     // Broiler-Human:        PENDING
     internal JsValue Call(JsValue callee, JsValue thisValue, JsValue[] arguments)
     {
@@ -4264,8 +4193,12 @@ internal sealed partial class JsEngine
                 case JsProxy proxy:
                     return proxy.ProxyCall(thisValue, arguments);
 
+                // A BUILT-IN RUNS IN ITS OWN REALM (JSD-0030 SR-2): another realm's is entered for
+                // the call, and the running one stays put for every call that does not cross.
                 case JsNativeFunction native:
-                    return native.Call(this, thisValue, arguments);
+                    return ReferenceEquals(native.Realm, Realm)
+                        ? native.Call(this, thisValue, arguments)
+                        : CallInRealm(native, thisValue, arguments);
 
                 case JsBoundFunction bound:
                     return Call(
@@ -4277,10 +4210,23 @@ internal sealed partial class JsEngine
                 // function - a call site, `Function.prototype.call`, a comparison function handed
                 // to `sort` - arrives at this switch, and a guard inside the constructor's own
                 // code would answer for none of them because the frame is never entered.
+                //
+                // The error is the CLASS's realm's (10.2.1 step 2: it is made in the callee's
+                // context), so a class of another realm called without `new` throws that realm's
+                // TypeError.
                 case JsScriptFunction script when script.IsClassConstructor:
-                    return ThrowTypeError(
-                        "Class constructor " + script.FunctionName +
-                        " cannot be invoked without 'new'");
+                    var outer = EnterRealm(script.Realm!);
+
+                    try
+                    {
+                        return ThrowTypeError(
+                            "Class constructor " + script.FunctionName +
+                            " cannot be invoked without 'new'");
+                    }
+                    finally
+                    {
+                        LeaveRealm(outer);
+                    }
 
                 case JsScriptFunction script:
                     return Invoke(script, thisValue, arguments, JsValue.Undefined, null);
@@ -4430,7 +4376,7 @@ internal sealed partial class JsEngine
     /// language promises rather than a half-built object.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=47ACF0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=FD2715
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
@@ -4469,7 +4415,9 @@ internal sealed partial class JsEngine
 
             try
             {
-                made = native.Construct(this, arguments, newTarget);
+                made = ReferenceEquals(native.Realm, Realm)
+                    ? native.Construct(this, arguments, newTarget)
+                    : ConstructInRealm(native, arguments, newTarget);
             }
             finally
             {
@@ -4493,9 +4441,17 @@ internal sealed partial class JsEngine
                 {
                     made.AsObject().Prototype = wanted.AsObject();
                 }
+                else if (made.AsObject().Prototype is { } built)
+                {
+                    // A `prototype` THAT IS NOT AN OBJECT ANSWERS THE INTRINSIC OF NEW.TARGET'S
+                    // REALM, which for a new target of another realm is not the one the built-in
+                    // used (JSD-0030 SR-7).
+                    made.AsObject().Prototype =
+                        FunctionRealm(newTarget).CounterpartOf(built, native.Realm!);
+                }
                 else
                 {
-                    RequireFunctionRealm(newTarget);
+                    FunctionRealm(newTarget);
                 }
             }
 
@@ -4523,13 +4479,8 @@ internal sealed partial class JsEngine
         {
             var prototype = GetProperty(newTarget, "prototype");
 
-            if (!prototype.IsObject)
-            {
-                RequireFunctionRealm(newTarget);
-            }
-
             instance = new JsObject(
-                prototype.IsObject ? prototype.AsObject() : Realm.ObjectPrototype);
+                prototype.IsObject ? prototype.AsObject() : FunctionRealm(newTarget).ObjectPrototype);
 
             // THE FIELDS GO ON BEFORE THE BODY RUNS AND NOT AFTER IT, which is what makes
             // `class C { x = 1; constructor() { this.x += 1 } }` produce a `2`. The specification
@@ -5809,13 +5760,13 @@ internal sealed partial class JsEngine
     /// reaches the guest; what it carries is the unit index and the scope chain the frame would
     /// otherwise have to be told twice.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A5152E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=FC8987
     // Broiler-Human:        PENDING
     private JsPromiseObject StartAsyncModule(
         JsProgram program, JsModuleRecord record, JsModuleInstance instance)
     {
         var body = new JsScriptFunction(
-            Realm.FunctionPrototype, program, (int)record.BodyUnit, instance.Environment)
+            Realm, Realm.FunctionPrototype, program, (int)record.BodyUnit, instance.Environment)
         {
             ScriptOrModule = record.Key,
         };
@@ -6698,7 +6649,7 @@ internal sealed partial class JsEngine
 
     /// <summary>The receiver a call of <paramref name="function"/> runs with: its own, or the lexical one of an arrow.</summary>
     /// <remarks><b>Shared with the value form's direct call</b>, for <see cref="CallEnvironment"/>'s reason.</remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9ADE35
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7E311E
     // Broiler-Falsified-If: a sloppy non-arrow function is entered with a primitive or nullish receiver, or a strict or arrow one with any receiver but the one the call supplied or the lexical one
     // Broiler-Human:        PENDING
     [System.Runtime.CompilerServices.MethodImpl(
@@ -6709,10 +6660,10 @@ internal sealed partial class JsEngine
             : unit.IsStrict
                 ? thisValue
                 : thisValue.IsNullish
-                    ? JsValue.Object(Realm.GlobalObject)
+                    ? JsValue.Object(function.Realm!.GlobalObject)
                     : thisValue.IsObject
                         ? thisValue
-                        : JsValue.Object(ToObject(thisValue));
+                        : JsValue.Object(ToObjectIn(function.Realm!, thisValue));
 
     /// <summary>
     /// Runs a generator's parameter-binding prologue, at the call, and leaves the frame at the
@@ -11183,47 +11134,6 @@ internal sealed partial class JsEngine
         }
 
         return collected;
-    }
-
-    /// <summary>
-    /// <c>GetFunctionRealm</c>, for the one answer this single-realm profile can give other than its
-    /// own realm: a <c>TypeError</c> for a revoked proxy, reached through any bound functions and
-    /// proxies around it.
-    /// </summary>
-    /// <remarks>
-    /// GetPrototypeFromConstructor asks for the realm only when <c>prototype</c> is not an object,
-    /// so a construction whose new target is a proxy revoked while its `prototype` was read throws
-    /// rather than using the intrinsic (10.1.14 step 4.a, 7.3.24 step 4). Until 2026-10-03 it built
-    /// the object (JSC-252).
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=795F9C
-    // Broiler-Human:        PENDING
-    internal void RequireFunctionRealm(JsValue constructor)
-    {
-        var current = constructor.AsObjectOrNull();
-
-        while (current is not null)
-        {
-            Charge(1);
-
-            if (current is JsBoundFunction bound)
-            {
-                current = bound.Target;
-            }
-            else if (current is JsProxy proxy)
-            {
-                if (proxy.Handler is null)
-                {
-                    ThrowTypeError("the new target is a revoked Proxy, which has no realm");
-                }
-
-                current = proxy.Target;
-            }
-            else
-            {
-                return;
-            }
-        }
     }
 
     /// <summary>Renders a thrown value for a host that has to describe it in one line.</summary>

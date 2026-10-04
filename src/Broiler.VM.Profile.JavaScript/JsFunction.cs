@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   38
 // Annotated:        38/38
-// Exempt:           36
+// Exempt:           38
 // Human-reviewed:   0/38
 // IP risk:          Low
 // Security risk:    High
@@ -212,12 +212,18 @@ internal sealed class JsEnvironment
 internal abstract class JsFunction : JsObject
 {
     /// <summary>Creates a function object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5BA6AC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1DA580
     // Broiler-Human:        PENDING
-    private protected JsFunction(JsObject? prototype)
-        : base(prototype, "Function")
-    {
-    }
+    private protected JsFunction(JsObject? prototype, JsRealm? realm)
+        : base(prototype, "Function") => Realm = realm;
+
+    /// <summary>
+    /// The function's <c>[[Realm]]</c>: the realm that was running when it was made, which runs
+    /// while it does (JSD-0030 SR-2). A bound function has none and is answered through its target.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1B976B
+    // Broiler-Human:        PENDING
+    internal JsRealm? Realm { get; }
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=24E030
@@ -260,11 +266,16 @@ internal sealed class JsNativeFunction : JsFunction
     private readonly JsNativeBody? construct;
 
     /// <summary>Creates a built-in.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3F38CD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8318EF
     // Broiler-Human:        PENDING
     internal JsNativeFunction(
-        JsObject? prototype, string name, int arity, JsNativeBody body, JsNativeBody? construct = null)
-        : base(prototype)
+        JsRealm realm,
+        JsObject? prototype,
+        string name,
+        int arity,
+        JsNativeBody body,
+        JsNativeBody? construct = null)
+        : base(prototype, realm)
     {
         this.body = body;
         this.construct = construct;
@@ -275,7 +286,21 @@ internal sealed class JsNativeFunction : JsFunction
 
         SetOwnProperty(
             "name", JsProperty.Data(JsValue.String(name), JsPropertyAttributes.Configurable));
+
+        if (construct is not null)
+        {
+            IntrinsicOrdinal = realm.NoteIntrinsicConstructor(this);
+        }
     }
+
+    /// <summary>
+    /// Where this constructor stands among the constructors its realm built while it was being built,
+    /// or -1 for one made afterwards; the same built-in has the same ordinal in every realm of one
+    /// engine, which is how another realm's counterpart is found (<see cref="JsRealm.CounterpartOf"/>).
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8C82D9
+    // Broiler-Human:        PENDING
+    internal int IntrinsicOrdinal { get; } = -1;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=67614C
@@ -342,11 +367,11 @@ internal sealed class JsNativeFunction : JsFunction
 internal sealed class JsScriptFunction : JsFunction
 {
     /// <summary>Creates a closure over <paramref name="environment"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C030F0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=55A16D
     // Broiler-Human:        PENDING
     internal JsScriptFunction(
-        JsObject? prototype, JsProgram program, int unit, JsEnvironment? environment)
-        : base(prototype)
+        JsRealm realm, JsObject? prototype, JsProgram program, int unit, JsEnvironment? environment)
+        : base(prototype, realm)
     {
         Program = program;
         Unit = unit;
@@ -692,11 +717,11 @@ internal sealed class JsClassElement
 internal sealed class JsBoundFunction : JsFunction
 {
     /// <summary>Creates a bound function.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=83F8C9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8846C1
     // Broiler-Human:        PENDING
     internal JsBoundFunction(
         JsObject? prototype, JsObject target, JsValue boundThis, JsValue[] boundArguments)
-        : base(prototype)
+        : base(prototype, null)
     {
         Target = target;
         BoundThis = boundThis;

@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 5984 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 6016 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 243 |
-| Code units | 10557 |
-| Relevant | 5984 |
-| Exempt | 4573 |
-| Assessed | 5984 of 5984 (100%) |
-| Human reviewed | 0 of 5984 (0%) |
-| Unverified | 5984 |
+| Files scanned | 244 |
+| Code units | 10602 |
+| Relevant | 6016 |
+| Exempt | 4586 |
+| Assessed | 6016 of 6016 (100%) |
+| Human reviewed | 0 of 6016 (0%) |
+| Unverified | 6016 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 5984 |
+| HUMAN_PENDING | 6016 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 4573 |
+| EXEMPT | 4586 |
 
 ## 5. Aliases In The Tree
 
@@ -216,15 +216,16 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 110 | 66 | 44 | 66 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Baseline.cs` | 14 | 12 | 2 | 12 | Low | Critical | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.Finalization.cs` | 16 | 12 | 4 | 12 | Low | High | 2/2 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.Stack.cs` | 24 | 13 | 11 | 13 | Low | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 252 | 217 | 35 | 217 | Low | Critical | 90/88 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.Realms.cs` | 15 | 11 | 4 | 11 | Low | High | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.Stack.cs` | 25 | 13 | 12 | 13 | Low | Medium | 1/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 250 | 216 | 34 | 216 | Low | Critical | 90/88 |
 | `src/Broiler.VM.Profile.JavaScript/JsEvalMap.cs` | 33 | 15 | 18 | 15 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 44 | 26 | 18 | 26 | Low | High | 12/12 |
-| `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 74 | 38 | 36 | 38 | Low | High | 3/3 |
+| `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 76 | 38 | 38 | 38 | Low | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 70 | 17 | 53 | 17 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/JsHandleTable.cs` | 32 | 17 | 15 | 17 | Low | Critical | 13/13 |
 | `src/Broiler.VM.Profile.JavaScript/JsHostObject.cs` | 14 | 10 | 4 | 10 | Low | High | 5/5 |
-| `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` | 93 | 81 | 12 | 81 | Low | High | 41/41 |
+| `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` | 98 | 84 | 14 | 84 | Low | High | 42/42 |
 | `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` | 133 | 55 | 78 | 55 | Low | High | 9/9 |
 | `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 51 | 15 | 36 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNativeAbi.cs` | 4 | 4 | 0 | 4 | Low | Critical | 4/4 |
@@ -251,7 +252,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs` | 12 | 9 | 3 | 9 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs` | 11 | 8 | 3 | 8 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Generator.cs` | 12 | 9 | 3 | 9 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs` | 25 | 25 | 0 | 25 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs` | 26 | 25 | 1 | 25 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Iterator.cs` | 29 | 16 | 13 | 16 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.IteratorHelpers.cs` | 27 | 18 | 9 | 18 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs` | 49 | 39 | 10 | 39 | Low | Medium | 0/0 |
@@ -264,8 +265,8 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Reflect.cs` | 6 | 6 | 0 | 6 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs` | 67 | 54 | 13 | 54 | Medium | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` | 25 | 25 | 0 | 25 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 31 | 10 | 21 | 10 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.cs` | 41 | 19 | 22 | 19 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 48 | 26 | 22 | 26 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.cs` | 47 | 22 | 25 | 22 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsSymbol.cs` | 8 | 2 | 6 | 2 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsThrow.cs` | 10 | 5 | 5 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsUnicodeCasing.cs` | 10 | 10 | 0 | 10 | Low | Medium | 0/0 |
@@ -1765,6 +1766,14 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a cleanup callback runs outside a job a host-requested sweep queued, the collector is read anywhere but at a #drain-jobs or #step-jobs sweep, or any guest code runs from a CLR finalizer
 - `Broiler.VM.Profile.JavaScript.JsEngine.SweepFinalization()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Finalization.cs` - Security=High, Spec=none cited, `B4A4C5`, PENDING
   - Falsified if: a sweep runs anywhere but at the start of a #drain-jobs or before a #step-jobs turn, or queues a second cleanup job for a registry that has one queued
+- `Broiler.VM.Profile.JavaScript.JsEngine` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Realms.cs` - Security=High, Spec=none cited, `7BBE7E`, PENDING
+  - Falsified if: a function runs in a realm other than its own, or a built-in of one realm hands a guest of another its intrinsics
+- `Broiler.VM.Profile.JavaScript.JsEngine.FunctionRealm(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Realms.cs` - Security=High, Spec=none cited, `52CDF8`, PENDING
+  - Falsified if: a function's realm is answered as any realm but the one running when it was made, or a revoked proxy answers a realm
+- `Broiler.VM.Profile.JavaScript.JsEngine.PrototypeFromConstructor(JsValue, JsObject)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Realms.cs` - Security=High, Spec=none cited, `B714F4`, PENDING
+  - Falsified if: a new.target whose prototype is not an object answers an intrinsic of any realm but its own
+- `Broiler.VM.Profile.JavaScript.JsEngine.CreateRealm()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.Realms.cs` - Security=High, Spec=none cited, `28AC81`, PENDING
+  - Falsified if: a created realm is built from a surface set other than the engine's, is not charged, or shares a global object or an intrinsic with another realm
 - `Broiler.VM.Profile.JavaScript.JsEngine.nativeForm` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `05B362`, PENDING
   - Falsified if: an engine built for one form runs a program of the other form
 - `Broiler.VM.Profile.JavaScript.JsEngine.valueForm` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `921708`, PENDING
@@ -1955,7 +1964,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this environment is asked for a mediator outside an invocation it supplied one for
 - `Broiler.VM.Profile.JavaScript.JsExecution.RunHostTurn(VmProfileId, JsInstance, IJsHostSurface)` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `A28546`, PENDING
   - Falsified if: a turn touches the realm outside the step bracket it opens
-- `Broiler.VM.Profile.JavaScript.JsExecution.InstallHostSurface(JsEngine, IJsHostSurface)` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `AA8194`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsExecution.InstallHostSurface(JsEngine, IJsHostSurface)` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `C4DE97`, PENDING
   - Falsified if: an embedder that throws leaves an instance a caller can obtain
 - `Broiler.VM.Profile.JavaScript.JsExecution.StepEntryPoint` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `815A20`, PENDING
   - Falsified if: a guest pause creates a core suspension, or a step runs more than one job
@@ -2025,7 +2034,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an index key reaches the deletion hook, or the ordinary deletion is skipped after the hook returned
 - `Broiler.VM.Profile.JavaScript.JsHostRealm` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `88DEB7`, PENDING
   - Falsified if: a crossing runs outside a step, on another thread, or without charging HostCalls
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.EndStep()` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `EF50C7`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.EndStep()` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `7D1F4F`, PENDING
   - Falsified if: an operation whose allowance was spent completes because host code caught the abort
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.DefineIndex(JsHostValue, uint, JsHostValue, JsHostPropertyFlags)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `19C400`, PENDING
   - Falsified if: an index defined here is not found by an operation that walks length
@@ -2033,7 +2042,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a guest-writable property or function decides the answer, or the realm's own storage is answered
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.TryReadArrayBuffer(JsHostValue, System.Span<byte>, out int)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `780A25`, PENDING
   - Falsified if: a destination is written when the answer is not Copied, or is written before the charge is admitted
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.NewArrayBuffer(System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `E9CCCF`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.NewArrayBuffer(System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `F8E88E`, PENDING
   - Falsified if: a buffer is answered after its fuel or live-bytes charge was refused, or a later write to the caller's memory changes it
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.BufferBytes(JsHostValue, out byte[]?)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `78A87E`, PENDING
   - Falsified if: an object that is not the realm's own buffer type answers Copied
@@ -2041,37 +2050,37 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a buffer this detaches can still be read or written through any view, or a guest reaches this without a function an embedder installed
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Invoke(JsHostValue, JsHostValue, System.ReadOnlySpan<JsHostValue>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `790C56`, PENDING
   - Falsified if: a guest call from host code skips the call-depth charge or lets a JsAbort escape as a guest throw
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.EvaluateScript(string, string, bool)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `634ACD`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.EvaluateScript(string, string, bool)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `7C2B9E`, PENDING
   - Falsified if: a host script runs outside a step, without charging HostCalls, or lets a JsAbort escape as a guest throw
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.EnqueueJob(System.Action)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `749324`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.EnqueueJob(System.Action)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `DB0384`, PENDING
   - Falsified if: a host job and a guest job run in an order neither queue decided
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.DrainJobs(int)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `0D75AE`, PENDING
   - Falsified if: a drain runs more than its limit, or a throwing job discards the queue behind it
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.NewPromiseCapability()` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `33371B`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.NewPromiseCapability()` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `89D517`, PENDING
   - Falsified if: the promise is built through a binding a guest can replace
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.ResolvePromise(JsHostPromiseCapability, JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `402C27`, PENDING
   - Falsified if: a second resolution changes the promise or queues a reaction
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.RejectPromise(JsHostPromiseCapability, JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `586445`, PENDING
   - Falsified if: a rejection after a resolution changes the promise or queues a reaction
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.Settle(JsHostPromiseCapability, JsHostValue, bool)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `531055`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Settle(JsHostPromiseCapability, JsHostValue, bool)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `4C9697`, PENDING
   - Falsified if: a capability another realm minted settles a promise in this one
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.LoadModule(string, string)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `B6FBE2`, PENDING
   - Falsified if: a module reaches the realm without the artifact provider, a module body runs, or one key answers two handles
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.EvaluateModule(JsHostModule)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `418E05`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.EvaluateModule(JsHostModule)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `490FF5`, PENDING
   - Falsified if: two calls answer two promises, a module body runs twice, the promise fulfils while a module of the graph is still suspended, or it fulfils for a graph holding an errored module
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.CompleteModuleRequest(JsHostModuleRequest)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `1CDAD4`, PENDING
   - Falsified if: a request settles twice, settles outside a step of its own realm, or settles other than through the job queue
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.FailModuleRequest(JsHostModuleRequest, JsHostErrorKind, string)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `882B8B`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.FailModuleRequest(JsHostModuleRequest, JsHostErrorKind, string)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `19B8BE`, PENDING
   - Falsified if: a failed request settles twice, or settles outside a step of its own realm
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Claim(JsHostModuleRequest)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `36AF6C`, PENDING
   - Falsified if: a request another realm offered, or one still being offered, is settled here
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.OfferModuleRequest(string, string, JsPromiseObject)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `7999FB`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.OfferModuleRequest(string, string, JsPromiseObject)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `430BF7`, PENDING
   - Falsified if: a loader's JsHostThrowException unwinds through interpreter frames untranslated, or a request the realm answered can be completed again
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.OfferDeletion(IJsHostExoticDeletion, string)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `20E4E7`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.OfferDeletion(IJsHostExoticDeletion, string)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `210017`, PENDING
   - Falsified if: a handler's JsHostThrowException unwinds through interpreter frames untranslated
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.HookRaised(System.Exception)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `7B7F0D`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.HookRaised(System.Exception)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `648D90`, PENDING
   - Falsified if: a hook's JsHostThrowException or JsHostSurfaceException unwinds through interpreter frames untranslated
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.TryEnterHook()` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `9046ED`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.TryEnterHook()` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `012F8F`, PENDING
   - Falsified if: an exotic hook runs without charging HostCalls, outside a step, or after the realm latched an abort
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Raised(JsHostThrowException)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `9154C2`, PENDING
   - Falsified if: a host's thrown value that this realm refuses escapes as a JsHostSurfaceException
@@ -2079,31 +2088,33 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: two calls over one guest object answer two different JsHostRef instances
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Unwrap(JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `F7AD59`, PENDING
   - Falsified if: a value minted by another realm resolves rather than being refused
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.AdmitBigInt(System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `EABD9A`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.AdmitBigInt(System.Numerics.BigInteger)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `06A4BA`, PENDING
   - Falsified if: a BigInt wider than JsBigInt.MaximumBits reaches the realm, or one reaches a realm whose composition declined the surface
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.UnwrapAtCrossing(JsHostValue)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `6B2764`, PENDING
   - Falsified if: a JsThrow or a JsAbort escapes a public crossing untranslated
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Installing` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `DBCA8A`, PENDING
   - Falsified if: a member the realm installs reaches an exotic handler as an assignment
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.BindConstructor(JsHostFunction)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `1A9B56`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.BindConstructor(JsHostFunction)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `B00151`, PENDING
   - Falsified if: a nested construction leaves the outer body reading the inner target
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.Bind(JsHostFunction)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `9EA8DF`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Bind(JsHostFunction)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `4DD906`, PENDING
   - Falsified if: a host body's CLR exception unwinds through interpreter frames uncaught
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.CloneSerialize(JsHostValue, long, long)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `BCF1B2`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.AnnounceCreated(IJsHostSurface)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `11898D`, PENDING
+  - Falsified if: a surface's CLR exception unwinds through interpreter frames uncaught, or the surface is told outside the running step
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.CloneSerialize(JsHostValue, long, long)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `CBF479`, PENDING
   - Falsified if: a serialization runs outside a step, or a refusal reaches host code as anything but a guest throw
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.CloneSerializeWithTransfer(JsHostValue, JsHostValue[], long, long)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `2B215E`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.CloneSerializeWithTransfer(JsHostValue, JsHostValue[], long, long)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `4EEA13`, PENDING
   - Falsified if: a refused transfer leaves any listed buffer detached, or a completed one leaves any attached
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.CloneDeserialize(JsCloneCarrier)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `28EF4E`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.CloneDeserialize(JsCloneCarrier)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `174D30`, PENDING
   - Falsified if: a deserialization runs outside a step, or answers an object built on another realm's intrinsics
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.DetachClone(JsHostValue, System.ReadOnlySpan<JsHostValue>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `37F58D`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.DetachClone(JsHostValue, System.ReadOnlySpan<JsHostValue>)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `661F9E`, PENDING
   - Falsified if: a carrier is made outside a step, holds an object of this realm, or leaves a listed buffer attached after returning
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.AdoptClone(object)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `1EC4C5`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.AdoptClone(object)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `78BC95`, PENDING
   - Falsified if: an adoption answers an object on another realm's intrinsics, accepts a foreign carrier, or adopts a single-use carrier twice
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.Enter(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `48F054`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Enter(ulong)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `B218F2`, PENDING
   - Falsified if: a crossing proceeds while the realm is outside a step or on another thread
 - `Broiler.VM.Profile.JavaScript.JsHostRealm.Thrown(JsThrow)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `871C26`, PENDING
   - Falsified if: a guest throw of any value reaches host code as anything but a JsHostThrowException or the latched termination
-- `Broiler.VM.Profile.JavaScript.JsHostRealm.Latch(JsAbort)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `F6EE30`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsHostRealm.Latch(JsAbort)` in `src/Broiler.VM.Profile.JavaScript/JsHostRealm.cs` - Security=High, Spec=none cited, `4367C0`, PENDING
   - Falsified if: an abort reaches host code as anything a catch clause can clear
 - `Broiler.VM.Profile.JavaScript.JsHostRef` in `src/Broiler.VM.Profile.JavaScript/JsHostValue.cs` - Security=High, Spec=none cited, `5A4DC0`, PENDING
   - Falsified if: two reads of one guest object answer two instances, or one instance names two guest objects
@@ -4117,7 +4128,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 5849 of the 5984 assessed units declare
+That is not a figure of speech. 5881 of the 6016 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

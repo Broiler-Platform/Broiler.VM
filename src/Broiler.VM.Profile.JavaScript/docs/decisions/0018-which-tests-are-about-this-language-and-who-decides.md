@@ -125,3 +125,19 @@ error was in the direction that never complains: it reported 1,201 passes where 
 this language, and the 117 difference was an engine agreeing with tests by refusing everything.
 **After it, the totals fell and nothing was repaired to make them fall** — which is the only
 direction a correction to a self-scored number can honestly go.
+
+## Amended 2026-10-04: the `cross-realm` harness feature (unsigned)
+
+*Recorded with phase F5's implementation; it signs nothing. Corrections entry
+[JSC-264](../roadmap.corrections.md#jsc-264).*
+
+- **Section 2's "unselectable" is the slice dialect's.** A case claiming a test-harness feature needs
+  a call into `$262`, which `broiler.javascript.slice` does not admit, and that is still so; no case
+  that dialect scores claims one. The wide dialect (`--test262`) never excluded such cases: it
+  selected the 281 files that call `$262.createRealm` and scored them as failures of its refusal.
+- **`cross-realm` is now a feature the wide host provides.** `$262.createRealm` builds a second realm
+  under proposed [JSD-0039](0039-a-second-realm-on-one-engine.md), which is the record JSD-0030's
+  SR-7 asks for under this one, and the conformance harness gives the new realm's `$262` its
+  `evalScript`, `detachArrayBuffer` and `IsHTMLDDA`. Nothing in either dialect's selection changes;
+  the cases score on what they measure. `IsHTMLDDA`, the other test-harness feature, is unchanged.
+

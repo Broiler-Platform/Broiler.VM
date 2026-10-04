@@ -394,7 +394,7 @@ internal static class JsExecution
     /// belongs.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=AA8194
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C4DE97
     // Broiler-Falsified-If: an embedder that throws leaves an instance a caller can obtain
     // Broiler-Human:        PENDING
     private static VmExecutionStep? InstallHostSurface(JsEngine engine, IJsHostSurface surface)
@@ -405,6 +405,9 @@ internal static class JsExecution
         // to install: an embedder that also answers imports is asked about them for this realm's
         // whole life, and one that does not leaves every import synchronous (JSD-0024 section 15).
         realm.ModuleLoader = surface as IJsHostModuleLoader;
+
+        // AND EVERY REALM A GUEST CREATES LATER IS ANNOUNCED TO THE SAME SURFACE (JSD-0030 SR-7).
+        engine.HostSurface = surface;
 
         try
         {

@@ -66,7 +66,7 @@ internal sealed partial class JsRealm
     internal JsObject GeneratorFunctionPrototype { get; private set; } = null!;
 
     /// <summary>Builds the generator intrinsics on top of the realm's own iteration protocol.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E571F8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3D4FB6
     // Broiler-Human:        PENDING
     private void SetupGenerator()
     {
@@ -121,6 +121,7 @@ internal sealed partial class JsRealm
         // broiler.javascript.dynamic has both, and one that declines it has neither. It refused in
         // every realm, giving the dynamic surface's reason in a realm that had admitted the surface.
         var constructor = new JsNativeFunction(
+            this,
             GlobalFunctionConstructor(),
             "GeneratorFunction",
             1,
@@ -152,7 +153,7 @@ internal sealed partial class JsRealm
     /// <c>SetupGlobal</c> has already published. Two entries in the list would have been two places
     /// to keep that ordering constraint in, and the second one is the one that would drift.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FF0675
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B6E295
     // Broiler-Human:        PENDING
     private void SetupAsyncFunction()
     {
@@ -166,6 +167,7 @@ internal sealed partial class JsRealm
         // `GeneratorFunction` do, by whether the composition admitted broiler.javascript.dynamic
         // (JSP-10, JSC-240).
         var constructor = new JsNativeFunction(
+            this,
             GlobalFunctionConstructor(),
             "AsyncFunction",
             1,
@@ -238,15 +240,16 @@ internal sealed partial class JsRealm
     /// ordinary <c>new</c> reads it</b>, so a program that replaced that property sees the
     /// replacement - which is what the specification's <c>OrdinaryCreateFromConstructor</c> does
     /// and what makes <c>Object.getPrototypeOf(g()) === g.prototype</c> a fact about the program
-    /// rather than about this implementation.
+    /// rather than about this implementation. A <c>prototype</c> that is not an object answers the
+    /// intrinsic of the FUNCTION's realm, which the call runs in, not of the caller's.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2EB509
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1B1797
     // Broiler-Human:        PENDING
     internal JsGenerator CreateGenerator(JsScriptFunction function, JsFrame frame)
     {
         var declared = engine.GetProperty(JsValue.Object(function), "prototype");
 
         return new JsGenerator(
-            declared.IsObject ? declared.AsObject() : GeneratorPrototype, frame);
+            declared.IsObject ? declared.AsObject() : function.Realm!.GeneratorPrototype, frame);
     }
 }

@@ -635,10 +635,15 @@ public sealed class JsHostTerminatedException : System.Exception
 /// <remarks>
 /// <para>
 /// <b>A composition supplies one of these and the profile calls it; there is no other door.</b> The
-/// realm is handed over exactly once per instance, at instantiation, and only when the composition
+/// first realm is handed over once per instance, at instantiation, and only when the composition
 /// also registered the host-surface capability - so the capability table is still the permission,
 /// and a composition that registered nothing gets a realm with no host object in it and a program
 /// naming one refused before it runs.
+/// </para>
+/// <para>
+/// <b>Every realm a guest creates afterwards is handed over too</b>, once, through a view of that
+/// realm, inside the step the guest's <c>$262.createRealm()</c> runs in (JSD-0039). The views of one
+/// instance share its step window, so each is current exactly when the first is.
 /// </para>
 /// <para>
 /// <b>It is called on the guest's own thread, inside the operation, with the meter live.</b> That is

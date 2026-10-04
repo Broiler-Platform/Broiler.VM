@@ -1638,7 +1638,7 @@ internal sealed partial class JsRealm
     /// Builds <c>%TypedArray%</c> and the twelve constructors that inherit from it (ten where BigInt
     /// is declined).
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=611D97
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4D3E5C
     // Broiler-Human:        PENDING
     private void SetupTypedArrayConstructors()
     {
@@ -1648,6 +1648,7 @@ internal sealed partial class JsRealm
         // TypeError, which is what "abstract" means when there is no such thing as an abstract
         // function object.
         var superclass = new JsNativeFunction(
+            this,
             FunctionPrototype,
             "TypedArray",
             0,
@@ -2373,22 +2374,15 @@ internal sealed partial class JsRealm
     /// constructors that build from <c>new.target</c> themselves.
     /// </summary>
     /// <remarks>
-    /// A <c>new.target</c> that is not an object - a direct internal construction - or whose
-    /// <c>prototype</c> is not an object answers the default, which is the same answer the engine
-    /// gives when it re-points a built-in's instance.
+    /// A <c>new.target</c> that is not an object - a direct internal construction - answers the
+    /// default, and one whose <c>prototype</c> is not an object answers the default of ITS realm,
+    /// which is the same answer the engine gives when it re-points a built-in's instance
+    /// (<see cref="JsEngine.PrototypeFromConstructor"/>).
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=555F6F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=56BA8E
     // Broiler-Human:        PENDING
-    private static JsObject BinaryPrototypeFrom(JsEngine engine, JsValue newTarget, JsObject fallback)
-    {
-        if (!newTarget.IsObject)
-        {
-            return fallback;
-        }
-
-        var wanted = engine.GetProperty(newTarget, "prototype");
-        return wanted.IsObject ? wanted.AsObject() : fallback;
-    }
+    private static JsObject BinaryPrototypeFrom(JsEngine engine, JsValue newTarget, JsObject fallback) =>
+        engine.PrototypeFromConstructor(newTarget, fallback);
 
     /// <summary>
     /// Drains an Array through the intrinsic <c>Array.prototype.values</c> without building its

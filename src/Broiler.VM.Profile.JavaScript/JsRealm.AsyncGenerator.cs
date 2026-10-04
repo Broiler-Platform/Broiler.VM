@@ -88,7 +88,7 @@ internal sealed partial class JsRealm
     /// <c>SetupGlobal</c> published, and one entry in the realm's setup list is one place to keep
     /// that ordering constraint rather than three.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=03FCF4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8C9E0C
     // Broiler-Human:        PENDING
     private void SetupAsyncGenerator()
     {
@@ -151,6 +151,7 @@ internal sealed partial class JsRealm
         // `GeneratorFunction` and `AsyncFunction` do, by whether the composition admitted
         // broiler.javascript.dynamic (JSP-10, JSC-240).
         var constructor = new JsNativeFunction(
+            this,
             GlobalFunctionConstructor(),
             "AsyncGeneratorFunction",
             1,
@@ -184,14 +185,14 @@ internal sealed partial class JsRealm
     /// <c>new</c> reads it, which is what <c>OrdinaryCreateFromConstructor</c> does and what makes
     /// <c>Object.getPrototypeOf(g()) === g.prototype</c> a fact about the program.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6D2BD2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6DB680
     // Broiler-Human:        PENDING
     internal JsAsyncGenerator CreateAsyncGenerator(JsScriptFunction function, JsFrame frame)
     {
         var declared = engine.GetProperty(JsValue.Object(function), "prototype");
 
         return new JsAsyncGenerator(
-            declared.IsObject ? declared.AsObject() : AsyncGeneratorPrototype, frame);
+            declared.IsObject ? declared.AsObject() : function.Realm!.AsyncGeneratorPrototype, frame);
     }
 
     /// <summary>

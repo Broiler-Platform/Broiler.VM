@@ -7,7 +7,12 @@
 members their gates name; JSH-4 and JSH-7 are partly implemented (the provider route, and the clone
 carrier without a second realm); JSH-5, JSH-6 and JSH-8 are not started; none is accepted. JSH-7's
 second realm is phase F5 of the plan's [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile), and JSH-5's thread model is phase F6
-([JSC-251](roadmap.corrections.md#jsc-251)).
+([JSC-251](roadmap.corrections.md#jsc-251)). *(Amended 2026-10-04: a second realm exists on one
+engine. A guest's `$262.createRealm` builds it, the composition's surface is told of it through a
+view of its own, and that view refuses a ref the first view minted by name, `ForeignRealm`, as
+JSH-7's "judged by" asks (proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md),
+[JSC-264](roadmap.corrections.md#jsc-264)). A realm on another thread, which the rest of JSH-7
+judges by, is phase F6's, and no embedder API creates a realm.)*
 
 **What this document is.** A design analysis and a proposed programme for one objective: that an
 embedder with a document-shaped object model - a DOM, a style declaration, a storage area, an event

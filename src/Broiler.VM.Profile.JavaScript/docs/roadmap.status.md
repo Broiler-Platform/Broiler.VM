@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, the WeakMap chain stall, JSC-260, phase F2's `v` flag, JSC-262, and phase F4's finalization sweep, JSC-263; milestone rows unchanged)
+**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, the WeakMap chain stall, JSC-260, phase F2's `v` flag, JSC-262, phase F4's finalization sweep, JSC-263, and phase F5's realms, JSC-264; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -592,6 +592,16 @@ hold the model through its eligibility seam, a fixture shows callbacks arriving 
 rule N25 passes ([JSC-263](roadmap.corrections.md#jsc-263)). The rewritten `Security=High` falsifier
 line awaits the owner's review. This is unreviewed implementation and validation material, not
 accepted milestone evidence; no milestone row advances.
+
+**Phase F5 observation, 2026-10-04.** An engine holds several realms. The well-known Symbols and the
+`Symbol.for` registry are the engine's, every function carries its realm and runs in it, and
+`$262.createRealm` builds a second realm on the same engine, charged to the same allowance, telling
+a composition's host surface through a view of its own; rule N26 keeps a captured realm out of the
+tree. The suite's `cross-realm` cases score on what they measure, and every one outside phases F6 and
+F7 passes ([JSC-264](roadmap.corrections.md#jsc-264), proposed
+[JSD-0039](decisions/0039-a-second-realm-on-one-engine.md)). ShadowRealm is not started. This is
+unreviewed implementation and validation material, not accepted milestone evidence; no milestone row
+advances.
 
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:

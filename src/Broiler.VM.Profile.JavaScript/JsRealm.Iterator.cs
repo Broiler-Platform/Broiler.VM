@@ -119,7 +119,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>One kind-specific prototype: a branded <c>next</c> and the kind's tag.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CD2DCD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=259EC0
     // Broiler-Human:        PENDING
     private JsObject IteratorKind(string tag)
     {
@@ -128,7 +128,7 @@ internal sealed partial class JsRealm
         Method(prototype, "next", 0, (engine, thisValue, arguments) =>
         {
             _ = arguments;
-            return engine.Realm.BuiltinIteratorNext(engine, thisValue, prototype, tag);
+            return engine.Realm.BuiltinIteratorNext(engine, thisValue, tag);
         });
 
         // NOT WRITABLE, NOT ENUMERABLE, CONFIGURABLE: the descriptor every kind's tag has, and the
@@ -175,9 +175,11 @@ internal sealed partial class JsRealm
     /// <summary>The shared <c>next</c> of every built-in iterator kind.</summary>
     /// <remarks>
     /// <para>
-    /// <b>The brand is the prototype the iterator was MADE for</b>, not the one it currently has:
+    /// <b>The brand is the kind the iterator was MADE as</b>, not the prototype it currently has:
     /// <c>Object.setPrototypeOf</c> can move an Array iterator under the Map iterator prototype, and
-    /// the specification's <c>GeneratorValidate</c> still answers by the internal brand.
+    /// the specification's <c>GeneratorValidate</c> still answers by the internal brand. It is a
+    /// name and not a realm's prototype, so another realm's iterator of the kind is stepped
+    /// (JSD-0030 SR-7).
     /// </para>
     /// <para>
     /// <b>These are generators in the specification, and three of their states are observable.</b>
@@ -192,12 +194,12 @@ internal sealed partial class JsRealm
     /// that re-enters <c>next</c> is simply answered (<see cref="JsBuiltinIterator.Resumable"/>).
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=791F0C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5FBA0A
     // Broiler-Human:        PENDING
-    private JsValue BuiltinIteratorNext(JsEngine engine, JsValue thisValue, JsObject brand, string tag)
+    private JsValue BuiltinIteratorNext(JsEngine engine, JsValue thisValue, string tag)
     {
         if (thisValue.AsObjectOrNull() is not JsBuiltinIterator iterator ||
-            !ReferenceEquals(iterator.Brand, brand))
+            !string.Equals(iterator.Brand, tag, System.StringComparison.Ordinal))
         {
             return engine.ThrowTypeError(
                 "%" + tag.Replace(" ", string.Empty, System.StringComparison.Ordinal) +
@@ -508,20 +510,24 @@ internal sealed partial class JsRealm
 internal sealed class JsBuiltinIterator : JsObject
 {
     /// <summary>Creates an iterator of one kind over the step that kind supplies.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=05CAF9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F9B195
     // Broiler-Human:        PENDING
     internal JsBuiltinIterator(
         JsObject brand, string tag, System.Func<JsEngine, (bool Found, JsValue Value)> step)
         : base(brand, tag)
     {
-        Brand = brand;
+        Brand = tag;
         Step = step;
     }
 
-    /// <summary>The kind prototype this iterator was made for, which its <c>next</c> checks.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AB0B65
+    /// <summary>
+    /// The kind this iterator was made as, which its <c>next</c> checks: the tag, not the kind
+    /// prototype, because the specification's brand is a name and a realm's <c>next</c> must step
+    /// another realm's iterator of its kind.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D43684
     // Broiler-Human:        PENDING
-    internal JsObject Brand { get; }
+    internal string Brand { get; }
 
     /// <summary>The next step, or <see langword="null"/> once the iterator is finished.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C2B2D5

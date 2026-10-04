@@ -11369,3 +11369,76 @@ from a CLR finalizer".
   of D03-a counting as done; JSD-0029 is still proposed. No milestone or stage moves.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+
+### JSC-264
+
+**Where:** phase F5's first half: the engine's realms (`JsEngine.Realms.cs`), every function's
+`[[Realm]]`, the agent's Symbols, `$262.createRealm`, the embedder's views of a realm, the
+built-in iterators' brand, and `super` assignment.
+
+**What the plan said.**
+- Roadmap section 13: "Today one realm is built per engine". Section 6's table: "`$262.createRealm`
+  throws a `TypeError` saying this profile creates no nested realm". Section 13's table of refusing
+  host members gave `createRealm`'s answer as "That this profile creates no nested realm", and
+  `runs/the-host-members-that-refuse.js` pinned it.
+- `JsRealm.Symbol.cs`: "The well-known Symbols are per-realm here, and the specification says they
+  are per-agent", and the `Symbol.for` registry "is per-realm for the same reason".
+- `JsRealm.Array.cs`, on `ArraySpeciesCreate`: "The cross-realm step is vacuous here."
+- `IJsHostSurface`: "The realm is handed over exactly once per instance, at instantiation".
+- [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) section 1: one realm per engine, no
+  realm on a function, Symbols per realm, `createRealm` refusing.
+- `JsEngine.SetSuper`'s remarks described a walk of the home object's chain; the walk read every
+  object on it as an ordinary one.
+
+**What replaced it, observed on 2026-10-04.**
+- **SR-1.** The fifteen well-known Symbols and the `Symbol.for` registry are the engine's
+  (`JsAgentSymbols`), shared by every realm it builds.
+- **SR-2.** Every function carries the realm that was running when it was made, and runs in it: a
+  frame's site saves and restores the running realm, and a built-in of another realm is entered in
+  its own. A sloppy function's `this` is its own realm's global; a class called without `new` throws
+  its own realm's `TypeError`; `GetPrototypeFromConstructor` falls back on the intrinsic of
+  `new.target`'s realm, found by constructor ordinal; `ArraySpeciesCreate` treats another realm's
+  `%Array%` as no species; a generator's fallback prototype is its function's realm's; a proxy's
+  traps are handed arrays and descriptors of the running realm; a built-in iterator's `next` checks
+  the kind it was made as, by name. Rule N26 holds the model.
+- **SR-7.** `$262.createRealm()` builds an ordinary new realm on the same engine from the same
+  surface set, charged 262,144 live bytes before it is built and 4,096 fuel, and answers its `$262`.
+  A composition's host surface is told of it through a view of its own that shares the engine's step
+  window; that view refuses a ref the first view minted, `ForeignRealm`. The conformance harness
+  installs its `$262` members in the new realm that way.
+- **`super.x = v` is the receiver-aware `[[Set]]`** every other write uses, so a proxy on the home
+  object's chain is asked through its `set` trap. Until today the walk stepped past it and the trap
+  never ran (`staging/sm/class/superPropProxies.js`).
+- **Records.** Proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md) records the model
+  and is the JSD-0018 record SR-7 asks for; JSD-0018, JSD-0024 and JSD-0030 carry dated sections;
+  roadmap sections 6 and 13, the delivery plan's F5 and the hosting roadmap's JSH-7 are amended.
+- **Checks and fixtures.** Five slice-compiler checks: the agent's Symbols shared by two realms, a
+  built-in running in its own realm, a function called through another realm's built-in running in
+  its own, the host surface told of a created realm and a foreign ref refused, and a loop creating
+  realms ending at the live-bytes ceiling. `runs/a-created-realm-is-a-realm-of-its-own.js` shows a
+  created realm's own global and intrinsics, the shared Symbols, its `TypeError`, `new.target`'s
+  realm's intrinsic, its sloppy `this` and the species rule in all three output forms;
+  `runs/the-host-members-that-refuse.js` no longer asks `createRealm`.
+- **test262.** Over the whole pinned suite, against the run [JSC-263](roadmap.corrections.md#jsc-263)
+  records: 94,996 variants, 83,676 passing, 3,394 failing, 42 exhausted and 7,884 skipped - 497
+  variants moved from failing to passing and none moved back, and the exhausted set is the same 42.
+  493 of the 497 are in the 281 files that call `$262.createRealm`, whose 534 variants now answer 493
+  passing, 30 failing and 11 skipped, where they answered 523 failing and 11 skipped; every one of the
+  30 needs `SharedArrayBuffer`, `Atomics` or `Intl`, and the 11 claim the `legacy-regexp` or
+  `ShadowRealm` proposal or `host-gc-required`. The other four are
+  `staging/sm/class/superPropNoOverwriting.js`, which the `super` assignment repair moves, and
+  `staging/sm/Proxy/revoked-get-function-realm-typeerror.js`, which `GetFunctionRealm` moves.
+
+**What must not be read as repaired.**
+- **ShadowRealm is still absent**; SR-3 to SR-5 are F5's second half.
+- **The cross-realm cases that need `SharedArrayBuffer`, `Atomics` or `Intl` still fail**; they are
+  phases F6 and F7's.
+- **A created realm shares the engine's module map**, so a dynamic `import()` from it answers the
+  instance the engine already holds; JSD-0039 leaves a map per realm undecided.
+- **An embedder cannot create a realm**, and JSH-7's realm on another thread is phase F6's.
+- **The engine still re-points a built-in's instance after its body runs**, so a `prototype` getter
+  on a `new.target` runs after the built-in's own argument conversions for the constructors that do
+  not read it themselves; that order is older than this change and not changed by it.
+- JSD-0039 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
