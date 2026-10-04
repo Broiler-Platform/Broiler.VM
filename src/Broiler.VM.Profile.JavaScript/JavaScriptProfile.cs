@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   28
 // Annotated:        28/28
-// Exempt:           15
+// Exempt:           16
 // Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    High
@@ -240,6 +240,18 @@ public static class JavaScriptProfile
     // Broiler-Human:        PENDING
     public static VmFeatureManifestId ShadowRealmManifest { get; } =
         VmFeatureManifestId.Parse(Format.JsSurfaces.ShadowRealm);
+
+    /// <summary>
+    /// The shared-memory surface: <c>SharedArrayBuffer</c> and <c>Atomics</c> (JSD-0041).
+    /// </summary>
+    /// <remarks>
+    /// <b>It is admitted only together with <see cref="BinaryManifest"/></b>: a descriptor naming it
+    /// without the binary surface is refused when it is built.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=084F37
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId SharedManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.Shared);
 
     /// <summary>
     /// The dynamic surface: <c>eval</c> and the <c>Function</c> constructor.
@@ -800,7 +812,7 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=04B8EA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=010AA8
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build(
@@ -820,6 +832,15 @@ public static class JavaScriptProfile
         {
             throw new System.ArgumentException(
                 Format.JsSurfaces.ShadowRealm + " is admitted only together with " + Format.JsSurfaces.Dynamic,
+                nameof(admittedSurfaces));
+        }
+
+        // AND THE SHARED-MEMORY SURFACE NEEDS THE BINARY ONE (JSD-0041), whose views read it.
+        if (admittedSurfaces.Contains(Format.JsSurfaces.Shared) &&
+            !admittedSurfaces.Contains(Format.JsSurfaces.Binary))
+        {
+            throw new System.ArgumentException(
+                Format.JsSurfaces.Shared + " is admitted only together with " + Format.JsSurfaces.Binary,
                 nameof(admittedSurfaces));
         }
 

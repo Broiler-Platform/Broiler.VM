@@ -1120,14 +1120,15 @@ public sealed class JsHostRealm
     /// <see cref="JsHostSurfaceException"/>, because asking is not a wiring defect of the host.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D9D821
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=130E87
     // Broiler-Falsified-If: a buffer this detaches can still be read or written through any view, or a guest reaches this without a function an embedder installed
     // Broiler-Human:        PENDING
     public void DetachArrayBuffer(JsHostValue buffer)
     {
         Enter(2);
 
-        if (UnwrapAtCrossing(buffer).AsObjectOrNull() is not JsArrayBuffer target)
+        // A SHARED BUFFER CANNOT BE DETACHED (DetachArrayBuffer step 1, JSD-0041).
+        if (UnwrapAtCrossing(buffer).AsObjectOrNull() is not JsArrayBuffer { IsShared: false } target)
         {
             throw Error(JsHostErrorKind.TypeError, "DetachArrayBuffer requires an ArrayBuffer");
         }

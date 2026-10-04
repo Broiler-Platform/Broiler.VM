@@ -12,6 +12,7 @@ AggregateError
 Array
 ArrayBuffer
 AsyncDisposableStack
+Atomics
 BigInt
 BigInt64Array
 BigUint64Array
@@ -44,6 +45,8 @@ ReferenceError
 Reflect
 RegExp
 Set
+ShadowRealm
+SharedArrayBuffer
 String
 SuppressedError
 Symbol

@@ -187,7 +187,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>ArrayBuffer</c>, its one static and its prototype.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F74A76
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6505E5
     // Broiler-Human:        PENDING
     private void SetupArrayBuffer()
     {
@@ -265,7 +265,7 @@ internal sealed partial class JsRealm
         // length past the maximum a RangeError, and none of the three changes the buffer.
         Method(ArrayBufferPrototype, "resize", 1, (engine, thisValue, arguments) =>
         {
-            if (thisValue.AsObjectOrNull() is not JsArrayBuffer { IsResizable: true } buffer)
+            if (thisValue.AsObjectOrNull() is not JsArrayBuffer { IsResizable: true, IsShared: false } buffer)
             {
                 return engine.ThrowTypeError(
                     "ArrayBuffer.prototype.resize requires that 'this' be a resizable ArrayBuffer");
@@ -316,7 +316,7 @@ internal sealed partial class JsRealm
             var constructor = BinarySpeciesConstructor(engine, thisValue, arrayBufferConstructor);
             var constructed = engine.Construct(constructor, [JsValue.Number(count)]);
 
-            if (constructed.AsObjectOrNull() is not JsArrayBuffer made)
+            if (constructed.AsObjectOrNull() is not JsArrayBuffer { IsShared: false } made)
             {
                 return engine.ThrowTypeError(
                     "ArrayBuffer.prototype.slice: the species constructor did not return an ArrayBuffer");
@@ -2547,11 +2547,13 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The receiver an <c>ArrayBuffer.prototype</c> member operates on.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=5B3BA9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=5E5BA4
     // Broiler-Human:        PENDING
     private static JsArrayBuffer BinaryThisBuffer(JsEngine engine, JsValue value, string member)
     {
-        if (value.AsObjectOrNull() is JsArrayBuffer buffer)
+        // A SHARED BUFFER IS NOT AN ARRAYBUFFER (IsSharedArrayBuffer, JSD-0041): every member of
+        // `ArrayBuffer.prototype` refuses it as it refuses any other object.
+        if (value.AsObjectOrNull() is JsArrayBuffer { IsShared: false } buffer)
         {
             return buffer;
         }

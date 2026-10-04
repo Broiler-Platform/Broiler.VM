@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
+// Relevant units:   16
+// Annotated:        16/16
 // Exempt:           0
-// Human-reviewed:   0/14
+// Human-reviewed:   0/16
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       14
+// Unverified:       16
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -188,6 +188,19 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public const string ShadowRealm = "broiler.javascript.shadowrealm";
 
+    /// <summary>
+    /// The shared-memory surface: <c>SharedArrayBuffer</c> and <c>Atomics</c> (JSD-0041).
+    /// </summary>
+    /// <remarks>
+    /// <b>Never folded into <see cref="Binary"/></b>, for the reason that surface's remarks give: a
+    /// composition that wants an ordinary byte buffer must not admit memory several agents write by
+    /// accident. It is admitted only together with the binary surface, whose views are how a shared
+    /// buffer is read at all.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=C58E11
+    // Broiler-Human:        PENDING
+    public const string Shared = "broiler.javascript.shared";
+
     /// <summary>Every optional surface this build knows, in ascending ordinal order.</summary>
     /// <remarks>
     /// An artifact declaring a name that is not here is refused as naming a surface this build does
@@ -196,9 +209,9 @@ public static class JsSurfaces
     /// <i>(Amended 2026-09-21. <see cref="BigInt"/> was for a while known and not here, so that the
     /// descriptor admitting every surface declined it; card B05 admitted it, and it is here.)</i>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=27E4CD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=05A586
     // Broiler-Human:        PENDING
-    public static readonly string[] All = [BigInt, Binary, Dynamic, Modules, Native, ShadowRealm];
+    public static readonly string[] All = [BigInt, Binary, Dynamic, Modules, Native, ShadowRealm, Shared];
 
     /// <summary>
     /// The global names the binary surface owns, in ascending ordinal order.
@@ -282,6 +295,11 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public static readonly string[] ShadowRealmGlobals = ["ShadowRealm"];
 
+    /// <summary>The global names the shared-memory surface owns.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7C52F9
+    // Broiler-Human:        PENDING
+    public static readonly string[] SharedGlobals = ["Atomics", "SharedArrayBuffer"];
+
     /// <summary>
     /// The surface that owns <paramref name="globalName"/>, or <see langword="false"/> when the
     /// name belongs to no optional surface.
@@ -292,7 +310,7 @@ public static class JsSurfaces
     /// surface for them, the first list it searches; a caller that records declarations reads
     /// <see cref="BigIntGlobals"/> as well. (Added 2026-09-22, JSeal B07.)
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=393BE9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6F06EA
     // Broiler-Human:        PENDING
     public static bool TryOwner(string globalName, out string manifestId)
     {
@@ -328,6 +346,15 @@ public static class JsSurfaces
             if (string.Equals(name, globalName, System.StringComparison.Ordinal))
             {
                 manifestId = ShadowRealm;
+                return true;
+            }
+        }
+
+        foreach (var name in SharedGlobals)
+        {
+            if (string.Equals(name, globalName, System.StringComparison.Ordinal))
+            {
+                manifestId = Shared;
                 return true;
             }
         }

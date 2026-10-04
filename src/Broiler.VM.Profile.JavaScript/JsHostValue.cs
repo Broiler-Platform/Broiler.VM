@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   55
-// Annotated:        55/55
-// Exempt:           78
-// Human-reviewed:   0/55
+// Relevant units:   56
+// Annotated:        56/56
+// Exempt:           79
+// Human-reviewed:   0/56
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         9/9
 // Resource impact:  2/10 max
-// Unverified:       55
+// Unverified:       56
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -652,6 +652,27 @@ public sealed class JsHostTerminatedException : System.Exception
 /// from outside a step has no meter to charge and no operation to fault.
 /// </para>
 /// </remarks>
+/// <summary>
+/// What a host surface may also say about the agent it embeds: whether <c>Atomics.wait</c> may block
+/// it (JSD-0041 section 4).
+/// </summary>
+/// <remarks>
+/// <b>The specification leaves <c>[[CanBlock]]</c> to the host, and so does this profile.</b> An agent
+/// whose host does not implement this, or answers <see langword="false"/>, is an event loop: its
+/// <c>Atomics.wait</c> is a <c>TypeError</c> and its <c>Atomics.waitAsync</c> still works. A host that
+/// answers <see langword="true"/> - a shell, the conformance runner - lets a wait suspend the guest's
+/// thread, bounded by the operation's allowance.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0DA65F
+// Broiler-Human:        PENDING
+public interface IJsHostAgentPolicy
+{
+    /// <summary>The agent's <c>[[CanBlock]]</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E776F1
+    // Broiler-Human:        PENDING
+    bool CanBlock { get; }
+}
+
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=8FEF7F
 // Broiler-Falsified-If: a realm is handed to a surface a composition did not register, or outside a step
 // Broiler-Human:        PENDING

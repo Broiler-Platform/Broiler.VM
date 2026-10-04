@@ -109,3 +109,12 @@ still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corre
   record's admission criterion - a manifest with no retained run of its own is not accepted - binds
   it like any other.
 
+## Minted 2026-10-04: `broiler.javascript.shared` (unsigned)
+
+*Recorded with phase F6's first slice; it signs nothing. Corrections entry
+[JSC-266](../roadmap.corrections.md#jsc-266).*
+
+- **`broiler.javascript.shared` is minted by proposed [JSD-0041](0041-shared-memory-in-one-agent.md)**,
+  JSD-0028's successor, as the reopened section above said. It owns `SharedArrayBuffer` and
+  `Atomics`; a descriptor naming it without `broiler.javascript.binary` is refused; every door that
+  admits every surface admits it.

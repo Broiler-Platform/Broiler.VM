@@ -55,8 +55,15 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// need be: what it installs lives in the realm it was handed and dies with it.
 /// </para>
 /// </remarks>
-internal sealed class Test262Host : IJsHostSurface
+internal sealed class Test262Host : IJsHostSurface, IJsHostAgentPolicy
 {
+    /// <inheritdoc/>
+    /// <remarks>
+    /// <b>The runner's main agent may block</b>, as a shell's does: it skips the suite's
+    /// <c>CanBlockIsFalse</c> cases and runs its <c>CanBlockIsTrue</c> ones (JSD-0041).
+    /// </remarks>
+    public bool CanBlock => true;
+
     /// <summary>The one instance a run's catalog is built with.</summary>
     internal static Test262Host Instance { get; } = new();
 

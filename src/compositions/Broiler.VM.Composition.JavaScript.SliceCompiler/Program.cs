@@ -486,6 +486,7 @@ internal static class Program
             .Concat(WeakMapChecks.Run())
             .Concat(FinalizationChecks.Run())
             .Concat(RealmChecks.Run())
+            .Concat(SharedChecks.Run())
             .Concat(BigIntChecks.Run())
             .Concat(JsWordChecks.Run())
             .Concat(ValueFormChecks.Run())

@@ -846,7 +846,7 @@ never silently widened:
 | `broiler.javascript.binary` | `ArrayBuffer`, `DataView` and the typed array constructors. Separate because shared mutable memory addressed by index is a question a composition has to be able to answer on its own; `SharedArrayBuffer` and `Atomics` are **not** in it, because they are the multi-agent surface and need the agent model of [section 13](#13-realms-agents-and-the-host-boundary); they have an identity of their own below *(corrected: JSC-86, [JSC-251](roadmap.corrections.md#jsc-251))*. | Opened by JSW-2 |
 | `broiler.javascript.intl` | Internationalization, ECMA-402. | Reopened 2026-10-03: [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F7 *(corrected: [JSC-251](roadmap.corrections.md#jsc-251))* |
 | `broiler.javascript.temporal` | The temporal surface, ahead of the edition at a pinned revision of the proposal. | Reopened 2026-10-03: phase F8 |
-| `broiler.javascript.shared` | `SharedArrayBuffer`, `Atomics` and the agents they are shared between. Never folded into `broiler.javascript.binary`, for that row's reason. | Proposed 2026-10-03: phase F6, minted by JSD-0028's successor |
+| `broiler.javascript.shared` | `SharedArrayBuffer`, `Atomics` and the agents they are shared between. Never folded into `broiler.javascript.binary`, for that row's reason. | Proposed 2026-10-03: phase F6, minted by JSD-0028's successor. *Minted 2026-10-04 by proposed [JSD-0041](decisions/0041-shared-memory-in-one-agent.md), for `SharedArrayBuffer` and `Atomics` in one agent; a descriptor naming it without `broiler.javascript.binary` is refused ([JSC-266](roadmap.corrections.md#jsc-266)). The agents are the phase's next slice.* |
 | `broiler.javascript.shadowrealm` | ShadowRealm, ahead of the edition, admitted only with `broiler.javascript.dynamic`. | Proposed 2026-10-03: phase F5, minted by the record admitting the proposal ([JSD-0030](decisions/0030-shadowrealm-support-boundary.md)). *Minted 2026-10-04 by proposed [JSD-0040](decisions/0040-admitting-shadowrealm.md): a descriptor naming it without `broiler.javascript.dynamic` is refused, and every door admitting every surface admits it ([JSC-265](roadmap.corrections.md#jsc-265)).* |
 
 **A further identity exists beside that table**: `broiler.javascript.wide`, a surface wider than
@@ -931,7 +931,7 @@ column is what a program meets, and it is as true as it was when the surface was
 
 | Surface | What a program meets today | Phase |
 |---|---|---|
-| Agents, `SharedArrayBuffer` and `Atomics` | `$262.agent`'s members throw; the ledger's absent-globals block names the two globals, and `typeof` answers `"undefined"` for each. | F6 |
+| Agents | `$262.agent`'s members throw, so a program cannot start a second agent and a shared buffer has one agent to share with. *(Amended 2026-10-04: `SharedArrayBuffer` and `Atomics` left this row; they are built behind `broiler.javascript.shared` under proposed [JSD-0041](decisions/0041-shared-memory-in-one-agent.md) ([JSC-266](roadmap.corrections.md#jsc-266)).)* | F6 |
 | `Intl` | The same block names it, and `typeof Intl` answers `"undefined"`; the locale-named methods answer as [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md) records. | F7 |
 | `Temporal` | The same block names it, and `typeof Temporal` answers `"undefined"`. | F8 |
 

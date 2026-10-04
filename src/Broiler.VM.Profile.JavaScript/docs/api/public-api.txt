@@ -14,6 +14,7 @@
 # let this be Assembly.Load, and loading would run the module initializers
 # invariant 2 forbids.
 
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostAgentPolicy.CanBlock : abstract System.Boolean { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExotic.IndexedLength(Broiler.VM.Profile.JavaScript.JsHostRealm realm) : abstract System.UInt32
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExotic.SupportedNames(Broiler.VM.Profile.JavaScript.JsHostRealm realm) : abstract System.Collections.Generic.IReadOnlyList<System.String>
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExotic.TryGetIndex(Broiler.VM.Profile.JavaScript.JsHostRealm realm, System.UInt32 index, out Broiler.VM.Profile.JavaScript.JsHostValue value) : abstract System.Boolean
@@ -145,6 +146,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ResolveBindingIndex : const System.Int32 = 2
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ResolveCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ShadowRealmManifest : static Broiler.VM.VmFeatureManifestId { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.SharedManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.SliceManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.SourceProviderCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.StepEntryPoint : const System.String = "#step-jobs"
@@ -2306,6 +2308,8 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Native : const System.String = "broiler.javascript.native"
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.ShadowRealm : const System.String = "broiler.javascript.shadowrealm"
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.ShadowRealmGlobals : static readonly System.String[]
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Shared : const System.String = "broiler.javascript.shared"
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.SharedGlobals : static readonly System.String[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.TryOwner(System.String globalName, out System.String manifestId) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical.IsIdentifierPart(System.Int32 codePoint) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsUnicodeLexical.IsIdentifierStart(System.Int32 codePoint) : static System.Boolean
@@ -2503,6 +2507,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.ToNumber(System.UInt64 word) : static System.Double
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.True : const System.UInt64 = 18444773748872577027
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsWord.Undefined : const System.UInt64 = 18444773748872577024
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostAgentPolicy : interface
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExotic : interface
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostExoticDeletion : interface
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.IJsHostModuleLoader : interface

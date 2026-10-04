@@ -394,7 +394,7 @@ internal static class JsExecution
     /// belongs.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=C4DE97
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=FC5623
     // Broiler-Falsified-If: an embedder that throws leaves an instance a caller can obtain
     // Broiler-Human:        PENDING
     private static VmExecutionStep? InstallHostSurface(JsEngine engine, IJsHostSurface surface)
@@ -408,6 +408,10 @@ internal static class JsExecution
 
         // AND EVERY REALM A GUEST CREATES LATER IS ANNOUNCED TO THE SAME SURFACE (JSD-0030 SR-7).
         engine.HostSurface = surface;
+
+        // THE SURFACE SAYS WHETHER THE AGENT MAY BLOCK, and an agent whose surface says nothing is an
+        // event loop (JSD-0041 section 4).
+        engine.CanBlock = surface is IJsHostAgentPolicy { CanBlock: true };
 
         try
         {
@@ -890,7 +894,7 @@ internal static class JsExecution
     /// capability this profile imports declares caller-thread affinity - which this satisfies: the
     /// thread that calls it is the thread the guest is running on.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=1456B0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F6F6BF
     // Broiler-Falsified-If: guest code runs on the caller's stack, or an exception the guest raised does not reach the caller
     // Broiler-Human:        PENDING
     private static JsValue RunOnGuestStack(JsInstance instance, uint? unit)
@@ -927,6 +931,14 @@ internal static class JsExecution
                         {
                             instance.Engine.SweepFinalization();
                             completed = instance.Engine.DrainJobs();
+
+                            // A DRAIN ALSO SETTLES THE AGENT'S ASYNCHRONOUS WAITERS, waiting for the
+                            // earliest deadline when nothing else is due, and runs what that queues
+                            // (JSD-0041 section 4).
+                            while (instance.Engine.SettleWaiters(wait: true))
+                            {
+                                completed = instance.Engine.DrainJobs();
+                            }
                         }
                     }
                     finally
@@ -966,7 +978,7 @@ internal static class JsExecution
     /// carried out rather than raised, because a job that throws does not stop the stepping any
     /// more than it stops a drain.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=CFD1F5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=9C9D6C
     // Broiler-Falsified-If: a job runs on the caller's stack, or a job that throws ends the stepping
     // Broiler-Human:        PENDING
     private static string RunOneJobOnGuestStack(JsInstance instance)
@@ -995,6 +1007,9 @@ internal static class JsExecution
                         // collector is read at; a cleanup it queues is that turn's job when the
                         // queue was empty (JSD-0029 section 4.2).
                         instance.Engine.SweepFinalization();
+
+                        // AND SETTLES THE WAITERS THAT ARE DUE, without waiting for one that is not.
+                        _ = instance.Engine.SettleWaiters(wait: false);
 
                         if (instance.Engine.StepOneJob(out var thrown))
                         {

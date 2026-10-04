@@ -376,6 +376,14 @@ internal sealed class Test262Manifest
             declined = [.. declined, JsSurfaces.ShadowRealm];
         }
 
+        // AND DECLINING THE BINARY SURFACE DECLINES THE SHARED ONE (JSD-0041), whose buffers only the
+        // binary surface's views can read.
+        if (declined.Contains(JsSurfaces.Binary, StringComparer.Ordinal) &&
+            !declined.Contains(JsSurfaces.Shared, StringComparer.Ordinal))
+        {
+            declined = [.. declined, JsSurfaces.Shared];
+        }
+
         var admitted = ImmutableArray.CreateBuilder<string>();
 
         foreach (var surface in JsSurfaces.All)

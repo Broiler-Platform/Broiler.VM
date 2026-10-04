@@ -612,6 +612,7 @@ ledger row, and the ledger carries no row that any of them would move.
 ### JSH-7 - A second realm, and what may cross between two
 
 - **Delivers.** More than one realm in one process, and a stated rule for what may pass between them.
+<!-- as-written, superseded 2026-10-04 -->
 - **What does not exist today, said plainly rather than implied.** One realm per engine, constructed
   in the engine's own constructor and nowhere else; **nothing in this profile creates a second**.
   There is no structured clone anywhere in the tree. `SharedArrayBuffer` and `Atomics` are absent,
@@ -620,6 +621,13 @@ ledger row, and the ledger carries no row that any of them would move.
   them in would let a composition asking for an ordinary byte buffer admit cross-agent shared memory
   by accident. The step bracket pins a realm to one thread for the duration of a step. **So there is
   no worker story, and a reader who needs one needs this stage and the stage does not exist.**
+<!-- /as-written -->
+- *(Superseded 2026-10-04: a guest's `$262.createRealm` and `ShadowRealm` create realms on one
+  engine ([JSC-264](roadmap.corrections.md#jsc-264), [JSC-265](roadmap.corrections.md#jsc-265)), the
+  clone carrier exists (JSD-0032), and `SharedArrayBuffer` and `Atomics` are built behind their own
+  identity, `broiler.javascript.shared`, for one agent ([JSC-266](roadmap.corrections.md#jsc-266)).
+  There is still no worker story: no second agent runs, and the step bracket still pins a realm to
+  one thread.)*
 - **What does exist, and it is the beginning of the answer rather than a coincidence.** `JsHostRef`
   carries the realm that minted it, and `Unwrap` refuses a ref from another realm by name with
   `JsHostRefusal.ForeignRealm`. **That refusal is written for a case that cannot yet arise**, which is

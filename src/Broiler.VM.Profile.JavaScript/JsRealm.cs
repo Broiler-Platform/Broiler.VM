@@ -190,7 +190,7 @@ internal sealed partial class JsRealm
     private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C15175
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6B67AD
     // Broiler-Human:        PENDING
     internal JsRealm(JsEngine owner, bool shadow = false)
     {
@@ -242,6 +242,12 @@ internal sealed partial class JsRealm
         if (owner.Admits(Format.JsSurfaces.Binary))
         {
             SetupBinary();
+
+            // SHARED MEMORY IS BUILT ON THE BINARY SURFACE'S TYPES, and only where both were admitted.
+            if (owner.Admits(Format.JsSurfaces.Shared))
+            {
+                SetupShared();
+            }
         }
 
         if (owner.Admits(Format.JsSurfaces.Dynamic))

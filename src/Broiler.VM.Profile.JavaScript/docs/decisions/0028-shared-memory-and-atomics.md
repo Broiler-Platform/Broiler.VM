@@ -324,3 +324,17 @@ still what takes it or a successor. Corrections entry [JSC-251](../roadmap.corre
   `broiler.javascript.shared`, which is never folded into `broiler.javascript.binary`.
 - **What a program meets today does not change** until S4; the two names stay in the ledger's
   `absent-globals` block and in the CLI row that pins them until the change that publishes them.
+
+## Succeeded in part, 2026-10-04 (unsigned)
+
+*Recorded with phase F6's first slice; it signs nothing and this record keeps its status line.
+Corrections entry [JSC-266](../roadmap.corrections.md#jsc-266).*
+
+- **Proposed [JSD-0041](0041-shared-memory-in-one-agent.md) is the successor the reopened section
+  above asks for**, for one agent: it answers sections 2.1 to 2.6 there, builds what one agent needs
+  of section 6's slices - `SharedArrayBuffer` and `Atomics`, `wait`, `waitAsync` and `notify` included,
+  with JSD-0041 section 4 saying what each slice still owes - and mints `broiler.javascript.shared`,
+  admitted only with `broiler.javascript.binary`.
+- **What section 2 asked about several agents is still open**: a block held by several, charged to
+  their aggregate once (2.2), a growth that races another agent (2.3), `$262.agent` and a worker's
+  `[[CanBlock]]` (2.4), and the carrier entry 2.7 describes. Those are F6's next slice.

@@ -1066,7 +1066,7 @@ meets today is unchanged until the phase that delivers the surface lands, and ro
 | Nested realms, `$262.createRealm` | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | SR-1, SR-2 and SR-7 are scheduled *(performed 2026-10-04: proposed [JSD-0039](decisions/0039-a-second-realm-on-one-engine.md))* | F5 |
 | ShadowRealm | [JSD-0030](decisions/0030-shadowrealm-support-boundary.md) | The deferral is not taken; SR-3 to SR-5 follow F5's realm work under `broiler.javascript.shadowrealm` *(performed 2026-10-04: proposed [JSD-0040](decisions/0040-admitting-shadowrealm.md))* | F5 |
 | Agents, `$262.agent` | [roadmap section 13](roadmap.md#13-realms-agents-and-the-host-boundary), [JSD-0028](decisions/0028-shared-memory-and-atomics.md) | A second agent is built, which is the first of JSD-0028's reopening conditions | F6 |
-| `SharedArrayBuffer` and `Atomics` | [JSD-0028](decisions/0028-shared-memory-and-atomics.md) | The exclusion is not taken; slices S1 to S5 follow the agent work under their own identity | F6 |
+| `SharedArrayBuffer` and `Atomics` | [JSD-0028](decisions/0028-shared-memory-and-atomics.md) | The exclusion is not taken; slices S1 to S5 follow the agent work under their own identity *(performed 2026-10-04 for one agent, ahead of the agents, as far as one agent needs each slice: proposed [JSD-0041](decisions/0041-shared-memory-in-one-agent.md))* | F6 |
 | `Intl` | [JSD-0027](decisions/0027-intl-scope-and-data-strategy.md), [JSD-0002](decisions/0002-feature-manifest-allocation.md) | The deferral is not taken; I0 to I4 are scheduled without waiting for a named consumer | F7 |
 | Temporal | [JSD-0002](decisions/0002-feature-manifest-allocation.md) only; a record opens F8 | Admitted at a pinned revision of the proposal, with a time-zone data boundary | F8 |
 
@@ -1074,6 +1074,8 @@ meets today is unchanged until the phase that delivers the surface lands, and ro
 direction given on 2026-10-03; it takes no record, signs nothing, and moves no ledger row. The
 `absent-globals` block in the ledger keeps all four of its names until the change that publishes
 each one removes it, because the block states what the realm lacks, not what the plan intends.
+*(Amended 2026-10-04: two remain; `SharedArrayBuffer` and `Atomics` left with phase F6's first slice,
+[JSC-266](roadmap.corrections.md#jsc-266).)*
 
 ### 26.4 The phases
 
@@ -1238,6 +1240,13 @@ gate and the ledger's row.
     the typed arrays pass;
   - the conformance adapter stops declining `CanBlockIsFalse` and `CanBlockIsTrue`;
   - the two names leave the ledger's `absent-globals` block in the same change that publishes them.
+- *Observed 2026-10-04, unreviewed: the first slice is in the tree under proposed
+  [JSD-0041](decisions/0041-shared-memory-in-one-agent.md), which mints `broiler.javascript.shared`.
+  `SharedArrayBuffer` passes, the shared-buffer cases of `DataView` and the typed arrays pass, and the
+  two names left the `absent-globals` block in the change that publishes them; `Atomics` passes every
+  variant that does not start a second agent, and the conformance runner's main agent may block, so
+  it runs its `CanBlockIsTrue` cases. Agents, `$262.agent` and the `CanBlockIsFalse` cases are the
+  second slice ([JSC-266](roadmap.corrections.md#jsc-266)).*
 
 #### F7 — `Intl`
 

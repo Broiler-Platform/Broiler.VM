@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap status
 
-**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, the WeakMap chain stall, JSC-260, phase F2's `v` flag, JSC-262, phase F4's finalization sweep, JSC-263, and phase F5's realms and ShadowRealm, JSC-264 and JSC-265; milestone rows unchanged)
+**Last updated:** 2026-10-04 (JSP-2, JSP-4 to JSP-7 and JSP-10 observations, and JSD-0027 N2 and N3, RegExp modifiers, JSC-245 to JSC-250, the roadmap reorganised by JSC-251, phase F1 batches JSC-252 to JSC-258, phase F3's source text and stacks, JSC-259 and JSC-261, the WeakMap chain stall, JSC-260, phase F2's `v` flag, JSC-262, phase F4's finalization sweep, JSC-263, and phase F5's realms and ShadowRealm, JSC-264 and JSC-265, and phase F6's shared memory, JSC-266; milestone rows unchanged)
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
@@ -606,6 +606,15 @@ F7 passes ([JSC-264](roadmap.corrections.md#jsc-264), proposed
 [JSD-0040](decisions/0040-admitting-shadowrealm.md)). This is unreviewed implementation and
 validation material, not accepted milestone evidence; no milestone row advances.
 
+**Phase F6 observation, 2026-10-04.** `SharedArrayBuffer` and `Atomics` are built for one agent behind
+`broiler.javascript.shared`, admitted only with the binary surface, and left the ledger's
+`absent-globals` block in the same change. `test/built-ins/SharedArrayBuffer` passes all 208 of its
+variants, and `ArrayBuffer`, `DataView`, `TypedArray` and `TypedArrayConstructors` have no failing
+variant; every one of the 224 failing variants under `test/built-ins/Atomics` starts a second agent,
+which is the phase's next slice ([JSC-266](roadmap.corrections.md#jsc-266), proposed
+[JSD-0041](decisions/0041-shared-memory-in-one-agent.md)). This is unreviewed implementation and
+validation material, not accepted milestone evidence; no milestone row advances.
+
 **Conformance defects observation, 2026-10-03.** Six defects outside every declined surface have a
 change each:
 - the tokenizer reads a `/` by what its bracket closed;
@@ -1192,13 +1201,16 @@ running `Object.getOwnPropertyNames(globalThis)` in a verified artifact and writ
 fails when the two disagree in either direction. **The block is the claim; the file is the fact.**
 
 ```absent-globals
-Atomics
 Intl
-SharedArrayBuffer
 Temporal
 ```
 
-**All four are absent for want of work, and each is scheduled.** Until 2026-10-03 this paragraph
+**Both are absent for want of work, and each is scheduled.** *(Amended 2026-10-04: `SharedArrayBuffer`
+and `Atomics` left the block in the change that publishes them, phase F6's first slice, under
+proposed [JSD-0041](decisions/0041-shared-memory-in-one-agent.md) and the identity
+`broiler.javascript.shared` ([JSC-266](roadmap.corrections.md#jsc-266)); the published file is now
+read from a realm admitting every surface that owns a global, so it lists `ShadowRealm` too. The
+paragraph below is kept as written.)* Until 2026-10-03 this paragraph
 said two of them, `SharedArrayBuffer` and `Atomics`, were absent deliberately. The plan reopened
 every declined surface that day ([JSC-251](roadmap.corrections.md#jsc-251)): the shared-memory pair
 is roadmap [section 26](roadmap.delivery.md#26-the-road-to-a-full-featured-profile)'s phase F6,

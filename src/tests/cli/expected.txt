@@ -263,7 +263,7 @@ threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
 #
 # The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
 # would still exit 0, and a row asserting only the exit code would pass over it.
-runs|0|# Completed: 145
+runs|0|# Completed: 146
 threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
@@ -444,11 +444,13 @@ runs/a-parameter-named-arguments.js|0|captured
 # through `ToNumber` - which for an object means calling its `valueOf` - and a detached buffer takes
 # every element with it. The last row is the DELIBERATE absence: `SharedArrayBuffer` and `Atomics`
 # are the multi-agent surface and the binary identity excludes them by name, so that row goes red
-# the day somebody folds them in.
+# the day somebody folds them in. (Amended 2026-10-04, JSC-266: they are built behind their own
+# identity, `broiler.javascript.shared`, which this host admits with every other, so the row now
+# answers `function:object:function`; the binary identity still excludes them.)
 runs/a-typed-array-over-a-buffer.js|0|typed-array-over-a-buffer ok
 runs/a-typed-array-over-a-buffer.js|0|undefined:false
 runs/a-typed-array-over-a-buffer.js|0|0,2,2,255
-runs/a-typed-array-over-a-buffer.js|0|undefined:undefined:function
+runs/a-typed-array-over-a-buffer.js|0|function:object:function
 
 # THE DYNAMIC SURFACE. This host registers an artifact provider, so `eval` can answer; a direct
 # `eval` inside a function reads and writes the caller's locals (JSeal V14) and introduces its sloppy
@@ -1066,3 +1068,14 @@ runs/a-shadow-realm-keeps-its-own-realm.js|0|state kept 2
 runs/a-shadow-realm-keeps-its-own-realm.js|0|host members undefined undefined
 runs/a-shadow-realm-keeps-its-own-realm.js|0|nested 2
 runs/a-shadow-realm-keeps-its-own-realm.js|0|bad source threw SyntaxError
+runs/a-shared-buffer-and-atomics.js|0|settled at the drain timed-out
+runs/a-shared-buffer-and-atomics.js|0|a shared buffer [object SharedArrayBuffer] 16 false
+runs/a-shared-buffer-and-atomics.js|0|add then load 0 5
+runs/a-shared-buffer-and-atomics.js|0|compareExchange 5 9
+runs/a-shared-buffer-and-atomics.js|0|narrowed to the element 300 44 44 1
+runs/a-shared-buffer-and-atomics.js|0|BigInt64 -5 -5 -3
+runs/a-shared-buffer-and-atomics.js|0|notify with no waiter 0
+runs/a-shared-buffer-and-atomics.js|0|wait threw TypeError
+runs/a-shared-buffer-and-atomics.js|0|an ArrayBuffer member on it threw TypeError
+runs/a-shared-buffer-and-atomics.js|0|grow 8 8
+runs/a-shared-buffer-and-atomics.js|0|waitAsync true

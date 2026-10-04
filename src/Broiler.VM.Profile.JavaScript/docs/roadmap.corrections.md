@@ -11500,3 +11500,65 @@ handling, and the charge for a realm.
 
 **Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
 
+### JSC-266
+
+**Where:** phase F6's first slice: `SharedArrayBuffer` and `Atomics` (`JsShared.cs`, `JsRealm.Shared.cs`,
+`JsEngine.Atomics.cs`), the buffer type, the surface table and descriptor builder, the host surface's
+agent policy, the host drain, the ledger's `absent-globals` block and the published globals.
+
+**What the plan said.**
+- The ledger's `absent-globals` block listed `Atomics` and `SharedArrayBuffer`, and roadmap section 6's
+  table said "the ledger's absent-globals block names the two globals, and `typeof` answers
+  `"undefined"` for each".
+- `JsBinary.cs`: "The bytes are a plain `byte[]` and are never shared between agents. A
+  `SharedArrayBuffer` is a different type for a reason ... and this profile does not build one."
+- The clone carrier's transfer list: "THIS REALM HAS NO SharedArrayBuffer (JSD-0028)".
+- The allocation table: `broiler.javascript.shared` "Proposed 2026-10-03: phase F6, minted by
+  JSD-0028's successor". The hosting roadmap's JSH-7 said the two globals "are absent, and absent
+  deliberately rather than incidentally".
+
+**What replaced it, observed on 2026-10-04.**
+- **`SharedArrayBuffer`** is built under proposed
+  [JSD-0041](decisions/0041-shared-memory-in-one-agent.md) as the binary buffer type over a shared
+  block: the constructor with its options bag, `byteLength`, `growable`, `maxByteLength`, `grow`,
+  `slice` and the species. Every `ArrayBuffer.prototype` member refuses it, as every member of its own
+  prototype refuses an unshared buffer; `$262.detachArrayBuffer`, a transfer list and the clone
+  carrier refuse it.
+- **`Atomics`** is built: the eleven read, write and read-modify-write members over every integer
+  view, `wait`, `waitAsync`, `notify` and `pause`, in the edition's validation order. Four- and
+  eight-byte accesses are lock-free compare-and-swap loops; one- and two-byte ones take the block's
+  lock, so `isLockFree` answers `false` for 1 and 2, where node 22 answers `true`.
+- **`[[CanBlock]]` is the host surface's** (`IJsHostAgentPolicy`, public): the conformance runner
+  answers `true`, the CLI does not answer and its `Atomics.wait` is a `TypeError`. A blocking wait
+  sleeps in 20 ms slices and polls cancellation and the meter between them. **`waitAsync` settles only
+  at a host drain or step**, and a drain whose queue is empty waits for the earliest deadline, bounded
+  the same way.
+- **`broiler.javascript.shared`** is minted, owning both globals and admitted only with
+  `broiler.javascript.binary`; the runner's `--decline` of the binary surface declines it. The public
+  surface gains `JavaScriptProfile.SharedManifest`, `JsSurfaces.Shared`, `JsSurfaces.SharedGlobals` and
+  `IJsHostAgentPolicy`, which the API baseline records.
+- **The two names left the `absent-globals` block** in this change, and `docs/realm/globals.txt` is now
+  read from a realm admitting every surface that owns a global, so it publishes `Atomics`,
+  `SharedArrayBuffer` and `ShadowRealm`. The hosting roadmap's stale clause is marked as written.
+- **Checks and a fixture**: seven slice-compiler checks - an agent that may not block refuses `wait`;
+  one that may waits and times out; a wait with no timeout ends at a 300 ms wall clock; a `waitAsync`
+  stays pending through two scripts and settles at the drain; a `notify` wakes one asynchronous waiter
+  for the next drain; the shared surface alone is refused; a declined shared surface builds neither
+  global - and `runs/a-shared-buffer-and-atomics.js` in all three output forms.
+  `runs/a-typed-array-over-a-buffer.js`, whose last line pinned the two names' absence as
+  `undefined:undefined:function`, answers `function:object:function` and says why.
+- **test262**, by directory: `built-ins/SharedArrayBuffer` 208 of 208 variants pass; `ArrayBuffer`,
+  `DataView`, `TypedArray` and `TypedArrayConstructors` have no failing variant; `built-ins/Atomics`
+  passes 524 and fails 224, every one of them in a file that starts a second agent through
+  `$262.agent`.
+
+**What must not be read as repaired.**
+- **No second agent runs**: `$262.agent` still refuses, and the cases that start an agent fail.
+- **A growable block replaces its array when it grows**, which a second agent writing during the
+  growth could lose a write to; with one agent nothing races it.
+- **The audit of the binary built-ins that read an element twice**, and JSD-0028 S2's architecture
+  rule over the plain element path, are owed before a second agent can write.
+- JSD-0041 is proposed and unsigned. No milestone or stage moves.
+
+**Authority and date.** The implementation of 2026-10-04 in this checkout. 2026-10-04.
+

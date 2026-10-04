@@ -1227,7 +1227,13 @@ public sealed class ReviewRecordRuleTests
         // and its two methods, and JsEngine.ShadowRealm.cs, the evaluation, the wrapping boundary and
         // the import. Both are covered on the same terms as every other product file, and nothing in
         // them has been read by a human.
-        Assert.Equal(246, AssuranceSources.Files.Count);
+        //
+        // AND SHARED MEMORY (phase F6, 2026-10-04, JSD-0041): JsShared.cs, the shared block, its
+        // waiters and the atomic accesses; JsRealm.Shared.cs, SharedArrayBuffer and Atomics; and
+        // JsEngine.Atomics.cs, the blocking wait and the asynchronous waiters a host drain settles.
+        // All three are covered on the same terms as every other product file, and nothing in them
+        // has been read by a human.
+        Assert.Equal(249, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
